@@ -69,3 +69,10 @@ in steps for a builder, a banner spun from string, a missing dye named on the li
 loaded mid-job finishing the beds, and with no Shepherd the Leatherworker leaving the beds alone and the line saying
 "Hire a Shepherd to make Blue Beds". `BuilderGameTests.dyerMakesTheConcreteAndRedWoolTheBuilderNeeds` has the Shepherd
 dye the red wool. Scene `weaver`.
+
+`QaShepherdWeavesGameTests` (QA, 12): two blue beds with only two blue dyes (white beds dyed), red carpets and blue wool
+from white wool and dye (with sheep grazing by the loom), white beds spun from string, a Shepherd saved between the
+chain's steps finishing the beds, the loom broken mid-job losing no wool or planks, the dye line word for word, no wool
+or string on the line, a Carpenter (and a nitwit or a baby by a loom) never weaving and the line saying "Hire a Shepherd
+to make Blue Beds, White Banners", "Shepherd · N woven" and "making 2 White Beds (step 1 of 2)" over his head, and
+paintings and flower banner patterns made for a Storehouse's stock orders.

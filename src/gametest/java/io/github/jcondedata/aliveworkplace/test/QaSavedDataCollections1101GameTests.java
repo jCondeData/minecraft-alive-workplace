@@ -185,7 +185,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		}));
 		// MoveSite#load refuses a site whose "where" (one byte per block of its plan) isn't as long as its plan, and drops
 		// packed data for a block index outside it.
-		TIED.put("move.MoveSites.sites", new Tie("a site's where has one byte per block of its plan, packed data only for those blocks (MoveSite#load)", (d, made, m) -> {
+		TIED.put("move.MoveSites.sites", new Tie("a site's where has one byte per block of its plan, packed data (and its turned mark) only for those blocks (MoveSite#load)", (d, made, m) -> {
 			for (Object site : (List<?>) made) {
 				int blocks = ((List<?>) part(part(site, "plan"), "blocks")).size();
 				byte[] where = new byte[blocks];
@@ -195,6 +195,8 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 				f.set(site, where);
 				Map<?, ?> packed = (Map<?, ?>) part(site, "packedData");
 				packed.keySet().removeIf(i -> (Integer) i >= blocks);
+				// B1137: the "turned" mark is saved inside a packed entry, so only blocks with packed data keep it
+				((java.util.Set<?>) part(site, "packedTurned")).retainAll(packed.keySet());
 			}
 			return made;
 		}));

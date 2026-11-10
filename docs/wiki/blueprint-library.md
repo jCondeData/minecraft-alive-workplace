@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454
 
 ## 1. What a player sees
 
@@ -187,11 +187,12 @@ a Blank Blueprint and a player 30 blocks away store nothing), `TableLibraryGameT
 `TableLibraryGameTests.aBrokenTableDropsItsBlueprints`, `TableLibraryGameTests.theTableKeepsItsBlueprintsThroughASaveAndReload`
 (and an old save loads empty), `TableLibraryGameTests.theStoredTabReadsInEnglish`.
 
-`QaBlueprintTableGameTests` (13, QA of 36.1, 36.10 and 36.13 through the packets a client sends): the Stored tab's
+`QaBlueprintTableGameTests` (14, QA of 36.1, 36.10 and 36.13 through the packets a client sends): the Stored tab's
 counts for two kinds down to the last one taken out, a stack in hand, the last free slot and a full bag (nothing
 dropped), a table at 199 and at 200, a table broken by a player dropping exactly what it held (and one replaced by
 another block), two tables kept apart through a reload, a second player taking one out; the search with mixed case,
-tabs and spaces, a name word with a job, a query only a level's id matches, each job of a shared job block; every
+tabs and spaces, a name word with a job, a query only a level's id matches, each job of a shared job block, a job switched on and off again after the
+Table listed its builds (B454: `aJobSwitchedOnAfterTheListingIsFoundBySearch`, the Firewarden); every
 basement build's preview depth, floor division at scales 1 to 3, and the "and 4 below ground" line from the preview a
 client receives.
 

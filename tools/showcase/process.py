@@ -41,6 +41,7 @@ ASSET_LINES = re.compile(r"(Missing model|Unable to load model|Missing textures?
 KEY = re.compile(r"^[a-z0-9_\-]+(\.[a-z0-9_\-/]+)+$")
 FOREIGN = re.compile(r"cobblemon|cobbledollars|mega_?showdown|showdown|accessories|owo|fabric|architectury|supplementaries|"
                      r"moonlight|handcrafted|beautify|cobblefurnies|chipped|rechiseled|carved_?wood|toms_storage|sophisticated")
+STUCK_LINES = re.compile(r"\[battle scene\] stuck |Missing interpretation on 'error' action")
 CRASH = re.compile(r"---- Minecraft Crash Report ----|#@!@# Game crashed|Exception in server tick loop")
 
 
@@ -155,6 +156,13 @@ def process(name, raw, out, seconds=None, exit_code=0):
             assets.append(re.sub(r"^.*?\]: ", "", line.strip())[:300])
     if exit_code == "timeout":
         problems.append("ran over its time limit")
+    # What a battle that stood still was waiting on (B43): the scene's own dump and Cobblemon's refused choices.
+    stuck = []
+    for line in log.splitlines():
+        if STUCK_LINES.search(line):
+            text = re.sub(r"^.*?\]: ", "", line.strip())[:300]
+            if text not in stuck:
+                stuck.append(text)
 
     # Stills, 2-4, as labelled.
     stills, more = [], []
@@ -242,6 +250,8 @@ def process(name, raw, out, seconds=None, exit_code=0):
         "stills": still_out, "more": more_out, "broken": broken, "gif": gif, "frames": len(frames),
         "seconds": seconds, "ticks": report.get("ticks") if report else None,
     }
+    if stuck:
+        result["stuck"] = stuck[:80]
     with open(os.path.join(out, "result.json"), "w") as f:
         json.dump(result, f, indent=1)
     return result

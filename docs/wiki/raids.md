@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146
 
 ## What a player sees
 
@@ -61,6 +61,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning.
+- **Called off.** An attack called off after the warning (threat level 0, Peaceful, the village set At peace, or
+  `/workplace threat clear`) takes its warning with it (`ThreatData.callOff`), and `Warnings.ready` is false in a quiet
+  village: no gates shut, no battle stations, nobody kept in (B1146).
 - **Without a source** the horn is the only warning, as before; the Defense page says "No lookout" and What next? says
   to build a Lookout Tower and post a guard by it.
 - The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).
@@ -212,6 +215,8 @@ None.
   lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
   of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
   switched off, every new sentence). Scene `warning`.
+- B1146: `QaThreatSwitches1110dBugTests` (warned at level 2, then the level set to 0, the world saved and loaded at
+  level 0, or the village set At peace: nothing shuts on the day).
 - 32.14 (QA, lane D): `QaWarningGameTests` (an archer posted exactly 24 blocks from a Lookout Tower's middle keeps
   watch, 25 blocks off doesn't and nobody is warned; an upgraded Lookout Tower still counts; a player in the village and
   the hall's owner 300 blocks off are each told once, in gold, and a stranger 300 blocks off isn't).

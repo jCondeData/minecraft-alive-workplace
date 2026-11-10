@@ -2402,7 +2402,7 @@ public class BuilderWork extends Behavior<Villager> {
 					MaterialRules.requirement(next.state()).ifPresent(r -> MaterialLedger.used(r.item(), bag.remove(r.item(), r.count())));
 				}
 				level.setBlock(at, next.state(), Block.UPDATE_ALL);
-				applyBlockEntityData(level, at, next.state(), next.nbt()); // 39.5: its place on the belt
+				applyBlockEntityData(level, site, at, next.state(), next.nbt()); // 39.5: its place on the belt
 				site.placedNow(at);
 			}
 		}
@@ -2482,7 +2482,7 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, shaped, Block.UPDATE_ALL);
 		}
 		freeBystanders(level, pos, villager);
-		applyBlockEntityData(level, pos, state, step.nbt());
+		applyBlockEntityData(level, site, pos, state, step.nbt());
 		site.placedNow(pos);
 		MaterialRules.afterPlaced(level, pos, state);
 		if (MaterialRules.laidWhole(state)) {
@@ -2630,8 +2630,11 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Copies sign text, banner patterns etc. from the blueprint — but never container contents or loot. */
-	private static void applyBlockEntityData(ServerLevel level, BlockPos pos, BlockState state, @Nullable CompoundTag nbt) {
+	/**
+	 * Copies sign text, banner patterns etc. from the blueprint — but never container contents or loot — turned with the
+	 * blueprint (B1137: a Create arm's targets, kept relative to it).
+	 */
+	private static void applyBlockEntityData(ServerLevel level, BuildSite site, BlockPos pos, BlockState state, @Nullable CompoundTag nbt) {
 		if (nbt == null || !state.hasBlockEntity()) {
 			return;
 		}
@@ -2645,6 +2648,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		try {
 			blockEntity.loadWithComponents(tag, level.registryAccess());
+			TurnedBlockEntities.apply(blockEntity, site.placement().mirror(), site.placement().rotation());
 			blockEntity.setChanged();
 		} catch (RuntimeException ignored) {
 			// Bad data in an imported blueprint should never crash the server; the block itself is placed.

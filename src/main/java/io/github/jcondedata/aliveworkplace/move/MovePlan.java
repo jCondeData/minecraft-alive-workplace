@@ -341,6 +341,7 @@ public final class MovePlan {
 			BlockEntity be = level.getBlockEntity(p.pos());
 			if (be != null) {
 				be.loadWithComponents(p.data(), level.registryAccess());
+				io.github.jcondedata.aliveworkplace.build.TurnedBlockEntities.apply(be, net.minecraft.world.level.block.Mirror.NONE, rotation); // B1137
 				be.setChanged();
 				level.sendBlockUpdated(p.pos(), p.state(), p.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 			}

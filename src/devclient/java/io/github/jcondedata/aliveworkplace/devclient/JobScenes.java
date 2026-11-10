@@ -2970,6 +2970,23 @@ final class JobScenes {
 				return n(ModAttachments.ITEMS_CRAFTED, b) >= 1 && job == null && carried == 0;
 			};
 		}, null));
+		// ROADMAP 46.6: the Glassblower at his Glass Kiln fires the sand in the builder's barrels into glass on their coal and
+		// makes the panes the builder's Glassblower's Workshop needs, and takes them to the builder
+		SCENES.put("glassblower", new Job("the glassblower fired the builder's sand into glass at his glass kiln, made the glass panes the builder needed and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.GLASSBLOWERS_WORKSHOP, new BlockPos(-8, -60, -3),
+				List.of(Items.GLASS_PANE), Map.of(Items.SAND, 24, Items.COAL, 4));
+			Villager g = worker(level, STATION, ModBlocks.GLASS_KILN, ModVillagers.GLASS_KILN_POI, ModVillagers.GLASSBLOWER);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(g);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(g).count(Items.GLASS_PANE);
+				timeoutWhy = "the glassblower made " + n(ModAttachments.ITEMS_CRAFTED, g) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " pane(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, g) >= 1 && job == null && carried == 0;
+			};
+		}, null));
 		// ROADMAP 46.5: the Leatherworker at his cauldron fills the Storehouse's stock orders for item frames and leads from
 		// the leather, sticks, string and slime balls in its store, and puts them there
 		SCENES.put("leatherworker_goods", job("the leatherworker made the item frames and leads the storehouse ordered from the leather, sticks, string and slime balls in its store", 3000, (level, player) -> {
@@ -4680,11 +4697,12 @@ final class JobScenes {
 			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
 				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 			BlockPos crate = STATION.offset(3, 0, -4);
-			level.setBlockAndUpdate(crate, ModBlocks.MOVERS_CRATE.defaultBlockState());
-			Villager mover = EntityType.VILLAGER.spawn(level, crate.south(), MobSpawnType.COMMAND);
+			// hired the way the game hires (Jobs.employ: his crate's ticket, and his brain rebuilt with the Mover's work; setting
+			// the profession alone left him with a jobless villager's brain, idle all scene: showcase B, 2026-11-10)
+			Villager mover = worker(level, crate, ModBlocks.MOVERS_CRATE.defaultBlockState(),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER);
 			io.github.jcondedata.aliveworkplace.legend.Gifted.set(mover, null);
-			mover.setVillagerData(mover.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER).setLevel(2));
-			mover.getBrain().setMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE, net.minecraft.core.GlobalPos.of(level.dimension(), crate));
+			mover.setVillagerData(mover.getVillagerData().setLevel(2));
 			boolean[] seen = {false, false, false};
 			int[] after = {-1};
 			net.minecraft.world.level.levelgen.structure.BoundingBox[] newBox = {null};

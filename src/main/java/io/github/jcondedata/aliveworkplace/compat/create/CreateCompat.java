@@ -1,10 +1,12 @@
 package io.github.jcondedata.aliveworkplace.compat.create;
 
+import io.github.jcondedata.aliveworkplace.build.TurnedBlockEntities;
 import io.github.jcondedata.aliveworkplace.city.CaravanTrains;
 
 /**
  * The Create integration (Milestone 39). Most of it goes by block ids and needs no Create class; the village trains
- * (39.7a) drive Create's own railway, so they live here and fill {@link CaravanTrains#RAILWAY}.
+ * (39.7a) drive Create's own railway, so they live here and fill {@link CaravanTrains#RAILWAY}; a block entity put up
+ * turned (the Mover, a builder) turns its data the way Create's contraptions do ({@link TurnedBlockEntities}, B1137).
  */
 public final class CreateCompat {
 	/** The Create versions this was tested with: the owner's Fabric port of 6.0.10 (libs/). */
@@ -15,5 +17,6 @@ public final class CreateCompat {
 
 	public static void init() {
 		CaravanTrains.RAILWAY.register("create", new CreateTrains());
+		TurnedBlockEntities.EXTENSION.register("create", new CreateTurns());
 	}
 }

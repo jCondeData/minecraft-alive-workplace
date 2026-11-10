@@ -110,7 +110,7 @@ public class QaJobLists1110cGameTests {
 		single.put(Items.LIME_CONCRETE, "Hire a Mason to make Lime Concrete");
 		single.put(Items.BLACK_CONCRETE_POWDER, "Hire a Mason to make Black Concrete Powder");
 		single.put(Items.PURPLE_GLAZED_TERRACOTTA, "Hire a Mason to make Purple Glazed Terracotta");
-		single.put(Items.TINTED_GLASS, "Hire a Mason to make Tinted Glass");
+		single.put(Items.TINTED_GLASS, "Hire a Glassblower to make Tinted Glass");
 		single.put(Items.TRIPWIRE_HOOK, "Hire a Tinkerer to make Tripwire Hooks");
 		single.put(Items.DAYLIGHT_DETECTOR, "Hire a Tinkerer to make Daylight Detectors");
 		single.put(Items.IRON_BARS, "Hire a Tinkerer to make Iron Bars");

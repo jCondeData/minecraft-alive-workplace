@@ -80,14 +80,15 @@ public final class SandRamps {
 	private static final class Site {
 		final BlockPos foot;
 		final Direction into;
-		final Set<UUID> over;
+		/** The siege's memory, whose saved set of raiders over the wall a climb that lands inside joins (B1130). */
+		final Storm storm;
 		int height;
 		int inside = 2;
 
-		Site(BlockPos foot, Direction into, Set<UUID> over) {
+		Site(BlockPos foot, Direction into, Storm storm) {
 			this.foot = foot.immutable();
 			this.into = into;
-			this.over = over;
+			this.storm = storm;
 		}
 
 		/** The blocks of the ramp in the order they are piled: stage by stage, each a whole ramp one higher, outside in. */
@@ -107,14 +108,32 @@ public final class SandRamps {
 		}
 	}
 
+	/**
+	 * What is kept in memory of a siege's ramps (rebuilt from the saved feet after a restart). The raiders over the wall
+	 * are the siege's own saved set, so a restart doesn't hand one inside back to the director or the ramp (B1130).
+	 */
 	private static final class Storm {
 		final List<Site> sites = new ArrayList<>();
 		final Map<UUID, Site> assigned = new HashMap<>();
 		final Map<UUID, Long> nextTry = new HashMap<>();
 		final Map<UUID, Long> sentAt = new HashMap<>();
-		final Set<UUID> over = ConcurrentHashMap.newKeySet();
+		/** The raiders of this siege who got over the wall by a ramp (shared by its ramps): the siege's saved set. */
+		Set<UUID> over;
+		/** The saved threat data, marked changed when a raider gets over. */
+		final ThreatData data;
 		List<Mob> raiders = List.of();
 		int steps;
+
+		Storm(ThreatData data, ThreatData.Siege siege) {
+			this.data = data;
+			this.over = siege.overByRamp;
+		}
+
+		void over(UUID id) {
+			if (over.add(id)) {
+				data.setDirty();
+			}
+		}
 	}
 
 	private static final Map<Key, Storm> STORMS = new ConcurrentHashMap<>();
@@ -160,7 +179,11 @@ public final class SandRamps {
 	/** Whether {@code mob} got over a wall by a sand ramp in the siege of the village round {@code hall}. */
 	public static boolean over(ServerLevel level, BlockPos hall, UUID mob) {
 		Storm storm = STORMS.get(new Key(level.dimension(), hall));
-		return storm != null && storm.over.contains(mob);
+		if (storm != null && storm.over.contains(mob)) {
+			return true;
+		}
+		// (after a restart, before the ramps' memory is rebuilt: the siege's saved set, B1130)
+		return Sieges.siege(level, hall).map(s -> s.overByRamp.contains(mob)).orElse(false);
 	}
 
 	/**
@@ -175,7 +198,7 @@ public final class SandRamps {
 			}
 			Storm storm = entry.getValue();
 			if (storm.over.remove(before)) {
-				storm.over.add(after);
+				storm.over(after);
 				changed = true;
 			}
 			Site site = storm.assigned.remove(before);
@@ -247,7 +270,12 @@ public final class SandRamps {
 	}
 
 	private static void step(ServerLevel level, ThreatData data, ThreatData.Siege siege, Culture culture) {
-		Storm storm = STORMS.computeIfAbsent(new Key(level.dimension(), siege.hall), k -> restore(siege));
+		Storm storm = STORMS.computeIfAbsent(new Key(level.dimension(), siege.hall), k -> restore(data, siege));
+		if (storm.over != siege.overByRamp) {
+			// (the siege was read again from its save while this was kept in memory)
+			siege.overByRamp.addAll(storm.over);
+			storm.over = siege.overByRamp;
+		}
 		if (storm.steps % 4 == 0) {
 			storm.raiders = Sieges.raiders(level, siege.hall);
 		}
@@ -386,10 +414,10 @@ public final class SandRamps {
 		return false;
 	}
 
-	private static Storm restore(ThreatData.Siege siege) {
-		Storm storm = new Storm();
+	private static Storm restore(ThreatData data, ThreatData.Siege siege) {
+		Storm storm = new Storm(data, siege);
 		for (int i = 0; i < siege.rampFeet.size(); i++) {
-			storm.sites.add(new Site(siege.rampFeet.get(i), Direction.from3DDataValue(siege.rampDirs.get(i)), storm.over));
+			storm.sites.add(new Site(siege.rampFeet.get(i), Direction.from3DDataValue(siege.rampDirs.get(i)), storm));
 		}
 		return storm;
 	}
@@ -539,7 +567,7 @@ public final class SandRamps {
 			if (height < 2) {
 				continue;
 			}
-			Site site = new Site(foot, into, storm.over);
+			Site site = new Site(foot, into, storm);
 			site.height = height;
 			site.inside = inside(level, site);
 			storm.sites.add(site);
@@ -619,7 +647,7 @@ public final class SandRamps {
 			// it drops into is let go whatever its height: the ground there may be higher than a step (B331: on a terrace two
 			// above the foot it was "up", and pushed for good toward the spot it stood on).
 			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && (!up(mob, site) || landed(mob, site, inward))) {
-				site.over.add(mob.getUUID());
+				site.storm.over(mob.getUUID());
 				CLIMBS.remove(mob.getUUID());
 				return;
 			}

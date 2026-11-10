@@ -893,6 +893,7 @@ placed keep working, so old worlds are fine.
 | Porter | Storehouse | empty chests: the village's store | nothing | any |
 | Carpenter | Crafting Table + planks | — (uses the builders' wood) | nothing | any |
 | Mason | Stonecutter (vanilla) | — (uses the builders' stone) | nothing | any |
+| Glassblower | Glass Kiln (bricks round a furnace, an iron ingot on top) | sand and coal or charcoal (the Florist's dyes, amethyst shards) | nothing | any |
 | Leatherworker | Cauldron (vanilla) | — (uses the leather, rabbit hide, sticks and string in the builders' chests or the store) | nothing | any |
 | Chef | Smoker + raw beef, pork, chicken, mutton, rabbit, cod, salmon or a potato | the makings: wheat, raw meat and fish, potatoes... | nothing | Artisan |
 | Armorer (smelter) | Blast Furnace (vanilla) | ore and coal (or nothing: they fetch it) | nothing — or sneak-right-click with coal to hire them | any |
@@ -1188,9 +1189,11 @@ torches, glass panes... up to two steps down count, so fences come from logs by 
 rest of the build doesn't need is used: planks for stairs, but not the planks the walls still want. **Masons** (vanilla
 villagers at a stonecutter) do the same with the stonecutter's recipes — stone bricks, stairs, slabs and walls cut from
 stone — and crush cobblestone into gravel and gravel into sand, and with a furnace by the stonecutter they are the
-village's **kiln**: sand fired into glass, cobblestone into stone and smooth stone, clay into terracotta and bricks
-(laid into brick blocks), netherrack into nether bricks — a coal for every 8 things fired; they go about their usual day
-in between, and they harden concrete powder into concrete. **Leatherworkers** (vanilla villagers at a cauldron) make
+village's **kiln**: cobblestone into stone and smooth stone, clay into terracotta and bricks (laid into brick blocks),
+netherrack into nether bricks — a coal for every 8 things fired; they go about their usual day in between, and they
+harden concrete powder into concrete. **Glassblowers** (at their own Glass Kiln: eight bricks round a furnace, an iron
+ingot on top) fire the glass from sand, a coal for every 8, and make glass panes, stained glass with the Florist's dyes,
+tinted glass and bottles; a Mason crushes the sand they need. **Leatherworkers** (vanilla villagers at a cauldron) make
 the leather goods a builder or the Storehouse is waiting for — item frames and glow item frames, leads, leather from rabbit hide, leather armor — the same way, and
 **Beekeepers** make the candles, colored candles and honeycomb blocks at their hive, in between harvesting it. Villages
 sometimes grow a carpenter's workshop.

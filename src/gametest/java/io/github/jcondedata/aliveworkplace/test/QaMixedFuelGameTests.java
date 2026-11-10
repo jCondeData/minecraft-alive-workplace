@@ -91,12 +91,12 @@ public class QaMixedFuelGameTests {
 		});
 	}
 
-	/** "Glass uses it too": three sand and one charcoal (no coal) by a Mason with a furnace: the glass row is built. */
+	/** "Glass uses it too": three sand and one charcoal (no coal) by a Glassblower (46.6; a Mason with a furnace before): the glass row is built. */
 	//$ gametest_ticks_batch AREA '3600' '"qaFuelGlassCharcoal"'
 	@GameTest(template = AREA, timeoutTicks = 3600, batch = "qaFuelGlassCharcoal")
 	public void glassIsFiredOnCharcoal(GameTestHelper helper) {
 		QaCrafterFurnitureGameTests.Asker a = asker(helper, Blocks.GLASS, new ItemStack(Items.SAND, 3), new ItemStack(Items.CHARCOAL, 1));
-		QaJobChainFixesGameTests.mason(helper);
+		glassblower(helper);
 		helper.succeedWhen(() -> {
 			QaCrafterFurnitureGameTests.assertBuilt(helper, a);
 			Container chest = helper.getBlockEntity(a.chest());
@@ -114,7 +114,7 @@ public class QaMixedFuelGameTests {
 	public void glassBurnsTheCoalAndLeavesTheCharcoal(GameTestHelper helper) {
 		QaCrafterFurnitureGameTests.Asker a = asker(helper, Blocks.GLASS, new ItemStack(Items.SAND, 3), new ItemStack(Items.COAL, 1),
 			new ItemStack(Items.CHARCOAL, 1));
-		QaJobChainFixesGameTests.mason(helper);
+		glassblower(helper);
 		helper.succeedWhen(() -> {
 			QaCrafterFurnitureGameTests.assertBuilt(helper, a);
 			Container chest = helper.getBlockEntity(a.chest());
@@ -124,14 +124,15 @@ public class QaMixedFuelGameTests {
 	}
 
 	/**
-	 * Glass all the way from cobblestone (crushed to gravel, then sand, then fired) on charcoal: three cobblestone and one
-	 * charcoal make the glass row, and nothing is left over.
+	 * Glass all the way from cobblestone (crushed to gravel, then sand by the Mason, then fired by the Glassblower since
+	 * 46.6) on charcoal: three cobblestone and one charcoal make the glass row, and nothing is left over.
 	 */
 	//$ gametest_ticks_batch AREA '4800' '"qaFuelGlassFromCobble"'
 	@GameTest(template = AREA, timeoutTicks = 4800, batch = "qaFuelGlassFromCobble")
 	public void glassFromCobblestoneOnCharcoal(GameTestHelper helper) {
 		QaCrafterFurnitureGameTests.Asker a = asker(helper, Blocks.GLASS, new ItemStack(Items.COBBLESTONE, 3), new ItemStack(Items.CHARCOAL, 1));
 		Villager mason = QaJobChainFixesGameTests.mason(helper);
+		glassblower(helper);
 		helper.succeedWhen(() -> {
 			QaCrafterFurnitureGameTests.assertBuilt(helper, a);
 			Container chest = helper.getBlockEntity(a.chest());
@@ -143,14 +144,14 @@ public class QaMixedFuelGameTests {
 	}
 
 	/**
-	 * Three sand and no fuel, a Mason with a furnace there: the builder's line names the missing coal ("short of 1 Coal to
+	 * Three sand and no fuel, a Glassblower there (a Mason with a furnace before 46.6): the builder's line names the missing coal ("short of 1 Coal to
 	 * make 3 Glass", as the kiln's does since B352), not "Nobody here makes", and the sand stays.
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"qaFuelGlassNone"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaFuelGlassNone")
 	public void glassWithNoFuelNamesTheCoal(GameTestHelper helper) {
 		QaCrafterFurnitureGameTests.Asker a = asker(helper, Blocks.GLASS, new ItemStack(Items.SAND, 3));
-		Villager mason = QaJobChainFixesGameTests.mason(helper);
+		Villager blower = glassblower(helper);
 		helper.runAfterDelay(700, () -> {
 			JsonObject lang = lang();
 			String expected = String.format(lang.get("message.aliveworkplace.job_chain.cant_make").getAsString(),
@@ -160,7 +161,7 @@ public class QaMixedFuelGameTests {
 				+ (line == null ? null : line.getString()) + "', expected '" + expected + "'");
 			Container chest = helper.getBlockEntity(a.chest());
 			helper.assertTrue(chest.countItem(Items.SAND) == 3, "sand left: " + chest.countItem(Items.SAND));
-			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(mason) == null, "the mason took a job it can't finish: " + ModAttachments.CRAFTER_JOB.get(mason));
+			helper.assertTrue(ModAttachments.CRAFTER_JOB.get(blower) == null, "the glassblower took a job he can't finish: " + ModAttachments.CRAFTER_JOB.get(blower));
 			helper.succeed();
 		});
 	}
@@ -191,6 +192,16 @@ public class QaMixedFuelGameTests {
 	}
 
 	private static final net.minecraft.core.BlockPos TINKER = new net.minecraft.core.BlockPos(14, 2, 2);
+	private static final net.minecraft.core.BlockPos KILN = new net.minecraft.core.BlockPos(14, 2, 7);
+
+	/** A Glassblower at his Glass Kiln (46.6: glass is his, no longer the Mason's). */
+	private static Villager glassblower(GameTestHelper helper) {
+		helper.setBlock(KILN, io.github.jcondedata.aliveworkplace.registry.ModBlocks.GLASS_KILN);
+		Villager v = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, KILN.south());
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(helper.getLevel(), v, helper.absolutePos(KILN),
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASS_KILN_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASSBLOWER);
+		return v;
+	}
 
 	private static JsonObject lang() {
 		try (InputStream in = QaMixedFuelGameTests.class.getResourceAsStream("/assets/aliveworkplace/lang/en_us.json")) {

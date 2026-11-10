@@ -1851,6 +1851,31 @@ def crafter():
 
 DRAW += [crafter]   # 37.14
 
+def glassblower():
+    """The Glassblower (ROADMAP 46.6): a tan leather apron from the chest to the shins with a scorched hem and a pocket
+    of jacks (the steel shaping tongs), worn over a pale linen shirt with the sleeves rolled to the elbow; green-tinted
+    goggles down over the eyes on a leather strap against the kiln's glare, and a red kerchief at the neck."""
+    t = vg.VillagerTexture()
+    apron = vg.cloth("#9a6a3c")
+    vg.apron(t, apron, top=2, bottom=18, left=1, right=6, ties=True, pocket=vg.cloth("#7a4f2a", n=4))
+    apron_back(t, apron)
+    jf = t.face("jacket", "front")
+    paint(jf, ((x, 18) for x in range(1, 7)), "#4a3020")  # the hem, scorched at the kiln's mouth
+    jf.put(3, 17, "#6a4428")
+    paint(jf, ((3, 11), (3, 12), (4, 11)), STEEL[2])      # the jacks' handles out of the pocket
+    jf.put(4, 12, STEEL[1])
+    paint(jf, ((2, 0), (3, 0), (4, 0), (5, 0), (3, 1), (4, 1)), "#a8322c")  # the kerchief at the neck
+    jf.put(4, 1, "#8a2622")
+    vg.sleeves(t, vg.cloth("#e0d9c4"), cuff="#c9c2ae", noise=0)
+    vg.glasses(t, frame="#3b2a1e", lens="#4f9a6a", strap="#5a3a22", tint=0.55)
+    hf = t.face("hat", "front")
+    paint(hf, ((3, 7), (4, 7)), "#3b2a1e")                # the bridge
+    return t.save_profession(ASSETS, "glassblower", hat=None)
+
+
+DRAW += [glassblower]   # 46.6
+
+
 if __name__ == "__main__":
     run(DRAW)
 
@@ -1877,3 +1902,4 @@ def mover():
 
 
 DRAW += [mover]   # 45.3
+

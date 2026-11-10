@@ -144,6 +144,9 @@ public final class Partners {
 		if (profession == ModVillagers.TINKERER) {
 			return Set.of("steel", "electric"); // Magnemite, Klink, Rotom...: parts made quicker
 		}
+		if (profession == ModVillagers.GLASSBLOWER) {
+			return Set.of("fire", "ground"); // Charmander, Sandile, Torkoal...: glass fired quicker
+		}
 		if (profession == ModVillagers.SIFTER) {
 			return Set.of("ground", "rock"); // Diglett, Sandshrew, Geodude...: sifting goes quicker
 		}

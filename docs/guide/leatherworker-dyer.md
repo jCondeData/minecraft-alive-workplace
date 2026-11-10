@@ -28,7 +28,7 @@ them from what's at hand, with the game's own recipes, step by step:
 - **Item frames** from leather and sticks, and **glow item frames** from an item frame and a glow ink sac.
 - **Leads** from string and a slime ball.
 - **Leather** from four rabbit hides, when there's no leather.
-- **Leather armor**: helmets, chestplates, leggings and boots.
+- **Leather armor**: helmets, chestplates, leggings and boots, and leather horse armor.
 
 They dye nothing any more: wool, carpet, beds, banners and paintings are the [Shepherd](shepherd.md)'s (at the loom),
 flower pots and dyes the [Florist](florist.md)'s, candles the [Beekeeper](beekeeper.md)'s, stained glass, terracotta and

@@ -38,7 +38,7 @@ public class QaJobCraftListsBugTests {
 		expected.put(Items.COPPER_BULB, "Hire a Tinkerer to make Copper Bulbs");
 		expected.put(Items.ARMOR_STAND, "Hire a Carpenter to make Armor Stands");
 		expected.put(Items.TRAPPED_CHEST, "Hire a Carpenter to make Trapped Chests");
-		expected.put(Items.BLACK_STAINED_GLASS_PANE, "Hire a Mason to make Black Stained Glass Panes");
+		expected.put(Items.BLACK_STAINED_GLASS_PANE, "Hire a Glassblower to make Black Stained Glass Panes"); // the Glassblower's since 46.6
 		expected.put(Items.BEACON, "Hire a Cleric to make Beacons");
 		expected.put(Items.ENDER_CHEST, "Hire a Cleric to make Ender Chests");
 		expected.put(Items.PAINTING, "Hire a Shepherd to make Paintings");

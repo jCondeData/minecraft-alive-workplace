@@ -1004,7 +1004,8 @@ public class CrafterWork extends Behavior<Villager> {
 
 	/**
 	 * Whether this job makes the makings {@code maker} lacks for a builder's thing (46.3): the Mason fires the bricks for
-	 * the Florist's flower pots, the Florist makes the dyes for the Shepherd's beds. None by default.
+	 * the Florist's flower pots and crushes the sand for the Glassblower's glass (46.6), the Florist makes the dyes for the
+	 * Shepherd's beds. None by default.
 	 */
 	protected boolean helps(CraftJobs.Job maker) {
 		return false;
@@ -1025,7 +1026,9 @@ public class CrafterWork extends Behavior<Villager> {
 				|| CraftJobs.workersNear(level, builderStation, radius, maker.profession()).isEmpty()) {
 			return null;
 		}
-		Map<Item, Integer> lack = JobShortages.positive(Crafting.lacking(level, Crafting.Kind.CRAFTING, item,
+		// the maker's own kind: the Glassblower's kiln fires his glass, so what it lacks is the sand (46.6)
+		Crafting.Kind makerKind = maker == CraftJobs.Job.GLASSBLOWER ? Crafting.Kind.KILN : Crafting.Kind.CRAFTING;
+		Map<Item, Integer> lack = JobShortages.positive(Crafting.lacking(level, makerKind, item,
 			Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable, i -> {
 				CraftJobs.Job job = CraftJobs.tagged(i);
 				return job != null && job != maker;

@@ -920,7 +920,75 @@ def movers_crate():
             side.save(block("movers_crate_side"))]
 
 
-DRAW = [cradle, crafters_workbench, movers_crate, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
+# --- Glass Kiln ------------------------------------------------------------------------------------------------------
+BRICK = Ramp([hexc(c) for c in list(P("bricks"))[:5]], name="brick")             # the bricks block's reds
+MORTAR = hexc(P("bricks")[6])
+GLASS = P("glass")                                                                 # the glass block's blues
+KILN_FIRE = FIRE | {"d": "#1a1210"}
+
+
+def glass_kiln():
+    """The Glassblower's (ROADMAP 46.6): a brick kiln drawn like vanilla's furnaces. Front: an arched mouth glowing with
+    the fire, a blowpipe leaning across it with a gather of molten glass at its end; top: the round flue with the glow
+    under it and a stone rim; side: plain bricks with an iron door to rake the ash, and a finished bottle on a ledge."""
+    def face(seed):
+        s = bricks_tile(BRICK, MORTAR, seed=seed)
+        return frame(s, BRICK[0])
+
+    front = face(611)
+    front.paste(grid("""
+        ...bbbbbb...
+        ..bkkkkkkb..
+        .bkkkkkkkkb.
+        .bkkkekkkkb.
+        .bkkeoekkkb.
+        .bkeoyoekkb.
+        .bkoywyokkb.
+        .beoywwyoeb.
+        .bcccccccccb
+    """, STONE | KILN_FIRE | {"b": BRICK[0]}), 2, 3)
+    for i in range(10):                                   # the blowpipe, steel, from the lower right up into the mouth
+        x, y = 13 - i, 14 - i // 2
+        if 0 < x < 15 and 0 < y < 15:
+            front.put(x, y, STEEL[2] if i % 3 else STEEL[1])
+    front.paste(grid("""
+        .o.
+        oyo
+        .o.
+    """, KILN_FIRE), 3, 8)                                # the glowing gather at the pipe's end
+
+    top = face(612)
+    top.paste(grid("""
+        ..aaaa..
+        .abddba.
+        abdeedba
+        adeooeda
+        adeooeda
+        abdeedba
+        .abddba.
+        ..aaaa..
+    """, STONE | KILN_FIRE), 4, 4)
+
+    side = face(613)
+    side.paste(grid("""
+        cccccc
+        c2222c
+        c2332c
+        c2222c
+        cccccc
+    """, {"c": IRON[0], "2": IRON[2], "3": IRON[3]}), 5, 9)
+    side.fill(rect(2, 6, 13, 6), STONE["c"])               # a stone ledge
+    side.paste(grid("""
+        .g.
+        .g.
+        g1g
+        g21
+    """, {"g": GLASS[0], "1": GLASS[2], "2": GLASS[3]}), 9, 2)
+    return [top.save(block("glass_kiln_top")), front.save(block("glass_kiln_front")),
+            side.save(block("glass_kiln_side"))]
+
+
+DRAW = [cradle, crafters_workbench, glass_kiln, movers_crate, harvest_idol, sieve, storehouse, teachers_desk, tinkers_bench, trade_board, training_dummy, training_post, travel_post,
         tutors_desk, undertakers_table, village_hall]
 
 if __name__ == "__main__":

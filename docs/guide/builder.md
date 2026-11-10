@@ -106,9 +106,13 @@ The builder is the village's biggest customer. Almost every other worker ends up
   [Miner](miner.md)'s stone and the [Lumberjack](lumberjack.md)'s logs end up there. Short of something? It shows on
   the Storehouse's requests board, where a click hands over what you carry.
 - **Crafted parts.** A builder waiting for something that can be made gets it from a crafter nearby: the
-  [Carpenter](carpenter.md) (stairs, doors, fences, torches...), the [Mason](mason.md) (stone bricks, glass, bricks), the
-  [Leatherworker](leatherworker-dyer.md) (anything colored), the [Tinkerer](tinkerer.md) (redstone and iron parts) and the
-  [Librarian](librarian.md) (books and bookshelves). A [Lumberjack](lumberjack.md) strips logs when a blueprint wants
+  [Carpenter](carpenter.md) (stairs, doors, fences, torches...), the [Mason](mason.md) (stone bricks, bricks, terracotta,
+  concrete, and glass until the Glassblower comes), the [Shepherd](shepherd.md) (wool, carpets, beds, banners), the
+  [Florist](florist.md) (pots and dyes), the [Cleric](cleric.md) (brewing stands and the magic blocks), the
+  [Beekeeper](beekeeper.md) (candles), the [Leatherworker](leatherworker-dyer.md) (item frames, leads, leather armor), the
+  [Tinkerer](tinkerer.md) (redstone and iron parts) and the [Librarian](librarian.md) (books and bookshelves). Each makes
+  only its own kind of thing; when none of that job works nearby, the builder's line says whom to hire ("Hire a Mason to
+  make Lime Concrete"). A [Lumberjack](lumberjack.md) strips logs when a blueprint wants
   stripped ones, and a [Florist](florist.md) grows the flowers.
 - **Help.** Fighting, Rock and Steel Pokémon in a Pasture Block nearby make the work go faster (with Cobblemon; see
   [Pokémon and villagers](pokemon.md)), and so does the **Swift Hands** research (see [Scholar](scholar.md)).

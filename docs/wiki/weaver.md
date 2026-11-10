@@ -16,7 +16,8 @@ Roadmap items: 46.2
 - Over his head while weaving: "Shepherd · 3 woven" and what he's making. Between jobs he keeps his flock: the flock
   waits while he weaves, and the weaving waits while he shears.
 - A missing dye is named on the builder's line: "Can't be made yet: short of 6 Blue Dye to make 2 Blue Beds". Planks
-  and sticks are named the same way. With lapis or a cornflower in the chests, he still makes the dye himself.
+  and sticks are named the same way. With lapis or a cornflower in the chests, he still makes the dye himself, unless a Florist works nearby: since 46.3
+  he leaves the dyes to her ([The Florist makes pots](florist-pots.md)).
 - A builder with no Shepherd nearby reads "Hire a Shepherd to make Blue Beds"; the Storehouse's board says "Made by:
   the Shepherd (name)" or "Hire a Shepherd to make it".
 - A Leatherworker no longer makes wool, carpets, beds, banners or paintings, even with the makings at hand.

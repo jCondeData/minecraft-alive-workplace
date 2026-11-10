@@ -31,6 +31,12 @@ public class MasonWork extends CrafterWork {
 		super(Crafting.Kind.STONECUTTING, false);
 	}
 
+	/** 46.3: the bricks the Florist's flower pots and decorated pots need, fired from the clay in the chests. */
+	@Override
+	protected boolean helps(CraftJobs.Job maker) {
+		return maker == CraftJobs.Job.FLORIST;
+	}
+
 	@Nullable
 	@Override
 	protected Job choose(ServerLevel level, Villager villager, net.minecraft.core.BlockPos station) {

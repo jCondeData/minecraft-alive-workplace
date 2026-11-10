@@ -13,11 +13,12 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A Leatherworker's crafting for builders (at their cauldron): leather goods, item frames and leads (46.1, the
- * {@code aliveworkplace:crafts/leatherworker} tag), and until the Beekeeper crafts (46.5) her list too, as the village's
- * dyer who made it before: candles, with the game's recipes. Wool, carpets, beds, banners and paintings are the
- * Shepherd's at his loom since 46.2 ({@link WeaverWork}), dyes and pots the Florist's since 46.3
- * ({@link FloristCraftWork}); stained glass, terracotta and concrete the Mason's ({@link CraftJobs}).
+ * A Leatherworker's crafting for builders (at their cauldron): leather goods and nothing else (46.1, 46.5, the
+ * {@code aliveworkplace:crafts/leatherworker} tag): item frames and glow item frames, leads, leather from rabbit hide and
+ * leather armor, with the game's recipes. The class keeps its old name (its status key is "dyer"), but he dyes nothing
+ * any more: wool, carpets, beds, banners and paintings are the Shepherd's at his loom since 46.2 ({@link WeaverWork}),
+ * dyes and pots the Florist's since 46.3 ({@link FloristCraftWork}), candles the Beekeeper's since 46.5
+ * ({@link BeekeeperCraftWork}); stained glass, terracotta and concrete the Mason's ({@link CraftJobs}).
  */
 public class DyerWork extends CrafterWork {
 	private static final List<String> COLOURS = java.util.Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList();
@@ -44,11 +45,7 @@ public class DyerWork extends CrafterWork {
 		return false;
 	}
 
-	/**
-	 * 46.1: the Leatherworker's own list ({@code aliveworkplace:crafts/leatherworker}), and meanwhile, as the village's
-	 * dyer who made it before, the Beekeeper's (until 46.5 teaches that job; the Shepherd weaves his own since 46.2, the
-	 * Florist makes hers since 46.3).
-	 */
+	/** 46.1: the Leatherworker's own list ({@code aliveworkplace:crafts/leatherworker}), no one's stand-in since 46.5. */
 	@Override
 	protected boolean wants(ServerLevel level, Item item) {
 		return CraftJobs.makes(level, CraftJobs.Job.LEATHERWORKER, item);

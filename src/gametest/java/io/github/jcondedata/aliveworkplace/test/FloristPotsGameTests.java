@@ -70,9 +70,9 @@ public class FloristPotsGameTests {
 			helper.assertTrue(CraftJobs.maker(level, item) == CraftJobs.Job.FLORIST, item + " is made by " + CraftJobs.maker(level, item));
 			helper.assertFalse(CraftJobs.makes(level, CraftJobs.Job.LEATHERWORKER, item), "the Leatherworker still makes " + item);
 		}
-		// the bricks stay the Mason's, candles the Beekeeper's stand-in's until 46.5
+		// the bricks stay the Mason's, candles are the Beekeeper's own since 46.5
 		helper.assertTrue(CraftJobs.maker(level, Items.BRICK) == CraftJobs.Job.MASON, "brick: " + CraftJobs.maker(level, Items.BRICK));
-		helper.assertTrue(CraftJobs.maker(level, Items.CANDLE) == CraftJobs.Job.LEATHERWORKER, "candle: " + CraftJobs.maker(level, Items.CANDLE));
+		helper.assertTrue(CraftJobs.maker(level, Items.CANDLE) == CraftJobs.Job.BEEKEEPER, "candle: " + CraftJobs.maker(level, Items.CANDLE));
 		helper.succeed();
 	}
 

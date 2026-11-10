@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A villager trainer has the same team every time: the Trainer screen shows the same Pokémon models on every opening (same gender and shininess), and the battle fields exactly those, with the same form (Wormadam's cloak, Vivillon's pattern), held item and moves; before, these were rolled again each time (B1104, B1122).
 - A villager's status card keeps its buttons inside the card: In chat, Hall page and Close share the card's width, and labels too long for one row (other languages) wrap to a second; before, Close stuck out past the card's right edge (B1103).
 - A building moved with Create inside comes across in one piece: a Mechanical Crafter's or Weighted Ejector's items arrive once, in the block (never also loose by the old spot), and a Create belt of any length moves whole, with the items on it, and runs at the new spot; before, the Mover took only the first segment and the rest of the belt and an item on it were lost (B1127, B1128).
 - A raider who climbed over a village wall by a siege ladder is no longer handed the ladder again after a server restart: who got over the wall is now saved with the siege, so after the restart it doesn't walk back to the wall's inside to "climb" it (B1126).

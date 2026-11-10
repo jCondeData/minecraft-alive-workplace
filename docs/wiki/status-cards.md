@@ -5,7 +5,7 @@ the Nurse's shows your health and your party's, with **Heal**; the Fossil Scient
 fossils is, with **Hand over**. Each button does exactly what the click did before. The card is the shared piece the
 job-status cards of 42.5 reuse ([Job status cards](job-status-cards.md)). Part of Milestone 43 (One look for every screen, Pokémon).
 
-Roadmap items: 43.3
+Roadmap items: 43.3, B1103
 
 ## What a player sees
 

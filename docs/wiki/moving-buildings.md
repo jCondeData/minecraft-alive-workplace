@@ -76,8 +76,9 @@ With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot ar
 belt of any length comes across whole, with the items on it, and runs at the new spot. A Fluid Tank or Item Vault
 built from several blocks arrives as one tank or vault with all its fluid or items, and a canceled move puts it back
 up as one, reachable through any of its blocks (B1135, B1136). A Mechanical Arm turned with the building still takes
-from and puts on the same depots and belts: its targets turn with it, as on Create's own contraptions. A builder
-building a blueprint turned turns them the same way.
+from and puts on the same depots and belts: its targets turn with it, as on Create's own contraptions, and turn back
+when a canceled move puts it back, also across a restart. A Display Link keeps pointing at the block it shows on. A
+builder building a blueprint turned, mirrored, or both turns them the same way.
 
 ## How it works
 

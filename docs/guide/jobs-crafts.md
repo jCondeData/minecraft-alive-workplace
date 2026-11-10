@@ -22,8 +22,8 @@ village's food and potions.
 
 *Full article: [Carpenter](carpenter.md).*
 
-A **crafting table** and **planks**. When a builder nearby is waiting for something that can be crafted (stairs, slabs,
-doors, fences, torches, glass panes...), the carpenter makes it from what the village has and carries it to the
+A **crafting table** and **planks**. When a builder nearby is waiting for something wooden (stairs, slabs,
+doors, fences, signs, chests, torches...), the carpenter makes it from what the village has and carries it to the
 builder's chest. Give a builder only logs, and the carpenter makes the rest.
 
 ![A carpenter at the crafting table](https://jcondedata.github.io/minecraft-alive-workplace/carpenter/still-3.jpg)
@@ -33,14 +33,15 @@ builder's chest. Give a builder only logs, and the carpenter makes the rest.
 *Full article: [Mason](mason.md).*
 
 **Masons** (vanilla, at a stonecutter) cut stone bricks, stairs and walls for the builders, crush cobblestone into gravel
-and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks.
+and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks. They also make concrete,
+dyed terracotta, glass panes and stained glass.
 
 ## Leatherworker (the dyer)
 
 *Full article: [Leatherworker](leatherworker-dyer.md).*
 
-**Leatherworkers** (vanilla, at a cauldron) make anything colored a builder is waiting for: wool, carpet, stained glass,
-terracotta, candles, beds, dyes. They also turn concrete powder into concrete.
+**Leatherworkers** (vanilla, at a cauldron) make the wool, carpet, beds, banners, candles, flower pots and dyes a builder
+is waiting for, and leather goods: item frames, leads, leather armor.
 
 ## Tinkerer
 

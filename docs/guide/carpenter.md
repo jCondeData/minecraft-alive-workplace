@@ -8,7 +8,7 @@ Workstation: Crafting Table
 Pick it with: planks
 Works for: the builders nearby, and the Storehouse's stock orders
 Needs: wood (logs are enough)
-Makes: anything a crafting table makes that a builder is waiting for: stairs, slabs, doors, fences, torches, glass panes...
+Makes: wooden things a builder is waiting for: planks, stairs, slabs, doors, fences, signs, chests, barrels, ladders, torches...
 Pokémon helpers: Fighting, Rock, Steel
 Build: the Carpenter's Workshop
 categories: Jobs, Builder
@@ -23,13 +23,17 @@ A crafting table never takes a villager by itself. Stand a villager by one and s
 
 ## What they do
 
-They watch the builders nearby. When one is waiting for something a crafting table can make (stairs, slabs, doors,
-fences, torches, glass panes and so on), the carpenter works out how to make it from what the village has, fetches the
+They watch the builders nearby. When one is waiting for something made mostly of wood (planks, stairs, slabs, doors,
+fences, signs, chests, barrels, ladders, torches, campfires and so on), the carpenter works out how to make it from what the village has, fetches the
 ingredients, crafts it at their table and carries it to the builder's chests. They can go up to two steps down: fences
 from sticks and planks, the planks from logs. They only use what the rest of that build doesn't need (planks for
 stairs, but never the planks the walls still want), and never what another build going up nearby still needs, in a
 chest the builders share or in the Storehouse. Because they use the game's own recipes, other mods' recipes count
-too.
+too: a wooden block from another mod is theirs when its recipe is made of logs or planks.
+
+They make **only wooden things**. A brewing stand, a flower pot, a banner, stained glass or a lantern is another job's
+work, even when its makings sit in the carpenter's chest. Point at it on the [Storehouse](storehouse.md)'s board to see
+who makes it, or which job to hire.
 
 **Stock orders.** Between the builders' jobs they also keep the storehouse in whatever you ordered on the Storehouse's
 board (see [Porter](porter.md)).
@@ -43,7 +47,7 @@ the builders are waiting for" when all's well.
 
 - **Fed by:** the [Lumberjack](lumberjack.md)'s logs, from their chests or the storehouse. Give a
   [Builder](builder.md) only logs, and the carpenter makes the rest.
-- **Works beside:** the [Mason](mason.md) (stone), the [Leatherworker](leatherworker-dyer.md) (anything colored), the
+- **Works beside:** the [Mason](mason.md) (stone), the [Leatherworker](leatherworker-dyer.md) (wool, dyes, beds and leather goods), the
   [Tinkerer](tinkerer.md) (redstone and iron parts) and the [Librarian](librarian.md) (books and bookshelves): each
   leaves the others' work to them.
 - **Faster with:** the **Craftsmanship** research (15% faster a level; see [Scholar](scholar.md)).

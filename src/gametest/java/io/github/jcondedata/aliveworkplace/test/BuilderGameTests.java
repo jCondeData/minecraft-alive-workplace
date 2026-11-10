@@ -584,7 +584,10 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
-	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
+	/**
+	 * A builder short of white concrete and red wool: the village's leatherworker dyes the wool (the Shepherd's list, his
+	 * until 46.2) and, since 46.1, the Mason hardens the powder (concrete is the Mason's; the dyer no longer takes it).
+	 */
 	//$ gametest_ticks_batch AREA '3000' '"dyer"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
@@ -609,9 +612,15 @@ public class BuilderGameTests implements FabricGameTest {
 		Villager dyer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
 		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(cauldron), net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER,
 			VillagerProfession.LEATHERWORKER);
+		BlockPos cutter = new BlockPos(14, 2, 6);
+		helper.setBlock(cutter, Blocks.STONECUTTER);
+		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(15, 2, 6));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
+			VillagerProfession.MASON);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0) == 6, "the dyer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0) == 3, "the dyer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 3, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}

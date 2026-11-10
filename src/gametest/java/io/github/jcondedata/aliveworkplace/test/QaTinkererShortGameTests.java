@@ -131,7 +131,7 @@ public class QaTinkererShortGameTests {
 		QaJobChainsGameTests.Asker a = QaJobChainsGameTests.asker(helper, Blocks.IRON_BARS, new ItemStack(Items.RAW_IRON, 6), new ItemStack(Items.COAL, 1));
 		helper.runAfterDelay(200, () -> line(helper, a)); // the builder's status asks while he waits: his wait starts about now
 		helper.runAfterDelay(1400, () -> {
-			String expected = String.format(lang("message.aliveworkplace.job_chain.nobody_makes"), "Iron Bars");
+			String expected = String.format(lang("message.aliveworkplace.job_chain.hire"), "Tinkerer", "Iron Bars"); // 46.1: the job to hire
 			String text = line(helper, a);
 			helper.assertTrue(expected.equals(text), "with no Tinkerer the builder's line: '" + text + "', expected '" + expected + "'");
 			Container chest = helper.getBlockEntity(a.chest());

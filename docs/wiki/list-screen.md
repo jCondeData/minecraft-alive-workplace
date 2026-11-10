@@ -8,7 +8,7 @@ hire screen, a Legend guest's terms and the Research screen; then the builder to
 style picker, the Price Tag, and the Shop and the Ferry paid in CobbleDollars. Part of Milestone 42 (One look for every
 screen).
 
-Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090
+Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107
 
 ## What a player sees
 
@@ -78,6 +78,12 @@ The builder tools and the shops (42.4) follow:
 
 Both shops follow your money while they're open: money paid in turns a red price green with no click.
 
+**Confirm pays the price on the screen (B1107).** The Shop also follows its counter while open: when the owner changes
+a lot or its price, the rows are redrawn. If the price changed between Buy and Confirm (raised or lowered), Confirm takes
+nothing: "The price changed: 16 Cobblestone now costs 900 CobbleDollars. Click Confirm again to buy at that price." and
+the row stays gold at the new price, so a second Confirm buys at what the screen shows. A lot taken off the counter
+says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything.
+
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
 price you can't pay is red.
 
@@ -131,7 +137,7 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
   `.list_hint`; the styles' `screen.aliveworkplace.styles.button_choose`, `.button_mirror`, `.button_unmirror`,
   `.list_hint`; the tag's `screen.aliveworkplace.price_tag.steps`, `.list_hint`; the shop's
   `message.aliveworkplace.shop.menu.button_buy`, `.button_confirm`, `.list_hint`, `.column_goods`, `.column_stock`,
-  `.column_price`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
+  `.column_price`, and (B1107) `message.aliveworkplace.shop.price_changed`, `.withdrawn`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
 - New text (42.3): `screen.aliveworkplace.orders.column_order`, `.button_pick`, `.button_unpick`; the smith's
   `screen.aliveworkplace.ball_smith.mode_any`, `.mode_only`, `.list_hint`, `.column_ball`, `.column_level`; the grower's
   `screen.aliveworkplace.gem_grower.mode_every`, `.mode_only`, `.list_hint`, `.column_bed`, `.column_planted`; the lures'
@@ -222,6 +228,9 @@ way survives a save; the Great Library's rows; a Legend tree's tab; every list l
 42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
 `BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,
 `ShopListMenusCompatTests.theFerryIsAList` (CobbleDollars).
+B1107: `QaJobShopLists1109cBugTests` (4, CobbleDollars): a price raised on an open screen is shown before Confirm can
+charge it; Confirm after a raise or a cut takes nothing and redraws the row gold at the new price, and the next Confirm
+charges it; a lot sold out or taken off the counter between Buy and Confirm takes nothing.
 QA (lane B, 2026-11-09, 42.4): `QaBuilderToolLists1109bGameTests` (9): every builder tool sentence in American English
 and the Price Tag's steps read "Steps of 1,000 / 100 / 10 / 1"; shape sizes stop at 1 and at 32; with no blocks the
 Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of range, button-only rows, swap, throw

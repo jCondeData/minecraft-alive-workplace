@@ -131,6 +131,9 @@ public class CrafterWork extends Behavior<Villager> {
 	private int fullFor;
 	/** The last look found nothing to do (so the line above the head says so). */
 	private boolean foundNothing = true;
+	/** 46.1: the job of the table this crafter is, whose list it keeps to (null: its own {@link #wants(Item)}). */
+	@Nullable
+	private CraftJobs.Job tableJob;
 
 	public CrafterWork(Crafting.Kind kind, boolean alwaysShowStatus) {
 		this(kind, kind == Crafting.Kind.STONECUTTING ? "mason" : "carpenter", "crafter", alwaysShowStatus);
@@ -941,7 +944,7 @@ public class CrafterWork extends Behavior<Villager> {
 			List<Map.Entry<Item, Integer>> missing = new ArrayList<>(site.missing().entrySet());
 			missing.sort(Map.Entry.<Item, Integer>comparingByValue().reversed());
 			for (Map.Entry<Item, Integer> want : missing) {
-				if (!wants(want.getKey())) {
+				if (!wants(level, want.getKey())) {
 					continue;
 				}
 				String claim = builder.getUUID() + "|" + BuiltInRegistries.ITEM.getKey(want.getKey());
@@ -1023,7 +1026,7 @@ public class CrafterWork extends Behavior<Villager> {
 			orders.forEach((item, keep) -> usable.computeIfPresent(item, (k, n) -> n > keep ? n - keep : null));
 			for (Map.Entry<Item, Integer> order : orders.entrySet()) {
 				long have = stock.getOrDefault(order.getKey(), 0L);
-				if (have >= order.getValue() || !wants(order.getKey())) {
+				if (have >= order.getValue() || !wants(level, order.getKey())) {
 					continue;
 				}
 				String claim = "stock|" + storehouse.asLong() + "|" + BuiltInRegistries.ITEM.getKey(order.getKey());
@@ -1062,7 +1065,7 @@ public class CrafterWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.store.StockOrders.of(level, storehouse).forEach((item, n) -> keep.merge(item, n, Integer::sum));
 		}
 		for (io.github.jcondedata.aliveworkplace.wonder.WonderGoods.Order order : orders) {
-			if (!wants(order.item())) {
+			if (!wants(level, order.item())) {
 				continue;
 			}
 			List<BlockPos> stockpile = SupplyContainers.find(level, order.stone(), null);
@@ -1121,6 +1124,20 @@ public class CrafterWork extends Behavior<Villager> {
 	/** Whether this crafter makes {@code item} for builders (everything its recipes make, unless a job says otherwise). */
 	protected boolean wants(Item item) {
 		return true;
+	}
+
+	/**
+	 * Whether this crafter makes {@code item} for builders, stock orders and Wonders: a job of the table in
+	 * {@link CraftJobs} (46.1) only what's on its list, any other what {@link #wants(Item)} says.
+	 */
+	protected boolean wants(ServerLevel level, Item item) {
+		return tableJob == null ? wants(item) : CraftJobs.makes(level, tableJob, item);
+	}
+
+	/** This crafter as {@code table}'s job of the table (46.1: the Carpenter makes only the Carpenter's list). */
+	public CrafterWork forJob(CraftJobs.Job table) {
+		this.tableJob = table;
+		return this;
 	}
 
 	/** How to make {@code count} of {@code item} from {@code usable} (the recipes of this crafter's kind), or null. */

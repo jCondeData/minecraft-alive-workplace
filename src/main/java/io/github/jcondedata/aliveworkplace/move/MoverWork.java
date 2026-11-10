@@ -30,7 +30,8 @@ import net.minecraft.world.phys.Vec3;
  * village work the same site, each with their own swings, so the move goes twice as fast. Nothing is kept on the Mover:
  * everything is on the site, so a Mover replaced, killed or reloaded mid-move leaves nothing behind. Taking a building
  * down packs it into the Mover's own crates, so a Mover whose Mover's Crate is gone (broken, or none claimed) waits and
- * says why ({@link #NO_CRATE}) until he has one again; putting it up needs none. Nothing at all with config
+ * says why ({@link #NO_CRATE}) until he has one again; putting it up needs none. A Mover's Crate inside the building
+ * stays where it stands ({@link MoveSite#stays}), so a Mover never packs his own crate away (B1120). Nothing at all with config
  * {@code movers} off (Movers already hired stand idle, their moves wait).
  */
 public class MoverWork extends Behavior<Villager> {
@@ -129,7 +130,7 @@ public class MoverWork extends Behavior<Villager> {
 			return false;
 		}
 		boolean packing = site.stage() == MoveSite.Stage.DISMANTLE || site.stage() == MoveSite.Stage.RESTORE_DOWN;
-		if (packing && !hasCrate(level, villager)) {
+		if (packing && !hasCrate(level, villager) && !site.crateToPutBack()) {
 			site.setWaiting(NO_CRATE); // nowhere to pack it: nothing comes down until he has his crate again
 			status(villager, site);
 			return false;

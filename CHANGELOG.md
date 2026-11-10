@@ -21,11 +21,19 @@ asks for the steps, `latest.log` and any crash report).
 - A raider who climbed over a village wall by a siege ladder is no longer handed the ladder again after a server restart: who got over the wall is now saved with the siege, so after the restart it doesn't walk back to the wall's inside to "climb" it (B1126).
 - The Storehouse board's click messages read as sentences for every request a job posts, the Nurse's, Undertaker's, Physician's and Composter's too: "Gave a remedy (honey, milk or a healing potion) to the Nurse's chests", "You don't have a golden apple (or a healing potion) to give", never "Gave 1 a ..." or "You have no a ..." (B1108, B1109).
 - The shop paid in CobbleDollars never charges a price its screen didn't show: an open shop screen redraws when the owner changes a price, and a Confirm pressed after a price change (up or down) takes nothing, says the new price and keeps the row gold at it for a second Confirm (B1107).
+### Added
+
+- A moved building's belongings arrive as they were: every chest, barrel, shulker box and modded store (Sophisticated Storage, furniture cabinets and cupboards) with exactly its items, nothing dropped or doubled, signs with their words, banners, item frames (one hanging on an outer wall too) and armor stands as the village left them, and CobbleFurnies, Handcrafted and Cozy Home furniture; a piece of a furniture mod removed mid-move is left out and the rest still moves (45.5).
+
+### Fixed
+
+- A Mover whose own Mover's Crate stands inside the building he's moving no longer packs it with the rest and then waits forever for it: the crate stays where it stands and the move finishes (a move already stuck this way carries on, the crate put back first).
 
 ## 0.153.0 — 2026-11-09
 
 ### Added
 
+- A moved building's residents move with it: while it's away they sleep in a free bed at the inn (or by the Village Hall), workers keep their jobs, and the moment the Mover puts a bed or workstation up at the new spot it's theirs again, held so nobody else takes it; the Hall's People page, their home, couples and the job cards follow, and a Builder's bench in a moved house stays his (45.4).
 - A new job, the **Mover**, at his own Mover's Crate (planks round a barrel, a lead on top, two iron ingots under it): he carries out the moves picked on the Village Hall's Move page, taking the building down from the top into his crates (chests packed with their contents, frames and furniture too, nothing dropped) and putting it up again at the new spot from the ground up, turned as picked. Two Movers share a move, a reload mid-move is fine, and Call off, even half way, puts everything back where it was. With his crate broken he waits and says why. Config switch `movers` (45.3).
 - The Village Hall has a Move page (under Buildings): pick a finished building, choose its new spot on a small map of the ground round it (a green ghost outline shows it in the world), turn it a quarter at a time, and see plainly why a spot won't do (another building or a road in the way, outside the village, too steep, under water). Confirming needs a hired Mover, the job that comes next; a confirmed move is saved with the village
 - A building the Village Hall knows can be captured as a moving plan (its blocks, chest contents, signs, banners, frames, armor stands, and its residents' beds and workstations) and turned any quarter: the first step toward moving finished buildings (45.1).

@@ -25,8 +25,10 @@ village. A villager without a job takes it by themselves, as a builder takes a B
 
 Pick the building and its new spot on the Village Hall's **Move** page, turn it if you like, and Confirm. The Mover:
 
-- takes it down from the top, one block at a time, into his crates. Chests and barrels are packed with what's in them,
-  each in its own crate; item frames, armor stands and furniture go too. Nothing is dropped;
+- takes it down from the top, one block at a time, into his crates. Chests, barrels, shulker boxes and modded storage
+  (Sophisticated Storage, furniture cabinets and cupboards) are packed with what's in them, each in its own crate;
+  signs keep their words, banners their patterns; item frames (one hanging on an outside wall too), armor stands and
+  furniture go too. Nothing is dropped and nothing is doubled;
 - puts it up again at the new spot from the ground up (the foundation, the walls and floors, then doors, beds, torches
   and decorations), turned the way you picked;
 - leaves the old spot cleared. Paths, fences and gardens round it stay where they are.
@@ -36,6 +38,17 @@ on where he was.
 
 He packs everything into the crates at his Mover's Crate, so keep it standing: if it's broken he can't take
 anything more down, and he waits ("Waiting for his Mover's Crate") until he has one again.
+
+**The people who live there move too.** Villagers whose bed or workstation is in the building keep them. While it's
+away they sleep in a free bed at the village's inn (or the free bed nearest the Village Hall), and workers keep their
+jobs. The moment the Mover puts a bed or workstation up at the new spot, it's theirs again, held so nobody else takes
+it. The Hall's People page, couples and job cards follow them, and a Builder whose Builder's Bench is in the house keeps
+it, with his queued builds.
+
+**Everything arrives as it was.** What's in a chest, on a frame or on an armor stand when he packs it is what comes
+out at the new spot: an item you took out after confirming the move stays yours, and one you put in moves too.
+Furniture from CobbleFurnies, Handcrafted and Lucky's Cozy Home moves like any block; if a furniture mod is removed in
+the middle of a move, its pieces are left out and the rest of the building still goes up.
 
 If a block of the building is broken before he gets to it, whoever broke it keeps it, and it isn't put up again.
 

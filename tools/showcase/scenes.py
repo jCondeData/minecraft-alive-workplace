@@ -27,7 +27,7 @@ import sys
 GROUPS = [
     "Picking a job", "Items", "Builder", "Mover", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
-    "Carpenter", "Crafter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
+    "Carpenter", "Crafter", "Mason", "Leatherworker", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
@@ -297,7 +297,11 @@ SCENES = [
     # The Florist makes pots (ROADMAP 46.3): a builder's flower pots made from bricks at her Flower Stand, taken to the builder
     job("florist_pots", "Florist", "Making flower pots for a builder", "the florist made the flower pots the builder needed and took them to the builder's chest", 200),
     # The Cleric makes the magic blocks (ROADMAP 46.4): a builder's brewing stand made from a blaze rod and cobblestone at his brewing stand, taken to the builder
-    job("cleric_crafts", "Cleric", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
+    job("cleric_crafts", "Cleric (alchemist)", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
+    # The Beekeeper makes candles (ROADMAP 46.5): a builder's graveyard candles made from honeycomb and string at her Apiary, taken to the builder
+    job("chandler", "Beekeeper", "Making candles for a builder", "the beekeeper made the candles the builder needed and took them to the builder's chest", 200),
+    # The Leatherworker makes leather goods (ROADMAP 46.5): the Storehouse's stock orders for item frames and leads, made at his cauldron
+    job("leatherworker_goods", "Leatherworker", "Making item frames and leads", "the leatherworker made the item frames and leads the storehouse ordered and put them in its store", 180),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     # Scaffolding (ROADMAP 35.6, 35.6a): a 14-high pillar with an overhanging cap, built from a column of vanilla

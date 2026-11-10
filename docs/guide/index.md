@@ -68,7 +68,7 @@ Settings | https://jcondedata.github.io/minecraft-alive-workplace/config/still-1
 - [Fossil Scientist](fossil-scientist.md): revives fossils (Cobblemon).
 - [Guard](guard.md): keeps the village safe.
 - [Innkeeper](innkeeper.md): travelers to hire.
-- [Leatherworker (the dyer)](leatherworker-dyer.md): anything colored for the builders.
+- [Leatherworker](leatherworker-dyer.md): item frames, leads and leather armor for the builders.
 - [Librarian](librarian.md): enchants the village's gear.
 - [Lumberjack](lumberjack.md): fells and replants trees.
 - [Mason](mason.md): stone, glass and bricks for the builders.

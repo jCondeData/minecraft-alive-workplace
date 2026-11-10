@@ -195,6 +195,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FamilyTreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassMigrationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallFirstRoundGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaElderClassSceneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationBugTests",
@@ -583,6 +584,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairBreakUp1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBountyCamp1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditFortGround1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPlagueCarrier1108dGameTests",
@@ -1588,7 +1590,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderAsksForFramesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1110eGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClericOwnChest1110bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests"
 		]
 	},
 	"depends": {

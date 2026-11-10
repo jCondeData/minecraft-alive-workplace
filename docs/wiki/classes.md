@@ -216,6 +216,10 @@ Ball, `classesVersion` (0: never seeded; 1: seeded with 1.8's rules) and `classG
   sorts children by their parents first (by id), then their building. The age spread is worked out from the UUID, so a
   re-seed gives the same ages. The hall's `families` book entry written before seeding gets the seeded age. The
   migration lives in `people/ClassMigration` (the design note's `hall/ClassMigration`: it works on villagers).
+- B436: a hall loaded with the world has its first round (and so its first seeding) five seconds after it loads,
+  a second apart from other halls (`docs/wiki/performance.md`). Before, the round on its first tick ran before the
+  hall's villagers were loaded: the hall counted itself seeded with a part of the village, and the "found their
+  places" line named only that part (or was left out). Tests: `HallFirstRoundGameTests`.
 
 ## Dressed by class (34.17, 34.17a)
 

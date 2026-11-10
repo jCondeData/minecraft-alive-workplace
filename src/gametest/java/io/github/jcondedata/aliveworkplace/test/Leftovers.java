@@ -60,7 +60,12 @@ final class Leftovers {
 			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();
 		for (net.minecraft.core.BlockPos hall : halls) {
 			level.removeBlock(hall, false);
+			// a point with no hall under it (B427) isn't taken away by removing the block: take the point itself
+			if (level.getPoiManager().getType(hall).filter(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI)).isPresent()) {
+				level.getPoiManager().remove(hall);
+			}
 		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		io.github.jcondedata.aliveworkplace.hall.VillageNeeds.forget();
 	}
 

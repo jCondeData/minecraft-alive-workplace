@@ -340,7 +340,21 @@ public final class VillageHalls {
 	}
 
 	private static Optional<BlockPos> findNearest(ServerLevel level, BlockPos pos) {
-		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);
+		if (!level.getServer().isSameThread()) {
+			return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);
+		}
+		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> standsAt(level, p), pos, RADIUS, PoiManager.Occupancy.ANY);
+	}
+
+	/**
+	 * Whether the hall point of interest at {@code pos} still has its hall (B427). A point left behind without the block
+	 * (a block swapped without a block update, as region edits and some mods do) was taken for the nearest hall, and
+	 * with no hall there every villager nearer to it than to the real hall had no village: no friendship, no requests.
+	 * A point in a chunk that isn't loaded is trusted (asking for its block would load the chunk). Server thread only.
+	 */
+	private static boolean standsAt(ServerLevel level, BlockPos pos) {
+		net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+		return chunk == null || chunk.getBlockState(pos).getBlock() instanceof VillageHallBlock;
 	}
 
 	/**
@@ -406,7 +420,7 @@ public final class VillageHalls {
 		int reach = (int) Math.ceil(Math.sqrt((double) RADIUS * RADIUS + (double) HEIGHT * HEIGHT));
 		return level.getPoiManager().getInRange(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, reach, PoiManager.Occupancy.ANY)
 			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos)
-			.filter(h -> contains(h, pos))
+			.filter(h -> contains(h, pos) && (!level.getServer().isSameThread() || standsAt(level, h)))
 			.min(Comparator.comparingLong(h -> across(h, pos)));
 	}
 

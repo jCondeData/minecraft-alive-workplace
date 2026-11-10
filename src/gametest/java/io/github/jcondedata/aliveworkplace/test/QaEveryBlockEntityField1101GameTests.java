@@ -65,7 +65,9 @@ public class QaEveryBlockEntityField1101GameTests implements FabricGameTest {
 
 	/** Worked out again from the world, never saved (each said so where it's declared and read). */
 	private static final Map<String, String> RECOUNTED = Map.of(
-		"VillageHallBlockEntity.needs", "the village's count, made again on the hall's first tick (VillageNeeds.check)",
+		"VillageHallBlockEntity.needs", "the village's count, made again at the hall's first round after a load (VillageNeeds.check)",
+		"VillageHallBlockEntity.fromSave", "whether the hall was read with its chunk, set by the load itself; its first round then waits its turn (B436)",
+		"VillageHallBlockEntity.firstRoundFrom", "when that first round may run, counted again from the hall's first tick after each load (B436)",
 		"VillageHallBlockEntity.civic", "the sum of the edicts', guilds' and reforms' effects, made again when asked",
 		"VillageHallBlockEntity.civicExtra", "the extra effects that sum was made with",
 		"VillageHallBlockEntity.civicGeneration", "which edicts that sum was made for");

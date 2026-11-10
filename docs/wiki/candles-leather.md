@@ -110,3 +110,11 @@ Candle to the builder"; "Leatherworker · N made for builders", never "Dyer") an
 `BuilderAsksForFramesGameTests` (B1148): a blueprint's frame made by the Leatherworker from the chest's leather and
 sticks and hung; with nobody to make it, the frame counted from the first tick, "1× Item Frame" on the waiting line and
 the board, then the build ending without it; and saved and loaded while waiting, the wait kept and the frame hung.
+`QaBuilderDecorations1110bGameTests` (QA of B1148): the Shepherd's painting and the Carpenter's armor stand made and
+put up; three frames with one in the chest ask for exactly two ("Needs: 2× Item Frame"); a frame already in the chest
+hung with no wait; a glow item frame asked by its own name; the wait ending at `DECORATION_WAIT` and not before, then
+the next job; a job forever on it holding the build no longer than three waits; an older save without
+`decoration_wait_since` loading and finishing. Known gap: during the wait the "Hire a Leatherworker" line isn't shown
+(B1159).
+`QaBuilderDecorStore1110bGameTests` (QA of B1148): a frame in neither the bench's chest nor made by anyone but spare
+in the village Storehouse is fetched from there and hung, and the Storehouse is left without it.

@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A husk that got over a village wall by a sand ramp is no longer ordered back by the siege after a server restart: who got over by a ramp is now saved with the siege, so after the restart it keeps fighting inside the walls instead of being walked back to the gate or the ramp (B1130).
 - A Cleric uses the blaze rods and other makings kept in his own chests (the ones by his brewing stand) for a builder's brewing stand, ender chest or beacon. Before, the builder waited forever, "short of 1 Blaze Rod", with the rod sitting in the Cleric's chest; a Cleric making tonics now also takes their makings from the village's Storehouse (B1144).
 - With Create, the Mover moves a Fluid Tank or Item Vault built from several blocks as one: a two-tall tank arrives with all its water instead of leaving its bottom block behind with 8 of 10 buckets and an empty top block at the new spot, and a canceled move puts a two-block vault back up as one vault with all its items through either block, not as a full vault and an empty one (B1135, B1136).
 - A builder's "Hire a ..." line names countable things in the plural ("Hire a Tinkerer to make Minecarts", "Hire a Cleric to make Beacons"), not "Minecart"; a builder short of concrete with no Mason reads "Hire a Mason to make Red Concrete" instead of nothing; and the Storehouse names the Lumberjack for stripped logs instead of "No job makes or gathers this" (B1132, B1133, B1134).

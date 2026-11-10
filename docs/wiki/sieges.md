@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130
 
 ## What a player sees
 
@@ -117,7 +117,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   with a foe in sight is left to fight. Each raider carries a goal that holds it to the director's order; without it
   their own hunting walks them round the walls after villagers they cannot reach. A raider over the wall by a ladder
   or a sand ramp is past the wall like one through the breach and is left to its fight too, the gate shut or not, and
-  after a restart (the ladders' over set is saved with the siege); back outside the gate line it is the director's
+  after a restart (the ladders' and the ramps' over sets are saved with the siege, `over_by_ladder` and
+  `over_by_ramp`, B1130); back outside the gate line it is the director's
   again (B1116: it was walked to the inside of the shut gate and stood there).
 - **A raider that converts** (a zombie drowning, a skeleton freezing: vanilla's `Mob.convertTo` gives it a new UUID)
   keeps its place (B1085): `ConvertedMobs.swap` moves the new mob into the director's through, ordered and orders, and
@@ -239,7 +240,7 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 
 | Key | Holds | Default |
 |---|---|---|
-| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told), and since B1126 `over_by_ladder` (the raiders who got over a wall by a ladder, by id) | none; `ladders` empty and `laddered` false in a siege saved before 32.5; nobody over in one saved before B1126 (a raider inside is counted over again once the ladders see it past the wall) |
+| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told), and since B1126 `over_by_ladder` (the raiders who got over a wall by a ladder, by id), and since B1130 `over_by_ramp` (the same for a sand ramp) | none; `ladders` empty and `laddered` false in a siege saved before 32.5; nobody over in one saved before B1126 (a raider inside is counted over again once the ladders see it past the wall), nobody over by a ramp in one saved before B1130 |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
 | `damaged` (32.16a) | every builder's block a threat took (a gate a ram broke, a block a village fire burned) that no builder has put back yet, as packed positions | none |
 | in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |

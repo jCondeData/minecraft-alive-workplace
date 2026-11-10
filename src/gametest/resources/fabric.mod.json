@@ -1553,6 +1553,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOver1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverShutGate1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverVerify1110dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLadderOverVerify1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderOverSaves1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSwitches1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",

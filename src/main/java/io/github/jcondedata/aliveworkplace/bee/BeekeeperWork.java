@@ -47,7 +47,9 @@ import org.jetbrains.annotations.Nullable;
  * — honey bottles with the glass bottles in the chests, honeycomb with shears (3 a hive; the bees stay calm with a
  * campfire under the hive, and fly out otherwise) — kept in flowers (planted from the chests round any hive with fewer
  * than {@link #FLOWERS_PER_HIVE} near it) and filled with bees (two fed flowers to breed while there are fewer than
- * {@link #BEES_PER_HIVE} a hive). What's harvested goes in the chests by the Apiary.
+ * {@link #BEES_PER_HIVE} a hive). What's harvested goes in the chests by the Apiary. Between these she makes her list
+ * for builders at the Apiary (46.5, {@code craft/BeekeeperCraftWork}: candles, colored candles, honeycomb blocks): the
+ * two take turns.
  */
 public class BeekeeperWork extends Behavior<Villager> {
 	public static int RADIUS = 16;
@@ -90,9 +92,32 @@ public class BeekeeperWork extends Behavior<Villager> {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.BEEKEEPER;
 	}
 
+	/** Beekeepers on a task at the hives (46.5: her crafting at the Apiary waits for it, {@code craft/BeekeeperCraftWork}). */
+	private static final java.util.Set<Villager> BUSY = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+	/** Whether this Beekeeper is on a task at the hives (harvesting, planting, breeding, putting the harvest away). */
+	public static boolean isBusy(Villager villager) {
+		synchronized (BUSY) {
+			return BUSY.contains(villager);
+		}
+	}
+
+	private static void setBusy(Villager villager, boolean busy) {
+		synchronized (BUSY) {
+			if (busy) {
+				BUSY.add(villager);
+			} else {
+				BUSY.remove(villager);
+			}
+		}
+	}
+
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && isBeekeeper(villager) && Builders.benchPos(villager).isPresent();
+		// 46.5: the hives wait while she makes something for a builder at the Apiary (the two share her bag), a job
+		// loaded from a save included
+		return !villager.isSleeping() && isBeekeeper(villager) && Builders.benchPos(villager).isPresent()
+			&& !io.github.jcondedata.aliveworkplace.craft.CrafterWork.isBusy(villager) && ModAttachments.CRAFTER_JOB.get(villager) == null;
 	}
 
 	@Override
@@ -109,11 +134,17 @@ public class BeekeeperWork extends Behavior<Villager> {
 	@Override
 	protected void stop(ServerLevel level, Villager villager, long gameTime) {
 		task = Task.NONE;
+		setBusy(villager, false);
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
 	}
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
+		work(level, villager);
+		setBusy(villager, task != Task.NONE);
+	}
+
+	private void work(ServerLevel level, Villager villager) {
 		BlockPos station = Builders.benchPos(villager).orElse(null);
 		if (station == null) {
 			return;

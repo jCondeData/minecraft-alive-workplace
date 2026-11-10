@@ -2952,6 +2952,36 @@ final class JobScenes {
 				return n(ModAttachments.ITEMS_CRAFTED, c) >= 1 && job == null && carried == 0;
 			};
 		}, null));
+		// ROADMAP 46.5: the Beekeeper makes the candles a builder's graveyard needs at her Apiary, from the honeycomb and
+		// string in the builder's barrels, and takes them to them
+		SCENES.put("chandler", new Job("the beekeeper made the candles the builder needed at her apiary and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.GRAVEYARD, new BlockPos(-8, -60, -3),
+				List.of(Items.CANDLE), Map.of(Items.HONEYCOMB, 32, Items.STRING, 32));
+			level.setBlockAndUpdate(STATION.east(2), Blocks.BEEHIVE.defaultBlockState());
+			Villager b = worker(level, STATION, ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(b);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(b).count(Items.CANDLE);
+				timeoutWhy = "the beekeeper made " + n(ModAttachments.ITEMS_CRAFTED, b) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " candle(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, b) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.5: the Leatherworker at his cauldron fills the Storehouse's stock orders for item frames and leads from
+		// the leather, sticks, string and slime balls in its store, and puts them there
+		SCENES.put("leatherworker_goods", job("the leatherworker made the item frames and leads the storehouse ordered from the leather, sticks, string and slime balls in its store", 3000, (level, player) -> {
+			BlockPos storehouse = chestPos().west();
+			level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(Items.LEATHER, 4), new ItemStack(Items.STICK, 32),
+				new ItemStack(Items.STRING, 8), new ItemStack(Items.SLIME_BALL, 2));
+			io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, Items.ITEM_FRAME);
+			io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, Items.LEAD);
+			worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+			return l -> c.countItem(Items.ITEM_FRAME) >= 1 && c.countItem(Items.LEAD) >= 1;
+		}));
 		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
 			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {
 			// 23.1a: the builder and three helpers from benches nearby, at the normal build speed, from exactly the house's

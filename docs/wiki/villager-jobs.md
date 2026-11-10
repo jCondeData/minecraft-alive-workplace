@@ -92,7 +92,7 @@ is never a cure either (B781): he puts it away and cures with a real Remedy from
 | Vintner | Cauldron + sweet berries, glow berries or an apple | any |
 | Tailor | Loom + string | any |
 | Printer | Cartography Table + an ink sac | any |
-| Leatherworker (dyer) | Cauldron (vanilla) | any |
+| Leatherworker | Cauldron (vanilla) | any |
 | Scholar | Lectern + paper | Burgher |
 | Teacher | Lectern + a book | Artisan |
 | Librarian (scribe) | Lectern (vanilla) | any |

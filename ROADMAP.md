@@ -6557,7 +6557,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 - [x] **46.4** (review: pending 2026-11-10) **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
   chests, end rods, beacons and for builders, besides his potions. Done when: GameTests for a brewing
   stand from a blaze rod and cobblestone, no blaze rod named on the shortage line; scene `cleric_crafts`.
-- [ ] **46.5** **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and
+- [x] **46.5** (review: pending 2026-11-10) **The Beekeeper makes candles, the Leatherworker leather goods.** Candles (and dyed ones) and
   honeycomb blocks from the hives' wax; item frames, leads and leather armor from leather. Done when: GameTests for a
   candle from honeycomb and string, an item frame; scenes `chandler` and `leatherworker_goods`.
 

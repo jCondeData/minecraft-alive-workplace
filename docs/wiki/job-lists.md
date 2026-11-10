@@ -33,11 +33,15 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4
   So nothing that was made before became unmakable. As each job learns to craft, its list moves to it.
 - When nobody in the village makes a part a builder waits for, his line under "Short of" names the job to hire:
   "Hire a Carpenter to make Oak Stairs", "Hire a Cleric to make Brewing Stands" (the Librarian's until 46.4). Things of
-  different jobs are grouped: "Hire a Carpenter to make Barrels; Hire a Tinkerer to make Lanterns". Only what no job
-  makes at all still reads "Nobody here makes".
+  different jobs are grouped: "Hire a Carpenter to make Barrels; Hire a Tinkerer to make Lanterns". Every countable
+  thing on a job's list reads in the plural ("Hire a Tinkerer to make Minecarts"); things counted by the block keep
+  their name ("Hire a Mason to make Red Concrete"). Concrete, which no recipe makes (the Mason sets the powder in
+  water), counts like the rest of his list. Only what no job makes at all still reads "Nobody here makes".
 - The Storehouse's board, under "You have", says for each thing a worker asks for who makes or gathers it:
   - "Made by: the Carpenter (Ada)" when one works within the village's reach (just "the Carpenter" if they have no
     name), else "Hire a Carpenter to make it";
+  - stripped logs: the Lumberjack, who strips them for builders ("Made by: the Lumberjack (Bo)" or "Hire a Lumberjack
+    to make it");
   - "Gathered by: the Lumberjack (Bo)" for raw things, else the job to hire: "Hire a Lumberjack to cut it" (logs),
     "Hire a Miner to dig it" (ore, raw ore, coal, gems, stone, sand, gravel, clay), "Hire a Shepherd to shear it"
     (wool), "Hire a Farmer to grow it", "Hire a Fisherman to catch it", "Hire a Beekeeper to collect it", "Hire a
@@ -107,3 +111,6 @@ or its stand-in, no job making another's things (the Leatherworker no glass, ter
 rule's order and the tag winning over it, every stonecutter cut the Mason's (or, for copper, the Tinkerer's), the "Hire a
 ..." line grouped by job in the plural, the Storehouse's line for every gatherer and only for grown workers in reach,
 and through a builder's request the Mason making stained glass while a Carpenter leaves stained glass and lanterns alone.
+`QaJobCraftListsBugTests` (QA, B1132-B1134): the hire line in the plural for countable things that had no plural
+(minecarts, redstone torches, copper bulbs, panes, beacons, paintings, leads, glow item frames), the Storehouse naming
+the Lumberjack for stripped logs, and "Hire a Mason to make Red Concrete".

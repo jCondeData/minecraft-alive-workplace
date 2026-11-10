@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A builder's "Hire a ..." line names countable things in the plural ("Hire a Tinkerer to make Minecarts", "Hire a Cleric to make Beacons"), not "Minecart"; a builder short of concrete with no Mason reads "Hire a Mason to make Red Concrete" instead of nothing; and the Storehouse names the Lumberjack for stripped logs instead of "No job makes or gathers this" (B1132, B1133, B1134).
 - In a siege, raiders finish the ladder they began after a server restart: before, a ladder-carrier who had stepped away from a half-raised ladder when the server came back could start a second ladder on another stretch of wall and leave the first standing unfinished (B325).
 - A house is no longer called done without its door: a door (or a bed) the Builder gave up because something stood in its upper half's spot each time he came to it, such as a block a player put there for a while, is set at the build's last look once that spot is free, and is then no longer counted as skipped; before, the build finished with an empty doorway and "1 skipped". A block that stays in the way still keeps the door out, counted once, and is never broken for it (B47).
 - A builder's path from a finished build and a Steward's road never lead into a fire (one burning on a ruined portal's netherrack, or soul fire), where no worker will stand; before, the path could take the fire's spot (B1119).

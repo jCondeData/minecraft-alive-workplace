@@ -198,7 +198,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			}
 			return made;
 		}));
-		for (String f : List.of("plan", "status", "missing", "shortfallStale", "trips", "detail", "claims", "helpersSeen", "lastNotified")) {
+		for (String f : List.of("plan", "planDepth", "planMargin", "status", "missing", "shortfallStale", "trips", "detail", "claims", "helpersSeen", "lastNotified")) {
 			INNER_NOT_SAVED.put("build.BuildSite." + f, "in BuildSite's block of fields marked \"Transient, recomputed as needed\"");
 		}
 		INNER_NOT_SAVED.put("move.MoveSite.waiting", "why the Mover waits, for his status line: set again at his next step (MoverWork#work)");

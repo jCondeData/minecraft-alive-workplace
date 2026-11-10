@@ -6545,7 +6545,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   banners, banner patterns and paintings for builders, with the chain steps (the wool first, then the bed). Done when:
   GameTests for two blue beds from white wool, planks and blue dye, a banner, a missing dye named on the shortage line;
   scene `weaver` (his loom, the bed going into the builder's chest).
-- [ ] **46.3** **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
+- [x] **46.3** (review: pending 2026-11-10) **The Florist makes pots and dyes.** Flower pots (the Mason fires the bricks if there are only clay
   balls), decorated pots, dyes from the flowers she grows, moss carpet; she still fills empty pots. Done when:
   GameTests for a flower pot from bricks, from clay with a Mason, a dye for the Shepherd's bed; scene `florist_pots`.
 - [ ] **46.4** **The Cleric brews and makes the magic blocks.** Brewing stands, blaze powder, eyes of ender, ender
@@ -6566,6 +6566,13 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-10 (lane-b-1110-0638, 46.3): **jobs help each other with makings, in two pairs.** A job makes what another
+  job here lacks from its own list for a builder's thing (`CrafterWork.helps`, which plans the shortfall of the
+  maker's chain with other jobs' things counted raw, into the builder's chest, its own claim): the Mason fires bricks for
+  the Florist's pots, the Florist makes dyes for the Shepherd's things, only while that maker works near the builder.
+  With a Florist near him the Shepherd plans with her dyes counted raw (`Crafting.asRaw`) and waits for hers; with none
+  he makes them as in 46.2. Not every pair (the Carpenter's planks for beds would cost planning on every look); 46.4-46.6
+  can add theirs with `helps`.
 - 2026-11-10 (lane-b-1110-0337, 46.2): **the Shepherd still makes a step's dye or planks; the line names them.** His
   chains plan with every crafting recipe as every job's do, so with lapis or a cornflower (or logs) in the chests he
   makes the dye (or planks) a bed needs himself, as the Leatherworker who wove before did: nothing he made became

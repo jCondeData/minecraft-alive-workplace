@@ -8,7 +8,7 @@ Workstation: Composter
 Pick it with: any flower
 Works at: the grass within 5 blocks of the composter, and flower pots within 24
 Needs: bone meal, a chest
-Makes: the biome's flowers, up to 64 in the chests
+Makes: the biome's flowers, up to 64 in the chests; flower pots, decorated pots, dyes and moss carpet for builders
 Pokémon helpers: Grass, Fairy
 Build: the Flower Shop
 categories: Jobs
@@ -33,14 +33,23 @@ there; then the florist stops growing more.
 Between times they walk round the village and put a flower in every **empty flower pot** within 24 blocks of their
 composter.
 
+When a builder nearby is waiting for a **flower pot**, a **decorated pot**, a **dye** or **moss carpet**, the florist
+makes it at their workstation from what the builder can get at (their chests, the village's, and the flowers in the
+florist's own chests) and takes it to the builder's chest. Pots are made from **bricks**: with only clay balls about, a
+[Mason](mason.md) with a furnace by his stonecutter fires the bricks first. The dyes a [Shepherd](shepherd.md)'s beds,
+wool and banners need are the florist's too: with a florist nearby, the Shepherd waits for hers. Short of bricks with no
+Mason, the builder's line says so ("short of 3 Bricks to make 1 Flower Pot"); with no florist at all it reads "Hire a
+Florist to make Flower Pots".
+
 Over their head: how many flowers they've grown, and whether they're growing, picking, filling a pot or putting the
 flowers away.
 
 ## How the florist fits in
 
 - **Fed by:** a [Composter](composter.md) makes the bone meal.
-- **Feeds:** a [Leatherworker](leatherworker-dyer.md) makes dyes from the flowers when a builder needs something
-  colored, and a [Builder](builder.md) takes the flowers a blueprint's beds and pots want. A
+- **Fed by (for pots):** a [Mason](mason.md) fires the bricks from clay.
+- **Feeds:** a [Builder](builder.md) takes the flowers a blueprint's beds and pots want, and the pots and dyes the
+  florist makes; a [Shepherd](shepherd.md) dyes wool with the florist's dyes. A
   [Beekeeper](beekeeper.md) plants flowers round the hives from their own chests, so a few of yours there help.
 - **Stops when:** the chests have no bone meal ("needs bone meal to grow flowers"), or there's no chest by the
   composter.

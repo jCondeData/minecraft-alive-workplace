@@ -28,6 +28,16 @@ public final class MoveSites extends SavedData {
 	private final List<MoveSite> sites = new ArrayList<>();
 	/** Residents of a move that's over who weren't loaded to take their bed or workstation yet (45.4, {@link MoveResidents}). */
 	private final List<MoveResidents.Resident> homecomings = new ArrayList<>();
+	/**
+	 * Beds and workstations of a move that's over, held for someone who was too far off to be noted as it started (B1154,
+	 * {@link MoveResidents.Claim}): whoever remembers the old spot gets the moved one when next seen. At most
+	 * {@link #MAX_FORWARDS}; each is let go after {@link MoveResidents#KEEP_TICKS}.
+	 */
+	private final List<MoveResidents.Claim> forwards = new ArrayList<>();
+	/** The most claims kept waiting: the oldest is let go first. */
+	public static final int MAX_FORWARDS = 256;
+	/** The game time forwards are next looked over (gone blocks dropped, old ones let go); not saved. */
+	private long nextSweep;
 
 	public static MoveSites get(ServerLevel level) {
 		return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(MoveSites::new, MoveSites::load, null), NAME);
@@ -114,6 +124,8 @@ public final class MoveSites extends SavedData {
 		long time = level.getGameTime();
 		homecomings.removeIf(r -> r.until < time);
 		homecomings.addAll(MoveResidents.arrive(level, site)); // its residents' beds and workstations are theirs where it stands (45.4)
+		forwards.addAll(MoveResidents.forwards(level, site)); // and theirs who were too far off to be noted (B1154)
+		sweep(level);
 		BuildSiteManager manager = BuildSiteManager.get(level);
 		if (site.canceled() || site.plan().structure() == null) {
 			return;
@@ -137,9 +149,40 @@ public final class MoveSites extends SavedData {
 		return List.copyOf(homecomings);
 	}
 
+	/** The claims a moved building still holds for someone too far off to be noted (B1154), for the tests. */
+	public List<MoveResidents.Claim> forwards() {
+		return List.copyOf(forwards);
+	}
+
+	/** Drops the forwards whose block is gone and lets go of those kept too long, or past {@link #MAX_FORWARDS}. */
+	private void sweep(ServerLevel level) {
+		sweep(level, level.getGameTime());
+	}
+
+	/** {@link #sweep(ServerLevel)} as at game time {@code time} (the tests look days ahead with it). */
+	public void sweep(ServerLevel level, long time) {
+		nextSweep = time + 1200;
+		int before = forwards.size();
+		for (java.util.Iterator<MoveResidents.Claim> it = forwards.iterator(); it.hasNext(); ) {
+			MoveResidents.Claim c = it.next();
+			if (c.until < time) {
+				MoveResidents.giveUp(level, c);
+				it.remove();
+			} else if (c.at() == null || level.isLoaded(c.at()) && !MoveResidents.standing(level, c)) {
+				it.remove(); // broken meanwhile: nothing held any more
+			}
+		}
+		while (forwards.size() > MAX_FORWARDS) {
+			MoveResidents.giveUp(level, forwards.remove(0));
+		}
+		if (forwards.size() != before) {
+			setDirty();
+		}
+	}
+
 	/** {@link MoveResidents#tick}: {@code villager}, if a resident of a building on the move or moved, gets what's theirs. */
 	void residentTick(ServerLevel level, net.minecraft.world.entity.npc.Villager villager) {
-		if (sites.isEmpty() && homecomings.isEmpty()) {
+		if (sites.isEmpty() && homecomings.isEmpty() && forwards.isEmpty()) {
 			return;
 		}
 		java.util.UUID id = villager.getUUID();
@@ -152,6 +195,12 @@ public final class MoveSites extends SavedData {
 				}
 			}
 		}
+		for (MoveSite site : sites) {
+			if (MoveResidents.late(level, site, villager)) { // too far off to be noted as it started (B1154)
+				setDirty();
+				return;
+			}
+		}
 		for (java.util.Iterator<MoveResidents.Resident> it = homecomings.iterator(); it.hasNext(); ) {
 			MoveResidents.Resident r = it.next();
 			if (r.id().equals(id)) {
@@ -160,6 +209,22 @@ public final class MoveSites extends SavedData {
 				setDirty();
 				return;
 			}
+		}
+		if (forwards.isEmpty()) {
+			return;
+		}
+		if (level.getGameTime() >= nextSweep) {
+			sweep(level);
+		}
+		boolean used = false;
+		for (java.util.Iterator<MoveResidents.Claim> it = forwards.iterator(); it.hasNext(); ) {
+			if (MoveResidents.forward(level, it.next(), villager)) {
+				it.remove();
+				used = true;
+			}
+		}
+		if (used) {
+			setDirty();
 		}
 	}
 
@@ -187,6 +252,11 @@ public final class MoveSites extends SavedData {
 			people.add(r.save());
 		}
 		tag.put("homecomings", people);
+		ListTag held = new ListTag();
+		for (MoveResidents.Claim c : forwards) {
+			held.add(c.save());
+		}
+		tag.put("forwards", held);
 		return tag;
 	}
 
@@ -199,6 +269,10 @@ public final class MoveSites extends SavedData {
 		ListTag people = Nbt.getList(tag, "homecomings", Tag.TAG_COMPOUND); // (none in a world from before 45.4)
 		for (int i = 0; i < people.size(); i++) {
 			MoveResidents.Resident.load(Nbt.compoundAt(people, i)).ifPresent(out.homecomings::add);
+		}
+		ListTag held = Nbt.getList(tag, "forwards", Tag.TAG_COMPOUND); // (none in a world from before B1154's fix)
+		for (int i = 0; i < held.size(); i++) {
+			MoveResidents.Claim.load(Nbt.compoundAt(held, i)).ifPresent(out.forwards::add);
 		}
 		return out;
 	}

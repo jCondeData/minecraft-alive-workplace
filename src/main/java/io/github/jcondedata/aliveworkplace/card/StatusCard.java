@@ -45,6 +45,65 @@ public record StatusCard(int entityId, Component title, Component tag, Component
 		}
 	}
 
+	/** The gap between two buttons in a row, and between two rows of buttons. */
+	public static final int BUTTON_GAP = 8;
+	public static final int BUTTON_ROW_GAP = 4;
+	/** The room a button gets past its label when there's space for it. */
+	public static final int BUTTON_ROOM = 16;
+
+	/**
+	 * Where the card's buttons go inside {@code inner} pixels (B1103: they used to run past the card's edge), from each
+	 * button's {@code need} (the width its label needs, the Hall's button width). Each box is {x from the inner left edge,
+	 * row, width}. In one row at their roomy width when that fits; else in one row at what they need, the space left
+	 * shared out; else wrapped onto more rows, a button wider than the card cut to it (its label is trimmed). Every box
+	 * stays inside {@code [0, inner)}. The client draws from this; pure numbers, so a GameTest can check it.
+	 */
+	public static int[][] buttonRow(int[] need, int inner) {
+		int n = need.length;
+		int[][] boxes = new int[n][3];
+		if (n == 0) {
+			return boxes;
+		}
+		int gaps = BUTTON_GAP * (n - 1);
+		int roomy = gaps;
+		int tight = gaps;
+		for (int w : need) {
+			roomy += w + BUTTON_ROOM;
+			tight += w;
+		}
+		if (tight <= inner) {
+			int extra = roomy <= inner ? BUTTON_ROOM * n : inner - tight;
+			int x = 0;
+			for (int i = 0; i < n; i++) {
+				int w = need[i] + extra / n + (i < extra % n ? 1 : 0);
+				boxes[i] = new int[]{x, 0, w};
+				x += w + BUTTON_GAP;
+			}
+			return boxes;
+		}
+		int x = 0;
+		int row = 0;
+		for (int i = 0; i < n; i++) {
+			int w = Math.min(need[i], inner);
+			if (x > 0 && x + w > inner) {
+				row++;
+				x = 0;
+			}
+			boxes[i] = new int[]{x, row, w};
+			x += w + BUTTON_GAP;
+		}
+		return boxes;
+	}
+
+	/** How many rows {@link #buttonRow} used. */
+	public static int buttonRows(int[][] boxes) {
+		int rows = 0;
+		for (int[] box : boxes) {
+			rows = Math.max(rows, box[1] + 1);
+		}
+		return Math.max(1, rows);
+	}
+
 	/** The button with {@code id}, or null. */
 	@org.jetbrains.annotations.Nullable
 	public Button button(int id) {

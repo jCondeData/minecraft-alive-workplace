@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * and DECORATION (bottom-up) to DONE. Everything is saved, so a Mover picks up at any tick from what's here; each step
  * looks at the world first, so a step half done before a restart is never done twice. Canceled half way, the site
  * takes down what it put up at the new spot and puts everything back up where it was (RESTORE_DOWN, RESTORE_UP).
+ * A Mover's Crate inside the building stays where it stands (B1120): it's where the Movers pack what they take down,
+ * so packing it would leave its Mover nowhere to pack the rest. It isn't counted in the move's blocks.
  */
 public final class MoveSite {
 	public enum Stage {
@@ -43,6 +45,8 @@ public final class MoveSite {
 	static final byte PACKED = 1;
 	static final byte NEW = 2;
 	static final byte LOST = 3;
+	/** A Mover's Crate: left standing at the old spot, never packed or put up (B1120). */
+	static final byte STAYS = 4;
 
 	private final BlockPos hall;
 	private final BlockPos from;
@@ -150,9 +154,41 @@ public final class MoveSite {
 		return n;
 	}
 
-	/** How many blocks of the building there are. */
+	/** How many blocks of the building move: all but the Mover's Crates in it, which stay where they stand. */
 	public int total() {
-		return where.length;
+		int n = 0;
+		for (int i = 0; i < where.length; i++) {
+			if (!stays(i)) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	/** Whether block {@code i} is a Mover's Crate, which stays where it stands (B1120). */
+	boolean stays(int i) {
+		return stays(plan.blocks().get(i).state());
+	}
+
+	/** Whether {@code state} is a Mover's Crate: where Movers pack, so it's never packed itself (B1120). */
+	public static boolean stays(BlockState state) {
+		return state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MOVERS_CRATE);
+	}
+
+	/**
+	 * Whether a Mover's Crate of this building is packed while it's coming down: only on a site saved before B1120's fix,
+	 * where it left its Mover waiting for good. The next step puts it back up where it stood, so he can carry on.
+	 */
+	public boolean crateToPutBack() {
+		if (stage != Stage.DISMANTLE) {
+			return false;
+		}
+		for (int i = 0; i < where.length; i++) {
+			if (where[i] == PACKED && stays(i)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Packed blocks that hold items (a chest, a barrel...): each kept in its own crate with its own contents. */
@@ -237,7 +273,18 @@ public final class MoveSite {
 					packThings(level, oldMin, Rotation.NONE, oldMin);
 					return Optional.empty();
 				}
+				for (int i = 0; i < where.length; i++) {
+					if (where[i] == PACKED && stays(i)) { // packed before B1120's fix: back where it stood
+						BlockPos pos = oldPos(i);
+						put(level, i, pos, plan.blocks().get(i).state(), STAYS);
+						return Optional.of(pos);
+					}
+				}
 				for (int i : downOrder()) {
+					if (where[i] == OLD && stays(i)) {
+						where[i] = STAYS; // his crate stays: nothing to do in the world
+						continue;
+					}
 					if (where[i] == OLD) {
 						BlockPos pos = oldPos(i);
 						take(level, i, pos, plan.blocks().get(i).state());

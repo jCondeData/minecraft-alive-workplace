@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119
 
 ## 1. What a player sees
 
@@ -250,7 +250,7 @@ else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
 themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
 [Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either, and a path goes round it or not at all), nor a lit
-campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`).
+campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`); nor does it lead into a fire, as on a ruined portal's netherrack, where no worker stands (B1119, `QaBuilderBugs1109bBugTests`).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.

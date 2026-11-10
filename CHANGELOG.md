@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A builder's path from a finished build and a Steward's road never lead into a fire (one burning on a ruined portal's netherrack, or soul fire), where no worker will stand; before, the path could take the fire's spot (B1119).
 - The builder game rules `workplaceFoundationDepth` and `workplaceLevelGround` take effect at once on a build under way, as the guide says: set the leveling ring to 0 mid-build and the Builder leaves the pits round the house alone; raise the foundation depth while he clears the site and the dip under the house is filled. Before, a build kept the values it started with until a server restart (B1113).
 - A villager trainer has the same team every time: the Trainer screen shows the same Pokémon models on every opening (same gender and shininess), and the battle fields exactly those, with the same form (Wormadam's cloak, Vivillon's pattern), held item and moves; before, these were rolled again each time (B1104, B1122).
 - A villager's status card keeps its buttons inside the card: In chat, Hall page and Close share the card's width, and labels too long for one row (other languages) wrap to a second; before, Close stuck out past the card's right edge (B1103).

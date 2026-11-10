@@ -926,6 +926,8 @@
   "message.aliveworkplace.shop.sold_out": "%s is sold out.",
   "message.aliveworkplace.shop.too_poor": "That costs %s.",
   "message.aliveworkplace.shop.bought": "Bought %s %s for %s",
+  "message.aliveworkplace.shop.price_changed": "The price changed: %s %s now costs %s. Click Confirm again to buy at that price.",
+  "message.aliveworkplace.shop.withdrawn": "%s isn't for sale anymore.",
   "message.aliveworkplace.shop.owner_sale": "%s bought %s× %s from your shop for %s",
   "message.aliveworkplace.shop.while_away": "While you were away, your shops took %s.",
   "message.aliveworkplace.shop.log.header": "Your shop: %s sales, %s taken in all. Latest:",

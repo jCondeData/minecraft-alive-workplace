@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- The shop paid in CobbleDollars never charges a price its screen didn't show: an open shop screen redraws when the owner changes a price, and a Confirm pressed after a price change (up or down) takes nothing, says the new price and keeps the row gold at it for a second Confirm (B1107).
+
 ## 0.153.0 — 2026-11-09
 
 ### Added

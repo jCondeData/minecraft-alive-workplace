@@ -11,7 +11,7 @@ import net.minecraft.world.entity.npc.Villager;
 /** The Carpenter's WORK activity (make what the builders nearby are waiting for), the Chef's (cook) and the Furnicrafter's. */
 public final class CarpenterPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
-		return work(new CrafterWork(Crafting.Kind.CRAFTING, true));
+		return work(new CrafterWork(Crafting.Kind.CRAFTING, true).forJob(CraftJobs.Job.CARPENTER)); // 46.1: only wood
 	}
 
 	/** The Chef's: cook the menu all shift. */

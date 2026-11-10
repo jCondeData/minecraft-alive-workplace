@@ -6521,7 +6521,7 @@ made today may become unmakable. Every item: GameTests through a builder's reque
 the job's guide and wiki pages; its scene where a player sees it; `sessions.py done <id> --review`. Lane B builds it,
 in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed first.
 
-- [ ] **46.1** **Each job's own list.** The tags and the ingredient rule above; Carpenter and Mason no longer take
+- [x] **46.1** (review: pending 2026-11-10) **Each job's own list.** The tags and the ingredient rule above; Carpenter and Mason no longer take
   everything; the dyer's colored rule goes; the shortage line names the job to hire, and the Storehouse's details pane shows who makes the item (the owner's screenshot: under "You have").
   Done when: GameTests that a
   Carpenter never makes a brewing stand, flower pot, banner, stained glass or lantern, that the Mason makes concrete and
@@ -6552,6 +6552,15 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
 
 ## Notes / blocked
 
+- 2026-11-10 (lane-b-1110-0038, 46.1): **stand-ins until 46.2-46.6.** The Shepherd, Florist, Cleric and Beekeeper
+  don't craft yet and the Glassblower isn't in the game, so each list is made meanwhile by the job that made those
+  things before 46.1 (`CraftJobs.Job.standIn`): glass, panes, stained and tinted glass, bottles by the Mason; wool,
+  carpets, beds, banners, paintings, flower pots, dyes, candles, honeycomb blocks by the Leatherworker; brewing stands,
+  blaze powder, ender eyes and chests, end rods, beacons by the Librarian. The "Hire a ..." lines name the stand-in
+  ("Hire a Librarian to make Brewing Stands"), never a job that can't make it yet; each later item drops its stand-in.
+  A vanilla item on no list that fits no ingredient rule (bread, diamond armor) stays with the Carpenter (crafting) or
+  the Mason (kiln), so nothing made before became unmakable (JobListsGameTests.everythingMadeBeforeStillHasAJob).
+  BuilderGameTests.dyerMakesTheConcreteAndRedWoolTheBuilderNeeds now has a Mason for the concrete (the spec moves it).
 - 2026-11-09 (lane-c-1109-2152, 45.4): **45.4 (residents move too) is written on `wip/lane-c-1109-2152`** but never
   compiled or run (the run's time went to 45.3's full build, which found 5 gaps, all fixed). Left: compile, run
   MoverResidentsGameTests and MoverGameTests and the saved-data checks (they will see the new `residents` and

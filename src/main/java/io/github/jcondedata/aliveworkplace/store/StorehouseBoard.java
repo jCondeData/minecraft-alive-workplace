@@ -104,7 +104,7 @@ public final class StorehouseBoard {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
-			menu.button(slot++, icon(level, request, store, viewer), p -> {
+			menu.button(slot++, icon(level, storehouse, request, store, viewer), p -> {
 				int given = give(p, request);
 				if (given > 0) {
 					Chat.actionBar(p, gaveMessage(request, given).withStyle(ChatFormatting.GREEN));
@@ -208,7 +208,7 @@ public final class StorehouseBoard {
 		}
 	}
 
-	private static ItemStack icon(ServerLevel level, Requests.Request request, List<BlockPos> store, ServerPlayer viewer) {
+	private static ItemStack icon(ServerLevel level, BlockPos storehouse, Requests.Request request, List<BlockPos> store, ServerPlayer viewer) {
 		ItemStack icon = request.icon().copyWithCount(Math.max(1, Math.min(99, request.count())));
 		MutableComponent name = request.count() > 1 && request.item() != null
 			? Component.translatable("screen.aliveworkplace.storehouse.wants", request.count(), request.what())
@@ -228,6 +228,13 @@ public final class StorehouseBoard {
 		int have = count(viewer.getInventory(), request);
 		lore.add(have > 0 ? plain(Component.translatable("screen.aliveworkplace.storehouse.give", Math.min(have, request.count())), ChatFormatting.GREEN)
 			: plain(Component.translatable("screen.aliveworkplace.storehouse.you_have_none"), ChatFormatting.DARK_GRAY));
+		if (request.item() != null && !request.forBlock()) {
+			// 46.1 (owner, 2026-11-09): who gathers or makes it here, else the job to hire
+			for (Component line : io.github.jcondedata.aliveworkplace.craft.CraftJobs.storeLines(level, storehouse,
+					io.github.jcondedata.aliveworkplace.work.Village.RADIUS, request.item())) {
+				lore.add(plain(line, ChatFormatting.AQUA));
+			}
+		}
 		icon.set(DataComponents.LORE, new ItemLore(lore));
 		return icon;
 	}

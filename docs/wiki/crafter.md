@@ -15,9 +15,10 @@ A builder short of three barrels with only oak logs in the chest: the village's 
 bench the line above their head says "making 3 Barrels (step 1 of 3)", then step 2 (the slabs), then step 3; the barrels
 go into the builder's chest and the build carries on. A Mason with a furnace by the stonecutter turns clay balls into
 brick stairs the same way (fired, laid, cut, a coal burnt for every eight fired). The Librarian makes the bookish parts,
-the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the dyer dyed
-wool and concrete, and, with CobbleFurnies, the Furnicrafter its furniture (the planks and sticks first, then the
-piece). A big order is made a bagful at a time until there's enough.
+the Tinkerer the metal ones (raw iron fired into ingots, then bars or a lantern), the Toolsmith tools, the
+Leatherworker leather goods (and meanwhile wool, beds, banners, dyes and candles), and, with CobbleFurnies, the
+Furnicrafter its furniture (the planks and sticks first, then the piece). A big order is made a bagful at a time until
+there's enough. Which job makes what is each job's own list since 46.1 ([Each job's own list](job-lists.md)).
 
 A job only crafts from what no open build needs. When two builds share a chest or the village Storehouse, the logs
 stocked for one are never turned into planks for the other: the Carpenter uses only what's left over once every other
@@ -44,7 +45,8 @@ builder's chests or the Storehouse as soon as they have room, before he makes an
 
 When a job could make a part but a raw material is short, nothing is taken and the builder's shortage line says so,
 under "Short of": "Can't be made yet: short of 4 Oak Logs to make 3 Barrels" (items named in the plural after a count above one, B426, for items that have a plural in the language file; every wood's logs and stems have one, "short of 2 Crimson Stems", and so do the countable things crafters run short of, such as sticks, nuggets, ingots, clay balls, feathers, diamonds, bricks, eggs and buckets, B920). When no job in the village makes a crafted
-part at all (oak stairs in a village with a Mason but no Carpenter), the line says "Nobody here makes: Oak Stairs".
+part at all (oak stairs in a village with a Mason but no Carpenter), the line names the job to hire: "Hire a
+Carpenter to make Oak Stairs" (46.1); only what no job makes says "Nobody here makes".
 A Mason's kiln counts its fuel as a raw material too: twelve clay balls and one coal for three brick stairs (a coal
 for every eight fired) is "short of 1 Coal to make 3 Brick Stairs", and nothing is taken (B352).
 Coal and charcoal count together: one coal and one charcoal are the two fuels twelve clay needs, and the Mason

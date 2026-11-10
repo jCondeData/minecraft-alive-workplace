@@ -35,7 +35,9 @@ the storehouse owns it: its porter works for them and their friends. A village's
 
 Right-click the Storehouse to see what the workers nearby are waiting for (a builder's missing blocks, a miner's
 pickaxe, a farmer's seeds), listed on the left with who wants it and how far away they are. Point at one and the pane
-on the right says how much is already in store and how many you have. Click one to hand over what you have, straight
+on the right says how much is already in store, how many you have, and who gets it: "Made by: the Carpenter (Ada)"
+or "Gathered by: the Lumberjack (Bo)" when one works nearby, else the job to hire ("Hire a Miner to dig it"), and
+"No job makes or gathers this" for the few things no worker can get you. Click one to hand over what you have, straight
 into that worker's chest. With the mouse elsewhere the pane shows the store at a glance: how many chests, items and
 empty slots, the Steward's shopping list and your stock orders.
 

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+
+- Each crafting job makes only its own kind of thing for builders (46.1): the Carpenter wooden things (never a brewing stand, flower pot, banner, stained glass or lantern), the Mason stone, bricks, terracotta and concrete (dyed terracotta and concrete without a furnace), the Tinkerer metal and redstone, the Leatherworker leather goods, the Librarian books and tables. The lists are item tags, `aliveworkplace:crafts/<job>`, so packs can change them, and a modded item in none goes by its recipe. Until the Shepherd, Florist, Cleric, Beekeeper and Glassblower craft, the job that made their things before still does. A builder short of something nobody here makes reads "Hire a Carpenter to make Oak Stairs", and the Storehouse's board says who makes or gathers each thing ("Made by: the Carpenter (Ada)", "Hire a Miner to dig it", "No job makes or gathers this").
+
 ## 0.153.0 — 2026-11-09
 
 ### Added

@@ -194,6 +194,7 @@
 			"io.github.jcondedata.aliveworkplace.test.FamilyTreeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ClassMigrationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallFirstRoundGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaElderClassSceneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationBugTests",

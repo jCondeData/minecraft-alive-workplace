@@ -126,7 +126,20 @@ public final class Rogues {
 	/** The group of the biome at {@code pos}: one naming the biome itself first, then one with a tag of it; null if none. */
 	@Nullable
 	public static Group group(ServerLevel level, BlockPos pos) {
-		return group(level.getBiome(pos));
+		return group(biome(level, pos));
+	}
+
+	/**
+	 * The biome at {@code pos} without waiting for a chunk (B436): a rogue's spot is 150 to 250 blocks out, and
+	 * {@code level.getBiome} there made the server thread wait, in the middle of the hall's round, for every chunk round
+	 * the spot that was on its way in. A chunk that is loaded answers for itself; for any other the world's generator
+	 * says what it holds (the same answer, unless someone changed the biome there by command).
+	 */
+	public static Holder<Biome> biome(ServerLevel level, BlockPos pos) {
+		return level.getBiomeManager().withDifferentSource((x, y, z) -> {
+			net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(net.minecraft.core.QuartPos.toSection(x), net.minecraft.core.QuartPos.toSection(z));
+			return chunk != null ? chunk.getNoiseBiome(x, y, z) : level.getUncachedNoiseBiome(x, y, z);
+		}).getBiome(pos);
 	}
 
 	/** The group of {@code biome}: one naming it first, then one with a tag of it; null if none. */

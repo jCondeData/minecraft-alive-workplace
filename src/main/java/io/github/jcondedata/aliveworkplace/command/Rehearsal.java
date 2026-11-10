@@ -518,6 +518,15 @@ public final class Rehearsal {
 
 	// ---- the first ticks with the new jar ----
 
+	/** A line for each tick over 50 ms while the world opens and the halls are seeded (B436: which ticks the window's worst are). */
+	private static void longTick(MinecraftServer server, String when) {
+		long[] times = server.getTickTimesNanos();
+		long last = times[(server.getTickCount() + times.length - 1) % times.length];
+		if (last > 50_000_000L) {
+			AliveWorkplace.LOG.info(String.format(java.util.Locale.ROOT, "Rehearsal: tick %d (%s) took %.1f ms", server.getTickCount() - 1, when, last / 1e6));
+		}
+	}
+
 	private static void tick(MinecraftServer server) {
 		if (!openedWritten) {
 			Path dir = dir(server);
@@ -528,6 +537,7 @@ public final class Rehearsal {
 			// The containers as this jar loaded them, once every chunk of the three villages is in (the forced chunks load
 			// over the first ticks); the seeding is timed from then: the ticks before are the server starting up.
 			waitedTicks++;
+			longTick(server, "loading");
 			if (!allLoaded(server) && waitedTicks < 2400) {
 				return;
 			}
@@ -543,6 +553,7 @@ public final class Rehearsal {
 		long[] times = server.getTickTimesNanos();
 		seedingTicks.add(times[(server.getTickCount() + times.length - 1) % times.length]);
 		watchedTicks++;
+		longTick(server, "seeding, watched tick " + watchedTicks);
 		if (watchedTicks % 20 != 0) {
 			return;
 		}

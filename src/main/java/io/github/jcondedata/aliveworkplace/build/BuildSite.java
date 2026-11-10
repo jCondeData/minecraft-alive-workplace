@@ -349,6 +349,29 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/**
+	 * B1148: when the finished build began waiting for the item frames, paintings or armor stands it is short of (game
+	 * time), or {@link #NOT_WAITING}. Saved, so a reload doesn't start the wait over; none in older saves.
+	 */
+	private long decorationWaitSince = NOT_WAITING;
+
+	public long decorationWaitSince() {
+		return decorationWaitSince;
+	}
+
+	public void setDecorationWaitSince(long time) {
+		this.decorationWaitSince = time;
+		onChange.run();
+	}
+
+	/**
+	 * B1148: the build is finished and its builder is getting the item frames, paintings or armor stands it is short of
+	 * before it ends: what it's short of is still asked for (the requests board, the jobs that make things).
+	 */
+	public boolean isGettingDecorations() {
+		return isDone() && decorationWaitSince != NOT_WAITING;
+	}
+
 	public int playerBlocks() {
 		return playerBlocks;
 	}
@@ -1155,6 +1178,9 @@ public final class BuildSite {
 		if (waitingSince != NOT_WAITING) {
 			tag.putLong("waiting_since", waitingSince);
 		}
+		if (decorationWaitSince != NOT_WAITING) {
+			tag.putLong("decoration_wait_since", decorationWaitSince); // B1148
+		}
 		if (playerBlocks > 0) {
 			tag.putInt("player_blocks", playerBlocks);
 		}
@@ -1235,6 +1261,8 @@ public final class BuildSite {
 		site.drawnHash = Nbt.has(tag, "blueprint_hash", Tag.TAG_INT) ? Nbt.getInt(tag, "blueprint_hash") : null; // B1049: none in older saves
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
+		// B1148: none in older saves
+		site.decorationWaitSince = Nbt.has(tag, "decoration_wait_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "decoration_wait_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
 		site.wonder = Nbt.hasUuid(tag, "wonder") ? Nbt.getUuid(tag, "wonder") : null;
 		site.foundation = !Nbt.getBoolean(tag, "no_foundation");

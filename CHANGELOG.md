@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- Builders now ask for a blueprint's item frames, paintings and armor stands like its blocks: they're on the builder's "Needs" list and the requests board from the start, the Leatherworker makes the frames, the Shepherd the paintings and the Carpenter the armor stands, and a finished build waits a little while for them to be made and hangs them. Before, they went up only if they were already in the chests and were quietly left out otherwise (B1148).
 - Builders short of a part from another mod get it crafted again: since villagers got their own crafting lists, hundreds of other mods' items (Create's Gearbox, Millstone and Mechanical Press, Supplementaries and Handcrafted furniture, modded chests and fence gates) had no job to make them; now one that fits no job's list goes to the Carpenter, as before (B1142).
 - A village warned of tomorrow night's raid no longer braces for it after the raid is called off: with the threat level set to 0, Peaceful difficulty or the village set At peace (also after a save and reload), the gates stay open, the portcullis stays up, the guards don't take battle stations and nobody is sent indoors on that day (B1146).
 - A husk that got over a village wall by a sand ramp is no longer ordered back by the siege after a server restart: who got over by a ramp is now saved with the siege, so after the restart it keeps fighting inside the walls instead of being walked back to the gate or the ramp (B1130).

@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6, B1154
+Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6, B1154, B1161
 
 ## What a player sees
 
@@ -203,6 +203,10 @@ workstation: planks round a barrel, a lead on top, two iron ingots under it; in 
 `movers` (on, 45.3): off, a jobless villager doesn't take a Mover's Crate (`WorkerLimits.hideFull`), Movers already
 hired do nothing, and confirmed moves wait.
 
+`moveBuildings` (on, 45.6, `MoveRules.ENABLED`): off, the Move page refuses every building, at its Move button and at
+Confirm (a building picked before the switch went off too); a move already confirmed still goes ahead. Back on, Confirm
+saves the same pick.
+
 ## Saved data
 
 A move under way is saved per dimension in `aliveworkplace_move_sites` (`move/MoveSites`): each site's plan, corners,
@@ -259,6 +263,16 @@ another player's protected village, each a click on its Move button refused (no 
 words) and the picker opening once the cause is gone; the Hall's own building, a Wonder and a building outside the
 village each refused with its reason, the village's own hut not.
 
+`QaMoveRefusals1110cGameTests` (9, the QA lane, 45.6), through the Move page's buttons: the hut picked and its spot
+chosen, then a live site started on it, another player's protection put on its village, `moveBuildings` switched off,
+or its record gone: each Confirm refused with its line, nothing saved, every block of the hut and its chest's 7 diamonds
+untouched; the site removed or the switch back on, the same Confirm saves. A DONE site on the hut doesn't hold it; a live
+build whose footprint shares its wall does, one a block clear doesn't. A building whose box reaches the hall block at its
+far corner is refused with the Hall's line, one a block short isn't. The player's own protected village lets them move;
+a neighbor's protected village refuses a building whose footprint is 16 from its hall (its radius) and not one at 17.
+The village's edge: a building whose middle is 16 from the hall is listed and movable, one at 17 isn't listed and is
+refused as not this village's. A Wonder's finished part is refused at its Move button and the list shows again.
+
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
@@ -311,6 +325,9 @@ barrel at the new spot.
 ## Known limits
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
+
+- B1161 (open): a building that holds another village's Village Hall isn't refused; only this village's own hall
+  block is checked (its failing test is on the branch tests/move-refusals-1110).
 
 - A resident is noted only if loaded within 128 blocks as the move starts; one far away keeps memories of blocks that
   are gone and finds new ones by vanilla's rules.

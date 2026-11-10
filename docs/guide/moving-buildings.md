@@ -35,9 +35,14 @@ Some buildings stay put, and the Move page tells you why when you click them:
 
 - **The Village Hall** stays where it stands: the village is measured from it.
 - **A Wonder** is built to stay where it stands.
-- **A building the builders are still working on**, such as one being upgraded or repaired. Move it once they're done.
+- **A building the builders are still working on**, such as one being upgraded or repaired, or one a new build next
+  door reaches into. Move it once they're done.
 - **A building outside your village**, or one in **someone else's protected village**. Only the village's own buildings
   can be moved, and only by the people allowed to change things there (the owner, their friends and server operators).
+
+The page checks again when you click **Confirm**. If something changed after you picked the building (builders
+started on it, someone else's protection now covers it, or moving was switched off), Confirm is refused with the
+reason and nothing moves.
 
 ## Turning it off
 

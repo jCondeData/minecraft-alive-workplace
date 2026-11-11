@@ -450,6 +450,8 @@
 			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverResidentGone1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTrainerScreen1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",

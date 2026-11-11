@@ -65,10 +65,12 @@ public final class MoveResidents {
 	 */
 	public static final class Resident {
 		final UUID id;
+		/** (Null once the player gives them another bed at the Hall meanwhile: the moved one isn't theirs any more, B1194.) */
 		@Nullable
-		final BlockPos bed;
+		BlockPos bed;
+		/** (Null once the player lets them go or gives them another job meanwhile, B1194.) */
 		@Nullable
-		final BlockPos job;
+		BlockPos job;
 		@Nullable
 		BlockPos stay;
 		@Nullable
@@ -537,6 +539,59 @@ public final class MoveResidents {
 	static void giveUp(ServerLevel level, Claim c) {
 		if (standing(level, c) && level.getPoiManager().getFreeTickets(c.at) == 0) {
 			level.getPoiManager().release(c.at);
+		}
+	}
+
+	/**
+	 * {@code r} isn't coming back for what's held for them (not back within {@link #KEEP_TICKS}, or gone: dead, or turned
+	 * into something else; B1201): what of theirs stands again and isn't theirs in their memories yet is let go, as a
+	 * claim nobody came back for is, so another villager can have it.
+	 */
+	static void giveUp(ServerLevel level, Resident r) {
+		if (!r.bedHome) {
+			letGo(level, r.bedAt);
+		}
+		if (!r.jobHome) {
+			letGo(level, r.jobAt);
+		}
+		r.bedAt = null;
+		r.jobAt = null;
+	}
+
+	/**
+	 * The player gave {@code r} another bed ({@code bed}) or another job, or none ({@code job}), at the Village Hall while
+	 * their building was on the move or before they were home (B1194): that choice stands. The moved bed or workstation
+	 * isn't theirs any more: it isn't held for them when it goes up, and what was held already is let go (one their memory
+	 * had was let go by the choice itself).
+	 */
+	static void chosen(ServerLevel level, Resident r, boolean bed, boolean job) {
+		if (bed && r.bed != null) {
+			if (!r.bedHome) {
+				letGo(level, r.bedAt);
+			}
+			r.bed = null;
+			r.bedAt = null;
+			r.bedHome = false;
+			r.stay = null; // (their bed at the inn was let go as they moved into the new one)
+		}
+		if (job && r.job != null) {
+			if (!r.jobHome) {
+				letGo(level, r.jobAt);
+			}
+			r.job = null;
+			r.jobAt = null;
+			r.jobHome = false;
+		}
+	}
+
+	/** Lets go of the one place held at {@code pos} (a bed or workstation the Mover put up), if it stands and is held. */
+	private static void letGo(ServerLevel level, @Nullable BlockPos pos) {
+		if (pos == null) {
+			return;
+		}
+		PoiManager poi = level.getPoiManager();
+		if (poi.getType(pos).isPresent() && poiAt(level, pos).isPresent() && poi.getFreeTickets(pos) == 0) {
+			poi.release(pos);
 		}
 	}
 

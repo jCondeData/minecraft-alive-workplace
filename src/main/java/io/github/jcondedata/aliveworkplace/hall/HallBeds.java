@@ -348,6 +348,7 @@ public final class HallBeds {
 			return true;
 		} else if (!option.taken()) {
 			if (moveIn(level, villager, bed)) {
+				io.github.jcondedata.aliveworkplace.move.MoveSites.chosen(level, villager, true, false); // the Mover leaves the pick be (B1194)
 				Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.beds.moved", who, option.where()).withStyle(ChatFormatting.GREEN));
 				level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
 				OPEN_LISTS.remove(menu);
@@ -357,6 +358,8 @@ public final class HallBeds {
 			}
 		} else if (option.sleeper() != null && mine != null && option.sleeper() != villager) {
 			swap(level, villager, mine, option.sleeper(), bed);
+			io.github.jcondedata.aliveworkplace.move.MoveSites.chosen(level, villager, true, false); // (B1194)
+			io.github.jcondedata.aliveworkplace.move.MoveSites.chosen(level, option.sleeper(), true, false);
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.hall.beds.swapped", who, option.sleeper().getDisplayName())
 				.withStyle(ChatFormatting.GREEN));
 			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);

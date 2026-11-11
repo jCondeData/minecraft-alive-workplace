@@ -79,7 +79,10 @@ and couples all show it straight away. A Builder's bench inside a moved house st
 from its chests. A move called off gives everyone their old bed and block back the same way. Someone who lives there
 but is far off when the move starts (out trading, or in a part of the world nobody is near) isn't forgotten: their bed
 and workstation are held for them too, and they get the moved ones when they're back, or the inn meanwhile if they
-come back before the house is up. A bed nobody comes back for within five days is let go for someone else.
+come back before the house is up. A bed nobody comes back for within five days is let go for someone else, and so is
+one held for a resident who dies (B1201). A bed or job you give a resident at the Village Hall's People page while
+their building is away stands: the Mover doesn't pull them back to the moved bed or workstation, and that one is free
+for someone else (B1194).
 
 ![Tomas at his barrel in the moved cottage](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-3.jpg)
 
@@ -184,7 +187,13 @@ the building), `Builders.benchPos` (the bench, the job-status cards); couples an
 
 A resident not loaded when their block goes up is settled by the villager tick (`mixin/VillagerMixin` →
 `MoveResidents.tick`, once a second; a stay bed is looked for again every 10 seconds while they have none). One whose
-move is over is kept in `MoveSites`' homecomings for `KEEP_TICKS` (5 days).
+move is over is kept in `MoveSites`' homecomings for `KEEP_TICKS` (5 days); homecomings are swept with the forwards,
+and one not back by then has what was held for them released (`MoveResidents.giveUp`, B1201). A resident who dies or is
+turned into something else (`BuilderEvents.workLeft` → `MoveSites.onGone`) is dropped from the site and the homecomings
+at once, their held blocks released. A bed picked at the Hall (`HallBeds.click`, a move-in or a swap) or a job changed
+or taken away (`Retraining.retrain`, `Retraining.unemploy`) calls `MoveSites.chosen` (B1194): the resident's moved bed
+or workstation is no longer theirs (its relative spot cleared, so `placed` doesn't reserve it and `settle` doesn't set
+it), and one held already is released.
 
 Residents too far off to be noted (over 128 blocks, or not loaded; B1154): as the site starts, every occupied bed
 (`PoiTypes.HOME`) or workstation (`VillagerProfession.ALL_ACQUIRABLE_JOBS`) point of interest in the box that no noted

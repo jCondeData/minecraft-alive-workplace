@@ -545,6 +545,7 @@ public final class BuilderEvents {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.move.MoveSites.onGone(level, villager); // a moved house doesn't hold their bed for good (B1201)
 		// what a worker carries that isn't in a bag: a machine trip's load (B960), a Mechanic's part from the store (B959)
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.onWorkerGone(villager);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.onWorkerGone(level, villager);

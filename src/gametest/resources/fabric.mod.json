@@ -152,6 +152,7 @@
 			"io.github.jcondedata.aliveworkplace.test.HallSidebarGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleJobGameTests",
+			"io.github.jcondedata.aliveworkplace.test.HallPeopleNoSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallPeopleBedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallVisitorJobs1104cBugTests",

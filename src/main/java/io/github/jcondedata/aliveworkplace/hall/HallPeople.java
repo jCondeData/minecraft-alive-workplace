@@ -63,8 +63,9 @@ public final class HallPeople {
 	/** Sets the table's numbers on {@code menu}: everyone listed, the workers, the jobless, the children and the window's start. */
 	static void counts(ChoiceMenu menu, VillageHalls.Census census, int listed, int first) {
 		menu.setState(HallSections.PEOPLE_TOTAL, Math.min(Short.MAX_VALUE, listed));
-		menu.setState(HallSections.PEOPLE_WORKING, Math.min(Short.MAX_VALUE, census.workers().size()));
-		menu.setState(HallSections.PEOPLE_JOBLESS, Math.min(Short.MAX_VALUE, census.jobless().size()));
+		int atTheirJob = atTheirJob(census); // B1173: counted as their rows show them
+		menu.setState(HallSections.PEOPLE_WORKING, Math.min(Short.MAX_VALUE, census.workers().size() + atTheirJob));
+		menu.setState(HallSections.PEOPLE_JOBLESS, Math.min(Short.MAX_VALUE, census.jobless().size() - atTheirJob));
 		menu.setState(HallSections.PEOPLE_CHILDREN, Math.min(Short.MAX_VALUE, census.children()));
 		menu.setState(HallSections.PEOPLE_FIRST, Math.min(Short.MAX_VALUE, first));
 	}
@@ -82,6 +83,32 @@ public final class HallPeople {
 				&& villager.getVillagerData().getProfession() != VillagerProfession.NONE;
 	}
 
+	/**
+	 * B1173: whether {@code villager} has a trade but no workstation now (it was broken, taken or lost while they kept
+	 * their level, as vanilla keeps an experienced villager's job). The census still counts them among the jobless (a free
+	 * work block is theirs for nothing, and the Steward and the settlers treat them so), but the People table shows their
+	 * job with "(no workstation)" and its header counts them working. A Legend without a trade never has one, so isn't this.
+	 */
+	public static boolean noWorkstation(Villager villager) {
+		if (villager.isBaby() || visitor(villager)) {
+			return false;
+		}
+		VillagerProfession job = villager.getVillagerData().getProfession();
+		return job != VillagerProfession.NONE && job != VillagerProfession.NITWIT && job != io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND
+			&& villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty();
+	}
+
+	/** B1173: whether the People table shows {@code villager}, one of the census's jobless, at their job: {@link #noWorkstation} or a Legend. */
+	static boolean listedWorking(Villager villager) {
+		return noWorkstation(villager)
+			|| !villager.isBaby() && villager.getVillagerData().getProfession() == io.github.jcondedata.aliveworkplace.registry.ModVillagers.LEGEND;
+	}
+
+	/** B1173: how many of the census's jobless the People table shows at their job ({@link #listedWorking}). */
+	static int atTheirJob(VillageHalls.Census census) {
+		return (int) census.jobless().stream().filter(v -> listedWorking(v)).count();
+	}
+
 	public static Kind kind(Villager villager) {
 		if (villager.isBaby()) {
 			return Kind.CHILD;
@@ -93,9 +120,10 @@ public final class HallPeople {
 		if (visitor(villager) && job != VillagerProfession.NONE) { // not the village's to employ: their own job, none offered (B889)
 			return job == io.github.jcondedata.aliveworkplace.registry.ModVillagers.GUARD ? Kind.GUARD : Kind.WORKER;
 		}
-		if (job == VillagerProfession.NONE || villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).isEmpty()) {
+		if (job == VillagerProfession.NONE) {
 			return Kind.JOBLESS;
 		}
+		// B1173: a trade without its workstation (an Undertaker whose table was broken) is still that trade, not jobless
 		if (Builders.isBuilder(villager)) {
 			return Kind.BUILDER;
 		}
@@ -116,7 +144,8 @@ public final class HallPeople {
 
 	/** What Job ▾ does for a row: "retrain" (a worker's Change job), "assign" (a jobless villager's free jobs) or "" (neither). */
 	static String jobAction(ServerLevel level, Villager villager, Kind kind) {
-		if (kind == Kind.JOBLESS && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty()) {
+		// a worker without a workstation (B1173) is given a free one as a jobless villager is, for nothing
+		if ((kind == Kind.JOBLESS || noWorkstation(villager)) && io.github.jcondedata.aliveworkplace.legend.Legends.of(villager).isEmpty()) {
 			return "assign";
 		}
 		return kind != Kind.CHILD && kind != Kind.NITWIT && kind != Kind.JOBLESS && HallRetraining.canRetrain(level, villager) ? "retrain" : "";
@@ -133,6 +162,7 @@ public final class HallPeople {
 			case JOBLESS -> "screen.aliveworkplace.hall.people.no_job";
 			default -> "entity.minecraft.villager." + villager.getVillagerData().getProfession().name();
 		});
+		row.putBoolean("no_site", noWorkstation(villager)); // B1173: "Undertaker (no workstation)"
 		row.putInt("level", kind == Kind.CHILD || kind == Kind.JOBLESS || kind == Kind.NITWIT ? 0 : BuilderLevels.level(villager));
 		row.putString("mood", mood(level, villager).id());
 		row.putString("job_action", jobAction(level, villager, kind));
@@ -157,6 +187,12 @@ public final class HallPeople {
 		return children == 1 ? Component.translatable("screen.aliveworkplace.hall.people.header_child", total, working, jobless) // "1 child" (B547)
 			: children > 0 ? Component.translatable("screen.aliveworkplace.hall.people.header_children", total, working, jobless, children)
 			: Component.translatable("screen.aliveworkplace.hall.people.header", total, working, jobless);
+	}
+
+	/** The Job column: the job's name, with "(no workstation)" after it for a worker without one (B1173). */
+	public static Component job(CompoundTag row) {
+		Component job = Component.translatable(row.getString("job"));
+		return row.getBoolean("no_site") ? Component.translatable("screen.aliveworkplace.hall.people.no_site", job) : job;
 	}
 
 	/** The Level column: "Novice" ... "Master", or a dash for someone without a job. */

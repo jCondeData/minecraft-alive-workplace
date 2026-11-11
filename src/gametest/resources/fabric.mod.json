@@ -417,6 +417,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobCrafts1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblowerStash1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblowerStash1110cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ChandlerLeatherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GlassblowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChandlerLeather1110cGameTests",

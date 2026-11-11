@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1170
 
 ## 1. What a player sees
 
@@ -162,6 +162,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   every place that list is used (the job board, the hauler golems, enchanting, workplace rules) and let builders take
   the crafter's own makings. Anything of the asked item in those chests is carried on, whoever put it there: they are
   the crafter's, and nothing else takes from them.
+- B1170: the Mason, Tinkerer, Leatherworker and Librarian now take part in the village (as the Cleric, B1144, and the
+  Glassblower, B1156, did), so the makings in their own chests are used for a builder's request and builders take from
+  those chests ([Each job's own list](job-lists.md)). The Carpenter stays out, for B778's reasons above.
 
 ## 7. Known limits
 

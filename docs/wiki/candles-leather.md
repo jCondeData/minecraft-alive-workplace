@@ -3,7 +3,7 @@
 Milestone 46, item 46.5 (owner, 2026-11-09: "Leatherworker shouldn't make stained glass"; each job crafts its own kind
 of thing). The Beekeeper makes the candles, colored candles and honeycomb blocks builders wait for, from her hives' wax,
 and the Leatherworker is no longer her stand-in: he makes leather goods and nothing else.
-Roadmap items: 46.5, B1148
+Roadmap items: 46.5, B1148, B1170
 
 ## 1. What a player sees
 
@@ -55,6 +55,9 @@ Roadmap items: 46.5, B1148
   names what a player hands over: a dye, not the flower.
 - The Leatherworker keeps `craft/DyerWork` (its name and its "dyer" status key stay, so saves and lines don't change),
   which takes only the `crafts/leatherworker` list.
+- B1170: the Leatherworker takes part in the village (`Village.takesPart`), so the leather and sticks in the chests by
+  his cauldron are a village-mate's stash a builder's request draws on. Before, an item frame waited "short of" with
+  them sitting there.
 
 ## 3. Switches
 
@@ -99,6 +102,9 @@ candle, and with no Beekeeper the Leatherworker leaving the candle alone and the
 Candles"; item frames from leather and sticks, a glow item frame step by step, leather from rabbit hide for a frame,
 leads and a leather helmet for stock orders, and with no Leatherworker the store untouched and the line saying "Hire a
 Leatherworker to make Item Frames". Scenes `chandler` and `leatherworker_goods`.
+
+`QaCrafterOwnChest1111GameTests#leatherAndSticksInTheLeatherworkersOwnChestBecomeTheBuildersFrame` (B1170): leather and
+sticks only in the chest by his cauldron become the blueprint's item frame, hung on the plank.
 
 `QaChandlerLeather1110cGameTests` (QA, from the spec): a blue candle from a plain candle and a dye, a block of three
 candles from three honeycomb and string, a red candle's two steps with a save and reload between them, the missing

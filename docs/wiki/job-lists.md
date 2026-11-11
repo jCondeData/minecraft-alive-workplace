@@ -6,7 +6,7 @@ place; 46.2 taught the Shepherd to weave at his loom ([The Shepherd weaves](weav
 and dyes ([The Florist makes pots](florist-pots.md)), 46.4 the Cleric to make the magic blocks ([The Cleric makes the
 magic blocks](cleric-crafts.md)), 46.5 the Beekeeper to make candles ([Candles and leather goods](candles-leather.md));
 and 46.6 brought the Glassblower ([The Glassblower](glassblower.md)).
-Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, 46.6, B1142
+Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, 46.6, B1142, B1170
 
 ## 1. What a player sees
 
@@ -25,6 +25,10 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, 46.6, B1142
   Beekeeper's. A Leatherworker by a builder short of red wool, with white wool and red dye in the chest, leaves them
   alone: the builder's line reads "Hire a Shepherd to make Red Wool".
 - The Librarian makes books, paper, bookshelves, lecterns, enchanting tables and cartography tables.
+- The Mason, Tinkerer, Leatherworker and Librarian also use the makings kept in the chests by their own workstation
+  (stone bricks by the stonecutter, iron by the Tinker's Bench, leather and sticks by the cauldron, planks and books by
+  the lectern), as the Cleric and the Glassblower do. Before, the builder waited "short of" with them sitting there
+  (B1170). The Carpenter still takes his makings only from the builder's chests and the village's stores (see 6).
 - The Shepherd (since 46.2) weaves at his loom: wool from string, dyed wool, carpets, beds, banners, banner patterns and
   paintings ([The Shepherd weaves](weaver.md)).
 - The Florist (since 46.3) makes flower pots, decorated pots, dyes and moss carpet at her stand
@@ -67,6 +71,13 @@ Roadmap items: 46.1, 46.2, 46.3, 46.4, 46.5, 46.6, B1142
 - `maker` is the job that makes it today: the list's job, or its stand-in while that job doesn't craft yet.
 - Each crafting job's `wants` asks `CraftJobs.makes(level, job, item)`; the Mason also keeps crushing gravel and sand.
 - The shortage line checks for a worker of the maker's job within the village's reach of the builder's table.
+- B1170: the Mason, Tinkerer, Leatherworker and Librarian take part in the village (`Village.takesPart`), so their
+  chests are a village-mate's stash that `CrafterWork.choose` pools with the builder's chests (it never read a crafter's
+  own chests for makings, only for a job taken home, B778). Side effects, as for the Cleric (B1144): builders take from
+  those chests too, the Tinkerer's golem mending now finds the Storehouse's and the Armorer's iron
+  (`TinkererWork.ironSources`), the Librarian's enchanting the Storehouse's lapis, their wants reach the requests
+  board, and their chunks are kept loaded like other workers'. Porters and Hauler Golems carry nothing away from them
+  (`Porters.keeps` keeps everything for these jobs).
 
 ## 3. Switches
 
@@ -98,6 +109,8 @@ before carries on.
 - Clay and sand are the Miner's to gather (his quarry keeps what it digs).
 - The ingredient rule goes in the spec's order (the first category any ingredient matches), so a cradle of wool,
   planks and sticks is the Carpenter's.
+- B1170 leaves the Carpenter out of `Village.takesPart`: B778 chose carrying his planks on over letting builders take
+  from his chests ([Job chains](crafter.md), section 6), and many tests rest on that.
 
 ## 7. Known limits
 
@@ -115,6 +128,9 @@ before carries on.
 
 ## 8. Proof
 
+`QaCrafterOwnChest1111GameTests` (B1170): with the makings only in the crafter's own chest, the Mason cuts a builder's
+stone brick slabs, the Tinkerer makes his iron bars, the Librarian his bookshelf and the Leatherworker the item frame
+the blueprint hangs, each built.
 `JobListsGameTests`: the owner's five never the Carpenter's, the Mason's concrete and dyed terracotta (through a
 builder's request, the concrete across a reload), an untagged wooden block (the Bounty Board) the Carpenter's by its
 recipe, every item made before 46.1 still has a job, the "Hire a ..." line for each job, the Storehouse's lines, the

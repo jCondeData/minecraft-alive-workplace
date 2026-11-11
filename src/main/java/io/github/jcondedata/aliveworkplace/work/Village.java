@@ -73,6 +73,11 @@ public final class Village {
 			|| job == VillagerProfession.CLERIC
 			// B1156: the same for the Glassblower's sand and coal in the chests by his Glass Kiln (46.6)
 			|| job == ModVillagers.GLASSBLOWER
+			// B1170: and for the other crafting jobs' makings in the chests by their workstations: the Mason's stonecutter,
+			// the Tinkerer's bench, the Leatherworker's cauldron and the Librarian's lectern (the Carpenter stays out: B778
+			// chose carrying his planks on over builders taking from his chests, crafter.md)
+			|| job == VillagerProfession.MASON || job == ModVillagers.TINKERER || job == VillagerProfession.LEATHERWORKER
+			|| job == VillagerProfession.LIBRARIAN
 			|| Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}

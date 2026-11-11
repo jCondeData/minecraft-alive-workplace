@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- Less server lag in a big village: workers no longer search the chunks around their workstation for chests every time they need them (most of them every tick, and for every neighbor's workstation too). The list is kept until a chest, barrel or furnace is placed, broken or changed. A farmer with nothing to do now counts its chests for spare seeds once a second instead of every tick, and villagers no longer look up their Village Hall's militia rule 20 times a second when nothing has hurt or scared them. (B455, B412)
+
 ## 0.154.0 — 2026-11-10
 
 ### Fixed

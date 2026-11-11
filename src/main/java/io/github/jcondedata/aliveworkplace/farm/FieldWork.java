@@ -108,6 +108,12 @@ public class FieldWork extends Behavior<Villager> {
 	/** What's going in the composter now (from the chests' surplus), or null. */
 	@Nullable
 	private Item composting;
+	/** How long a farmer who found no surplus to compost waits before counting the chests again (B455). */
+	public static final int COMPOST_LOOK_TICKS = 20;
+	/** How often {@link #compost} counted the chests' contents (for tests). */
+	public static long compostLooks;
+	private long noSurplusAt = Long.MIN_VALUE / 2;
+	private BlockPos noSurplusStation = BlockPos.ZERO;
 	private int compostTimer;
 
 	public FieldWork() {
@@ -747,8 +753,15 @@ public class FieldWork extends Behavior<Villager> {
 		}
 		int fill = composter.getValue(ComposterBlock.LEVEL);
 		if (composting == null && fill < ComposterBlock.READY) {
+			// B455: a farmer with nothing to do asked this every tick, counting every chest's contents each time; with
+			// no surplus found, it looks again a second later
+			long now = level.getGameTime();
+			if (now >= noSurplusAt && now - noSurplusAt < COMPOST_LOOK_TICKS && station.equals(noSurplusStation)) {
+				return false;
+			}
 			List<BlockPos> supplies = SupplyContainers.find(level, station, null);
 			Item surplus = null;
+			compostLooks++;
 			for (java.util.Map.Entry<Item, Long> e : SupplyContainers.contents(level, supplies).entrySet()) {
 				if (isCompostable(e.getKey()) && e.getValue() > COMPOST_ABOVE) {
 					surplus = e.getKey();
@@ -756,6 +769,8 @@ public class FieldWork extends Behavior<Villager> {
 				}
 			}
 			if (surplus == null) {
+				noSurplusAt = now;
+				noSurplusStation = station.immutable();
 				return false;
 			}
 			BlockPos chest = SupplyContainers.firstWith(level, supplies, surplus);

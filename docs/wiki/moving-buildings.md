@@ -388,7 +388,11 @@ barrel at the new spot.
 
 `MoveLiveSiteGameTests` (3, B1182): builders start on a hut after its move is confirmed: nothing comes down, the move
 is kept and the Move page says it waits; once their site is done the Mover moves the hut whole; through a save and
-reload while it waits; and the held move's row still opens with Call off, which drops it. `QaMoveLiveSite1111eBugTests`: QA's reproduction.
+reload while it waits; and the held move's row still opens with Call off, which drops it. `QaMoveLiveSite1111eBugTests`: QA's reproduction. `QaMoveLiveSiteVerify1111eGameTests` (5, QA's check of
+B1182): a site overlapping the hut by one column holds the move and one just beside it doesn't (the blueprint boxes'
+edge from both sides); a site at the hut's coordinates in the Nether doesn't; another building's confirmed move goes
+ahead, whole, while the hut's waits; and a whole save (build sites, moves and Mover sites) keeps it held until the
+reloaded site is done.
 
 ## Known limits
 

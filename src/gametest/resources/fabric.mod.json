@@ -405,6 +405,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MovePageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MovePageGuideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallPeopleJobs1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",

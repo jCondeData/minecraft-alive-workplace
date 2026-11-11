@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'tests/hall-people-jobs-1111c']
   pull_request:
   workflow_dispatch:
 

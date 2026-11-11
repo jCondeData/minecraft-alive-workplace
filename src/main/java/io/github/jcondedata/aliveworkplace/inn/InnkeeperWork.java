@@ -62,6 +62,7 @@ public class InnkeeperWork extends Behavior<Villager> {
 			return;
 		}
 		timer = EVERY;
+		InnCounters.get(level).remember(counter, villager.getUUID()); // his counter is the inn while he's away from it too (B1203, B1205)
 		tend(level, villager, counter);
 		// A guest's drink (38.8, Cobblecuisine): served at the counter, once a stay.
 		net.minecraft.world.item.ItemStack served = InnDrinks.serve(level, villager, counter);

@@ -318,8 +318,11 @@ Innkeeper is given No job at the hall, or he is retrained as the counter's Shopk
 still keeps the inn; two Innkeepers' Shop Counters and an old Inn Counter are each found once, a shop and a lectern
 beside them not; a counter exactly at the hall's reach is the village's inn, one block past it is not; the Seer's look
 ahead foretells a sure inn Legend at an Innkeeper's Shop Counter and nobody at a Shopkeeper's; and the inn's morning at a
-Shop Counter hosts that Legend by the counter. The inn is counted while its Innkeeper is within the hall's reach: one
-who has stepped out of the village (asleep in a bed past its edge) leaves no inn for that moment.
+Shop Counter hosts that Legend by the counter.
+Bugs B1203, B1205: `QaInnShopCounter1111cBugTests`, `QaInnKeeperAway1111dBugTests`: an Innkeeper out past the village's
+edge (asleep, on a walk) still keeps his Shop Counter the inn (the counters Innkeepers work are remembered,
+`InnCounters`, until another trade works them or the Innkeeper is gone for good). `QaInnCounters1111dGameTests`: an inn
+10.05 blocks from the Hall is the inn of a village of radius 11 and not of one of radius 10.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

@@ -92,6 +92,8 @@ public final class BuilderEvents {
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
 		// A lair's captain the game takes away on Peaceful is remembered as taken, not fallen (B767).
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
+		// B1203, B1205: an Innkeeper gone for good (killed, discarded, a zombie now) leaves his counter no inn
+		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.inn.InnCounters.onGone(entity, level));
 		// B1003: a Bard killed, discarded or unloaded mid-song: the song stops at the jukebox
 		Platform.get().onEntityUnload((entity, level) -> {
 			if (entity instanceof Villager villager) {
@@ -545,6 +547,7 @@ public final class BuilderEvents {
 		io.github.jcondedata.aliveworkplace.hall.Guilds.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.ranch.Daycare.onDeath(level, villager);
 		io.github.jcondedata.aliveworkplace.daycare.DaycareKeepers.onDeath(level, villager);
+		io.github.jcondedata.aliveworkplace.move.MoveSites.onGone(level, villager); // a moved house doesn't hold their bed for good (B1201)
 		// what a worker carries that isn't in a bag: a machine trip's load (B960), a Mechanic's part from the store (B959)
 		io.github.jcondedata.aliveworkplace.mechanic.MachineWork.onWorkerGone(villager);
 		io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.onWorkerGone(level, villager);

@@ -36,13 +36,13 @@ public class QaEverySavedDataGameTests implements FabricGameTest {
 	static final List<String> FILES = List.of(
 		"blueprint.BlueprintNames$Data", "bounty.Bounties$Data", "build.BuildSiteManager", "build.Friends", "camp.CampBeds$Data", "city.PlayerBuilt",
 		"craft.DishRequests", "cup.CupData", "guard.RaidDens$Sites", "guard.Scouts$Data", "guard.WarParties$Data",
-		"hall.Caravans$Data", "hall.Seasons$Data", "hall.VillageWaystones$Data", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager", "move.MoveSites", "move.PendingMoves",
+		"hall.Caravans$Data", "hall.Seasons$Data", "hall.VillageWaystones$Data", "inn.InnCounters", "legend.LegendRecord", "mail.PostOffice", "mine.QuarrySiteManager", "move.MoveSites", "move.PendingMoves",
 		"realm.Feuds$Data", "realm.Pacts$Data", "realm.RealmData", "shop.ShopLedger", "story.ReformStories$Data",
 		"story.Stories$Data", "table.BlueprintUnlocks$Wild", "threat.Covens$Data", "threat.Lairs$Data", "threat.Ships$Data",
 		"threat.RainLedger", "threat.ThreatData", "trainer.LeaderBracelets$Data", "trainer.RaidHelpers$Data", "travel.TravelNetwork",
 		"trainer.MegaShrines$Data", "wonder.StadiumDays$Data", "wonder.WonderManager", "work.JobSiteTickets", "work.WorkSites");
 
-	static final int KNOWN = 39;
+	static final int KNOWN = 40;
 
 	/** The file's loader: its static {@code load(CompoundTag, HolderLookup.Provider)}. */
 	private static Method loader(String name) {

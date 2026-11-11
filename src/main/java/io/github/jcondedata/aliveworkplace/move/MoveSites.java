@@ -127,8 +127,6 @@ public final class MoveSites extends SavedData {
 		sites.remove(site);
 		PendingMoves.get(level).remove(site.from());
 		tell(level, site);
-		long time = level.getGameTime();
-		homecomings.removeIf(r -> r.until < time);
 		homecomings.addAll(MoveResidents.arrive(level, site)); // its residents' beds and workstations are theirs where it stands (45.4)
 		forwards.addAll(MoveResidents.forwards(level, site)); // and theirs who were too far off to be noted (B1154)
 		sweep(level);
@@ -160,7 +158,10 @@ public final class MoveSites extends SavedData {
 		return List.copyOf(forwards);
 	}
 
-	/** Drops the forwards whose block is gone and lets go of those kept too long, or past {@link #MAX_FORWARDS}. */
+	/**
+	 * Drops the forwards whose block is gone and lets go of those kept too long, or past {@link #MAX_FORWARDS}; the same
+	 * for the homecomings: a resident not back within {@link MoveResidents#KEEP_TICKS} has what was held let go (B1201).
+	 */
 	private void sweep(ServerLevel level) {
 		sweep(level, level.getGameTime());
 	}
@@ -168,7 +169,14 @@ public final class MoveSites extends SavedData {
 	/** {@link #sweep(ServerLevel)} as at game time {@code time} (the tests look days ahead with it). */
 	public void sweep(ServerLevel level, long time) {
 		nextSweep = time + 1200;
-		int before = forwards.size();
+		int before = forwards.size() + homecomings.size();
+		for (java.util.Iterator<MoveResidents.Resident> it = homecomings.iterator(); it.hasNext(); ) {
+			MoveResidents.Resident r = it.next();
+			if (r.until < time) {
+				MoveResidents.giveUp(level, r);
+				it.remove();
+			}
+		}
 		for (java.util.Iterator<MoveResidents.Claim> it = forwards.iterator(); it.hasNext(); ) {
 			MoveResidents.Claim c = it.next();
 			if (c.until < time) {
@@ -181,8 +189,54 @@ public final class MoveSites extends SavedData {
 		while (forwards.size() > MAX_FORWARDS) {
 			MoveResidents.giveUp(level, forwards.remove(0));
 		}
-		if (forwards.size() != before) {
+		if (forwards.size() + homecomings.size() != before) {
 			setDirty();
+		}
+	}
+
+	/**
+	 * {@code villager} is gone for good (dead, or turned into something else; B1201): a building on the move or moved no
+	 * longer waits for them, and what was held for them is let go.
+	 */
+	public static void onGone(ServerLevel level, net.minecraft.world.entity.npc.Villager villager) {
+		MoveSites moves = get(level);
+		java.util.UUID id = villager.getUUID();
+		for (MoveSite site : moves.sites) {
+			if (site.residents().removeIf(r -> r.id().equals(id) && giveUp(level, r))) {
+				moves.setDirty();
+			}
+		}
+		if (moves.homecomings.removeIf(r -> r.id().equals(id) && giveUp(level, r))) {
+			moves.setDirty();
+		}
+	}
+
+	private static boolean giveUp(ServerLevel level, MoveResidents.Resident r) {
+		MoveResidents.giveUp(level, r);
+		return true;
+	}
+
+	/**
+	 * The player gave {@code villager} another bed ({@code bed}) or another job, or none ({@code job}), at the Village Hall
+	 * (B1194): if they're a resident of a building on the move, or moved before they were home, the Mover leaves that
+	 * choice be and lets go of what it held for them.
+	 */
+	public static void chosen(ServerLevel level, net.minecraft.world.entity.npc.Villager villager, boolean bed, boolean job) {
+		MoveSites moves = get(level);
+		java.util.UUID id = villager.getUUID();
+		for (MoveSite site : moves.sites) {
+			for (MoveResidents.Resident r : site.residents()) {
+				if (r.id().equals(id)) {
+					MoveResidents.chosen(level, r, bed, job);
+					moves.setDirty();
+				}
+			}
+		}
+		for (MoveResidents.Resident r : moves.homecomings) {
+			if (r.id().equals(id)) {
+				MoveResidents.chosen(level, r, bed, job);
+				moves.setDirty();
+			}
 		}
 	}
 
@@ -216,11 +270,11 @@ public final class MoveSites extends SavedData {
 				return;
 			}
 		}
+		if (level.getGameTime() >= nextSweep) {
+			sweep(level); // claims and homecomings kept too long are let go (B1201)
+		}
 		if (forwards.isEmpty()) {
 			return;
-		}
-		if (level.getGameTime() >= nextSweep) {
-			sweep(level);
 		}
 		boolean used = false;
 		for (java.util.Iterator<MoveResidents.Claim> it = forwards.iterator(); it.hasNext(); ) {

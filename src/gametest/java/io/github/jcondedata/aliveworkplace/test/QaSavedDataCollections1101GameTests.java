@@ -469,7 +469,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 
 	/**
 	 * The record test's maker, which also makes the concrete lists, sets and maps saved data declares (an {@code
-	 * ArrayDeque}, a {@code LinkedHashSet}, fastutil's sets and maps of longs), a block state, and the mod's own
+	 * ArrayDeque}, a {@code LinkedHashSet}, fastutil's sets and maps of longs, B1203's map of longs to objects), a block state, and the mod's own
 	 * hand-written classes (a siege, a cup, a bounty): made with their constructor, then every field given a made value.
 	 */
 	static final class Maker extends QaEveryRecordField1101GameTests {
@@ -508,6 +508,12 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			if (raw == it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap.class) {
 				it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap map = new it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap();
 				map.put(net.minecraft.core.BlockPos.asLong(3 + k, 64, -k), net.minecraft.core.BlockPos.asLong(40 + k++, 66, 7));
+				return map;
+			}
+			if (raw == it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap.class || raw == it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap.class) {
+				it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap<Object> map = new it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap<>();
+				map.put(net.minecraft.core.BlockPos.asLong(3 + k, 64, -k), make(args[0], path + "[0]"));
+				map.put(net.minecraft.core.BlockPos.asLong(9 + k++, 70, 4), make(args[0], path + "[1]"));
 				return map;
 			}
 			if (raw == it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap.class) {

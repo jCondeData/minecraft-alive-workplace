@@ -454,6 +454,8 @@
 			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverResidentGone1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTrainerScreen1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",
@@ -1653,7 +1655,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LeadToAndFroB1171GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bDecorGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bDecorGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnCounters1111dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnKeeperAway1111dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.InnCountersB1203GameTests"
 		]
 	},
 	"depends": {

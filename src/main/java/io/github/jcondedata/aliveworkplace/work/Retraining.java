@@ -150,6 +150,7 @@ public final class Retraining {
 		villager.setVillagerData(villager.getVillagerData().setLevel(1)); // the old job's level goes (its trades go with the job)
 		villager.setVillagerXp(0);
 		Stations.assign(level, villager, station, job);
+		io.github.jcondedata.aliveworkplace.move.MoveSites.chosen(level, villager, false, true); // a moved workstation isn't held for them (B1194)
 	}
 
 	/**
@@ -166,6 +167,7 @@ public final class Retraining {
 		villager.setVillagerData(villager.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NONE).setLevel(1));
 		villager.setVillagerXp(0);
 		villager.refreshBrain(level);
+		io.github.jcondedata.aliveworkplace.move.MoveSites.chosen(level, villager, false, true); // nor given back when it goes up (B1194)
 	}
 
 	/**

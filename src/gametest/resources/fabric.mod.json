@@ -1595,6 +1595,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLairFallWarning1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardlessGates1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatesNoGuardLeft1111dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGatesLastGuardNight1111dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairFallOtherBands1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarnedHallGone1111dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.WarnedHallGoneGameTests",

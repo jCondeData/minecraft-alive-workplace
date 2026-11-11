@@ -38,13 +38,16 @@ Two Movers in the village work the same move together, twice as fast. A save and
 on where he was.
 
 He packs everything into the crates at his Mover's Crate, so keep it standing: if it's broken he can't take
-anything more down, and he waits ("Waiting for his Mover's Crate") until he has one again.
+anything more down, and he waits ("Waiting for his Mover's Crate") until he has one again. A Mover's Crate inside the
+building he moves stays where it stands: the building goes up at its new spot without it, and you can move the crate
+yourself afterward.
 
 **The people who live there move too.** Villagers whose bed or workstation is in the building keep them. While it's
 away they sleep in a free bed at the village's inn (or the free bed nearest the Village Hall), and workers keep their
 jobs. The moment the Mover puts a bed or workstation up at the new spot, it's theirs again, held so nobody else takes
 it. The Hall's People page, couples and job cards follow them, and a Builder whose Builder's Bench is in the house keeps
-it, with his queued builds.
+it, with his queued builds. A resident who is far away when the move starts gets the moved bed or workstation too
+when they come back.
 
 **Everything arrives as it was.** What's in a chest, on a frame or on an armor stand when he packs it is what comes
 out at the new spot: an item you took out after confirming the move stays yours, and one you put in moves too.

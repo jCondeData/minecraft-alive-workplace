@@ -22,6 +22,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 
 - A Blueprint Table request (Get Blueprint, Store, Take Stored) naming a Table far from the player is refused without the server loading or generating the land there; before, a modified client could make a server generate chunks anywhere, one request at a time (B1037).
+- The Trainer screen's Challenge, Trade and Close buttons stay inside the panel: in a small window or with longer translated labels they now share out the room or wrap onto a second row instead of running past the panel's edge (B1131).
 - When a shop's owner swaps the goods on a counter while you're buying (16 Cobblestone for 200 becomes 1 Diamond for 200), Confirm still takes nothing, and now says "This counter now sells 1 Diamond for 200 CobbleDollars." instead of "The price changed", which was wrong when only the goods changed (B1147).
 - A lumberjack no longer gives up on a healthy sapling on its tree farm after 16 bone meal: about one sapling in a thousand needed more, and it then stood there unfed for good. It now gets up to 32 (a sapling that truly can't grow is still left alone after that). (B460)
 - A village warned that a lair's band strikes tonight no longer stays braced after you break the lair up: the gates open again, the Defense page drops the attack, and nobody goes to battle stations or indoors for a band that can't come.

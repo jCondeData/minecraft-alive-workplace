@@ -5,7 +5,7 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1157
+Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157
 
 ## What a player sees
 
@@ -31,7 +31,9 @@ challenge that starts a battle uses up a Leader's one a day: a refused one (busy
 leaves it for later the same day. A Leader's day turns over at sunrise (day time a multiple of 24000).
 **Trade** opens
 the trainer's trades, as a sneak-click does; it is gray while they're asleep or have nothing to sell. **Close** closes.
-Sneak-click still goes straight to the trades.
+Sneak-click still goes straight to the trades. The three buttons always stay inside the panel (B1131): with room to
+spare they keep their roomy width, in a small window or with longer translated labels they share out the room, and
+when even that doesn't fit they wrap onto a second row (the status card's layout, `StatusCard.buttonRow`, B1103).
 
 ## How it works
 
@@ -111,7 +113,8 @@ none
 `TrainerScreenCompatTests.refusedWhileBusyOrInABattle`, `TrainerScreenCompatTests.refusedWhenNotTheLeader`,
 `TrainerScreenCompatTests.refusedUntilTomorrowByALeader`, `TrainerScreenCompatTests.refusedAwayAtTheCup`,
 `TrainerScreenCompatTests.recordAndRevealSurviveAReload` (Cobblemon), `QaTrainerScreen1109dBugCompatTests.theTeamsModelsStayTheSameBetweenOpenings`,
-`QaMegaTrainersBug1109dCompatTests.aTrainersTeamIsTheSameEveryTime` (Cobblemon), `TrainerScreenGameTests.withoutCobblemonTheScreenSaysSo`
+`QaMegaTrainersBug1109dCompatTests.aTrainersTeamIsTheSameEveryTime` (Cobblemon), `TrainerScreenGameTests.withoutCobblemonTheScreenSaysSo`,
+`TrainerScreenButtonsGameTests.trainerButtonsStayInsideThePanel`,
 `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`,
 `QaLeaderBeatenCompatTests.aLeaderCountsOnlyWhenBeatenInBattle` (Cobblemon), `QaLeaderBeatenGameTests.aLeaderCountsOnlyWhenBeaten`
 and `QaLeaderBeatenGameTests.anOrdinaryTrainerCountsWhenBeaten`.

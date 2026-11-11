@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.move.MoveFit;
 import io.github.jcondedata.aliveworkplace.move.MovePlan;
+import io.github.jcondedata.aliveworkplace.move.MoveRules;
 import io.github.jcondedata.aliveworkplace.move.MoveSite;
 import io.github.jcondedata.aliveworkplace.move.MoveSites;
 import io.github.jcondedata.aliveworkplace.move.Movers;
@@ -204,6 +205,9 @@ public final class MovePage {
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.now", fromHall(hall, middle)), ChatFormatting.GRAY));
 			pending.forBuilding(from).ifPresent(m -> lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.planned_to",
 				m.to().getX(), m.to().getY(), m.to().getZ()), ChatFormatting.AQUA)));
+			if (pending.forBuilding(from).isPresent() && MoveSites.get(level).forBuilding(from).isEmpty() && MoveRules.underBuilders(level, f)) {
+				lore.add(VillageHallScreen.line("screen.aliveworkplace.move.waits_builders", ChatFormatting.YELLOW)); // B1182
+			}
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.move.click", ChatFormatting.DARK_GRAY));
 			menu.button(slot++, marked(VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
 				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), LIST_MARK, 1), p -> {
@@ -220,6 +224,10 @@ public final class MovePage {
 	/** The Move button of the building at {@code from}: its plan is taken and the picker opens on it. */
 	static void start(ChoiceMenu menu, ServerLevel level, BlockPos hall, BlockPos from, ServerPlayer player) {
 		Component refused = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, hall, from, player); // 45.6
+		if (refused != null && PendingMoves.get(level).forBuilding(from).isPresent() && refused.getContents()
+			instanceof net.minecraft.network.chat.contents.TranslatableContents t && t.getKey().equals("message.aliveworkplace.move.refused.building")) {
+			refused = null; // B1182: a confirmed move waiting on the builders still opens, with Call off (Confirm asks again)
+		}
 		if (refused != null) {
 			Chat.actionBar(player, refused.copy().withStyle(ChatFormatting.RED));
 			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);

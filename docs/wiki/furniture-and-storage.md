@@ -498,6 +498,17 @@ B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (fai
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
+The redrawn Inn (QA, no furniture mods): `QaInnRedrawn1111cGameTests.theInnsDrawingsHangNothingInTheAir` (the Inn, II
+and III: no shutter, sill, pot, banner or lantern hangs in the air, and the same check finds 28 such pieces in the Inn
+the owner played, v0.154.0; one Shop Counter facing west with dark oak bar either side and a walk-in space behind it, no
+Inn Counter, six beds, the corner banner at rotation 8 on its post, no chimney fire past the inn's east wall),
+`QaInnRedrawn1111cGameTests.theBuiltInnsBarTakesAnInnkeeper` (put up in the world: a jobless villager behind the bar
+handed a bed becomes its Innkeeper and keeps the job 200 ticks, the inn lookups find the counter, and a villager walks
+there from the front door), `QaInnRedrawn1111cGameTests.theBuiltInnsSixBedsFillWithTravellers` (one traveler a morning,
+each in a different guest bed upstairs; "full" at two; with room for more the six beds fill and the seventh morning is
+"no_bed"), `QaInnRedrawn1111cGameTests.theBuiltInnIIIKeepsItsBarAndBeds`, and `theBuiltInnStandsAfterBlockUpdates`,
+`theBuiltInnIIStandsAfterBlockUpdates`, `theBuiltInnIIIStandsAfterBlockUpdates` (every block can stay, nothing drops
+after every block is updated and 40 ticks pass).
 GameTests: `FurnishingConfigGameTests.furnitureModsKeepTheirOrderAndAreCleaned` (the default order, cleaning, an empty
 and a missing list, the list off the screen and in the saved file), `FurnishingConfigGameTests.theM37GateHoldsItsSwitches`
 (a player's file can't turn them on with the gate closed; with it open they obey the file), and

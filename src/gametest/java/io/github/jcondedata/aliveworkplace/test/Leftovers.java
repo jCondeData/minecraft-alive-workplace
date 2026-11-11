@@ -113,6 +113,40 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every block that gives light within 15 blocks (as far as light carries) of the test area, and returns where
+	 * they stood. A light an earlier batch's test left beside the area, or under its floor, is never cleared and shines
+	 * in: a bandit camp QaLairEngineGameTests' qaLairRest had come 80-104 blocks from its hall, wherever the dice fell,
+	 * once stood with its campfire under the south edge of StewardCivicRulesGameTests' dark-beds area, and the far bed
+	 * there read light 9, so it was no dark bed (B1191). The light fades on the light engine's own thread, some ticks
+	 * later: wait for the dark, don't check it at once. Call it before the test sets its own lights. Only for tests
+	 * alone in their batch.
+	 */
+	static java.util.List<net.minecraft.core.BlockPos> lights(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.List<net.minecraft.core.BlockPos> found = lightsNear(helper);
+		for (net.minecraft.core.BlockPos p : found) {
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+		}
+		return found;
+	}
+
+	/** Every block that gives light within 15 blocks of the test area (in loaded chunks), the area itself included. */
+	static java.util.List<net.minecraft.core.BlockPos> lightsNear(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB around = helper.getBounds().inflate(15);
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		int minY = Math.max(level.getMinBuildHeight(), (int) Math.floor(around.minY));
+		int maxY = Math.min(level.getMaxBuildHeight() - 1, (int) Math.floor(around.maxY));
+		for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed((int) Math.floor(around.minX), minY, (int) Math.floor(around.minZ),
+			(int) Math.floor(around.maxX), maxY, (int) Math.floor(around.maxZ))) {
+			if (level.hasChunkAt(p) && level.getBlockState(p).getLightEmission() > 0) {
+				found.add(p.immutable());
+			}
+		}
+		return found;
+	}
+
+	/**
 	 * Removes every bed (a home point of interest) a villager anywhere in the test area could claim: within vanilla's
 	 * claim range ({@code AcquirePoi.SCAN_RANGE}, 48) of the area. A homeless villager claims the free beds nearest him
 	 * that he can walk to, and a bed an earlier batch's test left outside its own area (never cleared) is one: with the

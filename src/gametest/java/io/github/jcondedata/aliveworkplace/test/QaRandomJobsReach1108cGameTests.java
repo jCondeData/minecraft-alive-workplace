@@ -25,8 +25,8 @@ public class QaRandomJobsReach1108cGameTests implements FabricGameTest {
 	private static final BlockPos BLOCK = new BlockPos(8, 2, 8);
 
 	/** Four Florists exactly 48 blocks off along each side count 4; four more at 49 add nothing. */
-	//$ gametest_ticks_batch AREA '200' '"qaRandomJobsReach48"'
-	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaRandomJobsReach48")
+	//$ gametest_ticks_batch AREA '600' '"qaRandomJobsReach48"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qaRandomJobsReach48")
 	public void floristsFortyEightBlocksOffCountAndFortyNineDoNot(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		List<Villager> spawned = new ArrayList<>();
@@ -47,36 +47,56 @@ public class QaRandomJobsReach1108cGameTests implements FabricGameTest {
 				}
 			}
 		}
-		boolean[] started = {false};
-		helper.onEachTick(() -> {
-			if (started[0] || !forced.stream().allMatch(c -> level.areEntitiesLoaded(c.toLong()))) {
-				return; // the forced chunks load over a few ticks
-			}
-			started[0] = true;
-			for (int[] side : sides) {
-				spawned.add(still(helper, at.offset(side[0] * RandomJobs.RADIUS, 0, side[1] * RandomJobs.RADIUS), florist));
-			}
-			Villager drawer = still(helper, at.offset(1, 0, 1), VillagerProfession.FARMER);
-			spawned.add(drawer);
-			spawned.add(still(helper, at.offset(2, 0, 1), VillagerProfession.NONE));
-			helper.runAfterDelay(1, () -> {
-				Map<VillagerProfession, Integer> near = RandomJobs.counts(level, at, drawer, jobs);
+		// The chunks' entities load on a file thread, in real time, and the test server never rests between ticks: in a
+		// warmed-up full run 200 ticks went by in 52 ms (CI run 43031618226), before the last chunk's entities were in,
+		// and the test timed out with nothing said (B1092, B1200). So every tick still waiting gives the load 5 ms of real
+		// time (the server's own tasks run meanwhile), and a load that never comes says which chunks.
+		long[] waited = {0, 0}; // ticks, milliseconds
+		List<Villager> drawer = new ArrayList<>();
+		helper.startSequence()
+			.thenWaitUntil(() -> {
+				if (!notLoaded(level, forced).isEmpty()) {
+					long until = System.nanoTime() + 5_000_000L;
+					level.getServer().managedBlock(() -> System.nanoTime() >= until);
+					waited[0]++;
+					waited[1] += 5;
+				}
+				List<net.minecraft.world.level.ChunkPos> missing = notLoaded(level, forced);
+				helper.assertTrue(missing.isEmpty(), "setup: the entities of " + missing.size() + " of the " + forced.size() + " forced chunks 48 and 49 blocks off never loaded: "
+					+ missing + " (waited " + waited[0] + " ticks, " + waited[1] + " ms)");
+			})
+			.thenExecute(() -> {
+				for (int[] side : sides) {
+					spawned.add(still(helper, at.offset(side[0] * RandomJobs.RADIUS, 0, side[1] * RandomJobs.RADIUS), florist));
+				}
+				drawer.add(still(helper, at.offset(1, 0, 1), VillagerProfession.FARMER));
+				spawned.add(drawer.get(0));
+				spawned.add(still(helper, at.offset(2, 0, 1), VillagerProfession.NONE));
+			})
+			.thenIdle(1)
+			.thenExecute(() -> {
+				Map<VillagerProfession, Integer> near = RandomJobs.counts(level, at, drawer.get(0), jobs);
 				helper.assertTrue(near.getOrDefault(florist, 0) == 4, "Florists 48 blocks off on each side counted: " + near.getOrDefault(florist, 0) + " (expected 4); "
 					+ spawned.stream().map(v -> v.blockPosition().subtract(at) + (level.getEntity(v.getUUID()) == null ? " not in the level" : "")).toList());
 				helper.assertTrue(near.getOrDefault(VillagerProfession.FARMER, 0) == 0, "the drawing villager counted himself: " + near);
 				for (int[] side : sides) {
 					spawned.add(still(helper, at.offset(side[0] * (RandomJobs.RADIUS + 1), 0, side[1] * (RandomJobs.RADIUS + 1)), florist));
 				}
-				helper.runAfterDelay(1, () -> {
-					Map<VillagerProfession, Integer> again = RandomJobs.counts(level, at, drawer, jobs);
-					long seen = spawned.stream().filter(v -> level.getEntity(v.getUUID()) != null).count();
-					helper.assertTrue(seen == spawned.size(), "setup: only " + seen + " of " + spawned.size() + " villagers are in the level");
-					helper.assertTrue(again.getOrDefault(florist, 0) == 4, "Florists 49 blocks off were counted too: " + again.getOrDefault(florist, 0) + " (expected 4)");
-					spawned.forEach(Villager::discard);
-					helper.succeed();
-				});
-			});
-		});
+			})
+			.thenIdle(1)
+			.thenExecute(() -> {
+				Map<VillagerProfession, Integer> again = RandomJobs.counts(level, at, drawer.get(0), jobs);
+				long seen = spawned.stream().filter(v -> level.getEntity(v.getUUID()) != null).count();
+				helper.assertTrue(seen == spawned.size(), "setup: only " + seen + " of " + spawned.size() + " villagers are in the level");
+				helper.assertTrue(again.getOrDefault(florist, 0) == 4, "Florists 49 blocks off were counted too: " + again.getOrDefault(florist, 0) + " (expected 4)");
+				spawned.forEach(Villager::discard);
+			})
+			.thenSucceed();
+	}
+
+	/** The chunks of {@code chunks} whose entities aren't loaded (a villager put there is in no entity search). */
+	private static List<net.minecraft.world.level.ChunkPos> notLoaded(net.minecraft.server.level.ServerLevel level, java.util.Set<net.minecraft.world.level.ChunkPos> chunks) {
+		return chunks.stream().filter(c -> !level.areEntitiesLoaded(c.toLong())).toList();
 	}
 
 	/** A NoAI villager of {@code job} standing on the middle of the block {@code abs} (an absolute position). */

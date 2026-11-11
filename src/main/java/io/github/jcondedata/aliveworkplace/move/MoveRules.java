@@ -29,7 +29,8 @@ import org.jetbrains.annotations.Nullable;
  * village ({@link VillageProtection#keeper}, the mod's own claims: operators and the owner's friends are let in); the
  * Village Hall's own building, or one that holds any other village's Hall (B1161: the Mover would carry it away); a
  * Wonder (or a part of one); and a building with a build site still going on it (an upgrade, a repair or a build
- * overlapping it), since the Builder's site would lose its building under it.
+ * overlapping it), since the Builder's site would lose its building under it. A move confirmed before the builders
+ * started on it waits until they are done ({@link #underBuilders}, B1182).
  */
 public final class MoveRules {
 	/** Whether buildings may be moved at all (config {@code moveBuildings}). Off: the Move page refuses every one. */
@@ -63,7 +64,19 @@ public final class MoveRules {
 		if (WonderPlans.isWonder(f.structure())) {
 			return Component.translatable("message.aliveworkplace.move.refused.wonder");
 		}
-		for (BuildSite site : sites.all()) {
+		if (underBuilders(level, from, box)) {
+			return Component.translatable("message.aliveworkplace.move.refused.building");
+		}
+		return null;
+	}
+
+	/**
+	 * Whether a build site is still going on the building at {@code from} (whose box is {@code box}): one at its own corner
+	 * or one overlapping it (an upgrade, a repair or a build). The Move page refuses it, and a move confirmed before the
+	 * builders started waits while it lasts ({@link MoveSites#begin}, B1182).
+	 */
+	public static boolean underBuilders(ServerLevel level, BlockPos from, BoundingBox box) {
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
 			if (site.isDone() || !site.placement().dimension().equals(Ids.of(level.dimension()))) {
 				continue;
 			}
@@ -71,10 +84,18 @@ public final class MoveRules {
 			boolean over = same || BlueprintLibrary.get(level, site.structure())
 				.map(b -> BlueprintOutline.bounds(site.placement(), b.size()).intersects(box)).orElse(false);
 			if (over) {
-				return Component.translatable("message.aliveworkplace.move.refused.building");
+				return true;
 			}
 		}
-		return null;
+		return false;
+	}
+
+	/** {@link #underBuilders(ServerLevel, BlockPos, BoundingBox)} for the village's finished building {@code f}. */
+	public static boolean underBuilders(ServerLevel level, BuildSiteManager.Finished f) {
+		BlockPos from = f.placement().origin();
+		BoundingBox box = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+			.orElse(new BoundingBox(from));
+		return underBuilders(level, from, box);
 	}
 
 	/**

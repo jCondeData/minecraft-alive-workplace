@@ -47,6 +47,11 @@ public class MinerPickaxeGameTests implements FabricGameTest {
 
 	private static Setup setup(GameTestHelper helper, BlockPos min, BlockPos max, ServerPlayer owner, ItemStack... chest) {
 		Leftovers.clear(helper);
+		// B1207: a Storehouse or hall an earlier batch's test left nearby makes its chests the miner's village store, and
+		// he takes the sticks left in them: the worn-out test's miner used anUpgradeIsOnlyEverABetterPickaxe's 2 leftover
+		// sticks (39 blocks off) and never cut his own planks
+		Leftovers.storehouses(helper);
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());

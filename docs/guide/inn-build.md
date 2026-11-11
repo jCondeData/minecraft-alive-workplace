@@ -11,7 +11,7 @@ categories: Builds
 related: jobs-services.md, terrace-build.md, ranch-build.md
 ```
 
-A big timber inn: a tavern on the ground floor with a **Shop Counter**, barrels, a cauldron and a brewing stand, and three guest rooms upstairs with six beds.
+A big timber inn: a stone taproom on the ground floor with a bar down one side (the **Shop Counter** in its middle and room behind it for the innkeeper), casks and shelves behind the bar, a kitchen corner, a fire in the back wall and two tables, and stairs up to three guest rooms with six beds.
 
 ## Getting the blueprint
 

@@ -273,10 +273,9 @@ public final class LegendGuests {
 	public static final List<String> PLACES = List.of("inn", "hall", "market", "festival", "chapel");
 
 	/** Whether {@code place} rolls for a guest on {@code day} in the village round {@code hall}, as far as can be told ahead. */
-	static boolean rollsOn(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, String place, long day) {
+	public static boolean rollsOn(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, String place, long day) {
 		return switch (place) {
-			case "inn" -> io.github.jcondedata.aliveworkplace.hall.VillageAdvice.poiCount(level, hall,
-				io.github.jcondedata.aliveworkplace.registry.ModVillagers.INN_COUNTER_POI) > 0;
+			case "inn" -> !io.github.jcondedata.aliveworkplace.inn.Innkeepers.counters(level, hall, VillageHalls.RADIUS).isEmpty();
 			case "market" -> io.github.jcondedata.aliveworkplace.hall.MarketDays.ENABLED && io.github.jcondedata.aliveworkplace.hall.MarketDays.isMarketDay(hall, day)
 				&& io.github.jcondedata.aliveworkplace.hall.MarketDays.square(level, hall).isPresent();
 			case "festival" -> io.github.jcondedata.aliveworkplace.hall.Festivals.nextDay(level, hall, entity) == day;

@@ -68,7 +68,7 @@ first to pick another spot"); call it off, then pick again. Whoever confirmed th
 ![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
 
 **The residents move too (45.4).** Whoever sleeps or works in the building keeps it. While it's away, those with a bed
-in it sleep in a free bed at the village's inn (round an Inn Counter), or else the free bed nearest the Village Hall;
+in it sleep in a free bed at the village's inn (round an Innkeeper's Shop Counter or an old Inn Counter), or else the free bed nearest the Village Hall;
 with none free they have no bed until theirs is back. A worker keeps their job while their workstation is packed. The
 moment the Mover puts a bed or a workstation up at the new spot it's theirs again: nobody else can take it, the bed at
 the inn is given back, and the Hall's People page, the census, their home (the moved building), the job-status cards
@@ -166,7 +166,7 @@ old spot, which may be empty by then (B1181), and Confirm is refused, so the sav
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on
 the site as a `Resident`: their bed and workstation relative to the box's lowest corner. A worker with no experience
 gets 1 (as `Jobs.employ` does), so vanilla's profession reset doesn't take the job while the block is packed. One with a
-bed moves into a stay bed (`MoveResidents.stayBed`: the nearest free bed round each Inn Counter in the village, nearest the hall
+bed moves into a stay bed (`MoveResidents.stayBed`: the nearest free bed round each inn counter in the village (`Innkeepers.counters`: an Inn Counter, or a Shop Counter an Innkeeper works, never a shop's; B1177), nearest the hall
 first, else the free bed nearest the hall, never a wagon bed or one in the old or new box) through `HallBeds.moveIn`,
 which lets their own bed go. When `MoveSite.put` puts a block up (at the new spot, or back at the old one on a cancel),
 `MoveResidents.placed` runs: a Builder's build whose bench was that block's other position follows it

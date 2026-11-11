@@ -208,6 +208,10 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   a raid (no man near to guard it), an old camp within 24 blocks of a standing lair (on its fire, exactly 24 east or
   north) is not swept and one 25 blocks off is; a bounty's hideout keeps its camp the same way, by its spot or its
   origin within 24 blocks, and once the bounty is gone the camp goes. Four hand mutants on those checks killed.
+- QA (lane D, 2026-11-11): `QaCampInUse1111dGameTests`: a running Bandit King story's camp keeps an old camp from the
+  sweep the same way, its band away: the story's record of the camp on the fire, 24 blocks off by its spot, or 24 off
+  by its built origin, and the camp stays; 25 blocks from both and it is swept. Kills `CampCleanup.inUse`'s story check
+  with `||` turned to `&&`.
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no

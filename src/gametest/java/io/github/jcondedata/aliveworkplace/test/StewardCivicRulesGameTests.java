@@ -235,13 +235,16 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 	public void darkBedsCountsBedsWithoutLight(GameTestHelper helper) {
 		BlockPos hall = hall(helper, VillageRanks.Rank.HAMLET);
 		Leftovers.beds(helper, hall); // the hall's reach goes past the area: no earlier batch's bed counts here (B775)
+		Leftovers.lights(helper); // nor does an earlier batch's light by the area reach these beds (B1191: a bandit camp's fire)
 		bed(helper, 3, 18);
 		bed(helper, 14, 18); // 13 blocks from the glowstone below: still dark
-		helper.runAfterDelay(3, () -> {
-			darkBedsHold(helper, hall, true, 2);
-			helper.setBlock(new BlockPos(3, 2, 21), Blocks.GLOWSTONE);
-			helper.succeedWhen(() -> darkBedsHold(helper, hall, false, 1)); // once the light has spread
-		});
+		// The light engine runs on its own thread: a light just taken away fades some ticks later, and the glowstone's
+		// light takes as long to spread. Each count is waited for; one that never comes fails with what was counted.
+		helper.startSequence()
+			.thenWaitUntil(() -> darkBedsHold(helper, hall, true, 2))
+			.thenExecute(() -> helper.setBlock(new BlockPos(3, 2, 21), Blocks.GLOWSTONE))
+			.thenWaitUntil(() -> darkBedsHold(helper, hall, false, 1))
+			.thenSucceed();
 	}
 
 	/** {@link #holds} for {@code dark_beds}, saying which beds it counted and how lit each one is when it fails (B775). */
@@ -257,7 +260,9 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 					VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 				.map(p -> p.subtract(origin).toShortString() + " " + level.getBlockState(p).getBlock().getName().getString()).toList();
 			helper.fail(json + ": expected " + (held ? "held" : "not held") + " with " + value + ", got " + c.held() + " with " + c.value()
-				+ "; dark beds seen " + seen + ", every home in reach " + homes + ", radius " + VillageHalls.RADIUS);
+				+ "; dark beds seen " + seen + ", every home in reach " + homes + ", radius " + VillageHalls.RADIUS
+				+ ", lights within 15 blocks of the area " + Leftovers.lightsNear(helper).stream().map(p -> p.subtract(origin).toShortString() + " "
+					+ level.getBlockState(p).getBlock().getName().getString()).toList());
 		}
 	}
 
@@ -410,13 +415,16 @@ public class StewardCivicRulesGameTests implements FabricGameTest {
 	public void twoDarkBedsGetAStreetLampByTheDarkestBed(GameTestHelper helper) {
 		BlockPos hall = hall(helper, VillageRanks.Rank.HAMLET);
 		Leftovers.beds(helper, hall); // the hall's reach goes past the area: no earlier batch's bed counts here (B775)
+		Leftovers.lights(helper); // nor does an earlier batch's light by the area reach these beds (B1191: a bandit camp's fire)
 		BlockPos lit = bed(helper, 3, 17);
 		helper.setBlock(new BlockPos(3, 2, 19), Blocks.GLOWSTONE);
-		bed(helper, 12, 17); // far enough from the glowstone to stay dark
+		BlockPos unlit = bed(helper, 12, 17); // far enough from the glowstone to stay dark
 		// The light engine runs on its own thread: on a busy machine the glowstone's light can reach the bed later than
 		// 3 ticks after it was set (CI run 37289855963), and until then that bed counts as a second dark one.
 		helper.startSequence().thenIdle(3).thenWaitUntil(() -> helper.assertTrue(
 			helper.getLevel().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, lit) >= 8, "the glowstone's light hasn't reached the lit bed yet"))
+		.thenWaitUntil(() -> helper.assertTrue(helper.getLevel().getBrightness(net.minecraft.world.level.LightLayer.BLOCK, unlit) < 8,
+			"a light taken away by the area still shines on the far bed (B1191)"))
 		.thenExecute(() -> {
 			absent(helper, wishes(helper, hall), "street_lamps"); // one bed in the dark
 			BlockPos dark = bed(helper, 18, 17);

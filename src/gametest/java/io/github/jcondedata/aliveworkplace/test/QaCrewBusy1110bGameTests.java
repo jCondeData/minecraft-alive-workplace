@@ -277,7 +277,8 @@ public class QaCrewBusy1110bGameTests implements net.fabricmc.fabric.api.gametes
 	/**
 	 * B181 3 and conservation: every one of the material of the structure's last step (the roof, where the lead used to
 	 * walk down to the chests for its last slab) is in the helper's bag, none in the chest or barrels; the rest is
-	 * exactly the material list. The lead, needing it for its own steps, gets it from the helper, and the house is
+	 * exactly the material list. The lead, needing it for its own steps, gets it from the helper (if the helper lays
+	 * every one itself before the lead's cursor comes to one, the lead never needs it: B1199), and the house is
 	 * finished from exactly the list: nothing of any material is left anywhere (so nothing was made from nothing) and
 	 * none is missing (else the house couldn't be finished), with no step skipped.
 	 */
@@ -292,6 +293,10 @@ public class QaCrewBusy1110bGameTests implements net.fabricmc.fabric.api.gametes
 		int misfit = ModAttachments.BUILDER_BAG.getOrCreate(c.mate).addAll(roof, count);
 		helper.assertTrue(misfit == 0, "setup: " + misfit + " " + roof + " didn't fit the helper's bag");
 		int[] leadGot = {-1, -1};
+		// B1199: what became of the helper's stock: laid by the helper itself before the lead had any, or passed to the
+		// lead; and the roof steps the lead's cursor came to unbuilt with the helper not on them (the lead needed one).
+		int[] trace = {count, 0, 0, 0}; // the helper's count last tick, laid by the helper, such steps, ticks on them
+		BlockPos[] leadOn = {null};
 		helper.onEachTick(() -> {
 			helper.setDayTime(3000);
 			watchClaims(c);
@@ -299,16 +304,38 @@ public class QaCrewBusy1110bGameTests implements net.fabricmc.fabric.api.gametes
 				leadGot[0] = (int) helper.getTick();
 				leadGot[1] = (int) Math.round(c.lead.distanceTo(c.mate));
 			}
+			int mateHas = c.mate.isAlive() ? ModAttachments.BUILDER_BAG.getOrCreate(c.mate).count(roof) + c.mate.getInventory().countItem(roof) : 0;
+			if (mateHas < trace[0] && leadGot[0] < 0) {
+				trace[1] += trace[0] - mateHas;
+			}
+			trace[0] = mateHas;
+			BuildSite site = c.site();
+			BuildPlan plan = site == null ? null : site.plan(c.level);
+			BuildPlan.Step at = plan == null || site.stage() != BuildPlan.Stage.STRUCTURE ? null : site.current(plan);
+			if (at != null && at.state().getBlock().asItem() == roof && !at.pos().equals(site.claim(c.mate.getUUID()))
+				&& !io.github.jcondedata.aliveworkplace.build.MaterialRules.matches(c.level.getBlockState(at.pos()), at.state())) {
+				if (!at.pos().equals(leadOn[0])) {
+					trace[2]++;
+					leadOn[0] = at.pos().immutable();
+				}
+				trace[3]++;
+			}
 		});
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, c);
 			Map<Item, Integer> left = leftOver(helper, c);
 			helper.assertTrue(left.isEmpty(), "materials left over after building from exactly the list (made from nothing): " + left);
 			helper.assertTrue(c.site().skipped() == 0, "steps were skipped: " + c.where());
-			helper.assertTrue(leadGot[0] >= 0, "the lead never had any " + roof + ", which only the helper carried: " + c.where());
+			String roofTrace = "; the helper laid " + trace[1] + " of " + count + " itself, the lead's cursor came to " + trace[2]
+				+ " unbuilt " + roof + " steps the helper wasn't on (" + trace[3] + " ticks)";
+			// B1199: the lead needs it only when its cursor comes to such a step before the helper has laid them all; a
+			// helper a little ahead of a slower lead lays every one itself (CI: 2 runs of many), the lead then never has any
+			helper.assertTrue(trace[2] == 0 || leadGot[0] >= 0, "the lead needed " + roof + " but never got any from the helper: " + c.where() + roofTrace);
+			helper.assertTrue(leadGot[0] >= 0 || trace[1] == count, "the lead never had any " + roof + ", which only the helper carried, and the helper "
+				+ "didn't lay them all: " + c.where() + roofTrace);
 			helper.assertTrue(c.drops == 0, "the helper dropped " + c.drops + " claims still to build once the lead's cursor reached them: " + c.dropped);
-			LOGGER.info("qa 1110b crew only helper has: {} x{}, the lead first had it at tick {}, {} blocks from the helper; placed lead {} helper {}; {}",
-				roof, count, leadGot[0], leadGot[1], c.site().placedBy(c.lead.getUUID(), false), c.site().placedBy(c.mate.getUUID(), false), c.where());
+			LOGGER.info("qa 1110b crew only helper has: {} x{}, the lead first had it at tick {}, {} blocks from the helper{}; placed lead {} helper {}; {}",
+				roof, count, leadGot[0], leadGot[1], roofTrace, c.site().placedBy(c.lead.getUUID(), false), c.site().placedBy(c.mate.getUUID(), false), c.where());
 		});
 	}
 

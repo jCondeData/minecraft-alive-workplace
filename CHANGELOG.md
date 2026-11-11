@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.154.0 — 2026-11-10
+
 ### Fixed
 
 - With Cobblemon: a battle against a villager trainer no longer freezes for good when the battle refuses the trainer's choice (seen when a trainer tried to send in a Pokémon that had already fainted: nothing happened any more and the battle never ended). The trainer now answers again with a move or switch the battle accepts, and the battle goes on.

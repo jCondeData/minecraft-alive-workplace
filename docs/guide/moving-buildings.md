@@ -18,9 +18,17 @@ it. The heavy lifting is done by the [Mover](mover.md); this page is about choos
 
 ## Picking a building and a spot
 
-Open the Village Hall and click the **Move** tab (a piston). It lists the village's finished buildings. Click one and
-a map opens: click where it should go, turn it with **Rotate**, and watch the glowing outline in the world (green when
-the spot fits, red when it doesn't). **Confirm** saves the move, and your Mover gets to work.
+Open the Village Hall and click the **Move** tab (a piston). The page walks you through three steps, shown across
+its top:
+
+1. **Pick a building.** The list shows the village's finished buildings and where each stands from the Hall.
+2. **Pick a new spot.** A map of your village opens: the building where it stands now in yellow, the Hall's bell, the
+   roads and the other buildings, named. Click the map where it should go. The new spot shows green when it fits and red
+   when it doesn't, with the reason beside the map, and a glowing outline marks it in the world too. Scroll over the
+   map to zoom out to the whole village. **Rotate** turns
+   it; the gold edge is its front.
+3. **Confirm.** Once the spot fits, **Confirm the move** lights up. The page tells you what the Mover will do and
+   about how long it takes. **Cancel** leaves the building where it is.
 
 A spot is refused, with the reason on the page, when the building would:
 

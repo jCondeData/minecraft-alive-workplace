@@ -82,15 +82,28 @@ public class QaTrainerFormsVerify1110dCompatTests implements FabricGameTest {
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void theWormadamMastersWholeTeamHoldsFor25Builds(GameTestHelper helper) {
-		List<Pokemon> team = CobblemonTrainers.team(WORMADAM_MASTER, 5, false);
-		Pokemon wormadam = team.stream().filter(p -> p.getSpecies().getName().equalsIgnoreCase("wormadam")).findFirst().orElse(null);
-		helper.assertTrue(wormadam != null, "B1122's Master has no Wormadam any more: " + fulls(team));
+		// B1122's Master has a Wormadam on the pack's Cobblemon; another Cobblemon (1.8) draws its teams from other pools,
+		// so then the first Master that fields one stands in for it (lane-d-1111-1007).
+		UUID master = WORMADAM_MASTER;
+		List<Pokemon> team = CobblemonTrainers.team(master, 5, false);
+		Pokemon wormadam = wormadam(team);
+		for (int n = 0; wormadam == null && n < 2000; n++) {
+			master = UUID.nameUUIDFromBytes(("qa1111d-wormadam-master-" + n).getBytes());
+			team = CobblemonTrainers.team(master, 5, false);
+			wormadam = wormadam(team);
+		}
+		helper.assertTrue(wormadam != null, "no Master of 2000 has a Wormadam, not even B1122's: " + fulls(team));
 		String cloak = wormadam.getForm().getName().toLowerCase();
 		helper.assertTrue(Set.of("plant", "sandy", "trash").contains(cloak) || cloak.equals("normal"),
 			"Wormadam wears no known cloak: " + full(wormadam));
-		sameEveryTime(helper, "B1122's Master", 25, () -> CobblemonTrainers.team(WORMADAM_MASTER, 5, false));
-		sameEveryTime(helper, "B1122's Master with a Mega Stone", 25, () -> CobblemonTrainers.team(WORMADAM_MASTER, 5, true));
+		UUID trainer = master;
+		sameEveryTime(helper, "Wormadam Master " + trainer, 25, () -> CobblemonTrainers.team(trainer, 5, false));
+		sameEveryTime(helper, "Wormadam Master " + trainer + " with a Mega Stone", 25, () -> CobblemonTrainers.team(trainer, 5, true));
 		helper.succeed();
+	}
+
+	static Pokemon wormadam(List<Pokemon> team) {
+		return team.stream().filter(p -> p.getSpecies().getName().equalsIgnoreCase("wormadam")).findFirst().orElse(null);
 	}
 
 	/**

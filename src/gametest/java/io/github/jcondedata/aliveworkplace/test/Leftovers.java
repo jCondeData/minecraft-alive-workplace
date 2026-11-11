@@ -281,6 +281,34 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every container block (chest, furnace, hopper, brewing stand: any block entity that holds items) outside
+	 * the test area within {@code margin} blocks of it, for a test that counts every item held round its area. One an
+	 * earlier batch's test left there is never cleared, and it can change what it holds by itself: QaMoverBelongings1110c's
+	 * furnace (8 raw iron on coal) 15 blocks north of the crew soak's area smelted its iron during the soak, which
+	 * counted "iron_ingot +8, raw_iron -8" (2026-11-11). Only for tests alone in their batch.
+	 */
+	static void containers(GameTestHelper helper, int margin) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB area = helper.getBounds();
+		AABB around = area.inflate(margin);
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		for (int cx = ((int) Math.floor(around.minX)) >> 4; cx <= ((int) Math.floor(around.maxX)) >> 4; cx++) {
+			for (int cz = ((int) Math.floor(around.minZ)) >> 4; cz <= ((int) Math.floor(around.maxZ)) >> 4; cz++) {
+				for (net.minecraft.world.level.block.entity.BlockEntity be : level.getChunk(cx, cz).getBlockEntities().values()) {
+					net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atCenterOf(be.getBlockPos());
+					if (be instanceof net.minecraft.world.Container && around.contains(at) && !area.contains(at)) {
+						found.add(be.getBlockPos().immutable());
+					}
+				}
+			}
+		}
+		for (net.minecraft.core.BlockPos p : found) {
+			level.removeBlockEntity(p);
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
+		}
+	}
+
+	/**
 	 * Removes every grave outside the test area that a village here would reach: an Undertaker's own search (twice a
 	 * village's radius round its hall) plus half the area's diagonal. A grave is a block, so one an earlier batch's test
 	 * left outside its own area is never cleared: B222's tests counted "2 graves" round their area in a mixed run (B482).

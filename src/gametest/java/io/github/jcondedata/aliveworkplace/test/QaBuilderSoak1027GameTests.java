@@ -71,12 +71,18 @@ public class QaBuilderSoak1027GameTests {
 
 	// ------------------------------------------------------------------------------------------------ shared helpers
 
+	/** How far round the area {@link #heldEverywhere} counts. */
+	private static final int HELD_MARGIN = 16;
+
 	private static ServerLevel rules(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
 		Leftovers.halls(helper);
 		Leftovers.buildSites(helper);
 		Leftovers.finished(helper);
+		// every container round the area is counted (heldEverywhere): an earlier batch's furnace there smelted its raw
+		// iron during the soak (2026-11-11), so only this test's own containers stay
+		Leftovers.containers(helper, HELD_MARGIN);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		boolean free = level.getGameRules().getBoolean(ModGameRules.FREE_MATERIALS);
@@ -181,7 +187,7 @@ public class QaBuilderSoak1027GameTests {
 	 */
 	private static Map<Item, Integer> heldEverywhere(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		AABB box = helper.getBounds().inflate(16);
+		AABB box = helper.getBounds().inflate(HELD_MARGIN);
 		Map<Item, Integer> out = new TreeMap<>(QaBuilderSoak1027GameTests::byId);
 		BlockPos from = BlockPos.containing(box.minX, box.minY, box.minZ);
 		BlockPos to = BlockPos.containing(box.maxX, box.maxY, box.maxZ);

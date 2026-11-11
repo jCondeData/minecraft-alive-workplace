@@ -53,21 +53,23 @@ public class FurnishedHomesCompatTests implements FabricGameTest {
 	private static Map<FurnitureSpot.Kind, String> handcraftedFirst() {
 		Map<FurnitureSpot.Kind, String> out = new EnumMap<>(FurnitureSpot.Kind.class);
 		for (FurnitureSpot.Kind kind : List.of(FurnitureSpot.Kind.CHAIR, FurnitureSpot.Kind.TABLE, FurnitureSpot.Kind.BED,
-			FurnitureSpot.Kind.NIGHTSTAND, FurnitureSpot.Kind.COUCH, FurnitureSpot.Kind.SHELF, FurnitureSpot.Kind.CROCKERY)) {
+			FurnitureSpot.Kind.NIGHTSTAND, FurnitureSpot.Kind.COUCH, FurnitureSpot.Kind.SHELF, FurnitureSpot.Kind.CROCKERY,
+			FurnitureSpot.Kind.COUNTER)) { // (the Inn's bar and kitchen worktops, since its 2026-11-11 redraw)
 			out.put(kind, "handcrafted");
 		}
-		for (FurnitureSpot.Kind kind : List.of(FurnitureSpot.Kind.LAMP, FurnitureSpot.Kind.PICTURE, FurnitureSpot.Kind.BLINDS)) {
+		for (FurnitureSpot.Kind kind : List.of(FurnitureSpot.Kind.LAMP, FurnitureSpot.Kind.PICTURE, FurnitureSpot.Kind.BLINDS,
+			FurnitureSpot.Kind.HANGING_POT)) {
 			out.put(kind, "beautify");
 		}
 		out.put(FurnitureSpot.Kind.CLOCK, "minecraft");
 		return out;
 	}
 
-	/** With CobbleFurnies first: its seats, tables, nightstands, lamps and curtains; Handcrafted's beds and shelves. */
+	/** With CobbleFurnies first: its seats, tables, nightstands, counters, lamps and curtains; Handcrafted's beds and shelves. */
 	private static Map<FurnitureSpot.Kind, String> cobbleFurniesFirst() {
 		Map<FurnitureSpot.Kind, String> out = handcraftedFirst();
 		for (FurnitureSpot.Kind kind : List.of(FurnitureSpot.Kind.CHAIR, FurnitureSpot.Kind.TABLE, FurnitureSpot.Kind.NIGHTSTAND,
-			FurnitureSpot.Kind.COUCH, FurnitureSpot.Kind.LAMP, FurnitureSpot.Kind.BLINDS)) {
+			FurnitureSpot.Kind.COUCH, FurnitureSpot.Kind.LAMP, FurnitureSpot.Kind.BLINDS, FurnitureSpot.Kind.COUNTER)) {
 			out.put(kind, "cobblefurnies");
 		}
 		return out;

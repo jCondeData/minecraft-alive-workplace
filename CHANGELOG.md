@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Changed
 
+- The Inn is redrawn after a play-through: a real taproom with a dark oak bar down the side and room behind it for the innkeeper to work the Shop Counter, a back bar of casks and shelves, a kitchen corner, a hearth in the back wall, two tables with chairs and a staircase up to three guest rooms with six beds. Every piece of furniture is a furniture spot (it becomes a furniture mod's piece when one is installed), no shutter or flower box hangs in the air (the ground windows sit on a stone skirt, the upper ones on a moulding under the jetty), and the banner on its post now faces the street. The Inn II and III get the same rooms; builds already standing can be refreshed to the new look from the Village Hall.
 - The Village Hall's Move page walks you through it: three steps across the top (pick a building, pick a new spot, confirm), a map of the whole village with the building where it stands now and where it would go, the Hall, the roads and the other buildings named, labeled Rotate, Confirm and Cancel buttons, and what the Mover will do and about how long (B1163, 45.2a).
 ### Fixed
 

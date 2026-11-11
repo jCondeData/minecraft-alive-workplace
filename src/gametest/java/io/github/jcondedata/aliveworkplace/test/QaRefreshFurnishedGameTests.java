@@ -186,8 +186,12 @@ public class QaRefreshFurnishedGameTests implements FabricGameTest {
 			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					s.level().setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-					if (step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock) {
-						BlockPos other = step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()));
+					// The other half of a two-block block goes up with it, as the builder places it: a bed's other half, and a
+					// door's top with its bottom (MaterialRules.secondaryPos; the redrawn Inn's guest-room doors are new)
+					BlockPos other = step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock
+						? step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()))
+						: io.github.jcondedata.aliveworkplace.build.MaterialRules.secondaryPos(step.pos(), step.state());
+					if (other != null) {
 						if (now.containsKey(other)) {
 							s.level().setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 						}

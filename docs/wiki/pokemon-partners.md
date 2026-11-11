@@ -58,6 +58,13 @@ loads.
 **Careful with your Pokémon.** A pastured Pokémon is never untethered from its pasture. A show never touches a
 Pokémon that is in battle, ridden or on a shoulder, nor its held item, friendship, moves or stats.
 
+**Fighting beside the guard.** When a guard lands a hit on one of their foes (any monster; a creeper only once the
+guard carries a bow in the other hand), each Fighting or Dragon Pokémon pastured near the guard's post that can see the
+foe from within 20 blocks follows up with a move: Cobblemon's own animation and sound, a line of sparks from the
+Pokémon, and 2 damage at level 1, 5 at level 50, 8 at level 100. The damage counts as the guard's, so the monster
+turns on the guard, never the Pokémon. Each Pokémon moves at most once a second. A hit by anyone who isn't a guard,
+or on an animal, brings no move.
+
 **Budget.** One show per worker every 200 ticks, at most 6 running per dimension, and none with no player within 48
 blocks.
 
@@ -103,7 +110,7 @@ never twice the same day). A show's carried display is a temporary entity tagged
 GameTests: `PartnerShowsGameTests` (9: every show file loads, each type carries only its own materials, a malformed
 file says what is wrong, a cut-off show's display is removed), `QaPartnerShowsGameTests`, `QaPartnerShowTableGameTests` (every job and cue's types are the roadmap's), `PaceGameTests` (10). With
 Cobblemon: `PartnerShowsCompatTests` (2), `PartnersAtWorkCompatTests` (10), `PartnersForgeCompatTests` (11),
-`PartnersAllCompatTests` (12), `QaPartnerShowBudgetCompatTests` (3: the 10 s wait, 6 at once, 48 blocks, each from both sides), `PaceCompatTests.aSifterWithTwoPartnersTakesSeventyPercent`.
+`PartnersAllCompatTests` (12), `QaPartnerShowBudgetCompatTests` (3: the 10 s wait, 6 at once, 48 blocks, each from both sides), `PaceCompatTests.aSifterWithTwoPartnersTakesSeventyPercent`. The guard's partners: `PastureCompatTests.pasturedPokemonFightBesideTheGuard`, `QaGuardPartnersCompatTests` (3: an animal, a wall, the 1 s cooldown), `QaGuardPartners1110dCompatTests` (5: a Dragon type, a level-50 move of 5, only a guard's hit, 20 blocks from both sides, a creeper with and without a bow).
 
 Showcase scenes: `partners_engine`, `partners_land` (building and the land), `partners_forge` (post, forge and
 kitchen), `partners_all` (everyone else), `pace` (a builder past the cap), `guard_pokemon`.

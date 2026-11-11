@@ -6,11 +6,17 @@ import com.cobblemon.mod.common.api.battles.model.actor.ActorType;
 import com.cobblemon.mod.common.api.battles.model.actor.EntityBackedBattleActor;
 import com.cobblemon.mod.common.api.battles.model.ai.BattleAI;
 import com.cobblemon.mod.common.api.net.NetworkPacket;
+import com.cobblemon.mod.common.battles.DefaultActionResponse;
+import com.cobblemon.mod.common.battles.ShowdownActionRequest;
+import com.cobblemon.mod.common.battles.ShowdownActionResponse;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
 import com.cobblemon.mod.common.entity.pokemon.PokemonEntity;
 import com.cobblemon.mod.common.net.messages.client.battle.BattleEndPacket;
+import com.cobblemon.mod.common.net.messages.client.battle.BattleMadeInvalidChoicePacket;
+import com.cobblemon.mod.common.net.messages.client.battle.BattleMakeChoicePacket;
 import com.cobblemon.mod.common.util.LocalizationUtilsKt;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.minecraft.network.chat.Component;
@@ -30,6 +36,11 @@ final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBa
 	private final Villager villager;
 	private final String name;
 	private final Vec3 initialPos;
+	// B43: what the battle last asked this trainer, and how often its answer to that was refused.
+	private ShowdownActionRequest asked;
+	private int refused;
+	// Refusals answered before the trainer gives up on a request (a battle never refused twice in testing).
+	static final int MAX_REFUSALS = 3;
 
 	VillagerTrainerActor(Villager villager, String name, List<BattlePokemon> team, BattleAI ai) {
 		super(villager.getUUID(), team, ai);
@@ -73,9 +84,37 @@ final class VillagerTrainerActor extends AIBattleActor implements EntityBackedBa
 		return LocalizationUtilsKt.battleLang("owned_pokemon", getName(), Component.literal(pokemon));
 	}
 
+	// B43: the battle refused this trainer's choice (the AI once switched to a Pokémon the battle counted as fainted).
+	// Cobblemon then waits for the actor to choose again, which a player does on their screen and an AI never did: the
+	// battle stood still for good. The trainer answers the same request with Showdown's own "default" choice, its first
+	// legal move or switch, which can't be refused.
+	private void chooseAgain() {
+		if (asked == null || getBattle().getEnded() || refused >= MAX_REFUSALS) {
+			return;
+		}
+		refused++;
+		if (getRequest() == null) {
+			setRequest(asked); // the battle cleared it when it passed the refused choice on
+		}
+		List<ShowdownActionResponse> choice = new ArrayList<>();
+		int slots = Math.max(asked.getActive() == null ? 0 : asked.getActive().size(), asked.getForceSwitch().size());
+		for (int i = 0; i < slots && i < getActivePokemon().size(); i++) {
+			choice.add(new DefaultActionResponse());
+		}
+		getResponses().clear();
+		setActionResponses(choice);
+	}
+
 	@Override
 	public void sendUpdate(NetworkPacket<?> packet) {
+		if (packet instanceof BattleMakeChoicePacket && getRequest() != null) {
+			asked = getRequest();
+			refused = 0;
+		}
 		super.sendUpdate(packet);
+		if (packet instanceof BattleMadeInvalidChoicePacket) {
+			chooseAgain();
+		}
 		if (packet instanceof BattleEndPacket) {
 			for (BattlePokemon pokemon : getPokemonList()) {
 				PokemonEntity entity = pokemon.getEntity();

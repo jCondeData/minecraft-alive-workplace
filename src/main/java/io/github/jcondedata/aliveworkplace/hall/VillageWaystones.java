@@ -252,15 +252,35 @@ public final class VillageWaystones {
 
 	/**
 	 * Whether caravans and settlers between the villages round {@code from} and {@code to} go by waystone (41.3): Waystones
-	 * installed, {@code villageWaystones} on, and the stone each village raised standing now (broken or missing: they walk).
+	 * installed, {@code villageWaystones} on, both villages still with their hall (a village whose hall is gone is off the
+	 * network, B996; a hall in a chunk that isn't loaded is trusted), and the stone each village raised standing now
+	 * (broken or missing: they walk).
 	 */
 	public static boolean linked(ServerLevel level, BlockPos from, BlockPos to) {
-		return offered() && !from.equals(to) && standing(level, from) && standing(level, to);
+		return offered() && !from.equals(to) && VillageHalls.standsAt(level, from) && VillageHalls.standsAt(level, to)
+			&& standing(level, from) && standing(level, to);
 	}
 
-	/** The villages of this dimension that have raised a waystone (41.3), their halls in no particular order. */
+	/**
+	 * The hall at {@code hall} was broken: its village leaves the network (B996). Only the village's own hall round ever
+	 * took it off, and that round never runs again once the hall is gone, so settlers kept going through its stone.
+	 */
+	public static void hallGone(ServerLevel level, BlockPos hall) {
+		Data.get(level).forget(hall);
+	}
+
+	/**
+	 * The villages of this dimension that have raised a waystone (41.3), their halls in no particular order; one whose hall
+	 * is gone (seen in a loaded chunk) is left out (B996).
+	 */
 	public static List<BlockPos> villages(ServerLevel level) {
-		return Data.get(level).halls();
+		List<BlockPos> out = new ArrayList<>();
+		for (BlockPos hall : Data.get(level).halls()) {
+			if (VillageHalls.standsAt(level, hall)) {
+				out.add(hall);
+			}
+		}
+		return out;
 	}
 
 	/** The mod's teleport sound and particles at the stone of the village round {@code hall}, where it's loaded (41.3). */

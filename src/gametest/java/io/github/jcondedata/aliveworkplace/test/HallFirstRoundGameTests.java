@@ -45,6 +45,11 @@ public class HallFirstRoundGameTests implements FabricGameTest {
 		return Math.floorMod(-(level.getGameTime() + hall.hashCode()), VillageNeeds.CHECK_EVERY);
 	}
 
+	/** Whether a first round seen {@code seen} ticks in was the hall's turn {@code turn} ticks in (seen then or a tick later). */
+	private static boolean atTurn(long seen, int turn) {
+		return seen == turn || seen == turn + 1;
+	}
+
 	/** The waits as the test wants them, put back when it ends. */
 	private static void waits(GameTestHelper helper, int wait, int gap) {
 		int wasWait = VillageHallBlockEntity.FIRST_ROUND_WAIT;
@@ -78,13 +83,15 @@ public class HallFirstRoundGameTests implements FabricGameTest {
 		BlockPos[] spots = {new BlockPos(5, 2, 5), new BlockPos(5, 2, 25), new BlockPos(25, 2, 5), new BlockPos(25, 2, 25)};
 		List<BlockPos> halls = new ArrayList<>();
 		int[] quiet = new int[spots.length];
+		int[] turn = new int[spots.length];
 		for (int i = 0; i < spots.length; i++) {
 			helper.setBlock(spots[i], ModBlocks.VILLAGE_HALL);
 			BlockPos pos = helper.absolutePos(spots[i]);
 			VillageHallBlockEntity hall = restarted(level, pos);
 			helper.assertTrue(hall.awaitingFirstRound() && hall.needs() == null, "a hall read with its chunk waits for its first round");
 			halls.add(pos);
-			quiet[i] = Math.min(wait, ticksToTurn(level, pos));
+			turn[i] = ticksToTurn(level, pos);
+			quiet[i] = Math.min(wait, turn[i]);
 		}
 		BlockPos placedAt = new BlockPos(15, 2, 15);
 		helper.setBlock(placedAt, ModBlocks.VILLAGE_HALL);
@@ -110,8 +117,11 @@ public class HallFirstRoundGameTests implements FabricGameTest {
 			for (int i = 0; i < firstRound.length; i++) {
 				helper.assertTrue(firstRound[i] >= 0, "hall " + i + " never had its first round: " + java.util.Arrays.toString(firstRound));
 				for (int j = 0; j < i; j++) {
-					// a hall whose own turn came during the wait had its round then, whatever the others did
-					boolean turns = quiet[i] < wait || quiet[j] < wait;
+					// a hall whose own turn came first had its round then, whatever the others did: during the wait, or
+					// after it but before its place behind the others (B1164: that second case was not excused, so the
+					// test failed whenever a hall's turn fell there, about 1 run in 15: the halls at (5, 25) and (25, 5) always
+					// share a turn and the one at (5, 5) has it 20 ticks later; QaHallFirstRound1111eGameTests sets it up)
+					boolean turns = atTurn(firstRound[i], turn[i]) || atTurn(firstRound[j], turn[j]);
 					helper.assertTrue(turns || Math.abs(firstRound[i] - firstRound[j]) >= gap,
 						"halls " + j + " and " + i + " had their first rounds within " + gap + " ticks of each other: " + java.util.Arrays.toString(firstRound));
 				}

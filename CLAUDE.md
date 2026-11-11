@@ -137,8 +137,8 @@ Commands:
 - Tester scripts: `tools/modtest/` (`scope.py`, `inventory.py`, `langcheck.py`, `mutate.py`, `results.py`,
   `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json` (the
   suite's tests by name; only a Full run updates it).
-- `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (5 suite runs for
-  flakes, the log audit, the pack boot and soak) and opens a `nightly-tests` issue when anything fails.
+- `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (the log audit, the pack
+  boot and soak, then up to 5 suite runs for flakes, as many as fit the job's time) and opens a `nightly-tests` issue when anything fails.
 - `.github/workflows/showcase.yml` films every screenshot scene on GitHub every night (parallel jobs, under an hour)
   and publishes the owner's showcase page, https://jcondedata.github.io/minecraft-alive-workplace/: a GIF and stills
   per scene, each with a pass or fail. Failures go into the same `nightly-tests` issue. Every scene is listed in

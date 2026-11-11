@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022
 
 ## 1. What a player sees
 
@@ -59,6 +59,9 @@ Ways to unlock, all for the village round the nearest hall:
 
 - `table/BlueprintUnlocks` holds the logic. `state(level, hall, id)` is UNLOCKED, LOCKED, HIDDEN or VIEW_ONLY (an
   unlocked Wonder: named and previewed, never handed out; Wonders are raised from their plan).
+- `TableServer.take` refuses every id in a Wonder's folder (`wonder/<id>` and its stages, `wonder/<id>/stage_1_0`, …)
+  with the "raised from its Wonder Plan" line and keeps the Blank Blueprint, whatever the switch (B1002, B1022); with the
+  switch on, a whole Wonder's id still goes through its state, so a ??? stays nameless.
 - Only the mod's own builds (the lists in `StarterBlueprints`, any style of them) and the Wonders can be locked. Imports,
   uploads, scans, structure-block saves and other datapacks' builds are always unlocked. Styles share their base's
   unlock; each upgrade tier is its own build.

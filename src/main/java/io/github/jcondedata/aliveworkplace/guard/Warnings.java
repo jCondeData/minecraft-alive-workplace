@@ -192,6 +192,18 @@ public final class Warnings {
 	}
 
 	/**
+	 * The Village Hall at {@code hall} is broken or moved (a Mover sets it down elsewhere, which is a new hall with a clock
+	 * of its own) (B1176). Only the hall's own round draws up the portcullis dropped on a warned day and ends its raid, so
+	 * without this both stayed for good: the bars dropped ahead of a warned attack go up now (they stood on air), and a
+	 * raid under way is called off, which ends its siege (lifted at the next dawn as always, its bars drawn up). The
+	 * warning stays on the clock: a hall put back on the very spot is the same village and braces again.
+	 */
+	public static void hallGone(ServerLevel level, BlockPos hall) {
+		VillageRaids.callOff(level, hall);
+		Sieges.raise(level, hall, true);
+	}
+
+	/**
 	 * Tells the village round {@code hall} of the next attack on its clock, once, if it has a source. Returns whether it
 	 * was told now.
 	 */

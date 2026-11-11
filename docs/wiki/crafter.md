@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1170, B1171
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171
 
 ## 1. What a player sees
 
@@ -26,6 +26,10 @@ there's enough. Which job makes what is each job's own list since 46.1 ([Each jo
 A job only crafts from what no open build needs. When two builds share a chest or the village Storehouse, the logs
 stocked for one are never turned into planks for the other: the Carpenter uses only what's left over once every other
 build's remaining list is counted, so neither build ends up waiting for a log that went into the other's planks (B696).
+What the builder (and his helpers) already carry for the build counts toward it: with the stall's 21 logs in his bag,
+the logs left in his chest are all spare, and the Carpenter saws them. Before B1151 the same 21 were held back in the
+chest as well, so the Carpenter made nothing or stopped part-way, and the builder waited for the rest beside a chest of
+logs.
 
 What a job makes for a builder goes where that builder looks for materials: the chests by his Blueprint Table, or,
 when there are none, the village Storehouse (else another village-mate's chests he takes from). A builder with no
@@ -176,6 +180,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and change the Tinkerer's golem mending. Chests already counted (the builder's, a village-mate's such as the
   Glassblower's, another builder's) aren't counted twice; a builder on another side (`Village.sharesWith`) gets none.
   The Carpenter stays out, for B778's reasons above: what he took home is carried on, not made into anything else.
+  "By his own workstation" means within 8 blocks of it: a chest 8 blocks away counts, one 9 blocks away is left
+  alone, and another crafter's chest is never raided (QaCrafterOwnChest1111cGameTests, 18, with the short lines' exact
+  numbers and reloads mid-make and mid-carry).
 - B1171 (lane-a-1111-0322): a crafter goes by the bench that feeds the build (`CrafterWork.supplyBench`:
   `Builders.siteBench` for its lead, as `BuilderWork` fetches and counts), not by the table of whichever builder it
   looked at, and skips helpers (`Builders.isHelping`), so each build is served once, where it takes from. Chosen over
@@ -193,6 +200,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 
 ## 8. Proof
 
+- `CarpenterOwnChestB1151GameTests` (the `carpenter` scene's village: a Market Stall, the builder's own chests, a
+  Carpenter at a crafting table): all the stall's woodwork made once from logs and the stall built, the same reloaded
+  mid-delivery, the logs a builder carries not held back in his chest too (B1151), and the stall's own logs never sawn
+  while the line names the spruce logs short.
 - `JobChainGameTests.theCarpenterMakesBarrelsFromLogsInThreeSteps`: the Carpenter's three-step chain, its "step 2 of 3"
   line, and the build finishing.
 - `JobChainGameTests.theMasonFiresLaysAndCutsBrickStairsFromClay`: a Mason's kiln chain, the fuel burnt.

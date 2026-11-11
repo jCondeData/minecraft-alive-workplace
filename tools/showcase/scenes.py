@@ -65,9 +65,9 @@ SCENES = [
        ("03_builder", "Second click: paid, now a Builder")]),
     # Each job's own list (ROADMAP 46.1): the Storehouse board names who gathers or makes each asked-for thing
     S("job_lists", "Crafter", "Who makes it: the Storehouse board's new lines",
-      "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands", 30,
+      "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands", 30,
       [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
-       ("02_hire_a_librarian_for_brewing_stands", "Brewing stands: hire a Librarian to make them")]),
+       ("02_hire_a_cleric_for_brewing_stands", "Brewing stands: hire a Cleric to make them")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -279,7 +279,7 @@ SCENES = [
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
     # Job chains (ROADMAP 37.14a, which retired the Crafter): several jobs filling one builder's Market Stall list from raw
-    # makings, each its own kind a step at a time (the Carpenter's woodwork, the dyer's red wool, the Tinkerer's lantern)
+    # makings, each its own kind a step at a time (the Carpenter's woodwork, the Shepherd's red wool, the Tinkerer's lantern)
     S("job_chains", "Carpenter", "Several jobs filling one builder's list, each making its own kind a step at a time",
       "several jobs filled the builder's list", 150,
       [("*_job_chains@first", "Start: only raw makings in the builder's chest"), ("*_job_chains@middle", "The jobs working through their chains"),

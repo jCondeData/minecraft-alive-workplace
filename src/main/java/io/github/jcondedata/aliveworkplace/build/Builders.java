@@ -866,6 +866,53 @@ public final class Builders {
 		return Math.max(0, have - reserved.getOrDefault(MaterialFamilies.key(item), 0));
 	}
 
+	/** The bags of {@code site}'s crew (its builder and helpers, those loaded), {@code first} (the asker's, or null) ahead and once. */
+	private static List<BuilderBag> crewBags(ServerLevel level, BuildSite site, @Nullable BuilderBag first) {
+		List<BuilderBag> bags = new java.util.ArrayList<>();
+		if (first != null) {
+			bags.add(first);
+		}
+		List<UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
+		if (site.builder() != null) {
+			crew.add(site.builder());
+		}
+		for (UUID id : crew) {
+			if (level.getEntity(id) instanceof Villager mate) {
+				BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
+				if (!bags.contains(mateBag)) {
+					bags.add(mateBag);
+				}
+			}
+		}
+		return bags;
+	}
+
+	/**
+	 * B1151: {@link #remainingNeed} less what the build's crew already carries for it (as {@link #computeMissing} counts
+	 * their bags): what the chests still have to give the build. The jobs that make things keep this much back in the
+	 * chests and work with the rest. Keeping the whole of {@link #remainingNeed} back held everything the builder had in
+	 * his bag back a second time: with the stall's logs on him, the Carpenter left as many again alone in the chest and
+	 * made nothing, or stopped part-way, while the builder waited for the woodwork.
+	 */
+	public static Map<Item, Integer> needFromChests(ServerLevel level, BuildSite site, BuildPlan plan) {
+		Map<Item, Integer> need = new LinkedHashMap<>(remainingNeed(level, site, plan));
+		List<BuilderBag> bags = crewBags(level, site, null);
+		need.entrySet().removeIf(e -> {
+			long carried = 0;
+			for (Item member : MaterialFamilies.accepted(e.getKey())) {
+				for (BuilderBag b : bags) {
+					carried += b.count(member);
+				}
+			}
+			if (carried >= e.getValue()) {
+				return true;
+			}
+			e.setValue((int) (e.getValue() - carried));
+			return false;
+		});
+		return need;
+	}
+
 	/** Materials still needed for the rest of the build, minus what the builder carries and what is in the supply chests. */
 	public static Map<Item, Integer> computeMissing(ServerLevel level, BuildSite site, BuildPlan plan, BuilderBag bag, List<BlockPos> supplies) {
 		return computeMissing(level, site, plan, bag, supplies, Map.of());
@@ -876,19 +923,7 @@ public final class Builders {
 													Map<Item, Long> elsewhere) {
 		Map<Item, Integer> need = remainingNeed(level, site, plan);
 		// What the rest of the crew is carrying counts too: it goes into this build.
-		List<BuilderBag> bags = new java.util.ArrayList<>(List.of(bag));
-		List<UUID> crew = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
-		if (site.builder() != null) {
-			crew.add(site.builder());
-		}
-		for (UUID id : crew) {
-			if (level.getEntity(id) instanceof Villager mate) {
-				BuilderBag mateBag = ModAttachments.BUILDER_BAG.getOrCreate(mate);
-				if (mateBag != bag) {
-					bags.add(mateBag);
-				}
-			}
-		}
+		List<BuilderBag> bags = crewBags(level, site, bag);
 		Map<Item, Integer> missing = new LinkedHashMap<>();
 		for (Map.Entry<Item, Integer> e : need.entrySet()) {
 			long have = elsewhere.getOrDefault(e.getKey(), 0L);

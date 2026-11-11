@@ -32,7 +32,7 @@ its top:
 
 A spot is refused, with the reason on the page, when the building would:
 
-- overlap another building or the Village Hall;
+- overlap another building, the spot another building is already being moved to, or the Village Hall;
 - sit on a road or under water;
 - stick out of the village, or stand on ground that rises more than 3 blocks across it;
 - cover a Mover's Crate. A Mover's Crate never travels with a building, so pick another spot or move the crate first.

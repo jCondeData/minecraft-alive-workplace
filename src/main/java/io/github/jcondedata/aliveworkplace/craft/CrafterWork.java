@@ -1012,7 +1012,8 @@ public class CrafterWork extends Behavior<Villager> {
 				}
 			});
 			sources.addAll(theirs);
-			Map<Item, Integer> need = Builders.remainingNeed(level, site, plan);
+			// B1151: what the chests still owe the build; what its builder already carries isn't kept back here as well
+			Map<Item, Integer> need = Builders.needFromChests(level, site, plan);
 			Map<Item, Long> usable = new HashMap<>();
 			stock.forEach((item, n) -> {
 				long spare = n - need.getOrDefault(MaterialFamilies.key(item), 0);

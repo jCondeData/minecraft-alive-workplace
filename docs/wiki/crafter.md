@@ -182,7 +182,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   The Carpenter stays out, for B778's reasons above: what he took home is carried on, not made into anything else.
   "By his own workstation" means within 8 blocks of it: a chest 8 blocks away counts, one 9 blocks away is left
   alone, and another crafter's chest is never raided (QaCrafterOwnChest1111cGameTests, 18, with the short lines' exact
-  numbers and reloads mid-make and mid-carry).
+  numbers and reloads mid-make and mid-carry). His own store can be modded storage, read like a chest: a Create Item
+  Vault by the Glass Kiln and a Sophisticated Storage barrel by the Mason's stonecutter are used for one batch and the
+  rest left, also through a reload; a Create Basin (a machine's, 39.2) by the kiln is never taken from; and a builder
+  whose only supply is a Create Item Vault gets the glass once (QaCrafterOwnModdedStore1111eCompatTests, 5).
 - B1171 (lane-a-1111-0322): a crafter goes by the bench that feeds the build (`CrafterWork.supplyBench`:
   `Builders.siteBench` for its lead, as `BuilderWork` fetches and counts), not by the table of whichever builder it
   looked at, and skips helpers (`Builders.isHelping`), so each build is served once, where it takes from. Chosen over

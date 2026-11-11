@@ -1654,6 +1654,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bDecorGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatesDawnEdge1111dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRallyBanner1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnCounters1111dGameTests"
 		]
 	},

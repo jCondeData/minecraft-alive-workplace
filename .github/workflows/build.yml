@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'wip/lane-a-1111-0322']
   pull_request:
   workflow_dispatch:
 

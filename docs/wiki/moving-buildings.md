@@ -313,6 +313,15 @@ picker, nothing is saved, the hut and its chest untouched, and the refusal is th
 `QaMovePage1111cBugTests` (2, B1174): with one hut's move planned, then with it started, the other hut's spot over
 that new spot is refused naming it (step 2, Confirm gray, nothing saved), and a spot clear of it fits.
 
+`QaHallMove1111c2GameTests` (5, the QA lane, B1163): a village with no finished buildings shows one note ("No
+buildings to move yet", "Buildings your builders finish in the village are listed here") that opens nothing, the tab
+"0 moves planned", the title "Move a building: <village>" and the no-Mover line (with a Mover, "A Mover works here");
+exactly 36 buildings fill the list's four rows, 37 give 35 rows and "And 2 more" in the last slot, which opens nothing;
+two moves confirmed (Confirm's own action-bar sentence with the spot) count "2 moves planned", Call off on one says
+"The Test Hut stays where it is: the move is called off", the list shows again with that row unplanned, the other move
+untouched, "1 move planned" and no block changed; a quarter-turned move saved and reloaded opens on its spot still
+turned (front east, Rotate's next turn south, step 3, Call off), and Confirm there again keeps the one move unchanged.
+
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.

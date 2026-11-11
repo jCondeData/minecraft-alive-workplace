@@ -352,11 +352,14 @@ public class LumberjackGameTests implements FabricGameTest {
 	 * With bone meal in the chests, the sapling on the tree farm is grown on the spot, then felled. In its own batch (B127):
 	 * beside the other lumberjack tests, a neighbour's grown tree (at its 14, 2, 14) is within the 16 blocks this lumberjack
 	 * searches, so off they went to fell it instead of feeding the sapling, and stopped working once out of their own test area.
+	 * A batch of its own doesn't move the tree away, though: batches stand side by side too, so the trees round the area are
+	 * cleared first (B460). The other half of B460 was the mod's: 16 bone meal was the most a sapling got (see the test below).
 	 */
 	//$ gametest_ticks_batch AREA '3000' '"lumberjackGrowsTheFarmWithBoneMeal"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "lumberjackGrowsTheFarmWithBoneMeal")
 	public void lumberjackGrowsTheFarmWithBoneMeal(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.trees(helper);
 		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(12, 1, 12))) {
 			helper.setBlock(p, Blocks.GRASS_BLOCK);
 		}
@@ -378,6 +381,45 @@ public class LumberjackGameTests implements FabricGameTest {
 			Container chest = helper.getBlockEntity(CHEST);
 			int left = chest.countItem(Items.BONE_MEAL) + ModAttachments.BUILDER_BAG.getOrCreate(villager).count(Items.BONE_MEAL);
 			helper.assertTrue(left < 32, "no bone meal used");
+		});
+	}
+
+	/**
+	 * A sapling that can't grow (a block right above it) gets 32 bone meal and no more: the rest stays for saplings that
+	 * can. It was 16 until B460: one healthy oak sapling in a thousand is still a sapling after 16 (the probe: 20 of
+	 * 20,000), and the lumberjack then left it alone for good with bone meal to spare; none of 20,000 was after 32.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"lumberjackStopsFeedingASaplingThatCannotGrow"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "lumberjackStopsFeedingASaplingThatCannotGrow")
+	public void lumberjackStopsFeedingASaplingThatCannotGrow(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Leftovers.trees(helper);
+		for (BlockPos p : BlockPos.betweenClosed(new BlockPos(10, 1, 10), new BlockPos(12, 1, 12))) {
+			helper.setBlock(p, Blocks.GRASS_BLOCK);
+		}
+		BlockPos sapling = new BlockPos(10, 2, 10);
+		helper.setBlock(sapling, Blocks.OAK_SAPLING);
+		helper.setBlock(sapling.above(), Blocks.STONE);
+		Villager villager = setup(helper, new ItemStack(Items.STONE_AXE), new ItemStack(Items.BONE_MEAL, 64));
+		io.github.jcondedata.aliveworkplace.wood.TreeFarms.start(villager,
+			net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(helper.absolutePos(new BlockPos(10, 1, 10)), helper.absolutePos(new BlockPos(12, 1, 12))));
+		long[] since = {-1};
+		helper.succeedWhen(() -> {
+			Container chest = helper.getBlockEntity(CHEST);
+			int used = 64 - chest.countItem(Items.BONE_MEAL) - ModAttachments.BUILDER_BAG.getOrCreate(villager).count(Items.BONE_MEAL);
+			helper.assertBlockPresent(Blocks.OAK_SAPLING, sapling);
+			if (used > 32) {
+				helper.fail("the sapling that can't grow got " + used + " bone meal: 32 is the most");
+			}
+			if (used < 32) {
+				since[0] = -1;
+				throw new GameTestAssertException("the sapling got " + used + " bone meal so far, not the 32 it's given before it's left alone");
+			}
+			if (since[0] < 0) {
+				since[0] = helper.getTick();
+			}
+			// Fed every 10 ticks: 200 quiet ticks is twenty feeds not given.
+			helper.assertTrue(helper.getTick() - since[0] >= 200, "waiting to see that no more bone meal goes to it");
 		});
 	}
 

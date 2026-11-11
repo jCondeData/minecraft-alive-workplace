@@ -417,6 +417,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePage1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCallOff1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrate1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",

@@ -616,6 +616,7 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 			if (made > 0) {
 				delivered(level, villager, job, made);
+				offTheList(level, job, made);
 			}
 			if (!job.claim().isEmpty()) {
 				claim(job.claim(), level.getGameTime());
@@ -635,6 +636,7 @@ public class CrafterWork extends Behavior<Villager> {
 		fullFor = 0;
 		deliverWait = 0;
 		delivered(level, villager, job, made);
+		offTheList(level, job, made);
 		if (!job.claim().isEmpty()) {
 			synchronized (CLAIMS) {
 				CLAIMS.remove(job.claim()); // the builder checks again, and asks for more if it wasn't enough
@@ -711,6 +713,61 @@ public class CrafterWork extends Behavior<Villager> {
 			return List.of();
 		}
 		return home.stream().filter(p -> !sources.contains(p) && !theirs.contains(p)).toList();
+	}
+
+	/**
+	 * B1171: the bench whose chests feed {@code site}, where what we make for it has to go: the one the build was started
+	 * from ({@link Builders#siteBench}, as the builder himself fetches and counts), which isn't always the table
+	 * {@code builder} works at. Null for a helper on someone else's build (a Wonder's crew too): that build is served once,
+	 * through its lead, and null while the build's bench isn't loaded. Going by each builder's own table, what was made
+	 * for a helper's (or a Wonder lead's) build was carried to the chests in his own house, where the build never takes
+	 * from: it stayed on the list and was made and carried there again and again.
+	 */
+	@Nullable
+	private static BlockPos supplyBench(ServerLevel level, Villager builder, BuildSite site) {
+		if (Builders.isHelping(builder)) {
+			return null;
+		}
+		BlockPos own = Builders.benchPos(builder).orElse(null);
+		BlockPos bench = site.bench();
+		if (bench == null || bench.equals(own)) {
+			return own;
+		}
+		if (!level.isLoaded(bench)) {
+			return null;
+		}
+		return Builders.siteBench(level, builder, site).orElse(null);
+	}
+
+	/**
+	 * B1171: what was just put in the asking builder's chests comes off his list at once, as a player's hand-over does
+	 * (B344). He counts his chests only every few seconds, and we look for the next job sooner: with the old count still
+	 * standing, a request just filled was made a second time. His next count replaces it with the real one. The claim
+	 * names the builder ("uuid|item"); a stock order's or a Wonder's names none.
+	 */
+	private static void offTheList(ServerLevel level, Job job, int made) {
+		int bar = job.claim().indexOf('|');
+		if (made <= 0 || bar <= 0) {
+			return;
+		}
+		try {
+			if (level.getEntity(java.util.UUID.fromString(job.claim().substring(0, bar))) instanceof Villager builder) {
+				BuildSite site = Builders.activeSite(level, builder);
+				Item item = job.plan().target();
+				if (site != null && site.missing().containsKey(item)) {
+					Map<Item, Integer> missing = new LinkedHashMap<>(site.missing());
+					int left = missing.get(item) - made;
+					if (left > 0) {
+						missing.put(item, left);
+					} else {
+						missing.remove(item);
+					}
+					site.setMissing(missing);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// a claim that isn't a builder's (a stock order's): no list to take it off
+		}
 	}
 
 	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
@@ -878,7 +935,8 @@ public class CrafterWork extends Behavior<Villager> {
 				continue;
 			}
 			BuildPlan plan = site.plan(level);
-			BlockPos builderStation = Builders.benchPos(builder).orElse(null);
+			// B1171: the bench whose chests feed this build, not the table this builder happens to work at
+			BlockPos builderStation = supplyBench(level, builder, site);
 			if (plan == null || builderStation == null) {
 				continue;
 			}

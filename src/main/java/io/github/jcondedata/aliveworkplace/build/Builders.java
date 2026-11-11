@@ -725,17 +725,16 @@ public final class Builders {
 			BuildPlan otherPlan = other.plan(level);
 			if (otherPlan != null) {
 				remainingNeedOfOther(level, other, otherPlan).forEach((item, n) -> out.merge(item, n, Integer::sum));
-				if (other.builder() != null) {
-					builders.add(other.builder());
-				}
+				builders.addAll(crewOf(level, other));
 			}
 		}
-		// 23.5: what those builders already carry goes into those builds, so it needn't stay in the chests too (counting
-		// it twice kept a builder's surplus from the storehouse locked up in its chests while another builder waited).
+		// 23.5: what those builds' crews already carry goes into those builds, so it needn't stay in the chests too
+		// (counting it twice kept a builder's surplus from the storehouse locked up in its chests while another builder
+		// waited). B1187: the helpers' bags as well as the builders', as computeMissing and needFromChests count them.
+		if (except != null) {
+			builders.removeAll(crewOf(level, except));
+		}
 		for (UUID id : builders) {
-			if (except != null && id.equals(except.builder())) {
-				continue;
-			}
 			BuilderBag carried = level.getEntity(id) instanceof Villager v ? ModAttachments.BUILDER_BAG.get(v) : null;
 			if (carried != null) {
 				for (ItemStack stack : carried.stacks()) {
@@ -828,9 +827,7 @@ public final class Builders {
 			}
 			Map<Item, Integer> need = byBench.computeIfAbsent(bench, b -> new java.util.HashMap<>());
 			remainingNeedOfOther(level, other, plan).forEach((item, n) -> need.merge(item, n, Integer::sum));
-			if (other.builder() != null) {
-				buildersAt.computeIfAbsent(bench, b -> new java.util.HashSet<>()).add(other.builder());
-			}
+			buildersAt.computeIfAbsent(bench, b -> new java.util.HashSet<>()).addAll(crewOf(level, other)); // B1187: helpers too
 		}
 		Map<Item, Integer> out = new java.util.HashMap<>();
 		byBench.forEach((bench, need) -> {
@@ -864,6 +861,15 @@ public final class Builders {
 			have += SupplyContainers.count(level, chests, member);
 		}
 		return Math.max(0, have - reserved.getOrDefault(MaterialFamilies.key(item), 0));
+	}
+
+	/** The ids of {@code site}'s crew: its builder (if any) and the helpers working on it now. */
+	private static Set<UUID> crewOf(ServerLevel level, BuildSite site) {
+		Set<UUID> crew = new java.util.HashSet<>(site.helpers(level.getGameTime()));
+		if (site.builder() != null) {
+			crew.add(site.builder());
+		}
+		return crew;
 	}
 
 	/** The bags of {@code site}'s crew (its builder and helpers, those loaded), {@code first} (the asker's, or null) ahead and once. */

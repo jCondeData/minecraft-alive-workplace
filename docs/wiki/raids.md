@@ -62,7 +62,7 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
   dropped bars over; if no attack came, the bars go up the next morning. A village with no guard (warned by a Seer or
   the Lighthouse) opens the gates the warning shut again the morning after, or as soon as the attack is called off
-  (B1158).
+  (B1158). Gates the last guard shut for the night, before he fell or took another job, open at dawn (B1180).
 - **Called off.** An attack called off after the warning (threat level 0, Peaceful, the village set At peace, or
   `/workplace threat clear`) takes its warning with it (`ThreatData.callOff`), and `Warnings.ready` is false in a quiet
   village: no gates shut, no battle stations, nobody kept in (B1146). So does a lair broken up before its band comes:
@@ -232,6 +232,9 @@ None.
   or opened as he set them, by day and by night; the gates open just before noon, shut at noon, open once the morning
   after, then stay as a player sets them; a guarded village whose only guard falls on the warned night opens them the
   morning after; one guard shuts them at dusk and opens them at dawn).
+- B1180: `QaGatesLastGuardNight1111dBugTests` (the only guard shuts the gates at dusk and falls in the night: they stay
+  shut through the night and open the next morning, also across a save and reload; then a player's shut gates stay
+  shut).
 - B1155 (QA, lane D): `QaLairFallOtherBands1111dGameTests` (the camp falls on a day the village is warned of monsters:
   still braced, the Defense page still shows it, only the bandits' attack leaves the clock; the camp broken up the
   evening before its warned day: nothing shut at noon, no battle stations at dusk; a later monster attack stays; bandits

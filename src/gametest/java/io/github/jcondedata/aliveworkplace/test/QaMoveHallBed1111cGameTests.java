@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.hall.HallBeds;
+import io.github.jcondedata.aliveworkplace.hall.HallJobs;
 import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
@@ -27,6 +28,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -36,7 +38,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import io.github.jcondedata.aliveworkplace.work.Jobs;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
@@ -64,6 +69,7 @@ public class QaMoveHallBed1111cGameTests implements FabricGameTest {
 	static final BlockPos TO = new BlockPos(16, 2, 16);
 	private static final BlockPos DOOR = new BlockPos(5, 3, 2);
 	static final BlockPos BED = new BlockPos(4, 3, 7);
+	static final BlockPos LECTERN = new BlockPos(7, 3, 4);
 	private static final BlockPos HALL = new BlockPos(15, 2, 2);
 	private static final BlockPos INN = new BlockPos(25, 2, 3);
 	static final BlockPos INN_BED = new BlockPos(24, 2, 6);
@@ -105,6 +111,7 @@ public class QaMoveHallBed1111cGameTests implements FabricGameTest {
 		set(level, helper.absolutePos(DOOR), door.setValue(DoorBlock.HALF, DoubleBlockHalf.LOWER));
 		set(level, helper.absolutePos(DOOR.above()), door.setValue(DoorBlock.HALF, DoubleBlockHalf.UPPER));
 		bed(helper, BED);
+		set(level, helper.absolutePos(LECTERN), Blocks.LECTERN.defaultBlockState());
 		set(level, helper.absolutePos(INN), ModBlocks.INN_COUNTER.defaultBlockState());
 		bed(helper, INN_BED);
 		bed(helper, OTHER_BED);
@@ -171,8 +178,8 @@ public class QaMoveHallBed1111cGameTests implements FabricGameTest {
 		return pos == null ? "none" : pos.toShortString();
 	}
 
-	/** The Hall's People page, opened as a player does, and Tomas's Bed ▾ list. */
-	private static List<ItemStack> bedList(GameTestHelper helper, ServerPlayer player, ChoiceMenu[] out, Villager villager) {
+	/** The Hall's People page, opened as a player does; {@code out[0]} the menu, the result {@code villager}'s row's slot. */
+	static int openPeople(GameTestHelper helper, ServerPlayer player, ChoiceMenu[] out, Villager villager) {
 		BlockPos hall = helper.absolutePos(HALL);
 		player.teleportTo(hall.getX() + 1.5, hall.getY(), hall.getZ() + 0.5);
 		helper.useBlock(HALL, player);
@@ -186,10 +193,25 @@ public class QaMoveHallBed1111cGameTests implements FabricGameTest {
 				slot = i;
 			}
 		}
-		helper.assertTrue(slot >= 0, "the People page has no row for Tomas while his house is away");
-		helper.assertTrue(menu.clickMenuButton(player, HallBeds.OPEN + slot), "Bed ▾ wasn't taken");
+		helper.assertTrue(slot >= 0, "the People page has no row for " + villager.getName().getString() + " while the house is away");
 		out[0] = menu;
-		return HallBeds.lines(menu.icon(slot));
+		return slot;
+	}
+
+	/** Job ▾ on {@code villager}'s row, then No job twice (the offer, then the confirm), as a player lets a worker go. */
+	static void letGoAtTheHall(GameTestHelper helper, ServerPlayer player, Villager villager) {
+		ChoiceMenu[] menu = new ChoiceMenu[1];
+		int slot = openPeople(helper, player, menu, villager);
+		helper.assertTrue(menu[0].clickMenuButton(player, HallJobs.OPEN + slot), "Job ▾ wasn't taken");
+		int none = HallJobs.PICK + BuiltInRegistries.VILLAGER_PROFESSION.getId(VillagerProfession.NONE);
+		helper.assertTrue(menu[0].clickMenuButton(player, none) && menu[0].clickMenuButton(player, none), "No job wasn't taken");
+	}
+
+	/** The Hall's People page, opened as a player does, and Tomas's Bed ▾ list. */
+	private static List<ItemStack> bedList(GameTestHelper helper, ServerPlayer player, ChoiceMenu[] out, Villager villager) {
+		int slot = openPeople(helper, player, out, villager);
+		helper.assertTrue(out[0].clickMenuButton(player, HallBeds.OPEN + slot), "Bed ▾ wasn't taken");
+		return HallBeds.lines(out[0].icon(slot));
 	}
 
 	/**

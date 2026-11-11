@@ -296,8 +296,11 @@ vanilla's ore tags) is left standing as before but remembered in the quarry (`le
 saved before load with none). Once the pickaxe in hand can harvest one, the miner goes back for it before anything else
 (the dig order's place stays where it was), and it counts as dug instead of left standing; an ore that's gone, has water
 or lava beside it now, or can't be reached is forgotten (an ore a player mined or built over meanwhile, even while
-the pickaxe is still too weak). With `minerCraftsPickaxe` off none of this happens, and the status line asks for nothing
-(`MinerPickaxeUpgradeGameTests`; `QaMinerUpgrade1111eGameTests`, 8: the ores left come back in order through two
+the pickaxe is still too weak). The head comes from the miner's bag and own chests before the
+village store, exactly three are taken; the old pickaxe goes back with its wear; with no furnace and no Armorer the
+miner digs on (no trips to the chests for it) and the line keeps saying what's missing. With `minerCraftsPickaxe` off none
+of this happens, remembered ores aren't gone back for, and the status line asks for nothing (`MinerPickaxeUpgradeGameTests`,
+`QaMinerUpgrade1111cGameTests`; `QaMinerUpgrade1111eGameTests`, 9: the ores left come back in order through two
 restarts of the quarry file, before and after the upgrade, and an emptied list writes nothing; the cap keeps the 256th
 and not the 257th; an ore a player took isn't waited on; a worn iron pickaxe becomes a diamond one and is kept once,
 as worn; diamonds beat iron and the ingots stay; the village store's ingots; the status line from both sides, with an

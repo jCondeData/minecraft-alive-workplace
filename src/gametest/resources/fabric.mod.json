@@ -1590,6 +1590,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWarnAgain1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairFallWarning1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardlessGates1110dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWarnedHallGone1111dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaZoglinRam1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",

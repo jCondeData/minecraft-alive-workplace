@@ -226,6 +226,14 @@ None.
   level 0, or the village set At peace: nothing shuts on the day).
 - B1158: `QaGuardlessGates1110dBugTests` (a guardless village's gates shut at noon of the warned day are open the
   morning after and when the attack is called off; a guarded village's the morning after, as before).
+- B1158 (QA, lane D): `QaGatesNoGuardLeft1111dGameTests` (a guardless, unwarned village leaves the gates a player shut
+  or opened as he set them, by day and by night; the gates open just before noon, shut at noon, open once the morning
+  after, then stay as a player sets them; a guarded village whose only guard falls on the warned night opens them the
+  morning after; one guard shuts them at dusk and opens them at dawn).
+- B1155 (QA, lane D): `QaLairFallOtherBands1111dGameTests` (the camp falls on a day the village is warned of monsters:
+  still braced, the Defense page still shows it, only the bandits' attack leaves the clock; the camp broken up the
+  evening before its warned day: nothing shut at noon, no battle stations at dusk; a later monster attack stays; bandits
+  and monsters both due the same night: still braced for the monsters).
 - 32.14 (QA, lane D): `QaWarningGameTests` (an archer posted exactly 24 blocks from a Lookout Tower's middle keeps
   watch, 25 blocks off doesn't and nobody is warned; an upgraded Lookout Tower still counts; a player in the village and
   the hall's owner 300 blocks off are each told once, in gold, and a stranger 300 blocks off isn't).

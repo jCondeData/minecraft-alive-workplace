@@ -407,6 +407,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MovePageGuideGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePage1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListsGameTests",
@@ -418,6 +419,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaClericCrafts1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCrafts1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblowerStash1110cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGlassblowerStash1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ChandlerLeatherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GlassblowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChandlerLeather1110cGameTests",
@@ -1577,6 +1579,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSwitches1110dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSwitches1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarnAgain1110dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLairFallWarning1110dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuardlessGates1110dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaZoglinRam1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",
@@ -1602,7 +1606,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaOldCarpenterJob1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClericOwnChest1110bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bBugTests"
 		]
 	},
 	"depends": {

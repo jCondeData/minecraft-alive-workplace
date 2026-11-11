@@ -53,8 +53,12 @@ public class LumberjackWork extends Behavior<Villager> {
 	private static final int KEEP_SAPLINGS = 16;
 	/** Bone meal kept in the bag for the saplings. */
 	private static final int KEEP_BONE_MEAL = 16;
-	/** Bone meal given to one sapling before giving up on it (a lone dark oak sapling never grows). */
-	private static final int MAX_FEEDS = 16;
+	/**
+	 * Bone meal given to one sapling before giving up on it (a lone dark oak sapling never grows). Not 16 (B460): a
+	 * sapling needs two lucky bone meals (45% each) to grow, and one healthy sapling in a thousand hasn't had them after
+	 * 16, so it was left alone for good; after 32 that's one in several million.
+	 */
+	private static final int MAX_FEEDS = 32;
 	private static final int FEED_EVERY = 10;
 
 	private enum Phase { LOOKING, CHOPPING, NEEDS_AXE, DEPOSITING, PLANTING, FERTILIZING }

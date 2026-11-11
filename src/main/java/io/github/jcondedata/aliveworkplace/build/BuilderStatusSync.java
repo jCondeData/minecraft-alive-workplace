@@ -161,11 +161,14 @@ public final class BuilderStatusSync {
 	/**
 	 * The lines under the status: the 3 materials the build is shortest of (counting the builders' chests and what the
 	 * crew carries) or that it has them all, then which chests or storehouse it takes from. Worked out every
-	 * {@link #SUPPLY_INTERVAL} ticks. None with free materials, for deconstruction and repairs of nothing.
+	 * {@link #SUPPLY_INTERVAL} ticks. None with free materials, for deconstruction and repairs of nothing, nor once the
+	 * build is done, except while it is still getting its item frames, paintings or armor stands (B1148's end wait): then
+	 * they show as for any material, with the job to hire (B1159).
 	 */
 	static List<Component> supplyLines(ServerLevel level, BuildSite site, BuildPlan plan, Villager villager) {
 		if (io.github.jcondedata.aliveworkplace.mc.Rules.on(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FREE_MATERIALS)
-				|| site.stage() == BuildPlan.Stage.DECONSTRUCT || site.stage() == BuildPlan.Stage.DONE) {
+				|| site.stage() == BuildPlan.Stage.DECONSTRUCT
+				|| (site.stage() == BuildPlan.Stage.DONE && !site.isGettingDecorations())) {
 			return List.of();
 		}
 		Supply cached = SUPPLY.get(site.id());

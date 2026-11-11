@@ -21,7 +21,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  *
  * <p>In a siege (ROADMAP 32.4, {@code threat/Sieges}) they shut at once, whatever the hour and with or without guards,
  * and the portcullis of every gate build drops; they stay shut until the first dawn after. On the day of an attack the
- * village was warned of ({@link Warnings}, 32.14) they shut from noon.
+ * village was warned of ({@link Warnings}, 32.14) they shut from noon. A village with no guard opens the gates a siege
+ * or a warned day shut once it is over (B1158).
  */
 public final class Gates {
 	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
@@ -44,8 +45,19 @@ public final class Gates {
 		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall) || Warnings.ready(level, hall);
 		// a Great Wall's Great Gate shuts at night, guards or none (35.16)
 		int moved = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.shutGates(level, hall, siege || shutTime(level));
-		if (guards <= 0 && !siege) {
-			return moved;
+		if (guards <= 0) {
+			// No guard keeps the hours, so the gates a siege or a warned day shut open again once it is over (B1158); a
+			// village that never had them shut leaves them as the players set them.
+			io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+			if (siege) {
+				data.gatesShut(hall, true);
+				return moved + shut(level, hall, true);
+			}
+			if (!data.gatesShut(hall)) {
+				return moved;
+			}
+			data.gatesShut(hall, false);
+			return moved + shut(level, hall, false);
 		}
 		return moved + shut(level, hall, siege || shutTime(level));
 	}

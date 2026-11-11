@@ -40,8 +40,9 @@ a hired Mover in the village (45.3); without one the page says "Needs a hired Mo
 again. In order: config `moveBuildings` off ("Moving buildings is switched off on this server"); not one of this hall's
 finished buildings ("that building isn't part of this village"); its footprint reaches into a protected village that
 keeps the player out (the mod's own claims, `VillageProtection.keeper`: operators and the owner's friends are let in;
-the line is the protection's own "X is Y's village..."); its footprint holds the Village Hall ("the Village Hall stays
-where it stands"); a Wonder or a Wonder's part ("a Wonder is built to stay where it stands"); a build site not done at
+the line is the protection's own "X is Y's village..."); its footprint holds the Village Hall, this village's or any
+other's (B1161: two villages side by side; `MoveRules.holdsHall` reads the loaded chunks' block entities and, for a
+chunk not loaded, the halls' points of interest) ("the Village Hall stays where it stands"); a Wonder or a Wonder's part ("a Wonder is built to stay where it stands"); a build site not done at
 its origin or overlapping it, such as an upgrade or repair ("builders are still working on it; move it once they're
 done"). With `moveBuildings` off a move already confirmed still goes ahead (stopping one half way would leave a
 building in pieces); `movers` off is the switch that stops the Movers.
@@ -303,6 +304,9 @@ a neighbor's protected village refuses a building whose footprint is 16 from its
 The village's edge: a building whose middle is 16 from the hall is listed and movable, one at 17 isn't listed and is
 refused as not this village's. A Wonder's finished part is refused at its Move button and the list shows again.
 
+`QaMoveRefusals1110cBugTests` (1, B1161): a second village's Village Hall placed inside the hut: its Move button opens no
+picker, nothing is saved, the hut and its chest untouched, and the refusal is the Hall's line.
+
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
@@ -355,9 +359,6 @@ barrel at the new spot.
 ## Known limits
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
-
-- B1161 (open): a building that holds another village's Village Hall isn't refused; only this village's own hall
-  block is checked (its failing test is on the branch tests/move-refusals-1110).
 
 - A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still
   gets the moved bed or workstation (B1154): every occupied bed and workstation in the box is saved as a claim on the

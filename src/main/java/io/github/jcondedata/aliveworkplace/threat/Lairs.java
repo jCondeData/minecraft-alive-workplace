@@ -942,6 +942,7 @@ public final class Lairs {
 		data.takenByPeace.remove(lair.captain());
 		data.broken.put(lair.hall(), new Rest(Chronicle.day(level), REST_DAYS));
 		data.setDirty();
+		ThreatData.get(level).callOff(lair.hall(), lair.culture()); // its band can't come: the attack it set is off, and its warning (B1155)
 		forgetEverywhere(level, lair);
 		CampCleanup.broken(level, lair); // its camp comes down, or stays as ruins (B209)
 		// A lair with a portal: it goes out; the Warlord's band left in the Overworld turns zombified (32.10).

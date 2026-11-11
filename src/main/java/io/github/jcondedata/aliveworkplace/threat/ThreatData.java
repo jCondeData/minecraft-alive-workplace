@@ -189,6 +189,8 @@ public final class ThreatData extends SavedData {
 		long warned = -1;
 		/** The portcullis bars dropped ahead of a warned attack (32.14), to draw up again or hand to the siege. */
 		final List<BlockPos> braced = new ArrayList<>();
+		/** The village's gates were shut with no guard to open them (a warned day or a siege; B1158), to open again after. */
+		boolean gatesShut;
 	}
 
 	/** The data of every dimension loaded since the server started (for the few callers that know a hall but no level). */
@@ -349,6 +351,26 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/**
+	 * Calls off the attacks of {@code culture} on the clock of the village round {@code hall} (B1155: its lair is broken
+	 * up, so its band can't come), and the warning if it was of one of them and no other culture's attack comes that
+	 * day: other cultures' attacks and warnings stay.
+	 */
+	public void callOff(BlockPos hall, ResourceLocation culture) {
+		Clock clock = clocks.get(hall);
+		if (clock == null) {
+			return;
+		}
+		long day = clock.warned;
+		boolean itsWarning = day >= 0 && clock.attacks.stream().anyMatch(a -> a.day() == day && a.culture().equals(culture));
+		if (clock.attacks.removeIf(a -> a.culture().equals(culture))) {
+			if (itsWarning && clock.attacks.stream().noneMatch(a -> a.day() == day)) {
+				clock.warned = -1;
+			}
+			setDirty();
+		}
+	}
+
 	/** The day of the attack the village round {@code hall} was warned of (32.14), or -1. */
 	public long warned(BlockPos hall) {
 		Clock clock = clocks.get(hall);
@@ -378,6 +400,21 @@ public final class ThreatData extends SavedData {
 		clock.braced.clear();
 		bars.forEach(b -> clock.braced.add(b.immutable()));
 		setDirty();
+	}
+
+	/** Whether the village round {@code hall} had its gates shut with no guard to open them (B1158). */
+	public boolean gatesShut(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock != null && clock.gatesShut;
+	}
+
+	/** Marks (or clears) the gates of the village round {@code hall} as shut with no guard to open them (B1158). */
+	public void gatesShut(BlockPos hall, boolean shut) {
+		Clock clock = shut ? clocks.computeIfAbsent(hall.immutable(), h -> new Clock()) : clocks.get(hall);
+		if (clock != null && clock.gatesShut != shut) {
+			clock.gatesShut = shut;
+			setDirty();
+		}
 	}
 
 	/** Forgets the hall's clock (the hall is gone; tests). */
@@ -580,6 +617,7 @@ public final class ThreatData extends SavedData {
 			c.put("attacks", attacks);
 			c.putLong("warned", e.getValue().warned);
 			c.putLongArray("braced", e.getValue().braced.stream().mapToLong(BlockPos::asLong).toArray());
+			c.putBoolean("gatesShut", e.getValue().gatesShut);
 			halls.add(c);
 		}
 		tag.put("clock", halls);
@@ -891,6 +929,7 @@ public final class ThreatData extends SavedData {
 			for (long bar : Nbt.getLongArray(c, "braced")) {
 				clock.braced.add(BlockPos.of(bar));
 			}
+			clock.gatesShut = Nbt.getBoolean(c, "gatesShut"); // false in a save from before B1158
 			clocks.put(BlockPos.of(Nbt.getLong(c, "hall")), clock);
 		}
 	}

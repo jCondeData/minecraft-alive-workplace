@@ -34,7 +34,8 @@ Roadmap items: 46.5, B1148
   the Shepherd the paintings and the Carpenter the armor stands, into the builder's chest. When the last block is in and
   one is still missing, the builder waits by his bench ("1× Item Frame" on his waiting line) while one is spare in the
   village (he fetches it), while a job is making it, or for two minutes (six at most), then hangs what he has. With nobody to make it,
-  the build ends without it and the owner is told, as before.
+  the build ends without it and the owner is told, as before. While he waits, the lines under his head show what he's
+  short of, whom to hire ("Hire a Leatherworker to make Item Frames") and where he takes from, as during the build (B1159).
 
 ## 2. How it works
 
@@ -43,7 +44,8 @@ Roadmap items: 46.5, B1148
   (`BuilderWork.getDecorations`, before `Builders.finish`), a decoration that the bench's chests and the bag don't
   hold is fetched like a block (from the village's spare stock, else waited for by the bench), while one is spare, a job
   is on it (`JobShortages.coveredFor`) or for `BuilderWork.DECORATION_WAIT` (2400 ticks) since the wait began. Crafters
-  and the requests board serve a finished build still getting them (`BuildSite.isGettingDecorations`).
+  and the requests board serve a finished build still getting them (`BuildSite.isGettingDecorations`), and so does
+  `BuilderStatusSync.supplyLines`, the overhead lines with the hire line (B1159; a done site with nothing pending shows none).
 - `craft/BeekeeperCraftWork` is a `CrafterWork` (the crafting table's recipes) in the Beekeeper's work package
   (`bee/BeekeeperPackages`) next to `bee/BeekeeperWork`; it takes what's on her list
   (`data/aliveworkplace/tags/item/crafts/beekeeper.json`, `CraftJobs.Job.BEEKEEPER`, whose stand-in is gone). The two
@@ -114,7 +116,8 @@ the board, then the build ending without it; and saved and loaded while waiting,
 put up; three frames with one in the chest ask for exactly two ("Needs: 2× Item Frame"); a frame already in the chest
 hung with no wait; a glow item frame asked by its own name; the wait ending at `DECORATION_WAIT` and not before, then
 the next job; a job forever on it holding the build no longer than three waits; an older save without
-`decoration_wait_since` loading and finishing. Known gap: during the wait the "Hire a Leatherworker" line isn't shown
-(B1159).
+`decoration_wait_since` loading and finishing.
+`QaBuilderDecorations1110bBugTests` (B1159): with no Leatherworker, the waiting builder's lines read "Needs: 1× Item
+Frame" and "Hire a Leatherworker to make Item Frames".
 `QaBuilderDecorStore1110bGameTests` (QA of B1148): a frame in neither the bench's chest nor made by anyone but spare
 in the village Storehouse is fetched from there and hung, and the Storehouse is left without it.

@@ -27,6 +27,31 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every log and leaf near the test area but outside it (inside is this test's own). A tree an earlier batch's
+	 * test left standing in its own area, a row or a column over, is never cleared, and a lumberjack fells any tree within
+	 * 16 blocks of the Chopping Block before he feeds a sapling: with ten copies of the bone meal test, one lumberjack
+	 * spent his 3000 ticks at the tree the copy a row north had grown on its farm (13 blocks past the area's edge), his
+	 * own sapling never fed (B460, B127). Only for tests alone in their batch.
+	 */
+	static void trees(GameTestHelper helper) {
+		AABB area = helper.getBounds();
+		AABB around = area.inflate(20, 0, 20);
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		io.github.jcondedata.aliveworkplace.wood.Trees.forEach(level, net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			net.minecraft.core.BlockPos.containing(around.minX, around.minY - 8, around.minZ), net.minecraft.core.BlockPos.containing(around.maxX, around.maxY + 16, around.maxZ)),
+			state -> state.is(net.minecraft.tags.BlockTags.LOGS) || state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.WART_BLOCKS),
+			p -> {
+				if (!area.contains(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5)) {
+					found.add(p.immutable());
+				}
+			});
+		for (net.minecraft.core.BlockPos p : found) {
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+		}
+	}
+
+	/**
 	 * Logs out every mock player near the test area. Many tests make one, teleport it into their area and never log it
 	 * out, so it stands there into later batches at the same spot: a Legend guest who leaves only with nobody within 24
 	 * blocks stayed because an earlier batch's player was standing by the hall. Only for tests alone in their batch

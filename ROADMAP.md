@@ -6502,6 +6502,7 @@ Lane C builds it, in order. Depends on: nothing open.
   spot is refused (overlaps a building or a road, outside the village, too steep, under water); a ghost outline in the
   world while choosing; Confirm needs a hired Mover. Done when: GameTests for picking, each refusal line, rotate,
   cancel; scene `move_plan`.
+  - [ ] **45.2a** Change from the owner (2026-11-11): the owner says the Move screen doesn't make much sense to a player; rework it so a player understands it (owner 2026-11-10)
 - [x] **45.3** (review: pending 2026-11-09) **The Mover.** A new job with its own workstation (the pixel-art skill; outfit too; a recipe and a
   creative-tab entry), hired like the Builder. He dismantles top-down into the village Storehouse or his own crates
   (nothing dropped, nothing lost, containers packed with their contents kept apart), then rebuilds at the new spot

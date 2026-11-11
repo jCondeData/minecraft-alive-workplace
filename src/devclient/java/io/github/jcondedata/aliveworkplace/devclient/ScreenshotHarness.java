@@ -1735,10 +1735,15 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall but the woodwork: spruce logs instead.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
-					{net.minecraft.world.item.Items.LANTERN, 1}, {net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 20},
-					{net.minecraft.world.item.Items.WHITE_WOOL, 15}};
+				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take 21 of
+				// the logs, which the Carpenter never touches, so 20 left him none to saw (until 46.1 he made the carpets from
+				// the spare wool, which is the Shepherd's work now, and the scene passed on those): a stack, and the rest of
+				// the stall's list as it is today.
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.STRIPPED_SPRUCE_LOG, 3},
+					{net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
+					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 16}, {net.minecraft.world.item.Items.WHITE_WOOL, 9},
+					{net.minecraft.world.item.Items.RED_CARPET, 8}, {net.minecraft.world.item.Items.WHITE_CARPET, 6}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
+					{net.minecraft.world.item.Items.DANDELION, 1}, {net.minecraft.world.item.Items.RED_TULIP, 1}};
 				for (int i = 0; i < stock.length; i++) {
 					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
 				}
@@ -1776,12 +1781,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Job chains (ROADMAP 37.14a): several jobs filling one builder's list, each its own kind, step by step ----------
 
-	/** The jobs filmed in {@link #jobChainsScene}: the Carpenter, the dyer and the Tinkerer. */
+	/** The jobs filmed in {@link #jobChainsScene}: the Carpenter, the Shepherd and the Tinkerer. */
 	private final java.util.List<Villager> chainWorkers = new java.util.ArrayList<>();
 
 	/**
 	 * SCENE=job_chains: a builder's Market Stall with only raw makings in the chest (spruce logs, white wool and poppies,
-	 * a raw iron with a coal and a torch): the Carpenter saws, cuts and makes the woodwork, the dyer grinds the poppies
+	 * a raw iron with a coal and a torch): the Carpenter saws, cuts and makes the woodwork, the Shepherd grinds the poppies
 	 * into dye and dyes the wool, the Tinkerer fires the iron, cuts nuggets and makes the lantern, each a step at a time.
 	 */
 	private void jobChainsScene(Minecraft mc, MinecraftServer server) {
@@ -1802,7 +1807,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
 				// Everything for a Market Stall in its rawest form: the jobs make the rest.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+				// B1151: a stack of logs (the stall's own posts take 21, which the Carpenter leaves alone)
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
 					{net.minecraft.world.item.Items.RAW_IRON, 1}, {net.minecraft.world.item.Items.COAL, 1}, {net.minecraft.world.item.Items.TORCH, 1},
 					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.WHITE_WOOL, 35}, {net.minecraft.world.item.Items.POPPY, 20}};
 				for (int i = 0; i < stock.length; i++) {
@@ -1816,8 +1822,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 				chainWorkers.clear();
 				chainWorkers.add(chainWorker(level, new BlockPos(3, -60, -2), ModBlocks.CARPENTERS_BENCH.defaultBlockState(),
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER));
-				chainWorkers.add(chainWorker(level, new BlockPos(6, -60, -2), Blocks.CAULDRON.defaultBlockState(),
-					net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER, net.minecraft.world.entity.npc.VillagerProfession.LEATHERWORKER));
+				// the Shepherd at his loom: dyeing and weaving are his since 46.2 (the Leatherworker dyed until then)
+				chainWorkers.add(chainWorker(level, new BlockPos(6, -60, -2), Blocks.LOOM.defaultBlockState(),
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD, net.minecraft.world.entity.npc.VillagerProfession.SHEPHERD));
 				chainWorkers.add(chainWorker(level, new BlockPos(9, -60, -2), ModBlocks.TINKERS_BENCH.defaultBlockState(),
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERER));
 				worker = chainWorkers.get(0);
@@ -1835,7 +1842,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				java.util.List<Integer> made = chainWorkers.stream()
 					.map(v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(v, 0)).toList();
 				Showcase.check(made.stream().filter(n -> n >= 1).count() >= 2,
-					"several jobs filled the builder's list (Carpenter, dyer, Tinkerer made " + made + ")");
+					"several jobs filled the builder's list (Carpenter, Shepherd, Tinkerer made " + made + ")");
 			});
 		}
 		if (tick == 1560) {

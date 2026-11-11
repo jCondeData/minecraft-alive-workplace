@@ -5014,7 +5014,7 @@ final class JobScenes {
 				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(STATION)).orElse(false)));
 		// ROADMAP 46.1: the Storehouse's board names who gathers or makes each thing a worker asks for, else the job to hire
-		SCREENS.put("job_lists", new Screen("the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Librarian for the brewing stands",
+		SCREENS.put("job_lists", new Screen("the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				place(level, STATION.east(3), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
@@ -5037,7 +5037,7 @@ final class JobScenes {
 						jobListsAsk();
 						io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, STATION.east(3));
 					}, 30),
-				new Step("02_hire_a_librarian_for_brewing_stands", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, null, 20)),
+				new Step("02_hire_a_cleric_for_brewing_stands", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, null, 20)),
 			(level, player) -> {
 				if (!(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu)) {
 					return false;
@@ -5049,7 +5049,7 @@ final class JobScenes {
 						lines.lines().forEach(l -> lore.append(l.getString()).append('|'));
 					}
 				}
-				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Librarian to make it") >= 0;
+				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Cleric to make it") >= 0;
 			}));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {

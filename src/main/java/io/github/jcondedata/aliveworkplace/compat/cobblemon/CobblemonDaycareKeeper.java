@@ -271,7 +271,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 				continue;
 			}
 			try {
-				for (String value : type.examples()) {
+				for (String value : choicesOf(provider)) {
 					if (type.fromString(value) instanceof StringSpeciesFeature feature
 							&& aspect.equals(aspectOf(provider, feature))) {
 						return feature.getName() + "=" + value;
@@ -314,6 +314,24 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			}
 		}
 		return out;
+	}
+
+	// The values provider takes, in its own order, read the way Cobblemon 1.7.3 and 1.8 both link with: examples()
+	// (1.8 dropped ChoiceSpeciesFeatureProvider.getChoices(), B1059, B1157). Empty when provider isn't a property type
+	// or this version can't read them. Shared with the trainers' team (CobblemonTrainers.settle).
+	static List<String> choicesOf(SpeciesFeatureProvider<?> provider) {
+		if (!(provider instanceof CustomPokemonPropertyType<?> type)) {
+			return List.of();
+		}
+		try {
+			List<String> out = new ArrayList<>();
+			for (String value : type.examples()) {
+				out.add(value);
+			}
+			return out;
+		} catch (RuntimeException | LinkageError e) {
+			return List.of();
+		}
 	}
 
 	/** The aspect {@code provider} gives {@code feature}, or null when it gives none (or isn't a choice feature). */

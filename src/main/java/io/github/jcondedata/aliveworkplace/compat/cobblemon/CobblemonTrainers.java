@@ -23,6 +23,7 @@ import com.cobblemon.mod.common.api.pokemon.feature.ChoiceSpeciesFeatureProvider
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatureProvider;
 import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
 import com.cobblemon.mod.common.api.pokemon.feature.StringSpeciesFeature;
+import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType;
 import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
@@ -307,14 +308,33 @@ public final class CobblemonTrainers {
 		float rate = Cobblemon.INSTANCE.getConfig().getShinyRate();
 		pokemon.setShiny(rate > 0 && shinyRoll * rate < 1);
 		for (SpeciesFeatureProvider<?> provider : SpeciesFeatures.getFeaturesFor(species)) {
-			// only the choices Cobblemon rolls at random (a fixed default stays as it is)
-			if (provider instanceof ChoiceSpeciesFeatureProvider choice && !choice.getChoices().isEmpty()
-				&& (choice.getDefault() == null || !choice.getChoices().contains(choice.getDefault()))) {
-				List<String> choices = choice.getChoices().stream().sorted().toList();
-				StringSpeciesFeature feature = choice.fromString(choices.get(random.nextInt(choices.size())));
-				if (feature != null) {
+			// only the choices Cobblemon rolls at random (a fixed default stays as it is). The choices are read the
+			// 1.8-safe way (B1157: 1.8.1 has no ChoiceSpeciesFeatureProvider.getChoices()); a provider whose default
+			// or value this version can't read keeps the form create() gave it.
+			if (!(provider instanceof ChoiceSpeciesFeatureProvider choice)
+				|| !(provider instanceof CustomPokemonPropertyType<?> type)) {
+				continue;
+			}
+			List<String> choices = CobblemonDaycareKeeper.choicesOf(provider).stream().sorted().toList();
+			if (choices.isEmpty()) {
+				continue;
+			}
+			String fixed;
+			try {
+				fixed = choice.getDefault();
+			} catch (RuntimeException | LinkageError e) {
+				continue;
+			}
+			if (fixed != null && choices.contains(fixed)) {
+				continue;
+			}
+			String value = choices.get(random.nextInt(choices.size()));
+			try {
+				if (type.fromString(value) instanceof StringSpeciesFeature feature) {
 					feature.apply(pokemon);
 				}
+			} catch (RuntimeException | LinkageError e) {
+				// A value this version can't parse: keep create()'s form
 			}
 		}
 		pokemon.updateAspects();

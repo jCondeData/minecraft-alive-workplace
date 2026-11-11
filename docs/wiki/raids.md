@@ -70,6 +70,10 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **Without a source** the horn is the only warning, as before; the Defense page says "No lookout" and What next? says
   to build a Lookout Tower and post a guard by it.
 - The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).
+- **The hall broken or moved.** Only the hall's own round draws the bars up and ends its raid, so a hall taken away
+  that day (broken, or moved by a Mover, which sets a new hall down) draws its dropped bars up at once and calls off
+  a raid under way, which ends its siege; the siege lifts at the next dawn as always (`Warnings.hallGone`, from
+  `VillageHallBlock.onRemove`, B1176). The warning stays on the clock: a hall put back on its spot braces again.
 
 ## How it works
 

@@ -100,6 +100,7 @@ public class VillageHallBlock extends BaseEntityBlock {
 			io.github.jcondedata.aliveworkplace.city.Stewards.hallGone(server, pos); // breaking the hall ends its Steward's job (27.5)
 			io.github.jcondedata.aliveworkplace.realm.Realms.hallGone(server, pos); // it leaves its realm; a capital passes the crown (33.11)
 			VillageWaystones.hallGone(server, pos); // it leaves the waystone network: no settlers through its stone (B996)
+			io.github.jcondedata.aliveworkplace.guard.Warnings.hallGone(server, pos); // a warned day's portcullis goes up, its raid ends (B1176)
 		}
 		super.onRemove(state, level, pos, newState, movedByPiston);
 	}

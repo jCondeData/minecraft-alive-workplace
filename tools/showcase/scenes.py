@@ -142,6 +142,10 @@ SCENES = [
     job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
         "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
         extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
+    # A better pickaxe as soon as there's the iron (ROADMAP 36.11a, B1202): raw iron smelted, an iron pickaxe made, the ores left dug
+    job("miner_pickaxe_upgrade", "Miner", "An iron pickaxe as soon as she has the iron",
+        "the Novice miner's raw iron was smelted in her blast furnace, she made an iron pickaxe from the ingots and went back for the gold and diamond ore her stone pickaxe had left", 240,
+        extra=[("04_making_iron_pickaxe", "Making the iron pickaxe at the blast furnace")]),
     # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
     job("quarry_build", "Miner", "A Quarry that grows back",
         "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),

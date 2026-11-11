@@ -116,8 +116,8 @@ public final class BuilderStatusSync {
 			var box = site.box();
 			Component title = Component.translatable("message.aliveworkplace.overhead.quarry", box.getXSpan(), box.getZSpan(), box.getYSpan(),
 				Math.round(site.progress() * 100));
-			Component line = Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase())
-				.withStyle(site.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
+			Component line = io.github.jcondedata.aliveworkplace.mine.Miners.stateLine(site,
+				site.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
 			send(miner, new Status(miner.getId(), title, site.progress(), line));
 		}
 	}

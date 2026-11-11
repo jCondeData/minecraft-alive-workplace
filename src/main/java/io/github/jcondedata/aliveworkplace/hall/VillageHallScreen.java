@@ -1007,8 +1007,7 @@ public final class VillageHallScreen {
 		}
 		QuarrySite quarry = Miners.activeSite(level, villager);
 		if (quarry != null) {
-			return List.of(Component.translatable("message.aliveworkplace.quarry.state." + quarry.status().name().toLowerCase())
-				.withStyle(quarry.status() == QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+			return List.of(Miners.stateLine(quarry, quarry.status() == QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		}
 		WorkerStatus.Entry entry = WorkerStatus.get(villager, level.getGameTime());
 		if (entry != null) {

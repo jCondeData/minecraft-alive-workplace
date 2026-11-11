@@ -31,7 +31,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 
 /**
  * Miners make their own pickaxe (ROADMAP 36.11): from the cobblestone they mined and two sticks, at their workstation,
- * when they have none or theirs wore out; what they lack goes on the Storehouse board; iron and diamond as they rise;
+ * when they have none or theirs wore out; what they lack goes on the Storehouse board; iron and diamond at any level;
  * restartable over a save; and with {@code minerCraftsPickaxe} off they wait as before.
  */
 public class MinerPickaxeGameTests implements FabricGameTest {
@@ -238,10 +238,13 @@ public class MinerPickaxeGameTests implements FabricGameTest {
 		});
 	}
 
-	/** Iron from Journeyman, diamond from Expert, the best they can make; a Novice makes stone even with ingots there. */
+	/**
+	 * The best they can make, at any level (36.11a, owner 2026-11-11: before, iron waited for Journeyman and diamond for
+	 * Expert): a Novice with diamonds, ingots and cobblestone makes diamond, then iron, then stone.
+	 */
 	//$ gametest_batch AREA '"miner_pickaxe_tiers"'
 	@GameTest(template = AREA, batch = "miner_pickaxe_tiers")
-	public void betterPickaxesAsTheMinerRises(GameTestHelper helper) {
+	public void theBestPickaxeAtAnyLevel(GameTestHelper helper) {
 		Setup s = setup(helper, MIN, MAX, null, new ItemStack(Items.COBBLESTONE, 3), new ItemStack(Items.IRON_INGOT, 3), new ItemStack(Items.DIAMOND, 3),
 			new ItemStack(Items.STICK, 8));
 		ServerLevel level = s.level();
@@ -249,8 +252,8 @@ public class MinerPickaxeGameTests implements FabricGameTest {
 		BlockPos bench = helper.absolutePos(BENCH);
 		List<BlockPos> own = io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(level, bench, s.site().box());
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(v);
-		int[] levels = {1, 3, 4};
-		net.minecraft.world.item.Item[] made = {Items.STONE_PICKAXE, Items.IRON_PICKAXE, Items.DIAMOND_PICKAXE};
+		int[] levels = {1, 1, 1};
+		net.minecraft.world.item.Item[] made = {Items.DIAMOND_PICKAXE, Items.IRON_PICKAXE, Items.STONE_PICKAXE};
 		for (int i = 0; i < levels.length; i++) {
 			v.setVillagerData(v.getVillagerData().setLevel(levels[i]));
 			ItemStack pick = PickaxeCrafting.craft(level, v, bench, own, bag);
@@ -259,7 +262,7 @@ public class MinerPickaxeGameTests implements FabricGameTest {
 		Container chest = helper.getBlockEntity(CHEST);
 		helper.assertTrue(chest.countItem(Items.COBBLESTONE) == 0 && chest.countItem(Items.IRON_INGOT) == 0 && chest.countItem(Items.DIAMOND) == 0
 			&& chest.countItem(Items.STICK) == 2, "materials left: " + chest.countItem(Items.STICK) + " sticks");
-		// A level-4 miner with only cobblestone left makes stone; with nothing, nothing (and nothing is taken).
+		// With only cobblestone left they make stone; with nothing, nothing (and nothing is taken).
 		chest.setItem(0, new ItemStack(Items.COBBLED_DEEPSLATE, 3));
 		helper.assertTrue(PickaxeCrafting.craft(level, v, bench, own, bag).is(Items.STONE_PICKAXE), "no stone pickaxe from cobbled deepslate");
 		helper.assertTrue(PickaxeCrafting.craft(level, v, bench, own, bag).isEmpty(), "a pickaxe from nothing");

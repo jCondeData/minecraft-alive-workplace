@@ -145,3 +145,15 @@ next day's first tick starts; presses, refusals and losses count 0 for the battl
 wins two seconds later; a win counts for the trainer's own village only, and for none when the trainer stands outside
 every village; two wins over an ordinary trainer in a day count 2; without Cobblemon a press spends and counts nothing.
 Mutants killed 3/3: the day spent on any press, a loss counted, the day boundary one tick early.
+
+QA (lane D, 2026-11-11, verifying 43.1, B1104, B1131, B43 and B473): `QaTrainerScreen1111dGameTests` (2):
+`QaTrainerScreen1111dGameTests.theButtonsFitAtEveryBoundaryAndWidth` checks the button layout at each rule's boundary
+from both sides (roomy fits exactly and one pixel short, tight fits exactly and one pixel short, a side narrower than
+Challenge alone) and at every width from 1 to 400 pixels for labels one, three and five times as long: always inside,
+in order, never cut below what a label needs; `QaTrainerScreen1111dGameTests.theTeamsFirstHalfShowsUntilAWin` checks the
+reveal for teams of 0 to 6 (1, 1, 2, 2, 3, 3 shown before a win, all after). `QaTrainerBattle1111dCompatTests` (3,
+Cobblemon): `QaTrainerBattle1111dCompatTests.aMastersChoiceRefusedTwiceInARowDoesNotStopTheBattle` (a Master's choice
+refused on two turns running; the battle goes on), `QaTrainerBattle1111dCompatTests.aBattleWhereThePlayersPokemonFaintRunsToTheEnd`
+(the player's Pokémon knocked out one by one, the next one picked as a player does; the battle ends) and
+`QaTrainerBattle1111dCompatTests.aTrainersBadForcedSwitchDoesNotStopTheBattle` (a trainer's forced switch that picks
+its fainted Pokémon; the battle still ends).

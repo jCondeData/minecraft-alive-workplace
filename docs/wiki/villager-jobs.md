@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a
 
 ## What a player sees
 
@@ -272,13 +272,31 @@ main hand is empty, B351) gets the "Order" button.
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three
 Cobblestone (or Cobbled Deepslate or Blackstone) from their bag and their chests, and two Sticks from there or from the
-village store, or two Planks cut into sticks (the spare sticks are kept). A Journeyman makes iron when there are three
-Iron Ingots in their chests (the blast furnace's own, often), an Expert or Master diamond with three Diamonds: always
-the best they can. It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
+village store, or two Planks cut into sticks (the spare sticks are kept). At any level (36.11a, B1202; before, iron
+waited for Journeyman and diamond for Expert) they make iron from three Iron Ingots and diamond from three Diamonds,
+always the best they can; the ingots and diamonds may also come from the village store or a village-mate's chests
+(where an Armorer who smelted the miner's raw iron keeps the ingots). It takes three seconds at the furnace, the line over their head says "making a pickaxe", and the
 owner reads "Dara made a new Stone Pickaxe at their workstation from what they mined." Nothing is taken unless all of
 it is there, so a Miner saved and loaded mid-way simply starts it again. Without the materials they wait as before
 ("needs a pickaxe"), and the Storehouse board asks for what they lack, the cobblestone first and then the sticks,
 beside "A pickaxe" (which the Toolsmith may still make): handed over, it goes into their chests and they make it.
+
+**An iron pickaxe as soon as there's the iron (36.11a, B1202; owner 2026-11-11).** A Miner digging with a pickaxe that a
+better one they can make beats (`PickaxeCrafting.rank`: by what it harvests, so modded pickaxes count too: wood and gold
+0, stone 1, iron 2, diamond and netherite 3) makes the better one too: every 5 seconds at work they look, and with the
+materials there they walk to the Blast Furnace and make it ("making a pickaxe"); the old pickaxe goes back into their
+chests. Short of ingots for an iron one, the line over their head, their status in chat and their Village Hall page say
+what they lack: "digging · needs 2 Iron Ingots for an Iron Pickaxe" (or "needs 2 Sticks..."). Raw iron they dug (and iron
+ore) gets to the ingots without the player: with a furnace by their workstation (their Blast Furnace itself counts), coal
+in the chests and the sticks there, they take the raw iron to the chests, the furnace is loaded on the way
+(`Furnaces.tend`), and they come back for the ingots once some are done; without a furnace a hired Armorer fetches the
+raw iron and smelts it, and the miner takes three ingots from the Armorer's chests. **Ores left for a better pickaxe:**
+an ore block the pickaxe in hand can't harvest (gold, diamond, redstone, emerald with a stone pickaxe; by `c:ores` or
+vanilla's ore tags) is left standing as before but remembered in the quarry (`left_ores`, saved; up to 256; quarries
+saved before load with none). Once the pickaxe in hand can harvest one, the miner goes back for it before anything else
+(the dig order's place stays where it was), and it counts as dug instead of left standing; an ore that's gone, has water
+or lava beside it now, or can't be reached is forgotten. With `minerCraftsPickaxe` off none of this happens
+(`MinerPickaxeUpgradeGameTests`).
 
 **Miners dig deeper as they level up (36.22).** The Quarry Marker's depths go 4, 8, 16, 32, 64 (every miner), then
 96 (Journeyman and up), 128 (Expert and up) and "down to just above bedrock" (Master only: the world's floor plus 5,
@@ -386,7 +404,7 @@ gives no marker back (there was none), and the Miner takes the pit again within 
 | `villagersPerFisherman` | 10 (1 to 100) | One more fisherman for every this many villagers, with the cap on |
 | `workerPathRange` | 48 (16 to 128) | How far a worker looks for a path in one go |
 | `keepVillagesWorking` | on | Villages keep working while no player is near |
-| `minerCraftsPickaxe` | on | A Miner with no pickaxe makes one at their workstation from what they mined; off: they wait for one |
+| `minerCraftsPickaxe` | on | A Miner with no pickaxe makes one at their workstation from what they mined, and a better one (iron, diamond) as soon as they have the materials, then digs the ores their old one left; off: they wait for one |
 | `quarryBuild` | on | The Quarry build's Miner digs its pit without a marker and it grows back; off: not offered, nothing grows back |
 | `quarryRegrowth` | 100 (0 to 2400) | Blocks that grow back in a Quarry's pit in a Minecraft day; 0: none |
 | `maxWorkPace` | 200 (100 to 400) | The cap on every speed bonus together, in percent of the usual pace |

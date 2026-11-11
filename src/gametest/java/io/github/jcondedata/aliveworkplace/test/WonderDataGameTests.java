@@ -578,8 +578,8 @@ public class WonderDataGameTests implements FabricGameTest {
 	 * {@code disabledWonders} takes bare names as ours, {@code wonderServerLimit} is clamped; with the gate closed every
 	 * switch is off and hidden.
 	 */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateWonderData"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateWonderData")
 	public void theWonderSwitches(GameTestHelper helper) {
 		try {
 			WorkplaceConfig config = WorkplaceConfig.parse("{\"wonderCaps\": [1, 9], \"wonderServerLimit\": 99, \"disabledWonders\": [\"great_cathedral\", \"pack:arch\", \"\"],"

@@ -4,14 +4,21 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.wonder.WonderPlans;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +27,9 @@ import org.jetbrains.annotations.Nullable;
  * clicked and again on Confirm. Refused, each with its reason: everything with config {@code moveBuildings} off; a
  * building that isn't the village's own (not one of the hall's finished buildings); one in another player's protected
  * village ({@link VillageProtection#keeper}, the mod's own claims: operators and the owner's friends are let in); the
- * Village Hall's own building; a Wonder (or a part of one); and a building with a build site still going on it (an
- * upgrade, a repair or a build overlapping it), since the Builder's site would lose its building under it.
+ * Village Hall's own building, or one that holds any other village's Hall (B1161: the Mover would carry it away); a
+ * Wonder (or a part of one); and a building with a build site still going on it (an upgrade, a repair or a build
+ * overlapping it), since the Builder's site would lose its building under it.
  */
 public final class MoveRules {
 	/** Whether buildings may be moved at all (config {@code moveBuildings}). Off: the Move page refuses every one. */
@@ -49,7 +57,7 @@ public final class MoveRules {
 		if (keeper.isPresent()) {
 			return VillageProtection.denied(level, keeper.get()).plainCopy();
 		}
-		if (box.isInside(hall)) {
+		if (box.isInside(hall) || holdsHall(level, box)) {
 			return Component.translatable("message.aliveworkplace.move.refused.hall");
 		}
 		if (WonderPlans.isWonder(f.structure())) {
@@ -67,6 +75,32 @@ public final class MoveRules {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * Whether any Village Hall stands inside {@code box} (B1161: another village's, two villages side by side). The
+	 * loaded chunks are read by their block entities, without loading any; a chunk that isn't loaded is asked by its
+	 * halls' points of interest.
+	 */
+	static boolean holdsHall(ServerLevel level, BoundingBox box) {
+		for (int cx = SectionPos.blockToSectionCoord(box.minX()); cx <= SectionPos.blockToSectionCoord(box.maxX()); cx++) {
+			for (int cz = SectionPos.blockToSectionCoord(box.minZ()); cz <= SectionPos.blockToSectionCoord(box.maxZ()); cz++) {
+				LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz); // loaded only, and without waiting (B103)
+				if (chunk == null) {
+					continue;
+				}
+				for (BlockEntity be : chunk.getBlockEntities().values()) {
+					if (be instanceof VillageHallBlockEntity && box.isInside(be.getBlockPos())) {
+						return true;
+					}
+				}
+			}
+		}
+		int reach = Math.max(box.getXSpan(), box.getZSpan()) / 2 + 1;
+		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), box.getCenter(), reach, PoiManager.Occupancy.ANY)
+			.map(PoiRecord::getPos)
+			.anyMatch(p -> box.isInside(p) && level.getChunkSource().getChunkNow(SectionPos.blockToSectionCoord(p.getX()),
+				SectionPos.blockToSectionCoord(p.getZ())) == null);
 	}
 
 	private MoveRules() {

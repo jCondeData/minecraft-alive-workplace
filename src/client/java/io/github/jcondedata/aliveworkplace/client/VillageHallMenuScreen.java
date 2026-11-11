@@ -1171,8 +1171,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			hits.add(new int[]{0, slot, x, top, w - 6, RH});
 			String kind = row.getString("kind");
 			g.drawString(font, TableStyle.trim(font, icon.getHoverName(), colW[0]), cols[0], top + 2, TableStyle.NAME, false);
-			Component job = Component.translatable(row.getString("job"));
-			int jobColour = kind.equals("builder") ? TableStyle.TITLE : kind.equals("child") || kind.equals("jobless") || kind.equals("nitwit")
+			Component job = HallPeople.job(row); // "Undertaker (no workstation)" for a worker without one (B1173)
+			int jobColour = kind.equals("builder") ? TableStyle.TITLE : kind.equals("child") || kind.equals("jobless") || kind.equals("nitwit") || row.getBoolean("no_site")
 				? TableStyle.SUBLINE : TableStyle.BODY;
 			g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 2, jobColour, false);
 			g.drawString(font, TableStyle.trim(font, HallPeople.level(row.getInt("level")), colW[2]), cols[2], top + 2, TableStyle.BODY, false);

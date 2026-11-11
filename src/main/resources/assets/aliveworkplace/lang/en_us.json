@@ -1509,6 +1509,7 @@
   "screen.aliveworkplace.hall.people.mood.no_bed": "No bed",
   "screen.aliveworkplace.hall.people.child": "Child",
   "screen.aliveworkplace.hall.people.no_job": "No job",
+  "screen.aliveworkplace.hall.people.no_site": "%s (no workstation)",
   "screen.aliveworkplace.hall.people.job_button": "Job ▾",
   "screen.aliveworkplace.hall.people.bed_button": "Bed ▾",
   "screen.aliveworkplace.hall.people.find_button": "Find",

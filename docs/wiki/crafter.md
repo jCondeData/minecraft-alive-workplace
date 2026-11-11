@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1170
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1170, B1171
 
 ## 1. What a player sees
 
@@ -32,6 +32,12 @@ when there are none, the village Storehouse (else another village-mate's chests 
 chest anywhere he looks isn't crafted for, so nothing made for him is left lying by the crafter's bench (B721).
 A builder who has a chest of his own still gets it there, never in the Storehouse, and two chestless builders each get
 theirs.
+"His Blueprint Table" is the table the build is fed from: a build is served once, through the builder who leads it. A
+builder who is only helping on it (a Wonder's crew too) is passed over, and a Wonder's part gets its things in the
+stockpile by the Foundation Stone, not in its lead's own house. Before, what was made for such a build was carried to
+the helper's (or the Wonder lead's) own chests, where the build never takes from: it stayed on the list and was made
+and carried there again and again. What a crafter delivers also comes off the builder's list at once, so it isn't made a
+second time before the builder next counts his chests (B1171).
 A job is only taken when what it makes fits in those chests: counting a slot the job's own ingredients empty (the last
 two stone bricks in a slot leave room for the four slabs cut from them), and leaving out the room another crafter's
 job already counts on, so two crafters never both count the same empty slot. With the chests by his table full, it
@@ -170,6 +176,13 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and change the Tinkerer's golem mending. Chests already counted (the builder's, a village-mate's such as the
   Glassblower's, another builder's) aren't counted twice; a builder on another side (`Village.sharesWith`) gets none.
   The Carpenter stays out, for B778's reasons above: what he took home is carried on, not made into anything else.
+- B1171 (lane-a-1111-0322): a crafter goes by the bench that feeds the build (`CrafterWork.supplyBench`:
+  `Builders.siteBench` for its lead, as `BuilderWork` fetches and counts), not by the table of whichever builder it
+  looked at, and skips helpers (`Builders.isHelping`), so each build is served once, where it takes from. Chosen over
+  serving a helper at the lead's bench too: his claim ("his uuid|item") would let two crafters make the same request.
+  A delivery lowers `BuildSite.missing` at once (`CrafterWork.offTheList`, as `Requests.lower` does for a player's
+  hand-over, B344); the builder's next count (every 100 ticks) replaces it. A crafter near a helper's table but more
+  than a village's reach from the lead's no longer serves that build.
 
 ## 7. Known limits
 
@@ -277,6 +290,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   wait reach the chestless builder once a Storehouse slot frees, none on the ground and the wood adding up (B778);
   `QaCarpenterHomePlanks1101GameTests.reloadedWhileCarryingHomePlanksOnStillFeedsTheBuilder`: the same with a save and
   reload of the Carpenter on his way, the row built and no job left saved.
+- `CraftersDeliverOnceB1171GameTests` (written while Gradle was down, first run on CI):
+  `stairsAndSlabsAreMadeOnceAndReachTheBuilder` (4 oak stairs and 4 stone brick slabs with a Carpenter, a Mason and a
+  Porter and makings for many more: made once, built, no second batch in the 500 ticks after),
+  `nothingIsMadeIntoAHelpersHouseTheBuildNeverTakesFrom` (another player's builder helping, planks in his own chest:
+  nothing made, his planks untouched), `reloadedOnTheWayTheStairsStillArriveOnce` (the Carpenter saved and loaded as he
+  sets off with the stairs) (B1171).
 - `JobChainGameTests.anOldSavesCrafterLoadsJobless`: an old save's Crafter loads clean and jobless.
 - `JobChainGameTests.theCarpenterMakesTheSlabsTheBuilderNeeds`, `theCarpenterFetchesTheOneLogItNeeds`,
   `oneCarpenterServesTwoBuilders`: one step, exactly one log, two askers.

@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173
 
 ## What a player sees
 
@@ -69,6 +69,14 @@ table. The open row is drawn, and takes clicks, while any part of its block show
 line and its details and lists are all above the table's top (B546); every table hit is clipped to the table. The
 header says "1 child" for one (`header_child`, B547). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
 again without them (`HallPeople.gone`).
+
+A villager with a trade but no workstation now (his table broken or taken while he kept his level, as vanilla keeps
+an experienced villager's job; `HallPeople.noWorkstation`) is listed at his job, among the workers, as "Undertaker (no
+workstation)" (`screen.aliveworkplace.hall.people.no_site`; the row's `no_site`), and the header and the People
+button's "With a job" count him working (B1173: such an Undertaker used to read "No job", counted jobless, so his job
+showed nowhere). Job ▾ gives him a free block for nothing, as it does a jobless villager, and the census still keeps
+him in `Census.jobless()` for the Steward's "worker without a workstation" check and the settlers. A Legend without a
+trade (`ModVillagers.LEGEND`, never a workstation) reads "Legend", no note, counted working.
 
 **Job ▾ (40.3).** Job ▾ on an open row opens a list of every job right under it (`hall/HallJobs`), the table
 scrolling over it. On top: "A new job for Dara", then the price by their level ("Retraining costs 20 emeralds
@@ -556,7 +564,9 @@ is; three upgrades in a row against a lead and two helpers split twice and queue
 lead and going on; two lone Builders are never split; the Repairs page's Yes the same; both answers word for word).
 `QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `QaLaneC1104eGameTests.theHallGivesNoJobToABabyOrANitwitButToAGrownVillager` (QA: the hall's hand-out refuses a baby who is no nitwit and a grown nitwit, the block staying free, and gives it to a grown villager beside them). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
-screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
+screen is open; scene `hall_people`). `HallPeopleNoSiteGameTests` (B1173: an Undertaker at his table and with it
+broken, his job with "(no workstation)" and the counts; every job of ours without a workstation, none jobless).
+`HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
 `aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,
 `notEnoughEmeraldsChangesNothing`, `toTheBuilder`, `aBusyBuilderHandsHisBuildBack`, `noJob` (and reloaded),
 `aJoblessVillagerIsGivenABlockForNothing`, `childrenAndNitwitsCant`, `theRuleOffHidesTheButton`,

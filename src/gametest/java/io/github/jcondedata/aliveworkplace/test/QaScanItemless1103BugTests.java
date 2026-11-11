@@ -11,16 +11,53 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 /**
  * QA (qa-lane-b-1103-0938, 2026-11-03): the Scan Tool round trips of {@link QaScanItemless1103GameTests} that fail on
- * main: infested stone, suspicious sand and a petrified oak slab ask items no survival player can hold (the spec: such
- * blocks use their base material, B874); and a powder snow bucket poured by a builder never gives its empty bucket back,
- * as a player's does and the builder's water and lava buckets do (B873). The bamboo shoot and chorus plant round trips
- * (B872, open) stay on tests/scan-itemless-1103 until that fix.
+ * main. A bamboo shoot is left out and a chorus plant asks its own (creative-only) item, where docs/wiki/builder.md
+ * builds a block with no item of its own from what a player would use; infested stone, suspicious sand and a petrified
+ * oak slab ask items no survival player can hold (the spec: such blocks use their base material); and a powder snow
+ * bucket poured by a builder never gives its empty bucket back, as a player's does and the builder's water and lava
+ * buckets do.
  */
 public class QaScanItemless1103BugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
+
+	/** A bamboo shoot (planted from bamboo, no item of its own) on grass asks one bamboo and is planted again. */
+	//$ gametest_ticks_batch HUGE '3000' '"qa1103ilShoot"'
+	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qa1103ilShoot")
+	public void aScannedBambooShootIsPlantedFromBamboo(GameTestHelper helper) {
+		QaScanRebuild1102dGameTests.Scene s = new QaScanRebuild1102dGameTests.Scene();
+		s.put(0, 0, 0, Blocks.GRASS_BLOCK);
+		s.put(0, 1, 0, Blocks.BAMBOO_SAPLING);
+		QaScanRebuild1102dGameTests.Built b = QaScanRebuild1102dGameTests.roundTrip(helper, s, Map.of(Items.BAMBOO, 1), true);
+		helper.succeedWhen(() -> {
+			QaScanItemless1103GameTests.finished(helper, b);
+			BlockState now = helper.getLevel().getBlockState(b.at(0, 1, 0));
+			helper.assertTrue(now.is(Blocks.BAMBOO_SAPLING) || now.is(Blocks.BAMBOO), "the bamboo shoot was built as " + now
+				+ " (" + b.b().site().skipped() + " skipped)");
+		});
+	}
+
+	/**
+	 * A chorus plant (no survival item: it grows from a chorus flower) two tall on end stone, topped with a chorus flower:
+	 * the list asks chorus flowers, never a chorus plant item, and the plant stands again.
+	 */
+	//$ gametest_ticks_batch HUGE '3000' '"qa1103ilChorus"'
+	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qa1103ilChorus")
+	public void aScannedChorusPlantAsksChorusFlowers(GameTestHelper helper) {
+		QaScanRebuild1102dGameTests.Scene s = new QaScanRebuild1102dGameTests.Scene();
+		s.put(0, 0, 0, Blocks.END_STONE);
+		s.put(0, 1, 0, Blocks.CHORUS_PLANT.defaultBlockState().setValue(BlockStateProperties.UP, true).setValue(BlockStateProperties.DOWN, true));
+		s.put(0, 2, 0, Blocks.CHORUS_PLANT.defaultBlockState().setValue(BlockStateProperties.UP, true).setValue(BlockStateProperties.DOWN, true));
+		s.put(0, 3, 0, Blocks.CHORUS_FLOWER);
+		QaScanRebuild1102dGameTests.Built b = QaScanRebuild1102dGameTests.roundTrip(helper, s, Map.of(), true);
+		Map<Item, Integer> asked = b.b().site().plan(helper.getLevel()).materials();
+		helper.assertTrue(!asked.containsKey(Items.CHORUS_PLANT), "the list " + asked + " asks chorus plant, an item no survival player can get");
+		helper.succeedWhen(() -> b.done(helper));
+	}
 
 	/**
 	 * Blocks a player finds but cannot hold in survival (the spec: "some blocks you cannot hold in survival use their base

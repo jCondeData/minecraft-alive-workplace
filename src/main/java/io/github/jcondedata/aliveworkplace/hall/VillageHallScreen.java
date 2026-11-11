@@ -149,7 +149,18 @@ public final class VillageHallScreen {
 		}
 		VillageHalls.Census census = VillageHalls.census(level, hall);
 		List<Villager> people = new ArrayList<>(census.workers());
-		people.addAll(census.jobless());
+		// B1173: a worker without a workstation is listed at their job, among the workers, as the header counts them
+		for (Villager v : census.jobless()) {
+			if (HallPeople.listedWorking(v)) {
+				people.add(v);
+			}
+		}
+		people.sort(VillageHalls.byJob(hall));
+		for (Villager v : census.jobless()) {
+			if (!HallPeople.listedWorking(v)) {
+				people.add(v);
+			}
+		}
 		// Legends come first (29.4); the sort is stable, so everyone else keeps their order.
 		people.sort(java.util.Comparator.comparing(v -> io.github.jcondedata.aliveworkplace.legend.Legends.of(v).isEmpty()));
 		people.addAll(HallPeople.children(level, hall)); // the People table lists the children too, last (40.2)
@@ -228,8 +239,8 @@ public final class VillageHallScreen {
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		VillageGrowth.Blocker growth = VillageGrowth.blocker(level, hall, needs, entity == null ? 0 : entity.lastBirth());
 		menu.button(PEOPLE, icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.hall.villagers", census.villagers()), ChatFormatting.WHITE,
-			line(Component.translatable("screen.aliveworkplace.hall.workers", census.workers().size()), ChatFormatting.GRAY),
-			line(Component.translatable("screen.aliveworkplace.hall.jobless", census.jobless().size()), ChatFormatting.GRAY),
+			line(Component.translatable("screen.aliveworkplace.hall.workers", census.workers().size() + HallPeople.atTheirJob(census)), ChatFormatting.GRAY), // as the People table counts (B1173)
+			line(Component.translatable("screen.aliveworkplace.hall.jobless", census.jobless().size() - HallPeople.atTheirJob(census)), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.children", census.children()), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.born", entity == null ? 0 : entity.births()), ChatFormatting.GRAY),
 			line(Component.translatable("screen.aliveworkplace.hall.graves", io.github.jcondedata.aliveworkplace.grave.Graves.near(level, hall, VillageHalls.RADIUS).size()),

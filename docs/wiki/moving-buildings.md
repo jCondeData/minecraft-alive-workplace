@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172
 
 ## What a player sees
 
@@ -255,8 +255,9 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   would make the player break the crate, which loses the job the same way.
 - Since it stays, a new spot over a Mover's Crate is refused on the Move page (B1129). A move confirmed before that check
   that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`). So is a
-  block whose spot gets a crate set down after the move is confirmed; a skipped chest or barrel loses its packed items
-  today (B1172, open).
+  block whose spot gets a crate set down after the move is confirmed. A skipped block that holds items (a chest, a
+  barrel) is dropped on top of the crate with everything packed in it, so nothing packed is ever deleted (B1172); a
+  waiting step was ruled out because the crate is the Mover's workstation and would never move by itself.
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -318,7 +319,7 @@ half way (whoever broke it has it, not put up again, nothing doubled); called of
 (everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
 and finishes once it's back); his own crate inside the house (it stays standing, the house moves without it and the move
 ends), also on a save from before the fix with the crate already packed (put back, the move ends); a move confirmed onto
-the spot where his crate stands (B1129: the crate isn't broken, only the one plank there is skipped, nothing dropped); config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+the spot where his crate stands (B1129: the crate isn't broken, only the one plank there is skipped, nothing dropped); `QaMoverCrate1111bGameTests` adds a chest whose spot is his crate (B1172: the chest and its 12 bread and 64 emeralds dropped there, none lost), a turned spot over the crate, a spot one block off it, reloads in every stage, the crate broken going down and going up, the Move page's crate refusals at the spot's edge, and B1154's 128-block line; config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
 doesn't see the crate).
 
 `MoverBelongingsGameTests` (4, 45.5): a house with a chest (a named sword in it), a double chest, a barrel, a shulker

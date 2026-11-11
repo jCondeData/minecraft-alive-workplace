@@ -191,6 +191,8 @@ public final class ThreatData extends SavedData {
 		final List<BlockPos> braced = new ArrayList<>();
 		/** The village's gates were shut with no guard to open them (a warned day or a siege; B1158), to open again after. */
 		boolean gatesShut;
+		/** A guard's round shut the village's gates for the night (B1180), to open at dawn if no guard is left to. */
+		boolean nightShut;
 	}
 
 	/** The data of every dimension loaded since the server started (for the few callers that know a hall but no level). */
@@ -417,6 +419,21 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/** Whether a guard's round shut the gates of the village round {@code hall} for the night (B1180). */
+	public boolean nightShut(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock != null && clock.nightShut;
+	}
+
+	/** Marks (or clears) the gates of the village round {@code hall} as shut for the night by a guard's round (B1180). */
+	public void nightShut(BlockPos hall, boolean shut) {
+		Clock clock = shut ? clocks.computeIfAbsent(hall.immutable(), h -> new Clock()) : clocks.get(hall);
+		if (clock != null && clock.nightShut != shut) {
+			clock.nightShut = shut;
+			setDirty();
+		}
+	}
+
 	/** Forgets the hall's clock (the hall is gone; tests). */
 	public void forgetClock(BlockPos hall) {
 		if (clocks.remove(hall) != null) {
@@ -618,6 +635,7 @@ public final class ThreatData extends SavedData {
 			c.putLong("warned", e.getValue().warned);
 			c.putLongArray("braced", e.getValue().braced.stream().mapToLong(BlockPos::asLong).toArray());
 			c.putBoolean("gatesShut", e.getValue().gatesShut);
+			c.putBoolean("nightShut", e.getValue().nightShut);
 			halls.add(c);
 		}
 		tag.put("clock", halls);
@@ -930,6 +948,7 @@ public final class ThreatData extends SavedData {
 				clock.braced.add(BlockPos.of(bar));
 			}
 			clock.gatesShut = Nbt.getBoolean(c, "gatesShut"); // false in a save from before B1158
+			clock.nightShut = Nbt.getBoolean(c, "nightShut"); // false in a save from before B1180
 			clocks.put(BlockPos.of(Nbt.getLong(c, "hall")), clock);
 		}
 	}

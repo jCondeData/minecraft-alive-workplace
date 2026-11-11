@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187
 
 ## 1. What a player sees
 
@@ -208,6 +208,8 @@ that village's store, so the village's own Builder on a village build (or none) 
 "Needs", it also names the nearest Storehouse he doesn't count and why (`Village.unusedStorehouse`): more than the
 village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
 48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
+
+**What shared chests keep back (B31, 23.5, B1187).** Chests that serve more than one build keep back what the other builds still need (`Builders.reservedAt`, `Builders.reservedIn`, and a Storehouse's `Builders.reservedForOthers`), less what each of those builds' crews already carries for it: the builder's bag and his helpers' bags alike, as `Builders.computeMissing` and the crafters' `Builders.needFromChests` count them. Before B1187 only the builders' own bags were taken off, so logs a helper carried for one build were held back in its chest as well and another builder waited beside the spare (QA's `QaSharedStock1111bBugTests`).
 
 **Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level,
 Novice to Master: 100%, 85%, 70%, 55%, 40%, rounded to whole ticks (at 30, a Novice places a block every 30 ticks and a
@@ -804,3 +806,8 @@ every starter build), `preview` (ghost preview and status), `placing` (turn, mir
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),
 `builder_table_move` (B290: the Storehouse counted at a workshop table, and a sneak-click moving the builder).
+QA's `QaBuilderFixes1111bGameTests` (B872 and B1117; 6 of its tests): a paid bamboo shoot asks exactly one bamboo, uses
+it and is planted; a grown bamboo stalk three tall asks three bamboo and a lone chorus flower one chorus flower (they have
+items); a paid chorus stalk two tall under its flower asks three chorus flowers, no chorus plant, and stands again; a pond
+with frogspawn beside a lily pad and a spawner asks the lily pad and two water buckets, never frogspawn or a spawner, and
+is built without them; a paid frogspawn pond finishes.

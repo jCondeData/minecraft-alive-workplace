@@ -2006,6 +2006,7 @@
   "screen.aliveworkplace.move.cancel_hint": "Leave the building where it is",
   "screen.aliveworkplace.move.new_corner": "New corner: %s, %s, %s",
   "screen.aliveworkplace.move.the_hall": "the Village Hall",
+  "screen.aliveworkplace.move.another_building": "another building",
   "screen.aliveworkplace.move.fit.fits": "This spot fits",
   "screen.aliveworkplace.move.fit.same_spot": "Pick a new spot on the map, or rotate it",
   "screen.aliveworkplace.move.fit.outside": "Refused: part of it would be outside the village",

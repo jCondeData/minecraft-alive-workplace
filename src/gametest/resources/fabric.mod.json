@@ -1617,7 +1617,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClericOwnChest1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cBugTests"
 		]
 	},
 	"depends": {

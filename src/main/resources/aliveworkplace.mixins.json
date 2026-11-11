@@ -25,6 +25,7 @@
 		"FarmlandTrampleMixin",
 		"PistonProtectionMixin",
 		"HangingHurtMixin",
+		"LevelChunkMixin",
 		"ArmorStandThreatMixin",
 		"ExplosionMixin",
 		"FireBlockAccessor",

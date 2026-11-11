@@ -214,6 +214,14 @@ cottage down, and the cottage back in hand.
 player leave the land there unloaded and the player's things unchanged; the same Get Blueprint at the Table beside the
 player hands out the cottage.
 
+`QaBuilderFixes1111bGameTests` (QA, B1037 and B1022; 4 of its tests): Get Blueprint, Store All and Take Stored each work
+with the player exactly 8 blocks from the Table's center and are refused at 8.01, and a loaded Table 20 blocks off
+refuses too; every Wonder stage blueprint on disk (the Colossus' four, every other Wonder's and the test folly's), plain
+and in a style, is refused with one "… is raised from its Wonder Plan, not handed out at the Table" line each (no id or
+placeholder in it) and both Blank Blueprints kept, with the switch off, on while the Wonders are ???, and on with the folly
+unlocked view-only by its Wonder Plan used on the Table; a whole Wonder's id hands out nothing either; the Starter Cottage
+is still handed out after.
+
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
 starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search
 for nothing lists nothing, and an emptied box lists everything).

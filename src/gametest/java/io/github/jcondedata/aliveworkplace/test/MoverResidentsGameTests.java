@@ -267,7 +267,11 @@ public class MoverResidentsGameTests implements FabricGameTest {
 			work(level, s, x -> false);
 			helper.assertTrue(site.stage() == MoveSite.Stage.DONE, "the move ended " + site.stage());
 			assertAtHome(helper, s, p);
-			helper.assertTrue(MoveSites.get(level).homecomings().isEmpty(), "residents left waiting: " + MoveSites.get(level).homecomings().size());
+			// none of this house's people is left waited for (the level's list also keeps other tests' residents, whose
+			// villagers were discarded with their test areas: counting those made this fail whenever it ran after them)
+			List<UUID> ours = List.of(p.husband().getUUID(), p.wife().getUUID(), p.librarian().getUUID(), p.builder().getUUID());
+			long waiting = MoveSites.get(level).homecomings().stream().filter(r -> ours.contains(r.id())).count();
+			helper.assertTrue(waiting == 0, "residents left waiting: " + waiting);
 			helper.succeed();
 		});
 	}

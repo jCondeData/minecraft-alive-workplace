@@ -252,6 +252,10 @@ public class QaMoveHallBed1111cGameTests implements FabricGameTest {
 			helper.assertTrue(chosen.equals(VillageNeeds.bed(level, tomas)), "the People page shows Tomas's bed as " + at(VillageNeeds.bed(level, tomas)));
 			helper.assertTrue(level.getPoiManager().getFreeTickets(chosen) == 0, "the bed the player gave Tomas is free for anyone");
 			helper.assertTrue(level.getPoiManager().getFreeTickets(helper.absolutePos(INN_BED)) == 1, "the inn's bed wasn't let go when he moved out");
+			// the move finished while Tomas is here, so he isn't left among the residents waited for (MoveSites is the level's,
+			// and MoverResidentsGameTests expects nobody waiting after its own move)
+			work(level, s, x -> false);
+			helper.assertTrue(MoveSites.get(level).homecomings().stream().noneMatch(r -> r.id().equals(tomas.getUUID())), "Tomas is left waited for");
 			helper.succeed();
 		});
 	}

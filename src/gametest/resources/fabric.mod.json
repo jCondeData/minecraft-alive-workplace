@@ -1631,6 +1631,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LeadToAndFroB1171GameTests"
 		]

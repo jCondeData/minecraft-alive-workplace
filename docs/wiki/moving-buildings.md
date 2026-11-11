@@ -314,6 +314,15 @@ picker, nothing is saved, the hut and its chest untouched, and the refusal is th
 `QaMovePage1111cBugTests` (2, B1174): with one hut's move planned, then with it started, the other hut's spot over
 that new spot is refused naming it (step 2, Confirm gray, nothing saved), and a spot clear of it fits.
 
+`QaHallMove1111c2GameTests` (5, the QA lane, B1163): a village with no finished buildings shows one note ("No
+buildings to move yet", "Buildings your builders finish in the village are listed here") that opens nothing, the tab
+"0 moves planned", the title "Move a building: <village>" and the no-Mover line (with a Mover, "A Mover works here");
+exactly 36 buildings fill the list's four rows, 37 give 35 rows and "And 2 more" in the last slot, which opens nothing;
+two moves confirmed (Confirm's own action-bar sentence with the spot) count "2 moves planned", Call off on one says
+"The Test Hut stays where it is: the move is called off", the list shows again with that row unplanned, the other move
+untouched, "1 move planned" and no block changed; a quarter-turned move saved and reloaded opens on its spot still
+turned (front east, Rotate's next turn south, step 3, Call off), and Confirm there again keeps the one move unchanged.
+
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows
 captured with its front and resident; empty and unknown buildings give no plan.
@@ -340,9 +349,10 @@ and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emera
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.
 `QaCreateMoverArm1110eCompatTests` (1, compat suite, B1137): a Mechanical Arm taking from a Depot to its west and
 putting on one to its north, moved a quarter turn, still aims at both depots.
-`QaCreateMoverHeld1111eCompatTests` (3, compat suite, the QA lane): a Deployer holding 16 iron ingots, a Deployer
-filtered to an iron pickaxe and holding one, and a Placard showing a diamond, each moved a quarter turn: the hand, the
-filter and the placard's item arrive once, nothing dropped while the house comes down or loose after.
+`QaCreateMoverHeld1111eCompatTests` (4, compat suite, the QA lane): a Deployer holding 16 iron ingots, a Deployer
+filtered to an iron pickaxe and holding one, and a Placard showing a diamond on the floor and one hung on the inside of
+a wall, each moved a quarter turn: the hand, the filter and the placard's item arrive once, the hung placard on its
+turned wall, nothing dropped while the house comes down or loose after.
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named

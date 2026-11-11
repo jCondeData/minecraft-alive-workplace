@@ -263,8 +263,8 @@ public final class Miners {
 		text.append(Component.translatable("message.aliveworkplace.quarry.header", who, box.getXSpan(), box.getZSpan(), box.getYSpan(),
 			Math.round(site.progress() * 100)).withStyle(ChatFormatting.GOLD));
 		text.append(Component.literal("\n  "));
-		text.append(Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase()).withStyle(
-			site.status() == QuarrySite.Status.NEEDS_PICKAXE || site.status() == QuarrySite.Status.NEEDS_LADDERS ? ChatFormatting.YELLOW : ChatFormatting.GRAY));
+		text.append(stateLine(site, site.status() == QuarrySite.Status.NEEDS_PICKAXE || site.status() == QuarrySite.Status.NEEDS_LADDERS
+			? ChatFormatting.YELLOW : ChatFormatting.GRAY));
 		text.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
 		text.append(Component.translatable("message.aliveworkplace.quarry.counts", site.mined(), site.skipped()).withStyle(ChatFormatting.GRAY));
 		if (villager != null) {
@@ -278,6 +278,21 @@ public final class Miners {
 			.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, cancel))
 			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("message.aliveworkplace.quarry.cancel_hover")))));
 		return text;
+	}
+
+	/**
+	 * What the miner is doing, in {@code color}, for the status lines (chat, overhead, the Hall), and what they still
+	 * lack for an iron pickaxe while they dig with a weaker one (36.11a): "digging · needs 2 Iron Ingots for an Iron Pickaxe".
+	 */
+	public static MutableComponent stateLine(QuarrySite site, ChatFormatting color) {
+		MutableComponent line = Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase()).withStyle(color);
+		PickaxeCrafting.Upgrade need = site.upgradeNeed();
+		if (need != null && PickaxeCrafting.ENABLED && (site.status() == QuarrySite.Status.WORKING || site.status() == QuarrySite.Status.DEPOSITING)) {
+			line.append(Component.literal(" · ").withStyle(ChatFormatting.DARK_GRAY));
+			line.append(Component.translatable("message.aliveworkplace.quarry.upgrade_needs", need.count(),
+				io.github.jcondedata.aliveworkplace.work.Words.itemName(need.item(), need.count())).withStyle(ChatFormatting.YELLOW));
+		}
+		return line;
 	}
 
 	public static void sendStatus(Player player, Villager villager) {

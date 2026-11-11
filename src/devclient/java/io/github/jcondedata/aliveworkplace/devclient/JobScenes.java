@@ -3163,6 +3163,39 @@ final class JobScenes {
 				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
 			};
 		}));
+		// A better pickaxe as soon as there's the iron (36.11a, B1202): a Novice digging with a stone pickaxe passes the gold
+		// and diamond ore in the top layer; the raw iron she dug goes into her blast furnace, she makes an iron pickaxe from
+		// the ingots at her workstation and goes back for the two ores.
+		SCENES.put("miner_pickaxe_upgrade", job("the Novice miner's raw iron was smelted in her blast furnace, she made an iron pickaxe from the ingots and went back for the gold and diamond ore her stone pickaxe had left",
+			4800, (level, player) -> {
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			chest(level, chestPos(), new ItemStack(Items.RAW_IRON, 3), new ItemStack(Items.COAL, 4), new ItemStack(Items.STICK, 2), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(-1, -60, -6);
+			BlockPos max = new BlockPos(2, -58, -3);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			BlockPos gold = new BlockPos(-1, -58, -5);
+			BlockPos diamond = new BlockPos(1, -58, -4);
+			level.setBlockAndUpdate(gold, Blocks.GOLD_ORE.defaultBlockState());
+			level.setBlockAndUpdate(diamond, Blocks.DIAMOND_ORE.defaultBlockState());
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite site = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, m, player,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 3);
+			site.setStairs(false);
+			boolean[] making = {false};
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				if (!making[0] && now != null && now.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.CRAFTING_PICKAXE) {
+					making[0] = true;
+					SHOTS.add("04_making_iron_pickaxe");
+				}
+				return making[0] && m.getMainHandItem().is(Items.IRON_PICKAXE) && l.getBlockState(gold).isAir() && l.getBlockState(diamond).isAir();
+			};
+		}));
 		// The Quarry build (36.12): the pit's top four layers dug already, the Miner at the shed's blast furnace takes the
 		// pit by themselves and digs on down, and what they dug grows back from the bottom up (fast, for the film).
 		SCENES.put("quarry_build", new Job("the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up",

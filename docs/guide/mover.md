@@ -54,6 +54,10 @@ out at the new spot: an item you took out after confirming the move stays yours,
 Furniture from CobbleFurnies, Handcrafted and Lucky's Cozy Home moves like any block; if a furniture mod is removed in
 the middle of a move, its pieces are left out and the rest of the building still goes up.
 
+**Builders first.** If your builders start work on the building (a repair or an upgrade) after you confirm its move,
+the move waits: he takes nothing down under them, and its row on the Move page says "Waiting: builders are working on
+it; the Mover starts once they're done". Once they finish, he moves it. You can still call it off while it waits.
+
 If a block of the building is broken before he gets to it, whoever broke it keeps it, and it isn't put up again.
 
 **Calling it off.** Call off on the Move page stops the move, even half way: what he put up at the new spot comes down

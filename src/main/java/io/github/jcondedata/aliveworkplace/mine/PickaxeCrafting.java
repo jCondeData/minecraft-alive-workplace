@@ -1,7 +1,6 @@
 package io.github.jcondedata.aliveworkplace.mine;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderBag;
-import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,14 +11,17 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * A Miner makes their own pickaxe (ROADMAP 36.11): with none in hand or in their chests, they make one at their
  * workstation from what they mined themselves, three of the head's material from their bag and their own chests, and two
- * sticks, from there or from the village store, or cut from two planks. Stone at any level; iron from Journeyman and
- * diamond from Expert, when they have the ingots or diamonds (the best they can make). Nothing is taken unless all of it
- * is there. {@code minerCraftsPickaxe} in the config turns it off: then they wait for a pickaxe as before.
+ * sticks, from there or from the village store, or cut from two planks. The best they can make, at any level (36.11a,
+ * B1202): stone from their own cobblestone, iron from three ingots and diamond from three diamonds, which may also come
+ * from the village store or a village-mate's chests (the Smelter's ingots). A miner whose pickaxe is worse than one they
+ * can make makes the better one too ({@link #upgrade}); the old one goes back to their chests. Nothing is taken unless
+ * all of it is there. {@code minerCraftsPickaxe} in the config turns it off: then they wait for a pickaxe as before.
  */
 public final class PickaxeCrafting {
 	/** The config's {@code minerCraftsPickaxe}. */
@@ -31,21 +33,49 @@ public final class PickaxeCrafting {
 	/** Ticks at the workstation making it. */
 	public static final int CRAFT_TICKS = 60;
 
-	/** What a miner can make, best last; each from its head's materials, from a villager level on. */
+	/**
+	 * What a miner can make, best last, each from its head's materials, at any level (36.11a). {@code rank} is how
+	 * good it is ({@link #rank}); {@code shared}: the head may come from the village store and village-mates' chests too
+	 * (ingots and diamonds), not only from what the miner mined themselves (cobblestone).
+	 */
 	public enum Tier {
-		STONE(Items.STONE_PICKAXE, 1, List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.BLACKSTONE)),
-		IRON(Items.IRON_PICKAXE, 3, List.of(Items.IRON_INGOT)),
-		DIAMOND(Items.DIAMOND_PICKAXE, 4, List.of(Items.DIAMOND));
+		STONE(Items.STONE_PICKAXE, 1, false, List.of(Items.COBBLESTONE, Items.COBBLED_DEEPSLATE, Items.BLACKSTONE)),
+		IRON(Items.IRON_PICKAXE, 2, true, List.of(Items.IRON_INGOT)),
+		DIAMOND(Items.DIAMOND_PICKAXE, 3, true, List.of(Items.DIAMOND));
 
 		public final Item pickaxe;
-		public final int level;
+		public final int rank;
+		public final boolean shared;
 		public final List<Item> heads;
 
-		Tier(Item pickaxe, int level, List<Item> heads) {
+		Tier(Item pickaxe, int rank, boolean shared, List<Item> heads) {
 			this.pickaxe = pickaxe;
-			this.level = level;
+			this.rank = rank;
+			this.shared = shared;
 			this.heads = heads;
 		}
+	}
+
+	/**
+	 * How good a pickaxe is, by what it can harvest (so a modded one counts as well): 3 obsidian (diamond, netherite), 2
+	 * diamond ore (iron), 1 iron ore (stone), 0 only stone (wood, gold); -1 no pickaxe at all.
+	 */
+	public static int rank(ItemStack pick) {
+		if (pick.isEmpty() || !pick.is(ItemTags.PICKAXES)) {
+			return -1;
+		}
+		if (pick.isCorrectToolForDrops(Blocks.OBSIDIAN.defaultBlockState())) {
+			return 3;
+		}
+		if (pick.isCorrectToolForDrops(Blocks.DIAMOND_ORE.defaultBlockState())) {
+			return 2;
+		}
+		return pick.isCorrectToolForDrops(Blocks.IRON_ORE.defaultBlockState()) ? 1 : 0;
+	}
+
+	/** Raw iron and iron ore: what the miner digs that a furnace by their workstation turns into the ingots for an iron pickaxe. */
+	public static boolean isIronOre(Item item) {
+		return item == Items.RAW_IRON || item == Items.IRON_ORE || item == Items.DEEPSLATE_IRON_ORE;
 	}
 
 	/** The pickaxe a miner is about to make, and the head's material. */
@@ -54,6 +84,10 @@ public final class PickaxeCrafting {
 
 	/** What a miner lacks to make one: {@code count} more of {@code item}. */
 	public record Missing(Item item, int count) {
+	}
+
+	/** What a miner lacks for a better pickaxe ({@code tier}): {@code count} more of {@code item} (36.11a). */
+	public record Upgrade(Tier tier, Item item, int count) {
 	}
 
 	/** The village store's containers that aren't the miner's own (sticks and planks may come from there). */
@@ -103,26 +137,84 @@ public final class PickaxeCrafting {
 	/** The best pickaxe {@code villager} can make from what's at hand, or null. */
 	@Nullable
 	public static Plan plan(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag) {
-		if (!ENABLED || !hasSticks(level, own, store(level, bench, own), bag)) {
-			return null;
-		}
-		return head(level, villager, own, bag);
+		return better(level, villager, bench, own, bag, -1);
+	}
+
+	/**
+	 * The best pickaxe {@code villager} can make that is better than {@code current} (36.11a: an iron one as soon as
+	 * they have the ingots, at any level), or null: none better, the materials aren't there, or the switch is off.
+	 */
+	@Nullable
+	public static Plan upgrade(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag, ItemStack current) {
+		return better(level, villager, bench, own, bag, rank(current));
 	}
 
 	@Nullable
-	private static Plan head(ServerLevel level, Villager villager, List<BlockPos> own, BuilderBag bag) {
-		int rank = BuilderLevels.level(villager);
+	private static Plan better(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag, int above) {
+		if (!ENABLED || above >= Tier.DIAMOND.rank || !hasSticks(level, own, store(level, bench, own), bag)) {
+			return null;
+		}
+		return head(level, villager, bench, own, bag, above);
+	}
+
+	/**
+	 * Where the head of {@code tier} may come from: the miner's own chests; for ingots and diamonds the village store
+	 * and village-mates' chests too (where the Smelter keeps the ingots it made of the miner's raw iron), after them.
+	 */
+	static List<BlockPos> sources(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, Tier tier) {
+		if (!tier.shared) {
+			return own;
+		}
+		java.util.LinkedHashSet<BlockPos> all = new java.util.LinkedHashSet<>(own);
+		all.addAll(store(level, bench, own));
+		for (io.github.jcondedata.aliveworkplace.work.Village.Stash stash : io.github.jcondedata.aliveworkplace.work.Village.stashes(level, villager, bench, null)) {
+			all.addAll(stash.chests());
+		}
+		return new ArrayList<>(all);
+	}
+
+	@Nullable
+	private static Plan head(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag, int above) {
 		Tier[] tiers = Tier.values();
 		for (int i = tiers.length - 1; i >= 0; i--) {
 			Tier tier = tiers[i];
-			if (rank < tier.level) {
-				continue;
+			if (tier.rank <= above) {
+				break;
 			}
+			List<BlockPos> from = null;
 			for (Item head : tier.heads) {
 				if (have(level, own, bag, head) >= HEAD) {
 					return new Plan(tier, head);
 				}
+				if (tier.shared) {
+					if (from == null) {
+						from = sources(level, villager, bench, own, tier);
+					}
+					if (have(level, from, bag, head) >= HEAD) {
+						return new Plan(tier, head);
+					}
+				}
 			}
+		}
+		return null;
+	}
+
+	/**
+	 * What {@code villager}, whose pickaxe is {@code current}, still lacks for an iron one (36.11a, the status line):
+	 * the ingots first, then the sticks; null when their pickaxe is iron or better, nothing is missing, or the switch is off.
+	 */
+	@Nullable
+	public static Upgrade upgradeMissing(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag, ItemStack current) {
+		if (!ENABLED || rank(current) >= Tier.IRON.rank) {
+			return null;
+		}
+		long ingots = have(level, sources(level, villager, bench, own, Tier.IRON), bag, Items.IRON_INGOT);
+		if (ingots < HEAD) {
+			return new Upgrade(Tier.IRON, Items.IRON_INGOT, (int) (HEAD - ingots));
+		}
+		List<BlockPos> store = store(level, bench, own);
+		if (!hasSticks(level, own, store, bag)) {
+			return new Upgrade(Tier.IRON, Items.STICK, (int) Math.max(1, STICKS - have(level, both(own, store), bag, Items.STICK)));
 		}
 		return null;
 	}
@@ -130,7 +222,7 @@ public final class PickaxeCrafting {
 	/** What {@code villager} still needs to make a pickaxe (stone's head first, then the sticks), or null if nothing. */
 	@Nullable
 	public static Missing missing(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag) {
-		if (head(level, villager, own, bag) == null) {
+		if (head(level, villager, bench, own, bag, -1) == null) {
 			long best = 0;
 			for (Item item : Tier.STONE.heads) {
 				best = Math.max(best, have(level, own, bag, item));
@@ -158,7 +250,12 @@ public final class PickaxeCrafting {
 	 * sticks go in the bag) and returns it; empty when the materials are no longer all there (nothing is taken then).
 	 */
 	public static ItemStack craft(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag) {
-		Plan plan = plan(level, villager, bench, own, bag);
+		return craft(level, villager, bench, own, bag, ItemStack.EMPTY);
+	}
+
+	/** As {@link #craft(ServerLevel, Villager, BlockPos, List, BuilderBag)}, only a pickaxe better than {@code current} (36.11a). */
+	public static ItemStack craft(ServerLevel level, Villager villager, BlockPos bench, List<BlockPos> own, BuilderBag bag, ItemStack current) {
+		Plan plan = better(level, villager, bench, own, bag, rank(current));
 		if (plan == null) {
 			return ItemStack.EMPTY;
 		}
@@ -181,7 +278,7 @@ public final class PickaxeCrafting {
 				}
 			}
 		}
-		take(level, own, bag, plan.head(), HEAD);
+		take(level, sources(level, villager, bench, own, plan.tier()), bag, plan.head(), HEAD);
 		return new ItemStack(plan.tier().pickaxe);
 	}
 

@@ -340,9 +340,10 @@ and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emera
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.
 `QaCreateMoverArm1110eCompatTests` (1, compat suite, B1137): a Mechanical Arm taking from a Depot to its west and
 putting on one to its north, moved a quarter turn, still aims at both depots.
-`QaCreateMoverHeld1111eCompatTests` (3, compat suite, the QA lane): a Deployer holding 16 iron ingots, a Deployer
-filtered to an iron pickaxe and holding one, and a Placard showing a diamond, each moved a quarter turn: the hand, the
-filter and the placard's item arrive once, nothing dropped while the house comes down or loose after.
+`QaCreateMoverHeld1111eCompatTests` (4, compat suite, the QA lane): a Deployer holding 16 iron ingots, a Deployer
+filtered to an iron pickaxe and holding one, and a Placard showing a diamond on the floor and one hung on the inside of
+a wall, each moved a quarter turn: the hand, the filter and the placard's item arrive once, the hung placard on its
+turned wall, nothing dropped while the house comes down or loose after.
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named

@@ -98,6 +98,7 @@ public class QaBuilderFixes1111bDecorGameTests implements net.fabricmc.fabric.ap
 		QaBuilderDecorations1110bGameTests.chest(helper, new ItemStack(Items.OAK_PLANKS, 8));
 		Villager builder = QaBuilderDecorations1110bGameTests.builder(helper);
 		BuildSite site = QaBuilderDecorations1110bGameTests.start(helper, builder, id);
+		forgetAfter(helper, site);
 		ServerLevel level = helper.getLevel();
 		AtomicReference<List<String>> more = new AtomicReference<>(List.of());
 		helper.onEachTick(() -> {
@@ -129,6 +130,7 @@ public class QaBuilderFixes1111bDecorGameTests implements net.fabricmc.fabric.ap
 		QaBuilderDecorations1110bGameTests.chest(helper, new ItemStack(Items.OAK_PLANKS, 4), new ItemStack(Items.STICK, 16), new ItemStack(Items.LEATHER, 2));
 		Villager builder = QaBuilderDecorations1110bGameTests.builder(helper);
 		BuildSite site = QaBuilderDecorations1110bGameTests.start(helper, builder, id);
+		forgetAfter(helper, site);
 		ServerLevel level = helper.getLevel();
 		String hire = hire("Leatherworker", "Item Frames");
 		AtomicLong hiredAt = new AtomicLong(-1);
@@ -174,6 +176,7 @@ public class QaBuilderFixes1111bDecorGameTests implements net.fabricmc.fabric.ap
 		Container chest = QaBuilderDecorations1110bGameTests.chest(helper, new ItemStack(Items.OAK_PLANKS, 4));
 		Villager builder = QaBuilderDecorations1110bGameTests.builder(helper);
 		BuildSite site = QaBuilderDecorations1110bGameTests.start(helper, builder, id);
+		forgetAfter(helper, site);
 		ServerLevel level = helper.getLevel();
 		String hire = hire("Leatherworker", "Item Frames");
 		AtomicLong arrived = new AtomicLong(-1);
@@ -211,6 +214,7 @@ public class QaBuilderFixes1111bDecorGameTests implements net.fabricmc.fabric.ap
 		QaBuilderDecorations1110bGameTests.chest(helper, new ItemStack(Items.OAK_PLANKS, 4));
 		Villager[] builder = {QaBuilderDecorations1110bGameTests.builder(helper)};
 		BuildSite site = QaBuilderDecorations1110bGameTests.start(helper, builder[0], id);
+		forgetAfter(helper, site);
 		ServerLevel level = helper.getLevel();
 		String hire = hire("Leatherworker", "Item Frames");
 		AtomicLong reloadedAt = new AtomicLong(-1);
@@ -244,6 +248,11 @@ public class QaBuilderFixes1111bDecorGameTests implements net.fabricmc.fabric.ap
 			helper.assertTrue(reloadedAt.get() >= 0, "never reloaded mid-wait");
 			helper.assertTrue(after.get() != null, "the loaded site's lines were never read while it waited");
 		});
+	}
+
+	/** A test that passes mid-wait leaves no waiting site behind for later tests that count the saved sites. */
+	private static void forgetAfter(GameTestHelper helper, BuildSite site) {
+		Leftovers.after(helper, () -> BuildSiteManager.get(helper.getLevel()).remove(site.id()));
 	}
 
 	private static int frames(GameTestHelper helper) {

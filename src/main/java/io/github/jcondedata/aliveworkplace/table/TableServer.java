@@ -437,8 +437,11 @@ public final class TableServer {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
-		if (!BlueprintUnlocks.ENABLED && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent()) {
-			// B1002: Wonders are never handed out, whatever the switch (with it on, the state below says VIEW_ONLY).
+		if (io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.inFolder(id)
+			&& (!BlueprintUnlocks.ENABLED || io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isEmpty())) {
+			// B1002, B1022: Wonders are never handed out, whatever the switch, nor any stage of one (wonder/<id>/stage_1_0),
+			// which BlueprintUnlocks doesn't manage. With the switch on, a whole Wonder's id goes on to the state below
+			// (HIDDEN while "???", so its name stays hidden, else VIEW_ONLY).
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.wonder_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}

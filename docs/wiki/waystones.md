@@ -4,7 +4,7 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2, 41.3
+Roadmap items: 41.1, 41.2, 41.3, B996
 
 ## What a player sees
 
@@ -43,6 +43,8 @@ Roadmap items: 41.1, 41.2, 41.3
   (3 minutes plus a tick a block from there). When their time is up they step out of that stone; if it (or their own) is
   broken by then, they walk the whole road from their village instead, and its chronicle says "The settlers for Newbrook
   found a waystone broken and are walking the road instead".
+- **A village whose Village Hall is broken leaves the network** (B996): caravans and settlers no longer go through its
+  waystone, even with its plaza and stone still standing, and it drops off every other hall's Map.
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
@@ -70,7 +72,8 @@ The network (41.2): each time a stone is raised (`raise` returns true), the hall
 `VillageWaystones.Data` (saved data `aliveworkplace_village_waystones`, one per dimension: `halls` and `stones`, two
 long arrays), so villages whose chunks aren't loaded are listed too; a hall round that finds none of the village's own plazas
 (finished or going up, whose nearest hall is this one; a neighbor's plaza within the radius doesn't count, B528)
-takes the village off. `network(level, hall, viewer)` takes the villages of the hall's owner
+takes the village off, and so does breaking the hall (`VillageHallBlock.onRemove` calls `VillageWaystones.hallGone`,
+B996: the round that took a village off never runs once its hall is gone). `network(level, hall, viewer)` takes the villages of the hall's owner
 from the realm's record of villages seen (`RealmData.Known`, kept by every hall round; the viewer's own when the hall
 has no owner), plus this one, and keeps those with a kept stone; `VillageWaystones.mapLines` makes the Map's lore. `stoneOf(level, hall)`
 and `standing(level, hall)` are there for 41.3 too. Two calls were added to the extension: `standing(level, pos)` (a
@@ -81,7 +84,9 @@ list (`WaystoneBlockBase.onRemove`). Unfilled, both answer false (and nothing is
 without the mod).
 
 Travel by waystone (41.3): `VillageWaystones.linked(level, from, to)` is true when the plaza is offered (the switch on,
-the mod installed) and the stone each village raised stands now (`standing`). The extension gained a default
+the mod installed), both halls still stand (`VillageHalls.standsAt`, which trusts a hall in a chunk that isn't loaded;
+B996, for a hall gone by a region edit) and the stone each village raised stands now (`standing`); `villages(level)`
+leaves out a kept village whose hall is gone the same way. The extension gained a default
 `warp(level, pos)`, a no-op unfilled; the compat does what Waystones' own `WaystoneTeleportManager.performTeleport` does
 for a teleport: the vanilla `PORTAL_TRAVEL` sound at the mod's volume (0.05) and the mod's `TeleportEffectMessage(pos)`
 to the players tracking the spot (its client draws 128 portal particles), sent as a plain `ClientboundCustomPayloadPacket`

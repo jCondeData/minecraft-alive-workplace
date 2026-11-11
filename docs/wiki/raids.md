@@ -73,7 +73,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **The hall broken or moved.** Only the hall's own round draws the bars up and ends its raid, so a hall taken away
   that day (broken, or moved by a Mover, which sets a new hall down) draws its dropped bars up at once and calls off
   a raid under way, which ends its siege; the siege lifts at the next dawn as always (`Warnings.hallGone`, from
-  `VillageHallBlock.onRemove`, B1176). The warning stays on the clock: a hall put back on its spot braces again.
+  `VillageHallBlock.onRemove`, B1176). Only that hall's iron bars go up: a bar's spot the player filled with another
+  block stays as it is, and another village's bars stay down. The warning stays on the clock: a hall put back on its
+  spot braces again.
 
 ## How it works
 

@@ -414,7 +414,6 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrate1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShepherdWeavesGameTests",
@@ -1626,7 +1625,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2BugTests"
 		]
 	},
 	"depends": {

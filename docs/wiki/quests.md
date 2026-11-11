@@ -57,6 +57,9 @@ Roadmap items: 31.2, 31.3
   the dates, who tracks them and the place found. Every field has a default. An entry that can't be read (an open
   quest, a story arc, a mood boost, a tracked quest without its player) is skipped with a warning in the log, and the
   rest of the file loads (B763).
+- A hall's quests from before 1.5 (saved on the hall itself) move into the engine the first time its quests are
+  looked at while its chunk is loaded. A hall nobody is near is never loaded for that: its open quests are listed and
+  kept as saved, and the old ones move in once it loads (B1212).
 
 ## Items, blocks, jobs, commands
 
@@ -83,4 +86,6 @@ broken, the command, the switch off, broken files, places and maps, every senten
 command from afar, the journal's lines) and `QaStoryEngine1031GameTests` (each condition on both sides of its edge, the rank factor, the due
 tick with the switch off, where a bring goes, once per player or repeatable, kills near the hall) and
 `QaStoryVerify1103cGameTests` (two broken files each skipped with exactly one warning naming it, the real `/reload`, an
-arc's quest still going up and counting with the switch off).
+arc's quest still going up and counting with the switch off) and `UnloadedHallQuestsB1212GameTests` (a hall in a chunk
+that isn't loaded stays unloaded through the errand tick and quest checks, keeps its request through save and reload,
+and its old quests move in once it loads).

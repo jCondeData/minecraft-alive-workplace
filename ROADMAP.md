@@ -6586,7 +6586,7 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   honeycomb blocks from the hives' wax; item frames, leads and leather armor from leather. Done when: GameTests for a
   candle from honeycomb and string, an item frame; scenes `chandler` and `leatherworker_goods`.
 
-- [x] **46.6** (approved 2026-11-11) **The Glassblower** (new job, owner 2026-11-09). His workstation is a new **Glass Kiln** block (a
+- [x] **46.6** (approved 2026-11-11) (verified 2026-11-11: QaGlassblower1111bGameTests [4: 8 sand on exactly one coal, 9 sand on one coal loses nothing and names the coal, charcoal fires the panes' glass, a chestless builder's panes come from the Storehouse's sand and coal]; 12/12 over 3 runs alone, full build's 8229 GameTests green; wiki and guide glassblower pages match. Existing tests already cover the kiln broken, reload, plain furnace and every sentence.) **The Glassblower** (new job, owner 2026-11-09). His workstation is a new **Glass Kiln** block (a
   brick kiln with a glowing mouth and a blowpipe; the pixel-art skill, drawn like vanilla's furnaces; a recipe from
   bricks, a furnace and an iron ingot; creative tab; not a plain furnace, so villagers never take a player's furnaces),
   an outfit (pixel-art skill, a leather apron and goggles) and a Glassblower's Workshop blueprint (architect skill) the

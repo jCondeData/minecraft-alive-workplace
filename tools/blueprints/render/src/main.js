@@ -43,7 +43,15 @@ function onLawn(build) {
   for (const b of build.getBlocks()) {
     const name = b.state.getName().toString()
     if (name === 'minecraft:air' || name === 'minecraft:structure_void' || name === 'minecraft:jigsaw') continue
-    out.addBlock([b.pos[0] + PAD, b.pos[1] + 1, b.pos[2] + PAD], name, { ...b.state.getProperties() }, b.nbt)
+    const props = { ...b.state.getProperties() }
+    // Lodestone draws a standing banner half a turn round from the game (in the game rotation 0 faces south and 8
+    // north, as a player looking south places it facing him; Lodestone showed 0 facing north). The Inn's banner was
+    // drawn at 0 because the preview showed it facing the street, and stood backwards in the game. Turned here so the
+    // preview matches the game; wall banners and signs were already right.
+    if (/_banner$/.test(name) && !/_wall_banner$/.test(name) && props.rotation !== undefined) {
+      props.rotation = String((Number(props.rotation) + 8) % 16)
+    }
+    out.addBlock([b.pos[0] + PAD, b.pos[1] + 1, b.pos[2] + PAD], name, props, b.nbt)
   }
   return out
 }

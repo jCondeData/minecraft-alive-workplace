@@ -21,6 +21,10 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
 - **Every `@GameTest` has a swap line above it**: `//$ gametest AREA`, `//$ gametest_ticks AREA '400'`,
   `//$ gametest_batch AREA '"name"'` or `//$ gametest_ticks_batch AREA '400' '"name"'` (arguments that aren't plain
   names in single quotes). On 1.21.1 the swap writes exactly the annotation below it; newer nodes get Fabric's.
+- **A batch belongs to one test class** (B1166; B427/B428: a neighbour class's setup in the same batch removed the
+  other's villagers). `python3 tools/modtest/batchcheck.py` (a tester script like `wikicheck.py`; the build runs it as
+  `checkBatches`, under a second) fails on a batch name two classes use, in src/gametest and src/compattest each, and
+  on a swap line whose batch differs from its annotation's. Pick a new name for a new class's batch.
 - **Round trip before committing:** `./gradlew "Refresh active project"` must leave `git diff` unchanged (if not, a guard
   or swap line doesn't match), and the active project must be the vcsVersion (`./gradlew "Reset active project"`).
 

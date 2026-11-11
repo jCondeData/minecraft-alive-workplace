@@ -16,8 +16,8 @@ import net.minecraft.gametest.framework.GameTestHelper;
  */
 public class FurnishingConfigGameTests implements FabricGameTest {
 	/** The mods' order: the owner's default, cleaned of case, blanks and repeats, an empty list kept, a missing one defaulted. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateFurnishingConfig"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateFurnishingConfig")
 	public void furnitureModsKeepTheirOrderAndAreCleaned(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		try {
@@ -56,8 +56,8 @@ public class FurnishingConfigGameTests implements FabricGameTest {
 	}
 
 	/** The gate: with M37 unfinished a player's file can't turn furniture or storage networks on; in tests it can, and off is obeyed. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateFurnishingConfig"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateFurnishingConfig")
 	public void theM37GateHoldsItsSwitches(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		String on = "{\"furnishedBuilds\": true, \"moddedStorageNetworks\": true}";

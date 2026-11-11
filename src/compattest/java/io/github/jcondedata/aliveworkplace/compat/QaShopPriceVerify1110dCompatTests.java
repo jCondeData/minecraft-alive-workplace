@@ -42,6 +42,11 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		return "The price changed: " + count + " " + goods + " now costs " + price + ". Click Confirm again to buy at that price.";
 	}
 
+	/** B1147: the sentence when the lot itself changed (other goods or another lot size), whatever the price did. */
+	private static String goodsChanged(int count, String goods, String price) {
+		return "This counter now sells " + count + " " + goods + " for " + price + ". Click Confirm again to buy that.";
+	}
+
 	private static ChoiceList.Mark row(GameTestHelper helper, ChoiceMenu menu) {
 		return QaJobShopLists1109cCompatTests.row(helper, menu, SLOT);
 	}
@@ -175,7 +180,8 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(CobbleDollarsBank.balance(buyer) == before, "the row showed 16 for 200; Confirm on the 8-lot took " + (before - CobbleDollarsBank.balance(buyer)));
 		helper.assertTrue(buyer.getInventory().countItem(Items.COBBLESTONE) == 0, "goods handed over on a refused Confirm");
-		helper.assertTrue(seen.contains(priceChanged(8, "Cobblestone", "200 CobbleDollars")), "the buyer read: " + seen);
+		helper.assertTrue(seen.contains(goodsChanged(8, "Cobblestone", "200 CobbleDollars")), "the buyer read: " + seen);
+		helper.assertTrue(seen.stream().noneMatch(s -> s.startsWith("The price changed")), "a smaller lot at the same price said the price changed: " + seen);
 		helper.assertTrue(row(helper, menu).on(), "the row should stay gold at the new lot");
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(before - CobbleDollarsBank.balance(buyer) == 200, "the 8-lot cost " + (before - CobbleDollarsBank.balance(buyer)));
@@ -303,7 +309,7 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 
 	/**
 	 * The lot in a chosen row replaced by different goods at the same price (cobblestone to a diamond, 200 both): Confirm
-	 * takes nothing, names the diamond, and the next Confirm hands over the diamond, not cobblestone. An item-priced lot
+	 * takes nothing, says "This counter now sells 1 Diamond for 200 CobbleDollars." (B1147: not "The price changed"), and the next Confirm hands over the diamond, not cobblestone. An item-priced lot
 	 * (2 diamonds) raised to 5: Confirm takes no diamonds. A lot taken off the counter: "Cobblestone isn't for sale
 	 * anymore.", the row is gone and nothing moves.
 	 */
@@ -326,7 +332,8 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(CobbleDollarsBank.balance(buyer) == before && buyer.getInventory().countItem(Items.DIAMOND) == 0
 			&& buyer.getInventory().countItem(Items.COBBLESTONE) == 0, "Confirm on a swapped lot bought something");
-		helper.assertTrue(seen.contains(priceChanged(1, "Diamond", "200 CobbleDollars")), "the buyer read: " + seen);
+		helper.assertTrue(seen.contains(goodsChanged(1, "Diamond", "200 CobbleDollars")), "the buyer read: " + seen);
+		helper.assertTrue(seen.stream().noneMatch(s -> s.startsWith("The price changed")), "only the goods changed, but the buyer read: " + seen);
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(before - CobbleDollarsBank.balance(buyer) == 200 && buyer.getInventory().countItem(Items.DIAMOND) == 1
 			&& buyer.getInventory().countItem(Items.COBBLESTONE) == 0, "second Confirm: paid " + (before - CobbleDollarsBank.balance(buyer))
@@ -341,6 +348,9 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT + 1);
 		helper.assertTrue(buyer.getInventory().countItem(Items.DIAMOND) == 10 && buyer.getInventory().countItem(Items.IRON_INGOT) == 0,
 			"Confirm after an item-price raise: diamonds " + buyer.getInventory().countItem(Items.DIAMOND) + ", iron " + buyer.getInventory().countItem(Items.IRON_INGOT));
+		helper.assertTrue(seen.stream().anyMatch(line -> line.startsWith("The price changed: 8 Iron Ingot now costs "))
+			&& seen.stream().noneMatch(line -> line.startsWith("This counter now sells 8 Iron Ingot")),
+			"only the price changed (same 8 iron), but the buyer read: " + seen);
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT + 1);
 		helper.assertTrue(buyer.getInventory().countItem(Items.DIAMOND) == 5 && buyer.getInventory().countItem(Items.IRON_INGOT) == 8,
 			"second Confirm at 5 diamonds: diamonds " + buyer.getInventory().countItem(Items.DIAMOND) + ", iron " + buyer.getInventory().countItem(Items.IRON_INGOT));
@@ -359,7 +369,7 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** B1107's two new sentences exist, in American English, with their arguments in order. */
+	/** B1107's two new sentences and B1147's goods-changed one exist, in American English, with their arguments in order. */
 	//$ gametest AREA
 	@GameTest(template = AREA)
 	public void priceChangedAndWithdrawnWordsReadRight(GameTestHelper helper) {
@@ -370,6 +380,12 @@ public class QaShopPriceVerify1110dCompatTests implements FabricGameTest {
 		helper.assertTrue(lang.getOrDefault(changed).equals("The price changed: %s %s now costs %s. Click Confirm again to buy at that price."),
 			"price_changed reads: " + lang.getOrDefault(changed));
 		helper.assertTrue(lang.getOrDefault(gone).equals("%s isn't for sale anymore."), "withdrawn reads: " + lang.getOrDefault(gone));
+		String swapped = "message.aliveworkplace.shop.goods_changed";
+		helper.assertTrue(lang.has(swapped), "missing key " + swapped);
+		helper.assertTrue(net.minecraft.network.chat.Component.translatable(swapped, 1, new ItemStack(Items.DIAMOND).getHoverName(),
+			io.github.jcondedata.aliveworkplace.work.Money.describe(200, 0)).getString()
+			.equals("This counter now sells 1 Diamond for 200 CobbleDollars. Click Confirm again to buy that."),
+			"goods_changed rendered: " + lang.getOrDefault(swapped));
 		helper.assertTrue(net.minecraft.network.chat.Component.translatable(changed, 16, new ItemStack(Items.COBBLESTONE).getHoverName(),
 			io.github.jcondedata.aliveworkplace.work.Money.describe(1250, 0)).getString()
 			.equals("The price changed: 16 Cobblestone now costs 1,250 CobbleDollars. Click Confirm again to buy at that price."), "rendered wrong");

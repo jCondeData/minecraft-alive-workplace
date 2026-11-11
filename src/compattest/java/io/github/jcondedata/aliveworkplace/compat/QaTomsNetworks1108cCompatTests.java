@@ -98,8 +98,8 @@ public class QaTomsNetworks1108cCompatTests implements FabricGameTest {
 	 * and puts the other 96 in the lone chest by the Storehouse. Nothing is lost and nothing is left over: what went in
 	 * is what the store holds.
 	 */
-	//$ gametest_ticks_batch AREA '200' '"qa_toms_full"'
-	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa_toms_full")
+	//$ gametest_ticks_batch AREA '200' '"qa_toms_full_1108c"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa_toms_full_1108c")
 	public void aFullNetworkSendsTheRestToALoneChest(GameTestHelper helper) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();

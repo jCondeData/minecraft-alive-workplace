@@ -45,8 +45,8 @@ public class ExpansionBuildsGameTests implements FabricGameTest {
 	}
 
 	/** With M28 closed the Table holds none of its builds; opened again, the Gem Grotto (its build without Cobblemon) is back. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateBuilds"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateBuilds")
 	public void tableHoldsNoM28BuildWhileM28IsOff(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
 		helper.assertFalse(Expansions.M28, "M28 is complete: this test's closed half no longer applies");
@@ -73,8 +73,8 @@ public class ExpansionBuildsGameTests implements FabricGameTest {
 	}
 
 	/** The other closed expansions' builds (M30, M32, M34) are gated the same way, by their jobs' switches. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateBuilds"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateBuilds")
 	public void laterExpansionsBuildsWaitForTheirSwitch(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
 		helper.assertFalse(Expansions.M30 || Expansions.M32 || Expansions.M34, "M30, M32 or M34 is complete: move its builds out of this test");
@@ -90,8 +90,8 @@ public class ExpansionBuildsGameTests implements FabricGameTest {
 	}
 
 	/** Asking the Table for a closed expansion's build by id is refused, and nothing is handed out. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateBuilds"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateBuilds")
 	public void tableRefusesAClosedExpansionsBuildById(GameTestHelper helper) {
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

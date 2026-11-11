@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1170
 
 ## 1. What a player sees
 
@@ -162,6 +162,14 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   every place that list is used (the job board, the hauler golems, enchanting, workplace rules) and let builders take
   the crafter's own makings. Anything of the asked item in those chests is carried on, whoever put it there: they are
   the crafter's, and nothing else takes from them.
+- B1170 (lane-a-1111-0322): a crafting job also counts the makings in the chests by his own workstation for a
+  builder's request (`CrafterWork.ownMakings`, pooled with the builder's chests and the village stores, taken like a
+  stash's), so a Mason's stone or a Librarian's books aren't left lying while the builder waits "short of" them. Chosen
+  over adding those jobs to `Village.takesPart` (as the Cleric, B1144, and the Glassblower, B1156, were), which would
+  also keep their chunks loaded, send their wants to the job board, let builders and B721's deliveries use their chests
+  and change the Tinkerer's golem mending. Chests already counted (the builder's, a village-mate's such as the
+  Glassblower's, another builder's) aren't counted twice; a builder on another side (`Village.sharesWith`) gets none.
+  The Carpenter stays out, for B778's reasons above: what he took home is carried on, not made into anything else.
 
 ## 7. Known limits
 

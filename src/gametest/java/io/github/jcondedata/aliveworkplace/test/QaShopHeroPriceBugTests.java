@@ -34,8 +34,8 @@ public class QaShopHeroPriceBugTests implements net.fabricmc.fabric.api.gametest
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
 	private static final BlockPos KEEPER = new BlockPos(4, 2, 2);
 
-	//$ gametest_ticks_batch AREA '100' '"qaShopHero"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaShopHero")
+	//$ gametest_ticks_batch AREA '100' '"qaShopHeroPrice"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaShopHeroPrice")
 	public void aHeroPaysTheOwnersPrice(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		helper.setBlock(COUNTER, ModBlocks.SHOP_COUNTER);

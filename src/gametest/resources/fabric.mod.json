@@ -407,6 +407,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1110cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.InnShopCounterB1177GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnRedrawn1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatesLastGuard1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverBelongingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverBelongings1110cGameTests",

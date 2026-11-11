@@ -177,4 +177,35 @@ public class QaMoverHomecomingSaves1111eGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B1194 across a restart: the server restarts while the house is packed; then the player gives Tomas the bed in the
+	 * open from the Hall. When the Mover puts the house up, Tomas keeps the bed the player chose and the moved bed is free
+	 * for someone else.
+	 */
+	//$ gametest_batch AREA '"qaMoverHomecomingHallPick"'
+	@GameTest(template = AREA, batch = "qaMoverHomecomingHallPick")
+	public void aBedGivenAtTheHallAfterARestartMidMoveIsKept(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		QaMoveHallBed1111cGameTests.Setup s = setup(helper, "homepick");
+		helper.runAfterDelay(2, () -> {
+			Villager tomas = tomas(helper, s);
+			work(level, s, x -> x.stage() == MoveSite.Stage.FOUNDATION);
+			helper.assertTrue(helper.absolutePos(INN_BED).equals(home(tomas)), "with his house packed Tomas sleeps at " + at(home(tomas)) + ", not the inn");
+			reload(level);
+			QaMoveHallBed1111cGameTests.pickTheFreeBed(helper, StationsSpecGameTests.listeningPlayer(helper, new java.util.ArrayList<>()), tomas);
+			BlockPos chosen = helper.absolutePos(QaMoveHallBed1111cGameTests.OTHER_BED);
+			helper.assertTrue(chosen.equals(home(tomas)), "after a restart the Hall's pick didn't give Tomas the bed in the open: he sleeps at " + at(home(tomas)));
+			MoveSite site = work(level, s, x -> false);
+			helper.assertTrue(site.stage() == MoveSite.Stage.DONE, "the move ended " + site.stage());
+			BlockPos moved = movedBed(helper, s);
+			helper.assertTrue(chosen.equals(home(tomas)),
+				"after a restart the Mover undid the player's Hall pick: Tomas now sleeps at " + at(home(tomas)) + ", not the bed in the open at " + at(chosen));
+			helper.assertTrue(free(level, chosen) == 0, "the bed the player gave Tomas is free for anyone");
+			helper.assertTrue(free(level, moved) == 1, "the moved bed nobody sleeps in is held: " + free(level, moved) + " places free");
+			helper.assertTrue(free(level, helper.absolutePos(INN_BED)) == 1, "the inn's bed wasn't let go");
+			helper.assertTrue(!waitedFor(level, tomas.getUUID()), "Tomas, in the bed the player chose, is waited for");
+			helper.succeed();
+		});
+	}
 }

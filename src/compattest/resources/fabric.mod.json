@@ -154,6 +154,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaFurnicrafterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MachineWorkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStoreRoom1102eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaStoreScanCreate1111eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesTheHall1107eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateIntoProtectedVillage1107eCompatTests",

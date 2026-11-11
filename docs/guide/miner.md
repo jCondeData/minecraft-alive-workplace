@@ -90,7 +90,8 @@ smelts it too. Until then they keep digging, and the line over their head says w
 "digging · needs 2 Iron Ingots for an Iron Pickaxe".
 
 Ores their pickaxe is too weak for (gold, diamond, redstone with a stone pickaxe) are left standing at first, but the
-miner remembers them: once they have the better pickaxe, they go back and dig them out.
+miner remembers them, through a restart too: once they have the better pickaxe, they go back and dig them out. One you
+mined yourself (or built over) in the meantime isn't waited for.
 
 ![Making an iron pickaxe from the iron she dug](https://jcondedata.github.io/minecraft-alive-workplace/miner_pickaxe_upgrade/still-4.jpg)
 

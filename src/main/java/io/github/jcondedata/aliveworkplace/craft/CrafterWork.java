@@ -697,6 +697,22 @@ public class CrafterWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * B1170: the chests by our own workstation, {@code home}, whose makings count for {@code builder}'s request: each one
+	 * not already among the chests he takes from ({@code sources}: his own, the village stores, a village-mate's such as
+	 * the Glassblower's, B1156) nor another builder's ({@code theirs}, where only the spare counts), so nothing is counted
+	 * twice. None for a builder on another side ({@link Village#sharesWith}, as for a village-mate's stash), and none for
+	 * the Carpenter: B778 chose carrying on what he took home over making anything else of it (crafter.md, Decisions).
+	 * Taken like a stash's makings, by {@code fetch} from the job's sources, and saved with the job like them.
+	 */
+	private List<BlockPos> ownMakings(ServerLevel level, Villager villager, Villager builder, List<BlockPos> home, List<BlockPos> sources,
+		List<BlockPos> theirs) {
+		if (home.isEmpty() || tableJob == CraftJobs.Job.CARPENTER || !Village.sharesWith(level, builder, villager)) {
+			return List.of();
+		}
+		return home.stream().filter(p -> !sources.contains(p) && !theirs.contains(p)).toList();
+	}
+
 	/** Whether the chests by our workstation can take all of {@code stacks} (B773: with none, taking it home dropped it). */
 	private static boolean roomAtHome(ServerLevel level, BlockPos station, List<ItemStack> stacks) {
 		Map<Item, Integer> left = new LinkedHashMap<>();
@@ -920,6 +936,10 @@ public class CrafterWork extends Behavior<Villager> {
 			if (deliverTo == null || SupplyContainers.find(level, deliverTo, area).isEmpty()) {
 				continue; // B721: nowhere this builder would find it; made anyway, it lay by our bench for ever
 			}
+			// B1170: the chests by our own workstation hold our makings too (the Mason's stone, the Tinkerer's iron, the
+			// Leatherworker's leather, the Librarian's books), not only the builder's and the village stores
+			List<BlockPos> own = ownMakings(level, villager, builder, home, sources, theirs);
+			sources.addAll(own);
 			Builders.reservedIn(level, sources, site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
 			Map<Item, Long> pooled = SupplyContainers.contents(level, sources);
 			Map<Item, Long> spareByFamily = new HashMap<>();
@@ -963,12 +983,14 @@ public class CrafterWork extends Behavior<Villager> {
 						continue;
 					}
 				}
-				Crafting.Plan carried = carryOn(level, home, sources, deliverTo, area, want.getKey(), want.getValue());
+				// B778's carry-on still sees our own chests as ours (B1170 put them in sources only for the makings)
+				List<BlockPos> shared = sources.stream().filter(p -> !own.contains(p)).toList();
+				Crafting.Plan carried = carryOn(level, home, shared, deliverTo, area, want.getKey(), want.getValue());
 				if (carried != null) {
 					synchronized (CLAIMS) {
 						CLAIMS.put(claim, now + CLAIM_TICKS);
 					}
-					List<BlockPos> from = home.stream().filter(p -> !sources.contains(p)).toList();
+					List<BlockPos> from = home.stream().filter(p -> !shared.contains(p)).toList();
 					return new Job(deliverTo, area, carried, claim, from);
 				}
 				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);

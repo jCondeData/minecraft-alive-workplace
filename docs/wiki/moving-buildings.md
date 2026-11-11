@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174
 
 ## What a player sees
 
@@ -32,7 +32,9 @@ Cottage"). A click on a building opens the picker:
 While choosing, a ghost outline of the new spot glows in the world for the player (green or red, its front edge gold).
 The fit line says plainly why a spot is refused: it would overlap another building (named) or the hall, sit on a road,
 be partly outside the village, the ground rises more than 3 blocks across it, there's water on it, or a Mover's Crate
-stands in it (B1129: a crate never moves with a building, so going up there would break it). Confirm also needs
+stands in it (B1129: a crate never moves with a building, so going up there would break it). Another building's new
+spot counts as a building once its move is planned or under way (B1174, `MoveFit.moving`), so two moves never target
+the same ground. Confirm also needs
 a hired Mover in the village (45.3); without one the page says "Needs a hired Mover" and nothing is saved.
 
 **What can't be moved (45.6).** Clicking a building's Move button (and Confirm, asked again) goes through
@@ -307,6 +309,9 @@ refused as not this village's. A Wonder's finished part is refused at its Move b
 
 `QaMoveRefusals1110cBugTests` (1, B1161): a second village's Village Hall placed inside the hut: its Move button opens no
 picker, nothing is saved, the hut and its chest untouched, and the refusal is the Hall's line.
+
+`QaMovePage1111cBugTests` (2, B1174): with one hut's move planned, then with it started, the other hut's spot over
+that new spot is refused naming it (step 2, Confirm gray, nothing saved), and a spot clear of it fits.
 
 `MovePlanGameTests` (4): a captured house rebuilt 14 blocks away matches block for block (`MaterialRules.matches`) with
 its chest, sign, banner, frame and armor stand; the same at 90, 180 and 270 degrees; a building the hall knows

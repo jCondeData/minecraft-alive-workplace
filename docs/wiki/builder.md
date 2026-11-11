@@ -806,3 +806,8 @@ every starter build), `preview` (ghost preview and status), `placing` (turn, mir
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),
 `builder_table_move` (B290: the Storehouse counted at a workshop table, and a sneak-click moving the builder).
+QA's `QaBuilderFixes1111bGameTests` (B872 and B1117; 6 of its tests): a paid bamboo shoot asks exactly one bamboo, uses
+it and is planted; a grown bamboo stalk three tall asks three bamboo and a lone chorus flower one chorus flower (they have
+items); a paid chorus stalk two tall under its flower asks three chorus flowers, no chorus plant, and stands again; a pond
+with frogspawn beside a lily pad and a spawner asks the lily pad and two water buckets, never frogspawn or a spawner, and
+is built without them; a paid frogspawn pond finishes.

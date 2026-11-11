@@ -69,6 +69,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintListCacheGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoreScanCacheGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoreScanCache1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StructureVillagerGameTests",
@@ -264,6 +265,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaDoorwayClearanceGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDoorwayBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanPotGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScanPreview1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanRoundTripGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaScanCorners1102bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoreTwoChests1102bGameTests",
@@ -438,6 +440,8 @@
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.NurseCardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTrainerScreen1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",
@@ -1634,7 +1638,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cBugTests",
-			"io.github.jcondedata.aliveworkplace.test.LeadToAndFroB1171GameTests"
+			"io.github.jcondedata.aliveworkplace.test.LeadToAndFroB1171GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1111bDecorGameTests"
 		]
 	},
 	"depends": {

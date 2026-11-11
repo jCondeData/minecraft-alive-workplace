@@ -3,7 +3,7 @@
 Milestone 46, item 46.5 (owner, 2026-11-09: "Leatherworker shouldn't make stained glass"; each job crafts its own kind
 of thing). The Beekeeper makes the candles, colored candles and honeycomb blocks builders wait for, from her hives' wax,
 and the Leatherworker is no longer her stand-in: he makes leather goods and nothing else.
-Roadmap items: 46.5, B1148, B1170
+Roadmap items: 46.5, B1148, B1170, B1159
 
 ## 1. What a player sees
 
@@ -35,7 +35,10 @@ Roadmap items: 46.5, B1148, B1170
   one is still missing, the builder waits by his bench ("1× Item Frame" on his waiting line) while one is spare in the
   village (he fetches it), while a job is making it, or for two minutes (six at most), then hangs what he has. With nobody to make it,
   the build ends without it and the owner is told, as before. While he waits, the lines under his head show what he's
-  short of, whom to hire ("Hire a Leatherworker to make Item Frames") and where he takes from, as during the build (B1159).
+  short of, whom to hire ("Hire a Leatherworker to make Item Frames", "Hire a Shepherd to make Paintings", "Hire a Carpenter
+  to make Armor Stands") and where he takes from, as during the build (B1159); with more jobs to hire than fit, it names
+  the first two and counts the rest ("and 1 more"). The hire line goes once that job works nearby, and stays after a save
+  and reload mid-wait.
 
 ## 2. How it works
 
@@ -124,5 +127,10 @@ the next job; a job forever on it holding the build no longer than three waits; 
 `decoration_wait_since` loading and finishing.
 `QaBuilderDecorations1110bBugTests` (B1159): with no Leatherworker, the waiting builder's lines read "Needs: 1× Item
 Frame" and "Hire a Leatherworker to make Item Frames".
+`QaBuilderFixes1111bDecorGameTests` (5, QA of B1159): during the wait a frame and a painting name the Leatherworker and
+the Shepherd to hire, an armor stand alone the Carpenter; a Leatherworker hired mid-wait takes the hire line away (after
+the lines' 100-tick refresh) and makes the frame, which is hung; a frame put in the chest mid-wait ends the wait with it
+hung; after a save and reload mid-wait the site still waits and its lines still read "Needs: 1× Item Frame" and the hire
+line.
 `QaBuilderDecorStore1110bGameTests` (QA of B1148): a frame in neither the bench's chest nor made by anyone but spare
 in the village Storehouse is fetched from there and hung, and the Storehouse is left without it.

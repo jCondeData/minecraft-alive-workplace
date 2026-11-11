@@ -8,6 +8,7 @@ import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
 import io.github.jcondedata.aliveworkplace.build.BuilderWork;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.craft.JobShortages;
+import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
@@ -343,8 +344,12 @@ public class QaBuilderDecorations1110bGameTests {
 			}
 			reloaded.set(true);
 			CompoundTag saved = BuildSiteManager.get(level).save(new CompoundTag(), level.registryAccess());
-			int stripped = strip(saved, "decoration_wait_since");
-			helper.assertTrue(stripped == 1, "expected the waiting site's decoration_wait_since in the save, found " + stripped);
+			// B1183: other tests' build sites share this level's save, so only this site's own entry is counted and
+			// stripped (another site still waiting for a decoration keeps its tag and loads as it was saved).
+			CompoundTag own = ownSite(saved, site);
+			helper.assertTrue(own != null, "this test's site isn't in the save");
+			int stripped = strip(own, "decoration_wait_since");
+			helper.assertTrue(stripped == 1, "expected the waiting site's decoration_wait_since in its saved entry, found " + stripped);
 			BuildSiteManager loaded = BuildSiteManager.load(saved, level.registryAccess());
 			level.getDataStorage().set(BuildSiteManager.NAME, loaded);
 			BuildSite back = loaded.get(site.id());
@@ -480,6 +485,16 @@ public class QaBuilderDecorations1110bGameTests {
 	}
 
 	/** Removes {@code key} everywhere in {@code tag} (as an older save, written before the key existed); returns how many. */
+	/** This site's own entry in a saved BuildSiteManager's "sites" list (B1183), or null. */
+	private static CompoundTag ownSite(CompoundTag saved, BuildSite site) {
+		for (Tag t : Nbt.getList(saved, "sites", Tag.TAG_COMPOUND)) {
+			if (t instanceof CompoundTag c && Nbt.hasUuid(c, "id") && Nbt.getUuid(c, "id").equals(site.id())) {
+				return c;
+			}
+		}
+		return null;
+	}
+
 	private static int strip(Tag tag, String key) {
 		int n = 0;
 		if (tag instanceof CompoundTag c) {

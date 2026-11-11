@@ -4,7 +4,7 @@ Milestone 46, item 46.6 (owner, 2026-11-09; each job crafts its own kind of thin
 own Glass Kiln: he fires glass from sand (a coal or charcoal for every eight) and makes the panes, stained glass with the
 Florist's dyes, tinted glass and bottles builders wait for. He replaces the stand-in 46.1 left in place: the Mason fired
 the glass until now.
-Roadmap items: 46.6
+Roadmap items: 46.6, B1156
 
 ## 1. What a player sees
 
@@ -14,7 +14,8 @@ Roadmap items: 46.6
   leather apron with a pocket of jacks, rolled linen sleeves, a red kerchief and green-tinted goggles). A plain furnace
   is no workstation, so villagers never take a player's furnaces.
 - A builder near a Glassblower who is short of glass gets it from him: he fetches the makings from the builder's chests
-  (and the village's), makes them at his kiln and puts them in the builder's chest.
+  (and the village's), makes them at his kiln and puts them in the builder's chest. Sand and coal kept in his own
+  chests (the two by his kiln) are used too (B1156).
   - Glass from sand, a coal or charcoal for every eight fired (nine glass take two coal).
   - Glass panes from sand, the glass fired first (a builder with sand and coal gets panes).
   - Stained glass and stained panes with a dye: red stained glass from eight sand, a coal and a red dye.
@@ -43,6 +44,9 @@ Roadmap items: 46.6
   recipes and the crafting table's), whole chains a bagful at a time, with a coal or charcoal for every
   `GLASS_PER_FUEL` (8) fired; what's short is planned with the fuel counted as a raw material and every
   other job's thing raw, so the line names the coal and the dye. It takes only the `crafts/glassblower` list.
+- B1156: the Glassblower takes part in the village (`Village.takesPart`), so his chests are a village-mate's stash the
+  builder's requests draw on (`CrafterWork` pools the builder's chests with those stashes). Before, his own sand and coal
+  were never counted.
 - `CraftJobs.Job.GLASSBLOWER` now names the job; its stand-in (the Mason) is gone, so the Mason no longer fires glass.
   He helps instead (`MasonWork.helps`): with a Glassblower at work by a builder whose glass lacks sand, the Mason crushes
   it from gravel or cobblestone into the builder's chests (`CrafterWork.makingsFor` reads a Glassblower's lack with the
@@ -102,3 +106,6 @@ coal (not built, no sand lost, the line one coal short), a blue stained glass pa
 missing red dye and the missing amethyst shard named word for word with nothing taken, his status title, the kiln
 broken mid-job and put back (the panes still come), saved and loaded between the glass and the stained glass, a nitwit,
 a child and a working Mason leaving a free kiln alone, and the kiln dropping itself when mined.
+
+`QaGlassblowerStash1110cBugTests` (B1156): eight sand and a coal in the chest by his kiln, none in the builder's, become
+the builder's four glass.

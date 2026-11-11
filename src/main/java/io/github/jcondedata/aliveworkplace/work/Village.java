@@ -71,6 +71,8 @@ public final class Village {
 			// B1144: the Cleric makes builders' brewing stands and beacons (46.4) from his own chests too, and they're only
 			// offered to a builder as a village-mate's stash when his job takes part
 			|| job == VillagerProfession.CLERIC
+			// B1156: the same for the Glassblower's sand and coal in the chests by his Glass Kiln (46.6)
+			|| job == ModVillagers.GLASSBLOWER
 			|| Fields.isFarmer(villager) && Fields.hasField(villager)
 			|| Fishers.isFisherman(villager) && Fishers.isHired(villager);
 	}

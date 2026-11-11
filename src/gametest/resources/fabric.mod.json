@@ -1593,6 +1593,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintTableJobs1111bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldCarpenterJob1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorations1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClericOwnChest1110bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDecorStore1110bGameTests"

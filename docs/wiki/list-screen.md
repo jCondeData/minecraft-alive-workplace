@@ -55,8 +55,10 @@ The job menus (42.3) follow, with their own rows:
 - **The Research screen** (sneak-right-click a Scholar, or a Legend with a tree): what's being researched at the top
   right, the tabs (the scholars', each Legend's tree, the realm's in a capital), then a row per topic: its level, the next
   level's price ("Fully researched" once done) and **Research**; gold "Under way" while it's worked on, gray with no button
-  while it's locked or done (the reason in its tooltip, and a click still says it). The Great Library's row and topics come
-  after the scholars' own.
+  while it's locked or done (the reason in its tooltip, and a click still says it: a topic at its top says "Swift Hands
+  is fully researched." even while the scholars are busy with another, B1090). The Great Library's row and topics come
+  after the scholars' own; below its second tier's top, a topic there says "Swift Hands IV–V needs the Great Library"
+  while no Great Library stands, and at that top "... is fully researched." with or without it.
 
 The builder tools and the shops (42.4) follow:
 

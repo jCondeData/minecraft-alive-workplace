@@ -44,7 +44,9 @@ Roadmap items: 41.1, 41.2, 41.3, B996
   broken by then, they walk the whole road from their village instead, and its chronicle says "The settlers for Newbrook
   found a waystone broken and are walking the road instead".
 - **A village whose Village Hall is broken leaves the network** (B996): caravans and settlers no longer go through its
-  waystone, even with its plaza and stone still standing, and it drops off every other hall's Map.
+  waystone, even with its plaza and stone still standing, and it drops off every other hall's Map. A caravan already
+  on its way there turns home with its load. Put the hall back and, after its next round, the village is on the
+  network again with its stone named after it.
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with

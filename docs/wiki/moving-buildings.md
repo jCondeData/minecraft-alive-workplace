@@ -86,7 +86,8 @@ stands go up with what they held when the Mover packed them, so an item a player
 isn't put back and one put in a chest meanwhile moves too. Furniture from CobbleFurnies, Handcrafted and Lucky's Cozy
 Home moves like any block. A piece of a furniture mod removed from the game mid-move is left out; the rest goes up.
 In the showcase, Tomas's barrel arrives with his 16 cod and 5 salmon and the cottage's sign still reads "Dara & Tomas".
-With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot arrives with its items once, and a
+With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot arrives with its items once (so does a
+Deployer's hand, with its filter, and the item on a Placard), and a
 belt of any length comes across whole, with the items on it, and runs at the new spot. A Fluid Tank or Item Vault
 built from several blocks arrives as one tank or vault with all its fluid or items, and a canceled move puts it back
 up as one, reachable through any of its blocks (B1135, B1136). A Mechanical Arm turned with the building still takes
@@ -339,6 +340,9 @@ and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emera
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.
 `QaCreateMoverArm1110eCompatTests` (1, compat suite, B1137): a Mechanical Arm taking from a Depot to its west and
 putting on one to its north, moved a quarter turn, still aims at both depots.
+`QaCreateMoverHeld1111eCompatTests` (3, compat suite, the QA lane): a Deployer holding 16 iron ingots, a Deployer
+filtered to an iron pickaxe and holding one, and a Placard showing a diamond, each moved a quarter turn: the hand, the
+filter and the placard's item arrive once, nothing dropped while the house comes down or loose after.
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named

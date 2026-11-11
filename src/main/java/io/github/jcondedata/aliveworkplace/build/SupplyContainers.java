@@ -74,12 +74,94 @@ public final class SupplyContainers {
 	}
 
 	private static List<BlockPos> stores(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude) {
+		return scanned(level, bench, exclude, false);
+	}
+
+	private static List<BlockPos> scanStores(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude, boolean[] modded) {
 		return near(level, bench, be -> !(exclude != null && exclude.isInside(be.getBlockPos()))
 			&& !(be instanceof io.github.jcondedata.aliveworkplace.work.PrivateContainer)
 			&& !(be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity)
 			&& !isMachine(be)
 			&& !ModdedBlocks.isStorageNetwork(be.getBlockState().getBlock())
-			&& STORES.isStore(level, be.getBlockPos()));
+			&& STORES.isStore(level, be.getBlockPos()), modded);
+	}
+
+	// ---- B455/B412: the scan is kept until a block entity near it changes ----
+	//
+	// Every job asks for the storage near its station, most of them every tick and a porter or crafter for every
+	// village-mate's too, and each ask went through every block entity of up to four chunks (registry lookups and a
+	// transfer-API lookup for each). The answer only changes when a block entity is placed or removed, a block with one
+	// changes state (a chest joining its other half) or a chunk loads or unloads: LevelChunkMixin counts those.
+
+	/** Counts every change that can alter a scan: see {@link #blockEntitiesChanged}. */
+	private static final java.util.concurrent.atomic.AtomicLong CHANGES = new java.util.concurrent.atomic.AtomicLong();
+	/** A kept scan is read again after this many ticks whatever happened: a net under what the count can't see (a tag reload). */
+	static final int KEEP_TICKS = 40;
+	private static final int KEEP_MOST = 4096;
+	/** Off: every ask scans, as before B455 (for the tests that compare the two). */
+	public static volatile boolean KEEP_SCANS = true;
+	/** How many scans really went through the chunks' block entities (for tests and the benchmark). */
+	public static long scans;
+	private static final java.util.Map<ServerLevel, java.util.Map<ScanKey, Scan>> KEPT = new java.util.WeakHashMap<>();
+
+	private record ScanKey(long bench, boolean furnaces, boolean boxed, int x0, int y0, int z0, int x1, int y1, int z1) {
+	}
+
+	private record Scan(List<BlockPos> found, long changes, long at, int radius, boolean furnished) {
+	}
+
+	/**
+	 * A block entity was placed or removed, a block with one changed state, or a chunk loaded or unloaded (called by
+	 * {@code mixin/LevelChunkMixin}, from any thread): every kept scan is stale.
+	 */
+	public static void blockEntitiesChanged() {
+		CHANGES.incrementAndGet();
+	}
+
+	/**
+	 * {@link #scanStores} or the furnaces near {@code bench}, kept while nothing changed. Never kept: a scan with another
+	 * mod's block entity in reach (its storage can change without the block changing: a Create vault forming), and asks
+	 * from another thread. The caller gets its own list.
+	 */
+	private static List<BlockPos> scanned(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude, boolean furnaces) {
+		if (!KEEP_SCANS || !level.getServer().isSameThread()) {
+			return scan(level, bench, exclude, furnaces, new boolean[1]);
+		}
+		ScanKey key = exclude == null ? new ScanKey(bench.asLong(), furnaces, false, 0, 0, 0, 0, 0, 0)
+			: new ScanKey(bench.asLong(), furnaces, true, exclude.minX(), exclude.minY(), exclude.minZ(), exclude.maxX(), exclude.maxY(), exclude.maxZ());
+		java.util.Map<ScanKey, Scan> kept = KEPT.computeIfAbsent(level, l -> new java.util.HashMap<>());
+		long changes = CHANGES.get();
+		long now = level.getGameTime();
+		boolean furnished = io.github.jcondedata.aliveworkplace.furnish.Furnishings.ENABLED;
+		Scan had = kept.get(key);
+		if (had != null && had.changes() == changes && had.radius() == RADIUS && had.furnished() == furnished
+			&& now >= had.at() && now - had.at() < KEEP_TICKS) {
+			return new ArrayList<>(had.found());
+		}
+		boolean[] modded = new boolean[1];
+		List<BlockPos> found = scan(level, bench, exclude, furnaces, modded);
+		if (modded[0]) {
+			kept.remove(key);
+		} else {
+			if (kept.size() >= KEEP_MOST) {
+				kept.clear();
+			}
+			// stamped with the count from before the scan: a change during it makes the scan stale, never fresh
+			kept.put(key, new Scan(List.copyOf(found), changes, now, RADIUS, furnished));
+		}
+		return found;
+	}
+
+	private static List<BlockPos> scan(ServerLevel level, BlockPos bench, @Nullable BoundingBox exclude, boolean furnaces, boolean[] modded) {
+		scans++;
+		return furnaces ? near(level, bench, be -> be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity, modded)
+			: scanStores(level, bench, exclude, modded);
+	}
+
+	/** Whether {@code be} is vanilla's or ours: its storage only changes with its block. */
+	private static boolean known(BlockEntity be) {
+		String name = be.getClass().getName();
+		return name.startsWith("net.minecraft.") || name.startsWith("io.github.jcondedata.aliveworkplace.");
 	}
 
 	/** Storage inside {@code box} (a building: a Legend's home chests, ROADMAP 29.5), the same kinds {@link #find} lists. */
@@ -125,10 +207,15 @@ public final class SupplyContainers {
 
 	/** Furnaces, blast furnaces and smokers near {@code bench}, nearest first. */
 	public static List<BlockPos> furnaces(ServerLevel level, BlockPos bench) {
-		return near(level, bench, be -> be instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity);
+		return scanned(level, bench, null, true);
 	}
 
 	private static List<BlockPos> near(ServerLevel level, BlockPos bench, java.util.function.Predicate<BlockEntity> keep) {
+		return near(level, bench, keep, new boolean[1]);
+	}
+
+	/** {@code modded[0]} is set when a block entity in reach is another mod's (see {@link #scanned}). */
+	private static List<BlockPos> near(ServerLevel level, BlockPos bench, java.util.function.Predicate<BlockEntity> keep, boolean[] modded) {
 		List<BlockPos> found = new ArrayList<>();
 		// a store that several blocks hand out (a Create item vault's) is listed once, so its items are counted once
 		java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
@@ -145,6 +232,7 @@ public final class SupplyContainers {
 					if (Math.abs(p.getX() - bench.getX()) > RADIUS || Math.abs(p.getZ() - bench.getZ()) > RADIUS || Math.abs(p.getY() - bench.getY()) > VERTICAL) {
 						continue;
 					}
+					modded[0] |= !known(be);
 					if (keep.test(be) && !otherHalfFound(be, found) && seen.add(STORES.identity(level, p))) {
 						found.add(p.immutable());
 					}

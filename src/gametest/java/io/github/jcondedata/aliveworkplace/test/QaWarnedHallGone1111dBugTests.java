@@ -194,6 +194,42 @@ public class QaWarnedHallGone1111dBugTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The siege the warned attack became, and the hall broken during it: the raiders come at dusk and the siege takes the
+	 * bars over; the player breaks the hall and kills the last raider. The siege director runs on its own (Sieges.tick,
+	 * every 20 ticks), but the raid only ends in the hall's round, so the next morning the siege still holds the gates
+	 * shut and the portcullis down. Expected: with no raider left and the night over, the siege is lifted as it is with
+	 * the hall standing.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"qaWarnedHallSiege1111d"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "qaWarnedHallSiege1111d")
+	public void aSiegeWhoseHallIsBrokenIsLiftedTheMorningAfter(GameTestHelper helper) {
+		List<BlockPos> bars = bracedAtNoon(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		level.setDayTime(BASE + VillageNeeds.DAY + VillageRaids.DUSK + 1500); // the raiders' hour
+		Mob husk = EntityType.HUSK.create(level);
+		BlockPos out = helper.absolutePos(new BlockPos(14, 2, 1));
+		husk.moveTo(out.getX() + 0.5, out.getY(), out.getZ() + 0.5, 0f, 0f);
+		husk.addTag(VillageRaids.TAG);
+		husk.setNoAi(true);
+		level.addFreshEntity(husk);
+		VillageRaids.track(level, hall, Threats.get(BESIEGERS).orElseThrow(), List.of(husk));
+		ThreatData.Siege siege = Sieges.siege(level, hall).orElse(null);
+		helper.assertTrue(siege != null && !siege.portcullis.isEmpty() && Sieges.portcullisDown(level, hall), "setup: the siege didn't begin with the bars down");
+		List<BlockPos> held = List.copyOf(siege.portcullis);
+		helper.setBlock(HALL, Blocks.AIR); // the player breaks the hall
+		husk.kill(); // and the last raider falls
+		level.setDayTime(BASE + 2 * VillageNeeds.DAY + 1000); // the next morning
+		helper.runAfterDelay(80, () -> {
+			int still = down(level, held) + down(level, bars);
+			helper.assertTrue(Sieges.siege(level, hall).isEmpty() && still == 0, "the hall was broken during the siege and its last raider killed; the next morning (4 director steps later) the siege "
+				+ (Sieges.siege(level, hall).isPresent() ? "still holds the gates (raid on the clock: " + ThreatData.get(level).raid(hall).isPresent() + ")" : "is lifted")
+				+ " and " + still + " portcullis bars are still down");
+			helper.succeed();
+		});
+	}
+
 	/** The control: the hall broken and put back on the same spot is the same village; the next morning its bars go up. */
 	//$ gametest_ticks_batch AREA '300' '"qaWarnedHallBack1111d"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "qaWarnedHallBack1111d")

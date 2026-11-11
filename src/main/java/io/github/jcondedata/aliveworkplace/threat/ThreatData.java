@@ -189,6 +189,8 @@ public final class ThreatData extends SavedData {
 		long warned = -1;
 		/** The portcullis bars dropped ahead of a warned attack (32.14), to draw up again or hand to the siege. */
 		final List<BlockPos> braced = new ArrayList<>();
+		/** The village's gates were shut with no guard to open them (a warned day or a siege; B1158), to open again after. */
+		boolean gatesShut;
 	}
 
 	/** The data of every dimension loaded since the server started (for the few callers that know a hall but no level). */
@@ -400,6 +402,21 @@ public final class ThreatData extends SavedData {
 		setDirty();
 	}
 
+	/** Whether the village round {@code hall} had its gates shut with no guard to open them (B1158). */
+	public boolean gatesShut(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock != null && clock.gatesShut;
+	}
+
+	/** Marks (or clears) the gates of the village round {@code hall} as shut with no guard to open them (B1158). */
+	public void gatesShut(BlockPos hall, boolean shut) {
+		Clock clock = shut ? clocks.computeIfAbsent(hall.immutable(), h -> new Clock()) : clocks.get(hall);
+		if (clock != null && clock.gatesShut != shut) {
+			clock.gatesShut = shut;
+			setDirty();
+		}
+	}
+
 	/** Forgets the hall's clock (the hall is gone; tests). */
 	public void forgetClock(BlockPos hall) {
 		if (clocks.remove(hall) != null) {
@@ -600,6 +617,7 @@ public final class ThreatData extends SavedData {
 			c.put("attacks", attacks);
 			c.putLong("warned", e.getValue().warned);
 			c.putLongArray("braced", e.getValue().braced.stream().mapToLong(BlockPos::asLong).toArray());
+			c.putBoolean("gatesShut", e.getValue().gatesShut);
 			halls.add(c);
 		}
 		tag.put("clock", halls);
@@ -911,6 +929,7 @@ public final class ThreatData extends SavedData {
 			for (long bar : Nbt.getLongArray(c, "braced")) {
 				clock.braced.add(BlockPos.of(bar));
 			}
+			clock.gatesShut = Nbt.getBoolean(c, "gatesShut"); // false in a save from before B1158
 			clocks.put(BlockPos.of(Nbt.getLong(c, "hall")), clock);
 		}
 	}

@@ -60,7 +60,9 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   come", the Lighthouse's keeper "watches the sea from the lighthouse" (B919).
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
-  dropped bars over; if no attack came, the bars go up the next morning.
+  dropped bars over; if no attack came, the bars go up the next morning. A village with no guard (warned by a Seer or
+  the Lighthouse) opens the gates the warning shut again the morning after, or as soon as the attack is called off
+  (B1158).
 - **Called off.** An attack called off after the warning (threat level 0, Peaceful, the village set At peace, or
   `/workplace threat clear`) takes its warning with it (`ThreatData.callOff`), and `Warnings.ready` is false in a quiet
   village: no gates shut, no battle stations, nobody kept in (B1146). So does a lair broken up before its band comes:
@@ -218,6 +220,8 @@ None.
   switched off, every new sentence). Scene `warning`.
 - B1146: `QaThreatSwitches1110dBugTests` (warned at level 2, then the level set to 0, the world saved and loaded at
   level 0, or the village set At peace: nothing shuts on the day).
+- B1158: `QaGuardlessGates1110dBugTests` (a guardless village's gates shut at noon of the warned day are open the
+  morning after and when the attack is called off; a guarded village's the morning after, as before).
 - 32.14 (QA, lane D): `QaWarningGameTests` (an archer posted exactly 24 blocks from a Lookout Tower's middle keeps
   watch, 25 blocks off doesn't and nobody is warned; an upgraded Lookout Tower still counts; a player in the village and
   the hall's owner 300 blocks off are each told once, in gold, and a stranger 300 blocks off isn't).

@@ -64,7 +64,8 @@ public class TrainerRefusedChoiceCompatTests implements FabricGameTest {
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
 		player.moveTo(helper.absoluteVec(new net.minecraft.world.phys.Vec3(6.5, 2, 6.5)));
-		// Sturdy and harmless: Splash does nothing, so nobody faints while the test watches the turns.
+		// Sturdy and harmless: Splash does nothing, so nobody faints while the test watches the turns (unless the trainer
+		// rules Splash out; the battle ending early is fine too).
 		Cobblemon.INSTANCE.getStorage().getParty(player).add(PokemonProperties.Companion.parse("magikarp level=100", " ", "=").create());
 
 		io.github.jcondedata.aliveworkplace.trainer.Trainers.challenge(player, trainer);
@@ -94,9 +95,15 @@ public class TrainerRefusedChoiceCompatTests implements FabricGameTest {
 				them[0].getResponses().add(new SwitchActionResponse(them[0].getActivePokemon().get(0).getBattlePokemon().getUuid()));
 				swapped[0] = true;
 			}
-			var move = us.getRequest().getActive().get(0).getMoves().stream().filter(m -> m.getId().equals("splash")).findFirst()
-				.orElse(us.getRequest().getActive().get(0).getMoves().get(0));
-			us.setActionResponses(List.<ShowdownActionResponse>of(new MoveActionResponse(move.getId(), null, null)));
+			// Splash while the battle allows it. A trainer's Taunt, Torment, Disable or Encore rules it out for a turn or more
+			// (the request marks it disabled, and Cobblemon throws "Invalid action choice" at a disabled move: CI run
+			// 42954235190), so then the first move the request does allow, aimed at the trainer's Pokémon when it needs a target.
+			var moves = us.getRequest().getActive().get(0).getMoves();
+			var move = moves.stream().filter(m -> m.getId().equals("splash") && m.canBeUsed()).findFirst()
+				.or(() -> moves.stream().filter(m -> m.canBeUsed()).findFirst()).orElse(moves.get(0));
+			var targets = move.getTargets(us.getActivePokemon().get(0));
+			String target = targets == null || targets.isEmpty() ? null : them[0].getActivePokemon().get(0).getPNX();
+			us.setActionResponses(List.<ShowdownActionResponse>of(new MoveActionResponse(move.getId(), target, null)));
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(swapped[0], "turn 1 never asked both sides (turn " + battle.getTurn() + ")");

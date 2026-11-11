@@ -52,6 +52,10 @@ The page checks again when you click **Confirm**. If something changed after you
 started on it, someone else's protection now covers it, or moving was switched off), Confirm is refused with the
 reason and nothing moves.
 
+If the builders start on a building after you confirmed its move, the move isn't lost: its row on the Move page says
+**Waiting: builders are working on it**, nothing comes down under them, and the Mover starts once they're done. You
+can still open the row and call the move off. Other buildings' moves go ahead meanwhile.
+
 ## Turning it off
 
 Server owners can switch moving off with the **Move buildings** setting. With it off the Move page refuses every

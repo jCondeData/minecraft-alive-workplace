@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182
 
 ## What a player sees
 
@@ -46,7 +46,10 @@ the line is the protection's own "X is Y's village..."); its footprint holds the
 other's (B1161: two villages side by side; `MoveRules.holdsHall` reads the loaded chunks' block entities and, for a
 chunk not loaded, the halls' points of interest) ("the Village Hall stays where it stands"); a Wonder or a Wonder's part ("a Wonder is built to stay where it stands"); a build site not done at
 its origin or overlapping it, such as an upgrade or repair ("builders are still working on it; move it once they're
-done"). With `moveBuildings` off a move already confirmed still goes ahead (stopping one half way would leave a
+done"). A move confirmed before the builders started on it waits (B1182): `MoveSites.begin` asks the same
+`MoveRules.underBuilders` and starts nothing while such a site is live; the move stays saved, the building's row on the
+Move page says "Waiting: builders are working on it; the Mover starts once they're done", and the Mover starts it once
+the site is done. With `moveBuildings` off a move already confirmed still goes ahead (stopping one half way would leave a
 building in pieces); `movers` off is the switch that stops the Movers.
 
 ![The Move page](https://jcondedata.github.io/minecraft-alive-workplace/move_plan/still-2.jpg)
@@ -379,6 +382,10 @@ called off half way gives everyone their old bed, lectern and bench back.
 The `mover` scene: Dara (the cottage's bed) and her husband Tomas (a fisherman at its barrel) move with it; its checks
 say her bed and his barrel are the moved cottage's and he's still a fisherman, and its third still is Tomas back at his
 barrel at the new spot.
+
+`MoveLiveSiteGameTests` (3, B1182): builders start on a hut after its move is confirmed: nothing comes down, the move
+is kept and the Move page says it waits; once their site is done the Mover moves the hut whole; through a save and
+reload while it waits; and the held move's row still opens with Call off, which drops it. `QaMoveLiveSite1111eBugTests`: QA's reproduction.
 
 ## Known limits
 

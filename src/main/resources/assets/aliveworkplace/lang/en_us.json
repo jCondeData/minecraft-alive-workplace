@@ -1991,6 +1991,7 @@
   "screen.aliveworkplace.move.none": "No buildings to move yet",
   "screen.aliveworkplace.move.none_hint": "Buildings your builders finish in the village are listed here",
   "screen.aliveworkplace.move.planned_to": "Move planned: to %s, %s, %s",
+  "screen.aliveworkplace.move.waits_builders": "Waiting: builders are working on it; the Mover starts once they're done",
   "screen.aliveworkplace.move.click": "Click to pick its new spot",
   "screen.aliveworkplace.move.more": "And %s more",
   "screen.aliveworkplace.move.back": "Back to the buildings",

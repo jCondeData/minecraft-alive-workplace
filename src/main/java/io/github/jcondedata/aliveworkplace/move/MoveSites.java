@@ -71,13 +71,19 @@ public final class MoveSites extends SavedData {
 		return Optional.empty();
 	}
 
-	/** Starts moving the building of {@code move}: captured as it stands now. Empty if the building is gone (the move is dropped). */
+	/**
+	 * Starts moving the building of {@code move}: captured as it stands now. Empty if the building is gone (the move is
+	 * dropped), or while a build site is still going on it (the move waits, kept: B1182, {@link MoveRules#underBuilders}).
+	 */
 	public Optional<MoveSite> begin(ServerLevel level, PendingMoves.Move move) {
 		Optional<MoveSite> known = forBuilding(move.from());
 		if (known.isPresent()) {
 			return known;
 		}
 		Optional<BuildSiteManager.Finished> building = BuildSiteManager.get(level).finishedAt(level, move.structure(), move.from());
+		if (building.isPresent() && MoveRules.underBuilders(level, building.get())) {
+			return Optional.empty(); // builders work on it (45.6): nothing comes down under them; the move waits, kept (B1182)
+		}
 		BoundingBox box = building.map(f -> MovePlan.box(level, f)).orElse(null);
 		Optional<MovePlan> plan = building.flatMap(f -> MovePlan.capture(level, f));
 		if (box == null || plan.isEmpty()) {

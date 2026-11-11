@@ -375,6 +375,9 @@ a Novice with no experience, keeps his job with his lectern packed even when his
 is held for him the moment it's put up; the builder's bench is his the moment it's put up, and his queued build's bench
 follows it; all of it through a save and reload every 7 steps (the residents and their inn beds survive); and a move
 called off half way gives everyone their old bed, lectern and bench back.
+`QaInnShopCounter1111cGameTests` (QA lane, B1177) adds the inn's edges for the stay beds: with the inn's Shop Counter
+broken, its Innkeeper given No job or retrained as the counter's Shopkeeper, the residents stay by the Hall; with the
+Innkeeper asleep they still stay at the inn.
 
 The `mover` scene: Dara (the cottage's bed) and her husband Tomas (a fisherman at its barrel) move with it; its checks
 say her bed and his barrel are the moved cottage's and he's still a fisherman, and its third still is Tomas back at his
@@ -382,6 +385,8 @@ barrel at the new spot.
 
 ## Known limits
 
+- The inn is found by its Innkeeper: if he is outside the village (past the Village Hall's reach) when the move
+  starts, the residents stay by the Hall instead of at the inn.
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
 
 - A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still

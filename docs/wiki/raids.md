@@ -235,6 +235,11 @@ None.
 - B1180: `QaGatesLastGuardNight1111dBugTests` (the only guard shuts the gates at dusk and falls in the night: they stay
   shut through the night and open the next morning, also across a save and reload; then a player's shut gates stay
   shut).
+- B1180 (QA, lane C): `QaGatesLastGuard1111cGameTests` (the guard counted by the hall's census: the only guard given
+  No job at the hall in the night leaves the gates shut until dawn, then they open; made a guard again before dawn, he
+  keeps them shut and opens them once at dawn; a gate a player opens in a guardless night stays open and the rest open
+  at dawn; the next dusk with still no guard nothing shuts, and a gate a player shuts that night stays shut in the
+  morning).
 - B1155 (QA, lane D): `QaLairFallOtherBands1111dGameTests` (the camp falls on a day the village is warned of monsters:
   still braced, the Defense page still shows it, only the bandits' attack leaves the clock; the camp broken up the
   evening before its warned day: nothing shut at noon, no battle stations at dusk; a later monster attack stays; bandits

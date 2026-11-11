@@ -172,7 +172,7 @@ old spot, which may be empty by then (B1181), and Confirm is refused, so the sav
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on
 the site as a `Resident`: their bed and workstation relative to the box's lowest corner. A worker with no experience
 gets 1 (as `Jobs.employ` does), so vanilla's profession reset doesn't take the job while the block is packed. One with a
-bed moves into a stay bed (`MoveResidents.stayBed`: the nearest free bed round each inn counter in the village (`Innkeepers.counters`: an Inn Counter, or a Shop Counter an Innkeeper works, never a shop's; B1177), nearest the hall
+bed moves into a stay bed (`MoveResidents.stayBed`: the nearest free bed round each inn counter in the village (`Innkeepers.counters`: an Inn Counter, or a Shop Counter an Innkeeper works, never a shop's, B1177; one he was seen working stays the inn while he is away, remembered in `InnCounters`, B1203/B1205), nearest the hall
 first, else the free bed nearest the hall, never a wagon bed or one in the old or new box) through `HallBeds.moveIn`,
 which lets their own bed go. When `MoveSite.put` puts a block up (at the new spot, or back at the old one on a cancel),
 `MoveResidents.placed` runs: a Builder's build whose bench was that block's other position follows it
@@ -391,6 +391,16 @@ called off half way gives everyone their old bed, lectern and bench back.
 broken, its Innkeeper given No job or retrained as the counter's Shopkeeper, the residents stay by the Hall; with the
 Innkeeper asleep they still stay at the inn. `QaInnShopCounter1111cBugTests` (B1203): with the Innkeeper stepped out
 past the village's edge his Shop Counter is still the inn, and the residents stay there.
+`QaMoveHallBed1111cBugTests` (B1194): a bed given at the Hall's People page while the house is away is kept when the
+Mover puts the house up, and a worker let go at the Hall stays jobless. `QaMoverResidentGone1111cBugTests` (B1201): a
+resident who dies mid-move doesn't hold the moved bed after five days. `QaMoveInnVerify1111cGameTests` (QA lane, 10):
+a worker retrained as a Mason at the Hall mid-move keeps the new job and the moved lectern is free; a Hall bed pick
+survives a save and reload mid-move; of two residents only the one given another bed leaves his moved bed (the other
+sleeps in hers, nothing held twice); a dead worker's moved lectern is free at once; an unloaded resident's moved bed is
+held for exactly five days and let go the tick after (and another villager can move in), while one back on the last tick
+gets it and keeps it; an Innkeeper in an unloaded chunk keeps his Shop Counter the inn across a reload (the residents
+stay there), one let go or killed while away leaves no inn, and an away Innkeeper's counter 10.05 blocks from the Hall is
+the inn of a village of radius 11, not 10.
 
 The `mover` scene: Dara (the cottage's bed) and her husband Tomas (a fisherman at its barrel) move with it; its checks
 say her bed and his barrel are the moved cottage's and he's still a fisherman, and its third still is Tomas back at his

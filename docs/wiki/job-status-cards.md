@@ -6,7 +6,7 @@ they're doing, their work in numbers, what they need, and buttons for the whole 
 Village Hall. It is the same card as the Nurse's and the Fossil Scientist's ([Status cards](status-cards.md)). Part of
 Milestone 42 (One look for every screen).
 
-Roadmap items: 42.5, B1096
+Roadmap items: 42.5, B1096, B1103
 
 ## What a player sees
 
@@ -35,7 +35,10 @@ the coordinates, the routes, the pace and the clickable **[Stop]**/**[Cancel]** 
 Hall on their own page (the worker's page with Find and Change job, or a jobless villager's free workstations) with
 Back to the people list; **Close**. With no Village Hall near them, Hall page is gray and "There's no Village Hall near
 Mason." shows under the row; in a protected village that keeps you out it's gray with the village's "only they and
-their friends" line. The hint at the foot: "In chat: every detail, with the Stop link."
+their friends" line. The buttons always stay inside the card (B1103): with room to spare they have the Hall's roomy
+width; when they don't fit that way (a narrow card, or longer labels in another language) they shrink to what their
+labels need and share the room left out evenly to the card's edge, then wrap onto another row, and a label wider than
+the card is cut to it. The hint at the foot: "In chat: every detail, with the Stop link."
 
 The same conditions as before open it: a Fisher only when hired, a Farmer, Lumberjack or Orchard keeper only with a
 field, tree farm or orchard; anything in hand still does what it did (a blueprint, a marker, a note, a rod), and a

@@ -39,6 +39,28 @@ that make a build look *built* instead of boxy. Check a new or changed build wit
 - Builds for builders use blocks a player can gather: white concrete with a little polished diorite reads as plaster;
   calcite is for village houses (placed by world generation, never paid for).
 
+## What the owner noticed in game (the Inn, 2026-11-11)
+
+He walked through the Inn on his server and found five faults the renders and checks had passed (fixed in 92b57580e).
+Check every build for them before calling it done, and research 3-5 well-liked builds of the same kind online first
+(Planet Minecraft, r/Minecraftbuilds, builders' tutorials), writing down the techniques they share.
+
+1. **The mod's own furniture inside** (the furniture spots of `furniture.py`: counters, worktops, shelves, tables,
+   chairs, lamps, beds, nightstands), not stair-and-trapdoor stand-ins.
+2. **Repeated details complete.** Every window on a facade gets the same shutters and sill on every floor; one
+   window function for all of them. A missing trapdoor reads as unfinished.
+3. **Banners face the street.** A standing banner's `rotation` is 0 south, 4 west, 8 north, 12 east, and our front
+   (z=0) is north, so a banner facing the front is rotation 8. The preview renderer was drawing standing banners
+   half a turn round and now matches the game; still work the rotation out from the front, not from a render.
+4. **Nothing floats.** Sills, flower boxes and shutters stand on a plinth or stone skirt (ground floor) or a moulding
+   or the jetty's beam (upper floors). Look at an eye-level render of every facade.
+5. **Room to work.** A job building has its working room: the workstation (e.g. the Shop Counter; the Inn Counter is
+   retired and uncraftable) with a walk-in space behind it its worker can path to, a 2-wide walkway for visitors,
+   seating or displays, storage behind the worker. An inn: bar with a back bar and kitchen corner, hearth, tables
+   and chairs, stairs to guest rooms with beds.
+
+Renders draw mod blocks as stand-ins and skip block entities; send the owner in-game screenshots when there are any.
+
 ## Checks run on every save
 
 `generate.py` runs `check.py` on each build it saves and prints `CHECK <name>: ...` for what would look broken in the

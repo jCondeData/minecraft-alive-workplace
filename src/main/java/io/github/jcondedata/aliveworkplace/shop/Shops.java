@@ -421,7 +421,8 @@ public final class Shops {
 
 	/**
 	 * B1107: Confirm buys only the lot at the price its row showed. If the owner changed either since the row was drawn
-	 * (raised or lowered the price, changed the lot), nothing is taken: the buyer is told the new price and the row is
+	 * (raised or lowered the price, changed the lot), nothing is taken: the buyer is told the new price (or, B1147, the new
+	 * goods and their price when the lot changed) and the row is
 	 * drawn again at it, still gold, so a second Confirm buys at the price now on screen. A lot taken off the counter
 	 * is no longer chosen. A lot whose stock ran out is left to {@link #buy}, which says it's sold out and takes nothing.
 	 */
@@ -438,7 +439,11 @@ public final class Shops {
 				pending.goods[column].getHoverName()).withStyle(net.minecraft.ChatFormatting.YELLOW));
 			return false;
 		}
-		Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.price_changed",
+		// B1147: say what changed. Other goods (or a different lot size) get "This counter now sells ...", even when the
+		// price changed too; only a price change on the same lot says "The price changed".
+		String key = ItemStack.matches(pending.goods[column], goods)
+			? "message.aliveworkplace.shop.price_changed" : "message.aliveworkplace.shop.goods_changed";
+		Chat.actionBar(player, net.minecraft.network.chat.Component.translatable(key,
 			goods.getCount(), goods.getHoverName(), priceText(price)).withStyle(net.minecraft.ChatFormatting.YELLOW));
 		return false;
 	}

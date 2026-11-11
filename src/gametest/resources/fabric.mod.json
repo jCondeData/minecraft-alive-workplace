@@ -68,6 +68,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintListCacheGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoreScanCacheGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoreScanCache1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StructureVillagerGameTests",

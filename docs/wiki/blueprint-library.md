@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037
 
 ## 1. What a player sees
 
@@ -97,6 +97,8 @@ Ways to unlock, all for the village round the nearest hall:
   blocks of the table (`TableServer.atTable`), each re-sending the screen's `Open`. `TablePayloads.Open` carries
   `stored` (`Stored(stack, count)`) and `capacity`; the screen sends `Store(table, all)` and `TakeStored(table, stack)`.
   `BlueprintTableBlock.onRemove` drops what's stored. A full table stores what fits and leaves the rest with the player.
+  `TableServer.atTable` (Get Blueprint, Store, Take Stored, uploads) checks reach first, then `level.isLoaded`, and only
+  then the block there, so a request naming a far Table never loads or generates the land there (B1037).
 
 ## 3. Switches
 
@@ -204,6 +206,10 @@ QA's `QaBlueprintLibraryVerify1108bGameTests` (8): a new village's unlocked buil
 
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.
+
+`QaTableFar1108bBugTests` (2, QA, B1037): Get Blueprint, Store and Take Stored naming a Table about 9,600 blocks from the
+player leave the land there unloaded and the player's things unchanged; the same Get Blueprint at the Table beside the
+player hands out the cottage.
 
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
 starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search

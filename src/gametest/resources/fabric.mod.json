@@ -1472,6 +1472,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderGaps1105bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderStruckStaleLightGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTableFar1108bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStruckLight1108BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReplacedMidBuild1108GameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReplacedBlueprintGameTests",

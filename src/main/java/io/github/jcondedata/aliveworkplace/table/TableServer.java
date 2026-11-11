@@ -407,9 +407,15 @@ public final class TableServer {
 		}
 	}
 
+	/**
+	 * Whether {@code player} stands within reach of a Blueprint Table at {@code table} (a client-given position). Reach is
+	 * checked first and then whether the land there is loaded, so a request naming a far Table never makes the server load
+	 * or generate the chunk there (B1037).
+	 */
 	static boolean atTable(ServerPlayer player, BlockPos table) {
-		return player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE)
-			&& player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE;
+		return player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE
+			&& player.level().isLoaded(table)
+			&& player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE);
 	}
 
 	/**

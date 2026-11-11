@@ -295,8 +295,13 @@ an ore block the pickaxe in hand can't harvest (gold, diamond, redstone, emerald
 vanilla's ore tags) is left standing as before but remembered in the quarry (`left_ores`, saved; up to 256; quarries
 saved before load with none). Once the pickaxe in hand can harvest one, the miner goes back for it before anything else
 (the dig order's place stays where it was), and it counts as dug instead of left standing; an ore that's gone, has water
-or lava beside it now, or can't be reached is forgotten. With `minerCraftsPickaxe` off none of this happens
-(`MinerPickaxeUpgradeGameTests`).
+or lava beside it now, or can't be reached is forgotten (an ore a player mined or built over meanwhile, even while
+the pickaxe is still too weak). With `minerCraftsPickaxe` off none of this happens, and the status line asks for nothing
+(`MinerPickaxeUpgradeGameTests`; `QaMinerUpgrade1111eGameTests`, 8: the ores left come back in order through two
+restarts of the quarry file, before and after the upgrade, and an emptied list writes nothing; the cap keeps the 256th
+and not the 257th; an ore a player took isn't waited on; a worn iron pickaxe becomes a diamond one and is kept once,
+as worn; diamonds beat iron and the ingots stay; the village store's ingots; the status line from both sides, with an
+iron pickaxe and with the switch off and on again).
 
 **Miners dig deeper as they level up (36.22).** The Quarry Marker's depths go 4, 8, 16, 32, 64 (every miner), then
 96 (Journeyman and up), 128 (Expert and up) and "down to just above bedrock" (Master only: the world's floor plus 5,

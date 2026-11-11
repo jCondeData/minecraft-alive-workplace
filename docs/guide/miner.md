@@ -83,12 +83,13 @@ they go straight back to digging.
 
 They don't wait for a better one either. At any level, as soon as there are **three iron ingots** and two sticks in
 their chests or the village store, a miner with a stone pickaxe makes an **iron pickaxe**, and with **three diamonds**
-a **diamond pickaxe**; the old pickaxe goes back in the chest. The raw iron they dig gets there by itself: with coal in
-the chests, their blast furnace smelts it, and an [Armorer](armorer.md) smelts it too. Until then the line over their
+a **diamond pickaxe** (from an iron one too; with both, the diamond one); the old pickaxe goes back in the chest.
+The raw iron they dig gets there by itself: with coal in the chests, their blast furnace smelts it, and an [Armorer](armorer.md) smelts it too. Until then the line over their
 head says what they still need, such as "digging · needs 2 Iron Ingots for an Iron Pickaxe".
 
 Ores their pickaxe is too weak for (gold, diamond, redstone with a stone pickaxe) are left standing at first, but the
-miner remembers them: once they have the better pickaxe, they go back and dig them out.
+miner remembers them, through a restart too: once they have the better pickaxe, they go back and dig them out. One you
+mined yourself (or built over) in the meantime isn't waited for.
 
 ![Making an iron pickaxe from the iron she dug](https://jcondedata.github.io/minecraft-alive-workplace/miner_pickaxe_upgrade/still-4.jpg)
 

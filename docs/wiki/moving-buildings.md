@@ -5,18 +5,29 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.3, 45.4, 45.5, 45.6, B1154, B1161
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163
 
 ## What a player sees
 
 **The Hall's Move page (45.2).** A **Move** tab (a piston) in the Village Hall, under Buildings, lists the village's
-finished buildings, each with where it is and, once planned, where it's going. A click opens the picker:
+finished buildings, each with where it stands from the Hall ("Now: 17 blocks north-west of the Hall") and, once
+planned, where it's going. Since B1163/45.2a the page is a three-step flow a first-time player can follow without this
+wiki: three steps across the top (**1. Pick a building**, **2. Pick a new spot**, **3. Confirm**), the current one in
+gold, and the step's instruction under them ("Step 1 of 3: pick the building to move...", "Step 2 of 3: click the map
+where the Starter Cottage should go", "Step 3 of 3: the spot fits. Press Confirm and a Mover moves the Starter
+Cottage"). A click on a building opens the picker:
 
-- the building, with its size and the way its front faces;
-- a map of the ground round the new spot, one cell every 4 blocks, north at the top: the new spot (green when it fits,
-  red when it's refused, yellow before a spot is picked), where it stands now, other buildings (bricks), roads, water,
-  the hall and the land outside the village; a click on a cell puts the spot's middle there;
-- Rotate (a quarter turn a click), the fit line, Confirm and Cancel, and Call off once a move is planned.
+- left, the village map: the land drawn like a vanilla map round the Hall (its bell), roads in light tan, the land
+  outside the village darker, every other building as a named brick box, where the building stands now in yellow
+  ("Now") and the new spot in green when it fits or red when it's refused ("New spot"), its front edge in gold; a
+  legend and "North is up" under it. It starts fitted to what the village has (the Hall, its buildings, now and the new
+  spot) so the buildings read; the mouse wheel zooms out to the whole village and back. Names sit inside their box when
+  they fit, else beside it on a dark backing, never on another name, box or the Hall's bell ("Hall"). A click anywhere on the map puts the new spot's middle on that
+  block; the mouse over it says what is there (a building's name, a road, water, the Hall, outside the village);
+- right: "Moving: Starter Cottage", where it is now and where it would go (both from the Hall), the reason in red
+  when the spot is refused, labeled buttons (**Rotate (front faces north)**, **Confirm the move**, gray until it can be
+  done, **Cancel**, and **Call off the planned move** once one is planned), then "What happens": what the Mover does,
+  about how long ("About 3 minutes of a Mover's work"), and whether a Mover works here or how to hire one.
 
 While choosing, a ghost outline of the new spot glows in the world for the player (green or red, its front edge gold).
 The fit line says plainly why a spot is refused: it would overlap another building (named) or the hall, sit on a road,
@@ -111,8 +122,16 @@ lowest corner sits on the middle (median) column's ground.
 
 **The Move page (45.2).** `hall/MovePage` is one of the hall's spare pages (`HallPages.SPARES` is now 6), placed under
 Buildings. What a player is picking (the building, its plan, the spot and the turn) is kept in memory while the screen is
-open and forgotten when it closes or on Cancel. The client draws the picker's map as a grid of framed cells
-(`VillageHallMenuScreen`, by the cells' `MAP_MARK`). The ghost is `BlueprintOutline.glowMove`. A Mover is a villager whose
+open and forgotten when it closes or on Cancel. The picker's buttons are still the menu's slots (Back, the header, Call
+off, Rotate, the fit line, Confirm, Cancel and the 9x4 grid of map cells, which tests press); since B1163 the client
+draws its own screen from them (`VillageHallMenuScreen`, spotted by the cells' `MAP_MARK`): the guide (`MovePage.GUIDE`:
+the step's instruction and its lines, the step in its `STEP_MARK`) and the village map (`MovePage.VIEW`: the land's map
+colors from `VillageMaps.colors`, a road/water mask, the Hall, the village radius, the other buildings' boxes with their
+names as its lines, now, the new spot and its front, in its `VIEW_MARK`). The map is taken once when the picker opens
+(`MovePage.MapView`, 128 pixels a side, a block a pixel up to a 64-block village radius) and a click on it is a menu
+button, `MovePage.MAP_CLICK` plus the pixel, handled through `HallSections`. The list's rows carry `LIST_MARK`, which
+shows the step 1 note. The time is `MovePage.minutes`: each block down and up again at the Mover's pace plus half a
+minute's walking, rounded up. The ghost is `BlueprintOutline.glowMove`. A Mover is a villager whose
 profession id is `aliveworkplace:mover` (`move/Movers`; 45.3 registers the job under that id).
 
 **The Mover's site (45.3).** `move/MoveSites` (saved) holds a `move/MoveSite` per building on the move: the plan
@@ -234,7 +253,9 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   it would leave its Mover without a workstation for the whole rebuild (vanilla can take his job away), and a refusal
   would make the player break the crate, which loses the job the same way.
 - Since it stays, a new spot over a Mover's Crate is refused on the Move page (B1129). A move confirmed before that check
-  that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`).
+  that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`). So is a
+  block whose spot gets a crate set down after the move is confirmed; a skipped chest or barrel loses its packed items
+  today (B1172, open).
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -245,7 +266,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   aren't drained through `ItemStores` first: a store whose items live outside its block data would lose them.
 - A block or chest a player places inside the box after the move started isn't in the plan, so it isn't moved.
 
-- The picker's map is a grid in the hall's screen, not the vanilla map item the hall draws: a map item can't be clicked.
+- The picker's map is drawn by the hall's screen from the land's map colors, not the vanilla map item the hall draws: a
+  map item can't be clicked. It shows the land as it was when the picker opened.
 - A building may turn in place or shift onto part of its own old spot: the Mover takes it down first.
 - Until the Mover job exists (45.3), Confirm is always refused with "Needs a hired Mover".
 
@@ -253,6 +275,13 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
 - Entities are saved without their UUID, so a rebuilt frame or stand is a new entity, never a duplicate of one still standing.
 
 ## Proof
+
+`MovePageGuideGameTests` (13, B1163/45.2a): the list is step 1 and says where each building stands from the Hall;
+the picker's guide (step 2, its instruction and every line) and the village map's data (land, road, Hall, where it
+stands now); a map click picks the spot on the block clicked (step 3, the new spot from the Hall, the ghost); a map click
+on another building, a road, outside the village, steep ground and water each keeps step 2 with its reason; Rotate turns
+the front on the map; Cancel forgets the map; Confirm without a Mover refused (with how to hire one), with one saved and
+back on step 1; the time grows with the building.
 
 `MovePageGameTests` (15), all through the hall's clicks: a map click picks the spot (and the ghost follows, green); a
 spot over another building, on a road, outside the village, too steep, under water and over a Mover's Crate each
@@ -330,8 +359,9 @@ barrel at the new spot.
 - B1161 (open): a building that holds another village's Village Hall isn't refused; only this village's own hall
   block is checked (its failing test is on the branch tests/move-refusals-1110).
 
-- A resident is noted only if loaded within 128 blocks as the move starts; one far away keeps memories of blocks that
-  are gone and finds new ones by vanilla's rules.
+- A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still
+  gets the moved bed or workstation (B1154): every occupied bed and workstation in the box is saved as a claim on the
+  site and held where it goes up, and a remembered old spot is forwarded to the moved block when they come back.
 
 - A player's own house has no record the hall knows (nothing registers one yet), so it is captured only as a box.
 - `place()` puts everything up at once; the Mover's step-by-step rebuild (45.3) must empty the original containers so nothing is doubled.

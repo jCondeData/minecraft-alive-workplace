@@ -583,12 +583,15 @@ SCENES = [
       "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"", 270,
       [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
        ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
-    S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",
-      "the Move page listed the Starter Cottage; its picker showed the map round it, a click put the new spot to the west "
-      "(it fits: green, the ghost outline glowing), and Rotate turned it to face east", 60,
-      [("01_move_page", "The Move page: the cottage, with its Move button"),
-       ("02_new_spot_fits", "The picker: the map, the new spot to the west, \"This spot fits\""),
-       ("03_rotated", "Rotated a quarter: its front faces east")]),
+    S("move_plan", "Village Hall", "Moving a building on the hall's Move page, step by step",
+      "1: the Move page listed the Starter Cottage with where it stands from the Hall; 2: its picker showed the village map "
+      "(the cottage now in yellow, the Hall, the roads) and said to click where it should go; 3: a click to the west put the "
+      "new spot there (it fits, green, the ghost glowing), Rotate turned its front east and Confirm was ready; 4: Confirm "
+      "planned the move for the Mover", 60,
+      [("01_pick_a_building", "Step 1: pick the building (the cottage, and where it stands)"),
+       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now, \"click where it should go\""),
+       ("03_confirm", "Step 3: the new spot fits (green), front turned east, Confirm ready"),
+       ("04_move_planned", "Planned: the list marks the move for the Mover")]),
     S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
       "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
       "was refused, no picker opened, and the action bar said why in red", 60,

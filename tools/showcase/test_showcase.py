@@ -296,6 +296,14 @@ def judging_tests(tmp):
     crash = "---- Minecraft Crash Report ----\n// Oops.\n"
     r, _ = judge(tmp, "sifter", log=crash)
     check("judge: a crash fails the scene", not r["pass"] and any("crashed" in x for x in r["reasons"]), r["reasons"])
+    # B43: what a battle that stood still was waiting on stays in result.json (each line once).
+    stuck = ("[11:49:48] [Server thread/ERROR] (Cobblemon) Missing interpretation on 'error' action |error|[Invalid choice] Can't switch\n"
+             + "[11:49:57] [Server thread/INFO] (Minecraft) [STDOUT]: [battle scene] stuck turn = 22\n" * 2)
+    r, _ = judge(tmp, "battle", log=stuck)
+    check("judge: a stuck battle's lines are kept", len(r.get("stuck", [])) == 2 and r["stuck"][1] == "[battle scene] stuck turn = 22"
+          and "Invalid choice" in r["stuck"][0], r.get("stuck"))
+    r, _ = judge(tmp, "sifter")
+    check("judge: no stuck lines, no key", "stuck" not in r, r.get("stuck"))
     r, _ = judge(tmp, "sifter", exit_code="timeout")
     check("judge: running over the time limit fails the scene", not r["pass"] and "ran over its time limit" in r["reasons"],
           r["reasons"])

@@ -16,8 +16,18 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+
+- The Village Hall's Move page walks you through it: three steps across the top (pick a building, pick a new spot, confirm), a map of the whole village with the building where it stands now and where it would go, the Hall, the roads and the other buildings named, labeled Rotate, Confirm and Cancel buttons, and what the Mover will do and about how long (B1163, 45.2a).
 ### Fixed
 
+- Less server lag in a big village: workers no longer search the chunks around their workstation for chests every time they need them (most of them every tick, and for every neighbor's workstation too). The list is kept until a chest, barrel or furnace is placed, broken or changed. A farmer with nothing to do now counts its chests for spare seeds once a second instead of every tick, and villagers no longer look up their Village Hall's militia rule 20 times a second when nothing has hurt or scared them. (B455, B412)
+
+## 0.154.0 — 2026-11-10
+
+### Fixed
+
+- With Cobblemon: a battle against a villager trainer no longer freezes for good when the battle refuses the trainer's choice (seen when a trainer tried to send in a Pokémon that had already fainted: nothing happened any more and the battle never ended). The trainer now answers again with a move or switch the battle accepts, and the battle goes on.
 - A villager no longer loses their village (no hearts, no gifts counted, no personal requests) because of a leftover Village Hall marker with no hall on it. When a hall block was swapped out without a block update (region edits, some world-editing mods), the game kept its marker; a villager standing nearer that marker than their real hall was treated as having no hall at all. The mod now ignores a marker whose hall is gone and uses the nearest hall that really stands (B427).
 - Opening a world saved by an older version no longer starts with a long stutter from the Village Halls. Each hall used to do its whole round (feeding, counting, seeding its villagers' classes, posting bounties) on its very first tick, all halls in the same tick and before their villagers had loaded, so a hall could announce its classes with only part of the village counted. A hall loaded with the world now waits five seconds for its first round and halls take turns a second apart, everyone is counted when "found their places" is announced, and a bounty on a rogue Pokémon no longer makes the server wait for far-off chunks (B436).
 - A villager who lives or works in a building the Mover moves now gets the moved bed and workstation even if they were far away (over 128 blocks off, or in a part of the world nobody was near) when the move started. Before, only villagers nearby were noted, and someone away came back to an empty spot where their house had stood (B1154).

@@ -120,7 +120,13 @@ builder's request, the concrete across a reload), an untagged wooden block (the 
 recipe, every item made before 46.1 still has a job, the "Hire a ..." line for each job, the Storehouse's lines, the
 board naming the Lumberjack for a builder short of logs, and a flower pot left unmade and named with its job absent.
 `QaModdedCraftJobs1110eCompatTests` (QA, with the pack's mods): every modded item with a crafting recipe has a
-job, Create's Gearbox by name. `QaJobCraftListsGameTests` (QA): every row of the Milestone 46 table on its own job's list and made today by that job
+job, Create's Gearbox by name. `QaCreateMakers1110e4CompatTests` (QA, with Create): the named job really makes Create's
+parts for a builder (the Carpenter Gearboxes from casings, shafts and planks through the cogwheels, also reloaded
+mid-chain with none doubled; the Tinkerer Fluid Pipes from copper), the builder's "Hire a Carpenter to make Gearbox"
+line, the Storehouse's lines for both and "No job makes or gathers this" for the Precision Mechanism.
+`QaOldCarpenterJob1110eGameTests` (QA, an old save): a Carpenter loaded with a brewing stand's job and makings from
+before 46.1 (no profession stamp) finishes it for the builder, nothing lost or doubled.
+`QaJobCraftListsGameTests` (QA): every row of the Milestone 46 table on its own job's list and made today by that job
 or its stand-in, no job making another's things (the Leatherworker no glass, terracotta or concrete), the ingredient
 rule's order and the tag winning over it, every stonecutter cut the Mason's (or, for copper, the Tinkerer's), the "Hire a
 ..." line grouped by job in the plural, the Storehouse's line for every gatherer and only for grown workers in reach,

@@ -40,20 +40,10 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
-      - run: mkdir -p build/modtest
+      - run: mkdir -p build/modtest && date +%s > build/modtest/job_start
 
       - name: Full build (every node, all GameTests, compat tests)
         run: ./gradlew build --continue --stacktrace 2>&1 | tee build/modtest/build.log; exit ${PIPESTATUS[0]}
-
-      - name: Flake sweep (whole GameTest suite, several runs)
-        if: always()
-        run: |
-          for i in $(seq 1 "$REPEATS"); do
-            ./gradlew ":$NODE:runGameTest" > "build/modtest/run$i.log" 2>&1 || true
-          done
-          python3 tools/modtest/results.py build/modtest/run*.log \
-            $( [ -f tools/modtest/baseline.json ] && echo --baseline tools/modtest/baseline.json ) \
-            | tee build/modtest/results.md
 
       - name: Translation check
         if: always()
@@ -86,6 +76,31 @@ jobs:
           export JAVA_HOME="$JAVA_HOME_21_X64" PATH="$JAVA_HOME_21_X64/bin:$PATH"
           # 25.1's benchmark load (150 workers, 3 villages) every night too; the Sunday job below repeats it on its own.
           PERF=true VILLAGES=3 PLOTS=25 tools/packtest/run.sh 2>&1 | tee build/modtest/perf.log
+
+      # Last, with a time budget (lane-e-1111-0113): with ~8,200 GameTests one suite run takes about an hour, so five
+      # runs before the pack steps hit the job's 300-minute timeout on 2026-11-09 and 11-10 and cancelled the job: no
+      # translation check, log audit, pack boot, furnished builds or soak, and no issue comment. Now the pack steps
+      # run first and the sweep starts another suite run only while one more fits (REPEATS is the most it runs).
+      - name: Flake sweep (whole GameTest suite, several runs)
+        if: always()
+        run: |
+          budget=$(( 285 * 60 ))   # the job's 300 minutes, less the upload and issue steps
+          job_start=$(cat build/modtest/job_start 2>/dev/null || date +%s)
+          last=$(( 70 * 60 ))      # a guess for the first run; then each run's own time
+          for i in $(seq 1 "$REPEATS"); do
+            if [ $(( $(date +%s) - job_start + last )) -gt "$budget" ]; then
+              echo "Flake sweep: stopped after $((i - 1)) run(s); another (~$((last / 60)) min) would not fit the job's time." | tee build/modtest/sweep-note.txt
+              break
+            fi
+            t0=$(date +%s)
+            ./gradlew ":$NODE:runGameTest" > "build/modtest/run$i.log" 2>&1 || true
+            last=$(( $(date +%s) - t0 ))
+          done
+          ls build/modtest/run*.log > /dev/null 2>&1 || { echo "Flake sweep: no suite run fit." > build/modtest/results.md; exit 1; }
+          python3 tools/modtest/results.py build/modtest/run*.log \
+            $( [ -f tools/modtest/baseline.json ] && echo --baseline tools/modtest/baseline.json ) \
+            | tee build/modtest/results.md
+          [ -f build/modtest/sweep-note.txt ] && cat build/modtest/sweep-note.txt >> build/modtest/results.md || true
 
       # The screenshot scenes run in their own workflow, every one of them: showcase.yml.
 

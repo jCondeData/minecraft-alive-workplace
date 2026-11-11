@@ -5891,11 +5891,14 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
-		// The Hall's Move page (ROADMAP 45.2): a finished Starter Cottage north of the hall; the Move page lists it, its picker
-		// opens with the map of the ground round it, a click two cells west puts the new spot there (it fits: green, and the
-		// ghost outline glows in the world), and Rotate turns it a quarter, its front to the east.
-		SCREENS.put("move_plan", new Screen("the hall's Move page listed the Starter Cottage; its picker showed the map round it, a click on the map put the "
-			+ "new spot to the west (it fits, the ghost outline in green), and Rotate turned it to face east",
+		// The Hall's Move page (ROADMAP 45.2, reworked for B1163): a finished Starter Cottage north of the hall and a hired Mover.
+		// One still per step: 1, the Move page lists the cottage ("Now: ... of the Hall"); 2, its picker opens on the village
+		// map (where it stands now in yellow, the Hall, the roads), saying to click where it should go; 3, a click on the map
+		// west of it puts the new spot there (green, the ghost glowing) and Rotate turns its front east: Confirm is ready;
+		// 4, Confirm: the move is planned and the list marks it.
+		SCREENS.put("move_plan", new Screen("the hall's Move page, step by step: it listed the Starter Cottage with where it stands; its picker showed the "
+			+ "village map with the cottage now and said to click where it should go; a click to the west put the new spot there (it fits, "
+			+ "green, the ghost glowing), Rotate turned its front east and Confirm was ready; Confirm planned the move for the Mover",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -5905,8 +5908,22 @@ final class JobScenes {
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				// the village round it: a market stall to the east and a road along the cottage's south side, both on the map
+				BlockPos stall = STATION.offset(6, 0, -14);
+				level.getStructureManager().get(StarterBlueprints.MARKET_STALL.id()).orElseThrow().placeInWorld(level, stall, stall,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.MARKET_STALL.id(), new BlueprintData.Placement(level.dimension().location(), stall,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				for (int x = -22; x <= 16; x++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, -4), net.minecraft.world.level.block.Blocks.DIRT_PATH.defaultBlockState());
+				}
+				for (int z = -3; z <= -1; z++) {
+					level.setBlockAndUpdate(STATION.offset(0, -1, z), net.minecraft.world.level.block.Blocks.DIRT_PATH.defaultBlockState());
+				}
+				worker(level, STATION.offset(3, 0, -6), ModBlocks.MOVERS_CRATE.defaultBlockState(),
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER);
 			},
-			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+			List.of(new Step("01_pick_a_building", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
@@ -5914,24 +5931,33 @@ final class JobScenes {
 							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40),
-				new Step("02_new_spot_fits", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
+				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
-						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE - 2, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString().startsWith("Step 2 of 3"),
+							"the picker says step 2: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString());
+					}
+				}, 60),
+				new Step("03_confirm", io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.MovePage.Picking p = io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).orElseThrow();
+						io.github.jcondedata.aliveworkplace.hall.MovePage.click(m, level, player,
+							io.github.jcondedata.aliveworkplace.hall.MovePage.mapClick(player, p.x() - 10, p.z()));
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, player);
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).is(Items.LIME_DYE),
 							"the spot to the west fits: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).getHoverName().getString());
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM).is(Items.PISTON), "Confirm is ready (a Mover is hired)");
 						Showcase.check(io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.moveGhost(player) != null, "the ghost outline glows");
 					}
 				}, 60),
-				new Step("03_rotated", io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, 6, (level, player) -> {
+				new Step("04_move_planned", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, player);
-						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player)
-								.map(p -> p.rotation() == net.minecraft.world.level.block.Rotation.CLOCKWISE_90).orElse(false),
-							"Rotate turned it a quarter: " + io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).map(p -> p.rotation().name()).orElse("not picking"));
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent(),
+							"the move is planned");
 					}
-				}, 60)),
-			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent()));
+				}, 40)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent()));
 		// A refused move (ROADMAP 45.6): the same cottage with builders still working on it (an upgrade's site open on it). Its
 		// Move button is refused: no picker opens, and the reason shows in red on the action bar (the hall closed so it shows).
 		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "

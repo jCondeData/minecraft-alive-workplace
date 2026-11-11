@@ -310,6 +310,9 @@ one instead of the traveler; a festival one short of its crowd brings nobody, on
 Chapel guest with no Chapel or off the full moon, then one at the next full moon; with Legends off no place brings a
 guest and no day's roll is spent; a Mythic guest refused by a Village and welcome in a Town, heard 5,000 blocks away
 where a Rare guest isn't.
+Bug B1177: `InnShopCounterB1177GameTests` (3): the inn's roll and a move's stay beds find an inn built with the Shop
+Counter (an Innkeeper working it) and an old Inn Counter, but not a plain shop (a Shopkeeper's Shop Counter) or a
+counter nobody works.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

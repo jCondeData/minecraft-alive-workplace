@@ -6,7 +6,6 @@ import io.github.jcondedata.aliveworkplace.camp.CampBeds;
 import io.github.jcondedata.aliveworkplace.hall.HallBeds;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.inn.Innkeepers;
-import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.JobSiteTickets;
 import io.github.jcondedata.aliveworkplace.work.Stations;
 import java.util.Comparator;
@@ -301,14 +300,14 @@ public final class MoveResidents {
 		}
 	}
 
-	/** A free bed for the move's residents: round the village's Inn Counters (nearest the Hall first), else round the Hall. */
+	/** A free bed for the move's residents: round the village's inn counters ({@link Innkeepers#counters}; nearest the Hall first), else round the Hall. */
 	public static Optional<BlockPos> stayBed(ServerLevel level, MoveSite site) {
 		BoundingBox old = site.oldBox();
 		BoundingBox now = site.newBox();
 		Predicate<BlockPos> ok = p -> !old.isInside(p) && !now.isInside(p) && !CampBeds.isWagonBed(level, p);
 		PoiManager poi = level.getPoiManager();
 		Predicate<Holder<PoiType>> beds = h -> h.is(PoiTypes.HOME);
-		List<BlockPos> inns = poi.findAll(h -> h.is(ModVillagers.INN_COUNTER_POI), p -> true, site.hall(), VillageHalls.RADIUS, PoiManager.Occupancy.ANY)
+		List<BlockPos> inns = Innkeepers.counters(level, site.hall(), VillageHalls.RADIUS).stream()
 			.sorted(Comparator.comparingDouble((BlockPos p) -> p.distSqr(site.hall())).thenComparingLong(BlockPos::asLong)).toList();
 		for (BlockPos counter : inns) {
 			Optional<BlockPos> bed = poi.findClosest(beds, ok, counter, Innkeepers.RADIUS, PoiManager.Occupancy.HAS_SPACE);

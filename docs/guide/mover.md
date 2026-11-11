@@ -57,7 +57,8 @@ the middle of a move, its pieces are left out and the rest of the building still
 If a block of the building is broken before he gets to it, whoever broke it keeps it, and it isn't put up again.
 
 **Calling it off.** Call off on the Move page stops the move, even half way: what he put up at the new spot comes down
-again, and everything goes back up where it was, chests and all.
+again, and everything goes back up where it was, chests and all. The building's row opens with Call off at every stage
+of the move. Once he has started, you can't send it to a different spot: call the move off first, then pick again.
 
 **Turning it off.** The server's config switch `movers` turns the job off: no new Movers, those hired stand idle, and
 confirmed moves wait.

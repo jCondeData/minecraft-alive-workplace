@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.inn;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
@@ -10,7 +11,9 @@ import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.wonder.powers.TravellersPower;
 import io.github.jcondedata.aliveworkplace.work.Words;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -23,6 +26,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -53,6 +57,26 @@ public final class Innkeepers {
 
 	public static boolean isInnkeeper(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.INNKEEPER;
+	}
+
+	/**
+	 * The inns' counters within {@code radius} of {@code center}, as the Innkeeper's job takes them: every Inn Counter, and
+	 * every Shop Counter an Innkeeper works (its job site), but not a shop's (B1177: inns are built with the Shop Counter
+	 * since the Inn Counter was retired). Each counter once, in no set order.
+	 */
+	public static List<BlockPos> counters(ServerLevel level, BlockPos center, int radius) {
+		PoiManager poi = level.getPoiManager();
+		Set<BlockPos> out = new LinkedHashSet<>();
+		poi.findAll(h -> h.is(ModVillagers.INN_COUNTER_POI), p -> true, center, radius, PoiManager.Occupancy.ANY)
+			.forEach(p -> out.add(p.immutable()));
+		double max = (double) radius * radius;
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(center).inflate(radius), v -> v.isAlive() && isInnkeeper(v))) {
+			Builders.benchPos(v)
+				.filter(p -> p.distSqr(center) <= max)
+				.filter(p -> poi.getType(p).map(h -> h.is(ModVillagers.SHOP_COUNTER_POI) || h.is(ModVillagers.INN_COUNTER_POI)).orElse(false))
+				.ifPresent(p -> out.add(p.immutable()));
+		}
+		return List.copyOf(out);
 	}
 
 	@Nullable

@@ -7,6 +7,8 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.move.MoveFit;
 import io.github.jcondedata.aliveworkplace.move.MovePlan;
+import io.github.jcondedata.aliveworkplace.move.MoveSite;
+import io.github.jcondedata.aliveworkplace.move.MoveSites;
 import io.github.jcondedata.aliveworkplace.move.Movers;
 import io.github.jcondedata.aliveworkplace.move.PendingMoves;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -226,7 +228,9 @@ public final class MovePage {
 		}
 		Optional<BuildSiteManager.Finished> building = BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> f.placement().origin().equals(from)).findFirst();
-		Optional<MovePlan> plan = building.flatMap(f -> MovePlan.capture(level, f));
+		// a move under way (B1181): the building is half (or wholly) taken down at its old spot, so its plan is the one the
+		// Mover took when it started, not what is left standing; the picker still opens, with Call off
+		Optional<MovePlan> plan = underWay(level, from).map(MoveSite::plan).or(() -> building.flatMap(f -> MovePlan.capture(level, f)));
 		if (plan.isEmpty()) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.move.cannot").withStyle(ChatFormatting.RED));
 			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
@@ -290,16 +294,20 @@ public final class MovePage {
 		});
 		menu.button(VERDICT, verdict(fit), null);
 		boolean mover = Movers.hired(level, hall);
+		boolean moving = underWay(level, p.from()).isPresent(); // B1192: the Mover has started; a new spot would not be followed
+		boolean ready = fit.fits() && mover && !moving;
 		List<Component> confirmLore = new ArrayList<>();
 		confirmLore.add(VillageHallScreen.line("screen.aliveworkplace.move.confirm_hint", ChatFormatting.GRAY));
-		if (!fit.fits()) {
+		if (moving) {
+			confirmLore.add(VillageHallScreen.line("message.aliveworkplace.move.under_way", ChatFormatting.RED));
+		} else if (!fit.fits()) {
 			confirmLore.add(VillageHallScreen.line(fit.line(), ChatFormatting.RED));
 		}
 		if (!mover) {
 			confirmLore.add(VillageHallScreen.line("screen.aliveworkplace.move.needs_mover", ChatFormatting.RED));
 		}
-		menu.button(CONFIRM, VillageHallScreen.icon(fit.fits() && mover ? Items.PISTON : Items.GRAY_DYE, Component.translatable("screen.aliveworkplace.move.confirm"),
-			fit.fits() && mover ? ChatFormatting.GREEN : ChatFormatting.GRAY, confirmLore.toArray(Component[]::new)), pl -> confirm(menu, level, pl));
+		menu.button(CONFIRM, VillageHallScreen.icon(ready ? Items.PISTON : Items.GRAY_DYE, Component.translatable("screen.aliveworkplace.move.confirm"),
+			ready ? ChatFormatting.GREEN : ChatFormatting.GRAY, confirmLore.toArray(Component[]::new)), pl -> confirm(menu, level, pl));
 		menu.button(CANCEL, VillageHallScreen.icon(Items.BARRIER, Component.translatable("screen.aliveworkplace.move.cancel"), ChatFormatting.RED,
 			VillageHallScreen.line("screen.aliveworkplace.move.cancel_hint", ChatFormatting.GRAY)), pl -> cancel(menu, level, hall, pl));
 		map(menu, level, p, fit);
@@ -522,6 +530,9 @@ public final class MovePage {
 		}
 		MoveFit.Fit fit = fit(level, p);
 		Component refusal = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, p.hall(), p.from(), player); // 45.6: asked again
+		if (refusal == null && underWay(level, p.from()).isPresent()) {
+			refusal = Component.translatable("message.aliveworkplace.move.under_way"); // B1192: call it off first
+		}
 		if (refusal == null) {
 			refusal = !fit.fits() ? fit.line() : !Movers.hired(level, p.hall()) ? Component.translatable("message.aliveworkplace.move.needs_mover") : null;
 		}
@@ -537,6 +548,11 @@ public final class MovePage {
 			fit.min().getX(), fit.min().getY(), fit.min().getZ()).withStyle(ChatFormatting.GREEN));
 		level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 0.8f, 1f);
 		backToList(menu, level, p.hall(), player);
+	}
+
+	/** The Mover's site moving the building at {@code from}, while the move is under way (started, not called off, not done). */
+	static Optional<MoveSite> underWay(ServerLevel level, BlockPos from) {
+		return MoveSites.get(level).forBuilding(from).filter(s -> !s.canceled() && s.stage() != MoveSite.Stage.DONE);
 	}
 
 	/** Cancel (or Back): the pick is forgotten, the ghost goes, and the list shows again; nothing is saved. */

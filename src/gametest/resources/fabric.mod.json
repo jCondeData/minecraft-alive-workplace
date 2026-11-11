@@ -1595,6 +1595,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLairFallOtherBands1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarnedHallGone1111dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.WarnedHallGoneGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWarnedHallGoneVerify1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampConverts1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaZoglinRam1109dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploads1109GameTests",

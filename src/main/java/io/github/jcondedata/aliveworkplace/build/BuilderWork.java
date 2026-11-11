@@ -538,7 +538,7 @@ public class BuilderWork extends Behavior<Villager> {
 		// (the helpers had taken everything near it, so it walked as much as a builder on its own).
 		offCursor = crewPick != null;
 		if (!helping && !crew && !site.helpers(gameTime).isEmpty() && villager.getEyePosition().distanceTo(Vec3.atCenterOf(step.pos())) > REACH) {
-			BuildPlan.Step near = workInReach(level, villager, site, plan, bench);
+			BuildPlan.Step near = workInReach(level, villager, site, plan, bench, bag, free);
 			if (near != null) {
 				step = near;
 				action = actionFor(level, site, near, bench);
@@ -934,9 +934,17 @@ public class BuilderWork extends Behavior<Villager> {
 		});
 	}
 
-	/** For the lead: the nearest block within reach that a helper could take (none claimed, not given up on). */
+	/**
+	 * For the lead: the nearest block within reach that a helper could take (none claimed, not given up on), and that the
+	 * lead can do from where it stands with what it carries. B1171: a block it had nothing in its bag for sent it off to
+	 * the chests; a few steps on that block was out of reach, so it turned back for its own next block (which it carried
+	 * the material for), came within reach of the first again, and went to and fro for good without laying either. That
+	 * needs a bag holding only part of the stretch: a lead whose materials come in a few at a time (from the Carpenter
+	 * and the Mason) while a helper is on the build.
+	 */
 	@Nullable
-	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench,
+									   BuilderBag bag, boolean free) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
 			retakeFailed.clear();
@@ -950,12 +958,25 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			Action a = actionFor(level, site, candidate, bench);
-			if (a == Action.BREAK || a == Action.PLACE) {
+			if (a == Action.BREAK && bag.freeSlots() > 0 || a == Action.PLACE && (free || carries(bag, candidate))) {
 				pick = candidate;
 				best = d;
 			}
 		}
 		return pick;
+	}
+
+	/** Whether the bag holds everything {@code step} is laid with (a step laid with nothing is never one to pick). */
+	private static boolean carries(BuilderBag bag, BuildPlan.Step step) {
+		if (step.requirements().isEmpty()) {
+			return false;
+		}
+		for (MaterialRules.Requirement r : step.requirements()) {
+			if (!bag.has(r.item(), r.count())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Nothing to help with right now (the lead is at the end of a stage): hang around the site. */

@@ -5,7 +5,7 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157
+Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157, B473
 
 ## What a player sees
 
@@ -54,7 +54,9 @@ shiny rate) and random form, such as Wormadam's cloak (`CobblemonTrainers.settle
 random). The form decides physical or special in training, so the held item, nature and moves follow it. So the
 screen shows the same models on every opening and the battle fields exactly those; a Mega Stone holder brought in
 for a Mega-Evolving trainer gets the same treatment. Nothing new is saved: an existing trainer's team just stops
-changing (it may look different once, from the first opening after the update). The form's choices are read through
+changing (it may look different once, from the first opening after the update). This was also B473's rare flake:
+a City Leader with a Wormadam fielded another cloak, and so another held item, from one look to the next
+(`MegaTrainerCompatTests.aLeaderWithAWormadamIsTheSameAtEveryLook`). The form's choices are read through
 `examples()`, which Cobblemon 1.7.3 and 1.8 both have (`CobblemonDaycareKeeper.choicesOf`, shared with the Daycare);
 1.8.1 has no `ChoiceSpeciesFeatureProvider.getChoices()`, which threw `NoSuchMethodError` on the first team and
 switched trainer battles and Mega trainers off (B1157). A choice feature whose default or value a version can't read

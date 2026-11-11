@@ -228,6 +228,56 @@ public class MegaTrainerCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B473: the test above failed once in 640 runs because its Leader (a random UUID) happened to field a Wormadam, whose
+	 * cloak Cobblemon rolled afresh at every team build; the cloak decides physical or special, and so the held item. Here
+	 * the Leader always has one: 20 builds before and 20 after a save and load give the same species, cloaks and items.
+	 */
+	//$ gametest_batch 'CompatGameTests.AREA' '"megaSaveLoadCloak"'
+	@GameTest(template = CompatGameTests.AREA, batch = "megaSaveLoadCloak")
+	public void aLeaderWithAWormadamIsTheSameAtEveryLook(GameTestHelper helper) {
+		UUID id = null;
+		for (int i = 0; i < 4000 && id == null; i++) { // the first of these Leaders whose team keeps a Wormadam beside its Mega
+			UUID candidate = new UUID(0x0473L, 0xb4730000L + i);
+			if (CobblemonTrainers.team(candidate, 4, true).stream().anyMatch(p -> p.getSpecies().getName().equalsIgnoreCase("wormadam"))) {
+				id = candidate;
+			}
+		}
+		helper.assertTrue(id != null, "no Leader with a Wormadam among 4000: the check proved nothing");
+		try {
+			hall(helper, VillageRanks.Rank.CITY);
+			ServerLevel level = helper.getLevel();
+			BlockPos at = helper.absolutePos(new BlockPos(3, 2, 3));
+			Villager leader = EntityType.VILLAGER.create(level);
+			leader.setUUID(id);
+			leader.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
+			leader.setVillagerData(leader.getVillagerData().setProfession(ModVillagers.TRAINER_LEADER).setLevel(1));
+			leader.setNoAi(true);
+			helper.assertTrue(level.addFreshEntity(leader), "the Leader didn't spawn");
+			String before = looks(CobblemonTrainers.teamOf(leader));
+			helper.assertTrue(before.contains("Wormadam/") && stones(CobblemonTrainers.teamOf(leader)) == 1, "the City Leader's team " + before);
+			for (int i = 0; i < 20; i++) {
+				helper.assertValueEqual(looks(CobblemonTrainers.teamOf(leader)), before, "the Leader's team at look " + (i + 2));
+			}
+			CompoundTag saved = new CompoundTag();
+			leader.save(saved);
+			leader.discard();
+			Villager loaded = (Villager) EntityType.loadEntityRecursive(saved, level, e -> e);
+			helper.assertTrue(loaded != null && level.addFreshEntity(loaded), "the Leader didn't load");
+			for (int i = 0; i < 20; i++) {
+				helper.assertValueEqual(looks(CobblemonTrainers.teamOf(loaded)), before, "the loaded Leader's team at look " + (i + 1));
+			}
+		} finally {
+			done(helper);
+		}
+		helper.succeed();
+	}
+
+	/** {@link #show} with each Pokémon's form (Wormadam's cloak) too. */
+	static String looks(List<Pokemon> team) {
+		return team.stream().map(p -> p.getSpecies().getName() + "/" + p.getForm().getName() + "@" + p.heldItem().getItem()).toList().toString();
+	}
+
 	/** A Cup at {@code host} today, closed, with these two villagers in its bracket: the final is next. */
 	static void finalCup(ServerLevel level, BlockPos host, Villager... trainers) {
 		CupData.Cup cup = CupData.get(level).cup(host);

@@ -230,7 +230,12 @@ helper keeps the step it claimed even after the lead has caught up with it, help
 instead of walking to the chests (B181; QA's `QaCrewBusy1110bGameTests`, 6: a material only the helper carries used
 exactly once, the helper never without a claim for long while open steps remain, the roof slabs passed over, a helper
 killed holding a claim, a player breaking and blocking the helper's claims, and a restart mid-STRUCTURE, each finishing
-from exactly the list).
+from exactly the list). With helpers on the build, a lead whose next block is out of reach first does a block
+within reach (so it walks less), but only one it can do from where it stands with what it carries: a block it has
+nothing in its bag for is left to a helper, or to its own turn in the list (B1171: it used to walk off to the chests for
+that block, turn back to its next block once the first was out of reach, and go to and fro for good, when its bag held
+only part of the stretch, as when the Carpenter and the Mason bring the parts a few at a time;
+`LeadToAndFroB1171GameTests`, QA's `QaCrafterLoop1111cBugTests`).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the

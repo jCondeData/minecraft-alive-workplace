@@ -54,7 +54,11 @@ public final class MovePage {
 	public static final String PAGE = "move";
 	/** On the picker: back to the list, the building, call off a planned move, rotate, the fit line, confirm, cancel. */
 	public static final int BACK = 0;
+	/** The picker's guide (B1163): its name is the step's instruction, its lines where it is now, the new spot, the plan and the Mover. */
+	public static final int GUIDE = 2;
 	public static final int HEADER = 4;
+	/** The village map the client draws (B1163): the land, the roads, the buildings (their names its lines), now and the new spot. */
+	public static final int VIEW = 6;
 	public static final int CALL_OFF = 8;
 	public static final int ROTATE = 10;
 	public static final int VERDICT = 12;
@@ -71,6 +75,14 @@ public final class MovePage {
 	public static final String MAP_MARK = "aliveworkplace:move_map";
 	/** Buildings on the list at most: the four rows under the divider, less the last slot when there are more. */
 	public static final int SHOWN = ChoiceMenu.SIZE - VillageHallScreen.FIRST_ROW;
+	/** The custom data key of {@link #VIEW}'s map, and of the list's rows (step 1, B1163). */
+	public static final String VIEW_MARK = "aliveworkplace:move_view";
+	public static final String LIST_MARK = "aliveworkplace:move_list";
+	/** The custom data key of {@link #GUIDE}'s step: 2 (pick the new spot) or 3 (confirm). */
+	public static final String STEP_MARK = "aliveworkplace:move_step";
+	/** The village map's pixels a side; a menu-button click of {@link #MAP_CLICK} plus {@code z * MAP + x} puts the spot there. */
+	public static final int MAP = 128;
+	public static final int MAP_CLICK = 600_000;
 	/** How long the ghost outline stays after the last click (it goes when the screen closes). */
 	static final int GHOST_TICKS = 2400;
 
@@ -99,6 +111,39 @@ public final class MovePage {
 	}
 
 	private static final Map<UUID, Picking> PICKING = new ConcurrentHashMap<>();
+
+	/**
+	 * The village map of a picker (B1163), taken once when it opens: its north-west corner ({@code ox}, {@code oz}), blocks a
+	 * pixel ({@code step}), the land's map colours and each pixel's kind (0 ground, 1 road, 2 water).
+	 */
+	public record MapView(int ox, int oz, int step, byte[] colors, byte[] kinds) {
+		/** The block at map pixel ({@code px}, {@code pz}). */
+		public BlockPos at(int px, int pz) {
+			return new BlockPos(ox + px * step + step / 2, 0, oz + pz * step + step / 2);
+		}
+
+		static MapView of(ServerLevel level, BlockPos hall) {
+			int step = Math.max(1, (VillageHalls.RADIUS + MAP / 2 - 1) / (MAP / 2));
+			int half = MAP / 2 * step;
+			byte[] colors = VillageMaps.colors(level, hall, half, step);
+			byte[] kinds = new byte[MAP * MAP];
+			for (int pz = 0; pz < MAP; pz++) {
+				for (int px = 0; px < MAP; px++) {
+					int x = hall.getX() - half + px * step;
+					int z = hall.getZ() - half + pz * step;
+					if (!level.hasChunk(x >> 4, z >> 4)) {
+						continue;
+					}
+					BlockState top = level.getBlockState(new BlockPos(x, MoveFit.groundY(level, x, z), z));
+					kinds[pz * MAP + px] = (byte) (top.getFluidState().is(FluidTags.WATER) ? 2
+						: io.github.jcondedata.aliveworkplace.city.RoadStyles.isPaving(top) ? 1 : 0);
+				}
+			}
+			return new MapView(hall.getX() - half, hall.getZ() - half, step, colors, kinds);
+		}
+	}
+
+	private static final Map<UUID, MapView> MAPS = new ConcurrentHashMap<>();
 
 	@Nullable
 	private static HallPages.Page page;
@@ -142,8 +187,8 @@ public final class MovePage {
 		stop(viewer);
 		List<BuildSiteManager.Finished> buildings = BuildSiteManager.get(level).finishedInVillage(level, hall);
 		if (buildings.isEmpty()) {
-			menu.button(VillageHallScreen.FIRST_ROW + 4, VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.move.none"),
-				ChatFormatting.GRAY, VillageHallScreen.line("screen.aliveworkplace.move.none_hint", ChatFormatting.DARK_GRAY)), null);
+			menu.button(VillageHallScreen.FIRST_ROW + 4, marked(VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.move.none"),
+				ChatFormatting.GRAY, VillageHallScreen.line("screen.aliveworkplace.move.none_hint", ChatFormatting.DARK_GRAY)), LIST_MARK, 1), null);
 			return;
 		}
 		int fit = buildings.size() > SHOWN ? SHOWN - 1 : SHOWN;
@@ -152,12 +197,13 @@ public final class MovePage {
 		for (BuildSiteManager.Finished f : buildings.subList(0, Math.min(fit, buildings.size()))) {
 			BlockPos from = f.placement().origin();
 			List<Component> lore = new ArrayList<>();
-			lore.add(VillageHallScreen.line(VillageHallScreen.where(hall, from), ChatFormatting.GRAY));
+			BlockPos middle = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()).getCenter()).orElse(from);
+			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.now", fromHall(hall, middle)), ChatFormatting.GRAY));
 			pending.forBuilding(from).ifPresent(m -> lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.planned_to",
 				m.to().getX(), m.to().getY(), m.to().getZ()), ChatFormatting.AQUA)));
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.move.click", ChatFormatting.DARK_GRAY));
-			menu.button(slot++, VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
-				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), p -> {
+			menu.button(slot++, marked(VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
+				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), LIST_MARK, 1), p -> {
 				start(menu, level, hall, from, p);
 				menu.broadcastChanges();
 			});
@@ -197,6 +243,7 @@ public final class MovePage {
 			picking = picking.turned(planned.get().rotation()).at(planned.get().to().getX() + size.getX() / 2, planned.get().to().getZ() + size.getZ() / 2);
 		}
 		PICKING.put(player.getUUID(), picking);
+		MAPS.put(player.getUUID(), MapView.of(level, hall));
 		menu.onClose(() -> stop(player));
 		render(menu, level, player);
 	}
@@ -254,6 +301,129 @@ public final class MovePage {
 		menu.button(CANCEL, VillageHallScreen.icon(Items.BARRIER, Component.translatable("screen.aliveworkplace.move.cancel"), ChatFormatting.RED,
 			VillageHallScreen.line("screen.aliveworkplace.move.cancel_hint", ChatFormatting.GRAY)), pl -> cancel(menu, level, hall, pl));
 		map(menu, level, p, fit);
+		menu.button(GUIDE, guide(level, p, fit, mover), null);
+		MapView view = MAPS.get(player.getUUID());
+		if (view != null) {
+			menu.button(VIEW, view(level, p, fit, view), null);
+		}
+	}
+
+	/** The step the picker is on: 3 (confirm) once the spot fits, else 2 (pick the new spot). */
+	public static int step(MoveFit.Fit fit) {
+		return fit.fits() ? 3 : 2;
+	}
+
+	/**
+	 * The guide (B1163): its name says what to do now ("Step 2 of 3: click the map where ..."), its lines where the building
+	 * stands now and where it would go (from the Hall), what the Mover will do, about how long, and whether a Mover works here.
+	 */
+	static ItemStack guide(ServerLevel level, Picking p, MoveFit.Fit fit, boolean mover) {
+		Component name = Blueprints.displayName(p.structure());
+		Component instruction = fit.fits()
+			? Component.translatable(mover ? "screen.aliveworkplace.move.step3" : "screen.aliveworkplace.move.step3_no_mover", name)
+			: Component.translatable(fit.reason() == MoveFit.Reason.SAME_SPOT ? "screen.aliveworkplace.move.step2" : "screen.aliveworkplace.move.step2_refused", name);
+		BlockPos hall = p.hall();
+		BlockPos now = p.old().getCenter();
+		Component spot = fit.reason() == MoveFit.Reason.SAME_SPOT ? Component.translatable("screen.aliveworkplace.move.spot_none")
+			: Component.translatable("screen.aliveworkplace.move.spot", fromHall(hall, fit.box().getCenter()));
+		int minutes = minutes(p.plan());
+		ItemStack icon = VillageHallScreen.icon(Items.FILLED_MAP, instruction, fit.fits() ? ChatFormatting.GREEN : ChatFormatting.GOLD,
+			VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.now", fromHall(hall, now)), ChatFormatting.YELLOW),
+			VillageHallScreen.line(spot, fit.fits() ? ChatFormatting.GREEN : fit.reason() == MoveFit.Reason.SAME_SPOT ? ChatFormatting.GRAY : ChatFormatting.RED),
+			VillageHallScreen.line("screen.aliveworkplace.move.plan", ChatFormatting.GRAY),
+			VillageHallScreen.line(Words.counted("screen.aliveworkplace.move.time", minutes, minutes), ChatFormatting.GRAY),
+			VillageHallScreen.line(mover ? "screen.aliveworkplace.move.mover_here" : "screen.aliveworkplace.move.no_mover_how",
+				mover ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
+		return marked(icon, STEP_MARK, step(fit));
+	}
+
+	/** About how many minutes one Mover works on {@code plan}: each block taken down and put up again, a step each, and walking. */
+	public static int minutes(MovePlan plan) {
+		long ticks = (long) plan.blocks().size() * 2 * io.github.jcondedata.aliveworkplace.move.MoverWork.STEP_TICKS * 5 / 4 + 600;
+		return (int) Math.max(1, (ticks + 1199) / 1200);
+	}
+
+	/** "17 blocks north-west of the Hall", or "next to the Hall". */
+	static Component fromHall(BlockPos hall, BlockPos pos) {
+		double dx = pos.getX() - hall.getX();
+		double dz = pos.getZ() - hall.getZ();
+		return dx * dx + dz * dz < 16 ? Component.translatable("screen.aliveworkplace.move.by_hall")
+			: Component.translatable("screen.aliveworkplace.move.from_hall", VillageHallScreen.where(hall, pos));
+	}
+
+	/**
+	 * The village map for the client to draw (B1163): the land and its roads, the Hall, the village's edge, every other
+	 * building (its box, its name a line of the icon), where the building stands now and the new spot with its front.
+	 */
+	static ItemStack view(ServerLevel level, Picking p, MoveFit.Fit fit, MapView map) {
+		List<MoveFit.Other> others = MoveFit.others(level, p.hall(), p.from());
+		List<Component> names = new ArrayList<>();
+		int[] boxes = new int[others.size() * 4];
+		for (int i = 0; i < others.size(); i++) {
+			BoundingBox b = others.get(i).box();
+			boxes[i * 4] = b.minX();
+			boxes[i * 4 + 1] = b.minZ();
+			boxes[i * 4 + 2] = b.maxX();
+			boxes[i * 4 + 3] = b.maxZ();
+			names.add(VillageHallScreen.line(others.get(i).name(), ChatFormatting.WHITE));
+		}
+		CompoundTag tag = new CompoundTag();
+		tag.putInt("ox", map.ox());
+		tag.putInt("oz", map.oz());
+		tag.putInt("step", map.step());
+		tag.putByteArray("colors", map.colors());
+		tag.putByteArray("kinds", map.kinds());
+		tag.putInt("hallX", p.hall().getX());
+		tag.putInt("hallZ", p.hall().getZ());
+		tag.putInt("radius", VillageHalls.RADIUS);
+		tag.putIntArray("others", boxes);
+		tag.putIntArray("old", new int[]{p.old().minX(), p.old().minZ(), p.old().maxX(), p.old().maxZ()});
+		tag.putIntArray("spot", new int[]{fit.box().minX(), fit.box().minZ(), fit.box().maxX(), fit.box().maxZ()});
+		tag.putInt("front", p.plan().front(p.rotation()).get2DDataValue());
+		tag.putInt("fit", fit.fits() ? 0 : fit.reason() == MoveFit.Reason.SAME_SPOT ? 1 : 2);
+		ItemStack icon = VillageHallScreen.icon(Items.MAP, VillageHalls.name(level, p.hall()).copy(), ChatFormatting.WHITE, names.toArray(Component[]::new));
+		CompoundTag data = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		data.put(VIEW_MARK, tag);
+		icon.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+		return icon;
+	}
+
+	private static ItemStack marked(ItemStack icon, String key, int value) {
+		CompoundTag tag = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		tag.putInt(key, value);
+		icon.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+		return icon;
+	}
+
+	/** Whether menu-button click {@code id} is a click on the picker's village map. */
+	public static boolean handles(int id) {
+		return id >= MAP_CLICK && id < MAP_CLICK + MAP * MAP;
+	}
+
+	/** A click on the village map (B1163): the new spot's middle goes on the block clicked. */
+	public static boolean click(ChoiceMenu menu, ServerLevel level, ServerPlayer player, int id) {
+		Picking now = PICKING.get(player.getUUID());
+		MapView view = MAPS.get(player.getUUID());
+		if (now == null || view == null || !handles(id)) {
+			return false;
+		}
+		int index = id - MAP_CLICK;
+		BlockPos at = view.at(index % MAP, index / MAP);
+		PICKING.put(player.getUUID(), now.at(at.getX(), at.getZ()));
+		render(menu, level, player);
+		menu.broadcastChanges();
+		return true;
+	}
+
+	/** The menu-button number of a click on the village map at block ({@code x}, {@code z}), or -1 off the map (tests, the harness). */
+	public static int mapClick(ServerPlayer player, int x, int z) {
+		MapView view = MAPS.get(player.getUUID());
+		if (view == null) {
+			return -1;
+		}
+		int px = Math.floorDiv(x - view.ox(), view.step());
+		int pz = Math.floorDiv(z - view.oz(), view.step());
+		return px < 0 || pz < 0 || px >= MAP || pz >= MAP ? -1 : MAP_CLICK + pz * MAP + px;
 	}
 
 	/** The fit line's icon: green when the spot fits, red with the reason when it's refused, yellow before a spot is picked. */
@@ -376,6 +546,7 @@ public final class MovePage {
 	/** Forgets what {@code player} was picking and takes the ghost away. */
 	public static void stop(ServerPlayer player) {
 		PICKING.remove(player.getUUID());
+		MAPS.remove(player.getUUID());
 		BlueprintOutline.stopMove(player);
 	}
 

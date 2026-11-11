@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+
+- The Village Hall's Move page walks you through it: three steps across the top (pick a building, pick a new spot, confirm), a map of the whole village with the building where it stands now and where it would go, the Hall, the roads and the other buildings named, labeled Rotate, Confirm and Cancel buttons, and what the Mover will do and about how long (B1163, 45.2a).
+
 ## 0.154.0 — 2026-11-10
 
 ### Fixed

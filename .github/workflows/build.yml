@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main, 'tests/warned-hall-gone-1111d']
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

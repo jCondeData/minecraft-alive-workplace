@@ -42,7 +42,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
  * refused) across a save and reload, and once that other move is called off or finished. 45.2: a spot is "refused:
  * overlaps a building"; a called-off move leaves its building where it is; 45.3: a finished move's building stands at its
  * new spot. Two finished Test Huts, A (x 3-7, z 3-7) and B (x 3-7, z 12-16); A's move to S (x 11-15, z 3-7) is
- * confirmed on its own picker. Helpers adapted from QaMovePage1111cBugTests (lane C).
+ * confirmed on its own picker. Also the planned spot's edge from both sides, and A's own planned spot never refusing A;
+ * a quarter-turned move of a building that isn't square is not covered here (the test huts are square). Helpers adapted from QaMovePage1111cBugTests (lane C).
  */
 public class QaMoveSpotSaves1111eGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
@@ -346,6 +347,45 @@ public class QaMoveSpotSaves1111eGameTests implements FabricGameTest {
 			helper.assertTrue(wrong == null, wrong);
 			String over = verdictForB(helper, v, S.getX(), S.getZ());
 			helper.assertTrue(over.equals("This spot fits [Confirm ready]"), "A's move to S was called off, yet B over S: " + over);
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * The planned spot's edge from both sides: with A's move to S (x 11-15, z 3-7) planned, B on x 15-19 (sharing S's east
+	 * column) is refused naming A, and B on x 16-20 (a block clear of it) fits.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaMoveSaves1111eEdge"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaMoveSaves1111eEdge")
+	public void aPlannedSpotsEdgeIsRefusedAndOneBlockOffFits(GameTestHelper helper) {
+		Village v = stage(helper);
+		helper.runAfterDelay(2, () -> {
+			planA(helper, v);
+			String touching = verdictForB(helper, v, 17, 5);
+			helper.assertTrue(touching.equals("Refused: it would overlap " + name() + " [Confirm gray]"),
+				"B on x 15-19 shares S's east column (x 15), yet: " + touching);
+			String clear = verdictForB(helper, v, 18, 5);
+			helper.assertTrue(clear.equals("This spot fits [Confirm ready]"), "B on x 16-20 is a block clear of S, yet: " + clear);
+			helper.succeed();
+		});
+	}
+
+	/** A's own planned spot never refuses A: reopened on its planned spot, A's picker says it fits, and a block east of it too. */
+	//$ gametest_ticks_batch AREA '100' '"qaMoveSaves1111eOwn"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaMoveSaves1111eOwn")
+	public void aBuildingsOwnPlannedSpotDoesntRefuseIt(GameTestHelper helper) {
+		Village v = stage(helper);
+		helper.runAfterDelay(2, () -> {
+			planA(helper, v);
+			ChoiceMenu menu = openPickerFor(helper, v, v.a());
+			String reopened = menu.icon(MovePage.VERDICT).getHoverName().getString();
+			helper.assertTrue(reopened.equals("This spot fits"), "A's picker reopened on its own planned spot S says: " + reopened);
+			clickMap(helper, v, menu, S.getX() + 1, S.getZ());
+			String shifted = menu.icon(MovePage.VERDICT).getHoverName().getString();
+			helper.assertTrue(shifted.equals("This spot fits") && menu.icon(MovePage.CONFIRM).is(Items.PISTON),
+				"A moved a block east of its own planned spot (overlapping it) says: " + shifted + ", " + menu.icon(MovePage.CONFIRM));
+			menu.removed(v.player());
+			MovePage.stop(v.player());
 			helper.succeed();
 		});
 	}

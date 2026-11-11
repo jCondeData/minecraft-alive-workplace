@@ -414,6 +414,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePage1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveCallOff1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrate1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
@@ -1632,6 +1633,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterOwnChest1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallMove1111c2BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLoop1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.LeadToAndFroB1171GameTests"
 		]

@@ -60,8 +60,10 @@ at his Mover's Crate: with his crate broken he can't take anything more down, so
 his Mover's Crate: nowhere to pack the building", and carries on once he has one again (putting it up needs none). A
 Mover's Crate inside the building being moved stays where it stands (it's where he packs), so the building goes up at
 its new spot without it and the Mover keeps his workstation; move the crate yourself afterward if you like. Called off on the Move page,
-even half way, what went up at the new spot comes down again and everything goes back up where it was. Whoever
-confirmed the move is told when it's over.
+even half way, what went up at the new spot comes down again and everything goes back up where it was: the building's
+row opens on the planned spot at every stage of the move, with Call off, even once nothing is left at the old spot. Once
+the Mover has started, Confirm is gray and a new spot is refused ("The Mover is already moving it: call the move off
+first to pick another spot"); call it off, then pick again. Whoever confirmed the move is told when it's over.
 
 ![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
 
@@ -156,7 +158,9 @@ up or counted in `total()` (B1120: packing his own crate left him waiting foreve
 the crate already packed puts it back where it stood on the next swing (`MoveSite.crateToPutBack`, which also lets that swing
 through without a crate). When a move ends, the hall's Finished record follows the
 building (its placement's origin and turn), and the waiting move is cleared. The Move page's Call off (the
-`PendingMoves` entry gone) cancels a started site.
+`PendingMoves` entry gone) cancels a started site. While a site is under way (`MovePage.underWay`: started, not
+canceled, not done), the picker takes the site's own plan (the building as the Mover captured it) instead of capturing the
+old spot, which may be empty by then (B1181), and Confirm is refused, so the saved move and the site never part (B1192).
 
 **The residents (45.4).** `move/MoveResidents`. As a site starts (`MoveSites.begin`), every loaded villager within 128
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on

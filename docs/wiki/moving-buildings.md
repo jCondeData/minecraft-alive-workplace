@@ -253,7 +253,9 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   it would leave its Mover without a workstation for the whole rebuild (vanilla can take his job away), and a refusal
   would make the player break the crate, which loses the job the same way.
 - Since it stays, a new spot over a Mover's Crate is refused on the Move page (B1129). A move confirmed before that check
-  that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`).
+  that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`). So is a
+  block whose spot gets a crate set down after the move is confirmed; a skipped chest or barrel loses its packed items
+  today (B1172, open).
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -357,8 +359,9 @@ barrel at the new spot.
 - B1161 (open): a building that holds another village's Village Hall isn't refused; only this village's own hall
   block is checked (its failing test is on the branch tests/move-refusals-1110).
 
-- A resident is noted only if loaded within 128 blocks as the move starts; one far away keeps memories of blocks that
-  are gone and finds new ones by vanilla's rules.
+- A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still
+  gets the moved bed or workstation (B1154): every occupied bed and workstation in the box is saved as a claim on the
+  site and held where it goes up, and a remembered old spot is forwarded to the moved block when they come back.
 
 - A player's own house has no record the hall knows (nothing registers one yet), so it is captured only as a box.
 - `place()` puts everything up at once; the Mover's step-by-step rebuild (45.3) must empty the original containers so nothing is doubled.

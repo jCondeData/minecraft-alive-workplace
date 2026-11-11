@@ -49,6 +49,11 @@ public class MinerPickaxeUpgradeGameTests implements FabricGameTest {
 	/** A Novice miner holding {@code hand} at his bench, a stone quarry from {@link #MIN} to {@code max}, {@code chest} in his chest. */
 	private static Setup setup(GameTestHelper helper, BlockPos max, ItemStack hand, ItemStack... chest) {
 		Leftovers.clear(helper);
+		// B1207: a Storehouse or hall an earlier batch's test left nearby makes its chests the miner's village store, and
+		// he takes the sticks left in them: the worn-out test's miner used anUpgradeIsOnlyEverABetterPickaxe's 2 leftover
+		// sticks (39 blocks off) and never cut his own planks
+		Leftovers.storehouses(helper);
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
@@ -234,7 +239,6 @@ public class MinerPickaxeUpgradeGameTests implements FabricGameTest {
 	public void anUpgradeIsOnlyEverABetterPickaxe(GameTestHelper helper) {
 		Setup s = setup(helper, new BlockPos(7, 2, 7), new ItemStack(Items.STONE_PICKAXE), new ItemStack(Items.COBBLESTONE, 6),
 			new ItemStack(Items.STICK, 8));
-		Leftovers.storehouses(helper);
 		ServerLevel level = s.level();
 		Villager v = s.miner();
 		BlockPos bench = helper.absolutePos(BENCH);
@@ -277,6 +281,8 @@ public class MinerPickaxeUpgradeGameTests implements FabricGameTest {
 		PickaxeCrafting.Upgrade need = PickaxeCrafting.upgradeMissing(level, v, bench, own, bag, new ItemStack(Items.STONE_PICKAXE));
 		helper.assertTrue(need != null && need.item() == Items.IRON_INGOT && need.count() == 2, "missing: " + need);
 		helper.assertTrue(PickaxeCrafting.upgradeMissing(level, v, bench, own, bag, new ItemStack(Items.IRON_PICKAXE)) == null, "missing with iron in hand");
+		// the Storehouse would stay a village store for later batches' workers nearby (B1207)
+		helper.setBlock(storehouse, Blocks.AIR);
 		helper.succeed();
 	}
 

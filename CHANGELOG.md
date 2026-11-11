@@ -22,6 +22,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 
 - A lumberjack no longer gives up on a healthy sapling on its tree farm after 16 bone meal: about one sapling in a thousand needed more, and it then stood there unfed for good. It now gets up to 32 (a sapling that truly can't grow is still left alone after that). (B460)
+- A village warned that a lair's band strikes tonight no longer stays braced after you break the lair up: the gates open again, the Defense page drops the attack, and nobody goes to battle stations or indoors for a band that can't come.
 - Less server lag in a big village: workers no longer search the chunks around their workstation for chests every time they need them (most of them every tick, and for every neighbor's workstation too). The list is kept until a chest, barrel or furnace is placed, broken or changed. A farmer with nothing to do now counts its chests for spare seeds once a second instead of every tick, and villagers no longer look up their Village Hall's militia rule 20 times a second when nothing has hurt or scared them. (B455, B412)
 
 ## 0.154.0 — 2026-11-10

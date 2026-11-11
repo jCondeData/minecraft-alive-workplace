@@ -63,7 +63,8 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   dropped bars over; if no attack came, the bars go up the next morning.
 - **Called off.** An attack called off after the warning (threat level 0, Peaceful, the village set At peace, or
   `/workplace threat clear`) takes its warning with it (`ThreatData.callOff`), and `Warnings.ready` is false in a quiet
-  village: no gates shut, no battle stations, nobody kept in (B1146).
+  village: no gates shut, no battle stations, nobody kept in (B1146). So does a lair broken up before its band comes:
+  its culture's attacks and their warning are off, other cultures' stay (B1155).
 - **Without a source** the horn is the only warning, as before; the Defense page says "No lookout" and What next? says
   to build a Lookout Tower and post a guard by it.
 - The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).

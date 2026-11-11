@@ -349,6 +349,26 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/**
+	 * Calls off the attacks of {@code culture} on the clock of the village round {@code hall} (B1155: its lair is broken
+	 * up, so its band can't come), and the warning if it was of one of them and no other culture's attack comes that
+	 * day: other cultures' attacks and warnings stay.
+	 */
+	public void callOff(BlockPos hall, ResourceLocation culture) {
+		Clock clock = clocks.get(hall);
+		if (clock == null) {
+			return;
+		}
+		long day = clock.warned;
+		boolean itsWarning = day >= 0 && clock.attacks.stream().anyMatch(a -> a.day() == day && a.culture().equals(culture));
+		if (clock.attacks.removeIf(a -> a.culture().equals(culture))) {
+			if (itsWarning && clock.attacks.stream().noneMatch(a -> a.day() == day)) {
+				clock.warned = -1;
+			}
+			setDirty();
+		}
+	}
+
 	/** The day of the attack the village round {@code hall} was warned of (32.14), or -1. */
 	public long warned(BlockPos hall) {
 		Clock clock = clocks.get(hall);

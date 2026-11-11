@@ -2,7 +2,7 @@ name: build
 
 on:
   push:
-    branches: [main]
+    branches: [main, qa/store-scan-create-1111e]
   pull_request:
   workflow_dispatch:
 

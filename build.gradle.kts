@@ -620,6 +620,20 @@ tasks {
     named("check") { dependsOn(checkWiki) }
 
     /**
+     * Every GameTest batch belongs to one test class (B1166): tests in a batch run side by side, and when two classes
+     * shared one, a class's Leftovers.clear or village() setup removed the other's villagers (B427, B428).
+     * tools/modtest/batchcheck.py fails on a batch name two classes use (src/gametest and src/compattest each) and on a
+     * swap line whose batch differs from the annotation under it. Under a second, checked-in files only, so it always runs.
+     */
+    val checkBatches by registering(Exec::class) {
+        group = "verification"
+        description = "Fails if two GameTest classes share a batch name, or a swap line's batch differs from its annotation's"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/batchcheck.py")
+    }
+    named("check") { dependsOn(checkBatches) }
+
+    /**
      * The player guide stays a guide for players (ROADMAP 22.10): tools/modtest/guidecheck.py fails when a page in
      * docs/guide/ has a roadmap id, "ROADMAP", "GameTest" or a path under src/, a broken link, or a picture of a showcase
      * scene or still that doesn't exist. Under a second, checked-in files only, so it always runs.

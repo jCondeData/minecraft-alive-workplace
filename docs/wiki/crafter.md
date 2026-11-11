@@ -176,6 +176,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and change the Tinkerer's golem mending. Chests already counted (the builder's, a village-mate's such as the
   Glassblower's, another builder's) aren't counted twice; a builder on another side (`Village.sharesWith`) gets none.
   The Carpenter stays out, for B778's reasons above: what he took home is carried on, not made into anything else.
+  "By his own workstation" means within 8 blocks of it: a chest 8 blocks away counts, one 9 blocks away is left
+  alone, and another crafter's chest is never raided (QaCrafterOwnChest1111cGameTests, 18, with the short lines' exact
+  numbers and reloads mid-make and mid-carry).
 - B1171 (lane-a-1111-0322): a crafter goes by the bench that feeds the build (`CrafterWork.supplyBench`:
   `Builders.siteBench` for its lead, as `BuilderWork` fetches and counts), not by the table of whichever builder it
   looked at, and skips helpers (`Builders.isHelping`), so each build is served once, where it takes from. Chosen over

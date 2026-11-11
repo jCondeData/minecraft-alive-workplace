@@ -616,6 +616,7 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 			if (made > 0) {
 				delivered(level, villager, job, made);
+				offTheList(level, job, made);
 			}
 			if (!job.claim().isEmpty()) {
 				claim(job.claim(), level.getGameTime());
@@ -635,6 +636,7 @@ public class CrafterWork extends Behavior<Villager> {
 		fullFor = 0;
 		deliverWait = 0;
 		delivered(level, villager, job, made);
+		offTheList(level, job, made);
 		if (!job.claim().isEmpty()) {
 			synchronized (CLAIMS) {
 				CLAIMS.remove(job.claim()); // the builder checks again, and asks for more if it wasn't enough
@@ -694,6 +696,77 @@ public class CrafterWork extends Behavior<Villager> {
 			}
 		} catch (IllegalArgumentException e) {
 			// a claim that isn't a builder's (a stock order's): nobody's line to write on
+		}
+	}
+
+	/**
+	 * B1170: the chests by our own workstation, {@code home}, whose makings count for {@code builder}'s request: each one
+	 * not already among the chests he takes from ({@code sources}: his own, the village stores, a village-mate's such as
+	 * the Glassblower's, B1156) nor another builder's ({@code theirs}, where only the spare counts), so nothing is counted
+	 * twice. None for a builder on another side ({@link Village#sharesWith}, as for a village-mate's stash), and none for
+	 * the Carpenter: B778 chose carrying on what he took home over making anything else of it (crafter.md, Decisions).
+	 * Taken like a stash's makings, by {@code fetch} from the job's sources, and saved with the job like them.
+	 */
+	private List<BlockPos> ownMakings(ServerLevel level, Villager villager, Villager builder, List<BlockPos> home, List<BlockPos> sources,
+		List<BlockPos> theirs) {
+		if (home.isEmpty() || tableJob == CraftJobs.Job.CARPENTER || !Village.sharesWith(level, builder, villager)) {
+			return List.of();
+		}
+		return home.stream().filter(p -> !sources.contains(p) && !theirs.contains(p)).toList();
+	}
+
+	/**
+	 * B1171: the bench whose chests feed {@code site}, where what we make for it has to go: the one the build was started
+	 * from ({@link Builders#siteBench}, as the builder himself fetches and counts), which isn't always the table
+	 * {@code builder} works at. Null for a helper on someone else's build (a Wonder's crew too): that build is served once,
+	 * through its lead, and null while the build's bench isn't loaded. Going by each builder's own table, what was made
+	 * for a helper's (or a Wonder lead's) build was carried to the chests in his own house, where the build never takes
+	 * from: it stayed on the list and was made and carried there again and again.
+	 */
+	@Nullable
+	private static BlockPos supplyBench(ServerLevel level, Villager builder, BuildSite site) {
+		if (Builders.isHelping(builder)) {
+			return null;
+		}
+		BlockPos own = Builders.benchPos(builder).orElse(null);
+		BlockPos bench = site.bench();
+		if (bench == null || bench.equals(own)) {
+			return own;
+		}
+		if (!level.isLoaded(bench)) {
+			return null;
+		}
+		return Builders.siteBench(level, builder, site).orElse(null);
+	}
+
+	/**
+	 * B1171: what was just put in the asking builder's chests comes off his list at once, as a player's hand-over does
+	 * (B344). He counts his chests only every few seconds, and we look for the next job sooner: with the old count still
+	 * standing, a request just filled was made a second time. His next count replaces it with the real one. The claim
+	 * names the builder ("uuid|item"); a stock order's or a Wonder's names none.
+	 */
+	private static void offTheList(ServerLevel level, Job job, int made) {
+		int bar = job.claim().indexOf('|');
+		if (made <= 0 || bar <= 0) {
+			return;
+		}
+		try {
+			if (level.getEntity(java.util.UUID.fromString(job.claim().substring(0, bar))) instanceof Villager builder) {
+				BuildSite site = Builders.activeSite(level, builder);
+				Item item = job.plan().target();
+				if (site != null && site.missing().containsKey(item)) {
+					Map<Item, Integer> missing = new LinkedHashMap<>(site.missing());
+					int left = missing.get(item) - made;
+					if (left > 0) {
+						missing.put(item, left);
+					} else {
+						missing.remove(item);
+					}
+					site.setMissing(missing);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			// a claim that isn't a builder's (a stock order's): no list to take it off
 		}
 	}
 
@@ -862,7 +935,8 @@ public class CrafterWork extends Behavior<Villager> {
 				continue;
 			}
 			BuildPlan plan = site.plan(level);
-			BlockPos builderStation = Builders.benchPos(builder).orElse(null);
+			// B1171: the bench whose chests feed this build, not the table this builder happens to work at
+			BlockPos builderStation = supplyBench(level, builder, site);
 			if (plan == null || builderStation == null) {
 				continue;
 			}
@@ -920,6 +994,10 @@ public class CrafterWork extends Behavior<Villager> {
 			if (deliverTo == null || SupplyContainers.find(level, deliverTo, area).isEmpty()) {
 				continue; // B721: nowhere this builder would find it; made anyway, it lay by our bench for ever
 			}
+			// B1170: the chests by our own workstation hold our makings too (the Mason's stone, the Tinkerer's iron, the
+			// Leatherworker's leather, the Librarian's books), not only the builder's and the village stores
+			List<BlockPos> own = ownMakings(level, villager, builder, home, sources, theirs);
+			sources.addAll(own);
 			Builders.reservedIn(level, sources, site).forEach((item, n) -> kept.merge(item, n, Integer::sum));
 			Map<Item, Long> pooled = SupplyContainers.contents(level, sources);
 			Map<Item, Long> spareByFamily = new HashMap<>();
@@ -963,12 +1041,14 @@ public class CrafterWork extends Behavior<Villager> {
 						continue;
 					}
 				}
-				Crafting.Plan carried = carryOn(level, home, sources, deliverTo, area, want.getKey(), want.getValue());
+				// B778's carry-on still sees our own chests as ours (B1170 put them in sources only for the makings)
+				List<BlockPos> shared = sources.stream().filter(p -> !own.contains(p)).toList();
+				Crafting.Plan carried = carryOn(level, home, shared, deliverTo, area, want.getKey(), want.getValue());
 				if (carried != null) {
 					synchronized (CLAIMS) {
 						CLAIMS.put(claim, now + CLAIM_TICKS);
 					}
-					List<BlockPos> from = home.stream().filter(p -> !sources.contains(p)).toList();
+					List<BlockPos> from = home.stream().filter(p -> !shared.contains(p)).toList();
 					return new Job(deliverTo, area, carried, claim, from);
 				}
 				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);

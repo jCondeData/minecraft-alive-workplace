@@ -72,8 +72,8 @@ public class FurnishingTableGameTests implements FabricGameTest {
 	}
 
 	/** A table's piece takes each spot it fits, its other cells become air; one that doesn't fit stays vanilla. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateFurnishingTable"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateFurnishingTable")
 	public void theFirstModWithAFittingPieceIsChosen(GameTestHelper helper) {
 		try {
 			Furnishings.MODS = List.of("handcrafted", TEST_TABLE);
@@ -104,8 +104,8 @@ public class FurnishingTableGameTests implements FabricGameTest {
 	}
 
 	/** {@code furnishedBuilds} off: vanilla, whatever the order says. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateFurnishingTable"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateFurnishingTable")
 	public void switchedOffTheBuildIsVanilla(GameTestHelper helper) {
 		try {
 			WorkplaceConfig config = WorkplaceConfig.parse("{\"furnishedBuilds\": false, \"furnitureMods\": [\"" + TEST_TABLE + "\"]}");
@@ -121,8 +121,8 @@ public class FurnishingTableGameTests implements FabricGameTest {
 	}
 
 	/** A site saved mid-build keeps its choice after a reload, though the order changed; an old save builds vanilla. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGate"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGate")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"expansionGateFurnishingTable"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "expansionGateFurnishingTable")
 	public void aSiteSavedMidBuildKeepsItsChoice(GameTestHelper helper) {
 		try {
 			Furnishings.MODS = List.of(TEST_TABLE);

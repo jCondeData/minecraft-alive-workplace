@@ -8,7 +8,7 @@ hire screen, a Legend guest's terms and the Research screen; then the builder to
 style picker, the Price Tag, and the Shop and the Ferry paid in CobbleDollars. Part of Milestone 42 (One look for every
 screen).
 
-Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107
+Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107, B1147
 
 ## What a player sees
 
@@ -83,7 +83,8 @@ a lot or its price, the rows are redrawn. If the price changed between Buy and C
 nothing: "The price changed: 16 Cobblestone now costs 900 CobbleDollars. Click Confirm again to buy at that price." and
 the row stays gold at the new price, so a second Confirm buys at what the screen shows. A lot taken off the counter
 says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything. A smaller lot or other goods at the
-same price are refused the same way (the message still says "The price changed"). Each buyer pays what their own
+same price are refused the same way, and the message says what changed (B1147): "This counter now sells 1 Diamond for
+200 CobbleDollars. Click Confirm again to buy that." Each buyer pays what their own
 screen shows: two buyers on one counter are charged separately, and clicking Confirm twice charges once.
 
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
@@ -139,7 +140,7 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
   `.list_hint`; the styles' `screen.aliveworkplace.styles.button_choose`, `.button_mirror`, `.button_unmirror`,
   `.list_hint`; the tag's `screen.aliveworkplace.price_tag.steps`, `.list_hint`; the shop's
   `message.aliveworkplace.shop.menu.button_buy`, `.button_confirm`, `.list_hint`, `.column_goods`, `.column_stock`,
-  `.column_price`, and (B1107) `message.aliveworkplace.shop.price_changed`, `.withdrawn`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
+  `.column_price`, and (B1107) `message.aliveworkplace.shop.price_changed`, `.withdrawn`, (B1147) `.goods_changed`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
 - New text (42.3): `screen.aliveworkplace.orders.column_order`, `.button_pick`, `.button_unpick`; the smith's
   `screen.aliveworkplace.ball_smith.mode_any`, `.mode_only`, `.list_hint`, `.column_ball`, `.column_level`; the grower's
   `screen.aliveworkplace.gem_grower.mode_every`, `.mode_only`, `.list_hint`, `.column_bed`, `.column_planted`; the lures'
@@ -236,7 +237,8 @@ charges it; a lot sold out or taken off the counter between Buy and Confirm take
 QA (lane D, 2026-11-10, B1107): `QaShopPriceVerify1110dCompatTests` (8, CobbleDollars): two buyers each charged
 what their own screen showed; a price raised and put back; a smaller lot and the last lot between two buyers; a raised
 price the buyer can't pay; Confirm twice; reopening shows the new price; swapped goods, an item price and a withdrawn
-lot; both new sentences read right. 5 hand mutants on `Shops` killed.
+lot; both new sentences read right. 5 hand mutants on `Shops` killed. B1147 extends it: swapped goods and a smaller lot
+say "This counter now sells ...", a price change on the same lot says "The price changed", and the new sentence reads right.
 QA (lane B, 2026-11-09, 42.4): `QaBuilderToolLists1109bGameTests` (9): every builder tool sentence in American English
 and the Price Tag's steps read "Steps of 1,000 / 100 / 10 / 1"; shape sizes stop at 1 and at 32; with no blocks the
 Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of range, button-only rows, swap, throw

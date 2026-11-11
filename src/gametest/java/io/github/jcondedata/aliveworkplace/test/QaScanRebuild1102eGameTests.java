@@ -207,7 +207,10 @@ public class QaScanRebuild1102eGameTests implements net.fabricmc.fabric.api.game
 		});
 	}
 
-	/** A chorus plant with a flower on top, on end stone, is built again with nothing skipped. */
+	/**
+	 * A chorus plant with a flower on top, on end stone, is built again with nothing skipped. B872: each stalk piece costs
+	 * the chorus flower that grows it (its own item is creative-only), so two pieces and the flower ask three flowers.
+	 */
 	//$ gametest_ticks_batch HUGE '3000' '"qa1102eChorus"'
 	@GameTest(template = HUGE, timeoutTicks = 3000, batch = "qa1102eChorus")
 	public void aScannedChorusPlantAndFlowerAreBuiltAgain(GameTestHelper helper) {
@@ -216,7 +219,7 @@ public class QaScanRebuild1102eGameTests implements net.fabricmc.fabric.api.game
 		s.put(0, 1, 0, Blocks.CHORUS_PLANT.defaultBlockState().setValue(BlockStateProperties.DOWN, true).setValue(BlockStateProperties.UP, true));
 		s.put(0, 2, 0, Blocks.CHORUS_PLANT.defaultBlockState().setValue(BlockStateProperties.DOWN, true).setValue(BlockStateProperties.UP, true));
 		s.put(0, 3, 0, Blocks.CHORUS_FLOWER);
-		QaScanRebuild1102dGameTests.roundTrip(helper, s, Map.of(Items.CHORUS_FLOWER, 1), false);
+		QaScanRebuild1102dGameTests.roundTrip(helper, s, Map.of(Items.CHORUS_FLOWER, 3), false);
 	}
 
 	/** A small dripleaf on clay (two blocks) is built as both halves, from one small dripleaf. */

@@ -96,8 +96,7 @@ public final class VillageHalls {
 				}
 			}
 		}
-		workers.sort(Comparator.comparing((Villager v) -> v.getVillagerData().getProfession().name())
-			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter())));
+		workers.sort(byJob(hall));
 		jobless.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getCenter())));
 		// B206, B207: a settlers' wagon's bedrolls are for the road, not the village's beds
 		int wagonBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.inVillage(level, hall).size();
@@ -109,6 +108,12 @@ public final class VillageHalls {
 		}
 		return new Census(List.copyOf(workers), List.copyOf(jobless), children, beds, freeBeds, food(level, hall), guards, requests,
 			builds(level, hall), wagonBeds, visitors);
+	}
+
+	/** The workers' order: by job, the highest level first, then nearest the hall (the People table lists them so). */
+	static Comparator<Villager> byJob(BlockPos hall) {
+		return Comparator.comparing((Villager v) -> v.getVillagerData().getProfession().name())
+			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter()));
 	}
 
 	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */

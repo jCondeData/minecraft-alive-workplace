@@ -1,6 +1,8 @@
 package io.github.jcondedata.aliveworkplace.client;
 
+import io.github.jcondedata.aliveworkplace.card.StatusCard;
 import io.github.jcondedata.aliveworkplace.trainer.TrainerMenu;
+import io.github.jcondedata.aliveworkplace.trainer.TrainerScreens;
 import io.github.jcondedata.aliveworkplace.trainer.TrainerView;
 import java.util.ArrayList;
 import java.util.List;
@@ -181,27 +183,33 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 			y += rows * PARTY_ROW + 4 + 10;
 		}
 		buttons.clear();
-		int bx = x;
 		Component tooltip = null;
 		boolean refused = !view().canChallenge();
-		Object[][] defs = {
-			{TrainerMenu.CHALLENGE, "screen.aliveworkplace.trainer.button.challenge", refused},
-			{TrainerMenu.TRADE, "screen.aliveworkplace.trainer.button.trade", !view().canTrade()},
-			{TrainerMenu.CLOSE, "screen.aliveworkplace.trainer.button.close", false}};
-		for (Object[] def : defs) {
-			int id = (int) def[0];
-			Component label = Component.translatable((String) def[1]);
-			boolean off = (boolean) def[2];
-			int bw = TableStyle.buttonWidth(font, label) + 16;
-			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= y && mouseY < y + BUTTON_H;
-			TableStyle.button(g, font, label, bx, y, bw, BUTTON_H, id == TrainerMenu.CHALLENGE && !off, over, off);
-			buttons.add(new int[]{id, bx, y, bw, off ? 1 : 0});
+		int[] ids = {TrainerMenu.CHALLENGE, TrainerMenu.TRADE, TrainerMenu.CLOSE};
+		boolean[] offs = {refused, !view().canTrade(), false};
+		Component[] labels = new Component[TrainerScreens.BUTTON_KEYS.length];
+		int[] need = new int[labels.length];
+		for (int i = 0; i < labels.length; i++) {
+			labels[i] = Component.translatable(TrainerScreens.BUTTON_KEYS[i]);
+			need[i] = TableStyle.buttonWidth(font, labels[i]);
+		}
+		// fitted inside the right side's w pixels, wrapped onto more rows if they must be (B1131, as the status card's, B1103)
+		int[][] boxes = StatusCard.buttonRow(need, w);
+		for (int i = 0; i < boxes.length; i++) {
+			int id = ids[i];
+			boolean off = offs[i];
+			int bx = x + boxes[i][0];
+			int by = y + boxes[i][1] * (BUTTON_H + StatusCard.BUTTON_ROW_GAP);
+			int bw = boxes[i][2];
+			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + BUTTON_H;
+			TableStyle.button(g, font, labels[i], bx, by, bw, BUTTON_H, id == TrainerMenu.CHALLENGE && !off, over, off);
+			buttons.add(new int[]{id, bx, by, bw, off ? 1 : 0});
 			if (over && off && id == TrainerMenu.CHALLENGE) {
 				tooltip = view().refusal();
 			}
-			bx += bw + 8;
 		}
-		y += BUTTON_H + 6;
+		int rows = StatusCard.buttonRows(boxes);
+		y += rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 6;
 		if (refused) {
 			for (FormattedCharSequence line : font.split(view().refusal(), w)) {
 				g.drawString(font, line, x, y, TableStyle.BODY, false);

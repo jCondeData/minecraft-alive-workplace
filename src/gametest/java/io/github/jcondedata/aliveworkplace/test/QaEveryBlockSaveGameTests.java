@@ -132,8 +132,8 @@ public class QaEveryBlockSaveGameTests implements FabricGameTest {
 	}
 
 	/** Every block entity type the mod registers is on the list. */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaBlockSaves"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaBlockSaves")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaEveryBlockSave"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaEveryBlockSave")
 	public void everyBlockThatKeepsDataIsListed(GameTestHelper helper) {
 		Set<String> registered = new LinkedHashSet<>();
 		for (var id : BuiltInRegistries.BLOCK_ENTITY_TYPE.keySet()) {
@@ -152,8 +152,8 @@ public class QaEveryBlockSaveGameTests implements FabricGameTest {
 	 * A block from before its fields (its id and place only) loads as a chunk loads it; and the save the jar writes for
 	 * a fresh block reads back to the same save, twice.
 	 */
-	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaBlockSaves"'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaBlockSaves")
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaEveryBlockSave"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaEveryBlockSave")
 	public void aBlockFromBeforeLoadsAndSavesTheSameTwice(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		HolderLookup.Provider registries = level.registryAccess();

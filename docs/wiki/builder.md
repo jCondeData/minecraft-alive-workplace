@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117
 
 ## 1. What a player sees
 
@@ -171,7 +171,12 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 material: grass, podzol, mycelium, farmland and a dirt path cost dirt; infested stone, cobblestone, deepslate and stone
 bricks (mossy, cracked and chiseled too) cost the same block uninfested, suspicious sand and gravel cost sand and gravel, and a petrified oak slab costs an oak
 slab, each still built as drawn; B874, `QaScanItemless1103BugTests`; `QaBuilderBugs1109bGameTests`: a paid build of all of them
-uses up just those base materials). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
+uses up just those base materials). Plants with no item a survival player can hold cost what grows them (B872,
+`QaScanItemless1103BugTests`): a bamboo shoot costs one bamboo and is planted as a shoot (one that has grown into bamboo since
+counts as built), and each piece of a chorus plant's stalk costs a chorus flower and is put down as drawn, from the end stone
+up, so a stalk two tall under its flower asks three chorus flowers. A fixed set of blocks is never placed (bedrock, command
+blocks, spawners, portals, barrier, fire, and frogspawn, which only frogs lay: a scanned pond is built without it; B1117,
+`QaScanFrogspawn1109eBugTests`).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
 down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the

@@ -84,20 +84,26 @@ public final class MaterialRules {
 		return null;
 	}
 
-	/** Blocks a builder never places: unobtainable, technical, or exploitable. */
+	/**
+	 * Blocks a builder never places: unobtainable, technical, or exploitable. B1117: frogspawn too, which only frogs lay
+	 * (it breaks into nothing, even with Silk Touch): a scanned pond is built without it, as a player's would be.
+	 */
 	private static final Set<Block> NEVER_PLACE = Set.of(
 		Blocks.BARRIER, Blocks.BEDROCK, Blocks.COMMAND_BLOCK, Blocks.CHAIN_COMMAND_BLOCK, Blocks.REPEATING_COMMAND_BLOCK,
 		Blocks.STRUCTURE_BLOCK, Blocks.STRUCTURE_VOID, Blocks.JIGSAW, Blocks.SPAWNER, Blocks.TRIAL_SPAWNER, Blocks.VAULT,
 		Blocks.END_PORTAL_FRAME, Blocks.END_PORTAL, Blocks.END_GATEWAY, Blocks.NETHER_PORTAL, Blocks.REINFORCED_DEEPSLATE,
 		Blocks.LIGHT, Blocks.BUDDING_AMETHYST, Blocks.MOVING_PISTON, Blocks.PISTON_HEAD, Blocks.FIRE, Blocks.SOUL_FIRE,
-		Blocks.FROSTED_ICE
+		Blocks.FROSTED_ICE, Blocks.FROGSPAWN
 	);
 
 	/**
 	 * Blocks you cannot hold as an item in survival: the builder uses the base material instead. B874: also the ones a
 	 * player finds but can't pick up as they are: infested stone blocks (a mountain's or a stronghold's silverfish stone)
 	 * cost their stone, suspicious sand and gravel cost sand and gravel, and a petrified oak slab (an old village's or
-	 * mineshaft's) costs an oak slab. Built as drawn, as grass is built from dirt.
+	 * mineshaft's) costs an oak slab. Built as drawn, as grass is built from dirt. B872: a chorus plant's own item is
+	 * creative-only (it grows from a chorus flower on end stone), so each piece costs the chorus flower that grows it and
+	 * the stalk is put down as drawn, piece on piece from the end stone up. A bamboo shoot (no item of its own) costs one
+	 * bamboo and is planted as the shoot a player's bamboo makes on the ground.
 	 */
 	private static final Map<Block, Item> SUBSTITUTES = Map.ofEntries(
 		Map.entry(Blocks.GRASS_BLOCK, Items.DIRT),
@@ -114,7 +120,9 @@ public final class MaterialRules {
 		Map.entry(Blocks.INFESTED_DEEPSLATE, Items.DEEPSLATE),
 		Map.entry(Blocks.SUSPICIOUS_SAND, Items.SAND),
 		Map.entry(Blocks.SUSPICIOUS_GRAVEL, Items.GRAVEL),
-		Map.entry(Blocks.PETRIFIED_OAK_SLAB, Items.OAK_SLAB)
+		Map.entry(Blocks.PETRIFIED_OAK_SLAB, Items.OAK_SLAB),
+		Map.entry(Blocks.CHORUS_PLANT, Items.CHORUS_FLOWER),
+		Map.entry(Blocks.BAMBOO_SAPLING, Items.BAMBOO)
 	);
 
 	/**
@@ -652,6 +660,9 @@ public final class MaterialRules {
 		}
 		if (wanted.getBlock() instanceof net.minecraft.world.level.block.AttachedStemBlock && actual.is(GROWN_FROM.get(wanted.getBlock()))) {
 			return true; // B865: planted as a fresh stem (grownAs), it turns to the grown stem by itself once its fruit is beside it
+		}
+		if (wanted.is(Blocks.BAMBOO_SAPLING) && actual.is(Blocks.BAMBOO)) {
+			return true; // B872: a planted bamboo shoot turns to bamboo by itself once it grows a piece on top
 		}
 		if (actual.getBlock() != wanted.getBlock() && unweathered(actual.getBlock()) != unweathered(wanted.getBlock())) {
 			return false;

@@ -92,6 +92,8 @@ public final class BuilderEvents {
 				|| io.github.jcondedata.aliveworkplace.guard.Guards.block(villager, source, amount))));
 		// A lair's captain the game takes away on Peaceful is remembered as taken, not fallen (B767).
 		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.threat.Lairs.onRemoved(level, entity));
+		// B1203, B1205: an Innkeeper gone for good (killed, discarded, a zombie now) leaves his counter no inn
+		Platform.get().onEntityUnload((entity, level) -> io.github.jcondedata.aliveworkplace.inn.InnCounters.onGone(entity, level));
 		// B1003: a Bard killed, discarded or unloaded mid-song: the song stops at the jukebox
 		Platform.get().onEntityUnload((entity, level) -> {
 			if (entity instanceof Villager villager) {

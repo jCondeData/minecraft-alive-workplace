@@ -106,7 +106,7 @@ Ways to unlock a build for the whole village:
 - **Use a blueprint on the table.** Right-click the table holding any blueprint, one found in a chest, a friend's or a
   bought one, and its build joins the library. Village storehouses, inns and kitchens, and the chests of pirates,
   bandits and other raiders, hold a blueprint now and then. A Wonder Plan used on the table shows its Wonder there
-  too, though a Wonder is still raised from its plan.
+  too, though a Wonder is still raised from its plan: the table never hands out a Wonder or any stage of one.
 
 Each unlock says so in chat: "The village's library has a new blueprint: Smithy II". Builds you upload, scan or import
 are always unlocked, and a table far from any Village Hall shares one collection for the whole server. A village that

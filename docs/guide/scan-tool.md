@@ -35,6 +35,10 @@ Sneak-right-click a block to start over.
 - **Builders build it** like any other blueprint, from the chests round their table.
 - **Frames, paintings and armor stands come along**, empty: the builder hangs each one up again with an item frame,
   painting or armor stand from the chests, but never copies what a frame holds or a stand wears. Villagers, animals,
-  dropped items and minecarts aren't scanned.
+  dropped items and minecarts aren't scanned. When one is missing at the end, the builder waits by his bench a while;
+  if nobody in the village makes it, the lines over his head say whom to hire ("Hire a Leatherworker to make Item
+  Frames").
+- **Plants cost what grows them.** A bamboo shoot costs one bamboo, and each piece of a chorus plant costs a chorus
+  flower. Frogspawn is left out (only frogs lay it), so a scanned pond is built without it.
 
 More in [The Builder and blueprints](builder.md).

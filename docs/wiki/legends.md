@@ -355,6 +355,8 @@ malformed gift file fails; a `gifted` attachment of "none" or a removed gift mak
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night
 Owl's hours at every edge; the night schedule for a miner, never for a child, a nitwit or the jobless, kept through a
 save and dropped when the gift goes.
+QA (lane D): `QaInnCounters1111dGameTests`: an inn 10.05 blocks from the Hall is the inn of a village of radius 11 and
+not of one of radius 10. Open: B1205 (the inn stops being one while its Innkeeper is out past the village's edge).
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,

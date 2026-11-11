@@ -529,7 +529,9 @@ public final class MoveSite {
 			BlockState there = level.getBlockState(at);
 			if (stays(there) && !stays(st)) {
 				// B1129: a Mover's Crate stands there (it stays where it stood, B1120; the fit check refuses such a spot, but a
-				// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up.
+				// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up;
+				// a block holding items (a chest, a barrel) is dropped there with them, so nothing packed is lost (B1172)
+				dropPacked(level, j, at, st);
 				where[j] = LOST;
 				skipped++;
 				continue;
@@ -558,6 +560,29 @@ public final class MoveSite {
 			}
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
+		}
+	}
+
+	/**
+	 * B1172: block {@code j} can't go up at {@code at} (a Mover's Crate stands there) and holds items: it and everything
+	 * packed in it are dropped on top of the crate, never deleted. A block with no items is left out as before (B1129).
+	 */
+	private void dropPacked(ServerLevel level, int j, BlockPos at, BlockState state) {
+		CompoundTag data = data(j);
+		if (data == null || !data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
+			return;
+		}
+		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>();
+		net.minecraft.world.item.Item block = state.getBlock().asItem();
+		if (block != net.minecraft.world.item.Items.AIR) {
+			drops.add(new net.minecraft.world.item.ItemStack(block));
+		}
+		net.minecraft.nbt.ListTag items = data.getList("Items", net.minecraft.nbt.Tag.TAG_COMPOUND);
+		for (int k = 0; k < items.size(); k++) {
+			net.minecraft.world.item.ItemStack.parse(level.registryAccess(), items.getCompound(k)).filter(s -> !s.isEmpty()).ifPresent(drops::add);
+		}
+		for (net.minecraft.world.item.ItemStack stack : drops) {
+			net.minecraft.world.Containers.dropItemStack(level, at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5, stack);
 		}
 	}
 

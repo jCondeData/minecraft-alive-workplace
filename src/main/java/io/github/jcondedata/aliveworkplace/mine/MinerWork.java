@@ -91,6 +91,8 @@ public class MinerWork extends Behavior<Villager> {
 		walker.reset();
 		digging = null;
 		crafting = 0;
+		upgrading = false;
+		smeltRun = false;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 	}
 
@@ -120,7 +122,9 @@ public class MinerWork extends Behavior<Villager> {
 		boolean fill = false;
 		boolean ladder = false;
 		ItemStack pick = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
-		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone(); budget--) {
+		// An ore passed before because the pickaxe was too weak, which this one can harvest (36.11a): that first.
+		BlockPos revisit = leftOre(level, site, pick);
+		for (int budget = SKIP_BUDGET; budget > 0 && !site.isDone() && revisit == null; budget--) {
 			BlockPos pos = site.current();
 			if (site.phase() != QuarrySite.Phase.PIT) {
 				ShaftJob job = shaftJob(level, site, pos, pick, bag);
@@ -128,7 +132,10 @@ public class MinerWork extends Behavior<Villager> {
 					site.advance(false, false);
 					continue;
 				}
-				if (job.kind() == Verdict.LEAVE) {
+				if (job.kind() == Verdict.LEAVE || job.kind() == Verdict.WEAK) {
+					if (job.kind() == Verdict.WEAK) {
+						site.leaveOre(pos);
+					}
 					if (site.phase() == QuarrySite.Phase.SHAFT) {
 						site.skipShaft();
 					} else {
@@ -147,9 +154,14 @@ public class MinerWork extends Behavior<Villager> {
 				fill = v == Verdict.FILL;
 				break;
 			}
-			site.advance(false, v == Verdict.LEAVE);
+			if (v == Verdict.WEAK) {
+				site.leaveOre(pos);
+			}
+			site.advance(false, v == Verdict.LEAVE || v == Verdict.WEAK);
 		}
-		if (site.isDone() && site.refills()) {
+		if (revisit != null) {
+			target = revisit;
+		} else if (site.isDone() && site.refills()) {
 			// A Quarry build's pit (36.12): never finished. Drop off the finds, then wait at the shed for a layer to grow back.
 			if (site.grownSincePass() >= QuarryBuilds.restartAfter(site)) {
 				site.restart();
@@ -159,7 +171,7 @@ public class MinerWork extends Behavior<Villager> {
 			}
 			return;
 		}
-		if (site.isDone()) {
+		if (revisit == null && site.isDone()) {
 			if (walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
 				Miners.finish(level, villager, site);
 			}
@@ -182,6 +194,10 @@ public class MinerWork extends Behavior<Villager> {
 			fetchFiller(level, villager, site, bench, bag);
 			return;
 		}
+		// A better pickaxe as soon as there's the iron (or diamonds) for one (36.11a).
+		if (isPickaxe(pick) && upgradePickaxe(level, villager, site, bench, bag, pick, gameTime)) {
+			return;
+		}
 
 		// 3. Room in the bag.
 		if (bag.freeSlots() < 2) {
@@ -198,7 +214,7 @@ public class MinerWork extends Behavior<Villager> {
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("[miner {}] at {} target={} pick={}",
 				villager.getId(), villager.position(), target.toShortString(), pick);
 		}
-		if (!approach(level, villager, site, target)) {
+		if (!approach(level, villager, site, target, revisit != null)) {
 			return;
 		}
 		villager.getBrain().eraseMemory(MemoryModuleType.WALK_TARGET);
@@ -208,13 +224,14 @@ public class MinerWork extends Behavior<Villager> {
 		} else if (fill) {
 			placeStep(level, villager, site, bag, target, site.phase() == QuarrySite.Phase.PIT);
 		} else {
-			dig(level, villager, site, bag, pick, target);
+			dig(level, villager, site, bag, pick, target, revisit != null);
 		}
 	}
 
 	// --- what to dig ---------------------------------------------------------------------------
 
-	private enum Verdict { DIG, EMPTY, LEAVE, KEEP, FILL, LADDER }
+	/** WEAK: LEAVE it, an ore the pickaxe in hand is too weak for (remembered for a better one, 36.11a). */
+	private enum Verdict { DIG, EMPTY, LEAVE, KEEP, FILL, LADDER, WEAK }
 
 	/** What to do for a step of the ladder shaft, and where (sealing it may mean filling in the block beside it). */
 	private record ShaftJob(Verdict kind, BlockPos pos) {
@@ -261,8 +278,11 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		float hardness = state.getDestroySpeed(level, pos);
 		if (hardness < 0 || MaterialRules.isProtected(state, hardness) || state.is(ModBlocks.BUILDERS_BENCH) || state.is(ModBlocks.MINERS_BENCH) || state.is(ModBlocks.BLUEPRINT_TABLE)
-			|| pos.equals(site.bench()) || isPickaxe(pick) && state.requiresCorrectToolForDrops() && !pick.isCorrectToolForDrops(state)) {
+			|| pos.equals(site.bench())) {
 			return new ShaftJob(Verdict.LEAVE, pos);
+		}
+		if (isPickaxe(pick) && state.requiresCorrectToolForDrops() && !pick.isCorrectToolForDrops(state)) {
+			return new ShaftJob(isOre(state) ? Verdict.WEAK : Verdict.LEAVE, pos);
 		}
 		return new ShaftJob(Verdict.DIG, pos);
 	}
@@ -308,7 +328,8 @@ public class MinerWork extends Behavior<Villager> {
 			return Verdict.LEAVE;
 		}
 		if (isPickaxe(pick) && state.requiresCorrectToolForDrops() && !pick.isCorrectToolForDrops(state)) {
-			return Verdict.LEAVE; // e.g. obsidian with an iron pickaxe
+			// e.g. obsidian with an iron pickaxe; an ore (diamond with a stone pickaxe) is remembered for a better one
+			return isOre(state) ? Verdict.WEAK : Verdict.LEAVE;
 		}
 		for (Direction d : Direction.values()) {
 			if (!level.getFluidState(pos.relative(d)).isEmpty()) {
@@ -316,6 +337,47 @@ public class MinerWork extends Behavior<Villager> {
 			}
 		}
 		return Verdict.DIG;
+	}
+
+	/** An ore block: the common {@code c:ores} tag, or vanilla's own ore tags (for a world without Fabric's tags filled). */
+	static boolean isOre(BlockState state) {
+		return state.is(ORES) || state.is(net.minecraft.tags.BlockTags.GOLD_ORES) || state.is(net.minecraft.tags.BlockTags.IRON_ORES)
+			|| state.is(net.minecraft.tags.BlockTags.DIAMOND_ORES) || state.is(net.minecraft.tags.BlockTags.REDSTONE_ORES)
+			|| state.is(net.minecraft.tags.BlockTags.LAPIS_ORES) || state.is(net.minecraft.tags.BlockTags.EMERALD_ORES)
+			|| state.is(net.minecraft.tags.BlockTags.COPPER_ORES) || state.is(net.minecraft.tags.BlockTags.COAL_ORES) || state.is(Blocks.ANCIENT_DEBRIS);
+	}
+
+	/**
+	 * The first ore left for a better pickaxe (36.11a) that {@code pick} can harvest now, or null. Ores that are gone,
+	 * or that can no longer be dug safely (water or lava came beside them, a protected spot), are forgotten; ones still
+	 * too hard wait for the next pickaxe. Nothing with the switch off, or in a chunk that isn't loaded.
+	 */
+	@Nullable
+	private static BlockPos leftOre(ServerLevel level, QuarrySite site, ItemStack pick) {
+		if (!PickaxeCrafting.ENABLED || !isPickaxe(pick) || site.leftOres().isEmpty()) {
+			return null;
+		}
+		List<BlockPos> forget = new java.util.ArrayList<>();
+		BlockPos found = null;
+		for (BlockPos pos : site.leftOres()) {
+			if (!level.isLoaded(pos)) {
+				continue;
+			}
+			BlockState state = level.getBlockState(pos);
+			float hardness = state.getDestroySpeed(level, pos);
+			boolean wet = false;
+			for (Direction d : Direction.values()) {
+				wet |= !level.getFluidState(pos.relative(d)).isEmpty();
+			}
+			if (!isOre(state) || hardness < 0 || MaterialRules.isProtected(state, hardness) || wet) {
+				forget.add(pos);
+			} else if (!state.requiresCorrectToolForDrops() || pick.isCorrectToolForDrops(state)) {
+				found = pos;
+				break;
+			}
+		}
+		forget.forEach(site::forgetOre);
+		return found;
 	}
 
 	/** A step with ground beside it outside the pit: a gap there would break the stairs. Steps above the ground aren't needed. */
@@ -434,7 +496,7 @@ public class MinerWork extends Behavior<Villager> {
 
 	// --- digging -------------------------------------------------------------------------------
 
-	private void dig(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, ItemStack pick, BlockPos target) {
+	private void dig(ServerLevel level, Villager villager, QuarrySite site, BuilderBag bag, ItemStack pick, BlockPos target, boolean leftOre) {
 		BlockState state = level.getBlockState(target);
 		if (!target.equals(digging)) {
 			digging = target;
@@ -469,7 +531,9 @@ public class MinerWork extends Behavior<Villager> {
 		}
 		io.github.jcondedata.aliveworkplace.hall.Guilds.hurt(villager, pick, 1, EquipmentSlot.MAINHAND); // the Miners' Guild: half (30.18)
 		boolean torch = state.is(Blocks.TORCH) || state.is(Blocks.WALL_TORCH);
-		if (site.awaitsLadder(target)) {
+		if (leftOre) {
+			site.dugLeftOre(target); // an ore passed before (36.11a): the cursor stays where it was
+		} else if (site.awaitsLadder(target)) {
 			site.countMined(); // the ladder goes in next, then the cursor moves on
 		} else if (!site.isStep(target)) {
 			site.advance(!torch, false);
@@ -517,13 +581,16 @@ public class MinerWork extends Behavior<Villager> {
 	// --- errands -------------------------------------------------------------------------------
 
 	private void fetchPickaxe(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag) {
+		upgrading = false;
+		smeltRun = false;
+		site.setUpgradeNeed(null);
 		List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
 		BlockPos chest = SupplyContainers.firstMatching(level, supplies, MinerWork::isPickaxe);
 		if (chest == null) {
 			// None in their chests: make one from what they mined (36.11).
 			PickaxeCrafting.Plan plan = PickaxeCrafting.plan(level, villager, bench, supplies, bag);
 			if (plan != null) {
-				craftPickaxe(level, villager, site, bench, supplies, bag);
+				craftPickaxe(level, villager, site, bench, supplies, bag, ItemStack.EMPTY);
 				return;
 			}
 		}
@@ -566,8 +633,88 @@ public class MinerWork extends Behavior<Villager> {
 	/** Ticks spent at the workstation making a pickaxe (not saved: after a restart they start it again, nothing taken yet). */
 	private int crafting;
 
-	/** Makes a pickaxe at the workstation from their own materials (36.11), then takes up digging again. */
-	private void craftPickaxe(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, List<BlockPos> supplies, BuilderBag bag) {
+	/** Making a better pickaxe than the one in hand (36.11a; not saved, like {@link #crafting}). */
+	private boolean upgrading;
+	/** Off to the chests by the furnace with raw iron, or for the ingots it made, towards an iron pickaxe (36.11a). */
+	private boolean smeltRun;
+	/** When the miner next looks whether they can make a better pickaxe (not saved: after a restart, at once). */
+	private long nextUpgradeLook;
+	/** Ticks between those looks. */
+	static final int UPGRADE_LOOK = 100;
+
+	/**
+	 * A better pickaxe as soon as there's the iron or diamonds for one (36.11a, B1202): every {@link #UPGRADE_LOOK} ticks
+	 * the miner looks whether they can make a pickaxe better than {@code pick}, and then makes it at the workstation, the
+	 * old one going back to the chests. Short of ingots for an iron one, the status line says what they lack, and raw
+	 * iron goes to the furnace by the workstation (and the ingots it made come out) on a trip to the chests. Returns
+	 * whether that took this tick.
+	 */
+	private boolean upgradePickaxe(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, BuilderBag bag, ItemStack pick, long gameTime) {
+		if (!PickaxeCrafting.ENABLED || PickaxeCrafting.rank(pick) >= PickaxeCrafting.Tier.DIAMOND.rank) {
+			upgrading = false;
+			smeltRun = false;
+			site.setUpgradeNeed(null);
+			return false;
+		}
+		if (!upgrading && !smeltRun) {
+			if (gameTime < nextUpgradeLook) {
+				return false;
+			}
+			nextUpgradeLook = gameTime + UPGRADE_LOOK;
+			List<BlockPos> supplies = SupplyContainers.find(level, bench, site.box());
+			if (PickaxeCrafting.upgrade(level, villager, bench, supplies, bag, pick) != null) {
+				upgrading = true;
+				crafting = 0;
+				site.setUpgradeNeed(null);
+			} else {
+				PickaxeCrafting.Upgrade need = PickaxeCrafting.upgradeMissing(level, villager, bench, supplies, bag, pick);
+				site.setUpgradeNeed(need);
+				smeltRun = need != null && need.item() == Items.IRON_INGOT && ironToSmelt(level, bench, supplies, bag)
+					&& PickaxeCrafting.hasSticks(level, supplies, PickaxeCrafting.store(level, bench, supplies), bag);
+			}
+		}
+		if (upgrading) {
+			craftPickaxe(level, villager, site, bench, SupplyContainers.find(level, bench, site.box()), bag, pick);
+			return true;
+		}
+		if (smeltRun) {
+			site.setStatus(QuarrySite.Status.DEPOSITING);
+			if (walkTo(level, villager, containerNear(level, bench), CONTAINER_REACH)) {
+				deposit(level, villager, site, bench, bag); // the raw iron goes in, the ingots come out
+				smeltRun = false;
+				nextUpgradeLook = gameTime; // the ingots may be enough now
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Whether a trip to the chests gets the ingots nearer: a furnace by the workstation, and raw iron in the bag, or in
+	 * the chests with a furnace free to take it, or ingots done in a furnace waiting to come out.
+	 */
+	private static boolean ironToSmelt(ServerLevel level, BlockPos bench, List<BlockPos> supplies, BuilderBag bag) {
+		List<BlockPos> furnaces = SupplyContainers.furnaces(level, bench);
+		if (furnaces.isEmpty()) {
+			return false;
+		}
+		boolean inBag = bag.stacks().stream().anyMatch(s -> !s.isEmpty() && PickaxeCrafting.isIronOre(s.getItem()));
+		boolean inChests = SupplyContainers.firstMatching(level, supplies, s -> PickaxeCrafting.isIronOre(s.getItem())) != null;
+		for (BlockPos pos : furnaces) {
+			if (level.getBlockEntity(pos) instanceof net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity furnace) {
+				if (furnace.getItem(2).is(Items.IRON_INGOT) || inChests && furnace.getItem(0).isEmpty()) {
+					return true;
+				}
+			}
+		}
+		return inBag;
+	}
+
+	/**
+	 * Makes a pickaxe at the workstation from their own materials (36.11), or one better than {@code old} in hand
+	 * (36.11a: the old one goes back to the chests), then takes up digging again.
+	 */
+	private void craftPickaxe(ServerLevel level, Villager villager, QuarrySite site, BlockPos bench, List<BlockPos> supplies, BuilderBag bag, ItemStack old) {
 		site.setStatus(QuarrySite.Status.CRAFTING_PICKAXE);
 		if (!walkTo(level, villager, bench, 3)) {
 			return;
@@ -581,11 +728,17 @@ public class MinerWork extends Behavior<Villager> {
 			return;
 		}
 		crafting = 0;
-		ItemStack pick = PickaxeCrafting.craft(level, villager, bench, supplies, bag);
+		upgrading = false;
+		ItemStack pick = PickaxeCrafting.craft(level, villager, bench, supplies, bag, old);
 		if (pick.isEmpty()) {
-			return; // the materials went meanwhile: next tick they look again
+			site.setStatus(QuarrySite.Status.WORKING);
+			return; // the materials went meanwhile: next tick (or next look) they look again
+		}
+		if (!old.isEmpty()) {
+			Miners.store(level, supplies, bench, old.copy()); // the old pickaxe back in the chests
 		}
 		villager.setItemSlot(EquipmentSlot.MAINHAND, pick);
+		site.setUpgradeNeed(null);
 		io.github.jcondedata.aliveworkplace.work.Requests.clear(villager);
 		level.playSound(null, bench, SoundEvents.SMITHING_TABLE_USE, SoundSource.BLOCKS, 0.8f, 1f);
 		site.setStatus(QuarrySite.Status.WORKING);
@@ -693,12 +846,14 @@ public class MinerWork extends Behavior<Villager> {
 	}
 
 	/** Walks to a spot the target can be dug from; hops down into the pit when there is no way to walk. */
-	private boolean approach(ServerLevel level, Villager villager, QuarrySite site, BlockPos target) {
+	private boolean approach(ServerLevel level, Villager villager, QuarrySite site, BlockPos target, boolean leftOre) {
 		if (walker.reach(level, villager, target, REACH)) {
 			return true;
 		}
 		if (walker.noSpot()) {
-			if (site.phase() == QuarrySite.Phase.SHAFT) {
+			if (leftOre) {
+				site.forgetOre(target); // an ore left before, with nowhere to dig it from now: it stays
+			} else if (site.phase() == QuarrySite.Phase.SHAFT) {
 				site.skipShaft(); // stuck in the shaft: make its own way down
 			} else {
 				site.advance(false, true); // nowhere to dig it from: leave it

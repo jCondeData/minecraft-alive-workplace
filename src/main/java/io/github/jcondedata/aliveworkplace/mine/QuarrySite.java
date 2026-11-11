@@ -65,6 +65,17 @@ public final class QuarrySite {
 	private int grownTotal;
 	private int grownSincePass;
 
+	/**
+	 * Ores left standing because the pickaxe was too weak for them (36.11a, B1202), in the order they were passed: dug
+	 * once the miner has a better pickaxe. Saved; empty in quarries saved before.
+	 */
+	private final java.util.LinkedHashSet<BlockPos> leftOres = new java.util.LinkedHashSet<>();
+	/** At most this many are remembered (the first ones passed). */
+	public static final int MAX_LEFT_ORES = 256;
+	/** What the miner lacks for an iron pickaxe, for the status line (36.11a); worked out again as they work, not saved. */
+	@Nullable
+	private PickaxeCrafting.Upgrade upgradeNeed;
+
 	private Status status = Status.WORKING;
 	private long lastNotified = Long.MIN_VALUE / 2;
 	private Runnable onChange = () -> {
@@ -481,6 +492,46 @@ public final class QuarrySite {
 		this.status = status;
 	}
 
+	// --- ores left for a better pickaxe (36.11a) ------------------------------------------------
+
+	/** An ore at {@code pos} was left standing: the pickaxe in hand couldn't harvest it. */
+	public void leaveOre(BlockPos pos) {
+		if (leftOres.size() < MAX_LEFT_ORES && leftOres.add(pos.immutable())) {
+			onChange.run();
+		}
+	}
+
+	/** The ores left for a better pickaxe, in the order they were passed. */
+	public java.util.Set<BlockPos> leftOres() {
+		return java.util.Collections.unmodifiableSet(leftOres);
+	}
+
+	/** The ore at {@code pos} is no longer waiting: gone, or can't be got at. It stays counted as left standing. */
+	public void forgetOre(BlockPos pos) {
+		if (leftOres.remove(pos)) {
+			onChange.run();
+		}
+	}
+
+	/** The ore at {@code pos}, left before, was dug after all: counted as dug instead of left standing. */
+	public void dugLeftOre(BlockPos pos) {
+		if (leftOres.remove(pos)) {
+			mined++;
+			skipped = Math.max(0, skipped - 1);
+			onChange.run();
+		}
+	}
+
+	/** What the miner lacks for an iron pickaxe, or null (see {@link PickaxeCrafting#upgradeMissing}). */
+	@Nullable
+	public PickaxeCrafting.Upgrade upgradeNeed() {
+		return upgradeNeed;
+	}
+
+	public void setUpgradeNeed(@Nullable PickaxeCrafting.Upgrade need) {
+		this.upgradeNeed = need;
+	}
+
 	public boolean shouldNotify(long gameTime, long interval) {
 		if (gameTime - lastNotified < interval) {
 			return false;
@@ -529,6 +580,9 @@ public final class QuarrySite {
 			tag.putInt("grown", grownTotal);
 			tag.putInt("grown_since_pass", grownSincePass);
 		}
+		if (!leftOres.isEmpty()) {
+			tag.putLongArray("left_ores", leftOres.stream().mapToLong(BlockPos::asLong).toArray()); // 36.11a
+		}
 		return tag;
 	}
 
@@ -558,6 +612,12 @@ public final class QuarrySite {
 		site.grownSincePass = Nbt.getInt(tag, "grown_since_pass");
 		// 36.22: absent in quarries saved before, and when the miner could dig the marker's whole depth
 		site.wantedBottom = Nbt.has(tag, "wanted_bottom", Tag.TAG_INT) ? Math.min(Nbt.getInt(tag, "wanted_bottom"), site.box.minY()) : site.box.minY();
+		// 36.11a: absent in quarries saved before, and when no ore was left for a better pickaxe
+		if (Nbt.has(tag, "left_ores", Tag.TAG_LONG_ARRAY)) {
+			for (long pos : Nbt.getLongArray(tag, "left_ores")) {
+				site.leftOres.add(BlockPos.of(pos));
+			}
+		}
 		return site;
 	}
 }

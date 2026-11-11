@@ -219,6 +219,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		INNER_NOT_SAVED.put("story.ArcState.endWith", "says so: set by an end_arc effect, not saved (it ends at once)");
 		INNER_NOT_SAVED.put("build.BuildSite.progressFromCursor", "says so: transient, worked out at load from a save without shown_progress (BuildSite#load)");
 		INNER_NOT_SAVED.put("mine.QuarrySite.status", "the miner's current step for the hall's page, set again as he works (MinerWork)");
+		INNER_NOT_SAVED.put("mine.QuarrySite.upgradeNeed", "what the miner lacks for an iron pickaxe, for the status line, looked up again as he works (MinerWork#upgradePickaxe, 36.11a)");
 		INNER_NOT_SAVED.put("mine.QuarrySite.fromOldVersion", "worked out at load: whether the save is from before stairs (QuarrySite#load)");
 		INNER_NOT_SAVED.put("build.BuildSite.onChange", "a callback the manager sets on the site it holds, not data");
 		INNER_NOT_SAVED.put("trainer.RaidHelpers$Hire.lastNear", "when the player was last by the den, refreshed every look while he is (RaidHelpers#tick)");

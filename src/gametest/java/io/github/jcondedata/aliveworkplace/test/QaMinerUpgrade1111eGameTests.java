@@ -50,6 +50,8 @@ public class QaMinerUpgrade1111eGameTests implements FabricGameTest {
 	/** A Novice miner holding {@code hand} at his bench, a stone quarry from {@link #MIN} to {@code max}, {@code chest} in his chest. */
 	private static Setup setup(GameTestHelper helper, BlockPos max, ItemStack hand, ItemStack... chest) {
 		Leftovers.clear(helper);
+		Leftovers.storehouses(helper); // B1207: a Storehouse or hall left nearby would be his village store
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
@@ -351,15 +353,15 @@ public class QaMinerUpgrade1111eGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch AREA '1200' '"qa_upgrade_1111e_store"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa_upgrade_1111e_store")
 	public void theVillageStoresIngotsMakeTheIronPickaxe(GameTestHelper helper) {
-		Leftovers.clear(helper);
-		Leftovers.storehouses(helper);
+		// setup() first: it clears every Storehouse left nearby (B1207), which would take this one too
+		Setup s = setup(helper, new BlockPos(10, 3, 10), new ItemStack(Items.STONE_PICKAXE), new ItemStack(Items.STICK, 2));
 		BlockPos storehouse = new BlockPos(2, 2, 12);
 		BlockPos storeChest = new BlockPos(3, 2, 12);
 		helper.setBlock(storehouse, ModBlocks.STOREHOUSE);
+		Leftovers.after(helper, () -> helper.setBlock(storehouse, Blocks.AIR)); // not a village store for later batches (B1207)
 		helper.setBlock(storeChest, Blocks.CHEST);
 		Container store = helper.getBlockEntity(storeChest);
 		store.setItem(0, new ItemStack(Items.IRON_INGOT, 3));
-		Setup s = setup(helper, new BlockPos(10, 3, 10), new ItemStack(Items.STONE_PICKAXE), new ItemStack(Items.STICK, 2));
 		helper.succeedWhen(() -> {
 			helper.assertTrue(s.miner().getMainHandItem().is(Items.IRON_PICKAXE), "no iron pickaxe from the store's ingots: " + state(helper, s) + " | " + status(s));
 			helper.assertTrue(store.countItem(Items.IRON_INGOT) == 0, "the store's ingots weren't used: " + store.countItem(Items.IRON_INGOT));

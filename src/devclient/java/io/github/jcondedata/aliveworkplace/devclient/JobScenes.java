@@ -5931,7 +5931,7 @@ final class JobScenes {
 							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40),
-				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
+				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString().startsWith("Step 2 of 3"),

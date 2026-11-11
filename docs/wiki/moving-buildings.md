@@ -20,8 +20,9 @@ Cottage"). A click on a building opens the picker:
 - left, the village map: the land drawn like a vanilla map round the Hall (its bell), roads in light tan, the land
   outside the village darker, every other building as a named brick box, where the building stands now in yellow
   ("Now") and the new spot in green when it fits or red when it's refused ("New spot"), its front edge in gold; a
-  legend and "North is up" under it. It starts zoomed in on the middle of the village when everything fits there; the
-  mouse wheel zooms out to the whole village and back. A click anywhere on the map puts the new spot's middle on that
+  legend and "North is up" under it. It starts fitted to what the village has (the Hall, its buildings, now and the new
+  spot) so the buildings read; the mouse wheel zooms out to the whole village and back. Names sit inside their box when
+  they fit, else beside it on a dark backing, never on another name, box or the Hall's bell ("Hall"). A click anywhere on the map puts the new spot's middle on that
   block; the mouse over it says what is there (a building's name, a road, water, the Hall, outside the village);
 - right: "Moving: Starter Cottage", where it is now and where it would go (both from the Hall), the reason in red
   when the spot is refused, labeled buttons (**Rotate (front faces north)**, **Confirm the move**, gray until it can be

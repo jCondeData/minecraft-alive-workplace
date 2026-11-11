@@ -200,6 +200,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	@Override
 	public int[] centre(int slot) {
 		if (moveMap()) {
+			if (slot == MovePage.GUIDE) { // the step's instruction: nothing there shows a tooltip
+				return new int[]{moveMapX + 4, moveMapY - 6};
+			}
 			if (slot == MovePage.CENTRE || slot == MovePage.VIEW) { // the pick's middle on the map (the map's, before it's drawn)
 				CompoundTag view = moveView();
 				int[] box = view == null ? new int[0] : view.getIntArray(view.getInt("fit") == 1 ? "old" : "spot");
@@ -341,7 +344,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	private byte[] moveColors;
 	private int moveMapX, moveMapY, moveMapS;
 	/** The map's window: its first pixel across and down, and pixels a side (64, zoomed in, or the whole 128). */
-	private int moveOrigin, moveWindow = MovePage.MAP;
+	private int moveOriginX, moveOriginZ, moveWindow = MovePage.MAP;
 	/** The zoom the player chose with the mouse wheel (0: picked by what has to show). */
 	private int moveZoom;
 
@@ -453,10 +456,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		List<Component> tip = null;
 		if (view != null && !view.isEmpty()) {
 			moveTexture(view);
-			moveWindow = moveZoom != 0 ? moveZoom : fitsHalf(view) ? MovePage.MAP / 2 : MovePage.MAP;
-			moveOrigin = (MovePage.MAP - moveWindow) / 2;
+			moveFit(view);
 			g.fill(x - 1, ly - 1, x + s + 1, ly + s + 1, TableStyle.PANEL_EDGE);
-			g.blit(MOVE_MAP, x, ly, s, s, moveOrigin, moveOrigin, moveWindow, moveWindow, MovePage.MAP, MovePage.MAP);
+			g.blit(MOVE_MAP, x, ly, s, s, moveOriginX, moveOriginZ, moveWindow, moveWindow, MovePage.MAP, MovePage.MAP);
 			g.enableScissor(x, ly, x + s, ly + s);
 			int[] others = view.getIntArray("others");
 			List<Component> names = loreOf(menu.slots.get(MovePage.VIEW).getItem());
@@ -485,22 +487,37 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			}
 			// the Hall's bell, at three quarters' size
 			int[] hall = moveRect(view, view.getInt("hallX"), view.getInt("hallZ"), view.getInt("hallX"), view.getInt("hallZ"));
+			int bx = (hall[0] + hall[2]) / 2 - 6;
+			int by = (hall[1] + hall[3]) / 2 - 6;
 			g.pose().pushPose();
-			g.pose().translate((hall[0] + hall[2]) / 2f - 6, (hall[1] + hall[3]) / 2f - 6, 0);
+			g.pose().translate(bx, by, 0);
 			g.pose().scale(0.75f, 0.75f, 1f);
 			g.renderItem(new ItemStack(net.minecraft.world.item.Items.BELL), 0, 0);
 			g.pose().popPose();
-			// names: the other buildings small, Now and New spot over their boxes
-			for (int i = 0; i + 3 < others.length && i / 4 < names.size(); i += 4) {
-				int[] r = moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]);
-				smallLabel(g, names.get(i / 4).getString(), (r[0] + r[2]) / 2, r[1] - 6, 0xFFFFFFFF);
+			// the names, each where it covers no other name, box or the bell: inside its box if it fits, else above, else below
+			List<int[]> taken = new ArrayList<>();
+			int[] bell = {bx, by, bx + 12, by + 12};
+			taken.add(bell);
+			List<int[]> boxes = new ArrayList<>();
+			for (int i = 0; i + 3 < others.length; i += 4) {
+				boxes.add(moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]));
 			}
-			if (oldR != null) { // under its box, so it never sits on the new spot's label above
-				smallLabel(g, Component.translatable("screen.aliveworkplace.move.legend.now").getString(), (oldR[0] + oldR[2]) / 2, oldR[3] + 1, MOVE_NOW);
+			if (oldR != null) {
+				boxes.add(oldR);
 			}
 			if (spotR != null) {
-				smallLabel(g, Component.translatable("screen.aliveworkplace.move.legend.new").getString(), (spotR[0] + spotR[2]) / 2, spotR[1] - 6,
-					fit == 0 ? MOVE_FITS : MOVE_REFUSED);
+				boxes.add(spotR);
+			}
+			taken.addAll(boxes);
+			mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.hall").getString(), bell, false, 0xFFFFFFFF, taken);
+			if (spotR != null) {
+				mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.new").getString(), spotR, true, fit == 0 ? MOVE_FITS : MOVE_REFUSED, taken);
+			}
+			if (oldR != null) {
+				mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.now").getString(), oldR, true, MOVE_NOW, taken);
+			}
+			for (int i = 0; i + 3 < others.length && i / 4 < names.size(); i += 4) {
+				mapLabel(g, names.get(i / 4).getString(), boxes.get(i / 4), true, 0xFFFFFFFF, taken);
 			}
 			g.disableScissor();
 			moveHits.add(new int[]{-1, x, ly, s, s});
@@ -570,13 +587,23 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		}
 	}
 
-	/** Whether the Hall, where it stands now, the new spot and every building fit the middle half of the map (it zooms in). */
-	private static boolean fitsHalf(CompoundTag view) {
+	/**
+	 * The map's window: by default fitted and centred on what the village has (the Hall, every building, where it stands
+	 * now and the new spot) with a margin, so the buildings are big enough to read; the whole map when zoomed out.
+	 */
+	private void moveFit(CompoundTag view) {
+		if (moveZoom == MovePage.MAP) {
+			moveWindow = MovePage.MAP;
+			moveOriginX = 0;
+			moveOriginZ = 0;
+			return;
+		}
 		int step = Math.max(1, view.getInt("step"));
-		int lo = view.getInt("ox") + MovePage.MAP / 4 * step + 2 * step;
-		int hi = view.getInt("ox") + MovePage.MAP * 3 / 4 * step - 2 * step;
-		int loZ = view.getInt("oz") + MovePage.MAP / 4 * step + 2 * step;
-		int hiZ = view.getInt("oz") + MovePage.MAP * 3 / 4 * step - 2 * step;
+		int ox = view.getInt("ox");
+		int oz = view.getInt("oz");
+		int hx = (view.getInt("hallX") - ox) / step;
+		int hz = (view.getInt("hallZ") - oz) / step;
+		int[] b = {hx - 3, hz - 3, hx + 3, hz + 3};
 		java.util.List<int[]> boxes = new ArrayList<>();
 		boxes.add(view.getIntArray("old"));
 		if (view.getInt("fit") != 1) {
@@ -586,20 +613,27 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		for (int i = 0; i + 3 < others.length; i += 4) {
 			boxes.add(new int[]{others[i], others[i + 1], others[i + 2], others[i + 3]});
 		}
-		for (int[] b : boxes) {
-			if (b.length == 4 && (b[0] < lo || b[2] > hi || b[1] < loZ || b[3] > hiZ)) {
-				return false;
+		for (int[] box : boxes) {
+			if (box.length == 4) {
+				b[0] = Math.min(b[0], Math.floorDiv(box[0] - ox, step));
+				b[1] = Math.min(b[1], Math.floorDiv(box[1] - oz, step));
+				b[2] = Math.max(b[2], Math.floorDiv(box[2] - ox, step) + 1);
+				b[3] = Math.max(b[3], Math.floorDiv(box[3] - oz, step) + 1);
 			}
 		}
-		return true;
+		int extent = Math.max(b[2] - b[0], b[3] - b[1]);
+		int window = Math.max(24, Math.min(MovePage.MAP, extent + Math.max(8, extent / 4) * 2));
+		moveWindow = window;
+		moveOriginX = Math.max(0, Math.min(MovePage.MAP - window, (b[0] + b[2]) / 2 - window / 2));
+		moveOriginZ = Math.max(0, Math.min(MovePage.MAP - window, (b[1] + b[3]) / 2 - window / 2));
 	}
 
 	/** Blocks (inclusive corners) to a rectangle on the map: [x0, y0, x1, y1], at least 2 pixels a side. */
 	private int[] moveRect(CompoundTag view, int minX, int minZ, int maxX, int maxZ) {
 		int step = Math.max(1, view.getInt("step"));
 		double scale = moveMapS / (double) (moveWindow * step);
-		int ox = view.getInt("ox") + moveOrigin * step;
-		int oz = view.getInt("oz") + moveOrigin * step;
+		int ox = view.getInt("ox") + moveOriginX * step;
+		int oz = view.getInt("oz") + moveOriginZ * step;
 		int x0 = moveMapX + (int) Math.floor((minX - ox) * scale);
 		int y0 = moveMapY + (int) Math.floor((minZ - oz) * scale);
 		int x1 = moveMapX + (int) Math.ceil((maxX + 1 - ox) * scale);
@@ -614,13 +648,44 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		}
 	}
 
-	/** A label at two thirds' size, centred on {@code cx}, with a shadow so it reads on any land. */
-	private void smallLabel(GuiGraphics g, String text, int cx, int top, int color) {
+	/**
+	 * A name on the map at two thirds' size on a dark backing: inside {@code box} if it fits there (and {@code inside} allows),
+	 * else above it, else below, else beside it, wherever it covers nothing in {@code taken}; then it is taken too.
+	 */
+	private void mapLabel(GuiGraphics g, String text, int[] box, boolean inside, int color, List<int[]> taken) {
+		int w = (int) Math.ceil(font.width(text) * 0.67f) + 2;
+		int h = 7;
+		int cx = (box[0] + box[2]) / 2 - w / 2;
+		List<int[]> tries = new ArrayList<>();
+		if (inside && box[2] - box[0] >= w + 2 && box[3] - box[1] >= h + 2) {
+			tries.add(new int[]{cx, (box[1] + box[3]) / 2 - h / 2, 1});
+		}
+		tries.add(new int[]{cx, box[1] - h - 1, 0});
+		tries.add(new int[]{cx, box[3] + 1, 0});
+		tries.add(new int[]{box[2] + 1, (box[1] + box[3]) / 2 - h / 2, 0});
+		tries.add(new int[]{box[0] - w - 1, (box[1] + box[3]) / 2 - h / 2, 0});
+		int[] at = tries.get(0);
+		for (int[] t : tries) {
+			int[] r = {t[0], t[1], t[0] + w, t[1] + h};
+			boolean clear = r[0] >= moveMapX && r[1] >= moveMapY && r[2] <= moveMapX + moveMapS && r[3] <= moveMapY + moveMapS;
+			for (int[] o : taken) {
+				boolean own = o == box && t[2] == 1;
+				if (clear && !own && r[0] < o[2] && r[2] > o[0] && r[1] < o[3] && r[3] > o[1]) {
+					clear = false;
+				}
+			}
+			if (clear) {
+				at = t;
+				break;
+			}
+		}
+		g.fill(at[0], at[1], at[0] + w, at[1] + h, 0xB0000000);
 		g.pose().pushPose();
-		g.pose().translate(cx, top, 200);
+		g.pose().translate(at[0] + 1, at[1] + 1, 200);
 		g.pose().scale(0.67f, 0.67f, 1f);
-		g.drawString(font, text, -font.width(text) / 2, 0, color, true);
+		g.drawString(font, text, 0, 0, color, false);
 		g.pose().popPose();
+		taken.add(new int[]{at[0], at[1], at[0] + w, at[1] + h});
 	}
 
 	private int wrapped(GuiGraphics g, Component text, int x, int y, int w, int color) {
@@ -686,8 +751,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	/** The block under the mouse on the map: [x, z, pixel x, pixel z]. */
 	private int[] moveBlockAt(CompoundTag view, double mouseX, double mouseY) {
-		int px = Math.max(0, Math.min(MovePage.MAP - 1, moveOrigin + (int) ((mouseX - moveMapX) * moveWindow / moveMapS)));
-		int pz = Math.max(0, Math.min(MovePage.MAP - 1, moveOrigin + (int) ((mouseY - moveMapY) * moveWindow / moveMapS)));
+		int px = Math.max(0, Math.min(MovePage.MAP - 1, moveOriginX + (int) ((mouseX - moveMapX) * moveWindow / moveMapS)));
+		int pz = Math.max(0, Math.min(MovePage.MAP - 1, moveOriginZ + (int) ((mouseY - moveMapY) * moveWindow / moveMapS)));
 		int step = Math.max(1, view.getInt("step"));
 		return new int[]{view.getInt("ox") + px * step + step / 2, view.getInt("oz") + pz * step + step / 2, px, pz};
 	}
@@ -718,8 +783,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		}
 		int step = Math.max(1, view.getInt("step"));
 		double scale = moveMapS / (double) (moveWindow * step);
-		return new int[]{moveMapX + (int) ((x - view.getInt("ox") - moveOrigin * step + 0.5) * scale),
-			moveMapY + (int) ((z - view.getInt("oz") - moveOrigin * step + 0.5) * scale)};
+		return new int[]{moveMapX + (int) ((x - view.getInt("ox") - moveOriginX * step + 0.5) * scale),
+			moveMapY + (int) ((z - view.getInt("oz") - moveOriginZ * step + 0.5) * scale)};
 	}
 
 	/** The People section's other buttons (the figures, the recall bell, the page tabs): a strip over the table. */
@@ -1256,7 +1321,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	protected boolean bodyScrolled(double mx, double my, double scrollY) {
 		if (moveMap()) {
 			if (mx >= moveMapX && mx < moveMapX + moveMapS && my >= moveMapY && my < moveMapY + moveMapS) {
-				moveZoom = scrollY > 0 ? MovePage.MAP / 2 : MovePage.MAP; // the wheel zooms the map in and out
+				moveZoom = scrollY > 0 ? 0 : MovePage.MAP; // the wheel zooms out to the whole map, and back in to the village
 			}
 			return true;
 		}

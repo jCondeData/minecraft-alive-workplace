@@ -185,6 +185,7 @@ public final class MovePage {
 	/** The list: a Move button per finished building of the village; with more than fit, the last slot says how many more. */
 	static void fill(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer viewer) {
 		stop(viewer);
+		menu.setState(HallSections.SECTION, HallSections.Section.BUILDINGS.ordinal()); // the sidebar shows the page's section
 		List<BuildSiteManager.Finished> buildings = BuildSiteManager.get(level).finishedInVillage(level, hall);
 		if (buildings.isEmpty()) {
 			menu.button(VillageHallScreen.FIRST_ROW + 4, marked(VillageHallScreen.icon(Items.PAPER, Component.translatable("screen.aliveworkplace.move.none"),
@@ -259,6 +260,7 @@ public final class MovePage {
 		Direction front = p.plan().front(p.rotation());
 		BlueprintOutline.glowMove(player, fit.box(), front, fit.fits(), GHOST_TICKS);
 		menu.clearButtons();
+		menu.setState(HallSections.SECTION, HallSections.Section.BUILDINGS.ordinal());
 		menu.button(BACK, VillageHallScreen.icon(Items.ARROW, Component.translatable("screen.aliveworkplace.move.back"), ChatFormatting.WHITE),
 			pl -> cancel(menu, level, hall, pl));
 		Component name = Blueprints.displayName(p.structure());

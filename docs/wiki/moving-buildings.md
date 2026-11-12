@@ -369,6 +369,14 @@ putting on one to its north, moved a quarter turn, still aims at both depots.
 filtered to an iron pickaxe and holding one, and a Placard showing a diamond on the floor and one hung on the inside of
 a wall, each moved a quarter turn: the hand, the filter and the placard's item arrive once, the hung placard on its
 turned wall, nothing dropped while the house comes down or loose after.
+`QaCreateMoverLinks1111eCompatTests` (1, compat suite, the QA lane): a Redstone Link powered by a redstone block beside
+it keeps its two frequency items through the move, sends nothing while packed, and at the new spot breaking and putting
+back its redstone block turns its receiver off and on (no transmitter left at the old spot). Right after the move, before
+anything next to it changes, it stays dark: B1216 (its failing test is on the tests/create-mover-link-1111e branch).
+`QaMoverHomecomingSaves1111eGameTests` (4, the QA lane): a resident unloaded when his bed goes up is still waited for
+after a restart, his bed held half the wait later, and loaded back he sleeps in it; one who never comes back has the bed
+let go five days on, also after a restart, and another restart doesn't hold it again; a restart mid-move with him
+unloaded still gives him the moved bed; a bed given at the Hall after a restart mid-move is kept (B1194).
 
 `QaBuildingSnapshot1109bGameTests` (4, the QA lane): a 7 × 9 room written to disk and read back, then rebuilt unturned
 and turned 90, 180 and 270 degrees, matches exactly, block for block: a double chest (still one, 54 slots), a named

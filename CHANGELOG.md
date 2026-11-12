@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.155.0 — 2026-11-11
+
 ### Changed
 
 - Miners get an iron pickaxe as soon as they have the iron for one, at any level and not only when theirs breaks: with three iron ingots (or three diamonds for a diamond pickaxe) and two sticks in their chests or the village store, they make it at their blast furnace and put the old one back in the chest. The raw iron they dig gets smelted on its own (their blast furnace with coal in the chests, or an Armorer), the line over their head says what they still need ("needs 2 Iron Ingots for an Iron Pickaxe"), and the gold, diamond and redstone ore they had to leave because their pickaxe was too weak are remembered and dug once they have the better one. Before, only a Journeyman made iron, and only when the old pickaxe was gone.

@@ -339,8 +339,9 @@ fi
 # Season mode (30.22): a City of 35 villagers in harvest season with farms, a kitchen and a store, a Cradle, a Harvest
 # Idol, a founded guild and a rush a day; SEASON_DAYS (4) in-game days under four edicts, then as many with all four
 # reformed, at full speed (/tick sprint). SEASON_PART=edicts or reformed runs one half on its own. Passes only when the
-# result says the costs show (both halves) and nothing ran away, and our code took under 15% of the tick every day
-# (25.2's target, from a profile of the whole run: tools/packtest/perf.py --days).
+# result says the costs show (both halves) and nothing ran away, our code took under 15% of the tick every day after the
+# village's first (25.2's target, from a profile of the whole run: tools/packtest/perf.py --days; the first day doesn't
+# count, owner 2026-10-13) and no tick of any day had over 50 ms of our code.
 if [ "${SEASON:-false}" = "true" ]; then
   SEASON_DAYS="${SEASON_DAYS:-4}"
   SEASON_PART="${SEASON_PART:-both}"
@@ -373,18 +374,25 @@ if line is None:
 ok = "DON'T SHOW" not in line and "ran away: nothing" in line
 profile = open(sys.argv[2]).read() if os.path.exists(sys.argv[2]) else ""
 shares = [float(x) for x in re.findall(r"our share of the tick, day \d+ \(\w+\): ([\d.]+)%", profile)]
+# A village's first day doesn't count against the 15% target (owner, 2026-10-13, ROADMAP 30.22; B455): the run starts on
+# a server that has just booted, so day 1 is our code's first use (run before it is compiled, while the rest of the
+# server is warm). It is still printed, and its ticks over 50 ms still count.
+first, shares = shares[:1], shares[1:]
 ours_over = re.search(r"ticks with over 50 ms of our code: (\d+)", profile)
 if ours_over and int(ours_over.group(1)) > 0:
     print(f"{ours_over.group(1)} tick(s) had over 50 ms of our code (25.2: none).")
     ok = False
-if not shares:
+if not first:
     print("No profile: our share of the tick wasn't measured.")
     ok = False
+elif not shares:
+    print(f"Only a first day was measured ({first[0]:.1f}% of the tick, not judged: 30.22): nothing to hold against the 15% target.")
 elif max(shares) >= 15:
-    print(f"Our code took {max(shares):.1f}% of the tick on its worst day: over the 15% target (25.2).")
+    print(f"Our code took {max(shares):.1f}% of the tick on its worst day after the first: over the 15% target (25.2).")
     ok = False
 else:
-    print(f"Our share of the tick: {max(shares):.1f}% on the worst day (target: under 15%).")
+    print(f"Our share of the tick: {max(shares):.1f}% on the worst day after the first (target: under 15%); "
+          f"the first day, not judged: {first[0]:.1f}%.")
 print("Season passed." if ok else "The season run did not pass.")
 sys.exit(0 if ok else 1)
 EOF

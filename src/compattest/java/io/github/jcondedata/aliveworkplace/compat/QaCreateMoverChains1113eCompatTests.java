@@ -39,8 +39,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * earlier Mover class put in a house.
  * A Sequenced Gearshift with its instruction list set and a Rotation Speed Controller set to 64 RPM: both keep their
  * settings through a quarter-turned move. The Mover works one swing a tick here ({@link #paced}), as he does in a
- * world (one swing every few ticks), so the blocks' own ticks run between swings. A Display Link aimed at a Nixie Tube still aims at it. Two Chain Conveyors joined by
- * a chain are in QaCreateMoverChains1113eBugCompatTests (on tests/create-mover-chains-1113e: the chain is lost).
+ * world (one swing every few ticks), so the blocks' own ticks run between swings. A Display Link aimed at a Nixie Tube still aims at it.
+ * Two Chain Conveyors joined by a chain, an eight-block Item Vault and an eight-block Fluid Tank are in
+ * QaCreateMoverChains1113eBugCompatTests (on tests/create-mover-chains-1113e: the chain is lost, the vault and the tank
+ * come back split, the tank short of water).
  */
 public class QaCreateMoverChains1113eCompatTests implements FabricGameTest {
 	static final String AREA = QaCreateMoverContents1110eCompatTests.AREA;

@@ -139,7 +139,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `SEASON=true` is the season under the edicts (30.22): `/workplace season` lays out a City of 35 with farms, a kitchen
   and a store and sprints 4 days under four edicts and 4 reformed (`SEASON_PART=edicts|reformed` for one half,
   `SEASON_DAYS=n`); a `Season day` line a day, a `Season result:` line, and `perf.py season.jfr --days server.log` adds
-  our share of each day's tick and whose code each tick over 50 ms was in. About 8 minutes.
+  our share of each day's tick and whose code each tick over 50 ms was in. About 8 minutes. The 15% target is held
+  against every day after the first (owner, 2026-10-13; day 1 is printed), the 50 ms one against every day.
   `tools/packtest/rehearsal.sh` is the update rehearsal (34.23): it builds the last release's jar (`OLD=0.142.0`) from a
   worktree of its tag with `command/Rehearsal.java` copied in (the published jar can't seed), seeds three villages with
   `/workplace rehearsal seed` (`REHEARSAL=old`), runs a day, reports and saves; then opens the world with this jar and

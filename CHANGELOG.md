@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.155.0 — 2026-11-11
+
 ### Changed
 
 - Miners get an iron pickaxe as soon as they have the iron for one, at any level and not only when theirs breaks: with three iron ingots (or three diamonds for a diamond pickaxe) and two sticks in their chests or the village store, they make it at their blast furnace and put the old one back in the chest. The raw iron they dig gets smelted on its own (their blast furnace with coal in the chests, or an Armorer), the line over their head says what they still need ("needs 2 Iron Ingots for an Iron Pickaxe"), and the gold, diamond and redstone ore they had to leave because their pickaxe was too weak are remembered and dug once they have the better one. Before, only a Journeyman made iron, and only when the old pickaxe was gone.
@@ -23,6 +25,7 @@ asks for the steps, `latest.log` and any crash report).
 - The Village Hall's Move page walks you through it: three steps across the top (pick a building, pick a new spot, confirm), a map of the whole village with the building where it stands now and where it would go, the Hall, the roads and the other buildings named, labeled Rotate, Confirm and Cancel buttons, and what the Mover will do and about how long (B1163, 45.2a).
 ### Fixed
 
+- Less lag from far-away villages: a village hall in a part of the world nobody is near is no longer loaded every two seconds to check its quests and requests. Its quests are kept as they are, and quests saved before 1.5 move into the quest journal once someone comes near it again (B1212).
 - An inn built with the Shop Counter stays the village's inn while its Innkeeper is away from it (asleep in a bed past the village's edge, out on a walk, or in a part of the world nobody is near): a Legend who visits the inn can still come there, the Seer still foretells one, and the residents of a building on the move still stay at the inn instead of by the Village Hall. The inn's counter stops counting when its Innkeeper takes another job or dies.
 - A resident of a building on the move keeps the bed or job you give him at the Village Hall's People page meanwhile: the Mover no longer moves him back into the moved bed (letting go of the one you picked) or gives a worker you let go his old workstation back. And a resident who dies while his house is away (or isn't back within five days) no longer holds the moved bed or workstation for good: it's free for someone else.
 - A building whose move you confirmed is no longer taken down under builders who started repairing or upgrading it afterward: the move now waits, kept through a restart, its row on the Village Hall's Move page says "Waiting: builders are working on it; the Mover starts once they're done", and the Mover moves it once they finish (B1182).

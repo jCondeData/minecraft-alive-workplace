@@ -117,9 +117,13 @@ public final class Stories {
 		return List.copyOf(Data.get(level).halls.keySet());
 	}
 
-	/** Every open quest of the village round {@code hall} (old ones moved in first). */
+	/**
+	 * Every open quest of the village round {@code hall} (old ones moved in first). B1212: a hall whose chunk isn't loaded
+	 * is never loaded for this (it ran every 2 seconds for every hall); its saved quests are listed as they are, and its
+	 * pre-1.5 ones move in on the first call after it loads.
+	 */
 	public static List<Quest> open(ServerLevel level, BlockPos hall) {
-		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+		if (level.isLoaded(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			migrate(level, hall, entity);
 		}
 		Entry e = Data.get(level).halls.get(hall);

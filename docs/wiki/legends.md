@@ -323,6 +323,9 @@ Bugs B1203, B1205: `QaInnShopCounter1111cBugTests`, `QaInnKeeperAway1111dBugTest
 edge (asleep, on a walk) still keeps his Shop Counter the inn (the counters Innkeepers work are remembered,
 `InnCounters`, until another trade works them or the Innkeeper is gone for good). `QaInnCounters1111dGameTests`: an inn
 10.05 blocks from the Hall is the inn of a village of radius 11 and not of one of radius 10.
+`QaMoveInnVerify1111cGameTests` (QA lane): an Innkeeper in an unloaded chunk keeps his Shop Counter the inn through a
+save and reload; one given No job or killed while out past the edge leaves no inn; the edge (11 yes, 10 no) holds with
+him away too.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

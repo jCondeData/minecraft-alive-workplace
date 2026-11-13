@@ -66,11 +66,25 @@ error or warning from our mod, 136 blueprints, the Repurposed Structures birch v
 
 `SEASON=true tools/packtest/run.sh`: a City of 35 villagers (16 with jobs) on the pack server, 8 in-game days at full
 speed, profiled for the whole run (`perf.py season.jfr --days server.log`). The run fails when our share of the server
-thread is 15% or more on any day, or any tick over 50 ms had over 50 ms of our code (its length times our share of its
-profile samples). The daily numbers are in `docs/design/M30.md`.
+thread is 15% or more on any day after the village's first, or any tick of any day had over 50 ms of our code (its
+length times our share of its profile samples). The daily numbers are in `docs/design/M30.md`.
+
+**The first day is printed, not judged** (owner, 2026-10-13: a village's first day doesn't count against the 15%
+target; in `run.sh`'s check since B455, 2026-11-11). The run starts on a server that has just booted, so day 1 is the
+Java runtime compiling the villagers' code, ours and vanilla's, while it runs. Measured on 2026-11-11 (B455, this
+2-CPU dev container): in day 1's 41 seconds the runtime compiled 11,246 methods and its compiler threads took 48 to
+66% of a CPU, leaving the server thread 41 to 74% of one; in the seven days after it compiled 3,307 and the server
+thread had 93% or more. Day 1 did less work than any later day (179 crops harvested against 199 to 235) and took 37
+seconds against 26 to 31; early in day 1's work hours 13 of 145 samples (3 seconds) had our code on top in code not yet
+optimized (run by the interpreter, or compiled on its own rather than inlined into its caller), against 2 to 6 of
+about 190 on day 2. No setup step stands out in day 1's profile: the same lookups are slower across the board (the
+kept storage scan's map lookup 0.48% of the tick on day 1, 0.01% later). The second run of the day showed the same
+(11,194 methods compiled by the end of day 1, 3,952 after).
 
 | Date | Run | Sprint | Our share, day 1 | Our share, days 2 to 8 | Ticks over 50 ms | Of them ours |
 |---|---|---|---|---|---|---|
+| 2026-11-11 22:03Z | B455, the same jar again (0.154.0 at 19588c369, this dev container; the first run judged without day 1's share) | 787 ticks a second (1.27 ms a tick) | 16.7% (not judged) | 13.3% to 14.6% | 7 of 192,000 | 2, both on day 1: half the samples (2 of 4) of the first world save, a 258 ms tick, in `RealmData.save` building its record codecs for the first time (`RealmData$Order.<clinit>`, `RealmData$Invite.<clinit>`), and a 75 ms tick with two samples (`Requests.clear`, `SicknessStory`'s tick) |
+| 2026-11-11 21:33Z | B455 (jar 0.154.0 at 19588c369) | 797 ticks a second (1.25 ms a tick) | 16.1% | 11.8% to 13.3% | 7 of 192,000 | 0 |
 | 2026-10-13 | B103 after (`SEASON_PART=edicts SEASON_DAYS=1`; nearest hall once a tick, the growing-up warm-up) | 479 ticks a second (2.09 ms a tick) | **14.7%** | not run | 5 | 1: 51 ms (2 of 2 samples, both the harness's pace of every villager at once, `SeasonSoak.everyone` > `Moods.of` > `Homes.building`) |
 | 2026-10-13 | B103 midway (same one day; nearest hall once a tick, no fastutil warm-up yet) | 527 ticks a second (1.90 ms a tick) | **17.7%** | not run | 5 | 2: 69 ms (cold `FieldWork` code and a vanilla packet class loaded by a swing) and 53 ms (`Cradles.round`, Lithium loading fastutil's double collections as a child grows up) |
 | 2026-10-11 | B103 before (lane-c-1011-1833, main, the same one day) | not recorded | **16.7%** | not run | not recorded | 4: 254 ms `Cradles.round` (the same fastutil load), 127 ms, 84 and 76 ms (the harness's `VillageHalls.nearest` and `Pace.of`) |

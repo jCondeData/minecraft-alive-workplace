@@ -373,6 +373,12 @@ turned wall, nothing dropped while the house comes down or loose after.
 it keeps its two frequency items through the move, sends nothing while packed, and at the new spot breaking and putting
 back its redstone block turns its receiver off and on (no transmitter left at the old spot). Right after the move, before
 anything next to it changes, it stays dark: B1216 (its failing test is on the tests/create-mover-link-1111e branch).
+`QaCreateMoverChains1113eCompatTests` (2, compat suite, the QA lane), with the Mover working one swing a tick as in a
+world: a Sequenced Gearshift keeps its instruction list and a Rotation Speed Controller its 64 RPM, and a Display Link
+put up before its Nixie Tube still aims at the tube, each moved a quarter turn with nothing loose. Two Chain Conveyors
+joined by a chain come back unjoined and the chain is gone: B1218. Moved the same way, an eight-block Item Vault and an
+eight-block Fluid Tank come back with their last block a store of its own, the tank short of 16 of its 40 buckets:
+B1219 (both failing tests are on the tests/create-mover-chains-1113e branch).
 `QaMoverHomecomingSaves1111eGameTests` (4, the QA lane): a resident unloaded when his bed goes up is still waited for
 after a restart, his bed held half the wait later, and loaded back he sleeps in it; one who never comes back has the bed
 let go five days on, also after a restart, and another restart doesn't hold it again; a restart mid-move with him

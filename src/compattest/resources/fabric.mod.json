@@ -188,6 +188,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverBelts1110fCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverMachines1110fCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverHeld1111eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverChains1113eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverLinks1111eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicLimitsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPlayersTrainCompatTests",

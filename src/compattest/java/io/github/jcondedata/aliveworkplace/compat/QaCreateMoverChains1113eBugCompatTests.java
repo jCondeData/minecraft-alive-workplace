@@ -39,6 +39,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * with every swing in one tick (no conveyor tick between them) the chain survives, so a conveyor's own tick drops its
  * link while its partner is packed or not yet put back up (Create's removeInvalidConnections, run on a conveyor's
  * first tick and whenever it is told to check).
+ * <p>
+ * The same pacing with Create's multi-block stores (B1219): an eight-block Item Vault (48 emeralds) and an eight-block
+ * Fluid Tank (40 buckets) come back with their last block a vault or tank of its own, empty, and the tank holds 24
+ * buckets: 16 are gone. Paced only while coming down, both arrive whole; paced only while going up, both split.
  */
 public class QaCreateMoverChains1113eBugCompatTests implements FabricGameTest {
 	static final String AREA = QaCreateMoverContents1110eCompatTests.AREA;
@@ -95,4 +99,74 @@ public class QaCreateMoverChains1113eBugCompatTests implements FabricGameTest {
 		});
 	}
 
+
+	/**
+	 * The eight-block Item Vault (2 x 2 x 2) of QaCreateMoverVaults1110e3CompatTests holding 48 emeralds, moved a quarter
+	 * turn one swing a tick (that class moves it all in one tick): Create re-forms what is left of the vault on its ticks
+	 * while it comes down block by block and what stands of it while it goes up; at the end it is one vault reading the 48
+	 * once through every block, none loose.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"qa_e1113_bug_vault8_paced"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "qa_e1113_bug_vault8_paced")
+	public void anEightBlockVaultMovedSwingBySwingIsStillOneVaultWithItsItems(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		QaCreateMoverVaults1110e3CompatTests.placeCube(level, helper);
+		helper.runAfterDelay(10, () -> {
+			QaCreateMoverVaults1110e3CompatTests.fillCube(level, helper);
+			Setup s = setupAround(helper, "vault8_paced");
+			helper.runAfterDelay(2, () -> QaCreateMoverChains1113eCompatTests.paced(helper, s, x -> x.stage() == MoveSite.Stage.FOUNDATION, down -> {
+				Map<String, Integer> afterDown = loose(helper);
+				QaCreateMoverChains1113eCompatTests.paced(helper, s, x -> false, site -> {
+					MoveSite.Stage end = site.stage();
+					int skipped = site.skipped();
+					helper.runAfterDelay(20, () -> {
+						Map<String, Integer> looseNow = loose(helper);
+						try {
+							helper.assertTrue(end == MoveSite.Stage.DONE && skipped == 0, "the move ended " + end + ", skipped " + skipped);
+							helper.assertTrue(afterDown.isEmpty(), "taking the vault down swing by swing dropped " + afterDown);
+							QaCreateMoverVaults1110e3CompatTests.cubeWhole(helper, "moved swing by swing", s, looseNow);
+						} finally {
+							tidy(helper, s);
+						}
+						helper.succeed();
+					});
+				});
+			}));
+		});
+	}
+
+	/**
+	 * The eight-block Fluid Tank (two wide, two tall) of QaCreateMoverTanks1110gCompatTests holding forty buckets of
+	 * water, moved a quarter turn one swing a tick: one tank with all forty at the new spot, nothing left at the old one.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"qa_e1113_bug_tank8_paced"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "qa_e1113_bug_tank8_paced")
+	public void anEightBlockTankMovedSwingBySwingKeepsAllItsWater(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		java.util.List<BlockPos> cells = QaCreateMoverTanks1110gCompatTests.WIDE;
+		long amount = 40 * net.fabricmc.fabric.api.transfer.v1.fluid.FluidConstants.BUCKET;
+		QaCreateMoverTanks1110gCompatTests.place(level, helper, cells);
+		helper.runAfterDelay(10, () -> {
+			QaCreateMoverTanks1110gCompatTests.fill(level, helper, cells, amount);
+			Setup s = setupAround(helper, "tank8_paced");
+			helper.runAfterDelay(2, () -> QaCreateMoverChains1113eCompatTests.paced(helper, s, x -> false, site -> {
+				MoveSite.Stage end = site.stage();
+				int skipped = site.skipped();
+				helper.runAfterDelay(20, () -> {
+					Map<String, Integer> looseNow = loose(helper);
+					try {
+						helper.assertTrue(end == MoveSite.Stage.DONE && skipped == 0, "the move ended " + end + ", skipped " + skipped);
+						QaCreateMoverTanks1110gCompatTests.nothingLeftBehind(helper, cells);
+						QaCreateMoverTanks1110gCompatTests.whole(helper, "moved swing by swing", cells,
+							p -> QaCreateMoverMultiblock1110e2CompatTests.moved(s, p), amount, looseNow);
+					} finally {
+						tidy(helper, s);
+					}
+					helper.succeed();
+				});
+			}));
+		});
+	}
 }

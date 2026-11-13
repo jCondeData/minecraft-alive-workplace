@@ -7,6 +7,7 @@ import static io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents11
 import static io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests.set;
 import static io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests.setupAround;
 import static io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests.tidy;
+import static io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests.with;
 
 import com.simibubi.create.content.kinetics.chainConveyor.ChainConveyorBlockEntity;
 import com.simibubi.create.content.kinetics.speedController.SpeedControllerBlockEntity;
@@ -14,6 +15,7 @@ import com.simibubi.create.content.kinetics.transmission.sequencer.Instruction;
 import com.simibubi.create.content.kinetics.transmission.sequencer.InstructionSpeedModifiers;
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencedGearshiftBlockEntity;
 import com.simibubi.create.content.kinetics.transmission.sequencer.SequencerInstructions;
+import com.simibubi.create.content.redstone.displayLink.DisplayLinkBlockEntity;
 import io.github.jcondedata.aliveworkplace.compat.QaCreateMoverContents1110eCompatTests.Setup;
 import io.github.jcondedata.aliveworkplace.move.MoveSite;
 import io.github.jcondedata.aliveworkplace.move.MoveSites;
@@ -37,8 +39,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  * earlier Mover class put in a house.
  * A Sequenced Gearshift with its instruction list set and a Rotation Speed Controller set to 64 RPM: both keep their
  * settings through a quarter-turned move. The Mover works one swing a tick here ({@link #paced}), as he does in a
- * world (one swing every few ticks), so the blocks' own ticks run between swings. Two Chain Conveyors joined by a chain
- * are in QaCreateMoverChains1113eBugCompatTests (on tests/create-mover-chains-1113e: the chain is lost).
+ * world (one swing every few ticks), so the blocks' own ticks run between swings. A Display Link aimed at a Nixie Tube still aims at it.
+ * Two Chain Conveyors joined by a chain, an eight-block Item Vault and an eight-block Fluid Tank are in
+ * QaCreateMoverChains1113eBugCompatTests (on tests/create-mover-chains-1113e: the chain is lost, the vault and the tank
+ * come back split, the tank short of water).
  */
 public class QaCreateMoverChains1113eCompatTests implements FabricGameTest {
 	static final String AREA = QaCreateMoverContents1110eCompatTests.AREA;
@@ -110,6 +114,51 @@ public class QaCreateMoverChains1113eCompatTests implements FabricGameTest {
 						helper.assertTrue(end == MoveSite.Stage.DONE && skipped == 0, "the move ended " + end + ", skipped " + skipped);
 						helper.assertTrue(wanted.equals(now), "the Sequenced Gearshift's instructions were " + wanted + "; after the move at " + na + ": " + now);
 						helper.assertTrue(speed.equals("64"), "the Rotation Speed Controller was set to 64 RPM; after the move at " + nb + ": " + speed);
+						helper.assertTrue(looseNow.isEmpty(), "loose after the move: " + looseNow);
+					} finally {
+						tidy(helper, s);
+					}
+					helper.succeed();
+				});
+			}));
+		});
+	}
+
+	/**
+	 * A Display Link on the floor linked to a Nixie Tube across the room (lane E's 11-10 test moved it all in one tick),
+	 * moved a quarter turn one swing a tick: the link is put up before its tube and ticks alone in between, and at the new
+	 * spot it still targets its tube.
+	 */
+	//$ gametest_ticks_batch AREA '3000' '"qa_e1113_mover_display_link_paced"'
+	@GameTest(template = AREA, timeoutTicks = 3000, batch = "qa_e1113_mover_display_link_paced")
+	public void aDisplayLinkMovedSwingBySwingStillTargetsItsTube(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		PartnerShowsCompatTests.clearLeftovers(helper);
+		BlockPos link = A;
+		BlockPos tube = B;
+		set(level, helper.absolutePos(link), with(block("create:display_link").defaultBlockState(), "facing", "up"));
+		set(level, helper.absolutePos(tube), block("create:nixie_tube").defaultBlockState());
+		helper.runAfterDelay(2, () -> {
+			BlockEntity be = level.getBlockEntity(helper.absolutePos(link));
+			helper.assertTrue(be instanceof DisplayLinkBlockEntity, "setup: the link's block entity is " + be);
+			((DisplayLinkBlockEntity) be).target(helper.absolutePos(tube));
+			be.setChanged();
+			helper.assertTrue(helper.absolutePos(tube).equals(((DisplayLinkBlockEntity) be).getTargetPosition()), "setup: the link doesn't target the tube");
+			Setup s = setupAround(helper, "display_link_paced");
+			helper.runAfterDelay(2, () -> paced(helper, s, x -> false, site -> {
+				MoveSite.Stage end = site.stage();
+				int skipped = site.skipped();
+				BlockPos linkNow = movedTo(s, link);
+				BlockPos tubeNow = movedTo(s, tube);
+				helper.runAfterDelay(20, () -> {
+					BlockEntity after = level.getBlockEntity(linkNow);
+					BlockPos target = after instanceof DisplayLinkBlockEntity d ? d.getTargetPosition() : null;
+					Map<String, Integer> looseNow = loose(helper);
+					try {
+						helper.assertTrue(end == MoveSite.Stage.DONE && skipped == 0, "the move ended " + end + ", skipped " + skipped);
+						helper.assertTrue(tubeNow.equals(target), "moved swing by swing, the display link at " + linkNow.toShortString() + " ("
+							+ level.getBlockState(linkNow) + ") targets " + (target == null ? null : target.toShortString()) + ", not its tube at "
+							+ tubeNow.toShortString() + " (" + level.getBlockState(tubeNow) + ")");
 						helper.assertTrue(looseNow.isEmpty(), "loose after the move: " + looseNow);
 					} finally {
 						tidy(helper, s);

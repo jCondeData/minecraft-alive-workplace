@@ -240,6 +240,9 @@ None.
   keeps them shut and opens them once at dawn; a gate a player opens in a guardless night stays open and the rest open
   at dawn; the next dusk with still no guard nothing shuts, and a gate a player shuts that night stays shut in the
   morning).
+- B1180 (QA, lane D): `QaGatesDawnEdge1111dGameTests` (the only guard taken off the job in the night, counted by the
+  hall's census: shut through the night, open in the morning; shut at 23499 and open at 23500, the guards' dawn; a guard
+  opens the gates at dawn and leaves that day, then the gates a player shuts that night stay shut through the next dawn).
 - B1155 (QA, lane D): `QaLairFallOtherBands1111dGameTests` (the camp falls on a day the village is warned of monsters:
   still braced, the Defense page still shows it, only the bandits' attack leaves the clock; the camp broken up the
   evening before its warned day: nothing shut at noon, no battle stations at dusk; a later monster attack stays; bandits

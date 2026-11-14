@@ -3,17 +3,20 @@ package io.github.jcondedata.aliveworkplace.compat;
 import com.cobblemon.mod.common.Cobblemon;
 import com.cobblemon.mod.common.api.battles.model.PokemonBattle;
 import com.cobblemon.mod.common.api.battles.model.actor.BattleActor;
+import com.cobblemon.mod.common.api.moves.Moves;
 import com.cobblemon.mod.common.api.pokemon.PokemonProperties;
 import com.cobblemon.mod.common.battles.BattleRegistry;
 import com.cobblemon.mod.common.battles.MoveActionResponse;
 import com.cobblemon.mod.common.battles.ShowdownActionResponse;
 import com.cobblemon.mod.common.battles.SwitchActionResponse;
+import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.compat.cobblemon.CobblemonTrainers;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.trainer.Trainers;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.List;
+import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -215,33 +218,67 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 	 * You can't switch to a fainted Pokémon") and the battle stood still. A Novice (two Pokémon) against a level 100
 	 * Mewtwo; the trainer's first forced switch picks the Pokémon that just fainted. Whoever turns the pick down (Cobblemon
 	 * or the battle), the battle must run to its end (the player wins).
+	 *
+	 * <p>B1210: the Novice's team comes from the villager's UUID, and a level 100 Mewtwo knows Future Sight, Recover,
+	 * Psystrike and Mist, of which the test used Future Sight every turn: when a newly spawned villager led with a
+	 * Dark-type Pokémon (about 1 run in 28; 2 of 2 such trainers, none of 6 others) it took no damage at all, nobody
+	 * fainted, and the battle ran past the test's limit with no forced switch ever asked. So the trainer is a fixed one,
+	 * and the Mewtwo knows four attacks of different types and uses them in turn (no Pokémon shrugs off all of them), which
+	 * knocks out whatever team it meets.
 	 */
 	//$ gametest_ticks_batch AREA '12000' '"qa1111d_forced_refused"'
 	@GameTest(template = AREA, timeoutTicks = 12000, batch = "qa1111d_forced_refused")
 	public void aTrainersBadForcedSwitchDoesNotStopTheBattle(GameTestHelper helper) {
+		badForcedSwitch(helper, FORCED_SWITCH_TRAINER);
+	}
+
+	/** The fixed Novice of {@link #aTrainersBadForcedSwitchDoesNotStopTheBattle}, so every run meets the same team. */
+	static final UUID FORCED_SWITCH_TRAINER = new UUID(0xB1210_1111DL, 0x8000_0000_0000_1210L);
+	/** The Mewtwo's attacks: Psychic, Fighting, Ghost and Ice, so no type (or pair of types) is immune to all of them. */
+	private static final String[] COVERING_MOVES = {"psystrike", "aurasphere", "shadowball", "icebeam"};
+
+	static void badForcedSwitch(GameTestHelper helper, UUID trainerId) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		helper.setDayTime(2000);
 		BlockPos post = new BlockPos(2, 2, 2);
 		helper.setBlock(post, ModBlocks.TRAINING_POST);
-		Villager trainer = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
+		Villager trainer = new Villager(EntityType.VILLAGER, helper.getLevel());
+		trainer.setUUID(trainerId);
+		BlockPos at = helper.absolutePos(new BlockPos(3, 2, 3));
+		trainer.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0f, 0f);
 		trainer.setNoAi(true);
+		helper.assertTrue(helper.getLevel().addFreshEntity(trainer), "setup: the trainer " + trainerId + " didn't join the world");
 		Jobs.employ(helper.getLevel(), trainer, helper.absolutePos(post), ModVillagers.TRAINING_POST_POI, ModVillagers.TRAINER);
+		String team = CobblemonTrainers.teamOf(trainer).stream()
+			.map(p -> p.getSpecies().getResourceIdentifier().getPath() + " " + p.getLevel()).toList().toString();
 
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		player.setGameMode(GameType.SURVIVAL);
 		player.moveTo(helper.absoluteVec(new Vec3(6.5, 2, 6.5)));
-		Cobblemon.INSTANCE.getStorage().getParty(player).add(PokemonProperties.Companion.parse("mewtwo level=100", " ", "=").create());
+		Pokemon mewtwo = PokemonProperties.Companion.parse("mewtwo level=100", " ", "=").create();
+		for (int i = 0; i < COVERING_MOVES.length; i++) {
+			mewtwo.getMoveSet().setMove(i, Moves.getByName(COVERING_MOVES[i]).create());
+		}
+		Cobblemon.INSTANCE.getStorage().getParty(player).add(mewtwo);
+		PokemonBattle[] fought = new PokemonBattle[1];
 		PartnerShowsCompatTests.after(helper, () -> {
 			PokemonBattle left = BattleRegistry.getBattleByParticipatingPlayer(player);
 			if (left != null) {
 				CobblemonTrainers.finishForTest(left, false);
+			} else if (fought[0] != null) {
+				// Cobblemon ends a battle whose tick throws (its answer to the bad pick) without saying who won, and the
+				// trainer then stays "busy" until the server restarts (B1256): a fixed trainer must be free for the next run.
+				CobblemonTrainers.finishForTest(fought[0], false);
 			}
+			// a fixed UUID: the next run's trainer can't join a world this one is still in
+			trainer.discard();
 		});
 
 		helper.assertTrue(Trainers.refusal(player, trainer) == null, "the trainer refuses the challenge: " + Trainers.refusal(player, trainer));
 		Trainers.challenge(player, trainer);
 		PokemonBattle battle = BattleRegistry.getBattleByParticipatingPlayer(player);
 		helper.assertTrue(battle != null, "no battle started");
+		fought[0] = battle;
 		BattleActor us = battle.getActor(player);
 		BattleActor[] them = new BattleActor[1];
 		battle.getActors().forEach(a -> {
@@ -273,6 +310,7 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 		}
 		long started = System.nanoTime();
 		long[] ticks = {0};
+		int[] chosen = {0};
 		helper.onEachTick(() -> {
 			keepRealTime(started, ++ticks[0]);
 			if (battle.getEnded() || us.getRequest() == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
@@ -283,15 +321,16 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 				return;
 			}
 			var moves = request.getActive().get(0).getMoves();
-			var move = moves.stream().filter(m -> m.canBeUsed() && !m.getId().equals("disable") && !m.getId().equals("barrier"))
-				.findFirst().orElse(moves.get(0));
+			// each attack in turn, so a Pokémon immune to one is hit by the next
+			var usable = moves.stream().filter(m -> m.canBeUsed()).toList();
+			var move = usable.isEmpty() ? moves.get(0) : usable.get(chosen[0]++ % usable.size());
 			var targets = move.getTargets(us.getActivePokemon().get(0));
 			String target = targets == null || targets.isEmpty() ? null : them[0].getActivePokemon().get(0).getPNX();
 			us.setActionResponses(List.<ShowdownActionResponse>of(new MoveActionResponse(move.getId(), target, null)));
 		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(battle.getEnded(), "the battle stands at turn " + battle.getTurn() + " (bad picks " + badPicks[0]
-				+ "): the trainer request=" + (them[0].getRequest() != null) + " mustChoose=" + them[0].getMustChoose() + ", the player request="
+				+ ") against " + team + ": the trainer request=" + (them[0].getRequest() != null) + " mustChoose=" + them[0].getMustChoose() + ", the player request="
 				+ (us.getRequest() != null) + " mustChoose=" + us.getMustChoose() + " (" + ticks[0] + " ticks in "
 				+ (System.nanoTime() - started) / 1_000_000L + " ms)");
 			helper.assertValueEqual(badPicks[0], 1, "the trainer's refused forced switches");

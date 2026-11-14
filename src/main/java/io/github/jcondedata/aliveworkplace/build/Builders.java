@@ -375,10 +375,13 @@ public final class Builders {
 				io.github.jcondedata.aliveworkplace.wonder.Wonders.name(wonder.get().wonder())), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
-		// B1185: a building's planned or under-way move will stand there (the Mover puts it up over whatever is in the way)
+		// B1185: a building's planned or under-way move will stand there (the Mover puts it up over whatever is in the way),
+		// or a called-off one is still being taken back down there (B1230)
 		for (io.github.jcondedata.aliveworkplace.move.MoveFit.Other move : io.github.jcondedata.aliveworkplace.move.MoveFit.moving(level, null)) {
 			if (move.box().minX() <= box.maxX() && move.box().maxX() >= box.minX() && move.box().minZ() <= box.maxZ() && move.box().maxZ() >= box.minZ()) {
-				tell(player, Component.translatable("message.aliveworkplace.assign.move_spot", move.name()), ChatFormatting.RED);
+				// B1230: a called-off move whose blocks the Mover is still taking back down there
+				tell(player, Component.translatable(move.puttingBack() ? "message.aliveworkplace.assign.move_spot_back" : "message.aliveworkplace.assign.move_spot",
+					move.name()), ChatFormatting.RED);
 				return InteractionResult.CONSUME;
 			}
 		}

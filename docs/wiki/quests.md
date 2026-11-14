@@ -64,7 +64,9 @@ Roadmap items: 31.2, 31.3
   next round, once someone is near it (even when its deadline passed in between: it was finished in time); a grave
   revived for a request of that hall answers it then. If the player who finished it is offline at that round, the
   quest waits, done and still theirs (its deadline no longer applies, and it takes no place on the board), until a
-  round finds them online; it is never paid to nobody (B1231).
+  round finds them online; it is never paid to nobody (B1231). It is paid once, to them alone: another player online at
+  the round gets nothing and can't take it over, and a one-time quest becomes theirs when it is paid. A villager's own
+  request is done at that round anyway, since it pays every helper, away ones included.
 
 ## Items, blocks, jobs, commands
 
@@ -106,4 +108,6 @@ one, and its hall stays unloaded) and `QaFarQuestsPaid1114e2GameTests` (QA, lane
 to the helper who finished the quest, also after a save and load and after the quest fell due; a broken hall pays nothing;
 a place reached far away counts only for the player standing there; a one-time quest done before counts nothing and loads nothing).
 Also `QaFarVillageResumes1114e2BugTests` (a far kill or place reached by a player who then logs off waits, past its
-deadline and through a save, and is paid to them at the first round they're back).
+deadline and through a save, and is paid to them at the first round they're back) and `QaFarQuestOffline1114c2GameTests`
+(QA, lane C: paid exactly once over three rounds and a save, nothing to another player online, no board slot taken, a
+one-time quest theirs once paid, a villager's own request done at once).

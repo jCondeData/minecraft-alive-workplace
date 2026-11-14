@@ -956,6 +956,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QuestEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.UnloadedHallQuestsB1212GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1112cBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarVillageName1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftGameTests",

@@ -264,7 +264,8 @@ Game rules (per world, `/gamerule`):
 
 None. The texts of the settings screen are in the lang file as `aliveworkplace.config.supplyRadius` and
 `aliveworkplace.config.supplyRadius.tooltip` (one pair per option); the game rules' as
-`gamerule.workplaceBuildDelay`.
+`gamerule.workplaceBuildDelay` (one line per rule, so the Edit Game Rules screen never shows a raw key; B1227 added the
+missing `gamerule.workplaceVillageFarms`).
 
 ## Decisions
 
@@ -300,6 +301,8 @@ expansions' builds wait the same way; the Table refuses a closed expansion's bui
 `CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`,
 `QaVillageSpawns1103dGameTests` (3, QA, B211, `forceVillageSpawns`: forced golems, pups and relief horses are in the
 world and ticking, the riders stay mounted and a pup of two tame wolves keeps their owner; only what the world refuses
-is forced and logged; with the switch off a band's riders all come on foot and the log says so).
+is forced and logged; with the switch off a band's riders all come on foot and the log says so),
+QA's `QaBuilderSwitches1114bBugTests` (B1227: every game rule in the table above has its words on the Edit Game Rules
+screen).
 
 Showcase scenes: `config` (the settings screen).

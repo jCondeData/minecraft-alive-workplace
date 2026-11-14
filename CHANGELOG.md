@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Edit Game Rules screen now shows words for `workplaceVillageFarms` ("Alive Workplace: a village farmer with no field takes on the farm by their composter, once a chest is near it") instead of the raw key gamerule.workplaceVillageFarms (B1227).
 - Less lag from far-away villages: once everyone has left, an old-house survey, a festival or banquet still on, or a siege (its ladders, sand ramps and the guards' battle stations) no longer loads the village's hall or gates again; a siege waits where it was and carries on, or is lifted if its dawn has passed, when someone comes back (B1221, B1224, B1225)
 - Less lag from far-away villages: killing a monster, a villager being revived, standing at a quest's place or at a ruined portal, outpost or shipwreck no longer loads a far village's hall. A kill or a place reached still counts for its quests, and a quest it finishes is paid (or a revival answers its request) when someone is next near that village; Legends are found at sites only for villages someone is near (B1220, B1222, B1223).
 - Scanning a box that holds only water, lava or a bubble column is now refused with "There's nothing built in that box" and keeps your Blank Blueprint, instead of saving a build the Blueprint Table showed with an empty picture (B1195).

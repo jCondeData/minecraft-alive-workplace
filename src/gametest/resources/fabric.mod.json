@@ -1710,7 +1710,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuild1114cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuiltVerify1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarSiege1114dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaFarLegendSite1114dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaFarLegendSite1114dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnHeldSite1114dGameTests"
 		]
 	},
 	"depends": {

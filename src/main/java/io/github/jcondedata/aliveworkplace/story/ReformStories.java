@@ -545,7 +545,9 @@ public final class ReformStories {
 		for (Map.Entry<BlockPos, Entry> en : List.copyOf(data.halls.entrySet())) {
 			BlockPos hall = en.getKey();
 			Entry e = en.getValue();
-			if (!level.isLoaded(hall)) {
+			// B1232: a loaded chunk isn't enough (B1221). Nobody near the hall: no bell, no line, no drill, whose dummy search
+			// reads 32 blocks round the hall and would load those chunks. The lamplit line waits for a night someone is near.
+			if (!level.isPositionEntityTicking(hall)) {
 				continue;
 			}
 			if (e.bell != Entry.NONE && (t >= RING_START && t < RING_START + EVERY || t >= RING_END && t < RING_END + EVERY)) {

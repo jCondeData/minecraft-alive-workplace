@@ -454,6 +454,9 @@ public class BuilderWork extends Behavior<Villager> {
 					// grave over a hollow on a hillside has its ground filled in by LANDSCAPE
 					io.github.jcondedata.aliveworkplace.furnish.Resting.settle(level, plan);
 				}
+				if (site.endsStage() && site.stage() == BuildPlan.Stage.CLEAR && !site.digOut() && !site.isRepair() && !site.isDeconstruction()) {
+					drainBox(level, plan); // B1243: a build sunk in a pond or lake: the water standing in its box goes
+				}
 				site.finishList();
 				continue;
 			}
@@ -2368,6 +2371,92 @@ public class BuilderWork extends Behavior<Villager> {
 				}
 			}
 		}
+	}
+
+	/** B1243: the most spots {@link #drainBox} looks round in one go (a 20 x 20 x 20 box under water is 8,000). */
+	static final int MOST_DRAINED = 32768;
+
+	/**
+	 * B1243: the end of CLEAR. CLEAR passes over water and lava (a fluid is no block to dig), so a build clicked onto the
+	 * bed of a pond or a lake had its walls go up round the water and its room finished flooded. Here every fluid
+	 * standing in the build's box (where the drawing has air or puts a block, not a pool or waterlogged block of its
+	 * own) is taken away, as a player scoops it with a bucket, all in the same tick so no source is left to fill the
+	 * spots again; and water or lava just outside the box that would run back in (beside it or above it, not below:
+	 * a fluid never rises) is plugged with earth, a cofferdam round the site. Blocks that hold water are drained and
+	 * kept. Nothing is saved: run again after a reload it finds nothing left to do.
+	 */
+	static int drainBox(ServerLevel level, BuildPlan plan) {
+		Set<BlockPos> box = new HashSet<>();
+		for (BuildPlan.Step s : plan.steps(BuildPlan.Stage.CLEAR)) {
+			box.add(s.pos());
+		}
+		box.addAll(plan.targets().keySet());
+		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		Set<BlockPos> seen = new HashSet<>();
+		for (BlockPos p : box) {
+			if (drains(level, plan, p) && seen.add(p)) {
+				open.add(p);
+			}
+		}
+		int drained = 0;
+		BlockPos first = null;
+		boolean lava = false;
+		int budget = MOST_DRAINED;
+		while (!open.isEmpty() && budget-- > 0) {
+			BlockPos at = open.poll();
+			if (drains(level, plan, at)) {
+				BlockState there = level.getBlockState(at);
+				if (first == null) {
+					first = at;
+					lava = there.getFluidState().is(net.minecraft.tags.FluidTags.LAVA);
+				}
+				if (there.hasProperty(BlockStateProperties.WATERLOGGED)) {
+					level.setBlock(at, there.setValue(BlockStateProperties.WATERLOGGED, false), Block.UPDATE_ALL);
+				} else {
+					level.setBlock(at, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+				}
+				drained++;
+			}
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+				BlockPos n = at.relative(d);
+				if (!level.isLoaded(n) || level.getFluidState(n).isEmpty()) {
+					continue;
+				}
+				if (box.contains(n)) {
+					if (drains(level, plan, n) && seen.add(n)) {
+						open.add(n);
+					}
+					continue;
+				}
+				if (d == net.minecraft.core.Direction.DOWN) {
+					continue; // a fluid below never rises into the box
+				}
+				BlockState outside = level.getBlockState(n);
+				if (outside.hasProperty(BlockStateProperties.WATERLOGGED)) {
+					level.setBlock(n, outside.setValue(BlockStateProperties.WATERLOGGED, false), Block.UPDATE_ALL);
+				} else if (outside.getBlock() instanceof LiquidBlock || outside.canBeReplaced()) {
+					level.setBlock(n, net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState(), Block.UPDATE_ALL); // (seagrass, kelp: all water)
+				}
+			}
+		}
+		if (first != null) {
+			level.playSound(null, first, lava ? SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL,
+				net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.0F);
+		}
+		return drained;
+	}
+
+	/** B1243: whether the fluid at {@code pos} of the build's box is one {@link #drainBox} takes away. */
+	private static boolean drains(ServerLevel level, BuildPlan plan, BlockPos pos) {
+		BlockState there = level.getBlockState(pos);
+		if (there.getFluidState().isEmpty()) {
+			return false;
+		}
+		BlockState wanted = plan.targets().get(pos);
+		if (wanted != null && !wanted.getFluidState().isEmpty()) {
+			return false; // the drawing's own pool or waterlogged block
+		}
+		return there.hasProperty(BlockStateProperties.WATERLOGGED) || there.getBlock() instanceof LiquidBlock || there.canBeReplaced();
 	}
 
 	/**

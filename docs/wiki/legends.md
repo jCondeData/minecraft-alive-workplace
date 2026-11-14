@@ -326,6 +326,10 @@ edge (asleep, on a walk) still keeps his Shop Counter the inn (the counters Innk
 `QaMoveInnVerify1111cGameTests` (QA lane): an Innkeeper in an unloaded chunk keeps his Shop Counter the inn through a
 save and reload; one given No job or killed while out past the edge leaves no inn; the edge (11 yes, 10 no) holds with
 him away too.
+`QaInnKeeperGone1114dGameTests` (QA lane D, 2026-11-14): with the Innkeeper away, his counter broken leaves no inn, and
+him turned Farmer leaves none and forgets the counter; a remembered counter of an Innkeeper the level doesn't have (an
+unloaded chunk) is the inn only while its job-site ticket is held, and no inn once it is freed (kills the mutant that
+counts a free counter).
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

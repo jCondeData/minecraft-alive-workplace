@@ -138,6 +138,10 @@ public class ShopCounterBlock extends BaseEntityBlock {
 			if (level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter) {
 				Containers.dropContents(level, pos, counter);
 			}
+			if (level instanceof net.minecraft.server.level.ServerLevel server) {
+				// a counter put back here is a new one: whoever worked the old one (an Innkeeper, B1213/B1215) takes it again
+				io.github.jcondedata.aliveworkplace.inn.InnCounters.get(server).forget(pos);
+			}
 			super.onRemove(state, level, pos, newState, moved);
 		}
 	}

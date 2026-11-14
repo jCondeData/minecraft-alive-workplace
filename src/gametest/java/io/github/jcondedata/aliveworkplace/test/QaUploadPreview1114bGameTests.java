@@ -5,6 +5,8 @@ import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.table.TableServer;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -13,11 +15,14 @@ import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.storage.LevelResource;
 
 /**
  * QA (lane b, 2026-11-14), B1195's other door: a .nbt uploaded at the Blueprint Table goes through
@@ -53,6 +58,18 @@ public class QaUploadPreview1114bGameTests implements FabricGameTest {
 		}
 	}
 
+	/** The imported file taken away again, so no other test (TablePreviewGameTests) meets it on the Table. */
+	private static void forget(GameTestHelper helper, ResourceLocation id) {
+		MinecraftServer server = helper.getLevel().getServer();
+		server.getStructureManager().remove(id);
+		Path file = server.getWorldPath(LevelResource.GENERATED_DIR).resolve(id.getNamespace()).resolve("structures").resolve(id.getPath() + ".nbt");
+		try {
+			Files.deleteIfExists(file);
+		} catch (IOException e) {
+			throw new GameTestAssertException("(cleanup) couldn't delete " + file + ": " + e);
+		}
+	}
+
 	private static String name(GameTestHelper helper, String what) {
 		return "qa_upload_" + what + "_" + Long.toHexString(helper.getLevel().getGameTime()) + "_" + Integer.toHexString(System.identityHashCode(helper)) + ".nbt";
 	}
@@ -64,6 +81,7 @@ public class QaUploadPreview1114bGameTests implements FabricGameTest {
 		try {
 			BlueprintImporter.Imported imported = BlueprintImporter.importBytes(helper.getLevel().getServer(), "uploads/qa_tester", name(helper, what), bytes);
 			long drawn = imported.blueprint().blocks().stream().filter(b -> TableServer.previewShows(b.state())).count();
+			forget(helper, imported.id());
 			throw new GameTestAssertException("a file of only " + what + " was imported as " + imported.id() + " (" + imported.blueprint().solidBlockCount()
 				+ " blocks counted, " + drawn + " the Table's preview would draw): it's listed with an empty picture (expected: refused, as a scan of it is since B1195)");
 		} catch (BlueprintFormatException e) {
@@ -78,6 +96,7 @@ public class QaUploadPreview1114bGameTests implements FabricGameTest {
 		try {
 			BlueprintImporter.Imported imported = BlueprintImporter.importBytes(helper.getLevel().getServer(), "uploads/qa_tester", name(helper, what), bytes);
 			long drawn = imported.blueprint().blocks().stream().filter(b -> TableServer.previewShows(b.state())).count();
+			forget(helper, imported.id());
 			helper.assertTrue(drawn > 0, what + " imported, but the Table's preview draws none of its " + imported.blueprint().solidBlockCount() + " blocks");
 			helper.succeed();
 		} catch (BlueprintFormatException e) {

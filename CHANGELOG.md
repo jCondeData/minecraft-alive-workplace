@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Create installed, a builder waiting for glass with no sand anywhere is told "short of 4 Sand to make 4 Glass" again, instead of being asked for Create's Tiled Glass, which is itself made from glass (B1196).
+- With Create installed, the Glassblower fires eight glass on one coal again, instead of two: he fires the sand, rather than firing glass, cutting it into Create's Tiled and Framed Glass and firing that back into glass (B1197).
 - A far-off village whose saved name was blank (or missing, from an older save) is listed on a Village Hall's Map waystone network by its made-up name, as everywhere else, instead of with no name at all (B1244).
 - Right after you call a move off on the Move page, picking a new spot says "The Mover is still putting it back" at once, instead of telling you to call the move off first (with no Call off button there) until the Mover's next swing (B1237).
 - A building clicked onto the bed of a pond or lake no longer ends with its room flooded: the Builder takes away the water standing where the building goes before he starts the walls (as you would with a bucket) and dams the water just outside with a little dirt, so the room ends dry (B1243).

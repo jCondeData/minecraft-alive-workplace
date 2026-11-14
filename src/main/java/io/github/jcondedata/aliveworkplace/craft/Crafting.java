@@ -945,9 +945,50 @@ public final class Crafting {
 					byResult.computeIfAbsent(out.getItem(), k -> new ArrayList<>()).add(holder);
 				}
 			}
+			// B1196, B1197: a recipe that makes a thing back from what's made of it (Create's glass fired from its Tiled
+			// and Framed Glass, cut from glass) comes after the ones that make it from scratch, so a plan fires the sand
+			// (not sand into glass into framed glass into glass again, two coal for eight) and the line names the sand.
+			// It's still tried when the others can't be made (framed glass to hand and no sand).
+			Map<Item, List<RecipeHolder<?>>> made = byResult;
+			for (Map.Entry<Item, List<RecipeHolder<?>>> e : byResult.entrySet()) {
+				if (e.getValue().size() > 1) {
+					Item target = e.getKey();
+					List<RecipeHolder<?>> sorted = new ArrayList<>(e.getValue());
+					sorted.sort(java.util.Comparator.comparingInt(h -> loopsBack(index, made, h.value(), target) ? 1 : 0)); // stable
+					e.setValue(sorted);
+				}
+			}
 			index.byResult().put(kind, byResult);
 			return byResult;
 		}
+	}
+
+	/**
+	 * Whether {@code recipe} (one way to make {@code target}) loops back: one of its ingredients is only ever made, by the
+	 * recipes in {@code byResult}, from {@code target} itself (glass from Create's Tiled Glass, which is cut from glass).
+	 * An ingredient with an option no recipe makes (a raw material) or one made some other way doesn't count.
+	 */
+	private static boolean loopsBack(Index index, Map<Item, List<RecipeHolder<?>>> byResult, Recipe<?> recipe, Item target) {
+		ItemStack made = new ItemStack(target);
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			List<Item> options = options(index, ingredient);
+			boolean onlyFromTarget = !options.isEmpty();
+			for (Item option : options) {
+				List<RecipeHolder<?>> ways = byResult.getOrDefault(option, List.of());
+				if (option == target || ways.isEmpty()
+						|| ways.stream().anyMatch(w -> Recipes.ingredients(w.value()).stream().noneMatch(i -> !i.isEmpty() && i.test(made)))) {
+					onlyFromTarget = false;
+					break;
+				}
+			}
+			if (onlyFromTarget) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Whether every making of {@code recipe} is one of {@code dishes} (each of its ingredient's items is one). */

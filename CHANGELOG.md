@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Listing your quests with `/workplace quests`, or asking a relative to write a lost reply again, no longer loads a far-away village's hall just to say its name, which caused a small lag spike (B1217).
 
 - A Shop Counter that was an inn is no longer the village's inn after you break it and a Shopkeeper takes the new one, even while the old Innkeeper is far away; and an Innkeeper standing past the village's edge still makes his counter inside the village its inn.
 

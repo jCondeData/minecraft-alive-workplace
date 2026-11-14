@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.move.MovePlan;
 import io.github.jcondedata.aliveworkplace.move.MoveSite;
 import io.github.jcondedata.aliveworkplace.move.MoveSites;
 import io.github.jcondedata.aliveworkplace.move.MoverWork;
@@ -9,152 +10,359 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.GlobalPos;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Clearable;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.JukeboxBlock;
 import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChiseledBookShelfBlockEntity;
 import net.minecraft.world.level.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 /**
- * The helpers QaMoverCrateHolds1114cBugGameTests (lane c, 2026-11-14) was written against (lane c's own copy was never
- * pushed; lane a wrote these for B1234-B1238), and the cases its bug tests leave out: a decorated pot and a chiseled
- * bookshelf with no room above the Mover's Crate, and a crate walled in all round (no free spot within 2 at all), where
- * the dropped block borrows a plain block's spot for a moment and puts it back. Set up as QaMoverCrateDrop1114eGameTests:
- * MoverGameTests' house with his only crate inside, moved two blocks south-east so the chest's spot lands on his crate.
+ * QA (lane c, 2026-11-14) for B1184, written from the bug report: when a Mover's Crate stands where a packed block goes
+ * up, nothing packed is ever destroyed; the block and whatever its data holds are dropped there (or it waits / goes back).
+ * QaMoverCrate1111bGameTests covers a chest and a lectern with a book. These add the other ways a vanilla block holds
+ * things (a jukebox's disc, a decorated pot's item, a chiseled bookshelf's books, a furnace's three slots), a sign (data,
+ * nothing held: just the sign), exact counts (nothing doubled), two blocks on two crates in one move, a save and reload
+ * all through the put-up, and a crate with the column above it built up: the drop's spot 16 blocks up, and none free.
+ * Same house, Mover and spot as QaMoverCrate1111bGameTests: moved 2 east and 2 south, the chest's spot on his crate.
  */
 public class QaMoverCrateHolds1114cGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
-	private static final BlockPos SPOT = new BlockPos(4, 3, 4);
+	/** MoverGameTests' chest: the block whose new spot is his crate. */
+	static final BlockPos CHEST = new BlockPos(4, 3, 4);
+	static final BlockPos OWN_CRATE = new BlockPos(6, 3, 6);
+	private static final BlockPos MOVER_AT = new BlockPos(24, 2, 24);
+	private static final BlockPos TO = new BlockPos(4, 2, 4);
 
-	/** MoverGameTests' house, his only crate inside, the chest's spot landing on it (the chest kept with its items). */
+	// ---- helpers ---------------------------------------------------------------------------------------------------
+
+	/** MoverGameTests' house and Mover, his only crate inside the house, moved to {@link #TO} not turned (the chest lands on the crate). */
 	static MoverGameTests.Setup crateInside(GameTestHelper helper, String name) {
-		Leftovers.clear(helper);
-		return QaMoverCrateDrop1114eGameTests.onHisCrate(helper, name, null, null);
+		MoverGameTests.Setup s = MoverGameTests.setup(helper, name);
+		ServerLevel level = helper.getLevel();
+		helper.setBlock(new BlockPos(12, 2, 11), Blocks.AIR); // no crate outside: his only one is in the house
+		helper.setBlock(OWN_CRATE, ModBlocks.MOVERS_CRATE);
+		s.mover().teleportTo(helper.absolutePos(MOVER_AT).getX() + 0.5, helper.absolutePos(MOVER_AT).getY(), helper.absolutePos(MOVER_AT).getZ() + 0.5);
+		s.mover().getBrain().setMemory(MemoryModuleType.JOB_SITE, GlobalPos.of(level.dimension(), helper.absolutePos(OWN_CRATE)));
+		BlockPos absTo = helper.absolutePos(TO);
+		PendingMoves.Move pending = PendingMoves.get(level).forBuilding(s.from()).orElseThrow();
+		PendingMoves.get(level).remove(s.from());
+		PendingMoves.get(level).put(new PendingMoves.Move(pending.hall(), pending.from(), pending.structure(), absTo, Rotation.NONE, null));
+		return new MoverGameTests.Setup(s.placement(), s.before(), s.hall(), s.from(), absTo, s.mover());
 	}
 
-	/** The chest at the spot that lands on his crate replaced by {@code state}, its block entity filled by {@code fill}. */
+	/** The chest emptied and {@code state} set in its place, then {@code fill} given its block entity. */
 	static void replaceChest(GameTestHelper helper, BlockState state, Consumer<BlockEntity> fill) {
 		ServerLevel level = helper.getLevel();
-		BlockPos at = helper.absolutePos(SPOT);
+		BlockPos at = helper.absolutePos(CHEST);
 		Clearable.tryClear(level.getBlockEntity(at));
-		level.setBlock(at, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
 		level.setBlock(at, state, Block.UPDATE_CLIENTS);
 		BlockEntity be = level.getBlockEntity(at);
-		helper.assertTrue(level.getBlockState(at).is(state.getBlock()) && be != null, "setup: no " + state.getBlock() + " at the spot");
+		helper.assertTrue(be != null && level.getBlockState(at).is(state.getBlock()), "setup: no " + state.getBlock() + " where the chest stood");
 		fill.accept(be);
 		be.setChanged();
-	}
-
-	/** A chiseled bookshelf with one book where the chest stood. */
-	static void shelf(GameTestHelper helper) {
-		replaceChest(helper, Blocks.CHISELED_BOOKSHELF.defaultBlockState(), be -> ((ChiseledBookShelfBlockEntity) be).setItem(0, new ItemStack(Items.BOOK)));
 	}
 
 	static MoveSite work(ServerLevel level, MoverGameTests.Setup s, Predicate<MoveSite> stop) {
 		return MoverGameTests.work(level, s, stop);
 	}
 
-	/** Stone in the {@code high} blocks right above his crate (where there's air). */
-	static void column(GameTestHelper helper, int high) {
-		BlockPos crate = helper.absolutePos(QaMoverCrateDrop1114eGameTests.OWN_CRATE);
-		for (int dy = 1; dy <= high; dy++) {
-			if (helper.getLevel().getBlockState(crate.above(dy)).isAir()) {
-				helper.getLevel().setBlock(crate.above(dy), Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS);
+	/** How many of {@code item} there are: in containers standing in the area, lying loose, or carried by villagers. */
+	static int count(GameTestHelper helper, Item item) {
+		ServerLevel level = helper.getLevel();
+		int n = 0;
+		for (BlockPos pos : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(0, 1, 0)), helper.absolutePos(new BlockPos(29, 29, 29)))) {
+			if (level.getBlockEntity(pos) instanceof Container c) {
+				for (int i = 0; i < c.getContainerSize(); i++) {
+					if (c.getItem(i).is(item)) {
+						n += c.getItem(i).getCount();
+					}
+				}
 			}
 		}
+		AABB area = new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(48);
+		for (ItemEntity e : level.getEntitiesOfClass(ItemEntity.class, area)) {
+			if (e.getItem().is(item)) {
+				n += e.getItem().getCount();
+			}
+		}
+		for (Villager v : level.getEntitiesOfClass(Villager.class, area)) {
+			for (int i = 0; i < v.getInventory().getContainerSize(); i++) {
+				if (v.getInventory().getItem(i).is(item)) {
+					n += v.getInventory().getItem(i).getCount();
+				}
+			}
+		}
+		return n;
 	}
 
-	/** The move ends whole: done, {@code skipped} left out, his crate where it stood and still his, the move put away. */
+	/** Whether a block of {@code block} stands anywhere in the area (the dropped block must not be left standing somewhere). */
+	static int standing(GameTestHelper helper, Block block) {
+		int n = 0;
+		for (BlockPos pos : BlockPos.betweenClosed(helper.absolutePos(new BlockPos(0, 1, 0)), helper.absolutePos(new BlockPos(29, 29, 29)))) {
+			if (helper.getLevel().getBlockState(pos).is(block)) {
+				n++;
+			}
+		}
+		return n;
+	}
+
+	/** The move ended with the one block on his crate skipped, the crate standing and his, and the barrel's coal moved with it. */
 	static void assertEnded(GameTestHelper helper, ServerLevel level, MoverGameTests.Setup s, MoveSite site, int skipped, String when) {
 		helper.assertTrue(site.stage() == MoveSite.Stage.DONE && site.waiting() == null && !site.canceled(),
 			when + ": the move ended " + site.stage() + ", waiting " + site.waiting() + ", canceled " + site.canceled());
+		helper.assertTrue(level.getBlockState(helper.absolutePos(OWN_CRATE)).is(ModBlocks.MOVERS_CRATE), when + ": his crate isn't where it stood");
+		helper.assertTrue(MoverWork.hasCrate(level, s.mover()), when + ": the Mover lost his crate");
 		helper.assertTrue(site.skipped() == skipped, when + ": skipped " + site.skipped() + ", not " + skipped);
-		helper.assertTrue(level.getBlockState(helper.absolutePos(QaMoverCrateDrop1114eGameTests.OWN_CRATE)).is(ModBlocks.MOVERS_CRATE),
-			when + ": his crate isn't where it stood");
-		helper.assertTrue(MoverWork.hasCrate(level, s.mover()), when + ": the Mover lost his crate (workstation)");
-		helper.assertTrue(PendingMoves.get(level).forBuilding(s.from()).isEmpty() && MoveSites.get(level).forBuilding(s.from()).isEmpty(),
-			when + ": the move wasn't put away");
+		helper.assertTrue(count(helper, Items.COAL) == 20, when + ": the barrel's 20 coal are now " + count(helper, Items.COAL));
+		helper.assertTrue(PendingMoves.get(level).forBuilding(s.from()).isEmpty() && MoveSites.get(level).forBuilding(s.from()).isEmpty(), when + ": the move wasn't put away");
 	}
 
-	/** Exactly {@code n} of {@code item} round the test (in containers, loose or carried). */
+	/** {@code item} is there exactly {@code n} times, none lost and none doubled. */
 	static void assertExactly(GameTestHelper helper, Item item, int n, String what) {
-		int now = QaMoverCrateDrop1114eGameTests.count(helper, item);
-		helper.assertTrue(now == n, what + ": " + now + " of " + item + ", not " + n + " (B1172: nothing packed is ever destroyed)");
+		int had = count(helper, item);
+		helper.assertTrue(had == n, what + ": " + had + " " + item + " in the world, not " + n + (had < n ? " (lost)" : " (doubled)"));
 	}
 
-	/** A decorated pot holding 10 gold ingots, the 16 blocks over his crate built up: the pot and its gold are dropped. */
-	//$ gametest_batch AREA '"moverCrateNoRoomPot"'
-	@GameTest(template = AREA, batch = "moverCrateNoRoomPot")
-	public void aDecoratedPotOnACrateWithNoRoomAboveKeepsWhatItHolds(GameTestHelper helper) {
+	private static void assertLandsOnCrate(GameTestHelper helper, MoverGameTests.Setup s) {
+		BlockPos crate = helper.absolutePos(OWN_CRATE);
+		for (MovePlan.Placed p : s.before().placed(s.to(), Rotation.NONE)) {
+			if (p.pos().equals(crate)) {
+				return;
+			}
+		}
+		helper.fail("setup: nothing of the house lands on his crate");
+	}
+
+	// ---- one block holding things on his crate ----------------------------------------------------------------------
+
+	/** A jukebox holding a disc (kept in its own tag, not an Items list): the jukebox and the disc lie there, once each. */
+	//$ gametest_batch AREA '"qaB1184JukeboxOnCrate1114c"'
+	@GameTest(template = AREA, batch = "qaB1184JukeboxOnCrate1114c")
+	public void aJukeboxWhoseSpotIsHisCrateKeepsItsDisc(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		MoverGameTests.Setup s = crateInside(helper, "cratenoroompot");
-		replaceChest(helper, Blocks.DECORATED_POT.defaultBlockState(), be -> ((DecoratedPotBlockEntity) be).setTheItem(new ItemStack(Items.GOLD_INGOT, 10)));
+		MoverGameTests.Setup s = crateInside(helper, "qajukebox1114c");
+		replaceChest(helper, Blocks.JUKEBOX.defaultBlockState().setValue(JukeboxBlock.HAS_RECORD, true),
+			be -> ((JukeboxBlockEntity) be).setSongItemWithoutPlaying(new ItemStack(Items.MUSIC_DISC_CAT)));
 		helper.runAfterDelay(2, () -> {
-			assertExactly(helper, Items.GOLD_INGOT, 10, "setup: the pot's gold");
-			work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
-			column(helper, 16);
+			assertLandsOnCrate(helper, s);
+			assertExactly(helper, Items.MUSIC_DISC_CAT, 1, "setup");
 			MoveSite site = work(level, s, x -> false);
-			assertEnded(helper, level, s, site, 1, "no room over the crate");
-			assertExactly(helper, Items.DECORATED_POT, 1, "the pot");
-			assertExactly(helper, Items.GOLD_INGOT, 10, "the pot's gold (16 blocks over the crate all built up)");
+			assertEnded(helper, level, s, site, 1, "jukebox on the crate");
+			assertExactly(helper, Items.MUSIC_DISC_CAT, 1, "the jukebox's disc");
+			assertExactly(helper, Items.JUKEBOX, 1, "the jukebox");
+			helper.assertTrue(standing(helper, Blocks.JUKEBOX) == 0, "a jukebox was left standing: " + standing(helper, Blocks.JUKEBOX));
 			helper.succeed();
 		});
 	}
 
-	/** A chiseled bookshelf with its book, the 16 blocks over his crate built up: the shelf itself and its book are dropped. */
-	//$ gametest_batch AREA '"moverCrateNoRoomShelf"'
-	@GameTest(template = AREA, batch = "moverCrateNoRoomShelf")
-	public void aChiseledBookshelfOnACrateWithNoRoomAboveIsDroppedWithItsBook(GameTestHelper helper) {
+	/** A decorated pot holding 7 diamonds: the pot (as a pot, not sherds) and the 7 diamonds lie there. */
+	//$ gametest_batch AREA '"qaB1184PotOnCrate1114c"'
+	@GameTest(template = AREA, batch = "qaB1184PotOnCrate1114c")
+	public void aDecoratedPotWhoseSpotIsHisCrateKeepsItsItem(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		MoverGameTests.Setup s = crateInside(helper, "cratenoroomshelf");
+		MoverGameTests.Setup s = crateInside(helper, "qapot1114c");
+		replaceChest(helper, Blocks.DECORATED_POT.defaultBlockState(), be -> ((DecoratedPotBlockEntity) be).setTheItem(new ItemStack(Items.DIAMOND, 7)));
+		helper.runAfterDelay(2, () -> {
+			assertLandsOnCrate(helper, s);
+			int diamonds = diamonds(helper); // the item frame's diamond too
+			helper.assertTrue(diamonds == 8, "setup: " + diamonds + " diamonds, not the pot's 7 and the frame's 1");
+			MoveSite site = work(level, s, x -> false);
+			assertEnded(helper, level, s, site, 1, "decorated pot on the crate");
+			int now = diamonds(helper);
+			helper.assertTrue(now == 8, "the pot's diamonds: " + now + " diamonds (with the frame's), not 8");
+			assertExactly(helper, Items.DECORATED_POT, 1, "the decorated pot");
+			assertExactly(helper, Items.BRICK, 0, "the pot broke into sherds");
+			helper.succeed();
+		});
+	}
+
+	/** The diamonds in the area, the item frames' included. */
+	private static int diamonds(GameTestHelper helper) {
+		int n = count(helper, Items.DIAMOND);
+		for (net.minecraft.world.entity.decoration.ItemFrame f : helper.getLevel().getEntitiesOfClass(net.minecraft.world.entity.decoration.ItemFrame.class,
+			new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(48))) {
+			n += f.getItem().is(Items.DIAMOND) ? f.getItem().getCount() : 0;
+		}
+		return n;
+	}
+
+	/** A chiseled bookshelf with three books in slots 0, 2 and 5 on his crate: the shelf as it stood. */
+	static void shelf(GameTestHelper helper) {
+		replaceChest(helper, Blocks.CHISELED_BOOKSHELF.defaultBlockState(), be -> {
+			ChiseledBookShelfBlockEntity shelf = (ChiseledBookShelfBlockEntity) be;
+			shelf.setItem(0, new ItemStack(Items.BOOK));
+			shelf.setItem(2, new ItemStack(Items.ENCHANTED_BOOK));
+			shelf.setItem(5, new ItemStack(Items.WRITABLE_BOOK));
+		});
+	}
+
+	/** A chiseled bookshelf with three books (in slots 0, 2 and 5): the three books lie there, once each (the shelf itself: the bug class). */
+	//$ gametest_batch AREA '"qaB1184ShelfOnCrate1114c"'
+	@GameTest(template = AREA, batch = "qaB1184ShelfOnCrate1114c")
+	public void aChiseledBookshelfWhoseSpotIsHisCrateKeepsItsBooks(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qashelf1114c");
 		shelf(helper);
 		helper.runAfterDelay(2, () -> {
-			work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
-			column(helper, 16);
+			assertLandsOnCrate(helper, s);
 			MoveSite site = work(level, s, x -> false);
-			assertEnded(helper, level, s, site, 1, "no room over the crate");
-			assertExactly(helper, Items.CHISELED_BOOKSHELF, 1, "the chiseled bookshelf");
+			assertEnded(helper, level, s, site, 1, "chiseled bookshelf on the crate");
 			assertExactly(helper, Items.BOOK, 1, "the shelf's book");
+			assertExactly(helper, Items.ENCHANTED_BOOK, 1, "the shelf's enchanted book");
+			assertExactly(helper, Items.WRITABLE_BOOK, 1, "the shelf's book and quill");
+			helper.succeed();
+		});
+	}
+
+	/** A furnace with ore, fuel and its output (an Items list: the boundary the old code handled): all three slots and the furnace. */
+	//$ gametest_batch AREA '"qaB1184FurnaceOnCrate1114c"'
+	@GameTest(template = AREA, batch = "qaB1184FurnaceOnCrate1114c")
+	public void aFurnaceWhoseSpotIsHisCrateKeepsAllThreeSlots(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qafurnace1114c");
+		replaceChest(helper, Blocks.FURNACE.defaultBlockState(), be -> {
+			Container furnace = (Container) be;
+			furnace.setItem(0, new ItemStack(Items.BONE, 9)); // nothing to smelt: the fuel isn't burnt while the test runs
+			furnace.setItem(1, new ItemStack(Items.CHARCOAL, 4));
+			furnace.setItem(2, new ItemStack(Items.IRON_INGOT, 11));
+		});
+		helper.runAfterDelay(2, () -> {
+			assertLandsOnCrate(helper, s);
+			MoveSite site = work(level, s, x -> false);
+			assertEnded(helper, level, s, site, 1, "furnace on the crate");
+			assertExactly(helper, Items.BONE, 9, "the furnace's input");
+			assertExactly(helper, Items.CHARCOAL, 4, "the furnace's fuel");
+			assertExactly(helper, Items.IRON_INGOT, 11, "the furnace's output");
+			assertExactly(helper, Items.FURNACE, 1, "the furnace");
+			helper.succeed();
+		});
+	}
+
+	/** A standing sign with words on it (data, nothing held): the sign lies there, once, and nothing else appears. */
+	//$ gametest_batch AREA '"qaB1184SignOnCrate1114c"'
+	@GameTest(template = AREA, batch = "qaB1184SignOnCrate1114c")
+	public void aSignWhoseSpotIsHisCrateIsDroppedOnce(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qasign1114c");
+		replaceChest(helper, Blocks.OAK_SIGN.defaultBlockState(), be -> ((net.minecraft.world.level.block.entity.SignBlockEntity) be).setText(
+			new net.minecraft.world.level.block.entity.SignText().setMessage(0, net.minecraft.network.chat.Component.literal("Mover")), true));
+		helper.runAfterDelay(2, () -> {
+			assertLandsOnCrate(helper, s);
+			MoveSite site = work(level, s, x -> false);
+			assertEnded(helper, level, s, site, 1, "sign on the crate");
+			assertExactly(helper, Items.OAK_SIGN, 1, "the sign");
+			int loose = level.getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(48)).size();
+			helper.assertTrue(loose == 1, "besides the sign, " + (loose - 1) + " more stacks lie loose");
+			helper.assertTrue(standing(helper, Blocks.OAK_SIGN) == 0, "a sign was left standing");
+			helper.succeed();
+		});
+	}
+
+	// ---- two at once, a reload, the column above the crate ------------------------------------------------------------
+
+	/**
+	 * Two crates, two blocks: a lectern with its book on his crate and a jukebox with its disc on a second Mover's Crate
+	 * inside the house. Both crates stay, both blocks and both things they hold lie there, once each.
+	 */
+	//$ gametest_batch AREA '"qaB1184TwoCrates1114c"'
+	@GameTest(template = AREA, batch = "qaB1184TwoCrates1114c")
+	public void twoBlocksOnTwoCratesBothKeepWhatTheyHold(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qatwo1114c");
+		BlockPos jukebox = new BlockPos(5, 3, 5);
+		BlockPos second = new BlockPos(7, 3, 7);
+		replaceChest(helper, Blocks.LECTERN.defaultBlockState().setValue(LecternBlock.HAS_BOOK, true),
+			be -> ((LecternBlockEntity) be).setBook(new ItemStack(Items.WRITABLE_BOOK)));
+		level.setBlock(helper.absolutePos(jukebox), Blocks.JUKEBOX.defaultBlockState().setValue(JukeboxBlock.HAS_RECORD, true), Block.UPDATE_CLIENTS);
+		((JukeboxBlockEntity) level.getBlockEntity(helper.absolutePos(jukebox))).setSongItemWithoutPlaying(new ItemStack(Items.MUSIC_DISC_13));
+		helper.setBlock(second, ModBlocks.MOVERS_CRATE);
+		helper.runAfterDelay(2, () -> {
+			MoveSite site = work(level, s, x -> false);
+			assertEnded(helper, level, s, site, 2, "two blocks on two crates");
+			helper.assertTrue(level.getBlockState(helper.absolutePos(second)).is(ModBlocks.MOVERS_CRATE), "the second crate isn't where it stood");
+			assertExactly(helper, Items.LECTERN, 1, "the lectern");
+			assertExactly(helper, Items.WRITABLE_BOOK, 1, "the lectern's book");
+			assertExactly(helper, Items.JUKEBOX, 1, "the jukebox");
+			assertExactly(helper, Items.MUSIC_DISC_13, 1, "the jukebox's disc");
+			helper.succeed();
+		});
+	}
+
+	/** A lectern with its book on his crate, the site saved and read back every 3 steps all through the put-up. */
+	//$ gametest_batch AREA '"qaB1184CrateReload1114c"'
+	@GameTest(template = AREA, batch = "qaB1184CrateReload1114c")
+	public void aLecternOnHisCrateKeepsItsBookThroughReloads(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qareload1114c");
+		replaceChest(helper, Blocks.LECTERN.defaultBlockState().setValue(LecternBlock.HAS_BOOK, true),
+			be -> ((LecternBlockEntity) be).setBook(new ItemStack(Items.WRITTEN_BOOK)));
+		helper.runAfterDelay(2, () -> {
+			MoveSite site = work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
+			helper.assertTrue(site.stage().rebuilding(), "setup: it didn't get to putting it up: " + site.stage());
+			helper.assertTrue(count(helper, Items.WRITTEN_BOOK) == 0, "setup: the book wasn't packed: " + count(helper, Items.WRITTEN_BOOK));
+			int steps = 0;
+			int reloads = 0;
+			while (site.stage() != MoveSite.Stage.DONE && steps++ < MoverGameTests.MAX_STEPS) {
+				MoverWork.work(level, s.mover(), site);
+				if (steps % 3 == 0 && site.stage() != MoveSite.Stage.DONE) {
+					site = MoverGameTests.reload(level, s);
+					reloads++;
+				}
+			}
+			helper.assertTrue(reloads >= 3, "only " + reloads + " reloads");
+			assertEnded(helper, level, s, site, 1, "reloaded every 3 steps");
+			assertExactly(helper, Items.WRITTEN_BOOK, 1, "the lectern's book");
+			assertExactly(helper, Items.LECTERN, 1, "the lectern");
 			helper.succeed();
 		});
 	}
 
 	/**
-	 * His crate walled in all round once the house is down (every block within 2 of it stone, none free): the lectern
-	 * borrows a plain block's spot for a moment, so it and its book are dropped, and that block stands again after.
+	 * The column over his crate built up 15 blocks once the house is down, so the first free block is the 16th up: the
+	 * lectern and its book are still dropped (they lie up there), none lost, nothing left standing.
 	 */
-	//$ gametest_batch AREA '"moverCrateWalledIn"'
-	@GameTest(template = AREA, batch = "moverCrateWalledIn")
-	public void aLecternOnACrateWalledInAllRoundKeepsItsBook(GameTestHelper helper) {
+	//$ gametest_batch AREA '"qaB1184Column15_1114c"'
+	@GameTest(template = AREA, batch = "qaB1184Column15_1114c")
+	public void aCrateUnderAFifteenBlockColumnStillGetsTheLecternAndBook(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		MoverGameTests.Setup s = crateInside(helper, "cratewalledin");
+		MoverGameTests.Setup s = crateInside(helper, "qacol15_1114c");
 		replaceChest(helper, Blocks.LECTERN.defaultBlockState().setValue(LecternBlock.HAS_BOOK, true),
 			be -> ((LecternBlockEntity) be).setBook(new ItemStack(Items.WRITABLE_BOOK)));
-		BlockPos crate = helper.absolutePos(QaMoverCrateDrop1114eGameTests.OWN_CRATE);
 		helper.runAfterDelay(2, () -> {
-			work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
-			column(helper, 16);
-			for (BlockPos p : BlockPos.betweenClosed(crate.offset(-2, -2, -2), crate.offset(2, 2, 2))) {
-				if (level.getBlockState(p).isAir()) {
-					level.setBlock(p, Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS);
-				}
-			}
-			MoveSite site = work(level, s, x -> false);
-			assertEnded(helper, level, s, site, 1, "his crate walled in");
+			MoveSite site = work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
+			column(helper, 15);
+			site = work(level, s, x -> false);
+			assertEnded(helper, level, s, site, 1, "a 15-block column over the crate");
+			assertExactly(helper, Items.WRITABLE_BOOK, 1, "the lectern's book");
 			assertExactly(helper, Items.LECTERN, 1, "the lectern");
-			assertExactly(helper, Items.WRITABLE_BOOK, 1, "the lectern's book (his crate walled in all round)");
-			helper.assertTrue(!level.getBlockState(crate.above()).isAir(), "the block over his crate wasn't put back: " + level.getBlockState(crate.above()));
+			helper.assertTrue(standing(helper, Blocks.LECTERN) == 0, "a lectern was left standing");
 			helper.succeed();
 		});
+	}
+
+	/** Stone on the {@code n} blocks over his crate. */
+	static void column(GameTestHelper helper, int n) {
+		for (int y = 1; y <= n; y++) {
+			helper.getLevel().setBlock(helper.absolutePos(OWN_CRATE.above(y)), Blocks.STONE.defaultBlockState(), Block.UPDATE_CLIENTS);
+		}
 	}
 }

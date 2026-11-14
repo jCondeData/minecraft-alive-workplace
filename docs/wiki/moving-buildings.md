@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1234, B1235, B1236, B1238
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1234, B1235, B1236, B1237, B1238
 
 ## What a player sees
 
@@ -175,7 +175,11 @@ canceled, not done), the picker takes the site's own plan (the building as the M
 old spot, which may be empty by then (B1181), and Confirm is refused, so the saved move and the site never part (B1192).
 A canceled site not yet done (`MovePage.puttingBack`) refuses Confirm too, with `message.aliveworkplace.move.putting_back`,
 and lends the picker its plan the same way: `MoveSites.finish` clears the building's `PendingMoves` entry when the
-put-back ends, so a move saved in that window was dropped without a word (B1204). Nothing new is saved.
+put-back ends, so a move saved in that window was dropped without a word (B1204). Nothing new is saved. Call off cancels
+the site at once (`MoveSites.cancel`), so from that click the row and Confirm say it's being put back, not "call the
+move off first" (B1237: the site used to turn only on the Mover's next work step, all night while he sleeps).
+`QaMovePutBack1114cBugGameTests` (1, B1237): right after Call off, before any step, the row, Confirm's gray line and
+a pressed Confirm all say the put-back line, and nothing is saved.
 
 **The residents (45.4).** `move/MoveResidents`. As a site starts (`MoveSites.begin`), every loaded villager within 128
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on

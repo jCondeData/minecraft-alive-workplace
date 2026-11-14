@@ -18,6 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 - A far-off village whose saved name was blank (or missing, from an older save) is listed on a Village Hall's Map waystone network by its made-up name, as everywhere else, instead of with no name at all (B1244).
+- Right after you call a move off on the Move page, picking a new spot says "The Mover is still putting it back" at once, instead of telling you to call the move off first (with no Call off button there) until the Mover's next swing (B1237).
 - A building clicked onto the bed of a pond or lake no longer ends with its room flooded: the Builder takes away the water standing where the building goes before he starts the walls (as you would with a bucket) and dams the water just outside with a little dirt, so the room ends dry (B1243).
 - A blueprint file uploaded at the Blueprint Table (or imported with /workplace import) that holds only water or only lava is now refused like an empty file, instead of being listed with an empty picture; a build with a pond in it still imports, as does a lone chest (B1239).
 - A village whose saved name was missing or damaged (a hand-edited or broken save) is no longer wiped from the caravan list on load, taking its trade routes, wants, banner color, stations and track with it: it keeps all of that and goes by its made-up name until its Village Hall next does its round (B1233).

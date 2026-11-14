@@ -290,7 +290,8 @@ public final class MovePage {
 			menu.button(CALL_OFF, VillageHallScreen.icon(Items.COBWEB, Component.translatable("screen.aliveworkplace.move.call_off"), ChatFormatting.RED,
 				VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.planned_to", planned.get().to().getX(), planned.get().to().getY(),
 					planned.get().to().getZ()), ChatFormatting.GRAY)), pl -> {
-				PendingMoves.get(level).remove(p.from());
+				// B1237: the site starts putting it back at once (not on the Mover's next step), so the page says so from now on
+				MoveSites.get(level).cancel(level, p.from());
 				Chat.actionBar(pl, Component.translatable("message.aliveworkplace.move.called_off", name).withStyle(ChatFormatting.YELLOW));
 				backToList(menu, level, hall, pl);
 			});

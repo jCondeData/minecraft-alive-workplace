@@ -95,4 +95,6 @@ counts and its quest is paid at the hall's next round; a revival while it's unlo
 as a control hall; tracking and accepting by id never load a far hall) and `QaFarVillageName1114eGameTests` (a far,
 unloaded village is named in `/workplace quests` and in a letter written again by its own name as its last round saved
 it, through a save and load word for word, else by its made-up name, also for a saved entry with no name or a broken
-one, and its hall stays unloaded).
+one, and its hall stays unloaded) and `QaFarQuestsPaid1114e2GameTests` (QA, lane E: two kills while the hall is unloaded are paid once at its round,
+to the helper who finished the quest, also after a save and load and after the quest fell due; a broken hall pays nothing;
+a place reached far away counts only for the player standing there; a one-time quest done before counts nothing and loads nothing).

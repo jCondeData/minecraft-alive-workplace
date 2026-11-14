@@ -124,9 +124,11 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   leaves them be). Ordinary terrain is still all dug out: a sand column standing over one spot (even one 24 high,
   more than 16 digs of it) is dug out with nothing skipped.
 - A build clicked onto the bed of a pond or a lake (its room under the water line) ends dry: at the end of CLEAR the
-  water or lava standing anywhere in the build's box (but a pool the drawing has) is taken away at once, as a player
-  scoops it with a bucket, and the water just outside the box that would run back in (beside or above it) is plugged
-  with dirt, a little dam round the site; blocks holding water are drained and kept. Before, CLEAR passed over water,
+  water or lava standing in its rooms (drawn air its walls, floor, roof, doors and windows shut in) and in the walls,
+  floor and roof right round them is taken away at once, as a player scoops it with a bucket, and the water just
+  beside or above that would run back in is plugged with dirt, a little dam; blocks holding water are drained and
+  kept. Water a build stands in or over on purpose, open to the outside (under the Fisher's Hut's jetty, round its
+  posts), and a pool the drawing has stay. Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
 - Sand or gravel that falls into the rooms later (a prop under a pile broken mid-build) is dug out before the build is
   called done: once LANDSCAPE has run out, the builder goes back over CLEAR in a dig-out that takes only sand, gravel,

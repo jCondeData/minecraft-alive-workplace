@@ -1896,7 +1896,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
 (babysitting) and builds on the builder (`BuildSite`, styles, upgrades, `Paths`), the Village Hall (census,
 `VillageAdvice`, ranks, research) and `Caravans`.
 
-- [x] **27.1** (approved 2026-10-05) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
+- [x] **27.1** (approved 2026-10-05) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **Design note.** `docs/design/M27.md`: what the player sees (the City Plan and its screen, the
   Steward's day, his desk on the hall's screen, roads, walls, renewed houses), the data formats with one example file
   each (zone kinds, Steward rules, road styles, wall kits, renewal lists), the config switches, every new saved field
   with its default (the plan and the Steward's state on the hall, the player-built ledger), the per-tick budgets, the
@@ -2262,7 +2262,7 @@ and an old vanilla village slowly rebuilds itself one house at a time. It answer
     there; a save and reload between the take-down and the rebuild; a renewal cancelled after the take-down leaves the
     plot to be proposed again;
   - showcase scene `renewal`: a time-lapse GIF of a vanilla village house becoming a Stone House in Cherry.
-- [x] **27.22** (approved 2026-10-06) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
+- [x] **27.22** (approved 2026-10-06) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **A village from a plan (the 1.1 yardstick).** The whole milestone at once, as 23.1 is for builders: a
   plains village with a hall, a Steward, 3 builders, a stocked storehouse and 12 villagers; a plan with Homes,
   Workshops, Farms, Market, Gardens and Keep Clear zones, two streets and a wall line; Run the village for 6 in-game
   days. Run it as a pack-server scenario (`tools/packtest`) for the numbers and as a screenshot scene for the
@@ -3220,7 +3220,7 @@ Guildhalls, and six tonics from the alchemist and the chef), give players more w
 the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, `Treasury`), `people/Moods` and
 `BuilderLevels.delay`, and adds the one shared cap that stops all speed bonuses together at twice normal pace.
 
-- [x] **30.1** (approved 2026-10-05) **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **30.1** (approved 2026-10-05) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **Design note.** `docs/design/M30.md`, sent to the owner as a review package (lanes don't wait for his
   reply). It covers:
   - what the player sees: a sketch of the Book of Edicts page, each edict's boost, cost and reform, each civic item,
     and the changes to the hall's screen and the Village Ledger;
@@ -3551,7 +3551,7 @@ the Village Hall (`VillageNeeds`, `VillageQuests`, `VillageRanks`, `Festivals`, 
   Done when: `langcheck.py` is clean; a GameTest per advice tip; the README's tables list every edict, tonic and guild
   data file we ship (the tester checks); showcase scene `village_talk`: villagers' lines under Long Shifts and after
   The Shift Bell.
-- [x] **30.22** (owner 2026-10-13: a village's first day does not count against the 15% tick target; B101 is done) (approved auto 2026-10-13) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
+- [x] **30.22** (owner 2026-10-13: a village's first day does not count against the 15% tick target; B101 is done) (approved auto 2026-10-13) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **A season under the edicts.** A pack-server scenario (`tools/packtest`, with `/tick sprint`, in
   pieces that fit a night run): a City of 35 villagers with farms, a kitchen and a store, 4 in-game days under four
   edicts at once (Long Shifts, Free Bread, Large Families, Festival Season), then 4 days with all four reformed, with a
   Cradle, an idol in harvest season, a founded guild and a rush a day. Each day records: meals eaten and left, births,
@@ -4534,7 +4534,7 @@ guards who ride to each other's aid. Between players come trade pacts, alliances
 feuds that only turn to war on a PvP server. It all builds on what exists: hall/Caravans, the Village Ledger and
 treasury, travel posts, mail, village protection and the Settler's Wagon (camp/).
 
-- [x] **33.1** (approved 2026-10-06) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **33.1** (approved 2026-10-06) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **Design note.** `docs/design/M33.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees in each part, with a mock-up of the hall's new Trade page and its tabs (Routes, Prices,
   Pacts, Realm, Colonies); the data formats (`data/aliveworkplace/trade_goods/<good>.json`,
   `data/aliveworkplace/realm_research/<topic>.json`, realm edicts in M30's edict format); the config switches
@@ -5302,7 +5302,7 @@ builds on the builder (`BuildSite`, `BuildSiteManager`, `BuilderWork`'s helpers,
 (`tools/blueprints/`, STYLE.md), the Village Hall (ranks, research, festivals, caravans, the chronicle) and M29's
 Legends.
 
-- [x] **35.1** (approved 2026-10-12) **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
+- [x] **35.1** (approved 2026-10-12) (verified 2026-11-14: lane-c-1114-0053, 45f0c16bd, full local build green on cd80f11aa [8620 GameTests + compat]: QaEdicts1114c [9: M30 defaults/old saves/reload, 30.22 cap edges], QaSelfBuild1114c [10: Steward appoint at 5/6 blocks, baby/nitwit/second refused, switch off, save/reload, city run], QaRealm1114c [11: M33 config edges, six realm edicts' values and text], QaWonders1114c [12: the eight Wonders' table, switch edges, refusal order, powers off/damaged, saves]; plus QaHallCross1114c [9, People/Bed/Job after a building move] and QaFurnished1114c [7, M37 storage mid-job, move]. No mutation run [edits mod code].) **Design note.** `docs/design/M35.md`, sent to the owner as a review package (lanes don't wait for his
   reply): what the player sees, from the hall's Wonders page through the plan, the Foundation Stone, the crew, the
   goods and the dedications to the finished Wonder's celebration and its powers; one Wonder's data file in full
   (`data/aliveworkplace/wonders/<id>.json`); the condition types and the power types; the config switches (`wonders`,

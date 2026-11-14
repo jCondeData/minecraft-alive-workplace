@@ -97,3 +97,11 @@ turns out six at a time and goes for the war party; a lair broken with two playe
 `aliveworkplace:village/camp_broken` to both (36.3), and one broken by a lone player grants nothing. `QaWarPartyBugTests`
 (B418): a lone guard's kill at the lair, then the player alone breaks it: 5 days and no cheer; a guard on a raised banner
 kills there and is lost (kills saved and loaded), then the player breaks it: 10 days and the cheer. Scene `war_party`.
+
+QA of the Rally Banner itself (lane D, 2026-11-14): `QaRallySafe1114dGameTests` (3): a following guard leaves alone
+the village's iron golem and an armor stand the player strikes, then goes for a pig the player strikes; a zombie after
+the player is named the foe and falls; a guard follows 80 blocks from their post through fifteen rounds without being
+sent home, and is back by the post within three seconds once the banner is lowered (the only test past the 64 blocks
+past which a let-go guard is put back at once). `QaRallyPokemon1114dCompatTests` (1): a wild Pokémon the player strikes
+and one after the player are left alone. Each kills a hand mutant of `Escorts` (golem, armor stand and Pokémon checks
+dropped; sending home the guards still called instead of the ones let go).

@@ -103,19 +103,45 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 		};
 	}
 
-	/** Waits (at most {@code max} ticks) until every one of {@code halls} is entity-ticking. */
+	/**
+	 * Waits (at most {@code max} ticks) until every one of {@code halls} is entity-ticking. A forced far chunk becomes
+	 * entity-ticking only once the 5×5 chunks round it are generated, on the background executor, in real time; the test
+	 * server ticks flat out, and on CI 1000 ticks went by in under 0.45 s (runs 43595839957 and 43598149565, B1245). So a
+	 * tick still waiting gives the chunk system up to {@link #WAIT_MS} ms of real time (the server's own tasks run
+	 * meanwhile), as B1092 and B1208 do.
+	 */
 	private static Step ticking(GameTestHelper helper, int max, BlockPos... halls) {
 		ServerLevel level = helper.getLevel();
 		int[] n = {0};
+		long[] waitedMs = {0};
 		return () -> {
+			if (!allTicking(level, halls)) {
+				long start = System.nanoTime();
+				long until = start + WAIT_MS * 1_000_000L;
+				level.getServer().managedBlock(() -> allTicking(level, halls) || System.nanoTime() >= until);
+				waitedMs[0] += (System.nanoTime() - start) / 1_000_000L;
+			}
 			for (BlockPos h : halls) {
 				if (!level.isPositionEntityTicking(h)) {
-					helper.assertTrue(++n[0] < max, "the forced chunk at " + h + " isn't entity-ticking after " + max + " ticks");
+					helper.assertTrue(++n[0] < max, "the forced chunk at " + h + " isn't entity-ticking after " + max + " ticks (" + waitedMs[0] + " ms waited; loaded "
+						+ loaded(level, h) + ", forced " + level.getForcedChunks().contains(ChunkPos.asLong(h)) + ")");
 					return false;
 				}
 			}
 			return true;
 		};
+	}
+
+	/** Real time a tick waiting in {@link #ticking} gives the chunk system, at most. */
+	private static final long WAIT_MS = 25;
+
+	private static boolean allTicking(ServerLevel level, BlockPos... halls) {
+		for (BlockPos h : halls) {
+			if (!level.isPositionEntityTicking(h)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Removes the hall at {@code hall} after the test, if its chunk is loaded then. */

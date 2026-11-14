@@ -1724,7 +1724,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaFarOffline1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReform1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCaravanLoad1114eBugTests",
-			"io.github.jcondedata.aliveworkplace.test.CaravanSavedNameB1233GameTests"
+			"io.github.jcondedata.aliveworkplace.test.CaravanSavedNameB1233GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStandDown1114dGameTests"
 		]
 	},
 	"depends": {

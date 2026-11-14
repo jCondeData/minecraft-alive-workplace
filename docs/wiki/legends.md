@@ -382,3 +382,7 @@ Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `l
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,
 `legend_golem_smith`, `legend_seer`, `legend_merchant_prince`, `legend_grand_chef`, `legend_bard`,
 `legend_beastmaster`, `legend_professor`, `legend_ranger`, `legend_founder`, `founder_colony`, `merchant_prince_board`.
+
+QA (lane C, 2026-11-14, B1222): `QaFarHall1114cGameTests#aLegendSiteSkipsAFarHallAndStillOffersForTheLoadedOneBehindIt`:
+a far village nearer the site than the player's own is passed over without loading its hall's chunk, and the player's
+loaded village behind it still qualifies.

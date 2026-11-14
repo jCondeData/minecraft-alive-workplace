@@ -564,46 +564,72 @@ public final class MoveSite {
 	}
 
 	/**
-	 * B1172, B1184: block {@code j} can't go up at {@code at} (a Mover's Crate stands there). A block with packed data (a
-	 * chest, a lectern with its book, a jukebox's disc, a decorated pot, Create's vault or depot) is dropped on top of the
-	 * crate with everything it holds, never deleted. It is dropped the way breaking it drops it: it goes up for a moment
-	 * at the first free spot above the crate with its packed data and is broken there, so the block's own code drops
-	 * whatever it holds, however it holds it (an {@code Items} list, a book, a vault's inventory). A block with no data
-	 * (a wall's plank) is left out as before, nothing dropped (B1129).
+	 * B1172, B1184, B1234-B1236, B1238: block {@code j} can't go up at {@code at} (a Mover's Crate stands there). A block with
+	 * packed data (a chest, a lectern with its book, a jukebox's disc, a decorated pot, Create's vault or depot) is dropped
+	 * by the crate with everything it holds, never deleted, however the crate is roofed. It is dropped the way breaking it
+	 * drops it: it goes up for a moment at a spot by the crate with its packed data and is taken away again, so the block's
+	 * own code spills whatever it holds, however it holds it (an {@code Items} list, a book, a vault's {@code Inventory}).
+	 * The spot is the first free one above the crate, else the nearest free one round it, else a plain block above or
+	 * round it borrowed for that moment and put back as it stood (see {@link #dropSpot}). The block itself drops as its
+	 * loot when broken by hand, or as its own item when that loot is nothing (a chiseled bookshelf, which drops only to
+	 * Silk Touch, B1236). A block with no data (a wall's plank) is left out as before, nothing dropped (B1129).
 	 */
 	private void dropPacked(ServerLevel level, int j, BlockPos at, BlockState state) {
 		CompoundTag data = data(j);
 		if (data == null) {
 			return;
 		}
-		BlockPos spot = null;
-		for (BlockPos up = at.above(); up.getY() < level.getMaxBuildHeight() && up.getY() <= at.getY() + 16; up = up.above()) {
-			if (level.isLoaded(up) && level.getBlockState(up).isAir()) {
-				spot = up;
-				break;
-			}
-		}
+		BlockPos spot = dropSpot(level, at);
 		if (spot != null) {
+			BlockState was = level.getBlockState(spot);
 			level.setBlock(spot, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			BlockState placed = level.getBlockState(spot);
 			BlockEntity be = level.getBlockEntity(spot);
-			if (level.getBlockState(spot).is(state.getBlock()) && be != null) {
+			if (placed.is(state.getBlock()) && be != null) {
 				be.loadWithComponents(data.copy(), level.registryAccess());
 				be.setChanged();
-				level.destroyBlock(spot, true); // the block's own drops (its loot with its data) and what it holds spilled
+				// the block's own drops (its loot with its data, as broken by hand), or the block itself when that's nothing
+				List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(placed, level, spot, be));
+				drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
+				if (drops.isEmpty()) {
+					net.minecraft.world.item.ItemStack own = state.getBlock().getCloneItemStack(level, spot, placed);
+					if (!own.isEmpty()) {
+						drops.add(own);
+					}
+				}
+				if (was.isAir()) {
+					level.destroyBlock(spot, false); // what it holds spilled (onRemove), the block's breaking shown
+				} else {
+					level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // spilled, no neighbor told
+				}
 				if (!level.getBlockState(spot).isAir()) {
-					level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+					level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+				}
+				for (net.minecraft.world.item.ItemStack stack : drops) {
+					Block.popResource(level, spot, stack); // a borrowed block's spot: pushed out of it once it's back
+				}
+				if (!was.isAir()) {
+					level.setBlock(spot, was, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // the borrowed block back as it stood
 				}
 				return;
 			}
-			level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			level.setBlock(spot, was, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
-		// no free spot above the crate (or the block wouldn't stand there): the block itself and its packed Items list
+		// the block won't stand anywhere by the crate: the block itself, and what its data holds read back into a block
+		// entity of its kind (any Container, however it saves its items), else its packed Items list
 		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>();
 		net.minecraft.world.item.Item block = state.getBlock().asItem();
 		if (block != net.minecraft.world.item.Items.AIR) {
 			drops.add(new net.minecraft.world.item.ItemStack(block));
 		}
-		if (data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
+		BlockEntity loaded = BlockEntity.loadStatic(at, state, data.copy(), level.registryAccess());
+		if (loaded instanceof net.minecraft.world.Container container) {
+			for (int k = 0; k < container.getContainerSize(); k++) {
+				if (!container.getItem(k).isEmpty()) {
+					drops.add(container.getItem(k).copy());
+				}
+			}
+		} else if (data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
 			net.minecraft.nbt.ListTag items = data.getList("Items", net.minecraft.nbt.Tag.TAG_COMPOUND);
 			for (int k = 0; k < items.size(); k++) {
 				net.minecraft.world.item.ItemStack.parse(level.registryAccess(), items.getCompound(k)).filter(s -> !s.isEmpty()).ifPresent(drops::add);
@@ -612,6 +638,45 @@ public final class MoveSite {
 		for (net.minecraft.world.item.ItemStack stack : drops) {
 			net.minecraft.world.Containers.dropItemStack(level, at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5, stack);
 		}
+	}
+
+	/**
+	 * Where a block that can't go up on a Mover's Crate at {@code at} is put up for a moment to be dropped: the first free
+	 * (air) spot within 16 above the crate; else the nearest free one within 2 round it; else a plain block (no block
+	 * entity, breakable, not a crate) above or round the crate, borrowed and put back. Null when there's none of these.
+	 */
+	@Nullable
+	private static BlockPos dropSpot(ServerLevel level, BlockPos at) {
+		for (BlockPos up = at.above(); up.getY() < level.getMaxBuildHeight() && up.getY() <= at.getY() + 16; up = up.above()) {
+			if (level.isLoaded(up) && level.getBlockState(up).isAir()) {
+				return up;
+			}
+		}
+		List<BlockPos> round = new ArrayList<>();
+		for (BlockPos p : BlockPos.betweenClosed(at.offset(-2, -2, -2), at.offset(2, 2, 2))) {
+			if (!p.equals(at) && p.getY() >= level.getMinBuildHeight() && p.getY() < level.getMaxBuildHeight()) {
+				round.add(p.immutable());
+			}
+		}
+		// nearest first; level with or above the crate before below it
+		round.sort(Comparator.<BlockPos>comparingInt(p -> p.distManhattan(at)).thenComparingInt(p -> p.getY() < at.getY() ? 1 : 0));
+		for (BlockPos p : round) {
+			if (level.isLoaded(p) && level.getBlockState(p).isAir()) {
+				return p;
+			}
+		}
+		List<BlockPos> borrow = new ArrayList<>();
+		borrow.add(at.above());
+		borrow.addAll(round);
+		for (BlockPos p : borrow) {
+			if (p.getY() < level.getMaxBuildHeight() && level.isLoaded(p)) {
+				BlockState there = level.getBlockState(p);
+				if (!there.hasBlockEntity() && !stays(there) && there.getDestroySpeed(level, p) >= 0) {
+					return p;
+				}
+			}
+		}
+		return null;
 	}
 
 	/** How block {@code j}'s packed data has to turn to stand {@code now}: with the move at the new spot, back again at the old one. */

@@ -6603,7 +6603,7 @@ Lane C builds it, in order. Depends on: nothing open.
   like builders. Done when: GameTests for a whole move, a block broken mid-move, save and reload in each stage, a
   full Storehouse (he waits, says why), the job canceled half way (everything taken down is put back up where it
   was); scene `mover` (before, half way, after).
-- [x] **45.4** (review: pending 2026-11-10) **The residents move too.** Villagers who live or work in the building keep it: during the move they
+- [x] **45.4** (review: pending 2026-11-10) (verified 2026-11-14: QaMoverResidents1114cGameTests [4]: inn before a free bed by the Hall; full inn falls back to the Hall's bed and gives it back; no free bed anywhere: none while away, own moved beds after, the neighbor untouched; the moved bed held and the inn bed given back as soon as both halves stand, before the move ends. Couples/People page/census/bench/reload already covered by MoverResidentsGameTests and QaMoverResidents1110c) **The residents move too.** Villagers who live or work in the building keep it: during the move they
   sleep in the Hall or the inn, then their bed, home and workstation are the new spot's, and the Hall's People page,
   couples and status cards follow. Done when: GameTests for a family's beds, a worker's workstation, a builder's
   bench inside a moved house, save and reload; scene `mover` shows them at home after.

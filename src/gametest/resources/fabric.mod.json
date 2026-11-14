@@ -13,6 +13,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWaterVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateVerify1114fBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateQa1114c4GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotQa1114c4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBackVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bBugTests",

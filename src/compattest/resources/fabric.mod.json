@@ -37,6 +37,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainerRefusedChoiceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerRefusedEveryTurn1114dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaShopSoldOut1114dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainerBattle1111dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WildFoesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.KeepsakeCompatTests",

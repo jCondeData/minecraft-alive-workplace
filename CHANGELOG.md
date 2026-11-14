@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A builder no longer takes a blueprint on the new spot of a called-off move while the Mover is still taking the building back down there: he says the spot isn't free yet, and takes it once the building stands where it was (B1230).
+- A block the Mover can't put up because a Mover's Crate stands on its spot is dropped as itself with everything it held, never deleted: an ender chest or a campfire is no longer turned into obsidian or charcoal, a beehive keeps its bees, a lectern or a Create Item Vault keeps its book or items even when the crate is boxed in by containers, and lava next to the crate is never used as the drop spot (B1246-B1250, B1252).
 - With Create installed, a builder waiting for glass with no sand anywhere is told "short of 4 Sand to make 4 Glass" again, instead of being asked for Create's Tiled Glass, which is itself made from glass (B1196).
 - With Create installed, the Glassblower fires eight glass on one coal again, instead of two: he fires the sand, rather than firing glass, cutting it into Create's Tiled and Framed Glass and firing that back into glass (B1197).
 - A far-off village whose saved name was blank (or missing, from an older save) is listed on a Village Hall's Map waystone network by its made-up name, as everywhere else, instead of with no name at all (B1244).

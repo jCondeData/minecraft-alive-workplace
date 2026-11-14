@@ -1688,6 +1688,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveInnMutants1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveInnVerify1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuilt1111dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnRebuiltVerify1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuild1114cGameTests"
 		]
 	},

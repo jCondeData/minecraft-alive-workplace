@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Less lag from far-away villages: a Militia Drill day at a village nobody is near no longer loads the chunks round its Village Hall; the drill, the Shift Bell and the lamplit chronicle line now happen only while someone is near the village (B1232).
 - A block a Mover can't put up because a Mover's Crate was set down on its spot is now dropped there with everything it holds, however it holds it: a Create Item Vault keeps its items, a lectern its book, a jukebox its disc. Before, only a chest's or barrel's items were dropped and the rest was deleted with the block (B1184).
 - A Shop Counter that was broken and put back for a Shopkeeper no longer becomes the inn again when its old Innkeeper comes back into a loaded chunk: she still remembers the spot as her job site, but the counter she worked is gone, so no Legend comes to the shop as to an inn and a move's residents don't stay there (B1228).
 - A village whose hall was given a blank name (only possible with commands) is now called by its made-up name in `/workplace quests` and letters, even far away, instead of by nothing, as in "Bring 3 Bread (): ..." (B1229).

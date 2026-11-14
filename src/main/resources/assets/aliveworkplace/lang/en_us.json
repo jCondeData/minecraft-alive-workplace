@@ -2071,6 +2071,7 @@
   "message.aliveworkplace.move.cannot": "That building can't be moved: its blueprint is gone",
   "message.aliveworkplace.move.needs_mover": "A move needs a hired Mover, and none works in the village yet",
   "message.aliveworkplace.move.under_way": "The Mover is already moving it: call the move off first to pick another spot",
+  "message.aliveworkplace.move.putting_back": "The Mover is still putting it back: pick a new spot once it stands again",
   "message.aliveworkplace.move.planned": "Move planned: a Mover will put the %s up again at %s, %s, %s",
   "message.aliveworkplace.move.called_off": "The %s stays where it is: the move is called off",
   "block.aliveworkplace.movers_crate": "Mover's Crate",

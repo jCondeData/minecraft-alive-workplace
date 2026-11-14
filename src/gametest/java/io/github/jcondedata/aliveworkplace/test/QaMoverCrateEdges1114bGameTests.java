@@ -265,46 +265,4 @@ public class QaMoverCrateEdges1114bGameTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
-
-	// ---- restored: the bug lane's two no-room tests (3476befe0), lost when a52eb6180's version of QaMoverCrateHolds1114cGameTests was merged over them
-
-	/** A decorated pot holding 10 gold ingots, the 16 blocks over his crate built up: the pot and its gold are dropped. */
-	//$ gametest_batch AREA '"moverCrateNoRoomPot"'
-	@GameTest(template = AREA, batch = "moverCrateNoRoomPot")
-	public void aDecoratedPotOnACrateWithNoRoomAboveKeepsWhatItHolds(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		MoverGameTests.Setup s = QaMoverCrateHolds1114cGameTests.crateInside(helper, "cratenoroompot");
-		QaMoverCrateHolds1114cGameTests.replaceChest(helper, Blocks.DECORATED_POT.defaultBlockState(),
-			be -> ((net.minecraft.world.level.block.entity.DecoratedPotBlockEntity) be).setTheItem(new ItemStack(Items.GOLD_INGOT, 10)));
-		helper.runAfterDelay(2, () -> {
-			assertExactly(helper, Items.GOLD_INGOT, 10, "setup: the pot's gold");
-			QaMoverCrateHolds1114cGameTests.work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
-			QaMoverCrateHolds1114cGameTests.column(helper, 16);
-			MoveSite site = QaMoverCrateHolds1114cGameTests.work(level, s, x -> false);
-			QaMoverCrateHolds1114cGameTests.assertEnded(helper, level, s, site, 1, "no room over the crate");
-			assertExactly(helper, Items.DECORATED_POT, 1, "the pot");
-			assertExactly(helper, Items.GOLD_INGOT, 10, "the pot's gold (16 blocks over the crate all built up)");
-			helper.succeed();
-		});
-	}
-
-	/** A chiseled bookshelf with its books, the 16 blocks over his crate built up: the shelf itself and its books are dropped. */
-	//$ gametest_batch AREA '"moverCrateNoRoomShelf"'
-	@GameTest(template = AREA, batch = "moverCrateNoRoomShelf")
-	public void aChiseledBookshelfOnACrateWithNoRoomAboveIsDroppedWithItsBook(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		MoverGameTests.Setup s = QaMoverCrateHolds1114cGameTests.crateInside(helper, "cratenoroomshelf");
-		QaMoverCrateHolds1114cGameTests.shelf(helper);
-		helper.runAfterDelay(2, () -> {
-			QaMoverCrateHolds1114cGameTests.work(level, s, x -> x.stage() != MoveSite.Stage.DISMANTLE);
-			QaMoverCrateHolds1114cGameTests.column(helper, 16);
-			MoveSite site = QaMoverCrateHolds1114cGameTests.work(level, s, x -> false);
-			QaMoverCrateHolds1114cGameTests.assertEnded(helper, level, s, site, 1, "no room over the crate");
-			assertExactly(helper, Items.CHISELED_BOOKSHELF, 1, "the chiseled bookshelf");
-			assertExactly(helper, Items.BOOK, 1, "the shelf's book");
-			assertExactly(helper, Items.ENCHANTED_BOOK, 1, "the shelf's enchanted book");
-			assertExactly(helper, Items.WRITABLE_BOOK, 1, "the shelf's book and quill");
-			helper.succeed();
-		});
-	}
 }

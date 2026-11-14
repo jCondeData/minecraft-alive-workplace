@@ -562,6 +562,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRealmFoundingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageSevenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRequestsLeaderboardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRealm1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRequestsLeaderboardBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReliefGrammarBugTests",
 			"io.github.jcondedata.aliveworkplace.test.CradleGameTests",

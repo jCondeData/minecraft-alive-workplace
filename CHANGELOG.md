@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.155.2 — 2026-11-14
+
 ### Fixed
 - A building put up from the modded library (furnished builds with the pack's building mods) is offered "Refresh to the latest look" again when its blueprint was redrawn: a modded Clinic built on 0.151.0 now refreshes to its new white ward beds, and 44 other modded buildings redrawn since 1.0 (Farmsteads, Healing Centers, Inns, the Map Room, Storage Hall, Warehouse and more) are recognized too (B680).
 - With Create installed, the Glassblower makes glass panes straight from the glass he fires: 6 sand and a coal make 16 panes, instead of the coal running short because the panes were planned through Create's Tiled Glass Panes and fired again (B1254, B1255).

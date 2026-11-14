@@ -341,6 +341,10 @@ and the edge (11 yes, 10 no) on that path.
 Bug B1228: when the old Innkeeper of a counter that was broken and put back for a Shopkeeper loads again (past the edge, or
 in the village away from the counter), her job-site memory of the spot is stale (the mod counts each break, so it knows
 the counter's ticket isn't hers since), and the counter stays a shop. `QaInnRebuild1114cBugTests` (2).
+`QaInnCounterEdges1114c2GameTests` (QA lane, 5): the same Innkeeper, or a new one, taking the rebuilt counter makes it
+the inn again (and it stays the inn while they are away); a counter broken and not put back is no inn anywhere; of two
+inns only the one rebuilt for a Shopkeeper stops being one; a rebuilt shop stays a shop across a save with its old
+Innkeeper standing at it; a rebuilt counter nobody works is no inn.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

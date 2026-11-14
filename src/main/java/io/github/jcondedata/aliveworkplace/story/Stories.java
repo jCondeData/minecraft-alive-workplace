@@ -62,10 +62,16 @@ public final class Stories {
 	public static void round(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		Data data = Data.get(level);
 		migrate(level, hall, entity);
+		RequestErrands.revivedWhileAway(level, hall, entity); // B1220: revivals while the hall wasn't loaded
 		long now = level.getGameTime();
 		Entry e = data.entry(hall);
+		for (Quest q : List.copyOf(e.quests)) {
+			if (q.done()) { // B1220: moved on to the end while the hall wasn't loaded: paid now
+				finishOrWait(level, hall, entity, q);
+			}
+		}
 		boolean changed = PersonalRequests.overdue(level, hall, now) > 0; // a missed personal request costs friendship (31.9)
-		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due);
+		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due && !q.done()); // B1231: a finished one waiting for its helper stays
 		changed |= swapUnfinishable(level, hall, entity, e);
 		long today = Chronicle.day(level);
 		changed |= e.moods.removeIf(m -> m.until < today);
@@ -77,7 +83,7 @@ public final class Stories {
 					q.progress[i] = days;
 					changed = true;
 					if (q.done()) {
-						finish(level, hall, entity, q, q.last == null ? null : level.getServer().getPlayerList().getPlayer(q.last));
+						finishOrWait(level, hall, entity, q);
 					}
 				}
 			}
@@ -100,9 +106,22 @@ public final class Stories {
 		Arcs.round(level, hall, entity); // story arcs move on, end or begin (31.4)
 	}
 
-	/** The open quests of the hall's board (giver {@code hall}). */
+	/**
+	 * B1231: a quest finished (while its hall wasn't loaded) is paid to its last helper at the round; one who is offline
+	 * then keeps it waiting, done, until a round finds them online (never paid to nobody). A villager's own request pays
+	 * every helper, away ones included ({@link PersonalRequests#done}), so it is finished now.
+	 */
+	private static void finishOrWait(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Quest q) {
+		ServerPlayer player = q.last == null ? null : level.getServer().getPlayerList().getPlayer(q.last);
+		if (player == null && q.last != null && !q.personal()) {
+			return;
+		}
+		finish(level, hall, entity, q, player);
+	}
+
+	/** The open quests of the hall's board (giver {@code hall}); a finished one waiting for its helper (B1231) takes no slot. */
 	static List<Quest> daily(Entry e) {
-		return e.quests.stream().filter(q -> q.giver.equals("hall")).toList();
+		return e.quests.stream().filter(q -> q.giver.equals("hall") && !q.done()).toList();
 	}
 
 	/** Puts an already resolved and located quest up in the village round {@code hall} (arcs, tests). */
@@ -117,9 +136,13 @@ public final class Stories {
 		return List.copyOf(Data.get(level).halls.keySet());
 	}
 
-	/** Every open quest of the village round {@code hall} (old ones moved in first). */
+	/**
+	 * Every open quest of the village round {@code hall} (old ones moved in first). B1212: a hall whose chunk isn't loaded
+	 * is never loaded for this (it ran every 2 seconds for every hall); its saved quests are listed as they are, and its
+	 * pre-1.5 ones move in on the first call after it loads.
+	 */
 	public static List<Quest> open(ServerLevel level, BlockPos hall) {
-		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+		if (level.isLoaded(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			migrate(level, hall, entity);
 		}
 		Entry e = Data.get(level).halls.get(hall);
@@ -297,11 +320,34 @@ public final class Stories {
 		return given;
 	}
 
-	/** A player killed something: it counts towards the first matching quest of the nearest village, and "anywhere" ones. */
+	/**
+	 * The block entity of {@code hall} when its chunk is ticking, else null, never loading the chunk (B1212, B1220: a
+	 * waiting-to-unload chunk counts as loaded, and {@code getBlockEntity} would ticket it again).
+	 */
+	@Nullable
+	static VillageHallBlockEntity ticking(ServerLevel level, BlockPos hall) {
+		return level.isPositionEntityTicking(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity : null;
+	}
+
+	/**
+	 * Whether a quest of {@code hall} may move on now: its hall is there ({@code entity}), or its chunk isn't ticking, so
+	 * it counts without loading it and a quest it finishes is paid at the hall's next round (B1220). False when the chunk
+	 * ticks and the hall is gone.
+	 */
+	static boolean counts(ServerLevel level, BlockPos hall, @Nullable VillageHallBlockEntity entity) {
+		return entity != null || !level.isPositionEntityTicking(hall);
+	}
+
+	/**
+	 * A player killed something: it counts towards the first matching quest of the nearest village, and "anywhere" ones.
+	 * B1220: a hall whose chunk isn't loaded isn't loaded for it; the kill counts and a quest it finishes is paid when the
+	 * hall's round next runs.
+	 */
 	public static void onKill(ServerLevel level, LivingEntity killed, ServerPlayer player) {
 		Optional<BlockPos> near = VillageHalls.nearest(level, killed.blockPosition());
 		near.ifPresent(hall -> {
-			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+			VillageHallBlockEntity entity = ticking(level, hall);
+			if (entity != null) {
 				migrate(level, hall, entity);
 			}
 		});
@@ -312,7 +358,11 @@ public final class Stories {
 				int i = q.current();
 				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere() || kill.role() != null) && kill.matches(killed)
 					&& (kill.role() == null || ArcEffects.plays(en.getValue(), q, kill.role(), killed)) // B711: this arc's own foe
-					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity entity && mayHelp(level, en.getKey(), q, player)) {
+					&& mayHelp(level, en.getKey(), q, player)) {
+					VillageHallBlockEntity entity = ticking(level, en.getKey());
+					if (!counts(level, en.getKey(), entity)) {
+						continue;
+					}
 					progress(level, en.getKey(), entity, q, i, 1, player);
 					break;
 				}
@@ -459,14 +509,18 @@ public final class Stories {
 		return repeatable || !Data.get(level).entry(hall).done.getOrDefault(player.getUUID(), Set.of()).contains(quest.file.toString());
 	}
 
-	static void progress(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Quest quest, int index, int amount, @Nullable ServerPlayer player) {
+	/**
+	 * {@code quest} moves on by {@code amount}; finished, it is paid. With no {@code entity} (B1220: the hall's chunk isn't
+	 * loaded) a finished quest waits for the hall's next {@link #round} to be paid.
+	 */
+	static void progress(ServerLevel level, BlockPos hall, @Nullable VillageHallBlockEntity entity, Quest quest, int index, int amount, @Nullable ServerPlayer player) {
 		quest.progress[index] = Math.min(quest.objectives.get(index).need(), quest.progress[index] + amount);
 		if (player != null) {
 			quest.helpers.merge(player.getUUID(), amount, Integer::sum);
 			quest.last = player.getUUID();
 		}
 		Data.get(level).setDirty();
-		if (quest.done()) {
+		if (quest.done() && entity != null) {
 			finish(level, hall, entity, quest, player);
 		}
 		QuestTracker.changed(level.getServer(), quest.id);

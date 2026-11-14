@@ -64,6 +64,11 @@ branches for the next run to merge). Finish the ones in flight, build, and push 
 
 **Usage**: one fresh subagent per feature (no model override); Sonnet subagents only for translations and routine
 tests (owner, 2026-10-04) and for searching or reading code. Don't print whole big files or logs; grep them.
+**Hard bugs go to Fable early** (owner, 2026-11-10: a hard bug left on Opus burns usage without a fix, and a late switch
+wastes what was already spent). Give a bug's subagent `model: "fable"` as soon as any of these holds: an earlier run
+already tried it (a fix that didn't hold, "not reproduced", "cause unknown" or "likely" in its notes), it is older
+than 2 days, or your own Opus subagent came back without a proven root cause. Switch at that point; never give it a
+second Opus attempt. Its leads are in the ROADMAP Notes (2026-11-10, Fable's second opinion); everything else stays as is.
 
 ## Reporting to the owner
 
@@ -132,8 +137,8 @@ Commands:
 - Tester scripts: `tools/modtest/` (`scope.py`, `inventory.py`, `langcheck.py`, `mutate.py`, `results.py`,
   `logaudit.py`), with `allow.txt` (log messages that are expected, each with its reason) and `baseline.json` (the
   suite's tests by name; only a Full run updates it).
-- `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (5 suite runs for
-  flakes, the log audit, the pack boot and soak) and opens a `nightly-tests` issue when anything fails.
+- `.github/workflows/nightly.yml` runs the heavy checks on GitHub every night at about 10 PM Central (the log audit, the pack
+  boot and soak, then up to 5 suite runs for flakes, as many as fit the job's time) and opens a `nightly-tests` issue when anything fails.
 - `.github/workflows/showcase.yml` films every screenshot scene on GitHub every night (parallel jobs, under an hour)
   and publishes the owner's showcase page, https://jcondedata.github.io/minecraft-alive-workplace/: a GIF and stills
   per scene, each with a pass or fail. Failures go into the same `nightly-tests` issue. Every scene is listed in

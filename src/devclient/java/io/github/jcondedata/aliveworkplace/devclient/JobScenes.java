@@ -422,6 +422,21 @@ final class JobScenes {
 	/** The bandit_king scene's front: the ground before the fort's gate, where the banners fly and the allies stand. */
 	private static final BlockPos BANDIT_KING_FRONT = new BlockPos(0, -60, -2);
 
+	/** job_lists (46.1): the scene's two builders, one asking for sixteen oak logs, the other for two brewing stands. */
+	private static final Villager[] JOB_LISTS_ASKERS = new Villager[2];
+
+	private static void jobListsAsk() {
+		Item[] wants = {Items.OAK_LOG, Items.BREWING_STAND};
+		int[] counts = {16, 2};
+		for (int i = 0; i < 2; i++) {
+			Villager v = JOB_LISTS_ASKERS[i];
+			if (v != null) {
+				io.github.jcondedata.aliveworkplace.work.Requests.post(v, new ItemStack(wants[i]), counts[i], wants[i].getDescription(),
+					new io.github.jcondedata.aliveworkplace.work.Requests.ExactItem(wants[i]));
+			}
+		}
+	}
+
 	/** The fort's men hold still for the camera. */
 	private static void stillFortMen(ServerLevel level) {
 		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
@@ -2876,14 +2891,114 @@ final class JobScenes {
 			Villager m = worker(level, STATION, Blocks.STONECUTTER, PoiTypes.MASON, VillagerProfession.MASON);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, m) >= 1 && built(l, site, 0.6f);
 		}, null));
-		SCENES.put("dyer", new Job("the dyer made the red wool and carpets the builder needed", 6000,
+		// 46.2: wool, carpets and beds are the Shepherd's at his loom now (the leatherworker dyed them before)
+		SCENES.put("dyer", new Job("the shepherd dyed the red wool and carpets the builder needed at his loom", 6000,
 			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
 			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
 			java.util.UUID site = builderSite(level, StarterBlueprints.MARKET_STALL, new BlockPos(-8, -60, -3),
 				List.of(Items.RED_WOOL, Items.RED_CARPET, Items.WHITE_CARPET), Map.of(Items.WHITE_WOOL, 48, Items.POPPY, 32));
-			Villager d = worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+			Villager d = worker(level, STATION, Blocks.LOOM, PoiTypes.SHEPHERD, VillagerProfession.SHEPHERD);
 			return l -> n(ModAttachments.ITEMS_CRAFTED, d) >= 1 && built(l, site, 0.6f);
 		}, null));
+		// ROADMAP 46.2: the Shepherd weaves a builder's bed at his loom, from white wool, red dye and planks in the builder's
+		// barrels, step by step (the wool dyed, then the bed), and takes it to them
+		SCENES.put("weaver", new Job("the shepherd made the red bed the builder needed at his loom and took it to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.STARTER_COTTAGE, new BlockPos(-8, -60, -3),
+				List.of(Items.RED_BED), Map.of(Items.WHITE_WOOL, 3, Items.RED_DYE, 3, Items.OAK_PLANKS, 3));
+			Villager s = worker(level, STATION, Blocks.LOOM, PoiTypes.SHEPHERD, VillagerProfession.SHEPHERD);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(s);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(s).count(Items.RED_BED);
+				timeoutWhy = "the shepherd made " + n(ModAttachments.ITEMS_CRAFTED, s) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " red bed(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, s) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.3: the Florist makes the flower pots a builder's cottage needs at her Flower Stand, from the bricks in
+		// the builder's barrels, and takes them to them
+		SCENES.put("florist_pots", new Job("the florist made the flower pots the builder needed at her flower stand and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.STARTER_COTTAGE, new BlockPos(-8, -60, -3),
+				List.of(Items.FLOWER_POT), Map.of(Items.BRICK, 12));
+			Villager f = worker(level, STATION, io.github.jcondedata.aliveworkplace.registry.ModBlocks.FLOWER_STAND,
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLOWER_STAND_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.FLORIST);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(f);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(f).count(Items.FLOWER_POT);
+				timeoutWhy = "the florist made " + n(ModAttachments.ITEMS_CRAFTED, f) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " flower pot(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, f) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.4: the Cleric makes the brewing stand a builder's healing center needs at his own brewing stand, from
+		// the blaze rod and cobblestone in the builder's barrels, and takes it to them
+		SCENES.put("cleric_crafts", new Job("the cleric made the brewing stand the builder needed at his brewing stand and took it to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.HEALING_CENTER, new BlockPos(-8, -60, -3),
+				List.of(Items.BREWING_STAND), Map.of(Items.BLAZE_ROD, 2, Items.COBBLESTONE, 6));
+			Villager c = worker(level, STATION, Blocks.BREWING_STAND, PoiTypes.CLERIC, VillagerProfession.CLERIC);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(c);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(c).count(Items.BREWING_STAND);
+				timeoutWhy = "the cleric made " + n(ModAttachments.ITEMS_CRAFTED, c) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " brewing stand(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, c) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.5: the Beekeeper makes the candles a builder's graveyard needs at her Apiary, from the honeycomb and
+		// string in the builder's barrels, and takes them to them
+		SCENES.put("chandler", new Job("the beekeeper made the candles the builder needed at her apiary and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.GRAVEYARD, new BlockPos(-8, -60, -3),
+				List.of(Items.CANDLE), Map.of(Items.HONEYCOMB, 32, Items.STRING, 32));
+			level.setBlockAndUpdate(STATION.east(2), Blocks.BEEHIVE.defaultBlockState());
+			Villager b = worker(level, STATION, ModBlocks.APIARY, ModVillagers.APIARY_POI, ModVillagers.BEEKEEPER);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(b);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(b).count(Items.CANDLE);
+				timeoutWhy = "the beekeeper made " + n(ModAttachments.ITEMS_CRAFTED, b) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " candle(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, b) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.6: the Glassblower at his Glass Kiln fires the sand in the builder's barrels into glass on their coal and
+		// makes the panes the builder's Glassblower's Workshop needs, and takes them to the builder
+		SCENES.put("glassblower", new Job("the glassblower fired the builder's sand into glass at his glass kiln, made the glass panes the builder needed and took them to the builder's chest", 4000,
+			new Vec3(4.5, -54.5, 8.5), new Vec3(-5, -58, -4), (level, player) -> {
+			level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+			java.util.UUID site = builderSite(level, StarterBlueprints.GLASSBLOWERS_WORKSHOP, new BlockPos(-8, -60, -3),
+				List.of(Items.GLASS_PANE), Map.of(Items.SAND, 24, Items.COAL, 4));
+			Villager g = worker(level, STATION, ModBlocks.GLASS_KILN, ModVillagers.GLASS_KILN_POI, ModVillagers.GLASSBLOWER);
+			return l -> {
+				var job = ModAttachments.CRAFTER_JOB.get(g);
+				int carried = ModAttachments.BUILDER_BAG.getOrCreate(g).count(Items.GLASS_PANE);
+				timeoutWhy = "the glassblower made " + n(ModAttachments.ITEMS_CRAFTED, g) + ", job " + (job == null ? "none" : job.phase() + " " + job.target())
+					+ ", carrying " + carried + " pane(s), site " + (site == null ? "none" : String.valueOf(BuildSiteManager.get(l).get(site) == null ? "done"
+						: BuildSiteManager.get(l).get(site).missing()));
+				return n(ModAttachments.ITEMS_CRAFTED, g) >= 1 && job == null && carried == 0;
+			};
+		}, null));
+		// ROADMAP 46.5: the Leatherworker at his cauldron fills the Storehouse's stock orders for item frames and leads from
+		// the leather, sticks, string and slime balls in its store, and puts them there
+		SCENES.put("leatherworker_goods", job("the leatherworker made the item frames and leads the storehouse ordered from the leather, sticks, string and slime balls in its store", 3000, (level, player) -> {
+			BlockPos storehouse = chestPos().west();
+			level.setBlockAndUpdate(storehouse, ModBlocks.STOREHOUSE.defaultBlockState());
+			Container c = chest(level, chestPos(), new ItemStack(Items.LEATHER, 4), new ItemStack(Items.STICK, 32),
+				new ItemStack(Items.STRING, 8), new ItemStack(Items.SLIME_BALL, 2));
+			io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, Items.ITEM_FRAME);
+			io.github.jcondedata.aliveworkplace.store.StockOrders.cycle(level, storehouse, Items.LEAD);
+			worker(level, STATION, Blocks.CAULDRON, PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+			return l -> c.countItem(Items.ITEM_FRAME) >= 1 && c.countItem(Items.LEAD) >= 1;
+		}));
 		SCENES.put("crew", new Job("four builders built the stone house together, each placing a share of it", 6000,
 			new Vec3(6.5, -51, 12.5), new Vec3(-5, -56, -6), (level, player) -> {
 			// 23.1a: the builder and three helpers from benches nearby, at the normal build speed, from exactly the house's
@@ -3046,6 +3161,39 @@ final class JobScenes {
 					SHOTS.add("04_making_pickaxe");
 				}
 				return making[0] && now == null && c.countItem(Items.STONE_PICKAXE) >= 1 && c.countItem(Items.STICK) == 0;
+			};
+		}));
+		// A better pickaxe as soon as there's the iron (36.11a, B1202): a Novice digging with a stone pickaxe passes the gold
+		// and diamond ore in the top layer; the raw iron she dug goes into her blast furnace, she makes an iron pickaxe from
+		// the ingots at her workstation and goes back for the two ores.
+		SCENES.put("miner_pickaxe_upgrade", job("the Novice miner's raw iron was smelted in her blast furnace, she made an iron pickaxe from the ingots and went back for the gold and diamond ore her stone pickaxe had left",
+			4800, (level, player) -> {
+			level.setBlockAndUpdate(STATION, Blocks.BLAST_FURNACE.defaultBlockState().setValue(BlockStateProperties.HORIZONTAL_FACING, Direction.SOUTH));
+			chest(level, chestPos(), new ItemStack(Items.RAW_IRON, 3), new ItemStack(Items.COAL, 4), new ItemStack(Items.STICK, 2), new ItemStack(Items.TORCH, 4));
+			BlockPos min = new BlockPos(-1, -60, -6);
+			BlockPos max = new BlockPos(2, -58, -3);
+			for (BlockPos p : BlockPos.betweenClosed(min, max)) {
+				level.setBlockAndUpdate(p, Blocks.STONE.defaultBlockState());
+			}
+			BlockPos gold = new BlockPos(-1, -58, -5);
+			BlockPos diamond = new BlockPos(1, -58, -4);
+			level.setBlockAndUpdate(gold, Blocks.GOLD_ORE.defaultBlockState());
+			level.setBlockAndUpdate(diamond, Blocks.DIAMOND_ORE.defaultBlockState());
+			Villager m = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+			m.setCustomName(Component.literal("Dara"));
+			io.github.jcondedata.aliveworkplace.mine.Miners.employ(level, m, STATION);
+			m.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, new ItemStack(Items.STONE_PICKAXE));
+			io.github.jcondedata.aliveworkplace.mine.QuarrySite site = io.github.jcondedata.aliveworkplace.mine.Miners.start(level, m, player,
+				net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(min, max), 3);
+			site.setStairs(false);
+			boolean[] making = {false};
+			return l -> {
+				var now = io.github.jcondedata.aliveworkplace.mine.QuarrySiteManager.get(l).get(site.id());
+				if (!making[0] && now != null && now.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.CRAFTING_PICKAXE) {
+					making[0] = true;
+					SHOTS.add("04_making_iron_pickaxe");
+				}
+				return making[0] && m.getMainHandItem().is(Items.IRON_PICKAXE) && l.getBlockState(gold).isAir() && l.getBlockState(diamond).isAir();
 			};
 		}));
 		// The Quarry build (36.12): the pit's top four layers dug already, the Miner at the shed's blast furnace takes the
@@ -4527,6 +4675,139 @@ final class JobScenes {
 				return drop.isEmpty() && n(ModAttachments.ITEMS_CARRIED, porter) >= 1 && store.countItem(Items.BREAD) >= 1;
 			};
 		}, null));
+		// The Mover (ROADMAP 45.3): a Starter Cottage the hall knows, its move confirmed on the Move page (a quarter turn, to
+		// the east); the village's Mover takes it down top-down and puts it up again at the new spot, chest and all. Its
+		// residents move too (45.4): Dara, who sleeps in its bed, and her husband Tomas, a fisherman at its barrel; after
+		// the move her bed and his barrel are the new cottage's, and he walks to it.
+		SCENES.put("mover", new Job("the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter "
+			+ "at its new spot, nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now, "
+			+ "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"",
+			9000, new Vec3(0.5, -50, 6), new Vec3(0.5, -59, -12), (level, player) -> {
+			level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+				.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+			BlockPos cottage = STATION.offset(-12, 0, -16);
+			var cottageTemplate = level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow();
+			cottageTemplate.placeInWorld(level, cottage, cottage,
+				new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+			// its residents: Dara in its bed, Tomas a fisherman at its barrel (given them once the level has filed the blocks)
+			BlockPos[] bedAndBarrel = {null, null};
+			net.minecraft.core.Vec3i cottageSize = cottageTemplate.getSize();
+			for (BlockPos p : BlockPos.betweenClosed(cottage, cottage.offset(cottageSize.getX() - 1, cottageSize.getY() - 1, cottageSize.getZ() - 1))) {
+				BlockState st = level.getBlockState(p);
+				if (bedAndBarrel[0] == null && st.getBlock() instanceof net.minecraft.world.level.block.BedBlock
+					&& st.getValue(net.minecraft.world.level.block.BedBlock.PART) == net.minecraft.world.level.block.state.properties.BedPart.HEAD) {
+					bedAndBarrel[0] = p.immutable();
+				}
+				if (bedAndBarrel[1] == null && st.is(Blocks.BARREL)) {
+					bedAndBarrel[1] = p.immutable();
+				}
+			}
+			// 45.5: his barrel holds the day's catch, and a sign by the cottage says whose it is; both arrive as they were
+			if (bedAndBarrel[1] != null && level.getBlockEntity(bedAndBarrel[1]) instanceof net.minecraft.world.Container barrelItems) {
+				barrelItems.setItem(0, new ItemStack(Items.COD, 16));
+				barrelItems.setItem(1, new ItemStack(Items.SALMON, 5));
+			}
+			BlockPos[] sign = {null};
+			for (BlockPos p : BlockPos.betweenClosed(cottage.above(), cottage.offset(cottageSize.getX() - 1, cottageSize.getY() - 1, cottageSize.getZ() - 1))) {
+				if (level.getBlockState(p).isAir() && level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
+					sign[0] = p.immutable();
+					break;
+				}
+			}
+			if (sign[0] != null) {
+				level.setBlockAndUpdate(sign[0], Blocks.OAK_SIGN.defaultBlockState());
+				((net.minecraft.world.level.block.entity.SignBlockEntity) level.getBlockEntity(sign[0])).setText(new net.minecraft.world.level.block.entity.SignText()
+					.setMessage(1, Component.literal("Dara & Tomas")), true);
+			}
+			Villager dara = EntityType.VILLAGER.spawn(level, cottage.offset(-2, 0, 2), MobSpawnType.COMMAND);
+			Villager tomas = EntityType.VILLAGER.spawn(level, cottage.offset(-2, 0, 4), MobSpawnType.COMMAND);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(dara, null);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(tomas, null);
+			dara.setCustomName(Component.literal("Dara"));
+			tomas.setCustomName(Component.literal("Tomas"));
+			dara.setVillagerData(dara.getVillagerData().setProfession(VillagerProfession.NITWIT)); // (so she doesn't take his barrel)
+			ModAttachments.PARTNER.set(dara, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(tomas.getUUID(), tomas.getDisplayName(), 0L, true));
+			ModAttachments.PARTNER.set(tomas, new io.github.jcondedata.aliveworkplace.people.Couples.Partner(dara.getUUID(), dara.getDisplayName(), 0L, true));
+			BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
+				net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+			BlockPos crate = STATION.offset(3, 0, -4);
+			// hired the way the game hires (Jobs.employ: his crate's ticket, and his brain rebuilt with the Mover's work; setting
+			// the profession alone left him with a jobless villager's brain, idle all scene: showcase B, 2026-11-10)
+			Villager mover = worker(level, crate, ModBlocks.MOVERS_CRATE.defaultBlockState(),
+				io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER);
+			io.github.jcondedata.aliveworkplace.legend.Gifted.set(mover, null);
+			mover.setVillagerData(mover.getVillagerData().setLevel(2));
+			boolean[] seen = {false, false, false};
+			int[] after = {-1};
+			net.minecraft.world.level.levelgen.structure.BoundingBox[] newBox = {null};
+			BlockPos[] signNow = {null};
+			return l -> {
+				if (!seen[2]) {
+					seen[2] = true; // the residents get their bed and barrel, then the move is confirmed
+					for (BlockPos p : bedAndBarrel) {
+						if (p != null && l.getPoiManager().getType(p).isEmpty()) {
+							PoiTypes.forState(l.getBlockState(p)).ifPresent(type -> l.getPoiManager().add(p, type));
+						}
+					}
+					if (bedAndBarrel[0] != null) {
+						io.github.jcondedata.aliveworkplace.hall.HallBeds.moveIn(l, dara, bedAndBarrel[0]);
+					}
+					if (bedAndBarrel[1] != null) {
+						Jobs.employ(l, tomas, bedAndBarrel[1], PoiTypes.FISHERMAN, VillagerProfession.FISHERMAN);
+					}
+					io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).put(new io.github.jcondedata.aliveworkplace.move.PendingMoves.Move(STATION, cottage,
+						StarterBlueprints.STARTER_COTTAGE.id(), STATION.offset(4, 0, -16), net.minecraft.world.level.block.Rotation.CLOCKWISE_90, player.getUUID()));
+					return false;
+				}
+				var site = io.github.jcondedata.aliveworkplace.move.MoveSites.get(l).forBuilding(cottage);
+				if (site.isPresent()) {
+					seen[0] = true;
+					newBox[0] = site.get().newBox();
+					if (sign[0] != null) {
+						signNow[0] = site.get().at(sign[0].subtract(site.get().oldMin()));
+					}
+					if (!seen[1] && site.get().stage() == io.github.jcondedata.aliveworkplace.move.MoveSite.Stage.DISMANTLE && site.get().packed() * 2 >= site.get().total()) {
+						seen[1] = true; // half of it down
+						SHOTS.add("02_half_way");
+					}
+				}
+				timeoutWhy = "the mover: " + mover.getVillagerData().getProfession() + ", doing " + mover.getBrain().getActiveNonCoreActivity().map(Object::toString).orElse("nothing")
+					+ ", site " + site.map(x -> x.stage() + " " + x.packed() + "/" + x.total()).orElse("none");
+				boolean moved = seen[0] && site.isEmpty() && io.github.jcondedata.aliveworkplace.move.PendingMoves.get(l).forBuilding(cottage).isEmpty();
+				if (!moved) {
+					return false;
+				}
+				if (after[0] < 0) {
+					after[0] = 0;
+					Showcase.check(seen[1], "the cottage was filmed half way down");
+					// 45.4: her bed and his barrel are the new cottage's (the Hall's People page reads the same memories)
+					BlockPos bed = io.github.jcondedata.aliveworkplace.hall.VillageNeeds.bed(l, dara);
+					BlockPos barrel = tomas.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+						.map(net.minecraft.core.GlobalPos::pos).orElse(null);
+					Showcase.check(bedAndBarrel[0] != null && (bed != null && newBox[0] != null && newBox[0].isInside(bed)),
+						"Dara's bed is the moved cottage's (" + (bed == null ? "none" : bed.toShortString()) + ")");
+					Showcase.check(bedAndBarrel[1] != null && (barrel != null && newBox[0] != null && newBox[0].isInside(barrel) && l.getBlockState(barrel).is(Blocks.BARREL)),
+						"Tomas's barrel is the moved cottage's (" + (barrel == null ? "none" : barrel.toShortString()) + ")");
+					Showcase.check(tomas.getVillagerData().getProfession() == VillagerProfession.FISHERMAN, "Tomas is still a fisherman");
+					// 45.5: the barrel's catch and the sign's words came with the cottage
+					boolean catchThere = barrel != null && l.getBlockEntity(barrel) instanceof net.minecraft.world.Container c
+						&& c.countItem(Items.COD) >= 16 && c.countItem(Items.SALMON) >= 5;
+					Showcase.check(catchThere, "Tomas's barrel still holds his 16 cod and 5 salmon");
+					Showcase.check(signNow[0] != null && l.getBlockEntity(signNow[0]) instanceof net.minecraft.world.level.block.entity.SignBlockEntity sb
+						&& sb.getFrontText().getMessage(1, false).getString().equals("Dara & Tomas"), "the cottage's sign still reads \"Dara & Tomas\"");
+				}
+				after[0]++;
+				// he walks to his barrel at the new spot (or, on a slow runner, the shot is taken anyway after 30 s)
+				BlockPos barrel = tomas.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
+					.map(net.minecraft.core.GlobalPos::pos).orElse(null);
+				boolean there = barrel != null && tomas.position().distanceTo(Vec3.atCenterOf(barrel)) < 4;
+				if (after[0] < 100000 && (there || after[0] >= 600)) {
+					SHOTS.add("03_at_home");
+					after[0] = 100000;
+				}
+				return after[0] >= 100040;
+			};
+		}, null));
 		// Caravans you can see (33.7): Thornholm's caravan leaves for Ashford, then Ashford's comes in, unloads and goes back.
 		SCENES.put("caravan", new Job("Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
 			+ "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 4800,
@@ -4766,6 +5047,44 @@ final class JobScenes {
 				&& subject.getVillagerData().getLevel() == 1
 				&& subject.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.JOB_SITE)
 					.map(g -> g.pos().equals(STATION)).orElse(false)));
+		// ROADMAP 46.1: the Storehouse's board names who gathers or makes each thing a worker asks for, else the job to hire
+		SCREENS.put("job_lists", new Screen("the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				place(level, STATION.east(3), io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE);
+				for (int i = 0; i < 2; i++) {
+					BlockPos bench = STATION.west(2 * i);
+					place(level, bench, io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH);
+					Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+					builder.setNoAi(true);
+					io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+					JOB_LISTS_ASKERS[i] = builder;
+				}
+				Villager bo = EntityType.VILLAGER.spawn(level, STATION.east(2).south(), MobSpawnType.COMMAND);
+				bo.setNoAi(true);
+				bo.setVillagerData(bo.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.LUMBERJACK));
+				bo.setCustomName(net.minecraft.network.chat.Component.literal("Bo"));
+				jobListsAsk();
+			},
+			List.of(new Step("01_logs_gathered_by_the_lumberjack", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST, 6,
+					(level, player) -> {
+						jobListsAsk();
+						io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, STATION.east(3));
+					}, 30),
+				new Step("02_hire_a_cleric_for_brewing_stands", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, null, 20)),
+			(level, player) -> {
+				if (!(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu)) {
+					return false;
+				}
+				StringBuilder lore = new StringBuilder();
+				for (int i = 0; i < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE; i++) {
+					var lines = menu.icon(i).get(net.minecraft.core.component.DataComponents.LORE);
+					if (lines != null) {
+						lines.lines().forEach(l -> lore.append(l.getString()).append('|'));
+					}
+				}
+				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Cleric to make it") >= 0;
+			}));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);
@@ -5606,11 +5925,14 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> !classPeople.isEmpty() && io.github.jcondedata.aliveworkplace.registry.ModAttachments.BUILDER_JOB.has(classPeople.get(0))));
-		// The Hall's Move page (ROADMAP 45.2): a finished Starter Cottage north of the hall; the Move page lists it, its picker
-		// opens with the map of the ground round it, a click two cells west puts the new spot there (it fits: green, and the
-		// ghost outline glows in the world), and Rotate turns it a quarter, its front to the east.
-		SCREENS.put("move_plan", new Screen("the hall's Move page listed the Starter Cottage; its picker showed the map round it, a click on the map put the "
-			+ "new spot to the west (it fits, the ghost outline in green), and Rotate turned it to face east",
+		// The Hall's Move page (ROADMAP 45.2, reworked for B1163): a finished Starter Cottage north of the hall and a hired Mover.
+		// One still per step: 1, the Move page lists the cottage ("Now: ... of the Hall"); 2, its picker opens on the village
+		// map (where it stands now in yellow, the Hall, the roads), saying to click where it should go; 3, a click on the map
+		// west of it puts the new spot there (green, the ghost glowing) and Rotate turns its front east: Confirm is ready;
+		// 4, Confirm: the move is planned and the list marks it.
+		SCREENS.put("move_plan", new Screen("the hall's Move page, step by step: it listed the Starter Cottage with where it stands; its picker showed the "
+			+ "village map with the cottage now and said to click where it should go; a click to the west put the new spot there (it fits, "
+			+ "green, the ghost glowing), Rotate turned its front east and Confirm was ready; Confirm planned the move for the Mover",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -5620,6 +5942,71 @@ final class JobScenes {
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), new BlueprintData.Placement(level.dimension().location(), cottage,
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				// the village round it: a market stall to the east and a road along the cottage's south side, both on the map
+				BlockPos stall = STATION.offset(6, 0, -14);
+				level.getStructureManager().get(StarterBlueprints.MARKET_STALL.id()).orElseThrow().placeInWorld(level, stall, stall,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.MARKET_STALL.id(), new BlueprintData.Placement(level.dimension().location(), stall,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
+				for (int x = -22; x <= 16; x++) {
+					level.setBlockAndUpdate(STATION.offset(x, -1, -4), net.minecraft.world.level.block.Blocks.DIRT_PATH.defaultBlockState());
+				}
+				for (int z = -3; z <= -1; z++) {
+					level.setBlockAndUpdate(STATION.offset(0, -1, z), net.minecraft.world.level.block.Blocks.DIRT_PATH.defaultBlockState());
+				}
+				worker(level, STATION.offset(3, 0, -6), ModBlocks.MOVERS_CRATE.defaultBlockState(),
+					io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVER);
+			},
+			List.of(new Step("01_pick_a_building", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
+							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+					}
+				}, 40),
+				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString().startsWith("Step 2 of 3"),
+							"the picker says step 2: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString());
+					}
+				}, 60),
+				new Step("03_confirm", io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						io.github.jcondedata.aliveworkplace.hall.MovePage.Picking p = io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).orElseThrow();
+						io.github.jcondedata.aliveworkplace.hall.MovePage.click(m, level, player,
+							io.github.jcondedata.aliveworkplace.hall.MovePage.mapClick(player, p.x() - 10, p.z()));
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, player);
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).is(Items.LIME_DYE),
+							"the spot to the west fits: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).getHoverName().getString());
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM).is(Items.PISTON), "Confirm is ready (a Mover is hired)");
+						Showcase.check(io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.moveGhost(player) != null, "the ghost outline glows");
+					}
+				}, 60),
+				new Step("04_move_planned", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent(),
+							"the move is planned");
+					}
+				}, 40)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent()));
+		// A refused move (ROADMAP 45.6): the same cottage with builders still working on it (an upgrade's site open on it). Its
+		// Move button is refused: no picker opens, and the reason shows in red on the action bar (the hall closed so it shows).
+		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+			+ "was refused, no picker opened, and the action bar said why in red",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
+					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
+				BlockPos cottage = STATION.offset(-8, 0, -15);
+				level.getStructureManager().get(StarterBlueprints.STARTER_COTTAGE.id()).orElseThrow().placeInWorld(level, cottage, cottage,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), cottage,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
+				BuildSiteManager.get(level).create(player.getUUID(), player.getGameProfile().getName(), StarterBlueprints.STARTER_COTTAGE.id(), placement);
 			},
 			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
@@ -5629,24 +6016,17 @@ final class JobScenes {
 							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40),
-				new Step("02_new_spot_fits", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
+				new Step("02_refused", 0, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
-						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE - 2, player);
-						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).is(Items.LIME_DYE),
-							"the spot to the west fits: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).getHoverName().getString());
-						Showcase.check(io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.moveGhost(player) != null, "the ghost outline glows");
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty(), "no picker opened on the cottage");
+						Component why = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, STATION, STATION.offset(-8, 0, -15), player);
+						Showcase.check(why != null && why.getString().equals(Component.translatable("message.aliveworkplace.move.refused.building").getString()),
+							"refused because builders are working on it: " + (why == null ? null : why.getString()));
+						player.closeContainer(); // the action bar's red line shows over the world
 					}
-				}, 60),
-				new Step("03_rotated", io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, 6, (level, player) -> {
-					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, player);
-						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player)
-								.map(p -> p.rotation() == net.minecraft.world.level.block.Rotation.CLOCKWISE_90).orElse(false),
-							"Rotate turned it a quarter: " + io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).map(p -> p.rotation().name()).orElse("not picking"));
-					}
-				}, 60)),
-			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent()));
+				}, 10)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty()));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

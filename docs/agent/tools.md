@@ -21,6 +21,10 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
 - **Every `@GameTest` has a swap line above it**: `//$ gametest AREA`, `//$ gametest_ticks AREA '400'`,
   `//$ gametest_batch AREA '"name"'` or `//$ gametest_ticks_batch AREA '400' '"name"'` (arguments that aren't plain
   names in single quotes). On 1.21.1 the swap writes exactly the annotation below it; newer nodes get Fabric's.
+- **A batch belongs to one test class** (B1166; B427/B428: a neighbour class's setup in the same batch removed the
+  other's villagers). `python3 tools/modtest/batchcheck.py` (a tester script like `wikicheck.py`; the build runs it as
+  `checkBatches`, under a second) fails on a batch name two classes use, in src/gametest and src/compattest each, and
+  on a swap line whose batch differs from its annotation's. Pick a new name for a new class's batch.
 - **Round trip before committing:** `./gradlew "Refresh active project"` must leave `git diff` unchanged (if not, a guard
   or swap line doesn't match), and the active project must be the vcsVersion (`./gradlew "Reset active project"`).
 
@@ -135,7 +139,8 @@ multi-version layout (ROADMAP, Milestone 19): **Stonecutter**, one Gradle node p
   `SEASON=true` is the season under the edicts (30.22): `/workplace season` lays out a City of 35 with farms, a kitchen
   and a store and sprints 4 days under four edicts and 4 reformed (`SEASON_PART=edicts|reformed` for one half,
   `SEASON_DAYS=n`); a `Season day` line a day, a `Season result:` line, and `perf.py season.jfr --days server.log` adds
-  our share of each day's tick and whose code each tick over 50 ms was in. About 8 minutes.
+  our share of each day's tick and whose code each tick over 50 ms was in. About 8 minutes. The 15% target is held
+  against every day after the first (owner, 2026-10-13; day 1 is printed), the 50 ms one against every day.
   `tools/packtest/rehearsal.sh` is the update rehearsal (34.23): it builds the last release's jar (`OLD=0.142.0`) from a
   worktree of its tag with `command/Rehearsal.java` copied in (the published jar can't seed), seeds three villages with
   `/workplace rehearsal seed` (`REHEARSAL=old`), runs a day, reports and saves; then opens the world with this jar and

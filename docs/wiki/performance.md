@@ -11,7 +11,9 @@ Nothing new to look at: villages with many lumberjacks and builders simply don't
 lumberjack in a wood full of log pillars or log cabins looks a few trunks over at a time, so it may take a moment
 longer to pick its tree there. A tree farm's saplings are found without going over every block of the farm. A
 builder waiting for materials no longer recounts every other build of the village block by block each time. A
-builder leveling up no longer makes the server stutter in a big modpack.
+builder leveling up no longer makes the server stutter in a big modpack. After a server restart (and the first time
+a world from an older version is opened), each Village Hall waits five seconds before it counts its village, and halls
+loaded together take turns a second apart, instead of all doing it in the server's first, slowest tick.
 
 ## How it works
 
@@ -43,6 +45,19 @@ builder leveling up no longer makes the server stutter in a big modpack.
   an upload), which is quick to look at, so a structure saved a moment ago is still listed at once. The library's
   filters also test the cheap "is it one of ours or saved in this world" first, so other mods' pieces are turned away
   before the slower tests.
+- **A loaded hall's first round waits its turn (B436).** A hall's round (feeding, the count, classes, quests, bounties
+  and some forty other steps) used to run on the hall's first tick after a load, because its count isn't saved. Opening
+  an old world, that tick came while the server was still bringing the world in and before the hall's villagers were
+  loaded (entities come in after their chunk), for every hall at once: in the update rehearsal the three halls' first
+  rounds took 400, 1,298 and 217 ms in ticks 6 to 11, a hall said its village was seeded with part of it (or nobody)
+  counted, and the rest got their class at a later round without a word. Now a hall read with its chunk
+  (`VillageHallBlockEntity.roundDue`) waits `FIRST_ROUND_WAIT` (100 ticks) from its first tick, and at least
+  `FIRST_ROUND_GAP` (20 ticks) after any other hall's first round; its own turn in the 30-second cycle is never held
+  back. A hall a player places still has its round on its first tick. Nothing new is saved.
+- **A rogue's biome without a chunk (B436).** Posting a bounty on a rogue Pokémon reads the biome of up to 8 spots 150
+  to 250 blocks from the hall. `level.getBiome` there asks the chunk system for the chunk and waits on the server
+  thread while one is on its way in (the rehearsal's profile: over half of the first rounds' samples). `Rogues.biome`
+  reads a loaded chunk's own biome and otherwise asks the world's generator, which loads nothing.
 - **The hour-long soak (25.4).** `PERF=true VILLAGES=3 PLOTS=25 SOAK_MINUTES=60 tools/packtest/run.sh` keeps the
   benchmark running for an hour and reads the heap after a full GC every 10 minutes; `tools/packtest/soakheap.py`
   fails the run only if the heap grows more than 5% from minute 10 (a falling heap is not a leak).
@@ -76,6 +91,11 @@ none (the caches above live only in memory; a reloaded lumberjack starts its sea
 
 - A lumberjack in a very large log-pillar forest takes a few ticks longer to settle on a tree.
 - A build whose blocks a player breaks or places by hand is recounted within 5 seconds, not at once.
+- For five seconds after a restart a hall has no count yet: until then its villagers work at the plain pace (as by a
+  hall placed a moment ago), and its feeding, classes, quests and bounties start then. The first ticks after a world opens are still the server's own
+  (chunks and entities coming in, every villager's first tick): in the rehearsal those ticks, not the halls, are now
+  the window's longest.
+- A biome changed by command (`/fillbiome`) in a chunk that isn't loaded reads as the generator's for a rogue's spot.
 - The targets are measured on a loaded container locally; GitHub's runner gives the comparable numbers
   (`docs/performance.md`).
 
@@ -94,4 +114,12 @@ none (the caches above live only in memory; a reloaded lumberjack starts its sea
 - `tools/packtest/test_soakheap.py`: the soak's verdict passes a falling heap and fails a growing one.
 - `BenchmarkCostGameTests.theTickTimerCountsOurWorkOnceAndResetsEachTick`,
   `BenchmarkCostGameTests.theTickTimerDoesNothingWhenOff`: the per-tick timer.
+- `HallFirstRoundGameTests.hallsLoadedTogetherWaitAndTakeTurnsForTheirFirstRound` (B436): four halls read with their
+  chunks in one tick have no round before the wait is over, never two first rounds within the gap, and all four soon
+  after; a placed hall has its round on its first tick.
+- `HallFirstRoundGameTests.anOldVillageIsSeededRoundByRoundAfterTheWaitAndThroughARestart` (B436): an old hall with
+  forty villagers seeds nobody while it waits, at most sixteen a tick after, keeps who was seeded through a restart
+  part-way (and waits again), and ends with all forty seeded and one chronicle line.
+- `HallFirstRoundGameTests.aRoguesBiomeIsReadWithoutAChunk` (B436): far out the biome is the world's own and no chunk
+  is loaded for it; in a loaded chunk it is the chunk's.
 - Showcase scenes: none (nothing new to see).

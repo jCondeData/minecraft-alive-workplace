@@ -9,6 +9,8 @@ import io.github.jcondedata.aliveworkplace.hall.MovePage;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.move.MoveFit;
+import io.github.jcondedata.aliveworkplace.move.MoveRules;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.move.Movers;
 import io.github.jcondedata.aliveworkplace.move.PendingMoves;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -225,6 +227,119 @@ public class MovePageGameTests implements FabricGameTest {
 			menu.press(EAST, v.player());
 			BlockPos at = helper.absolutePos(new BlockPos(13, 1, 5));
 			assertVerdict(helper, menu, Component.translatable("screen.aliveworkplace.move.fit.water.at", at.getX(), at.getY(), at.getZ()));
+			helper.succeed();
+		});
+	}
+
+	/** Refused (B1129): a Mover's Crate on the spot, with where. It never moves with a building, so going up there would break it. */
+	//$ gametest_ticks_batch AREA '100' '"movePageCrate"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageCrate")
+	public void aSpotOverAMoversCrateIsRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		helper.setBlock(new BlockPos(13, 2, 5), ModBlocks.MOVERS_CRATE);
+		helper.runAfterDelay(2, () -> {
+			ChoiceMenu menu = openPicker(helper, v);
+			menu.press(EAST, v.player());
+			BlockPos at = helper.absolutePos(new BlockPos(13, 2, 5));
+			assertVerdict(helper, menu, Component.translatable("screen.aliveworkplace.move.fit.crate.at", at.getX(), at.getY(), at.getZ()));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * 45.6: the hut's Move button clicked on the hall's Move page is refused: no picker opens, nothing is saved, and the
+	 * reason is {@code expected}'s words.
+	 */
+	private static void assertRefused(GameTestHelper helper, Village v, Component expected) {
+		ChoiceMenu menu = VillageHallScreen.forTest(v.player(), v.hall());
+		menu.press(HallPages.slot(MovePage.PAGE), v.player());
+		menu.press(VillageHallScreen.FIRST_ROW, v.player());
+		helper.assertTrue(MovePage.picking(v.player()).isEmpty(), "the picker opened on a building that can't be moved");
+		helper.assertTrue(PendingMoves.get(v.level()).forBuilding(v.hut()).isEmpty(), "a move was saved");
+		Component why = MoveRules.refusal(v.level(), v.hall(), v.hut(), v.player());
+		helper.assertTrue(why != null && why.getString().equals(expected.getString()), "refused with \"" + (why == null ? null : why.getString())
+			+ "\", not \"" + expected.getString() + "\"");
+	}
+
+	/** 45.6: config {@code moveBuildings} off: every building is refused with the switch's line; back on, the picker opens. */
+	//$ gametest_ticks_batch AREA '100' '"movePageSwitchOff"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageSwitchOff")
+	public void withMoveBuildingsOffEveryMoveIsRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		Leftovers.after(helper, () -> MoveRules.ENABLED = true);
+		MoveRules.ENABLED = false;
+		helper.runAfterDelay(2, () -> {
+			assertRefused(helper, v, Component.translatable("message.aliveworkplace.move.refused.off"));
+			MoveRules.ENABLED = true;
+			openPicker(helper, v);
+			helper.succeed();
+		});
+	}
+
+	/** 45.6: a building with a live build site on it (an upgrade going on) is refused until the builders are done. */
+	//$ gametest_ticks_batch AREA '100' '"movePageLiveSite"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageLiveSite")
+	public void aBuildingWithALiveSiteIsRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		BuildSiteManager sites = BuildSiteManager.get(v.level());
+		UUID id = sites.create(UUID.randomUUID(), "Builder", HUT, placement(helper, HUT_ORIGIN)).id();
+		Leftovers.after(helper, () -> sites.remove(id));
+		helper.runAfterDelay(2, () -> {
+			assertRefused(helper, v, Component.translatable("message.aliveworkplace.move.refused.building"));
+			sites.remove(id);
+			openPicker(helper, v);
+			helper.succeed();
+		});
+	}
+
+	/** 45.6: in another player's protected village the building is refused with whose village it is. */
+	//$ gametest_ticks_batch AREA '100' '"movePageClaim"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageClaim")
+	public void aBuildingInAnotherPlayersProtectedVillageIsRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		VillageHallBlockEntity hall = helper.getBlockEntity(HALL);
+		hall.setOwner(UUID.randomUUID(), "Owner");
+		hall.setProtected(true);
+		Leftovers.after(helper, () -> hall.setProtected(false));
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(!v.player().hasPermissions(2), "the test player is an operator (setup)");
+			assertRefused(helper, v, Component.translatable("message.aliveworkplace.protection.denied", VillageHalls.name(v.level(), v.hall()), "Owner"));
+			hall.setProtected(false);
+			openPicker(helper, v);
+			helper.succeed();
+		});
+	}
+
+	/** 45.6: the Hall's own building, a Wonder and a building outside the village are refused, each with its reason. */
+	//$ gametest_ticks_batch AREA '100' '"movePageNeverMoved"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "movePageNeverMoved")
+	public void theHallAWonderAndABuildingOutsideAreRefused(GameTestHelper helper) {
+		Village v = stage(helper);
+		BuildSiteManager sites = BuildSiteManager.get(v.level());
+		BlueprintData.Placement hallHouse = placement(helper, HALL);
+		ResourceLocation wonderId = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "wonder/test_wonder");
+		BlueprintData.Placement wonder = placement(helper, new BlockPos(10, 2, 3));
+		BlueprintData.Placement outside = placement(helper, new BlockPos(3, 2, 3).offset(200, 0, 200));
+		sites.recordFinished(HUT, hallHouse, UUID.randomUUID());
+		sites.recordFinished(wonderId, wonder, UUID.randomUUID());
+		sites.recordFinished(HUT, outside, UUID.randomUUID());
+		Leftovers.after(helper, () -> {
+			sites.forgetFinished(hallHouse);
+			sites.forgetFinished(wonder);
+			sites.forgetFinished(outside);
+		});
+		helper.runAfterDelay(2, () -> {
+			ServerLevel level = v.level();
+			String hallWhy = String.valueOf(MoveRules.refusal(level, v.hall(), hallHouse.origin(), v.player()) == null ? null
+				: MoveRules.refusal(level, v.hall(), hallHouse.origin(), v.player()).getString());
+			helper.assertTrue(hallWhy.equals(Component.translatable("message.aliveworkplace.move.refused.hall").getString()), "the Hall's building: " + hallWhy);
+			Component wonderWhy = MoveRules.refusal(level, v.hall(), wonder.origin(), v.player());
+			helper.assertTrue(wonderWhy != null && wonderWhy.getString().equals(Component.translatable("message.aliveworkplace.move.refused.wonder").getString()),
+				"the Wonder: " + (wonderWhy == null ? null : wonderWhy.getString()));
+			Component outsideWhy = MoveRules.refusal(level, v.hall(), outside.origin(), v.player());
+			helper.assertTrue(outsideWhy != null && outsideWhy.getString().equals(Component.translatable("message.aliveworkplace.move.refused.not_ours").getString()),
+				"the building outside: " + (outsideWhy == null ? null : outsideWhy.getString()));
+			helper.assertTrue(MoveRules.refusal(level, v.hall(), v.hut(), v.player()) == null, "the village's own hut is refused");
 			helper.succeed();
 		});
 	}

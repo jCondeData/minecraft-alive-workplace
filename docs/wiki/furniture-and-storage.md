@@ -42,8 +42,11 @@ fence-and-plate table with two stair chairs), a bedroom (a slab nightstand at th
 lantern on a fence post), a sitting corner (a couch of stair seats against the wall, some with trapdoor arms), a shelf
 of cups (an upside-down slab with a flower pot on it), a grandfather clock (a stripped log case under a trapdoor
 hood), pictures (plain wall banners) and blinds rolled up over the windows (closed trapdoors at the window head). The
-Inn has shelves of cups behind the bar, a clock by the door, a nightstand, lamp and picture in each guest room, and a
-couch and lamp on the landing. With Handcrafted those become Handcrafted chairs, tables, fancy beds, nightstands,
+Inn (redrawn 2026-11-11 after the owner played it) has a real taproom: a dark oak bar down the east side with the Shop
+Counter in its middle and a walk-in space behind it for the innkeeper (counter pieces either side of the Shop Counter),
+shelves of cups on the back bar, kitchen worktops with a shelf and a hanging pot behind the bar, two tables with three
+chairs each, a clock by the door, a picture and blinds; upstairs a nightstand, lamp and picture in each of the three
+guest rooms, and a couch, lamp and clock on the landing. With Handcrafted those become Handcrafted chairs, tables, fancy beds, nightstands,
 couches, shelves and crockery; Beautify adds its candelabras, picture frames and blinds; with CobbleFurnies first its
 chairs, tables, nightstands, sofas, lamps and curtains. Cozy Home's clocks and sofas come in on the real pack. A home
 planned with a Pokémon partner (a Pokémon kept in a Pasture Block within 16 blocks of the plot) gets a Trainer's room:
@@ -495,6 +498,17 @@ B876: `QaHallBeds1103cBugTests.aBedBehindAnIronDoorUpALadderIsNotClaimable` (fai
 B300: `FloatingFurnishingsGameTests.noFurnishedBlueprintHasAFloatingPiece` (every furnished blueprint, vanilla and
 with one-block tables), `FloatingFurnishingsGameTests.aPotOnALowerTableSitsOnIt`,
 `FloatingFurnishingsGameTests.aBuiltFurnishedHomeHasNothingFloating`, `FloatingFurnishingsGameTests.aPieceLeftOnNothingIsSetDown`.
+The redrawn Inn (QA, no furniture mods): `QaInnRedrawn1111cGameTests.theInnsDrawingsHangNothingInTheAir` (the Inn, II
+and III: no shutter, sill, pot, banner or lantern hangs in the air, and the same check finds 28 such pieces in the Inn
+the owner played, v0.154.0; one Shop Counter facing west with dark oak bar either side and a walk-in space behind it, no
+Inn Counter, six beds, the corner banner at rotation 8 on its post, no chimney fire past the inn's east wall),
+`QaInnRedrawn1111cGameTests.theBuiltInnsBarTakesAnInnkeeper` (put up in the world: a jobless villager behind the bar
+handed a bed becomes its Innkeeper and keeps the job 200 ticks, the inn lookups find the counter, and a villager walks
+there from the front door), `QaInnRedrawn1111cGameTests.theBuiltInnsSixBedsFillWithTravellers` (one traveler a morning,
+each in a different guest bed upstairs; "full" at two; with room for more the six beds fill and the seventh morning is
+"no_bed"), `QaInnRedrawn1111cGameTests.theBuiltInnIIIKeepsItsBarAndBeds`, and `theBuiltInnStandsAfterBlockUpdates`,
+`theBuiltInnIIStandsAfterBlockUpdates`, `theBuiltInnIIIStandsAfterBlockUpdates` (every block can stay, nothing drops
+after every block is updated and 40 ticks pass).
 GameTests: `FurnishingConfigGameTests.furnitureModsKeepTheirOrderAndAreCleaned` (the default order, cleaning, an empty
 and a missing list, the list off the screen and in the saved file), `FurnishingConfigGameTests.theM37GateHoldsItsSwitches`
 (a player's file can't turn them on with the gate closed; with it open they obey the file), and

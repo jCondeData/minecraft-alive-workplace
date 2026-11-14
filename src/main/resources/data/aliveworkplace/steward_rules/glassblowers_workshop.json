@@ -1,0 +1,30 @@
+{
+  "when": [
+    {
+      "no_worker": {
+        "profession": "aliveworkplace:glassblower"
+      }
+    },
+    {
+      "villagers_at_least": {
+        "n": 8
+      }
+    },
+    {
+      "built_count_below": {
+        "blueprint": "aliveworkplace:glassblowers_workshop",
+        "n": 1
+      }
+    }
+  ],
+  "do": {
+    "build": {
+      "blueprint": "aliveworkplace:glassblowers_workshop",
+      "zone": "workshops"
+    }
+  },
+  "priority": 40,
+  "why": "steward.aliveworkplace.why.glassblower",
+  "cooldown_days": 2,
+  "max": 1
+}

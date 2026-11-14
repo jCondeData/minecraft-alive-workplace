@@ -56,7 +56,8 @@ import org.jetbrains.annotations.Nullable;
  * fewer than {@link #GUARD_KEEP} gets one brought to the chests by their Guard Post. After the guards' potions, the
  * alchemist's tonics (ROADMAP 30.15, {@link Tonics}): with nothing else to do at the stand, the makings of the first one
  * short of its keep are fetched from the chests by the stand and the store's, brewed at the stand one at a time, and put
- * in the chests by it.
+ * in the chests by it. Between these he makes the magic blocks for builders at the stand (46.4,
+ * {@code craft/ClericCraftWork}): the two take turns.
  */
 public class AlchemistWork extends Behavior<Villager> {
 	/** Potions brewed, and kept in the chests up to this many each. */
@@ -132,7 +133,10 @@ public class AlchemistWork extends Behavior<Villager> {
 
 	@Override
 	protected boolean checkExtraStartConditions(ServerLevel level, Villager villager) {
-		return !villager.isSleeping() && isAlchemist(villager) && Builders.benchPos(villager).isPresent();
+		// 46.4: the potions wait while he makes something for a builder at the stand (the two share his bag), a job
+		// loaded from a save included
+		return !villager.isSleeping() && isAlchemist(villager) && Builders.benchPos(villager).isPresent()
+			&& !io.github.jcondedata.aliveworkplace.craft.CrafterWork.isBusy(villager) && ModAttachments.CRAFTER_JOB.get(villager) == null;
 	}
 
 	@Override

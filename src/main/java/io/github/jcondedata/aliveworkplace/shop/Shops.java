@@ -274,7 +274,7 @@ public final class Shops {
 				.withStyle(net.minecraft.ChatFormatting.YELLOW));
 			return;
 		}
-		int[] pending = {-1};
+		Pending pending = new Pending();
 		// The list screen (ROADMAP 42.4): the money at the top, a row per lot with what's in stock, the price (red while the
 		// player can't pay it) and Buy, then Confirm; it follows the player's money while open, as the Inn's does.
 		io.github.jcondedata.aliveworkplace.work.ChoiceMenu.openList(player, villager.getDisplayName(),
@@ -284,7 +284,8 @@ public final class Shops {
 				net.minecraft.network.chat.Component[] shown = {io.github.jcondedata.aliveworkplace.work.Money.balance(player)};
 				menu.everyTick(() -> {
 					net.minecraft.network.chat.Component now = io.github.jcondedata.aliveworkplace.work.Money.balance(player);
-					if (!now.equals(shown[0])) {
+					// B1107: the owner changing a lot or its price shows on an open screen too, not only a change of money
+					if (!now.equals(shown[0]) || pending.stale(villager)) {
 						shown[0] = now;
 						renderMenu(menu, player, villager, pending);
 					}
@@ -294,18 +295,63 @@ public final class Shops {
 
 	/** The shop screen without showing it (tests). */
 	public static io.github.jcondedata.aliveworkplace.work.ChoiceMenu menuForTest(net.minecraft.server.level.ServerPlayer player, Villager villager) {
-		int[] pending = {-1};
+		Pending pending = new Pending();
 		return io.github.jcondedata.aliveworkplace.work.ChoiceMenu.detached(player, menu -> renderMenu(menu, player, villager, pending));
 	}
 
+	/**
+	 * One open shop screen's state: the row chosen (gold, Confirm) and the lot and price each row showed when it was
+	 * last drawn (B1107), so Confirm never charges a price the screen didn't show.
+	 */
+	private static final class Pending {
+		int column = -1;
+		final ItemStack[] goods = new ItemStack[ShopCounterBlockEntity.COLUMNS];
+		final ItemStack[] price = new ItemStack[ShopCounterBlockEntity.COLUMNS];
+
+		Pending() {
+			java.util.Arrays.fill(goods, ItemStack.EMPTY);
+			java.util.Arrays.fill(price, ItemStack.EMPTY);
+		}
+
+		void remember(ShopCounterBlockEntity counter) {
+			for (int c = 0; c < ShopCounterBlockEntity.COLUMNS; c++) {
+				goods[c] = counter.goods(c).copy();
+				price[c] = counter.price(c).copy();
+			}
+		}
+
+		/** Whether column {@code c} still sells what its row showed, at the price it showed. */
+		boolean asShown(ShopCounterBlockEntity counter, int c) {
+			return ItemStack.matches(goods[c], counter.goods(c)) && ItemStack.matches(price[c], counter.price(c));
+		}
+
+		/** Whether any lot or price on the counter differs from what the screen last drew. */
+		boolean stale(Villager villager) {
+			if (!(villager.level() instanceof ServerLevel level)) {
+				return false;
+			}
+			ShopCounterBlockEntity counter = counter(level, villager).orElse(null);
+			if (counter == null) {
+				return false;
+			}
+			for (int c = 0; c < ShopCounterBlockEntity.COLUMNS; c++) {
+				if (!asShown(counter, c)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
 	private static void renderMenu(io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu, net.minecraft.server.level.ServerPlayer player,
-			Villager villager, int[] pending) {
+			Villager villager, Pending pending) {
 		menu.clearButtons();
 		ServerLevel level = (ServerLevel) villager.level();
 		ShopCounterBlockEntity counter = counter(level, villager).orElse(null);
 		if (counter == null) {
 			return;
 		}
+		pending.remember(counter);
 		List<BlockPos> stock = stock(level, counter);
 		int shown = 0;
 		for (int column = 0; column < ShopCounterBlockEntity.COLUMNS; column++) {
@@ -320,7 +366,7 @@ public final class Shops {
 			}
 			shown++;
 			int col = column;
-			boolean chosen = pending[0] == column;
+			boolean chosen = pending.column == column;
 			ItemStack icon = goods.copy();
 			List<net.minecraft.network.chat.Component> lines = new java.util.ArrayList<>();
 			lines.add(net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.price", priceText(price))
@@ -343,10 +389,10 @@ public final class Shops {
 				net.minecraft.network.chat.Component.translatable(chosen ? "message.aliveworkplace.shop.menu.button_confirm" : "message.aliveworkplace.shop.menu.button_buy"),
 				false, chosen);
 			menu.button(FIRST_GOODS_SLOT + column, icon, p -> {
-				if (pending[0] != col) {
-					pending[0] = col;
-				} else {
-					pending[0] = -1;
+				if (pending.column != col) {
+					pending.column = col;
+				} else if (confirmAsShown(p, villager, pending, col)) {
+					pending.column = -1;
 					buy(p, villager, col);
 				}
 				renderMenu(menu, player, villager, pending);
@@ -371,6 +417,46 @@ public final class Shops {
 				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.column_stock"),
 				net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.menu.column_price")));
 		menu.button(INFO_SLOT, info, null);
+	}
+
+	/**
+	 * B1107: Confirm buys only the lot at the price its row showed. If the owner changed either since the row was drawn
+	 * (raised or lowered the price, changed the lot), nothing is taken: the buyer is told the new price (or, B1147, the new
+	 * goods and their price when the lot changed) and the row is
+	 * drawn again at it, still gold, so a second Confirm buys at the price now on screen. A lot taken off the counter
+	 * is no longer chosen. A changed lot the chests hold none of (B1189) isn't listed anymore, so the buyer is told it's
+	 * sold out instead of being asked to Confirm again. An unchanged lot whose stock ran out is left to {@link #buy},
+	 * which says it's sold out and takes nothing.
+	 */
+	private static boolean confirmAsShown(net.minecraft.server.level.ServerPlayer player, Villager villager, Pending pending, int column) {
+		ShopCounterBlockEntity counter = counter((ServerLevel) villager.level(), villager).orElse(null);
+		if (counter == null || pending.asShown(counter, column)) {
+			return true;
+		}
+		ItemStack goods = counter.goods(column);
+		ItemStack price = counter.price(column);
+		if (goods.isEmpty() || price.isEmpty()) {
+			pending.column = -1;
+			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.withdrawn",
+				pending.goods[column].getHoverName()).withStyle(net.minecraft.ChatFormatting.YELLOW));
+			return false;
+		}
+		// B1189: the lot now on the counter has no stock, so the redrawn list leaves its row out and there is no Confirm to
+		// click again. Say it's sold out (as buy does) instead of asking for a second Confirm.
+		ServerLevel level = (ServerLevel) villager.level();
+		if (SupplyContainers.countMatching(level, stock(level, counter), goods) < goods.getCount()) {
+			pending.column = -1;
+			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.sold_out",
+				goods.getHoverName()).withStyle(net.minecraft.ChatFormatting.YELLOW));
+			return false;
+		}
+		// B1147: say what changed. Other goods (or a different lot size) get "This counter now sells ...", even when the
+		// price changed too; only a price change on the same lot says "The price changed".
+		String key = ItemStack.matches(pending.goods[column], goods)
+			? "message.aliveworkplace.shop.price_changed" : "message.aliveworkplace.shop.goods_changed";
+		Chat.actionBar(player, net.minecraft.network.chat.Component.translatable(key,
+			goods.getCount(), goods.getHoverName(), priceText(price)).withStyle(net.minecraft.ChatFormatting.YELLOW));
+		return false;
 	}
 
 	/** "300 CobbleDollars" for an emerald price, otherwise the items ("2 Diamond"). */

@@ -27,6 +27,31 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every log and leaf near the test area but outside it (inside is this test's own). A tree an earlier batch's
+	 * test left standing in its own area, a row or a column over, is never cleared, and a lumberjack fells any tree within
+	 * 16 blocks of the Chopping Block before he feeds a sapling: with ten copies of the bone meal test, one lumberjack
+	 * spent his 3000 ticks at the tree the copy a row north had grown on its farm (13 blocks past the area's edge), his
+	 * own sapling never fed (B460, B127). Only for tests alone in their batch.
+	 */
+	static void trees(GameTestHelper helper) {
+		AABB area = helper.getBounds();
+		AABB around = area.inflate(20, 0, 20);
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		io.github.jcondedata.aliveworkplace.wood.Trees.forEach(level, net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
+			net.minecraft.core.BlockPos.containing(around.minX, around.minY - 8, around.minZ), net.minecraft.core.BlockPos.containing(around.maxX, around.maxY + 16, around.maxZ)),
+			state -> state.is(net.minecraft.tags.BlockTags.LOGS) || state.is(net.minecraft.tags.BlockTags.LEAVES) || state.is(net.minecraft.tags.BlockTags.WART_BLOCKS),
+			p -> {
+				if (!area.contains(p.getX() + 0.5, p.getY() + 0.5, p.getZ() + 0.5)) {
+					found.add(p.immutable());
+				}
+			});
+		for (net.minecraft.core.BlockPos p : found) {
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+		}
+	}
+
+	/**
 	 * Logs out every mock player near the test area. Many tests make one, teleport it into their area and never log it
 	 * out, so it stands there into later batches at the same spot: a Legend guest who leaves only with nobody within 24
 	 * blocks stayed because an earlier batch's player was standing by the hall. Only for tests alone in their batch
@@ -60,7 +85,12 @@ final class Leftovers {
 			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList();
 		for (net.minecraft.core.BlockPos hall : halls) {
 			level.removeBlock(hall, false);
+			// a point with no hall under it (B427) isn't taken away by removing the block: take the point itself
+			if (level.getPoiManager().getType(hall).filter(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI)).isPresent()) {
+				level.getPoiManager().remove(hall);
+			}
 		}
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.forgetNearest();
 		io.github.jcondedata.aliveworkplace.hall.VillageNeeds.forget();
 	}
 
@@ -77,6 +107,61 @@ final class Leftovers {
 			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, hall,
 			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
 			.map(net.minecraft.core.BlockPos::immutable).toList();
+		for (net.minecraft.core.BlockPos bed : beds) {
+			level.removeBlock(bed, false); // its other half goes with it, as it can't stand alone
+		}
+	}
+
+	/**
+	 * Removes every block that gives light within 15 blocks (as far as light carries) of the test area, and returns where
+	 * they stood. A light an earlier batch's test left beside the area, or under its floor, is never cleared and shines
+	 * in: a bandit camp QaLairEngineGameTests' qaLairRest had come 80-104 blocks from its hall, wherever the dice fell,
+	 * once stood with its campfire under the south edge of StewardCivicRulesGameTests' dark-beds area, and the far bed
+	 * there read light 9, so it was no dark bed (B1191). The light fades on the light engine's own thread, some ticks
+	 * later: wait for the dark, don't check it at once. Call it before the test sets its own lights. Only for tests
+	 * alone in their batch.
+	 */
+	static java.util.List<net.minecraft.core.BlockPos> lights(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.List<net.minecraft.core.BlockPos> found = lightsNear(helper);
+		for (net.minecraft.core.BlockPos p : found) {
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 3);
+		}
+		return found;
+	}
+
+	/** Every block that gives light within 15 blocks of the test area (in loaded chunks), the area itself included. */
+	static java.util.List<net.minecraft.core.BlockPos> lightsNear(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB around = helper.getBounds().inflate(15);
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		int minY = Math.max(level.getMinBuildHeight(), (int) Math.floor(around.minY));
+		int maxY = Math.min(level.getMaxBuildHeight() - 1, (int) Math.floor(around.maxY));
+		for (net.minecraft.core.BlockPos p : net.minecraft.core.BlockPos.betweenClosed((int) Math.floor(around.minX), minY, (int) Math.floor(around.minZ),
+			(int) Math.floor(around.maxX), maxY, (int) Math.floor(around.maxZ))) {
+			if (level.hasChunkAt(p) && level.getBlockState(p).getLightEmission() > 0) {
+				found.add(p.immutable());
+			}
+		}
+		return found;
+	}
+
+	/**
+	 * Removes every bed (a home point of interest) a villager anywhere in the test area could claim: within vanilla's
+	 * claim range ({@code AcquirePoi.SCAN_RANGE}, 48) of the area. A homeless villager claims the free beds nearest him
+	 * that he can walk to, and a bed an earlier batch's test left outside its own area (never cleared) is one: with the
+	 * Terrace's free beds up a ladder (claimable only when vanilla finds no walk to a bed), the homeless villager of
+	 * QaHallBeds1103cGameTests claimed such a bed 13 blocks past the area's edge and walked off to it (B1084). Call it
+	 * before the test places its own beds. Only for tests alone in their batch.
+	 */
+	static void homes(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = net.minecraft.world.entity.ai.behavior.AcquirePoi.SCAN_RANGE + (int) Math.ceil(halfDiagonal);
+		java.util.List<net.minecraft.core.BlockPos> beds = level.getPoiManager().findAll(
+			h -> h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.HOME), p -> true, net.minecraft.core.BlockPos.containing(box.getCenter()),
+			reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).map(net.minecraft.core.BlockPos::immutable).toList();
 		for (net.minecraft.core.BlockPos bed : beds) {
 			level.removeBlock(bed, false); // its other half goes with it, as it can't stand alone
 		}
@@ -226,6 +311,34 @@ final class Leftovers {
 				level.removeBlockEntity(p);
 				level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 			}
+		}
+	}
+
+	/**
+	 * Removes every container block (chest, furnace, hopper, brewing stand: any block entity that holds items) outside
+	 * the test area within {@code margin} blocks of it, for a test that counts every item held round its area. One an
+	 * earlier batch's test left there is never cleared, and it can change what it holds by itself: QaMoverBelongings1110c's
+	 * furnace (8 raw iron on coal) 15 blocks north of the crew soak's area smelted its iron during the soak, which
+	 * counted "iron_ingot +8, raw_iron -8" (2026-11-11). Only for tests alone in their batch.
+	 */
+	static void containers(GameTestHelper helper, int margin) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB area = helper.getBounds();
+		AABB around = area.inflate(margin);
+		java.util.List<net.minecraft.core.BlockPos> found = new java.util.ArrayList<>();
+		for (int cx = ((int) Math.floor(around.minX)) >> 4; cx <= ((int) Math.floor(around.maxX)) >> 4; cx++) {
+			for (int cz = ((int) Math.floor(around.minZ)) >> 4; cz <= ((int) Math.floor(around.maxZ)) >> 4; cz++) {
+				for (net.minecraft.world.level.block.entity.BlockEntity be : level.getChunk(cx, cz).getBlockEntities().values()) {
+					net.minecraft.world.phys.Vec3 at = net.minecraft.world.phys.Vec3.atCenterOf(be.getBlockPos());
+					if (be instanceof net.minecraft.world.Container && around.contains(at) && !area.contains(at)) {
+						found.add(be.getBlockPos().immutable());
+					}
+				}
+			}
+		}
+		for (net.minecraft.core.BlockPos p : found) {
+			level.removeBlockEntity(p);
+			level.setBlock(p, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 		}
 	}
 

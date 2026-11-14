@@ -228,7 +228,7 @@ public final class ThreatCommand {
 		}
 		ThreatData data = ThreatData.get(level);
 		cleared += data.attacks(hall).size();
-		data.drop(hall, Long.MAX_VALUE, false);
+		data.callOff(hall);
 		return cleared;
 	}
 

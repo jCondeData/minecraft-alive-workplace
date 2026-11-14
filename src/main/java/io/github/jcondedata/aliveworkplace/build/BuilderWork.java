@@ -174,6 +174,13 @@ public class BuilderWork extends Behavior<Villager> {
 	 * it (nobody could lay that one): without it the column above waited for good (B139).
 	 */
 	private static final int GIVEN_UP_WAIT = 200;
+	/**
+	 * B1148: how long a finished build waits for an item frame, painting or armor stand it is short of when no job is on
+	 * it and none is spare in the village (one a job is making, or one spare somewhere, is waited for as long as that
+	 * lasts). After it the build ends without it, as it always did, and the owner is told what wasn't put up. Not final:
+	 * tests shorten it.
+	 */
+	public static int DECORATION_WAIT = 2400;
 	/** True while this builder works on a Wonder with a crew, in columns (35.5). */
 	private boolean crew;
 	/** True while the lead works on a block away from its cursor, this tick (23.1a). */
@@ -518,6 +525,9 @@ public class BuilderWork extends Behavior<Villager> {
 			lastMark = site.progressMark(); // B270: giving those up isn't the crew moving on: the stand-still goes on
 		}
 		if (!helping && site.isDone()) {
+			if (getDecorations(level, villager, site, plan, bag, bench, free)) {
+				return; // B1148: the item frames, paintings and armor stands first, like any material
+			}
 			Builders.finish(level, villager, site);
 			return;
 		}
@@ -528,7 +538,7 @@ public class BuilderWork extends Behavior<Villager> {
 		// (the helpers had taken everything near it, so it walked as much as a builder on its own).
 		offCursor = crewPick != null;
 		if (!helping && !crew && !site.helpers(gameTime).isEmpty() && villager.getEyePosition().distanceTo(Vec3.atCenterOf(step.pos())) > REACH) {
-			BuildPlan.Step near = workInReach(level, villager, site, plan, bench);
+			BuildPlan.Step near = workInReach(level, villager, site, plan, bench, bag, free);
 			if (near != null) {
 				step = near;
 				action = actionFor(level, site, near, bench);
@@ -924,9 +934,17 @@ public class BuilderWork extends Behavior<Villager> {
 		});
 	}
 
-	/** For the lead: the nearest block within reach that a helper could take (none claimed, not given up on). */
+	/**
+	 * For the lead: the nearest block within reach that a helper could take (none claimed, not given up on), and that the
+	 * lead can do from where it stands with what it carries. B1171: a block it had nothing in its bag for sent it off to
+	 * the chests; a few steps on that block was out of reach, so it turned back for its own next block (which it carried
+	 * the material for), came within reach of the first again, and went to and fro for good without laying either. That
+	 * needs a bag holding only part of the stretch: a lead whose materials come in a few at a time (from the Carpenter
+	 * and the Mason) while a helper is on the build.
+	 */
 	@Nullable
-	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench) {
+	private BuildPlan.Step workInReach(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BlockPos bench,
+									   BuilderBag bag, boolean free) {
 		if (avoidStage != site.stage()) {
 			avoid.clear();
 			retakeFailed.clear();
@@ -940,12 +958,25 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			Action a = actionFor(level, site, candidate, bench);
-			if (a == Action.BREAK || a == Action.PLACE) {
+			if (a == Action.BREAK && bag.freeSlots() > 0 || a == Action.PLACE && (free || carries(bag, candidate))) {
 				pick = candidate;
 				best = d;
 			}
 		}
 		return pick;
+	}
+
+	/** Whether the bag holds everything {@code step} is laid with (a step laid with nothing is never one to pick). */
+	private static boolean carries(BuilderBag bag, BuildPlan.Step step) {
+		if (step.requirements().isEmpty()) {
+			return false;
+		}
+		for (MaterialRules.Requirement r : step.requirements()) {
+			if (!bag.has(r.item(), r.count())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Nothing to help with right now (the lead is at the end of a stage): hang around the site. */
@@ -958,8 +989,8 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/**
 	 * B508: the build's last look before it's called done. One pass over the structure and decoration: if a block laid
-	 * earlier is gone and its spot is open ({@link BuildPlan#missing}, as the repair round sees it; crops and blocks
-	 * given up for good aside), the lead goes back to the first such block and over the lists again, what still stands
+	 * earlier is gone and its spot is open ({@link BuildPlan#missing}, as the repair round sees it; crops aside, and
+	 * blocks given up earlier, but for a door or a bed that can go in now, B47), the lead goes back to the first such block and over the lists again, what still stands
 	 * passed straight over (at most {@link #MOST_RECHECKS} times a build). After that, what's still gone is counted as
 	 * skipped. True if it went back.
 	 */
@@ -974,7 +1005,16 @@ public class BuilderWork extends Behavior<Villager> {
 			List<BuildPlan.Step> steps = plan.steps(stage);
 			for (int i = 0; i < steps.size(); i++) {
 				BuildPlan.Step s = steps.get(i);
-				if (!site.leftOut(s.pos()) && !BuildPlan.isCrop(s.state()) && BuildPlan.missing(level, s)) {
+				if (!BuildPlan.isCrop(s.state()) && BuildPlan.missing(level, s)) {
+					if (site.leftOut(s.pos())) {
+						// B47: a door or a bed given up earlier (something in its other half's cell each time the builder
+						// came to it): if it can go in now it is taken back and laid like a block broken since, rather than
+						// the house called done without its door; anything else given up stays given up (B508)
+						if (site.rechecks() >= MOST_RECHECKS || !canGoInNow(level, s)) {
+							continue;
+						}
+						site.takeBack(s.pos());
+					}
 					if (first == null) {
 						first = stage;
 						at = i;
@@ -991,6 +1031,22 @@ public class BuilderWork extends Behavior<Villager> {
 			site.leftBroken(gone); // broken again and again: left for the repair round, not claimed done
 		}
 		return false;
+	}
+
+	/**
+	 * B47: whether a two-block block given up earlier (a door, a bed, a tall plant) could be laid now: its other half's
+	 * spot (the door's top, the bed's head) is free, as {@link #place} asks, and it has what it stands on. One-block
+	 * blocks given up are never gone back for (B508: a torch given up while its wall was gone is the repair round's).
+	 */
+	private static boolean canGoInNow(ServerLevel level, BuildPlan.Step step) {
+		if (step.secondaryPos() == null) {
+			return false;
+		}
+		BlockState there = level.getBlockState(step.secondaryPos());
+		if (!there.isAir() && !there.canBeReplaced() && !MaterialRules.matches(there, step.secondaryState())) {
+			return false;
+		}
+		return MaterialRules.canStand(level, step.pos(), MaterialRules.grownAs(level, step.pos(), step.state()));
 	}
 
 	/**
@@ -2055,6 +2111,59 @@ public class BuilderWork extends Behavior<Villager> {
 	}
 
 	/**
+	 * B1148: the build is finished but short of an item frame, painting or armor stand that neither the chests by the
+	 * bench nor the bag hold. The builder gets it like any material: from what the village can spare, else waiting by
+	 * the bench with it on the waiting line and the board, where the jobs that make it (the Leatherworker's frames, the
+	 * Shepherd's paintings, the Carpenter's armor stands) see it. He waits while one is spare somewhere, while a job is on it, or
+	 * for {@link #DECORATION_WAIT} from when the wait began (saved on the site, so a reload keeps it), and never past three
+	 * times that. True while he is
+	 * at it; false once the build may end, what's still short left out and the owner told (Builders.finish).
+	 */
+	private boolean getDecorations(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BlockPos bench,
+								   boolean free) {
+		if (free || site.isDeconstruction() || site.isRepair() || plan.entities().isEmpty()) {
+			return false;
+		}
+		Map<Item, Integer> need = Builders.decorationNeed(level, plan);
+		if (need.isEmpty()) {
+			return false;
+		}
+		long now = level.getGameTime();
+		List<BlockPos> supplies = SupplyContainers.find(level, bench, null); // the chests Builders.finish puts them up from
+		Map<Item, Long> elsewhere = null;
+		for (Map.Entry<Item, Integer> e : need.entrySet()) {
+			Item item = e.getKey();
+			long inChests = SupplyContainers.count(level, supplies, item);
+			if (inChests + bag.count(item) >= e.getValue()) {
+				continue;
+			}
+			if (site.decorationWaitSince() == BuildSite.NOT_WAITING || site.decorationWaitSince() > now) {
+				site.setDecorationWaitSince(now);
+				// the list as it stands now the blocks are all in (it may still name blocks laid since its last count)
+				site.setMissing(Builders.computeMissing(level, site, plan, bag, supplies, spareElsewhere(level, villager, site, plan, bench)));
+			}
+			long waited = now - site.decorationWaitSince();
+			if (waited >= 3L * DECORATION_WAIT) {
+				return false; // never for good: a job that keeps saying it's on it, or a spare one out of reach, ends too
+			}
+			boolean worthIt = waited < DECORATION_WAIT
+				|| io.github.jcondedata.aliveworkplace.craft.JobShortages.coveredFor(site.id(), item, now);
+			if (!worthIt) {
+				if (elsewhere == null) {
+					elsewhere = spareElsewhere(level, villager, site, plan, bench);
+				}
+				worthIt = elsewhere.getOrDefault(MaterialFamilies.key(item), 0L) > 0;
+			}
+			if (worthIt) {
+				// the bag's count plus what the chests are short of: fetch takes the rest from the village, or waits for it
+				fetch(level, villager, site, plan, bag, bench, new MaterialRules.Requirement(item, (int) Math.min(64, e.getValue() - inChests)));
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * B636: works out what the rest of the build is short of, for the requests board and the jobs that make things,
 	 * keeping B499's scaffolding count. The lead only, while it builds on (waiting keeps its own list).
 	 */
@@ -2377,7 +2486,7 @@ public class BuilderWork extends Behavior<Villager> {
 					MaterialRules.requirement(next.state()).ifPresent(r -> MaterialLedger.used(r.item(), bag.remove(r.item(), r.count())));
 				}
 				level.setBlock(at, next.state(), Block.UPDATE_ALL);
-				applyBlockEntityData(level, at, next.state(), next.nbt()); // 39.5: its place on the belt
+				applyBlockEntityData(level, site, at, next.state(), next.nbt()); // 39.5: its place on the belt
 				site.placedNow(at);
 			}
 		}
@@ -2457,7 +2566,7 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, shaped, Block.UPDATE_ALL);
 		}
 		freeBystanders(level, pos, villager);
-		applyBlockEntityData(level, pos, state, step.nbt());
+		applyBlockEntityData(level, site, pos, state, step.nbt());
 		site.placedNow(pos);
 		MaterialRules.afterPlaced(level, pos, state);
 		if (MaterialRules.laidWhole(state)) {
@@ -2605,8 +2714,11 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
-	/** Copies sign text, banner patterns etc. from the blueprint — but never container contents or loot. */
-	private static void applyBlockEntityData(ServerLevel level, BlockPos pos, BlockState state, @Nullable CompoundTag nbt) {
+	/**
+	 * Copies sign text, banner patterns etc. from the blueprint — but never container contents or loot — turned with the
+	 * blueprint (B1137: a Create arm's targets, kept relative to it).
+	 */
+	private static void applyBlockEntityData(ServerLevel level, BuildSite site, BlockPos pos, BlockState state, @Nullable CompoundTag nbt) {
 		if (nbt == null || !state.hasBlockEntity()) {
 			return;
 		}
@@ -2620,6 +2732,7 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 		try {
 			blockEntity.loadWithComponents(tag, level.registryAccess());
+			TurnedBlockEntities.apply(blockEntity, site.placement().mirror(), site.placement().rotation());
 			blockEntity.setChanged();
 		} catch (RuntimeException ignored) {
 			// Bad data in an imported blueprint should never crash the server; the block itself is placed.

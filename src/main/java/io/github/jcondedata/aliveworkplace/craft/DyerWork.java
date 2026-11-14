@@ -13,10 +13,12 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A Leatherworker as the village's dyer (at their cauldron): when a builder nearby is waiting for something coloured —
- * wool, carpet, stained glass, terracotta, concrete, candles, beds, dyes themselves — they make it from what the
- * builder can get at with the game's recipes (dyes from flowers too), and harden concrete powder into concrete in the
- * cauldron's water. Everything else a builder waits for is left to the carpenter.
+ * A Leatherworker's crafting for builders (at their cauldron): leather goods and nothing else (46.1, 46.5, the
+ * {@code aliveworkplace:crafts/leatherworker} tag): item frames and glow item frames, leads, leather from rabbit hide and
+ * leather armor, with the game's recipes. The class keeps its old name (its status key is "dyer"), but he dyes nothing
+ * any more: wool, carpets, beds, banners and paintings are the Shepherd's at his loom since 46.2 ({@link WeaverWork}),
+ * dyes and pots the Florist's since 46.3 ({@link FloristCraftWork}), candles the Beekeeper's since 46.5
+ * ({@link BeekeeperCraftWork}); stained glass, terracotta and concrete the Mason's ({@link CraftJobs}).
  */
 public class DyerWork extends CrafterWork {
 	private static final List<String> COLOURS = java.util.Arrays.stream(DyeColor.values()).map(DyeColor::getName).toList();
@@ -25,7 +27,10 @@ public class DyerWork extends CrafterWork {
 		super(Crafting.Kind.CRAFTING, "dyer", "crafter", false);
 	}
 
-	/** Something coloured (by the usual naming: {@code red_wool}, {@code lime_dye}, modded blocks too) or a dye. */
+	/**
+	 * Something coloured (by the usual naming: {@code red_wool}, {@code lime_dye}, modded blocks too) or a dye. No longer
+	 * what the dyer takes (46.1: each job's own list, {@link CraftJobs}); kept for the tests and tools that ask.
+	 */
 	static boolean isColoured(Item item) {
 		ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
 		String path = id.getPath();
@@ -40,18 +45,31 @@ public class DyerWork extends CrafterWork {
 		return false;
 	}
 
+	/** 46.1: the Leatherworker's own list ({@code aliveworkplace:crafts/leatherworker}), no one's stand-in since 46.5. */
 	@Override
-	protected boolean wants(Item item) {
-		return isColoured(item);
+	protected boolean wants(ServerLevel level, Item item) {
+		return CraftJobs.makes(level, CraftJobs.Job.LEATHERWORKER, item);
 	}
 
 	/** Concrete: from its powder (in stock, or mixed from sand, gravel and dye), hardened in the cauldron. */
 	@Nullable
 	@Override
 	protected Crafting.Plan planFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		if (powderFor(item) == null) {
+			return super.planFor(level, item, count, usable);
+		}
+		return concrete(level, item, count, usable);
+	}
+
+	/**
+	 * {@code count} concrete ({@code item}) from its powder, in stock or mixed first (a recipe makes 8), hardened in water
+	 * as the plan's own last step; null if {@code item} isn't concrete or there's too little. The Mason's too since 46.1.
+	 */
+	@Nullable
+	static Crafting.Plan concrete(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
 		Item powder = powderFor(item);
 		if (powder == null) {
-			return super.planFor(level, item, count, usable);
+			return null;
 		}
 		int n = Math.min(count, Crafting.MAX_CRAFTS);
 		long have = usable.getOrDefault(powder, 0L);
@@ -60,7 +78,7 @@ public class DyerWork extends CrafterWork {
 			takes.put(powder, n);
 		} else {
 			// Mix the powder first (a recipe makes 8), then harden it.
-			Crafting.Plan mix = Crafting.plan(level, kind, powder, n, usable);
+			Crafting.Plan mix = Crafting.plan(level, Crafting.Kind.CRAFTING, powder, n, usable);
 			if (mix == null || mix.count() < n) {
 				return null;
 			}

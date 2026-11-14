@@ -54,13 +54,24 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 			h += 12;
 		}
 		h += card().lines().isEmpty() ? font.split(card().empty(), inner).size() * 10 + 4 : card().lines().size() * TableStyle.CARD_LINE + 2;
-		h += 6 + BUTTON_H + 4;
+		int rows = StatusCard.buttonRows(buttonBoxes(inner));
+		h += 6 + rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 4;
 		StatusCard.Button off = firstOff();
 		if (off != null) {
 			h += font.split(off.refusal(), inner).size() * 10 + 2;
 		}
 		h += card().hint().getString().isEmpty() ? 4 : 14;
 		return h;
+	}
+
+	/** The buttons' boxes inside {@code inner} pixels ({@link StatusCard#buttonRow}): x, row, width. */
+	private int[][] buttonBoxes(int inner) {
+		List<StatusCard.Button> list = card().buttons();
+		int[] need = new int[list.size()];
+		for (int i = 0; i < need.length; i++) {
+			need[i] = TableStyle.buttonWidth(font, list.get(i).label());
+		}
+		return StatusCard.buttonRow(need, inner);
 	}
 
 	/** The first grayed-out button (its reason shows under the row), or null. */
@@ -111,23 +122,26 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 		}
 		y += 6;
 		buttons.clear();
-		int bx = x;
+		int[][] boxes = buttonBoxes(w);
 		boolean gold = true;
 		Component tooltip = null;
-		for (StatusCard.Button button : card().buttons()) {
+		for (int i = 0; i < boxes.length; i++) {
+			StatusCard.Button button = card().buttons().get(i);
 			boolean off = !button.usable();
-			int bw = TableStyle.buttonWidth(font, button.label()) + 16;
-			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= y && mouseY < y + BUTTON_H;
+			int bx = x + boxes[i][0];
+			int by = y + boxes[i][1] * (BUTTON_H + StatusCard.BUTTON_ROW_GAP);
+			int bw = boxes[i][2];
+			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + BUTTON_H;
 			boolean on = gold && !off && button.id() != StatusCardMenu.CLOSE;
-			TableStyle.button(g, font, button.label(), bx, y, bw, BUTTON_H, on, over, off);
+			TableStyle.button(g, font, button.label(), bx, by, bw, BUTTON_H, on, over, off);
 			gold &= !on;
-			buttons.add(new int[]{button.id(), bx, y, bw, off ? 1 : 0});
+			buttons.add(new int[]{button.id(), bx, by, bw, off ? 1 : 0});
 			if (over && off) {
 				tooltip = button.refusal();
 			}
-			bx += bw + 8;
 		}
-		y += BUTTON_H + 4;
+		int rows = StatusCard.buttonRows(boxes);
+		y += rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 4;
 		StatusCard.Button off = firstOff();
 		if (off != null) {
 			for (FormattedCharSequence line : font.split(off.refusal(), w)) {

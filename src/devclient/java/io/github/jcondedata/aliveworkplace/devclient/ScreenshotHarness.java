@@ -1735,10 +1735,15 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall but the woodwork: spruce logs instead.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
-					{net.minecraft.world.item.Items.LANTERN, 1}, {net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 20},
-					{net.minecraft.world.item.Items.WHITE_WOOL, 15}};
+				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take 21 of
+				// the logs, which the Carpenter never touches, so 20 left him none to saw (until 46.1 he made the carpets from
+				// the spare wool, which is the Shepherd's work now, and the scene passed on those): a stack, and the rest of
+				// the stall's list as it is today.
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.STRIPPED_SPRUCE_LOG, 3},
+					{net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
+					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 16}, {net.minecraft.world.item.Items.WHITE_WOOL, 9},
+					{net.minecraft.world.item.Items.RED_CARPET, 8}, {net.minecraft.world.item.Items.WHITE_CARPET, 6}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
+					{net.minecraft.world.item.Items.DANDELION, 1}, {net.minecraft.world.item.Items.RED_TULIP, 1}};
 				for (int i = 0; i < stock.length; i++) {
 					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
 				}
@@ -1776,12 +1781,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 
 	// --- Job chains (ROADMAP 37.14a): several jobs filling one builder's list, each its own kind, step by step ----------
 
-	/** The jobs filmed in {@link #jobChainsScene}: the Carpenter, the dyer and the Tinkerer. */
+	/** The jobs filmed in {@link #jobChainsScene}: the Carpenter, the Shepherd and the Tinkerer. */
 	private final java.util.List<Villager> chainWorkers = new java.util.ArrayList<>();
 
 	/**
 	 * SCENE=job_chains: a builder's Market Stall with only raw makings in the chest (spruce logs, white wool and poppies,
-	 * a raw iron with a coal and a torch): the Carpenter saws, cuts and makes the woodwork, the dyer grinds the poppies
+	 * a raw iron with a coal and a torch): the Carpenter saws, cuts and makes the woodwork, the Shepherd grinds the poppies
 	 * into dye and dyes the wool, the Tinkerer fires the iron, cuts nuggets and makes the lantern, each a step at a time.
 	 */
 	private void jobChainsScene(Minecraft mc, MinecraftServer server) {
@@ -1802,7 +1807,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
 				// Everything for a Market Stall in its rawest form: the jobs make the rest.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 20}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+				// B1151: a stack of logs (the stall's own posts take 21, which the Carpenter leaves alone)
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
 					{net.minecraft.world.item.Items.RAW_IRON, 1}, {net.minecraft.world.item.Items.COAL, 1}, {net.minecraft.world.item.Items.TORCH, 1},
 					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.WHITE_WOOL, 35}, {net.minecraft.world.item.Items.POPPY, 20}};
 				for (int i = 0; i < stock.length; i++) {
@@ -1816,8 +1822,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 				chainWorkers.clear();
 				chainWorkers.add(chainWorker(level, new BlockPos(3, -60, -2), ModBlocks.CARPENTERS_BENCH.defaultBlockState(),
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.CARPENTER));
-				chainWorkers.add(chainWorker(level, new BlockPos(6, -60, -2), Blocks.CAULDRON.defaultBlockState(),
-					net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER, net.minecraft.world.entity.npc.VillagerProfession.LEATHERWORKER));
+				// the Shepherd at his loom: dyeing and weaving are his since 46.2 (the Leatherworker dyed until then)
+				chainWorkers.add(chainWorker(level, new BlockPos(6, -60, -2), Blocks.LOOM.defaultBlockState(),
+					net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD, net.minecraft.world.entity.npc.VillagerProfession.SHEPHERD));
 				chainWorkers.add(chainWorker(level, new BlockPos(9, -60, -2), ModBlocks.TINKERS_BENCH.defaultBlockState(),
 					io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERS_BENCH_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.TINKERER));
 				worker = chainWorkers.get(0);
@@ -1835,7 +1842,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 				java.util.List<Integer> made = chainWorkers.stream()
 					.map(v -> io.github.jcondedata.aliveworkplace.registry.ModAttachments.ITEMS_CRAFTED.getOrElse(v, 0)).toList();
 				Showcase.check(made.stream().filter(n -> n >= 1).count() >= 2,
-					"several jobs filled the builder's list (Carpenter, dyer, Tinkerer made " + made + ")");
+					"several jobs filled the builder's list (Carpenter, Shepherd, Tinkerer made " + made + ")");
 			});
 		}
 		if (tick == 1560) {
@@ -3246,6 +3253,9 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private int battleShots;
 	private int lastTurn = -1;
 	private int lastTurnTick;
+	/** B43: what the battle last asked the player's side, and how often its answer to that was refused. */
+	private com.cobblemon.mod.common.battles.ShowdownActionRequest battleAsked;
+	private int battleRefusals;
 
 	// B43: what a battle that stopped moving is waiting on (every field of the battle, sizes for collections).
 	private static void dumpStuckBattle(Object battle) {
@@ -3256,7 +3266,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 					Object v = f.get(battle);
 					String s;
 					if (v instanceof java.util.Collection<?> col) {
-						s = "size " + col.size() + " " + col.stream().limit(6).map(String::valueOf).toList();
+						// the newest entries: what the battle last heard (B43: an '|error|' line told why it stood still)
+						s = "size " + col.size() + " " + col.stream().skip(Math.max(0, col.size() - 6)).map(String::valueOf).toList();
 					} else if (v instanceof java.util.Map<?, ?> map) {
 						s = "size " + map.size();
 					} else {
@@ -3326,9 +3337,34 @@ public class ScreenshotHarness implements ClientModInitializer {
 				}
 				battleTrainer = trainer;
 				var party = com.cobblemon.mod.common.Cobblemon.INSTANCE.getStorage().getParty(player);
-				for (String p : List.of("snorlax level=100", "blissey level=100", "skarmory level=100", "tyranitar level=100", "dragonite level=100", "garchomp level=100")) {
-					party.add(com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(p, " ", "=").create());
-				}
+				// Fixed movesets (B43, B790): attacks that always work. The moves a level 100 Pokémon came with included
+				// Giga Impact and Hyper Beam (a turn lost recharging) and Last Resort (fails), and the battle ran past its time.
+				java.util.Map<String, List<String>> team = new java.util.LinkedHashMap<>();
+				team.put("snorlax", List.of("bodyslam", "earthquake", "crunch", "icepunch"));
+				team.put("blissey", List.of("flamethrower", "icebeam", "thunderbolt", "shadowball"));
+				team.put("skarmory", List.of("drillpeck", "ironhead", "nightslash", "aerialace"));
+				team.put("tyranitar", List.of("crunch", "earthquake", "rockslide", "icepunch"));
+				team.put("dragonite", List.of("dragonclaw", "earthquake", "firepunch", "thunderpunch"));
+				team.put("garchomp", List.of("dragonclaw", "earthquake", "crunch", "ironhead"));
+				team.forEach((species, moves) -> {
+					var pokemon = com.cobblemon.mod.common.api.pokemon.PokemonProperties.Companion.parse(species + " level=100", " ", "=").create();
+					List<com.cobblemon.mod.common.api.moves.MoveTemplate> known = new ArrayList<>();
+					for (String move : moves) {
+						var template = com.cobblemon.mod.common.api.moves.Moves.getByName(move);
+						if (template != null) {
+							known.add(template);
+						}
+					}
+					if (known.size() == moves.size()) {
+						pokemon.getMoveSet().clear();
+						for (int i = 0; i < known.size(); i++) {
+							pokemon.getMoveSet().setMove(i, known.get(i).create());
+						}
+					} else {
+						System.out.println("[battle scene] " + species + " keeps its own moves: not every one of " + moves + " exists");
+					}
+					party.add(pokemon);
+				});
 				player.setGameMode(GameType.SURVIVAL);
 				if (!megaLeader) {
 					player.teleportTo(level, 0.5, -60, -6.5, 0, 10);
@@ -3400,29 +3436,40 @@ public class ScreenshotHarness implements ClientModInitializer {
 					lastTurn = battle.getTurn();
 					lastTurnTick = tick;
 				}
-				if (us == null || us.getRequest() == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
+				if (us == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
+					return;
+				}
+				if (us.getRequest() == null) {
+					// B43: the battle refused our last choice. It cleared the request when it passed the choice on, and waits
+					// for another answer to the same one: Showdown's own "default" (its first legal move or switch).
+					if (battleAsked == null || battleRefusals >= 5) {
+						return;
+					}
+					battleRefusals++;
+					System.out.println("[battle scene] tick " + tick + " our choice was refused; choosing Showdown's default");
+					us.setRequest(battleAsked);
+					us.setActionResponses(List.of(new com.cobblemon.mod.common.battles.DefaultActionResponse()));
 					return;
 				}
 				var request = us.getRequest();
+				if (request != battleAsked) {
+					battleAsked = request;
+					battleRefusals = 0;
+				}
 				List<com.cobblemon.mod.common.battles.ShowdownActionResponse> choice = new ArrayList<>();
 				if (request.getForceSwitch() != null && request.getForceSwitch().contains(true)) {
-					// Send in the next Pokémon that can still fight.
-					for (var pokemon : us.getPokemonList()) {
-						if (pokemon.getHealth() > 0 && us.getActivePokemon().stream().noneMatch(a -> a.getBattlePokemon() == pokemon)) {
-							choice.add(new com.cobblemon.mod.common.battles.SwitchActionResponse(pokemon.getUuid()));
-							break;
-						}
-					}
+					// Send in the next Pokémon that can still fight: Showdown's own pick, which it can't refuse.
+					choice.add(new com.cobblemon.mod.common.battles.DefaultActionResponse());
 				} else if (request.getActive() != null && !request.getActive().isEmpty()) {
 					var moves = request.getActive().get(0).getMoves();
-					// The strongest usable move (B43): the first one was sometimes a status move, and the battle ran past the
-					// scene's time on turns that did no damage.
-					var usable = moves.stream().filter(m -> m.canBeUsed())
-						.max(java.util.Comparator.comparingDouble(m -> {
+					// Each usable move in turn, strongest first (B43, B790): the first move was sometimes a status move, and the
+					// strongest alone can be one the trainer's Pokémon is immune to, turn after turn.
+					var ranked = moves.stream().filter(m -> m.canBeUsed())
+						.sorted(java.util.Comparator.comparingDouble((com.cobblemon.mod.common.battles.InBattleMove m) -> {
 							var template = com.cobblemon.mod.common.api.moves.Moves.getByName(m.getId());
-							return template == null ? 0 : template.getPower();
-						}))
-						.orElse(moves.get(0));
+							return template == null ? 0 : -template.getPower();
+						})).toList();
+					var usable = ranked.isEmpty() ? moves.get(0) : ranked.get(Math.floorMod(battle.getTurn(), ranked.size()));
 					if (tick % 100 == 0) {
 						System.out.println("[battle scene] tick " + tick + " our move " + usable.getId());
 					}

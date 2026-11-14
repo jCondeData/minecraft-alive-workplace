@@ -183,8 +183,29 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			}
 			return out;
 		}));
-		for (String f : List.of("plan", "status", "missing", "shortfallStale", "trips", "detail", "claims", "helpersSeen", "lastNotified")) {
+		// MoveSite#load refuses a site whose "where" (one byte per block of its plan) isn't as long as its plan, and drops
+		// packed data for a block index outside it.
+		TIED.put("move.MoveSites.sites", new Tie("a site's where has one byte per block of its plan, packed data (and its turned mark) only for those blocks (MoveSite#load)", (d, made, m) -> {
+			for (Object site : (List<?>) made) {
+				int blocks = ((List<?>) part(part(site, "plan"), "blocks")).size();
+				byte[] where = new byte[blocks];
+				java.util.Arrays.fill(where, (byte) 1);
+				Field f = site.getClass().getDeclaredField("where");
+				f.setAccessible(true);
+				f.set(site, where);
+				Map<?, ?> packed = (Map<?, ?>) part(site, "packedData");
+				packed.keySet().removeIf(i -> (Integer) i >= blocks);
+				// B1137: the "turned" mark is saved inside a packed entry, so only blocks with packed data keep it
+				((java.util.Set<?>) part(site, "packedTurned")).retainAll(packed.keySet());
+			}
+			return made;
+		}));
+		for (String f : List.of("plan", "planDepth", "planMargin", "status", "missing", "shortfallStale", "trips", "detail", "claims", "helpersSeen", "lastNotified")) {
 			INNER_NOT_SAVED.put("build.BuildSite." + f, "in BuildSite's block of fields marked \"Transient, recomputed as needed\"");
+		}
+		INNER_NOT_SAVED.put("move.MoveSite.waiting", "why the Mover waits, for his status line: set again at his next step (MoverWork#work)");
+		for (String f : List.of("downOrder", "upOrder")) {
+			INNER_NOT_SAVED.put("move.MoveSite." + f, "a cache of the plan's blocks in taking-down or putting-up order, worked out again from the plan when first needed (MoveSite#" + f + ")");
 		}
 		INNER_NOT_SAVED.put("mine.QuarrySite.lastNotified", "when the owner was last told of a missing pickaxe or ladders, in memory (a restart may tell him once more)");
 		INNER_NOT_SAVED.put("build.BuildSite.leadClaim", "says so: the block the lead is on away from his cursor, not saved");
@@ -198,6 +219,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		INNER_NOT_SAVED.put("story.ArcState.endWith", "says so: set by an end_arc effect, not saved (it ends at once)");
 		INNER_NOT_SAVED.put("build.BuildSite.progressFromCursor", "says so: transient, worked out at load from a save without shown_progress (BuildSite#load)");
 		INNER_NOT_SAVED.put("mine.QuarrySite.status", "the miner's current step for the hall's page, set again as he works (MinerWork)");
+		INNER_NOT_SAVED.put("mine.QuarrySite.upgradeNeed", "what the miner lacks for an iron pickaxe, for the status line, looked up again as he works (MinerWork#upgradePickaxe, 36.11a)");
 		INNER_NOT_SAVED.put("mine.QuarrySite.fromOldVersion", "worked out at load: whether the save is from before stairs (QuarrySite#load)");
 		INNER_NOT_SAVED.put("build.BuildSite.onChange", "a callback the manager sets on the site it holds, not data");
 		INNER_NOT_SAVED.put("trainer.RaidHelpers$Hire.lastNear", "when the player was last by the den, refreshed every look while he is (RaidHelpers#tick)");
@@ -447,7 +469,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 
 	/**
 	 * The record test's maker, which also makes the concrete lists, sets and maps saved data declares (an {@code
-	 * ArrayDeque}, a {@code LinkedHashSet}, fastutil's sets and maps of longs), a block state, and the mod's own
+	 * ArrayDeque}, a {@code LinkedHashSet}, fastutil's sets and maps of longs, B1203's map of longs to objects), a block state, and the mod's own
 	 * hand-written classes (a siege, a cup, a bounty): made with their constructor, then every field given a made value.
 	 */
 	static final class Maker extends QaEveryRecordField1101GameTests {
@@ -488,6 +510,12 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 				map.put(net.minecraft.core.BlockPos.asLong(3 + k, 64, -k), net.minecraft.core.BlockPos.asLong(40 + k++, 66, 7));
 				return map;
 			}
+			if (raw == it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap.class || raw == it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap.class) {
+				it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap<Object> map = new it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap<>();
+				map.put(net.minecraft.core.BlockPos.asLong(3 + k, 64, -k), make(args[0], path + "[0]"));
+				map.put(net.minecraft.core.BlockPos.asLong(9 + k++, 70, 4), make(args[0], path + "[1]"));
+				return map;
+			}
 			if (raw == it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap.class) {
 				it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap map = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap();
 				map.put(net.minecraft.core.BlockPos.asLong(3 + k, 64, -k), 5 + k++ % 7);
@@ -498,6 +526,9 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 			}
 			if (raw == int[].class) {
 				return new int[] {3 + k, 7 + k++ % 5, 2};
+			}
+			if (raw == byte[].class) {
+				return new byte[] {(byte) (1 + k++ % 3)};
 			}
 			if (raw == long[].class) {
 				return new long[] {5_000_000_000L + k++, 42L};

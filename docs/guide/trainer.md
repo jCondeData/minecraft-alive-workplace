@@ -29,8 +29,8 @@ Trainer. A villager already at a Training Post becomes one with a **Poké Ball**
 
 Right-click a trainer with an empty hand and their page opens (over their head you see "right-click to battle" and how
 many battles they've fought). On the left: their name and rank, your record against them, whether you've battled today
-and the rules. On the right: the prize, their team with the real Pokémon models (only half of it until you beat them
-once, the rest "???"), your party with a line each (ready, fainted, or over your level cap), and three buttons.
+and the rules. On the right: the prize, their team with the real Pokémon models (only the first half of it, rounded up,
+until you beat them once, the rest "???"; the same Pokémon every time you look, and the ones they send into battle), your party with a line each (ready, fainted, or over your level cap), and three buttons.
 **Challenge** starts the battle; **Trade** opens their trades (as sneaking and right-clicking does); **Close** closes.
 When they can't battle you right now, Challenge is gray and the reason is under it: they're asleep ("come back in the
 morning"), busy with someone else, or away at the Cup, or you have no Pokémon with you. The battle heals your team

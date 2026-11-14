@@ -209,7 +209,7 @@ public final class VillageRaids {
 			return;
 		}
 		if (Threats.quiet(level, hall)) {
-			data.drop(hall, Long.MAX_VALUE, false); // nothing comes to a quiet village (32.21): the attacks the clock set are off
+			data.callOff(hall); // nothing comes to a quiet village (32.21): the attacks the clock set are off, and their warning (B1146)
 			return;
 		}
 		long day = Chronicle.day(level);

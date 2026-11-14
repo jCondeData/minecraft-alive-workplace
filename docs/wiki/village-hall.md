@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224
 
 ## What a player sees
 
@@ -69,6 +69,14 @@ table. The open row is drawn, and takes clicks, while any part of its block show
 line and its details and lists are all above the table's top (B546); every table hit is clipped to the table. The
 header says "1 child" for one (`header_child`, B547). A click on a row whose villager has died or left the village since the screen was laid out lays the list out
 again without them (`HallPeople.gone`).
+
+A villager with a trade but no workstation now (his table broken or taken while he kept his level, as vanilla keeps
+an experienced villager's job; `HallPeople.noWorkstation`) is listed at his job, among the workers, as "Undertaker (no
+workstation)" (`screen.aliveworkplace.hall.people.no_site`; the row's `no_site`), and the header and the People
+button's "With a job" count him working (B1173: such an Undertaker used to read "No job", counted jobless, so his job
+showed nowhere). Job ▾ gives him a free block for nothing, as it does a jobless villager, and the census still keeps
+him in `Census.jobless()` for the Steward's "worker without a workstation" check and the settlers. A Legend without a
+trade (`ModVillagers.LEGEND`, never a workstation) reads "Legend", no note, counted working.
 
 **Job ▾ (40.3).** Job ▾ on an open row opens a list of every job right under it (`hall/HallJobs`), the table
 scrolling over it. On top: "A new job for Dara", then the price by their level ("Retraining costs 20 emeralds
@@ -202,9 +210,12 @@ village: within its radius across and 32 blocks up or down, so a death on its ri
 "(1 entry)" on its button for a chronicle of one, B744), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
-festival. A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
+festival. A festival or a Grand Chef's banquet goes on only while someone is near the village: once everyone has left, nothing of it
+loads the hall again (B1224), and one still on when someone comes back carries on (or is over, at dusk). A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
 the charter, it works from the off hand when the main hand is empty, B360); otherwise it gets a made-up
-name such as Thornholm.
+name such as Thornholm. A blank name (empty, or only spaces, tabs and line breaks, styled or not; only possible by
+commands) counts as none, on the hall and on the caravan list that names an unloaded village in `/workplace quests` and
+letters: the made-up name again, never an empty one, and the hall's round saves that made-up name on the list (B1229).
 
 ## How it works
 
@@ -382,7 +393,7 @@ bar says whose they are and that they can add the player with `/workplace friend
 On the hall block itself (`VillageHallBlockEntity`). A field missing from an older save reads as zero, false or
 empty unless a default is given here:
 
-- Identity: `CustomName` (none: a made-up name), `owner` and `ownerName` (none), `protected` (false), `rank`.
+- Identity: `CustomName` (none or blank: a made-up name), `owner` and `ownerName` (none), `protected` (false), `rank`.
 - People: `births`, `lastBirth`, `chronicle` (at most 100 entries, the oldest forgotten).
 - Money and days: `treasury`, `treasuryTotal`, `lastTaxDay` (-1: never), `lastQuestDay` (-1), `lastMarketDay` (-1),
   `lastRaidDay` (-100), `festivalDay` (-1), `feastDay` (-1), `festivalCalled` (-100), `festivalMissed` (-1).
@@ -494,6 +505,10 @@ point of interest, saved by Minecraft).
 - Upgrades: the space check names the first blocking spot only; clear it and the row names the next one, if any. Spots
   in chunks that aren't loaded aren't checked (the page never loads a chunk); the Builder deals with them when he gets
   there, as for any build. The page lists up to 36 builds.
+- A name made only of characters Java doesn't count as whitespace (no-break spaces, zero-width spaces; commands only)
+  isn't treated as blank: the village is listed by it and reads empty.
+- B1233: a caravan-list entry saved with no name or a broken one (an old or hand-edited save) is skipped whole on load,
+  its trade routes, wants and banner color with it; the village is still named by its made-up name.
 
 ## Proof
 
@@ -551,9 +566,14 @@ fence, a path, then water (natural); `naturalGroundDoesNotBlockAnUpgrade`, all o
 `HallCrewSplitGameTests` (B1110: every builder busy on A, a lead and a helper: the Upgrades page's row and the Repairs
 page's Yes take the helper off A, who builds the upgrade or repairs the wall while A goes on with its lead; with one
 builder only, nothing is taken off A and the answer says none can be spared; the split through a save and reload).
+`QaHallCrewSplit1110cGameTests` (QA of B1110: a lone Builder is never taken even when his bench is nearest, a helper
+is; three upgrades in a row against a lead and two helpers split twice and queue the third, every build keeping a
+lead and going on; two lone Builders are never split; the Repairs page's Yes the same; both answers word for word).
 `QaHallFixes1103cGameTests` (B885, B886, B889-B891 beyond their repros: visitors and Doctor Wren never jobless or given a block, a hire ending, the level request called off for every helper and across a save, a scout given No job, a retired elder's forged picks, a new Steward after a retrained one), `QaHallMidActivity1103cGameTests` (job changes mid-alarm, mid-trade and with a tools request open). `QaLaneC1104eGameTests.theHallGivesNoJobToABabyOrANitwitButToAGrownVillager` (QA: the hall's hand-out refuses a baby who is no nitwit and a grown nitwit, the block staying free, and gives it to a grown villager beside them). `HallPeopleGameTests` (40.2: the rows and counts of a village of 8 and of 60 scrolled to its last villager, the
 details of a builder, a guard, a child and a nitwit and Job ▾ on the builder, a villager who dies or leaves while the
-screen is open; scene `hall_people`). `HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
+screen is open; scene `hall_people`). `HallPeopleNoSiteGameTests` (B1173: an Undertaker at his table and with it
+broken, his job with "(no workstation)" and the counts; every job of ours without a workstation, none jobless).
+`HallPeopleJobGameTests` (40.3, every case through Job ▾'s clicks:
 `aChangeThatWorks` (price on top, "Mason · 1 free Stonecutter", the offer, then paid), `aJobWithNoFreeBlock`,
 `notEnoughEmeraldsChangesNothing`, `toTheBuilder`, `aBusyBuilderHandsHisBuildBack`, `noJob` (and reloaded),
 `aJoblessVillagerIsGivenABlockForNothing`, `childrenAndNitwitsCant`, `theRuleOffHidesTheButton`,
@@ -571,6 +591,12 @@ still load), `B796GameTests` (one damaged plan zone and one damaged research lev
 `QaHallLenientLoad1102GameTests` (a clean hall writes the same tags after a load; one loaded with damage writes back
 only its good entries, which load the same again; a list saved as a string, a number or a compound loads empty and the
 hall keeps its owner).
+QA's `QaFarVillageName1114eGameTests` (B1217: a far village is named without loading its hall: a renamed one by its
+saved name, through a save and load and in a letter, an old or broken entry and a never-listed village by the made-up
+name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back to the made-up name).
+`QaFarVillageBlankName1114e2GameTests` (B1229: whitespace and styled empty names, saved or from a Name Tag on a loaded
+hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
+paths, the round saves the made-up name, and a real name, spaces and all, still wins).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
@@ -578,5 +604,13 @@ from the pane without a click, then the Storehouse board), `hall_jobs` (the Free
 takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
 blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
 Dara's row, Mason clicked once for the price, then paid).
+
+## Which hall is a villager's
+
+A villager's hall is the nearest Village Hall within the hall radius (`VillageHalls.nearest`, found through the hall's
+point of interest). Only a hall that really stands counts: a point of interest left behind with no hall block on it
+(a block swapped without a block update, as region edits and some world-editing mods do) is skipped, so the villager
+keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
+point in a chunk that isn't loaded is trusted.
 
 See also: [House looks](house-looks.md), the page the Builds button opens.

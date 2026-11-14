@@ -488,6 +488,58 @@ public class QaBlueprintTableGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * B454: a job switched on while the server runs (config {@code firewardens}) is found by the search at once, for
+	 * every build whose detail pane names it; switched off again, the search and the pane both drop it. The listing is
+	 * first read with the job off, as a Table opened before the switch changed.
+	 */
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '200' '"qaTableSearchSwitch"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 200, batch = "qaTableSearchSwitch")
+	public void aJobSwitchedOnAfterTheListingIsFoundBySearch(GameTestHelper helper) {
+		boolean firewardens = io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = firewardens);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.threat.VillageFire.live(), "village fires aren't live here: the Firewarden can't be had, pick another job");
+		ResourceLocation job = net.minecraft.core.registries.BuiltInRegistries.VILLAGER_PROFESSION
+			.getKey(io.github.jcondedata.aliveworkplace.registry.ModVillagers.FIREWARDEN);
+		List<String> queries = List.of(BuildJobs.name(job).getString().toUpperCase(Locale.ROOT), job.getPath());
+		List<String> problems = new ArrayList<>();
+		int[] named = new int[3];
+		boolean[] rounds = {false, true, false};
+		for (int round = 0; round < rounds.length; round++) {
+			boolean on = rounds[round];
+			io.github.jcondedata.aliveworkplace.work.FirewardenWork.ENABLED = on;
+			List<TablePayloads.Entry> all = library(helper);
+			for (TablePayloads.Entry e : all) {
+				if (e.hidden()) {
+					continue;
+				}
+				Optional<TablePayloads.Details> details = TableServer.details(helper.getLevel(), null, e.id());
+				if (details.isEmpty()) {
+					continue;
+				}
+				boolean pane = details.get().jobs().stream().anyMatch(b -> b.jobs().contains(job));
+				named[round] += pane ? 1 : 0;
+				if (pane != e.jobs().contains(job)) {
+					problems.add("firewardens " + (on ? "on" : "off") + ": " + e.id() + "'s pane " + (pane ? "names" : "doesn't name")
+						+ " the Firewarden, its listing " + (pane ? "doesn't" : "does"));
+				}
+				for (String q : queries) {
+					if (pane && !TableSearch.filter(all, q).contains(e)) {
+						problems.add("firewardens " + (on ? "on" : "off") + ": \"" + q + "\" misses " + e.id());
+					}
+				}
+			}
+			if (!on) {
+				for (TablePayloads.Entry e : all) {
+					helper.assertFalse(e.jobs().contains(job), "firewardens off: " + e.id() + " is still listed with the Firewarden");
+				}
+			}
+		}
+		helper.assertTrue(problems.isEmpty(), problems.size() + " problems, first: " + String.join("; ", problems.subList(0, Math.min(4, problems.size()))));
+		helper.assertTrue(named[0] == 0 && named[1] > 0 && named[2] == 0, "builds whose pane names the Firewarden (off, on, off): " + java.util.Arrays.toString(named));
+		helper.succeed();
+	}
+
 	// --- 36.1: the basement preview ------------------------------------------------------------------------------
 
 	private static List<BlockPos> cells(TablePayloads.Preview preview) {

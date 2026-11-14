@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/movers_crate"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/movers_crate",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/movers_crate",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/movers_crate",
+      "y": 270
+    }
+  }
+}

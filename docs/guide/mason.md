@@ -8,7 +8,7 @@ Workstation: Stonecutter (vanilla: a jobless villager takes one by themselves)
 Pick it with: a clay ball
 Works for: the builders nearby, and the Storehouse's stock orders
 Needs: stone; a furnace by the stonecutter and coal or charcoal for fired blocks
-Makes: stone bricks, stairs, slabs and walls; gravel, sand, glass, smooth stone, terracotta, bricks
+Makes: stone bricks, stairs, slabs and walls; gravel, sand, glass, glass panes, stained glass, smooth stone, terracotta, dyed terracotta, concrete, bricks
 Pokémon helpers: Fighting, Rock, Steel
 Build: the Mason's Yard
 categories: Jobs, Builder
@@ -25,12 +25,17 @@ another job, sneak-right-click them with a **clay ball** to make them a Mason ag
 ## What they do
 
 When a builder nearby is waiting for something a stonecutter makes (stone bricks, stairs, slabs, walls), the mason cuts
-it from the village's stone and carries it to the builder's chests. They're the village's crusher, glassblower and kiln
-too:
+it from the village's stone and carries it to the builder's chests. They're the village's crusher and kiln too:
 
-- **Crushing:** cobblestone into gravel, and gravel into sand, at the stonecutter.
-- **Firing**, with a **furnace by the stonecutter**: sand into glass, and stone, smooth stone, terracotta and bricks
-  from clay. Each coal or charcoal fires eight.
+- **Crushing:** cobblestone into gravel, and gravel into sand, at the stonecutter, for the builders and for the sand a
+  [Glassblower](glassblower.md) nearby needs for their glass.
+- **Firing**, with a **furnace by the stonecutter**: stone, smooth stone, terracotta and bricks from clay. Each coal or
+  charcoal fires eight.
+- **At the bench**, no furnace needed: **concrete** (they mix the powder from sand, gravel and dye and set it) and
+  **dyed terracotta**.
+
+Stone, bricks and clay are the mason's work, so the carpenter leaves them alone. Glass, panes, stained glass and bottles
+are the [Glassblower](glassblower.md)'s now.
 
 Over their head: how many blocks they've cut, and what they're working on.
 

@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146
 
 ## What a player sees
 
@@ -60,10 +60,22 @@ A village that keeps watch hears of an attack **the evening before**, when the c
   come", the Lighthouse's keeper "watches the sea from the lighthouse" (B919).
 - **On the day.** From noon the gates shut and the portcullis of every gate build drops; at dusk the guards take their
   battle stations ([Sieges](sieges.md)) and the villagers go in, before the horn. The siege that begins takes the
-  dropped bars over; if no attack came, the bars go up the next morning.
+  dropped bars over; if no attack came, the bars go up the next morning. A village with no guard (warned by a Seer or
+  the Lighthouse) opens the gates the warning shut again the morning after, or as soon as the attack is called off
+  (B1158). Gates the last guard shut for the night, before he fell or took another job, open at dawn (B1180).
+- **Called off.** An attack called off after the warning (threat level 0, Peaceful, the village set At peace, or
+  `/workplace threat clear`) takes its warning with it (`ThreatData.callOff`), and `Warnings.ready` is false in a quiet
+  village: no gates shut, no battle stations, nobody kept in (B1146). So does a lair broken up before its band comes:
+  its culture's attacks and their warning are off, other cultures' stay (B1155).
 - **Without a source** the horn is the only warning, as before; the Defense page says "No lookout" and What next? says
   to build a Lookout Tower and post a guard by it.
 - The warning and the dropped bars are saved on the hall's clock (`warned`, `braced`; a save from before has none).
+- **The hall broken or moved.** Only the hall's own round draws the bars up and ends its raid, so a hall taken away
+  that day (broken, or moved by a Mover, which sets a new hall down) draws its dropped bars up at once and calls off
+  a raid under way, which ends its siege; the siege lifts at the next dawn as always (`Warnings.hallGone`, from
+  `VillageHallBlock.onRemove`, B1176). Only that hall's iron bars go up: a bar's spot the player filled with another
+  block stays as it is, and another village's bars stay down. The warning stays on the clock: a hall put back on its
+  spot braces again.
 
 ## How it works
 
@@ -212,6 +224,29 @@ None.
   lookout; on the warned day the gates shut and the portcullis down at noon, the archer on the tower within 400 ticks
   of dusk and the villagers in, the siege taking the bars over; the bars up when no attack came, raids and sieges
   switched off, every new sentence). Scene `warning`.
+- B1146: `QaThreatSwitches1110dBugTests` (warned at level 2, then the level set to 0, the world saved and loaded at
+  level 0, or the village set At peace: nothing shuts on the day).
+- B1158: `QaGuardlessGates1110dBugTests` (a guardless village's gates shut at noon of the warned day are open the
+  morning after and when the attack is called off; a guarded village's the morning after, as before).
+- B1158 (QA, lane D): `QaGatesNoGuardLeft1111dGameTests` (a guardless, unwarned village leaves the gates a player shut
+  or opened as he set them, by day and by night; the gates open just before noon, shut at noon, open once the morning
+  after, then stay as a player sets them; a guarded village whose only guard falls on the warned night opens them the
+  morning after; one guard shuts them at dusk and opens them at dawn).
+- B1180: `QaGatesLastGuardNight1111dBugTests` (the only guard shuts the gates at dusk and falls in the night: they stay
+  shut through the night and open the next morning, also across a save and reload; then a player's shut gates stay
+  shut).
+- B1180 (QA, lane C): `QaGatesLastGuard1111cGameTests` (the guard counted by the hall's census: the only guard given
+  No job at the hall in the night leaves the gates shut until dawn, then they open; made a guard again before dawn, he
+  keeps them shut and opens them once at dawn; a gate a player opens in a guardless night stays open and the rest open
+  at dawn; the next dusk with still no guard nothing shuts, and a gate a player shuts that night stays shut in the
+  morning).
+- B1180 (QA, lane D): `QaGatesDawnEdge1111dGameTests` (the only guard taken off the job in the night, counted by the
+  hall's census: shut through the night, open in the morning; shut at 23499 and open at 23500, the guards' dawn; a guard
+  opens the gates at dawn and leaves that day, then the gates a player shuts that night stay shut through the next dawn).
+- B1155 (QA, lane D): `QaLairFallOtherBands1111dGameTests` (the camp falls on a day the village is warned of monsters:
+  still braced, the Defense page still shows it, only the bandits' attack leaves the clock; the camp broken up the
+  evening before its warned day: nothing shut at noon, no battle stations at dusk; a later monster attack stays; bandits
+  and monsters both due the same night: still braced for the monsters).
 - 32.14 (QA, lane D): `QaWarningGameTests` (an archer posted exactly 24 blocks from a Lookout Tower's middle keeps
   watch, 25 blocks off doesn't and nobody is warned; an upgraded Lookout Tower still counts; a player in the village and
   the hall's owner 300 blocks off are each told once, in gold, and a stranger 300 blocks off isn't).

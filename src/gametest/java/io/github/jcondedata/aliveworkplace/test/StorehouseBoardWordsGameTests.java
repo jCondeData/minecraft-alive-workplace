@@ -58,4 +58,54 @@ public class StorehouseBoardWordsGameTests implements FabricGameTest {
 		says(helper, StorehouseBoard.noneMessage(cobble), "You have no Cobblestone to give (or their chests are full)");
 		helper.succeed();
 	}
+
+	/** A count before an article ("Gave 1 a"), "no" before one ("You have no a"), a count of one ("Gave 1 "), a capital mid-sentence. */
+	private static final java.util.regex.Pattern WRONG = java.util.regex.Pattern.compile(
+		"\\b\\d+ (a|an|A|An) |\\bno (a|an|A|An) |\\bGave 1 |.\\b(A|An|Seeds)\\b|\\b1 seeds\\b|\\bGave \\d+ (a|an) ");
+
+	/**
+	 * B1108, B1109: every request name a job posts in place of an item's name (each in {@link Requests#NAMES}) reads as a
+	 * sentence on the board, for one, a few and a stack handed over and for none, and has its own words (not a raw key).
+	 * Every plain request name in en_us.json ("request.aliveworkplace.<name>" with no placeholder) is in that list, so a
+	 * new job's name can't fall back to "Gave 16 <name>".
+	 */
+	//$ gametest_batch AREA '"storehouseBoardEveryName"'
+	@GameTest(template = AREA, batch = "storehouseBoardEveryName")
+	public void everyRequestNameAJobPostsReadsAsASentence(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		java.util.List<String> wrong = new java.util.ArrayList<>();
+		try (java.io.InputStream in = Requests.class.getResourceAsStream("/assets/aliveworkplace/lang/en_us.json")) {
+			helper.assertTrue(in != null, "en_us.json isn't on the classpath");
+			com.google.gson.JsonObject lang = com.google.gson.JsonParser.parseReader(
+				new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+			for (String key : lang.keySet()) {
+				if (key.matches("request\\.aliveworkplace\\.[a-z_]+") && !lang.get(key).getAsString().contains("%")
+					&& !Requests.NAMES.contains(key)) {
+					wrong.add(key + " is a request name the board has no sentences for");
+				}
+			}
+		} catch (java.io.IOException e) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException("en_us.json: " + e);
+		}
+		Villager worker = worker(helper, VillagerProfession.FARMER);
+		for (String key : Requests.NAMES) {
+			Requests.Request r = request(helper, worker, new ItemStack(Items.WHEAT_SEEDS), 16, Component.translatable(key));
+			java.util.List<String> sentences = new java.util.ArrayList<>();
+			for (int given : new int[] {1, 2, 16}) {
+				sentences.add(StorehouseBoard.gaveMessage(r, given).getString());
+			}
+			sentences.add(StorehouseBoard.noneMessage(r).getString());
+			for (String s : sentences) {
+				if (s.contains("aliveworkplace") || WRONG.matcher(s).find()) {
+					wrong.add(key + ": '" + s + "'");
+				}
+			}
+			if (!sentences.get(0).endsWith(" to the Farmer's chests") || !sentences.get(1).startsWith("Gave 2 ")
+				|| !sentences.get(3).startsWith("You don't have ")) {
+				wrong.add(key + " reads " + sentences);
+			}
+		}
+		helper.assertTrue(wrong.isEmpty(), String.join("; ", wrong));
+		helper.succeed();
+	}
 }

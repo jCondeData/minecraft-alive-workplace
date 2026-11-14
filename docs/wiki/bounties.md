@@ -169,5 +169,10 @@ edit, a damaged file) is skipped with a warning in the log, and the rest of the 
   battle and leaves the bounty up for the capture to pay; a battle the player lost pays nothing; for the village's
   "Defeat 8 wild Pokémon" quest, two wild Pokémon beaten in one won battle count 2, a capture counts 1 (its victory
   nothing more), a lost battle and a win over another player count nothing.
+- QA (lane D, 2026-11-11): `QaRoguesWildFoes1111dCompatTests`: the player and the chronicle say which way the rogue was
+  taken: a rogue beaten in a won battle is told "You beat Rogue Tauros! The bounty is yours: ..." and chronicled
+  "... beat Rogue Tauros in battle ...", never as caught; a rogue caught is told "You caught ...! It's yours to keep,
+  and so is the bounty: ..." once and chronicled as caught, never as a battle win. Kills the mutant that flips the
+  battle path's caught flag (CobblemonRogues:83), which the money-only checks let through.
 - Showcase scene `bounty_rogue` (Cobblemon): the rogue's poster in the Bounties tab, the glowing Rogue Ursaring, the win paid.
 - Showcase scene `bounty`: the board with two posters, the poster in the Bounties tab, the captain and his band, the claim.

@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022
 
 ## 1. What a player sees
 
@@ -59,6 +59,9 @@ Ways to unlock, all for the village round the nearest hall:
 
 - `table/BlueprintUnlocks` holds the logic. `state(level, hall, id)` is UNLOCKED, LOCKED, HIDDEN or VIEW_ONLY (an
   unlocked Wonder: named and previewed, never handed out; Wonders are raised from their plan).
+- `TableServer.take` refuses every id in a Wonder's folder (`wonder/<id>` and its stages, `wonder/<id>/stage_1_0`, …)
+  with the "raised from its Wonder Plan" line and keeps the Blank Blueprint, whatever the switch (B1002, B1022); with the
+  switch on, a whole Wonder's id still goes through its state, so a ??? stays nameless.
 - Only the mod's own builds (the lists in `StarterBlueprints`, any style of them) and the Wonders can be locked. Imports,
   uploads, scans, structure-block saves and other datapacks' builds are always unlocked. Styles share their base's
   unlock; each upgrade tier is its own build.
@@ -97,6 +100,8 @@ Ways to unlock, all for the village round the nearest hall:
   blocks of the table (`TableServer.atTable`), each re-sending the screen's `Open`. `TablePayloads.Open` carries
   `stored` (`Stored(stack, count)`) and `capacity`; the screen sends `Store(table, all)` and `TakeStored(table, stack)`.
   `BlueprintTableBlock.onRemove` drops what's stored. A full table stores what fits and leaves the rest with the player.
+  `TableServer.atTable` (Get Blueprint, Store, Take Stored, uploads) checks reach first, then `level.isLoaded`, and only
+  then the block there, so a request naming a far Table never loads or generates the land there (B1037).
 
 ## 3. Switches
 
@@ -187,11 +192,12 @@ a Blank Blueprint and a player 30 blocks away store nothing), `TableLibraryGameT
 `TableLibraryGameTests.aBrokenTableDropsItsBlueprints`, `TableLibraryGameTests.theTableKeepsItsBlueprintsThroughASaveAndReload`
 (and an old save loads empty), `TableLibraryGameTests.theStoredTabReadsInEnglish`.
 
-`QaBlueprintTableGameTests` (13, QA of 36.1, 36.10 and 36.13 through the packets a client sends): the Stored tab's
+`QaBlueprintTableGameTests` (14, QA of 36.1, 36.10 and 36.13 through the packets a client sends): the Stored tab's
 counts for two kinds down to the last one taken out, a stack in hand, the last free slot and a full bag (nothing
 dropped), a table at 199 and at 200, a table broken by a player dropping exactly what it held (and one replaced by
 another block), two tables kept apart through a reload, a second player taking one out; the search with mixed case,
-tabs and spaces, a name word with a job, a query only a level's id matches, each job of a shared job block; every
+tabs and spaces, a name word with a job, a query only a level's id matches, each job of a shared job block, a job switched on and off again after the
+Table listed its builds (B454: `aJobSwitchedOnAfterTheListingIsFoundBySearch`, the Firewarden); every
 basement build's preview depth, floor division at scales 1 to 3, and the "and 4 below ground" line from the preview a
 client receives.
 
@@ -203,6 +209,18 @@ QA's `QaBlueprintLibraryVerify1108bGameTests` (8): a new village's unlocked buil
 
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.
+
+`QaTableFar1108bBugTests` (2, QA, B1037): Get Blueprint, Store and Take Stored naming a Table about 9,600 blocks from the
+player leave the land there unloaded and the player's things unchanged; the same Get Blueprint at the Table beside the
+player hands out the cottage.
+
+`QaBuilderFixes1111bGameTests` (QA, B1037 and B1022; 4 of its tests): Get Blueprint, Store All and Take Stored each work
+with the player exactly 8 blocks from the Table's center and are refused at 8.01, and a loaded Table 20 blocks off
+refuses too; every Wonder stage blueprint on disk (the Colossus' four, every other Wonder's and the test folly's), plain
+and in a style, is refused with one "… is raised from its Wonder Plan, not handed out at the Table" line each (no id or
+placeholder in it) and both Blank Blueprints kept, with the switch off, on while the Wonders are ???, and on with the folly
+unlocked view-only by its Wonder Plan used on the Table; a whole Wonder's id hands out nothing either; the Starter Cottage
+is still handed out after.
 
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
 starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search

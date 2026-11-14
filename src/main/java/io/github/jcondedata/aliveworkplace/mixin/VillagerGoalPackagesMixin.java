@@ -54,6 +54,10 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.furnicrafter(speed));
 		} else if (profession == ModVillagers.PHYSICIAN) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.PhysicianWork.packages(speed));
+		} else if (profession == ModVillagers.GLASSBLOWER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.glassblower(speed));
+		} else if (profession == ModVillagers.MOVER) {
+			cir.setReturnValue(io.github.jcondedata.aliveworkplace.move.MoverWork.packages(speed));
 		} else if (profession == ModVillagers.WELL_KEEPER) {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.WellKeeperWork.packages(speed));
 		} else if (profession == ModVillagers.VINTNER) {
@@ -206,21 +210,23 @@ abstract class VillagerGoalPackagesMixin {
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.FletcherWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.SHEPHERD) {
-			// Shepherds shear and breed the sheep around their loom.
+			// Shepherds shear and breed the sheep around their loom, and weave for the builders at it (46.2).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
-				new io.github.jcondedata.aliveworkplace.ranch.ShepherdWork(), v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v)));
+				new io.github.jcondedata.aliveworkplace.craft.WeaverWork(), new io.github.jcondedata.aliveworkplace.ranch.ShepherdWork(),
+				v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v) && io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v)));
 		} else if (profession == VillagerProfession.BUTCHER) {
 			// Butchers look after the cows, pigs, chickens and rabbits around their smoker.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.ranch.HerderWork(), v -> !io.github.jcondedata.aliveworkplace.ranch.RanchWork.isBusy(v)));
 		} else if (profession == VillagerProfession.LEATHERWORKER) {
-			// Leatherworkers dye what the builders nearby are waiting for.
+			// Leatherworkers make the leather goods the builders nearby are waiting for (46.5: item frames, leads, armor).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
 				new io.github.jcondedata.aliveworkplace.craft.DyerWork(), io.github.jcondedata.aliveworkplace.craft.CrafterWork::vanillaMayRun));
 		} else if (profession == VillagerProfession.CLERIC) {
-			// Clerics brew potions for the guards at their brewing stand.
+			// Clerics brew potions for the guards at their brewing stand, and make the magic blocks for builders there (46.4).
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),
-				new io.github.jcondedata.aliveworkplace.brew.AlchemistWork(), v -> !io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isBusy(v)));
+				new io.github.jcondedata.aliveworkplace.craft.ClericCraftWork(), new io.github.jcondedata.aliveworkplace.brew.AlchemistWork(),
+				v -> !io.github.jcondedata.aliveworkplace.brew.AlchemistWork.isBusy(v) && io.github.jcondedata.aliveworkplace.craft.CrafterWork.vanillaMayRun(v)));
 		} else if (profession == VillagerProfession.LIBRARIAN) {
 			// Librarians make books for the builders and enchant the village's gear.
 			cir.setReturnValue(io.github.jcondedata.aliveworkplace.work.UpgradedJob.work(cir.getReturnValue(),

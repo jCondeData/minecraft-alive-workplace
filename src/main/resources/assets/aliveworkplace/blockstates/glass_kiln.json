@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "aliveworkplace:block/glass_kiln"
+    },
+    "facing=east": {
+      "model": "aliveworkplace:block/glass_kiln",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "aliveworkplace:block/glass_kiln",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "aliveworkplace:block/glass_kiln",
+      "y": 270
+    }
+  }
+}

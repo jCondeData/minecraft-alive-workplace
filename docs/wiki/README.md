@@ -11,6 +11,12 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Builder](builder.md): the villager who builds blueprints.
 - [Moving a finished building](moving-buildings.md): the Mover and the building snapshot it moves (Milestone 45, being built).
 - [Job chains](crafter.md): every crafting job makes the builders' parts through whole recipe chains of its own kind, and the builder says what nobody can make (37.14a, which retired the Crafter).
+- [Each job's own list](job-lists.md): which job crafts what (data tags per job), the job to hire on the builder's line, and who makes or gathers each thing on the Storehouse's board (46.1).
+- [The Florist makes pots](florist-pots.md): flower pots, decorated pots, dyes and moss carpet for builders at her stand, the Mason firing the bricks from clay, her dyes for the Shepherd's beds (46.3).
+- [The Cleric makes the magic blocks](cleric-crafts.md): brewing stands, blaze powder, eyes of ender, ender chests, end rods and beacons for builders at his brewing stand, besides his potions (46.4).
+- [Candles and leather goods](candles-leather.md): the Beekeeper's candles, colored candles and honeycomb blocks at her Apiary, besides her hives, and the Leatherworker's item frames, leads and leather armor, and nothing else (46.5).
+- [The Glassblower](glassblower.md): a new job at his own Glass Kiln, who fires glass from sand (a coal for every eight) and makes the builders' panes, stained glass, tinted glass and bottles; the Glassblower's Workshop (46.6).
+- [The Shepherd weaves](weaver.md): wool, dyed wool, carpets, beds, banners, banner patterns and paintings for builders at his loom, step by step, a missing dye named on the builder's line (46.2).
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
 - [Textures and item icons](textures.md): every texture drawn from a recipe in vanilla's style, and the item icons the owner picked (21.1, 21.1b).

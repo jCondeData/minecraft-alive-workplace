@@ -116,8 +116,8 @@ public final class BuilderStatusSync {
 			var box = site.box();
 			Component title = Component.translatable("message.aliveworkplace.overhead.quarry", box.getXSpan(), box.getZSpan(), box.getYSpan(),
 				Math.round(site.progress() * 100));
-			Component line = Component.translatable("message.aliveworkplace.quarry.state." + site.status().name().toLowerCase())
-				.withStyle(site.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
+			Component line = io.github.jcondedata.aliveworkplace.mine.Miners.stateLine(site,
+				site.status() == io.github.jcondedata.aliveworkplace.mine.QuarrySite.Status.NEEDS_PICKAXE ? ChatFormatting.YELLOW : ChatFormatting.GRAY);
 			send(miner, new Status(miner.getId(), title, site.progress(), line));
 		}
 	}
@@ -161,11 +161,14 @@ public final class BuilderStatusSync {
 	/**
 	 * The lines under the status: the 3 materials the build is shortest of (counting the builders' chests and what the
 	 * crew carries) or that it has them all, then which chests or storehouse it takes from. Worked out every
-	 * {@link #SUPPLY_INTERVAL} ticks. None with free materials, for deconstruction and repairs of nothing.
+	 * {@link #SUPPLY_INTERVAL} ticks. None with free materials, for deconstruction and repairs of nothing, nor once the
+	 * build is done, except while it is still getting its item frames, paintings or armor stands (B1148's end wait): then
+	 * they show as for any material, with the job to hire (B1159).
 	 */
 	static List<Component> supplyLines(ServerLevel level, BuildSite site, BuildPlan plan, Villager villager) {
 		if (io.github.jcondedata.aliveworkplace.mc.Rules.on(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FREE_MATERIALS)
-				|| site.stage() == BuildPlan.Stage.DECONSTRUCT || site.stage() == BuildPlan.Stage.DONE) {
+				|| site.stage() == BuildPlan.Stage.DECONSTRUCT
+				|| (site.stage() == BuildPlan.Stage.DONE && !site.isGettingDecorations())) {
 			return List.of();
 		}
 		Supply cached = SUPPLY.get(site.id());
@@ -183,7 +186,7 @@ public final class BuilderStatusSync {
 		lines.add(missingLine(missing));
 		// 37.14a: what the village's jobs can't make of it (a raw material short), or that nobody here makes
 		if (io.github.jcondedata.aliveworkplace.Expansions.isOpen("M37") && site.status() == BuildSite.Status.WAITING_FOR_MATERIALS && !missing.isEmpty()) {
-			Component cant = io.github.jcondedata.aliveworkplace.craft.JobShortages.line(level, site.id(), missing);
+			Component cant = io.github.jcondedata.aliveworkplace.craft.JobShortages.line(level, site.id(), missing, bench);
 			if (cant != null) {
 				lines.add(cant.copy().withStyle(ChatFormatting.GOLD));
 			}

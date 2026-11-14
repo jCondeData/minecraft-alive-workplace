@@ -96,8 +96,7 @@ public final class VillageHalls {
 				}
 			}
 		}
-		workers.sort(Comparator.comparing((Villager v) -> v.getVillagerData().getProfession().name())
-			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter())));
+		workers.sort(byJob(hall));
 		jobless.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getCenter())));
 		// B206, B207: a settlers' wagon's bedrolls are for the road, not the village's beds
 		int wagonBeds = io.github.jcondedata.aliveworkplace.camp.CampBeds.inVillage(level, hall).size();
@@ -109,6 +108,12 @@ public final class VillageHalls {
 		}
 		return new Census(List.copyOf(workers), List.copyOf(jobless), children, beds, freeBeds, food(level, hall), guards, requests,
 			builds(level, hall), wagonBeds, visitors);
+	}
+
+	/** The workers' order: by job, the highest level first, then nearest the hall (the People table lists them so). */
+	static Comparator<Villager> byJob(BlockPos hall) {
+		return Comparator.comparing((Villager v) -> v.getVillagerData().getProfession().name())
+			.thenComparing(v -> -v.getVillagerData().getLevel()).thenComparing(v -> v.distanceToSqr(hall.getCenter()));
 	}
 
 	/** How many kinds of meal the store has (see {@link io.github.jcondedata.aliveworkplace.people.Diet}). */
@@ -340,7 +345,22 @@ public final class VillageHalls {
 	}
 
 	private static Optional<BlockPos> findNearest(ServerLevel level, BlockPos pos) {
-		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);
+		if (!level.getServer().isSameThread()) {
+			return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, RADIUS, PoiManager.Occupancy.ANY);
+		}
+		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> standsAt(level, p), pos, RADIUS, PoiManager.Occupancy.ANY);
+	}
+
+	/**
+	 * Whether the hall point of interest at {@code pos} still has its hall (B427). A point left behind without the block
+	 * (a block swapped without a block update, as region edits and some mods do) was taken for the nearest hall, and
+	 * with no hall there every villager nearer to it than to the real hall had no village: no friendship, no requests.
+	 * A point in a chunk that isn't loaded is trusted (asking for its block would load the chunk). Server thread only;
+	 * also the waystone network's check that a village still has its hall (B996).
+	 */
+	static boolean standsAt(ServerLevel level, BlockPos pos) {
+		net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+		return chunk == null || chunk.getBlockState(pos).getBlock() instanceof VillageHallBlock;
 	}
 
 	/**
@@ -361,12 +381,33 @@ public final class VillageHalls {
 		NEAREST.clear();
 	}
 
-	/** The village's name: the hall's own (from a Name Tag or an anvil), else one made up from where it stands. */
+	/**
+	 * The village's name: the hall's own (from a Name Tag or an anvil), else one made up from where it stands. A blank
+	 * custom name (only reachable by commands) counts as none (B1229).
+	 */
 	public static Component name(ServerLevel level, BlockPos hall) {
-		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.getCustomName() != null) {
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && readable(entity.getCustomName())) {
 			return entity.getCustomName();
 		}
 		return madeUpName(hall);
+	}
+
+	/**
+	 * {@link #name} without loading the hall's chunk (B1217): for a one-shot line that names a village that may be far
+	 * away (the quest list, a letter). A loaded hall gives its own name; an unloaded one the name its last round saved on
+	 * the caravan list, else (none saved, or a blank one) the made-up one.
+	 */
+	public static Component nameIfLoaded(ServerLevel level, BlockPos hall) {
+		if (level.isLoaded(hall)) {
+			return name(level, hall);
+		}
+		Caravans.Village known = Caravans.Data.get(level).village(hall);
+		return known != null && readable(known.name()) ? known.name() : madeUpName(hall); // B1229: a blank saved name too
+	}
+
+	/** A name a player can read: not missing and not blank. */
+	private static boolean readable(@Nullable Component name) {
+		return name != null && !name.getString().isBlank();
 	}
 
 	/** "Oakbrook", "Ashford"... always the same for the same spot. */
@@ -406,7 +447,7 @@ public final class VillageHalls {
 		int reach = (int) Math.ceil(Math.sqrt((double) RADIUS * RADIUS + (double) HEIGHT * HEIGHT));
 		return level.getPoiManager().getInRange(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, reach, PoiManager.Occupancy.ANY)
 			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos)
-			.filter(h -> contains(h, pos))
+			.filter(h -> contains(h, pos) && (!level.getServer().isSameThread() || standsAt(level, h)))
 			.min(Comparator.comparingLong(h -> across(h, pos)));
 	}
 

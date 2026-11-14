@@ -49,6 +49,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * </ul>
  */
 public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
+	private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("aliveworkplace-qa");
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 	private static final int TRACK_Z = 12;
 	private static final int FAR = -110;
@@ -58,10 +59,12 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	private static final BlockPos FAR_HALL = new BlockPos(FAR + 6, 2, 22);
 	/** How long a case waits for what the player should see once the far village has unloaded. */
 	private static final int WAIT = 4000;
+	// Timeouts: what a case needs in ticks (6000; 8000 with the later visit) plus ChunkWaits.TIMEOUT_TICKS for each time the
+	// far village is force-loaded and waited for on the clock (B1125, B1150): once, twice with the later visit.
 
 	/** B912 reversed: the player renames his own (near) village's station while the far one is unloaded. */
-	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesNearRenamed"'
-	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesNearRenamed")
+	//$ gametest_ticks_batch AREA '26000' '"qaTrainEdgesNearRenamed"'
+	@GameTest(template = AREA, timeoutTicks = 26000, batch = "qaTrainEdgesNearRenamed")
 	public void theNearStationRenamedWithTheFarVillageUnloadedIsFollowedAndTheTrainComesBackToIt(GameTestHelper helper) {
 		Run r = new Run(helper, true, false);
 		boolean[] renamed = {false};
@@ -87,8 +90,8 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	}
 
 	/** The far station renamed twice before the player walks home: the train goes by the last name, there and back. */
-	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesFarRenamedTwice"'
-	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesFarRenamedTwice")
+	//$ gametest_ticks_batch AREA '26000' '"qaTrainEdgesFarRenamedTwice"'
+	@GameTest(template = AREA, timeoutTicks = 26000, batch = "qaTrainEdgesFarRenamedTwice")
 	public void theFarStationRenamedTwiceBeforeItUnloadsIsFollowedUnderItsLastName(GameTestHelper helper) {
 		Run r = new Run(helper, true, false);
 		boolean[] left = {false};
@@ -116,8 +119,8 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	 * The far station renamed 'Harbor' and the stop followed with the far village unloaded; on a later visit the player
 	 * names it back as it was and walks home again: the stop goes back to the old name.
 	 */
-	//$ gametest_ticks_batch AREA '8000' '"qaTrainEdgesFarRenamedBack"'
-	@GameTest(template = AREA, timeoutTicks = 8000, batch = "qaTrainEdgesFarRenamedBack")
+	//$ gametest_ticks_batch AREA '48000' '"qaTrainEdgesFarRenamedBack"'
+	@GameTest(template = AREA, timeoutTicks = 48000, batch = "qaTrainEdgesFarRenamedBack")
 	public void theFarStationRenamedBackOnALaterVisitIsFollowedBackOnceItUnloadsAgain(GameTestHelper helper) {
 		Run r = new Run(helper, true, false);
 		// 0: waiting for 'Harbor' to be followed; 1: visiting (far loaded again); 2: named back, waiting for it to unload; 3: checking
@@ -187,8 +190,8 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	 * (Create's own write and read of the train, its carriages put away as the unloaded village keeps them); it still
 	 * has its conductors and comes to the near village.
 	 */
-	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesStandingReloaded"'
-	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesStandingReloaded")
+	//$ gametest_ticks_batch AREA '26000' '"qaTrainEdgesStandingReloaded"'
+	@GameTest(template = AREA, timeoutTicks = 26000, batch = "qaTrainEdgesStandingReloaded")
 	public void aTrainStandingAtTheUnloadedFarStationSavedAndReadBackStillComesToTheNearVillage(GameTestHelper helper) {
 		Run r = new Run(helper, false, false);
 		boolean[] reloaded = {false};
@@ -225,8 +228,8 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 	 * first departure (not a round trip later); once the train has left, the far village unloads, and the 32 logs reach
 	 * the near village's chest.
 	 */
-	//$ gametest_ticks_batch AREA '6000' '"qaTrainEdgesFirstDeparture"'
-	@GameTest(template = AREA, timeoutTicks = 6000, batch = "qaTrainEdgesFirstDeparture")
+	//$ gametest_ticks_batch AREA '26000' '"qaTrainEdgesFirstDeparture"'
+	@GameTest(template = AREA, timeoutTicks = 26000, batch = "qaTrainEdgesFirstDeparture")
 	public void aCaravanSentAsTheFarTrainIsPutTogetherBoardsItsFirstDepartureAndArrives(GameTestHelper helper) {
 		Run r = new Run(helper, false, true);
 		int[] departed = {-1};
@@ -280,6 +283,9 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 		int tick;
 		int startedAt = -1;
 		int unloadedAt = -1;
+		/** Whether the far village is force-loaded now (the player is there), and since when (the clock its loading is waited on). */
+		boolean wantFar;
+		ChunkWaits.Clock loading;
 
 		Run(GameTestHelper helper, boolean nearBuilds, boolean holdFar) {
 			this.helper = helper;
@@ -343,6 +349,29 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 		 */
 		void go(Runnable atStart, java.util.function.Supplier<String> check) {
 			helper.onEachTick(() -> {
+				// B1125, B1150: forcing the far village's chunks loads their blocks at once, but they only start running (block
+				// entities ticking, entities moving) once their neighbours and entities have loaded on other threads, in real
+				// time, while the headless server ticks flat out. Counted in ticks from the forcing, the setup ran out before
+				// the far station ticked (no train in 1200 ticks, under two seconds in build 42720718458), or put the train
+				// together where entities don't move yet and let the village go at once: Create takes the carriage and its
+				// conductor out only where entities move, so the train never had its conductor counted (build 42802493443).
+				// A village with a player in it is running: the case's ticks count only while the far village is, when wanted.
+				if (wantFar && !(ChunkWaits.running(level, forced, l.far.getY()) && ChunkWaits.running(level, l.nearStation))) {
+					if (loading == null) {
+						loading = ChunkWaits.start(level); // a chunk stopped running while he's there: waited for again
+					}
+					if (loading.overdue()) {
+						end("setup: the far village's chunks never started running: " + ChunkWaits.state(level, forced, l.far.getY())
+							+ ", near station " + ChunkWaits.state(level, l.nearStation) + " (waited " + loading + ")");
+					}
+					return;
+				}
+				if (wantFar && loading != null) {
+					if (loading.ticks() > 0) {
+						LOGGER.info("QA far-away train (B1125, B1150): the far village at {} was running after {}", l.far.toShortString(), loading);
+					}
+					loading = null; // running: said once for each time it is loaded
+				}
 				tick++;
 				if (startedAt < 0) {
 					if (tick % 10 == 0) {
@@ -359,7 +388,7 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 						}
 						startedAt = tick;
 					} else if (tick > 1200) {
-						end("setup: no village train was put together in 1200 ticks");
+						end("setup: no village train was put together in 1200 ticks: " + why());
 					}
 					return;
 				}
@@ -379,6 +408,47 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 					end(result);
 				}
 			});
+		}
+
+		/**
+		 * B1125: why no train was put together, for the setup's failure: each station as Create knows it, whether they're
+		 * on one network, whether the train's blocks stand (or have room), every train with the pair's owner, who would
+		 * drive it, and any open site of the hall's.
+		 */
+		String why() {
+			StringBuilder out = new StringBuilder();
+			for (BlockPos hall : List.of(l.near, l.far)) {
+				out.append(hall.equals(l.near) ? "near" : "far").append(" hall ").append(hall.toShortString()).append(" loaded ").append(level.isLoaded(hall))
+					.append(", stations ").append(data.stations(hall)).append("; ");
+			}
+			for (BlockPos pos : List.of(l.nearStation, l.farStation)) {
+				out.append(pos.equals(l.nearStation) ? "near" : "far").append(" station ").append(pos.toShortString()).append(": ");
+				if (!(level.getBlockEntity(pos) instanceof StationBlockEntity be)) {
+					out.append("no station block (").append(level.getBlockState(pos)).append("); ");
+					continue;
+				}
+				var station = be.getStation();
+				out.append("track ").append(be.edgePoint.hasValidTrack()).append(", ")
+					.append(station == null ? "unknown to Create" : "'" + station.name + "', present train "
+						+ (station.getPresentTrain() == null ? "-" : station.getPresentTrain().id + " owner " + station.getPresentTrain().owner))
+					.append("; ");
+			}
+			BlockPos builds = CaravanTrains.first(l.near, l.far) ? l.nearStation : l.farStation;
+			BlockPos other = builds.equals(l.nearStation) ? l.farStation : l.nearStation;
+			CaravanTrains.Railway rw = CreateTrainCompatTests.railway();
+			out.append("linked ").append(rw.linked(level, builds, other)).append(", built ").append(rw.built(level, builds, other))
+				.append(", room ").append(rw.train(level, builds, other) != null).append(", owner's trains [");
+			for (Train train : Create.RAILWAYS.trains.values()) {
+				if (owner.equals(train.owner)) {
+					out.append(train.id).append(" invalid ").append(train.invalid).append(" derailed ").append(train.derailed).append(' ');
+				}
+			}
+			Villager driver = CaravanTrains.conductorFor(level, builds);
+			out.append("], driver ").append(driver == null ? "none" : driver.blockPosition().toShortString())
+				.append(", open sites ").append(io.github.jcondedata.aliveworkplace.city.Roads.openSegments(level, l.near).stream()
+					.map(s -> s.structure().toString()).toList())
+				.append(", trains on the railway ").append(Create.RAILWAYS.trains.size());
+			return out.toString();
 		}
 
 		/** A name the stop must not follow before the far village has unloaded (else the case tests nothing far away). */
@@ -423,6 +493,8 @@ public class QaTrainFarAwayEdges1104e2CompatTests implements FabricGameTest {
 			for (long[] ch : forced) {
 				level.setChunkForced((int) ch[0], (int) ch[1], on);
 			}
+			wantFar = on;
+			loading = on ? ChunkWaits.start(level) : null;
 		}
 
 		boolean at(BlockPos station) {

@@ -65,7 +65,9 @@ public class QaEveryBlockEntityField1101GameTests implements FabricGameTest {
 
 	/** Worked out again from the world, never saved (each said so where it's declared and read). */
 	private static final Map<String, String> RECOUNTED = Map.of(
-		"VillageHallBlockEntity.needs", "the village's count, made again on the hall's first tick (VillageNeeds.check)",
+		"VillageHallBlockEntity.needs", "the village's count, made again at the hall's first round after a load (VillageNeeds.check)",
+		"VillageHallBlockEntity.fromSave", "whether the hall was read with its chunk, set by the load itself; its first round then waits its turn (B436)",
+		"VillageHallBlockEntity.firstRoundFrom", "when that first round may run, counted again from the hall's first tick after each load (B436)",
 		"VillageHallBlockEntity.civic", "the sum of the edicts', guilds' and reforms' effects, made again when asked",
 		"VillageHallBlockEntity.civicExtra", "the extra effects that sum was made with",
 		"VillageHallBlockEntity.civicGeneration", "which edicts that sum was made for");
@@ -245,7 +247,8 @@ public class QaEveryBlockEntityField1101GameTests implements FabricGameTest {
 		"Data.looks", "CampBeds.Data#looks: whether this session of an older save still looks at unlisted beds (B749)",
 		"PostOffice.lastNoon", "the last noon mail round, in memory (a second round after a restart finds nothing new)",
 		"BuildSiteManager.changes", "a count of changes this session, so a reader can tell the list hasn't changed (B85)",
-		"WonderManager.layouts", "a count of Wonders laid out or forgotten this session, so footprint caches look again (B747); the sites themselves are saved (B758)");
+		"WonderManager.layouts", "a count of Wonders laid out or forgotten this session, so footprint caches look again (B747); the sites themselves are saved (B758)",
+		"MoveSites.nextSweep", "when the held beds of far-off residents are next looked over (B1154), in memory: after a restart the first tick sweeps, and the claims themselves are saved");
 
 	/** As the record test's diff, with an anthem's notes compared note by note (a record of an array). */
 	private static String same(Object wrote, Object read, String name) {

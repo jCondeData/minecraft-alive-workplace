@@ -520,17 +520,20 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
-	/** A builder short of sand and glass: the mason crushes cobblestone into sand and fires glass in the furnace by the stonecutter. */
+	/**
+	 * A builder short of gravel and glass: the mason crushes cobblestone into gravel at the stonecutter, and since 46.6 the
+	 * Glassblower, not the mason, fires the glass from sand at his Glass Kiln (the furnace by the stonecutter fires none).
+	 */
 	//$ gametest_ticks_batch AREA '3000' '"mason_glass"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "mason_glass")
-	public void masonCrushesSandAndFiresGlassForTheBuilder(GameTestHelper helper) {
+	public void masonCrushesGravelAndTheGlassblowerFiresGlassForTheBuilder(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.village(helper, 48);
 		ServerLevel level = helper.getLevel();
 		BlockPos src = new BlockPos(12, 2, 12);
 		for (int x = 0; x < 3; x++) {
 			helper.setBlock(src.offset(x, 0, 0), Blocks.GLASS);
-			helper.setBlock(src.offset(x, 0, 1), Blocks.SAND);
+			helper.setBlock(src.offset(x, 0, 1), Blocks.GRAVEL);
 		}
 		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "glassy_" + Long.toHexString(level.getGameTime()));
 		level.getStructureManager().getOrCreate(wall).fillFromWorld(level, helper.absolutePos(src), new Vec3i(3, 1, 2), false, Blocks.STRUCTURE_VOID);
@@ -538,16 +541,22 @@ public class BuilderGameTests implements FabricGameTest {
 			helper.setBlock(src.offset(x, 0, 0), Blocks.AIR);
 			helper.setBlock(src.offset(x, 0, 1), Blocks.AIR);
 		}
-		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 6), new ItemStack(Items.COAL, 1));
+		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.COBBLESTONE, 3), new ItemStack(Items.SAND, 3), new ItemStack(Items.COAL, 1));
 		BlockPos cutter = new BlockPos(14, 2, 2);
 		helper.setBlock(cutter, Blocks.STONECUTTER);
 		helper.setBlock(new BlockPos(16, 2, 2), Blocks.FURNACE);
 		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
 		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
 			VillagerProfession.MASON);
+		BlockPos kiln = new BlockPos(14, 2, 7);
+		helper.setBlock(kiln, ModBlocks.GLASS_KILN);
+		Villager glassblower = helper.spawn(EntityType.VILLAGER, kiln.south());
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, glassblower, helper.absolutePos(kiln), io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASS_KILN_POI,
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASSBLOWER);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 6, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 3, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(glassblower, 0) == 3, "the glassblower made " + ModAttachments.ITEMS_CRAFTED.getOrElse(glassblower, 0));
 		});
 	}
 
@@ -584,7 +593,11 @@ public class BuilderGameTests implements FabricGameTest {
 		});
 	}
 
-	/** A builder short of white concrete and red wool: the village's leatherworker hardens the powder and dyes the wool. */
+	/**
+	 * A builder short of white concrete and red wool: since 46.2 the Shepherd dyes the wool at his loom (the red dye from
+	 * the poppies a step of his chain; the leatherworker dyed it before) and, since 46.1, the Mason hardens the powder
+	 * (concrete is the Mason's; the dyer no longer takes it).
+	 */
 	//$ gametest_ticks_batch AREA '3000' '"dyer"'
 	@GameTest(template = AREA, timeoutTicks = 3000, batch = "dyer")
 	public void dyerMakesTheConcreteAndRedWoolTheBuilderNeeds(GameTestHelper helper) {
@@ -604,14 +617,20 @@ public class BuilderGameTests implements FabricGameTest {
 		}
 		Setup s = setup(helper, wall, HUT_ORIGIN, Rotation.NONE, new ItemStack(Items.WHITE_CONCRETE_POWDER, 3), new ItemStack(Items.WHITE_WOOL, 3),
 			new ItemStack(Items.POPPY, 3));
-		BlockPos cauldron = new BlockPos(14, 2, 2);
-		helper.setBlock(cauldron, Blocks.CAULDRON);
+		BlockPos loom = new BlockPos(14, 2, 2);
+		helper.setBlock(loom, Blocks.LOOM);
 		Villager dyer = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 3));
-		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(cauldron), net.minecraft.world.entity.ai.village.poi.PoiTypes.LEATHERWORKER,
-			VillagerProfession.LEATHERWORKER);
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, dyer, helper.absolutePos(loom), net.minecraft.world.entity.ai.village.poi.PoiTypes.SHEPHERD,
+			VillagerProfession.SHEPHERD);
+		BlockPos cutter = new BlockPos(14, 2, 6);
+		helper.setBlock(cutter, Blocks.STONECUTTER);
+		Villager mason = helper.spawn(EntityType.VILLAGER, new BlockPos(15, 2, 6));
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, mason, helper.absolutePos(cutter), net.minecraft.world.entity.ai.village.poi.PoiTypes.MASON,
+			VillagerProfession.MASON);
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0) == 6, "the dyer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0) == 3, "the dyer made " + ModAttachments.ITEMS_CRAFTED.getOrElse(dyer, 0));
+			helper.assertTrue(ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0) == 3, "the mason made " + ModAttachments.ITEMS_CRAFTED.getOrElse(mason, 0));
 			io.github.jcondedata.aliveworkplace.work.Village.RADIUS = 0;
 		});
 	}

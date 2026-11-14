@@ -197,12 +197,8 @@ public final class MovePlan {
 		}
 		AABB area = AABB.of(box);
 		List<Thing> things = new ArrayList<>();
-		for (Entity entity : level.getEntities((Entity) null, area, MovePlan::movesWithBuilding)) {
-			CompoundTag data = entity.saveWithoutId(new CompoundTag());
-			data.putString("id", EntityType.getKey(entity.getType()).toString());
-			data.remove("UUID");
-			data.remove("Passengers");
-			things.add(new Thing(entity.position().subtract(min.getX(), min.getY(), min.getZ()), data));
+		for (Entity entity : thingsIn(level, box)) {
+			things.add(thing(entity, min));
 		}
 		List<UUID> residents = new ArrayList<>();
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, area.inflate(128))) {
@@ -223,6 +219,32 @@ public final class MovePlan {
 		return Optional.of(new MovePlan(structure, size, front, blocks, things, beds, workstations, residents));
 	}
 
+	/**
+	 * The things that belong to the building standing in {@code box}: every one {@link #movesWithBuilding} inside it, and
+	 * (45.5) a frame or painting hanging on one of its blocks from outside, on an outer wall, which would fall off with it.
+	 */
+	public static List<Entity> thingsIn(ServerLevel level, BoundingBox box) {
+		AABB area = AABB.of(box);
+		List<Entity> out = new ArrayList<>();
+		for (Entity entity : level.getEntities((Entity) null, area.inflate(1), MovePlan::movesWithBuilding)) {
+			boolean hangsOnIt = entity instanceof net.minecraft.world.entity.decoration.HangingEntity hanging
+				&& box.isInside(hanging.getPos().relative(hanging.getDirection().getOpposite()));
+			if (hangsOnIt || area.contains(entity.position())) {
+				out.add(entity);
+			}
+		}
+		return out;
+	}
+
+	/** A thing as the plan keeps it: by id, without its UUID or riders, its position relative to {@code min}. */
+	public static Thing thing(Entity entity, BlockPos min) {
+		CompoundTag data = entity.saveWithoutId(new CompoundTag());
+		data.putString("id", EntityType.getKey(entity.getType()).toString());
+		data.remove("UUID");
+		data.remove("Passengers");
+		return new Thing(entity.position().subtract(min.getX(), min.getY(), min.getZ()), data);
+	}
+
 	private static boolean inside(ServerLevel level, BoundingBox box, Optional<GlobalPos> pos) {
 		return pos.isPresent() && pos.get().dimension() == level.dimension() && box.isInside(pos.get().pos());
 	}
@@ -236,6 +258,13 @@ public final class MovePlan {
 			&& !(entity instanceof ExperienceOrb) && !(entity instanceof Projectile) && !(entity instanceof AbstractMinecart)
 			&& !(entity instanceof Boat) && !(entity instanceof PrimedTnt) && !(entity instanceof FallingBlockEntity)
 			&& !(entity instanceof LightningBolt) && !entity.isPassenger();
+	}
+
+	/** The box a finished building stands in (its blueprint's size at its placement), or null if its blueprint is gone. */
+	@Nullable
+	public static BoundingBox box(ServerLevel level, BuildSiteManager.Finished building) {
+		Vec3i size = size(level, building.structure());
+		return size == null ? null : BlueprintOutline.bounds(building.placement(), size);
 	}
 
 	@Nullable
@@ -312,12 +341,23 @@ public final class MovePlan {
 			BlockEntity be = level.getBlockEntity(p.pos());
 			if (be != null) {
 				be.loadWithComponents(p.data(), level.registryAccess());
+				io.github.jcondedata.aliveworkplace.build.TurnedBlockEntities.apply(be, net.minecraft.world.level.block.Mirror.NONE, rotation); // B1137
 				be.setChanged();
 				level.sendBlockUpdated(p.pos(), p.state(), p.state(), net.minecraft.world.level.block.Block.UPDATE_CLIENTS);
 			}
 		}
+		return placeThings(level, min, rotation);
+	}
+
+	/** Puts the plan's entities (frames, armor stands, furniture) up at {@code min}; how many couldn't be (see {@link #place}). */
+	public int placeThings(ServerLevel level, BlockPos min, Rotation rotation) {
+		return placeThings(level, things, min, rotation);
+	}
+
+	/** Puts {@code list} (things of this plan, unturned, relative to its lowest corner) up at {@code min}; how many couldn't be. */
+	public int placeThings(ServerLevel level, List<Thing> list, BlockPos min, Rotation rotation) {
 		int left = 0;
-		for (Thing t : things) {
+		for (Thing t : list) {
 			Vec3 pos = turn(t.rel(), rotation).add(min.getX(), min.getY(), min.getZ());
 			Optional<Entity> made = BuildEntities.create(level, new BuildPlan.EntityStep(pos, t.data(), Items.AIR, rotation, Mirror.NONE));
 			if (made.isEmpty()) {
@@ -397,6 +437,9 @@ public final class MovePlan {
 		ListTag list = Nbt.getList(tag, "blocks", Tag.TAG_COMPOUND);
 		for (int i = 0; i < list.size(); i++) {
 			CompoundTag entry = Nbt.compoundAt(list, i);
+			if (!Nbt.has(entry, "state", Tag.TAG_INT) || !Nbt.has(entry, "pos", Tag.TAG_LONG)) {
+				continue; // a damaged entry: not a block of the building (it would read as the palette's first state at 0, 0, 0)
+			}
 			int index = Nbt.getInt(entry, "state");
 			if (index < 0 || index >= states.size()) {
 				continue;

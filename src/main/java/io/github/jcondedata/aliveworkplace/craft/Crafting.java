@@ -150,6 +150,38 @@ public final class Crafting {
 	}
 
 	/**
+	 * As {@link #lacking(ServerLevel, Kind, Item, int, Map)}, with what {@code raw} says counted as a raw material: never
+	 * made from further down while planning what's short, so the line names it (46.2: the Shepherd's bed short of Blue
+	 * Dye, another job's thing, not of the lapis that makes it). The plan he makes still may.
+	 */
+	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable, Predicate<Item> raw) {
+		Predicate<Item> before = RAW.get();
+		RAW.set(raw);
+		try {
+			return lacks(shortfall(level, kind, target, count, usable));
+		} finally {
+			RAW.set(before);
+		}
+	}
+
+	/**
+	 * {@code body} run with what {@code raw} says counted as a raw material in the plans it makes, not only while planning
+	 * what's short (46.3: with a Florist at work the Shepherd leaves the dyes to her and waits for them).
+	 */
+	public static <T> T asRaw(Predicate<Item> raw, java.util.function.Supplier<T> body) {
+		Predicate<Item> before = RAW.get();
+		RAW.set(raw);
+		try {
+			return body.get();
+		} finally {
+			RAW.set(before);
+		}
+	}
+
+	/** What {@link #lacking(ServerLevel, Kind, Item, int, Map, Predicate)} and {@link #asRaw} count as raw for the plan being made on this thread. */
+	private static final ThreadLocal<Predicate<Item>> RAW = ThreadLocal.withInitial(() -> i -> false);
+
+	/**
 	 * The plan {@link #lacking(ServerLevel, Kind, Item, int, Map)} reads: its steps as if every raw material were there
 	 * (a kiln counts its fuel from them, B352), and what's short as negative takes. Null if no recipe makes it.
 	 */
@@ -226,6 +258,7 @@ public final class Crafting {
 		Pool pool = new Pool(usable, left);
 		pool.budget.types = types;
 		pool.budget.lenient = lenient;
+		pool.budget.raw = RAW.get();
 		List<Step> steps = new ArrayList<>();
 		boolean made = make(level, kind, target, count, pool, steps, depth, allowed);
 		tick[1] += pool.budget.tried;
@@ -276,6 +309,8 @@ public final class Crafting {
 		Predicate<RecipeType<?>> types = t -> true;
 		/** Planning what's short ({@link #lacking}): a raw material that's short is noted, and planning goes on. */
 		boolean lenient;
+		/** Things counted as raw, never made from further down (46.2: planning what's short; 46.3: {@link #asRaw}). */
+		Predicate<Item> raw = i -> false;
 
 		Budget(int max) {
 			this.max = max;
@@ -663,7 +698,7 @@ public final class Crafting {
 					best = have;
 				}
 			}
-			if (pick == null && depth > 0 && slot.makeable()) {
+			if (pick == null && depth > 0 && slot.makeable() && !(!slot.options().isEmpty() && slot.options().stream().allMatch(pool.budget.raw))) {
 				pick = makeOne(level, kind, slot, need, pool, steps, depth, allowed);
 			}
 			if (pick == null || pool.have(pick) < need) {

@@ -232,6 +232,10 @@ def main(path, log=None):
         print("no server thread samples")
         return
     print(f"server thread samples: {total}; in Alive Workplace code: {ours} ({100 * ours / total:.1f}%)")
+    # B455: work/Gated only passes a vanilla job behaviour through (a farmer's own routine while ours rests); a sample
+    # whose innermost frame of ours is the gate is vanilla's work, counted in our share above. Shown, not taken off.
+    gated = sum(n for name, n in top_self.items() if name.startswith("work.Gated."))
+    print(f"  of that, vanilla behaviours run through our gate (innermost frame of ours is work.Gated): {100 * gated / total:.1f}%")
     for label, (n, mine) in by_day.items():
         print(f"  our share of the tick, {label}: {100 * mine / n:.1f}% ({mine} of {n} samples)" if n else f"  our share of the tick, {label}: no samples")
     if log:

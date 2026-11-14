@@ -49,6 +49,8 @@ public class QaSavedDataOneBadEntry1101GameTests implements FabricGameTest {
 		String quest = "Stories.Data#load drops an open quest it can't read, with a warning (\"Dropping an open quest that can't be read\")";
 		BY_DESIGN.put("story.Stories$Data halls[].quests[].objectives", quest);
 		BY_DESIGN.put("story.Stories$Data halls[].quests[].rewards", quest);
+		BY_DESIGN.put("move.MoveSites sites[].plan.palette", "a moving building's palette is positional (each block names its state by index, as in vanilla's structure files): "
+			+ "an entry put first shifts every block's state, so no block comes back as it was");
 		String piece = "FurnitureChoice#load leaves out a furniture piece with a cell it can't read, whole (a part of a piece would be wrong)";
 		BY_DESIGN.put("build.BuildSiteManager finished[].furniture[].cells", piece);
 		BY_DESIGN.put("build.BuildSiteManager sites[].furniture[].cells", piece);

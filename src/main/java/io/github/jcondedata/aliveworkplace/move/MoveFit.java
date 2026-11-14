@@ -18,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -26,8 +27,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Whether a building fits a new spot (ROADMAP 45.2): the Hall's Move page asks this for the spot picked on its map and
  * says plainly why one is refused. In order: the whole footprint inside the village, clear of the village's other
- * buildings (finished or going up) and the hall, no road or path under it, no water on it, and ground no steeper than
- * {@link #MAX_STEP} blocks from its lowest to its highest column. The building's own old spot counts as its ground (the
+ * buildings (finished or going up), the hall and the new spots of other buildings on the move (B1174), no road or path under it, no water on it, and ground no steeper than
+ * {@link #MAX_STEP} blocks from its lowest to its highest column, and no Mover's Crate in its box (B1129). The building's own old spot counts as its ground (the
  * Mover takes it down first), so a building can shift a little or turn where it stands.
  */
 public final class MoveFit {
@@ -35,7 +36,7 @@ public final class MoveFit {
 	public static final int MAX_STEP = 3;
 
 	public enum Reason {
-		FITS, SAME_SPOT, OUTSIDE, BUILDING, ROAD, STEEP, WATER;
+		FITS, SAME_SPOT, OUTSIDE, BUILDING, ROAD, STEEP, WATER, CRATE;
 
 		public String key() {
 			return name().toLowerCase();
@@ -57,7 +58,7 @@ public final class MoveFit {
 			if (reason == Reason.BUILDING && what != null) {
 				return Component.translatable(key, what);
 			}
-			if (at != null && (reason == Reason.ROAD || reason == Reason.WATER)) {
+			if (at != null && (reason == Reason.ROAD || reason == Reason.WATER || reason == Reason.CRATE)) {
 				return Component.translatable(key + ".at", at.getX(), at.getY(), at.getZ());
 			}
 			return Component.translatable(key);
@@ -120,6 +121,17 @@ public final class MoveFit {
 				return new Fit(Reason.BUILDING, min, box, other.name(), new BlockPos(other.box().minX(), other.box().minY(), other.box().minZ()));
 			}
 		}
+		for (Other other : moving(level, from)) {
+			// B1174: another building's planned or under-way move will stand there, so two Movers would rebuild into each other
+			if (other.box().minX() <= maxX && other.box().maxX() >= minX && other.box().minZ() <= maxZ && other.box().maxZ() >= minZ) {
+				return new Fit(Reason.BUILDING, min, box, other.name(), new BlockPos(other.box().minX(), other.box().minY(), other.box().minZ()));
+			}
+		}
+		BlockPos crate = crateIn(level, box);
+		if (crate != null) {
+			// B1129: a Mover's Crate stays where it stands (B1120), so the building going up there would break it
+			return new Fit(Reason.CRATE, min, box, null, crate);
+		}
 		if (road != null) {
 			return new Fit(Reason.ROAD, min, box, null, road);
 		}
@@ -130,6 +142,20 @@ public final class MoveFit {
 			return new Fit(Reason.STEEP, min, box, null, null);
 		}
 		return new Fit(Reason.FITS, min, box, null, null);
+	}
+
+	/**
+	 * A Mover's Crate standing in {@code box} (null: none). A Mover's Crate never moves with a building (B1120), so a
+	 * new spot over one would break it and leave its Mover without his workstation (B1129).
+	 */
+	@Nullable
+	static BlockPos crateIn(ServerLevel level, BoundingBox box) {
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			if (MoveSite.stays(level.getBlockState(pos))) {
+				return pos.immutable();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -169,6 +195,39 @@ public final class MoveFit {
 				BlueprintLibrary.get(level, site.structure()).ifPresent(b -> out.add(new Other(BlueprintOutline.bounds(site.placement(), b.size()),
 					Blueprints.displayName(site.structure()))));
 			}
+		}
+		return out;
+	}
+
+	/**
+	 * The new spots of the other buildings on the move in this dimension (B1174): each move under way by its site's new
+	 * box, each move still waiting for a Mover by its new lowest corner and its blueprint's turned size. The building at
+	 * {@code from} is left out, and so is a move being called off (it goes back where it was).
+	 */
+	public static List<Other> moving(ServerLevel level, @Nullable BlockPos from) {
+		List<Other> out = new ArrayList<>();
+		List<BlockPos> started = new ArrayList<>();
+		for (MoveSite site : MoveSites.get(level).all()) {
+			started.add(site.from());
+			if (site.from().equals(from) || site.canceled() || site.stage() == MoveSite.Stage.DONE) {
+				continue;
+			}
+			Component name = site.plan().structure() == null ? Component.translatable("screen.aliveworkplace.move.another_building")
+				: Blueprints.displayName(site.plan().structure());
+			out.add(new Other(site.newBox(), name));
+		}
+		for (PendingMoves.Move move : PendingMoves.get(level).all()) {
+			if (move.from().equals(from) || started.contains(move.from())) {
+				continue;
+			}
+			BlueprintLibrary.get(level, move.structure()).ifPresent(b -> {
+				boolean quarter = move.rotation() == Rotation.CLOCKWISE_90 || move.rotation() == Rotation.COUNTERCLOCKWISE_90;
+				int sx = quarter ? b.size().getZ() : b.size().getX();
+				int sz = quarter ? b.size().getX() : b.size().getZ();
+				BlockPos to = move.to();
+				out.add(new Other(new BoundingBox(to.getX(), to.getY(), to.getZ(), to.getX() + sx - 1, to.getY() + Math.max(1, b.size().getY()) - 1,
+					to.getZ() + sz - 1), Blueprints.displayName(move.structure())));
+			});
 		}
 		return out;
 	}

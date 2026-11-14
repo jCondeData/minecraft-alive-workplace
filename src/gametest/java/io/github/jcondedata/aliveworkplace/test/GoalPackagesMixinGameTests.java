@@ -80,6 +80,8 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 		jobs.put(ModVillagers.NURSE, () -> io.github.jcondedata.aliveworkplace.nurse.NursePackages.work(SPEED));
 		jobs.put(ModVillagers.PHYSICIAN, () -> io.github.jcondedata.aliveworkplace.work.PhysicianWork.packages(SPEED));
 		jobs.put(ModVillagers.WELL_KEEPER, () -> io.github.jcondedata.aliveworkplace.work.WellKeeperWork.packages(SPEED));
+		jobs.put(ModVillagers.MOVER, () -> io.github.jcondedata.aliveworkplace.move.MoverWork.packages(SPEED));
+		jobs.put(ModVillagers.GLASSBLOWER, () -> io.github.jcondedata.aliveworkplace.craft.CarpenterPackages.glassblower(SPEED));
 		jobs.put(ModVillagers.SHOPKEEPER, () -> io.github.jcondedata.aliveworkplace.shop.ShopkeeperPackages.work(SPEED));
 		jobs.put(ModVillagers.FERRYMAN, () -> io.github.jcondedata.aliveworkplace.travel.FerrymanPackages.work(SPEED));
 		jobs.put(ModVillagers.BARD, () -> io.github.jcondedata.aliveworkplace.bard.BardPackages.work(SPEED));
@@ -123,10 +125,12 @@ public class GoalPackagesMixinGameTests implements FabricGameTest {
 			{VillagerProfession.WEAPONSMITH, new Class<?>[] {io.github.jcondedata.aliveworkplace.mend.MendingWork.class,
 				io.github.jcondedata.aliveworkplace.craft.WeaponsmithWork.class}},
 			{VillagerProfession.FLETCHER, new Class<?>[] {io.github.jcondedata.aliveworkplace.craft.FletcherWork.class}},
-			{VillagerProfession.SHEPHERD, new Class<?>[] {io.github.jcondedata.aliveworkplace.ranch.ShepherdWork.class}},
+			{VillagerProfession.SHEPHERD, new Class<?>[] {io.github.jcondedata.aliveworkplace.ranch.ShepherdWork.class,
+				io.github.jcondedata.aliveworkplace.craft.WeaverWork.class}},
 			{VillagerProfession.BUTCHER, new Class<?>[] {io.github.jcondedata.aliveworkplace.ranch.HerderWork.class}},
 			{VillagerProfession.LEATHERWORKER, new Class<?>[] {io.github.jcondedata.aliveworkplace.craft.DyerWork.class}},
-			{VillagerProfession.CLERIC, new Class<?>[] {io.github.jcondedata.aliveworkplace.brew.AlchemistWork.class}},
+			{VillagerProfession.CLERIC, new Class<?>[] {io.github.jcondedata.aliveworkplace.brew.AlchemistWork.class,
+				io.github.jcondedata.aliveworkplace.craft.ClericCraftWork.class}},
 			{VillagerProfession.LIBRARIAN, new Class<?>[] {io.github.jcondedata.aliveworkplace.scribe.EnchantWork.class,
 				io.github.jcondedata.aliveworkplace.craft.ScribeWork.class}},
 			{VillagerProfession.CARTOGRAPHER, new Class<?>[] {io.github.jcondedata.aliveworkplace.explore.ExplorerWork.class}},

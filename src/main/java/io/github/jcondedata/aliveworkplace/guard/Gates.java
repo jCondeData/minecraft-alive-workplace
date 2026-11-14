@@ -21,7 +21,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  *
  * <p>In a siege (ROADMAP 32.4, {@code threat/Sieges}) they shut at once, whatever the hour and with or without guards,
  * and the portcullis of every gate build drops; they stay shut until the first dawn after. On the day of an attack the
- * village was warned of ({@link Warnings}, 32.14) they shut from noon.
+ * village was warned of ({@link Warnings}, 32.14) they shut from noon. A village with no guard opens the gates a siege
+ * or a warned day shut once it is over (B1158), and the gates its last guard shut for the night at dawn (B1180).
  */
 public final class Gates {
 	/** The blueprints whose fence gates are the village's gates: the two we ship, and every wall kit's gate (27.18). */
@@ -44,10 +45,30 @@ public final class Gates {
 		boolean siege = io.github.jcondedata.aliveworkplace.threat.Sieges.shut(level, hall) || Warnings.ready(level, hall);
 		// a Great Wall's Great Gate shuts at night, guards or none (35.16)
 		int moved = io.github.jcondedata.aliveworkplace.wonder.GreatWallPowers.shutGates(level, hall, siege || shutTime(level));
-		if (guards <= 0 && !siege) {
-			return moved;
+		io.github.jcondedata.aliveworkplace.threat.ThreatData data = io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level);
+		if (guards <= 0) {
+			// No guard keeps the hours, so the gates a siege or a warned day shut open again once it is over (B1158), and
+			// the gates the last guard shut for the night open at dawn (B1180); a village that never had them shut leaves
+			// them as the players set them.
+			if (siege) {
+				data.gatesShut(hall, true);
+				return moved + shut(level, hall, true);
+			}
+			boolean over = data.gatesShut(hall) || data.nightShut(hall) && !shutTime(level);
+			if (!over) {
+				return moved;
+			}
+			data.gatesShut(hall, false);
+			data.nightShut(hall, false);
+			return moved + shut(level, hall, false);
 		}
-		return moved + shut(level, hall, siege || shutTime(level));
+		boolean shut = siege || shutTime(level);
+		// remembered, so the gates still open at dawn if this guard falls in the night (B1180)
+		data.nightShut(hall, shut);
+		if (!shut) {
+			data.gatesShut(hall, false); // a guard opened them: the guardless village's shut is over
+		}
+		return moved + shut(level, hall, shut);
 	}
 
 	/** Shuts ({@code shut}) or opens the gates of the village round {@code hall} now. Returns how many gates moved. */

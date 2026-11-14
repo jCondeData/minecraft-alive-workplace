@@ -514,7 +514,10 @@ public class QaBuilderSupply1027GameTests {
 
 	// ------------------------------------------------------------------------- CrafterWork.fuelShort rounding survivor
 
-	/** A builder with {@code items} in the chest, building a row of {@code n} {@code block}, a Mason with a furnace by. */
+	/**
+	 * A builder with {@code items} in the chest, building a row of {@code n} {@code block}, a Mason with a furnace by and
+	 * (46.6: glass is his now, no longer the Mason's) a Glassblower at his Glass Kiln.
+	 */
 	private static QaCrafterFurnitureGameTests.Asker longRow(GameTestHelper helper, Block block, int n, ItemStack... items) {
 		QaCrafterFurnitureGameTests.prepare(helper);
 		ServerLevel level = helper.getLevel();
@@ -545,6 +548,11 @@ public class QaBuilderSupply1027GameTests {
 			throw new GameTestAssertException("blueprint not found: " + id);
 		}
 		QaJobChainFixesGameTests.mason(helper);
+		BlockPos kiln = new BlockPos(14, 2, 7);
+		helper.setBlock(kiln, ModBlocks.GLASS_KILN);
+		Villager glassblower = helper.spawn(EntityType.VILLAGER, kiln.south());
+		io.github.jcondedata.aliveworkplace.work.Jobs.employ(level, glassblower, helper.absolutePos(kiln),
+			io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASS_KILN_POI, io.github.jcondedata.aliveworkplace.registry.ModVillagers.GLASSBLOWER);
 		return new QaCrafterFurnitureGameTests.Asker(builder, site, plan, chestAt);
 	}
 

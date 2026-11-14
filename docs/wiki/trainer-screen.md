@@ -5,7 +5,7 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, B1091, B1102
+Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157, B473
 
 ## What a player sees
 
@@ -31,7 +31,9 @@ challenge that starts a battle uses up a Leader's one a day: a refused one (busy
 leaves it for later the same day. A Leader's day turns over at sunrise (day time a multiple of 24000).
 **Trade** opens
 the trainer's trades, as a sneak-click does; it is gray while they're asleep or have nothing to sell. **Close** closes.
-Sneak-click still goes straight to the trades.
+Sneak-click still goes straight to the trades. The three buttons always stay inside the panel (B1131): with room to
+spare they keep their roomy width, in a small window or with longer translated labels they share out the room, and
+when even that doesn't fit they wrap onto a second row (the status card's layout, `StatusCard.buttonRow`, B1103).
 
 ## How it works
 
@@ -45,6 +47,20 @@ closing (Close).
 order, and changes nothing; the Pokémon half (the player or trainer already battling, no party) comes from Cobblemon's
 side through the `TrainerBattles` extension point, which also fills the team and the party (`TrainerView.Sides`). The
 team is the one `CobblemonTrainers.challenge` would field, scaled to the player's RCT cap the same way.
+
+**The same team every time** (B1104, B1122). A trainer's team is built afresh each time it's shown or fielded, from
+the trainer's UUID: the species and levels, and since B1104 also each Pokémon's gender, shininess (at Cobblemon's
+shiny rate) and random form, such as Wormadam's cloak (`CobblemonTrainers.settle`, each member with its own seeded
+random). The form decides physical or special in training, so the held item, nature and moves follow it. So the
+screen shows the same models on every opening and the battle fields exactly those; a Mega Stone holder brought in
+for a Mega-Evolving trainer gets the same treatment. Nothing new is saved: an existing trainer's team just stops
+changing (it may look different once, from the first opening after the update). This was also B473's rare flake:
+a City Leader with a Wormadam fielded another cloak, and so another held item, from one look to the next
+(`MegaTrainerCompatTests.aLeaderWithAWormadamIsTheSameAtEveryLook`). The form's choices are read through
+`examples()`, which Cobblemon 1.7.3 and 1.8 both have (`CobblemonDaycareKeeper.choicesOf`, shared with the Daycare);
+1.8.1 has no `ChoiceSpeciesFeatureProvider.getChoices()`, which threw `NoSuchMethodError` on the first team and
+switched trainer battles and Mega trainers off (B1157). A choice feature whose default or value a version can't read
+keeps the form Cobblemon rolled.
 
 **The record.** Every battle with a trainer adds a win or a loss and the day to that player's record on the trainer
 (`Trainers.battleOver`). One win shows the whole team for good.
@@ -90,8 +106,6 @@ none
 - With RCT, the team and the cap are worked out when the screen opens; a cap that rises while it is open shows on the
   next open.
 - A very small window (a big GUI scale) cuts the longer lines with "…".
-- B1104 (open): the team's models are rolled again on each opening (gender and shininess), so one slot can show a
-  female Pokemon one time and a male one the next.
 
 ## Proof
 
@@ -100,7 +114,9 @@ none
 `TrainerScreenCompatTests.refusedWhileAsleep`, `TrainerScreenCompatTests.refusedWithNoTeam`,
 `TrainerScreenCompatTests.refusedWhileBusyOrInABattle`, `TrainerScreenCompatTests.refusedWhenNotTheLeader`,
 `TrainerScreenCompatTests.refusedUntilTomorrowByALeader`, `TrainerScreenCompatTests.refusedAwayAtTheCup`,
-`TrainerScreenCompatTests.recordAndRevealSurviveAReload` (Cobblemon), `TrainerScreenGameTests.withoutCobblemonTheScreenSaysSo`
+`TrainerScreenCompatTests.recordAndRevealSurviveAReload` (Cobblemon), `QaTrainerScreen1109dBugCompatTests.theTeamsModelsStayTheSameBetweenOpenings`,
+`QaMegaTrainersBug1109dCompatTests.aTrainersTeamIsTheSameEveryTime` (Cobblemon), `TrainerScreenGameTests.withoutCobblemonTheScreenSaysSo`,
+`TrainerScreenButtonsGameTests.trainerButtonsStayInsideThePanel`,
 `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`,
 `QaLeaderBeatenCompatTests.aLeaderCountsOnlyWhenBeatenInBattle` (Cobblemon), `QaLeaderBeatenGameTests.aLeaderCountsOnlyWhenBeaten`
 and `QaLeaderBeatenGameTests.anOrdinaryTrainerCountsWhenBeaten`.
@@ -129,3 +145,19 @@ next day's first tick starts; presses, refusals and losses count 0 for the battl
 wins two seconds later; a win counts for the trainer's own village only, and for none when the trainer stands outside
 every village; two wins over an ordinary trainer in a day count 2; without Cobblemon a press spends and counts nothing.
 Mutants killed 3/3: the day spent on any press, a loss counted, the day boundary one tick early.
+
+QA (lane D, 2026-11-11, verifying 43.1, B1104, B1131, B43 and B473): `QaTrainerScreen1111dGameTests` (2):
+`QaTrainerScreen1111dGameTests.theButtonsFitAtEveryBoundaryAndWidth` checks the button layout at each rule's boundary
+from both sides (roomy fits exactly and one pixel short, tight fits exactly and one pixel short, a side narrower than
+Challenge alone) and at every width from 1 to 400 pixels for labels one, three and five times as long: always inside,
+in order, never cut below what a label needs; `QaTrainerScreen1111dGameTests.theTeamsFirstHalfShowsUntilAWin` checks the
+reveal for teams of 0 to 6 (1, 1, 2, 2, 3, 3 shown before a win, all after). `QaTrainerBattle1111dCompatTests` (3,
+Cobblemon): `QaTrainerBattle1111dCompatTests.aMastersChoiceRefusedTwiceInARowDoesNotStopTheBattle` (a Master's choice
+refused on two turns running; the battle goes on), `QaTrainerBattle1111dCompatTests.aBattleWhereThePlayersPokemonFaintRunsToTheEnd`
+(the player's Pokémon knocked out one by one, the next one picked as a player does; the battle ends) and
+`QaTrainerBattle1111dCompatTests.aTrainersBadForcedSwitchDoesNotStopTheBattle` (a trainer's forced switch that picks
+its fainted Pokémon; the battle still ends).
+
+QA (lane D, 2026-11-14, B43): `QaTrainerRefusedEveryTurn1114dCompatTests.aTrainerRefusedOnFiveTurnsInARowStillBattlesOn`
+(Cobblemon): the trainer's choice refused on five turns in a row, more refusals than one request's limit of 3, and the
+battle still reaches turn 6 (the limit counts per request; kills the mutant that never resets the count).

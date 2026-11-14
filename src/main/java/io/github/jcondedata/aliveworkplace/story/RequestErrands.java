@@ -612,9 +612,9 @@ public final class RequestErrands {
 		stack.set(DataComponents.MAX_STACK_SIZE, 1);
 	}
 
-	/** The giver's village name, as the letter says it. */
+	/** The giver's village name, as the letter says it (B1217: never loading a far hall to say it). */
 	private static Component home(ServerLevel level, BlockPos hall) {
-		return VillageHalls.name(level, hall);
+		return VillageHalls.nameIfLoaded(level, hall);
 	}
 
 	/** The sealed letter (paper) to {@code deliver}'s relative, or ({@code reply}) their reply to the giver. */
@@ -910,20 +910,64 @@ public final class RequestErrands {
 
 	// --- Events ---------------------------------------------------------------------------------------------------
 
+	/**
+	 * B1220: revivals that answer a request of a hall whose chunk wasn't loaded, answered at that hall's next round
+	 * ({@link #revivedWhileAway}) instead of loading it. Kept in memory: after a restart the couple are wed again anyway
+	 * ({@link Couples#onRevived}), only the request's thanks are lost.
+	 */
+	private static final List<Revived> REVIVED = new ArrayList<>();
+
+	private record Revived(ServerLevel level, BlockPos hall, UUID was, UUID back) {
+	}
+
 	/** Someone came back from the grave ({@link Graves#revive}): a request to bring them back moves on. */
 	public static void onRevived(ServerLevel level, UUID was, Villager back) {
 		for (BlockPos hall : Stories.halls(level)) {
-			for (Quest quest : PersonalRequests.open(level, hall)) {
-				int i = quest.current();
-				if (i >= 0 && quest.objectives.get(i) instanceof Revive revive && revive.partner().isPresent()
-					&& (revive.partner().get().equals(was) || revive.partner().get().equals(back.getUUID()))
-					&& level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
-					Villager giver = PersonalRequests.giver(level, quest);
-					if (giver != null) {
-						remarry(level, hall, giver, back); // (here, as they may come back under a new id)
-					}
-					Stories.progress(level, hall, entity, quest, i, 1, null);
+			if (!level.isPositionEntityTicking(hall)) {
+				// B1220: not loaded for this; the request is answered when the hall's round next runs
+				if (PersonalRequests.open(level, hall).stream().anyMatch(q -> answers(q, was, back.getUUID()))) {
+					REVIVED.add(new Revived(level, hall, was, back.getUUID()));
 				}
+				continue;
+			}
+			if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
+				revived(level, hall, entity, was, back.getUUID(), back);
+			}
+		}
+	}
+
+	/** B1220: the revivals that came while {@code hall} wasn't loaded answer its requests now (its round). */
+	static void revivedWhileAway(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
+		if (REVIVED.isEmpty()) {
+			return;
+		}
+		List<Revived> due = new ArrayList<>();
+		REVIVED.removeIf(r -> {
+			boolean here = r.level == level && r.hall.equals(hall);
+			if (here) {
+				due.add(r);
+			}
+			return here || r.level.getServer() != level.getServer(); // (and those of a world since closed)
+		});
+		for (Revived r : due) {
+			revived(level, hall, entity, r.was, r.back, level.getEntity(r.back) instanceof Villager v && v.isAlive() ? v : null);
+		}
+	}
+
+	private static boolean answers(Quest quest, UUID was, UUID back) {
+		int i = quest.current();
+		return i >= 0 && quest.objectives.get(i) instanceof Revive revive && revive.partner().isPresent()
+			&& (revive.partner().get().equals(was) || revive.partner().get().equals(back));
+	}
+
+	private static void revived(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, UUID was, UUID backId, @Nullable Villager back) {
+		for (Quest quest : PersonalRequests.open(level, hall)) {
+			if (answers(quest, was, backId)) {
+				Villager giver = PersonalRequests.giver(level, quest);
+				if (giver != null && back != null) {
+					remarry(level, hall, giver, back); // (here, as they may come back under a new id)
+				}
+				Stories.progress(level, hall, entity, quest, quest.current(), 1, null);
 			}
 		}
 	}

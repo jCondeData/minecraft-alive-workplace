@@ -53,7 +53,7 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  * <li><b>Any wall, only into air.</b> A wall is whatever stands at least two blocks high in the way, a player's too; a
  * rung only ever replaces air, and never leans on a gate. At most {@link #MAX_LADDERS} ladders a siege; a climber whose
- * spot is within {@link #SHARE} blocks of one uses it.</li>
+ * spot is within {@link #SHARE} blocks of one uses it, and one without a ladder first finishes a ladder left half up.</li>
  * <li><b>A guard throws it down.</b> A guard standing at least two blocks above a ladder's foot and within
  * {@link #THROW_REACH} blocks of its top rung throws it down: the whole column goes, whoever is on it falls, and the
  * raiders wait {@link #RAISE_AGAIN} ticks before they raise it again.</li>
@@ -93,8 +93,6 @@ public final class Ladders {
 	private static final class Site {
 		final BlockPos foot;
 		final Direction into;
-		/** The raiders of this siege who are over the wall (shared by its ladders). */
-		final Set<UUID> over;
 		/** The siege's memory and its hall, so a climb can let go of a follower the tick the gate opens (B934). */
 		final Storm storm;
 		final BlockPos hall;
@@ -110,7 +108,6 @@ public final class Ladders {
 			this.into = into;
 			this.storm = storm;
 			this.hall = hall.immutable();
-			this.over = storm.over;
 			this.top = foot.getY();
 		}
 
@@ -124,19 +121,36 @@ public final class Ladders {
 		}
 	}
 
-	/** What is kept in memory of a siege's ladders (rebuilt from the saved rungs after a restart). */
+	/**
+	 * What is kept in memory of a siege's ladders (rebuilt from the saved rungs after a restart). The raiders over the
+	 * wall are the siege's own saved set, so a restart doesn't send one inside back to a ladder (B1126).
+	 */
 	private static final class Storm {
 		final List<Site> sites = new ArrayList<>();
 		final Map<UUID, Site> assigned = new HashMap<>();
 		final Map<UUID, Long> nextTry = new HashMap<>();
 		/** Where each raider was last sent (so one on an older errand is sent anew). */
 		final Map<UUID, BlockPos> sent = new HashMap<>();
-		final Set<UUID> over = ConcurrentHashMap.newKeySet();
+		/** The raiders of this siege who are over the wall (shared by its ladders): the siege's saved set. */
+		Set<UUID> over;
+		/** The saved threat data, marked changed when a raider gets over. */
+		final ThreatData data;
 		List<Mob> raiders = List.of();
 		int steps;
 		int cursor;
 		int most;
 		int thrown;
+
+		Storm(ThreatData data, ThreatData.Siege siege) {
+			this.data = data;
+			this.over = siege.overByLadder;
+		}
+
+		void over(UUID id) {
+			if (over.add(id)) {
+				data.setDirty();
+			}
+		}
 	}
 
 	private static final Map<Key, Storm> STORMS = new ConcurrentHashMap<>();
@@ -213,7 +227,7 @@ public final class Ladders {
 			}
 			Storm storm = entry.getValue();
 			if (storm.over.remove(before)) {
-				storm.over.add(after);
+				storm.over(after);
 				changed = true;
 			}
 			Site site = storm.assigned.remove(before);
@@ -270,7 +284,7 @@ public final class Ladders {
 	private static void tick(ServerLevel level) {
 		ThreatData data = ThreatData.get(level);
 		for (ThreatData.Siege siege : data.sieges()) {
-			if (siege.over) {
+			if (siege.over || !level.isPositionEntityTicking(siege.hall)) { // B1225: not while nobody is near the village
 				continue; // (the director takes the ladders away)
 			}
 			Optional<Culture> culture = data.raid(siege.hall).flatMap(r -> Threats.get(r.culture()));
@@ -282,6 +296,11 @@ public final class Ladders {
 
 	private static void step(ServerLevel level, ThreatData data, ThreatData.Siege siege, Culture culture) {
 		Storm storm = STORMS.computeIfAbsent(new Key(level.dimension(), siege.hall), k -> restore(level, data, siege));
+		if (storm.over != siege.overByLadder) {
+			// (the siege was read again from its save while this was kept in memory)
+			siege.overByLadder.addAll(storm.over);
+			storm.over = siege.overByLadder;
+		}
 		if (storm.steps % 4 == 0) {
 			storm.raiders = Sieges.raiders(level, siege.hall);
 		}
@@ -349,7 +368,12 @@ public final class Ladders {
 					if (path == null || path.canReach()) {
 						continue; // (no wall in its way)
 					}
-					site = siteFor(level, siege, storm, mob, path);
+					// A ladder left half up comes first (B325): after a restart nothing holds its climber for a moment, and from
+					// wherever it had got to by then it began a second ladder and left the first standing unfinished.
+					site = leftHalfUp(storm, raiders, mob.blockPosition());
+					if (site == null) {
+						site = siteFor(level, siege, storm, mob, path);
+					}
 					if (site == null) {
 						if (mob.getNavigation().isDone()) {
 							mob.getNavigation().moveTo(path, 1.0); // (as far as it gets; it asks again from there)
@@ -460,7 +484,7 @@ public final class Ladders {
 
 	/** The ladders of {@code siege} as its saved rungs give them: one for each column, facing as its lowest rung does. */
 	private static Storm restore(ServerLevel level, ThreatData data, ThreatData.Siege siege) {
-		Storm storm = new Storm();
+		Storm storm = new Storm(data, siege);
 		Map<Long, List<BlockPos>> columns = new TreeMap<>();
 		for (BlockPos pos : siege.ladders) {
 			columns.computeIfAbsent(BlockPos.asLong(pos.getX(), 0, pos.getZ()), k -> new ArrayList<>()).add(pos);
@@ -563,6 +587,32 @@ public final class Ladders {
 		Site best = null;
 		for (Site site : storm.sites) {
 			if (standing && !site.standing()) {
+				continue;
+			}
+			if (best == null || site.foot.distSqr(pos) < best.foot.distSqr(pos)) {
+				best = site;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * The ladder nearest {@code pos} that was left half up: some rungs set, not all, and no climber among {@code raiders}
+	 * who has it for his own (a restart forgot who had, or he fell). A climber without a ladder finishes it before a new
+	 * one is begun, however far off it is (B325). One a guard threw down has no rungs and isn't one of these.
+	 */
+	@Nullable
+	private static Site leftHalfUp(Storm storm, List<Mob> raiders, BlockPos pos) {
+		Set<Site> taken = new HashSet<>();
+		for (Mob raider : raiders) {
+			Site site = storm.assigned.get(raider.getUUID());
+			if (site != null && Threats.role(raider) == Culture.Role.CLIMBER) {
+				taken.add(site);
+			}
+		}
+		Site best = null;
+		for (Site site : storm.sites) {
+			if (site.rungs == 0 || site.finished() || taken.contains(site)) {
 				continue;
 			}
 			if (best == null || site.foot.distSqr(pos) < best.foot.distSqr(pos)) {
@@ -729,7 +779,7 @@ public final class Ladders {
 				// Over the top: across the wall and down inside.
 				double inward = inward(mob, site);
 				if (inward >= site.inside - 0.4 || mob.onGround() && mob.getY() < site.top - 1.5 && inward >= 1.5) {
-					site.over.add(mob.getUUID());
+					site.storm.over(mob.getUUID());
 					CLIMBS.remove(mob.getUUID());
 					return;
 				}

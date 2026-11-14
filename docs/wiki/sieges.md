@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130, B1225
 
 ## What a player sees
 
@@ -12,6 +12,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **The gates shut at once**, whatever the hour and with or without guards, and the **portcullis drops**: iron bars
   come down across the gateway of every finished Gatehouse, under the drawn-up ones. Players can still open the fence
   gates by hand. Both open again at the first dawn after, once the raid is over.
+- **A siege waits for you.** While nobody is near the village (its hall isn't loaded), the siege, its ladders and
+  sand ramps and the guards' battle stations stand still and load nothing (B1225); when someone comes back it carries
+  on, and a raid that is over is lifted at once if its dawn has passed.
 - **Every night the guards shut the gates** (no siege needed): in a village with a Village Hall and at least one guard,
   the fence gates of every finished Gatehouse and Palisade Gate in the village shut at dusk (day time 12,500) and open
   again just before dawn (23,500), on the hall's round, so within half a minute; the same every day, and for a gate
@@ -55,7 +58,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **Ladders go up the walls** (32.5). Raiders who carry ladders (the pillagers of the warband, 32.7) walk to the wall
   in their way and set a ladder up its outer face, a rung every half second, with the sound of a ladder being placed.
   When the first one stands the chat says "Ladders at the walls of Oakbrook! A guard on the wall can throw them down."
-  They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
+  A ladder left half up (after a server restart, or when the raider raising it fell) is finished before a new one is
+  begun. They climb it, cross the wall's top and drop inside; the other raiders follow up the same ladder while the gate is
   still shut. Once the gate is open, one still on its way to a ladder turns and goes in by the gate instead.
 - **A guard on the walkway throws a ladder down** when he is within 2 blocks of its top: the whole ladder breaks away
   at once, whoever is on it falls, and the raiders need 10 seconds before they raise it again.
@@ -114,7 +118,11 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   any of them is still outside the gate line within 12 blocks, the rams wait 4 blocks out and 4 along the wall from the
   breach and strike no blow (B126: a ravager at the next bar stood in the one-block way it had opened). A raider
   with a foe in sight is left to fight. Each raider carries a goal that holds it to the director's order; without it
-  their own hunting walks them round the walls after villagers they cannot reach.
+  their own hunting walks them round the walls after villagers they cannot reach. A raider over the wall by a ladder
+  or a sand ramp is past the wall like one through the breach and is left to its fight too, the gate shut or not, and
+  after a restart (the ladders' and the ramps' over sets are saved with the siege, `over_by_ladder` and
+  `over_by_ramp`, B1130); back outside the gate line it is the director's
+  again (B1116: it was walked to the inside of the shut gate and stood there).
 - **A raider that converts** (a zombie drowning, a skeleton freezing: vanilla's `Mob.convertTo` gives it a new UUID)
   keeps its place (B1085): `ConvertedMobs.swap` moves the new mob into the director's through, ordered and orders, and
   into the ladders' and sand ramps' over sets and assignments (`Sieges.converted`, `Ladders.converted`,
@@ -133,6 +141,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
     first thing at least two blocks high. A ladder already within 8 blocks of that spot is used; otherwise a new one is
     begun there, or up to 3 blocks to either side, wherever every rung goes into air or a wild plant it buries (`threat/Buriable`: vanilla's `#minecraft:replaceable`
     blocks without fluids, fire, vines, glow lichen, hanging roots, light and structure void). At most 3 ladders a siege.
+    Before any of that, a climber without a ladder takes the nearest one left half up (some rungs, not all, and no
+    climber assigned: a restart forgets the assignments, B325), however far off it is.
   - The ladder reaches to where the wall's column leaves two blocks free, at most 10 rungs: over a Stone Wall's
     crenel that is 5 rungs, over a merlon 6. One rung is set every 10 ticks while a climber stands within 3 blocks of
     the foot.
@@ -146,7 +156,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   - Every rung is recorded in the siege's saved data before anything else happens to it. Each tick the ladders are
     checked against the world: a rung someone took, and every rung above it, comes off the list and is set again.
     `Ladders.takeAway` runs when the raid ends and again when the siege lifts, and works from the saved list alone, so
-    ladders standing when the server stopped go too.
+    ladders standing when the server stopped go too. The raiders who got over a wall by a ladder are saved with the
+    siege as well (`over_by_ladder`, B1126), so after a restart one already inside isn't handed the ladder again.
 - **Battle stations** (`guard/BattleStations`, 32.6) run beside the director: one watch a siege, every 20 ticks in
   a tick of its own, sending at most 4 guards on their way a tick. A new siege gets its first watch at once: on the
   next tick, or within the tick it began if an archer of the village would fight before then (`BattleStations.postNow`), so no
@@ -232,7 +243,7 @@ In `aliveworkplace_threats` (per dimension), all new and empty by default, so an
 
 | Key | Holds | Default |
 |---|---|---|
-| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told) | none; `ladders` empty and `laddered` false in a siege saved before 32.5 |
+| `sieges` | per hall, the siege laid to it: `began`, `dawn` (the day time the gates open again), `over`, `breached`, `breach` (the gate block the rams go for), `out` (the side the raiders came from), `gates` (the breach's blocks in breaking order: `pos`, `hp`, `state` standing, broken or gone, `lane`, `high`, `dropped`), `portcullis` (every bar dropped), and since 32.5 `ladders` (every rung set, to take away) and `laddered` (the players were told), and since B1126 `over_by_ladder` (the raiders who got over a wall by a ladder, by id), and since B1130 `over_by_ramp` (the same for a sand ramp) | none; `ladders` empty and `laddered` false in a siege saved before 32.5; nobody over in one saved before B1126 (a raider inside is counted over again once the ladders see it past the wall), nobody over by a ramp in one saved before B1130 |
 | `broken` | per hall, the gate blocks rams broke that wait for a builder | none |
 | `damaged` (32.16a) | every builder's block a threat took (a gate a ram broke, a block a village fire burned) that no builder has put back yet, as packed positions | none |
 | in each of `sieges` (32.6) | `hp_factor` (what gate hit points were multiplied by), `came`, `fled`, `to_guards`, `to_players`, `to_others`, `kills` (guard, count, name), `players` (who killed a raider) | 1, 0, false, 0, 0, 0, none, none |
@@ -409,6 +420,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   `sieges` off; a ring of Stone Walls, with the gathering point beyond it from 16 sides and a started raid's raiders
   all outside, every one counted and on ground where mobs move (B176; the test keeps the ground east of its area live
   with a ticket of its own that lapses by itself, never the forced chunks the batches share).
+- `LadderGameTests.aClimberAwayFromItsLadderAfterARestartFinishesItInsteadOfASecond` (B325): after a save and load with
+  the ladder 3 rungs up, the climber stands penned outside another wall, more than 8 blocks away; no second ladder is
+  begun there, and once let out it goes back, finishes the first (5 rungs) and gets over.
 - `LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt`: a player's hay bale where the ladder would go is
   never replaced; the ladder goes up in air beside it and the climber is still over the wall within 600 ticks.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
@@ -448,3 +462,18 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   within 600 ticks and nothing drops (2 of 2). Failing (B966): at
   the Palisade Gate alone the ram never strikes the gate put back in the breach and nobody gets in,
   QaSiegeRegate1105dGameTests on tests/siege-regate-1105d.
+- Raiders over the wall through saves (QA, lane D, 2026-11-10, B1126): `QaLadderOverSaves1110dGameTests` (4, each 7 of 7
+  runs): after a save and load only the zombie inside is let go and one still outside is sent to the standing ladder; a
+  siege saved without its over_by_ladder list loads with nobody over and goes on (the zombie inside counted over again within
+  about 45 ticks, then saved); a new siege at the same village after a call-off remembers nobody over; two saves in a
+  row keep the set, and one over the wall that died breaks nothing (every rung gone at the call-off).
+- A far siege (QA, lane C, 2026-11-14, B1225): `QaFarHall1114cGameTests#aFarSiegePastItsDawnWaitsAndIsLiftedOnceSomeoneIsBack`:
+  a siege whose raid is over and whose dawn has passed is neither lifted nor loads its hall's chunk for 60 ticks while
+  nobody is near, and is lifted once the village's chunk is loaded and ticking again.
+- A siege nobody is near (QA, lane D, 2026-11-14, B1225): `QaFarSiege1114dGameTests` (3, 10 of 10 runs): a far siege
+  past its dawn with ladders and a sand ramp saved stays saved and loads no chunk for 160 ticks; once its hall's chunk
+  ticks again it is lifted; a near siege is still marked over and lifted while a far one waits, and a near one whose dawn
+  is still to come stands.
+- Far villages (QA, lane E, 2026-11-14, B1225): `QaFarVillageResumes1114e2GameTests` (3 siege tests, 3 of 3 runs): a far
+  siege read back after a restart loads no hall, gate, ladder or sand chunk and changes nothing for 120 ticks; once someone
+  is back the raid ends, is lifted at once past its dawn and its ladder taken away, and before its dawn it waits for it.

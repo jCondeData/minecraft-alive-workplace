@@ -18,6 +18,14 @@ import net.minecraft.world.item.ItemStack;
  * party and Challenge, Trade and Close on the right. Challenge is grayed out with the reason a click would have given.
  */
 public final class TrainerScreens {
+	/**
+	 * The buttons' labels, in the order the screen lays them out: Challenge, Trade, Close ({@link TrainerMenu#CHALLENGE},
+	 * {@code TRADE}, {@code CLOSE}). The client's TrainerScreen fits them with {@code StatusCard.buttonRow} (B1131), and
+	 * TrainerScreenButtonsGameTests checks that layout with these labels.
+	 */
+	public static final String[] BUTTON_KEYS = {"screen.aliveworkplace.trainer.button.challenge",
+		"screen.aliveworkplace.trainer.button.trade", "screen.aliveworkplace.trainer.button.close"};
+
 	/** Opens the screen on {@code trainer} for {@code player}. */
 	public static void open(ServerPlayer player, Villager trainer) {
 		TrainerView view = view(player, trainer);

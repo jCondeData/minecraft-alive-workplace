@@ -80,6 +80,9 @@ public final class BuildSite {
 	// Transient, recomputed as needed
 	@Nullable
 	private BuildPlan plan;
+	/** B1113: the foundation depth and levelling margin {@link #plan} was worked out with (game rules of that moment). */
+	private int planDepth;
+	private int planMargin;
 	private Status status = Status.STARTING;
 	private Map<Item, Integer> missing = Map.of();
 	/** B636: {@link #missing} predates materials the crew has taken since (not saved). */
@@ -248,6 +251,17 @@ public final class BuildSite {
 	}
 
 	/**
+	 * B47: the door or bed at {@code pos}, given up earlier this build, can go in after all (its other half's spot is
+	 * free again): no longer left out nor counted as skipped, so the last look before DONE goes back for it like a block
+	 * broken since.
+	 */
+	public void takeBack(BlockPos pos) {
+		if (leftOut.remove(pos) && skipped > 0) {
+			skipped--;
+		}
+	}
+
+	/**
 	 * B508: back to {@code stage}'s list at {@code index} (the first block broken since it was laid), to put back what's
 	 * gone before the build is called done; what's still in place is passed straight over.
 	 */
@@ -335,6 +349,29 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/**
+	 * B1148: when the finished build began waiting for the item frames, paintings or armor stands it is short of (game
+	 * time), or {@link #NOT_WAITING}. Saved, so a reload doesn't start the wait over; none in older saves.
+	 */
+	private long decorationWaitSince = NOT_WAITING;
+
+	public long decorationWaitSince() {
+		return decorationWaitSince;
+	}
+
+	public void setDecorationWaitSince(long time) {
+		this.decorationWaitSince = time;
+		onChange.run();
+	}
+
+	/**
+	 * B1148: the build is finished and its builder is getting the item frames, paintings or armor stands it is short of
+	 * before it ends: what it's short of is still asked for (the requests board, the jobs that make things).
+	 */
+	public boolean isGettingDecorations() {
+		return isDone() && decorationWaitSince != NOT_WAITING;
+	}
+
 	public int playerBlocks() {
 		return playerBlocks;
 	}
@@ -364,6 +401,15 @@ public final class BuildSite {
 
 	@Nullable
 	public BuildPlan plan(ServerLevel level) {
+		int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
+		int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+		if (plan != null && !deconstruct && !repair && (depth != planDepth || margin != planMargin)) {
+			// B1113: workplaceFoundationDepth or workplaceLevelGround changed with /gamerule while the build is under way. They
+			// "take effect at once" (game-rules.md), as after a restart: the plan is worked out again with the new values. Only
+			// the foundation and landscaping lists depend on them, and those restart from the top when worked out again in
+			// their stage (below); the other lists, and the cursor in them, stay as they are.
+			plan = null;
+		}
 		if (plan == null) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level.getServer(), structure);
 			if (blueprint.isEmpty()) {
@@ -381,8 +427,8 @@ public final class BuildSite {
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
 			}
-			int depth = foundation && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.FOUNDATION_DEPTH) : 0;
-			int margin = levelGround && !cellarOnly ? Rules.number(level, io.github.jcondedata.aliveworkplace.registry.ModGameRules.LEVEL_GROUND) : 0;
+			planDepth = depth;
+			planMargin = margin;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair && refresh != null ? Refreshes.plan(level, drawn, structure, refresh, placement, furniture) // B642: furnished as built, and anew
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
@@ -1132,6 +1178,9 @@ public final class BuildSite {
 		if (waitingSince != NOT_WAITING) {
 			tag.putLong("waiting_since", waitingSince);
 		}
+		if (decorationWaitSince != NOT_WAITING) {
+			tag.putLong("decoration_wait_since", decorationWaitSince); // B1148
+		}
 		if (playerBlocks > 0) {
 			tag.putInt("player_blocks", playerBlocks);
 		}
@@ -1212,6 +1261,8 @@ public final class BuildSite {
 		site.drawnHash = Nbt.has(tag, "blueprint_hash", Tag.TAG_INT) ? Nbt.getInt(tag, "blueprint_hash") : null; // B1049: none in older saves
 		site.stewardHall = Nbt.getBoolean(tag, "steward") && Nbt.has(tag, "hall", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "hall")) : null;
 		site.waitingSince = Nbt.has(tag, "waiting_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "waiting_since") : NOT_WAITING;
+		// B1148: none in older saves
+		site.decorationWaitSince = Nbt.has(tag, "decoration_wait_since", Tag.TAG_LONG) ? Nbt.getLong(tag, "decoration_wait_since") : NOT_WAITING;
 		site.playerBlocks = Nbt.getInt(tag, "player_blocks");
 		site.wonder = Nbt.hasUuid(tag, "wonder") ? Nbt.getUuid(tag, "wonder") : null;
 		site.foundation = !Nbt.getBoolean(tag, "no_foundation");

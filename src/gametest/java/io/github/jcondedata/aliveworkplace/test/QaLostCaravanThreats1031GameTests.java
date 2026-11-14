@@ -144,8 +144,8 @@ public class QaLostCaravanThreats1031GameTests implements FabricGameTest {
 	 * walked to Ashford (the receiving village), the story ends; he's the village's at Journeyman, both chronicles say he
 	 * settled in Ashford, he's +100 friendship with the helper, and the helper is +150 and a Wayfinder in both villages.
 	 */
-	//$ gametest_ticks_batch AREA '200' '"qaLostCaravanReceivingVillage"'
-	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaLostCaravanReceivingVillage")
+	//$ gametest_ticks_batch AREA '700' '"qaLostCaravanReceivingVillage"'
+	@GameTest(template = AREA, timeoutTicks = 700, batch = "qaLostCaravanReceivingVillage")
 	public void tobinWalkedToTheReceivingVillageJoinsIt(GameTestHelper helper) {
 		BlockPos[] ab = road(helper);
 		BlockPos a = ab[0];
@@ -164,7 +164,10 @@ public class QaLostCaravanThreats1031GameTests implements FabricGameTest {
 		// the two of them, 13 blocks apart, by Ashford's hall (320 blocks from Thornholm's), once its forced chunk is loaded
 		// for entities (as it is round a player who walked there). Freed, Tobin is no longer kept in the cage and strolls
 		// like any villager; the cage is only 30 blocks from Thornholm's hall, so while Ashford loads he's held where he
-		// was freed: a stroll of 6 blocks toward the hall would bring him home to Thornholm (B759)
+		// was freed: a stroll of 6 blocks toward the hall would bring him home to Thornholm (B759). The chunk's entities load
+		// on a file thread in real time and the test server never rests between ticks, so ticks alone can run out before
+		// they're in (CI run 43057052874: 'Ashford never loaded' with the whole test over in 245 ms, B1208): every tick
+		// still waiting gives the load 5 ms (see when)
 		net.minecraft.world.phys.Vec3 held = tobin.position();
 		me.teleportTo(b.getX() + 3.5, b.getY(), b.getZ() + 3.5);
 		when(helper, () -> {
@@ -172,7 +175,7 @@ public class QaLostCaravanThreats1031GameTests implements FabricGameTest {
 			tobin.getBrain().eraseMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET);
 			tobin.teleportTo(held.x, held.y, held.z);
 			return level.isPositionEntityTicking(b);
-		}, 150, "setup: Ashford never loaded", () -> {
+		}, 600, "setup: the entities of Ashford's forced chunk never loaded", () -> {
 			helper.assertTrue(Arcs.running(level, a) != null, "setup: the story ended before Tobin got to Ashford, with him at " + tobin.blockPosition().subtract(a)
 				+ " from Thornholm's hall: " + line(level, a, "chronicle.aliveworkplace.lost_caravan.ending"));
 			tobin.teleportTo(b.getX() + 12.5, b.getY(), b.getZ() + 12.5);
@@ -203,13 +206,25 @@ public class QaLostCaravanThreats1031GameTests implements FabricGameTest {
 		});
 	}
 
-	/** Runs {@code then} on the first tick {@code ready} holds, failing with {@code why} after {@code ticks}. */
+	/**
+	 * Runs {@code then} on the first tick {@code ready} holds, failing with {@code why} after {@code ticks}. A tick still
+	 * waiting gives the server 5 ms of real time first (its tasks run meanwhile), so a wait for chunks or entities that a
+	 * file thread loads isn't over in a few milliseconds of fast ticks (B1208, as B1092).
+	 */
 	private static void when(GameTestHelper helper, java.util.function.BooleanSupplier ready, int ticks, String why, Runnable then) {
+		when(helper, ready, ticks, 0, why, then);
+	}
+
+	private static void when(GameTestHelper helper, java.util.function.BooleanSupplier ready, int ticks, int waited, String why, Runnable then) {
+		if (!ready.getAsBoolean()) {
+			long until = System.nanoTime() + 5_000_000L;
+			helper.getLevel().getServer().managedBlock(() -> System.nanoTime() >= until);
+		}
 		if (ready.getAsBoolean()) {
 			then.run();
 		} else {
-			helper.assertTrue(ticks > 0, why);
-			helper.runAfterDelay(1, () -> when(helper, ready, ticks - 1, why, then));
+			helper.assertTrue(ticks > 0, why + " (waited " + waited + " ticks, " + waited * 5 + " ms or more)");
+			helper.runAfterDelay(1, () -> when(helper, ready, ticks - 1, waited + 1, why, then));
 		}
 	}
 

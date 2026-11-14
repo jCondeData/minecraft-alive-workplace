@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.threat.Lairs;
 import io.github.jcondedata.aliveworkplace.threat.Sieges;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -156,9 +157,13 @@ public final class Warnings {
 		return day < Chronicle.day(level) ? Optional.empty() : data.attacks(hall).stream().filter(a -> a.day() == day).findFirst();
 	}
 
-	/** Whether it is the day of a warned attack on the village round {@code hall}, from noon on: the gates stay shut. */
+	/**
+	 * Whether it is the day of a warned attack on the village round {@code hall}, from noon on: the gates stay shut. Not
+	 * in a quiet village (32.21: threat level 0, Peaceful or At peace), where the attack is called off (B1146).
+	 */
 	public static boolean ready(ServerLevel level, BlockPos hall) {
-		return VillageRaids.ENABLED && ThreatData.get(level).warned(hall) == Chronicle.day(level) && level.getDayTime() % VillageNeeds.DAY >= NOON;
+		return VillageRaids.ENABLED && ThreatData.get(level).warned(hall) == Chronicle.day(level) && level.getDayTime() % VillageNeeds.DAY >= NOON
+			&& !Threats.quiet(level, hall);
 	}
 
 	/** Whether it is the evening of a warned attack (from dusk) with no raid yet: guards to their stations, villagers in. */
@@ -184,6 +189,18 @@ public final class Warnings {
 		} else if (!data.braced(hall).isEmpty() && Sieges.siege(level, hall).isEmpty()) {
 			Sieges.raise(level, hall, true);
 		}
+	}
+
+	/**
+	 * The Village Hall at {@code hall} is broken or moved (a Mover sets it down elsewhere, which is a new hall with a clock
+	 * of its own) (B1176). Only the hall's own round draws up the portcullis dropped on a warned day and ends its raid, so
+	 * without this both stayed for good: the bars dropped ahead of a warned attack go up now (they stood on air), and a
+	 * raid under way is called off, which ends its siege (lifted at the next dawn as always, its bars drawn up). The
+	 * warning stays on the clock: a hall put back on the very spot is the same village and braces again.
+	 */
+	public static void hallGone(ServerLevel level, BlockPos hall) {
+		VillageRaids.callOff(level, hall);
+		Sieges.raise(level, hall, true);
 	}
 
 	/**

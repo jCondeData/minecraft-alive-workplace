@@ -1,16 +1,20 @@
 package io.github.jcondedata.aliveworkplace.inn;
 
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
+import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.ChoiceList;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.JobSiteTickets;
 import io.github.jcondedata.aliveworkplace.work.Money;
 import io.github.jcondedata.aliveworkplace.wonder.powers.TravellersPower;
 import io.github.jcondedata.aliveworkplace.work.Words;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -23,6 +27,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerType;
@@ -53,6 +58,69 @@ public final class Innkeepers {
 
 	public static boolean isInnkeeper(Villager villager) {
 		return !villager.isBaby() && villager.getVillagerData().getProfession() == ModVillagers.INNKEEPER;
+	}
+
+	/**
+	 * The inns' counters within {@code radius} of {@code center}, as the Innkeeper's job takes them: every Inn Counter, and
+	 * every Shop Counter an Innkeeper works (its job site), but not a shop's (B1177: inns are built with the Shop Counter
+	 * since the Inn Counter was retired). An Innkeeper's counter stays the inn while he is out of reach, asleep past the
+	 * village's edge or in an unloaded chunk (B1203, B1205): the counters Innkeepers were seen working are remembered
+	 * ({@link InnCounters}) and count while someone still works them and no other trade is seen doing so. A villager's
+	 * job-site memory of a counter broken and put back since they got it is stale and says nothing (B1228). Each counter
+	 * once, in no set order.
+	 */
+	public static List<BlockPos> counters(ServerLevel level, BlockPos center, int radius) {
+		PoiManager poi = level.getPoiManager();
+		InnCounters known = InnCounters.get(level);
+		Set<BlockPos> out = new LinkedHashSet<>();
+		poi.findAll(h -> h.is(ModVillagers.INN_COUNTER_POI), p -> true, center, radius, PoiManager.Occupancy.ANY)
+			.forEach(p -> out.add(p.immutable()));
+		double max = (double) radius * radius;
+		Set<BlockPos> shops = new java.util.HashSet<>();
+		for (Villager v : level.getEntitiesOfClass(Villager.class, new AABB(center).inflate(radius), v -> v.isAlive() && !v.isBaby())) {
+			BlockPos site = JobSiteTickets.heldSite(level, v).filter(p -> p.distSqr(center) <= max).map(BlockPos::immutable).orElse(null);
+			if (site == null || !poi.getType(site).map(h -> h.is(ModVillagers.SHOP_COUNTER_POI) || h.is(ModVillagers.INN_COUNTER_POI)).orElse(false)) {
+				continue;
+			}
+			if (isInnkeeper(v)) {
+				out.add(site);
+				known.remember(site, v.getUUID());
+			} else {
+				shops.add(site); // a Shopkeeper's (or another trade's) counter now, whoever worked it before
+				known.forget(site);
+			}
+		}
+		// Worked counters nobody in the village was seen at: whoever works one is out past the village's edge (B1214). A
+		// loaded villager anywhere in the level whose job site it is says whose it is (no chunk is loaded to ask).
+		List<BlockPos> worked = poi.findAll(h -> h.is(ModVillagers.SHOP_COUNTER_POI), p -> !out.contains(p) && !shops.contains(p),
+			center, radius, PoiManager.Occupancy.IS_OCCUPIED).map(BlockPos::immutable).toList();
+		if (!worked.isEmpty()) {
+			Set<BlockPos> open = new java.util.HashSet<>(worked);
+			for (Villager v : level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER, v -> v.isAlive() && !v.isBaby())) {
+				BlockPos site = JobSiteTickets.heldSite(level, v).filter(open::contains).map(BlockPos::immutable).orElse(null);
+				if (site == null) {
+					continue;
+				}
+				if (isInnkeeper(v)) {
+					known.remember(site, v.getUUID());
+				} else {
+					shops.add(site);
+					known.forget(site);
+				}
+			}
+		}
+		// An Innkeeper's counter while he is away (B1203, B1205): still worked (its ticket held), and he still works it
+		// when he is loaded anywhere in the level; in an unloaded chunk his counter is taken at its word.
+		List<BlockPos> away = worked.stream().filter(p -> known.keeper(p) != null && !shops.contains(p)).toList();
+		for (BlockPos p : away) {
+			net.minecraft.world.entity.Entity keeper = level.getEntity(known.keeper(p));
+			if (keeper == null || keeper instanceof Villager v && v.isAlive() && isInnkeeper(v) && JobSiteTickets.heldSite(level, v).filter(p::equals).isPresent()) {
+				out.add(p);
+			} else {
+				known.forget(p); // he took another trade, or another counter
+			}
+		}
+		return List.copyOf(out);
 	}
 
 	@Nullable

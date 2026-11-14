@@ -25,9 +25,9 @@ import sys
 
 # Page sections, in the README's order ("All the jobs at a glance"), then the village-wide pieces.
 GROUPS = [
-    "Picking a job", "Items", "Builder", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
+    "Picking a job", "Items", "Builder", "Mover", "Miner", "Lumberjack", "Orchard Keeper", "Farmer", "Beekeeper", "Florist", "Scholar", "Sifter",
     "Tinkerer", "Composter", "Netherworker", "Undertaker", "Innkeeper", "Teacher", "Rancher", "Fisherman", "Porter",
-    "Carpenter", "Crafter", "Mason", "Leatherworker (dyer)", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
+    "Carpenter", "Crafter", "Mason", "Glassblower", "Leatherworker", "Chef", "Armorer (smelter)", "Toolsmith", "Weaponsmith", "Fletcher",
     "Shepherd", "Butcher (herder)", "Cleric (alchemist)", "Librarian (scribe)", "Cartographer (explorer)", "Postman",
     "Guard", "Threats", "Nurse", "Shopkeeper", "Ferryman", "Bard", "Trainer", "Trainer Leader", "Move Tutor", "Ball Smith",
     "Pokémon Trader", "Fossil Scientist", "Berry Breeder", "Steward", "Camp Cook", "Gem Grower", "Jeweler", "Vintner", "Tailor", "Printer", "Habitat Keeper", "Daycare Keeper", "Furnicrafter", "Mechanic", "Create", "Village Hall", "Realm", "Realm builds", "Legends", "Wonders", "Everyone at work", "Build families",
@@ -63,6 +63,11 @@ SCENES = [
       "the Journeyman Librarian was shown the price, then paid for and retrained as a Novice Builder at the Blueprint Table", 40,
       [("01_librarian", "A Journeyman Librarian by a Blueprint Table"), ("02_offer", "First click: the price"),
        ("03_builder", "Second click: paid, now a Builder")]),
+    # Each job's own list (ROADMAP 46.1): the Storehouse board names who gathers or makes each asked-for thing
+    S("job_lists", "Crafter", "Who makes it: the Storehouse board's new lines",
+      "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands", 30,
+      [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
+       ("02_hire_a_cleric_for_brewing_stands", "Brewing stands: hire a Cleric to make them")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -137,6 +142,10 @@ SCENES = [
     job("miner_pickaxe", "Miner", "Making a new pickaxe from what she mined",
         "the miner's worn pickaxe broke, she made a stone pickaxe at the blast furnace from the cobblestone she dug and dug on to the end", 150,
         extra=[("04_making_pickaxe", "Making the pickaxe at the blast furnace")]),
+    # A better pickaxe as soon as there's the iron (ROADMAP 36.11a, B1202): raw iron smelted, an iron pickaxe made, the ores left dug
+    job("miner_pickaxe_upgrade", "Miner", "An iron pickaxe as soon as she has the iron",
+        "the Novice miner's raw iron was smelted in her blast furnace, she made an iron pickaxe from the ingots and went back for the gold and diamond ore her stone pickaxe had left", 240,
+        extra=[("04_making_iron_pickaxe", "Making the iron pickaxe at the blast furnace")]),
     # The Quarry build (ROADMAP 36.12): the Miner at its blast furnace digs its pit without a marker, and it grows back
     job("quarry_build", "Miner", "A Quarry that grows back",
         "the Miner at the Quarry's blast furnace took its pit without a marker and dug, and the mined rock grew back from the bottom up", 300),
@@ -274,7 +283,7 @@ SCENES = [
     S("carpenter", "Carpenter", "Making a builder's woodwork", "the carpenter made woodwork for the builder", 150,
       [("*_carpenter@first", "Start"), ("*_carpenter@middle", "Working"), ("30_carpenter_closeup", "At the crafting table")]),
     # Job chains (ROADMAP 37.14a, which retired the Crafter): several jobs filling one builder's Market Stall list from raw
-    # makings, each its own kind a step at a time (the Carpenter's woodwork, the dyer's red wool, the Tinkerer's lantern)
+    # makings, each its own kind a step at a time (the Carpenter's woodwork, the Shepherd's red wool, the Tinkerer's lantern)
     S("job_chains", "Carpenter", "Several jobs filling one builder's list, each making its own kind a step at a time",
       "several jobs filled the builder's list", 150,
       [("*_job_chains@first", "Start: only raw makings in the builder's chest"), ("*_job_chains@middle", "The jobs working through their chains"),
@@ -286,7 +295,19 @@ SCENES = [
       [("*_crafter_furniture@first", "Start: a table and oak logs in the chest"), ("*_crafter_furniture@middle", "Sawing, cutting and crafting"),
        ("30_crafter_furniture_corner", "The dining corner, built")], cobblemon=True, furniture=True),
     job("mason", "Mason", "Cutting stone for a builder", "the mason cut stone bricks the builder needed", 240),
-    job("dyer", "Leatherworker (dyer)", "Dyeing wool for a builder", "the dyer made colored wool the builder needed", 240),
+    job("dyer", "Shepherd", "Dyeing wool for a builder", "the shepherd dyed the colored wool the builder needed at his loom", 240),
+    # The Shepherd weaves (ROADMAP 46.2): a builder's bed made at his loom, the wool dyed first, then taken to the builder
+    job("weaver", "Shepherd", "Weaving a bed for a builder", "the shepherd made the red bed the builder needed and took it to the builder's chest", 200),
+    # The Florist makes pots (ROADMAP 46.3): a builder's flower pots made from bricks at her Flower Stand, taken to the builder
+    job("florist_pots", "Florist", "Making flower pots for a builder", "the florist made the flower pots the builder needed and took them to the builder's chest", 200),
+    # The Cleric makes the magic blocks (ROADMAP 46.4): a builder's brewing stand made from a blaze rod and cobblestone at his brewing stand, taken to the builder
+    job("cleric_crafts", "Cleric (alchemist)", "Making a brewing stand for a builder", "the cleric made the brewing stand the builder needed and took it to the builder's chest", 200),
+    # The Beekeeper makes candles (ROADMAP 46.5): a builder's graveyard candles made from honeycomb and string at her Apiary, taken to the builder
+    job("chandler", "Beekeeper", "Making candles for a builder", "the beekeeper made the candles the builder needed and took them to the builder's chest", 200),
+    # The Glassblower (ROADMAP 46.6): a builder's glass panes fired from sand on coal at his Glass Kiln, taken to the builder
+    job("glassblower", "Glassblower", "Firing glass panes for a builder", "the glassblower fired the builder's sand into glass at his glass kiln, made the glass panes the builder needed and took them to the builder's chest", 200),
+    # The Leatherworker makes leather goods (ROADMAP 46.5): the Storehouse's stock orders for item frames and leads, made at his cauldron
+    job("leatherworker_goods", "Leatherworker", "Making item frames and leads", "the leatherworker made the item frames and leads the storehouse ordered and put them in its store", 180),
     # Builder crews (ROADMAP 23.1a): a builder and three helpers on one build, about a third of the time alone
     job("crew", "Builder", "A crew of four on one build", "four builders built the stone house together, each placing a share of it", 150),
     # Scaffolding (ROADMAP 35.6, 35.6a): a 14-high pillar with an overhanging cap, built from a column of vanilla
@@ -557,12 +578,29 @@ SCENES = [
        ("02_blocked_by_a_fence", "The Stone House II: blocked by a fence where its level III goes"),
        ("03_bram_builds_it", "Clicked: Bram builds the Starter Cottage II")]),
     # The Hall's Move page (ROADMAP 45.2): the list, the picker's map with a fitting spot and its ghost, then rotated
-    S("move_plan", "Village Hall", "Picking a new spot for a building on the hall's Move page",
-      "the Move page listed the Starter Cottage; its picker showed the map round it, a click put the new spot to the west "
-      "(it fits: green, the ghost outline glowing), and Rotate turned it to face east", 60,
+    # The Mover (ROADMAP 45.3): the cottage taken down top-down and put up again turned a quarter at its new spot;
+    # its residents move too (45.4): Dara's bed and Tomas's barrel are the new cottage's, and he walks to it;
+    # its belongings arrive as they were (45.5): the barrel's catch and the sign's words
+    S("mover", "Mover", "Moving a finished building",
+      "the Mover took the Starter Cottage down top-down into his crates and put it up again turned a quarter at its new spot, "
+      "nothing dropped; Dara's bed and her husband Tomas's barrel moved with it, so they live and work there now, "
+      "his barrel still holding his 16 cod and 5 salmon and the cottage's sign still reading \"Dara & Tomas\"", 270,
+      [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
+       ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
+    S("move_plan", "Village Hall", "Moving a building on the hall's Move page, step by step",
+      "1: the Move page listed the Starter Cottage with where it stands from the Hall; 2: its picker showed the village map "
+      "(the cottage now in yellow, the Hall, the roads) and said to click where it should go; 3: a click to the west put the "
+      "new spot there (it fits, green, the ghost glowing), Rotate turned its front east and Confirm was ready; 4: Confirm "
+      "planned the move for the Mover", 60,
+      [("01_pick_a_building", "Step 1: pick the building (the cottage, and where it stands)"),
+       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now, \"click where it should go\""),
+       ("03_confirm", "Step 3: the new spot fits (green), front turned east, Confirm ready"),
+       ("04_move_planned", "Planned: the list marks the move for the Mover")]),
+    S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
+      "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
+      "was refused, no picker opened, and the action bar said why in red", 60,
       [("01_move_page", "The Move page: the cottage, with its Move button"),
-       ("02_new_spot_fits", "The picker: the map, the new spot to the west, \"This spot fits\""),
-       ("03_rotated", "Rotated a quarter: its front faces east")]),
+       ("02_refused", "Refused: \"builders are still working on it; move it once they're done\"")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

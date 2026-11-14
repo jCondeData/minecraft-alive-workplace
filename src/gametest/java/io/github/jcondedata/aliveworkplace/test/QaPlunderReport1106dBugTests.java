@@ -64,8 +64,8 @@ public class QaPlunderReport1106dBugTests implements FabricGameTest {
 	 * Aldred kills a raider, Brannoc kills one, Brannoc kills a second (the first to 2 kills), then Aldred kills a second
 	 * (2 as well). The hero, "the first to get there when two have as many", is Brannoc; the report names him.
 	 */
-	//$ gametest_ticks_batch AREA '40' '"qaSiegeReportTie1106d"'
-	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaSiegeReportTie1106d")
+	//$ gametest_ticks_batch AREA '40' '"qaSiegeReportTie1106dBug"'
+	@GameTest(template = AREA, timeoutTicks = 40, batch = "qaSiegeReportTie1106dBug")
 	public void theHeroOnATieIsTheGuardWhoReachedTheMostKillsFirst(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();

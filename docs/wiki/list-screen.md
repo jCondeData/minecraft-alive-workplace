@@ -8,7 +8,7 @@ hire screen, a Legend guest's terms and the Research screen; then the builder to
 style picker, the Price Tag, and the Shop and the Ferry paid in CobbleDollars. Part of Milestone 42 (One look for every
 screen).
 
-Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090
+Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107, B1147
 
 ## What a player sees
 
@@ -55,8 +55,10 @@ The job menus (42.3) follow, with their own rows:
 - **The Research screen** (sneak-right-click a Scholar, or a Legend with a tree): what's being researched at the top
   right, the tabs (the scholars', each Legend's tree, the realm's in a capital), then a row per topic: its level, the next
   level's price ("Fully researched" once done) and **Research**; gold "Under way" while it's worked on, gray with no button
-  while it's locked or done (the reason in its tooltip, and a click still says it). The Great Library's row and topics come
-  after the scholars' own.
+  while it's locked or done (the reason in its tooltip, and a click still says it: a topic at its top says "Swift Hands
+  is fully researched." even while the scholars are busy with another, B1090). The Great Library's row and topics come
+  after the scholars' own; below its second tier's top, a topic there says "Swift Hands IV–V needs the Great Library"
+  while no Great Library stands, and at that top "... is fully researched." with or without it.
 
 The builder tools and the shops (42.4) follow:
 
@@ -77,6 +79,18 @@ The builder tools and the shops (42.4) follow:
   post you know with its fare and **Buy**, then **Confirm**.
 
 Both shops follow your money while they're open: money paid in turns a red price green with no click.
+
+**Confirm pays the price on the screen (B1107).** The Shop also follows its counter while open: when the owner changes
+a lot or its price, the rows are redrawn. If the price changed between Buy and Confirm (raised or lowered), Confirm takes
+nothing: "The price changed: 16 Cobblestone now costs 900 CobbleDollars. Click Confirm again to buy at that price." and
+the row stays gold at the new price, so a second Confirm buys at what the screen shows. A lot taken off the counter
+says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything. A smaller lot or other goods at the
+same price are refused the same way, and the message says what changed (B1147): "This counter now sells 1 Diamond for
+200 CobbleDollars. Click Confirm again to buy that." If the shop's chests hold less than one lot of the new goods (3
+iron ingots for a lot of 4, or none), the row is gone from the list, so it says "Diamond is sold out." instead (B1189);
+exactly one lot is still offered with "Click Confirm again". A price changed on a lot whose chest ran short meanwhile is
+sold out too, not "The price changed". Each buyer pays what their own
+screen shows: two buyers on one counter are charged separately, and clicking Confirm twice charges once.
 
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a
 price you can't pay is red.
@@ -131,7 +145,7 @@ none (the screen keeps nothing; the lessons, prices and tutor ranks are the Move
   `.list_hint`; the styles' `screen.aliveworkplace.styles.button_choose`, `.button_mirror`, `.button_unmirror`,
   `.list_hint`; the tag's `screen.aliveworkplace.price_tag.steps`, `.list_hint`; the shop's
   `message.aliveworkplace.shop.menu.button_buy`, `.button_confirm`, `.list_hint`, `.column_goods`, `.column_stock`,
-  `.column_price`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
+  `.column_price`, and (B1107) `message.aliveworkplace.shop.price_changed`, `.withdrawn`, (B1147) `.goods_changed`; the ferry's `message.aliveworkplace.travel.list_hint`, `.column_destination`, `.column_fare`.
 - New text (42.3): `screen.aliveworkplace.orders.column_order`, `.button_pick`, `.button_unpick`; the smith's
   `screen.aliveworkplace.ball_smith.mode_any`, `.mode_only`, `.list_hint`, `.column_ball`, `.column_level`; the grower's
   `screen.aliveworkplace.gem_grower.mode_every`, `.mode_only`, `.list_hint`, `.column_bed`, `.column_planted`; the lures'
@@ -222,6 +236,14 @@ way survives a save; the Great Library's rows; a Legend tree's tab; every list l
 42.4: `BuilderToolListsGameTests.theShapePlannerIsAList`, `BuilderToolListsGameTests.theStylePickerIsAList`,
 `BuilderToolListsGameTests.thePriceTagIsAList`; `ShopListMenusCompatTests.theShopIsAList`,
 `ShopListMenusCompatTests.theFerryIsAList` (CobbleDollars).
+B1107: `QaJobShopLists1109cBugTests` (4, CobbleDollars): a price raised on an open screen is shown before Confirm can
+charge it; Confirm after a raise or a cut takes nothing and redraws the row gold at the new price, and the next Confirm
+charges it; a lot sold out or taken off the counter between Buy and Confirm takes nothing.
+QA (lane D, 2026-11-10, B1107): `QaShopPriceVerify1110dCompatTests` (8, CobbleDollars): two buyers each charged
+what their own screen showed; a price raised and put back; a smaller lot and the last lot between two buyers; a raised
+price the buyer can't pay; Confirm twice; reopening shows the new price; swapped goods, an item price and a withdrawn
+lot; both new sentences read right. 5 hand mutants on `Shops` killed. B1147 extends it: swapped goods and a smaller lot
+say "This counter now sells ...", a price change on the same lot says "The price changed", and the new sentence reads right.
 QA (lane B, 2026-11-09, 42.4): `QaBuilderToolLists1109bGameTests` (9): every builder tool sentence in American English
 and the Price Tag's steps read "Steps of 1,000 / 100 / 10 / 1"; shape sizes stop at 1 and at 32; with no blocks the
 Shape Planner says "no blocks" and refuses to draw; forged clicks (slots out of range, button-only rows, swap, throw
@@ -234,6 +256,9 @@ offers only building blocks carried, each once, at most 9 cells; the Shape Plann
 hand; choosing a style keeps the mirror, choosing the chosen one changes nothing and only one row is gold; a Wonder's
 plans show one row and Mirror; the Price Tag stops at 1,000,000,000 and 1 then -1 reads "No price yet". Mutants: 3 of 3
 caught.
+QA (lane D, 2026-11-14, B1189): `QaShopSoldOut1114dCompatTests` (3, CobbleDollars): goods swapped to a lot with exactly
+one lot in stock ask to Confirm again and sell; one short is sold out and takes nothing; a price raised on a lot one short
+is sold out, never "The price changed".
 
 Showcase scenes: `shapes`, `style_menu`, `shop`, `ferry_menu` (42.4, and the Price Tag in `counter`), `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

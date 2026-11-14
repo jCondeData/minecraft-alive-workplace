@@ -2,6 +2,8 @@
 # Keep this short: every line hides a class of messages forever. Our own mixin or data failures are never allowed.
 
 # --- ours, triggered on purpose by tests ---
+# QaBuilderSwitches1114bGameTests loads world rules holding builder rules outside their ranges (a hand-edited level.dat), to prove each loads inside its range; Fabric's rule warns and keeps the default.
+\(GameRuleRegistry\) Failed to parse integer (50|9|0|-1|-3|-8|-2147483648)\. Was out of bounds (0 - 8|1 - 2147483647|0 - 2147483647)
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
 # QaHostileSpawnsForced1101dGameTests gives a captain and a golem a living villager's UUID so the world refuses them even when placed directly (REFUSED_FORCED); vanilla warns of the clash.
@@ -30,6 +32,8 @@ Player test-mock-player just tried to change non-editable sign
 Stopped quarry .* stretched over its Miner's Bench .* by a bug before 0\.45\.0
 # QaSavedDataOneBadEntry1101GameTests and its BugTests put one damaged entry in every saved list, to prove the bad entry is skipped and the rest of the file loads (B763).
 Skipping (a saved caravan (village|sale)|a saved claimed bounty id|a saved mood boost|a tracked quest|finished quests saved for a player)
+# CaravanSavedNameB1233GameTests loads caravan-list entries with a broken village name, to prove the entry is kept under its made-up name (B1233).
+A saved caravan village at .* had an unreadable name, using its made-up name
 # QaRemovedModItems1102BugTests and RemovedModItemsGameTests load bags, loads, routes and trips naming a removed mod's item, to prove only that entry is dropped (B791).
 Dropped an entry of a saved (builder bag|golem load|route filter|courier route|machine trip) that no longer loads
 # QaHallListsOneBadEntry1102BugTests puts one empty entry in each of a Village Hall's saved lists, to prove only that entry is dropped (B796).

@@ -394,7 +394,7 @@ public final class QuestJournal {
 						"/workplace quests " + (tracked ? "untrack" : "track " + q.id)))
 					.withHoverEvent(new net.minecraft.network.chat.HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT,
 						Component.translatable(tracked ? "command.aliveworkplace.quests.untrack_hover" : "command.aliveworkplace.quests.track_hover"))));
-			out.add(Component.translatable("command.aliveworkplace.quests.line", q.title(), VillageHalls.name(f.level(), f.hall()), o.line(), q.progress[i],
+			out.add(Component.translatable("command.aliveworkplace.quests.line", q.title(), VillageHalls.nameIfLoaded(f.level(), f.hall()), o.line(), q.progress[i],
 				o.need(), button).withStyle(ChatFormatting.WHITE));
 		}
 		return out;

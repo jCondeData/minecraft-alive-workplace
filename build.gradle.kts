@@ -463,6 +463,12 @@ tasks {
         // runs, and on the pack that first link stalled a tick by 80 to 110 ms (B103: a day's report line, a farmer's
         // first look at a field). Same strings, no runtime linking.
         options.compilerArgs.add("-XDstringConcat=inline")
+        // The GameTest sources (1,700 classes, 28 MB) outgrew javac inside the 2 GB Gradle daemon: CI build 4076 died
+        // with "OutOfMemoryError: Java heap space" in compileGametestJava. Big source sets compile in their own JVM.
+        if (name == "compileGametestJava" || name == "compileCompattestJava") {
+            options.isFork = true
+            options.forkOptions.memoryMaximumSize = findProperty("javacHeap")?.toString() ?: "3g"
+        }
     }
 
     withType<ProcessResources>().configureEach {
@@ -618,6 +624,20 @@ tasks {
         commandLine("python3", "tools/modtest/wikicheck.py")
     }
     named("check") { dependsOn(checkWiki) }
+
+    /**
+     * Every GameTest batch belongs to one test class (B1166): tests in a batch run side by side, and when two classes
+     * shared one, a class's Leftovers.clear or village() setup removed the other's villagers (B427, B428).
+     * tools/modtest/batchcheck.py fails on a batch name two classes use (src/gametest and src/compattest each) and on a
+     * swap line whose batch differs from the annotation under it. Under a second, checked-in files only, so it always runs.
+     */
+    val checkBatches by registering(Exec::class) {
+        group = "verification"
+        description = "Fails if two GameTest classes share a batch name, or a swap line's batch differs from its annotation's"
+        workingDir = rootProject.projectDir
+        commandLine("python3", "tools/modtest/batchcheck.py")
+    }
+    named("check") { dependsOn(checkBatches) }
 
     /**
      * The player guide stays a guide for players (ROADMAP 22.10): tools/modtest/guidecheck.py fails when a page in

@@ -81,9 +81,19 @@ they go straight back to digging.
 
 ![Making a new pickaxe at the blast furnace](https://jcondedata.github.io/minecraft-alive-workplace/miner_pickaxe/still-4.jpg)
 
-As they gain levels they make better ones: an **iron pickaxe** from Journeyman when there are three iron ingots in
-their chests (their blast furnace smelts some for them), a **diamond pickaxe** from Expert with three diamonds. They
-always make the best one they can.
+They don't wait for a better one either. At any level, as soon as there are **three iron ingots** and two sticks in
+their chests or the village store, a miner with a weaker pickaxe (wood, gold or stone) makes an **iron pickaxe**, and
+with **three diamonds** a **diamond pickaxe** (even over an iron one); the old pickaxe goes back in the chest, as worn as
+it was. They use their own ingots before the store's, and never more than the three. The raw iron they dig gets there by
+itself: with coal in the chests, their blast furnace (or a furnace beside it) smelts it, and an [Armorer](armorer.md)
+smelts it too. Until then they keep digging, and the line over their head says what they still need, such as
+"digging · needs 2 Iron Ingots for an Iron Pickaxe".
+
+Ores their pickaxe is too weak for (gold, diamond, redstone with a stone pickaxe) are left standing at first, but the
+miner remembers them, through a restart too: once they have the better pickaxe, they go back and dig them out. One you
+mined yourself (or built over) in the meantime isn't waited for.
+
+![Making an iron pickaxe from the iron she dug](https://jcondedata.github.io/minecraft-alive-workplace/miner_pickaxe_upgrade/still-4.jpg)
 
 Nothing to make one from? They wait by the furnace ("needs a pickaxe"), and the **Storehouse** board asks for what's
 missing, the cobblestone first and then the sticks. Hand it over there and they get to work. If you'd rather they
@@ -104,7 +114,7 @@ marker, you can also type `/workplace strip <height>`.
 
 ## How the miner fits in
 
-- **Fed by:** they make their own stone pickaxes; a [Toolsmith](toolsmith.md) makes one when they can't, and a
+- **Fed by:** they make their own pickaxes, stone, then iron and diamond from what they dig; a [Toolsmith](toolsmith.md) makes one when they can't, and a
   [Weaponsmith](weaponsmith.md) mends worn ones. A [Librarian](librarian.md) with an enchanting table enchants their
   pickaxe.
 - **Feeds:** the [Porter](porter.md) carries the stone and ore to the storehouse, but leaves the torches, ladders and

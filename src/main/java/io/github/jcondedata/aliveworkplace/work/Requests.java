@@ -91,7 +91,7 @@ public final class Requests {
 	private static final Map<String, BlockPost> BLOCK_POSTS = new java.util.LinkedHashMap<>();
 
 	/** Accepts one plain item (so it can be counted and moved by item). */
-	record ExactItem(Item item) implements Predicate<ItemStack> {
+	public record ExactItem(Item item) implements Predicate<ItemStack> {
 		@Override
 		public boolean test(ItemStack stack) {
 			return stack.is(item);
@@ -176,9 +176,20 @@ public final class Requests {
 	private static final Set<String> STANDALONE_NAMES = Set.of("request.aliveworkplace.pickaxe", "request.aliveworkplace.axe",
 		"request.aliveworkplace.fishing_rod", "request.aliveworkplace.seeds");
 
-	/** Whether {@code what} is a request name written to stand alone ("A pickaxe"), with a mid-sentence form (B1098). */
-	public static boolean standsAlone(Component what) {
-		return what.getContents() instanceof TranslatableContents t && STANDALONE_NAMES.contains(t.getKey());
+	/**
+	 * Every request name a job posts in place of an item's name (B1108, B1109): a tool, seeds, a remedy, a revival, scraps
+	 * to compost. Each has the Storehouse board's own sentences under the same key, since a name such as "a golden apple
+	 * (or a healing potion)" carries its own article and can't take a count or "no" in front: {@code .gave} ("Gave 16
+	 * seeds to the %2$s's chests"), {@code .gave.one} for one handed over, and {@code .none} ("You don't have a pickaxe to
+	 * give"). A new named request goes in this list with those three keys.
+	 */
+	public static final Set<String> NAMES = Set.of("request.aliveworkplace.pickaxe", "request.aliveworkplace.axe",
+		"request.aliveworkplace.fishing_rod", "request.aliveworkplace.seeds", "request.aliveworkplace.remedy",
+		"request.aliveworkplace.revival", "request.aliveworkplace.remedy_physician", "request.aliveworkplace.compost");
+
+	/** The language key of {@code what} when it is one of {@link #NAMES}, else null (an item's or a tag's name). */
+	public static @Nullable String nameKey(Component what) {
+		return what.getContents() instanceof TranslatableContents t && NAMES.contains(t.getKey()) ? t.getKey() : null;
 	}
 
 	/**
@@ -260,7 +271,7 @@ public final class Requests {
 		}
 		out.addAll(io.github.jcondedata.aliveworkplace.legend.StrangeMoods.requests(level, worker)); // a strange mood's materials (29.10)
 		BuildSite site = Builders.activeSite(level, worker);
-		if (site != null && !site.isDone() && !site.isDeconstruction()) {
+		if (site != null && (!site.isDone() || site.isGettingDecorations()) && !site.isDeconstruction()) { // (B1148: its frames too)
 			// B636: what the build is short of is asked for while the builder works on with what he has (BuilderWork keeps
 			// the list fresh), not only once he stands waiting at the block that needs it. B499's scaffolding is on it too.
 			site.missing().entrySet().stream()

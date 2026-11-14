@@ -252,6 +252,9 @@ public final class HallSections {
 		menu.setState(DAY, today.dayOfSeason());
 		menu.setState(YEAR, (int) Math.max(1, Math.min(Short.MAX_VALUE, today.year())));
 		menu.onMenuButton((p, id) -> {
+			if (MovePage.handles(id)) {
+				return MovePage.click(menu, level, p, id); // a click on the Move page's village map (B1163)
+			}
 			if (HallJobs.handles(id)) {
 				return HallJobs.click(menu, level, hall, p, id); // Job ▾'s list (40.3)
 			}

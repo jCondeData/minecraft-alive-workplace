@@ -63,7 +63,8 @@ dead with no grave (or turned into a witch by lightning) they fall 7 days later 
   the world is already taken.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
   the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
-  every 5 seconds for each player; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
+  every 5 seconds for each player; only villages whose hall is loaded, with someone near it, are looked at, B1222 (a nearer far hall is skipped and the
+  next loaded one gets the Legend; `QaFarLegendSite1114dGameTests`); the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
   `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
   each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
   breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank
@@ -310,6 +311,36 @@ one instead of the traveler; a festival one short of its crowd brings nobody, on
 Chapel guest with no Chapel or off the full moon, then one at the next full moon; with Legends off no place brings a
 guest and no day's roll is spent; a Mythic guest refused by a Village and welcome in a Town, heard 5,000 blocks away
 where a Rare guest isn't.
+Bug B1177: `InnShopCounterB1177GameTests` (3): the inn's roll and a move's stay beds find an inn built with the Shop
+Counter (an Innkeeper working it) and an old Inn Counter, but not a plain shop (a Shopkeeper's Shop Counter) or a
+counter nobody works.
+QA (lane c, B1177): `QaInnShopCounter1111cGameTests` (8): an inn is no inn once its Shop Counter is broken, its
+Innkeeper is given No job at the hall, or he is retrained as the counter's Shopkeeper; an Innkeeper asleep in his bed
+still keeps the inn; two Innkeepers' Shop Counters and an old Inn Counter are each found once, a shop and a lectern
+beside them not; a counter exactly at the hall's reach is the village's inn, one block past it is not; the Seer's look
+ahead foretells a sure inn Legend at an Innkeeper's Shop Counter and nobody at a Shopkeeper's; and the inn's morning at a
+Shop Counter hosts that Legend by the counter.
+Bugs B1203, B1205: `QaInnShopCounter1111cBugTests`, `QaInnKeeperAway1111dBugTests`: an Innkeeper out past the village's
+edge (asleep, on a walk) still keeps his Shop Counter the inn (the counters Innkeepers work are remembered,
+`InnCounters`, until another trade works them or the Innkeeper is gone for good). `QaInnCounters1111dGameTests`: an inn
+10.05 blocks from the Hall is the inn of a village of radius 11 and not of one of radius 10.
+`QaMoveInnVerify1111cGameTests` (QA lane): an Innkeeper in an unloaded chunk keeps his Shop Counter the inn through a
+save and reload; one given No job or killed while out past the edge leaves no inn; the edge (11 yes, 10 no) holds with
+him away too.
+`QaInnKeeperGone1114dGameTests` (QA lane D, 2026-11-14): with the Innkeeper away, his counter broken leaves no inn, and
+him turned Farmer leaves none and forgets the counter; a remembered counter of an Innkeeper the level doesn't have (an
+unloaded chunk) is the inn only while its job-site ticket is held, and no inn once it is freed (kills the mutant that
+counts a free counter).
+Bugs B1213, B1214, B1215: a Shop Counter that is broken (by a player, an explosion, or replaced by another block) is
+forgotten, so one put back for a Shopkeeper is a shop, not the inn of its old Innkeeper in an unloaded chunk; only turning
+the counter keeps it. An Innkeeper who has only ever stood past the village's edge still makes his counter inside the
+village the inn (any loaded villager whose job site it is says whose it is; a baby never does).
+`QaInnRebuild1114cGameTests` (QA lane, 7): those cases, the never-seen Innkeeper's inn through a save, his return and
+his retraining to Shopkeeper (then a shop), two counters worked from past the edge (only the Innkeeper's is the inn),
+and the edge (11 yes, 10 no) on that path.
+Bug B1228: when the old Innkeeper of a counter that was broken and put back for a Shopkeeper loads again (past the edge, or
+in the village away from the counter), her job-site memory of the spot is stale (the mod counts each break, so it knows
+the counter's ticket isn't hers since), and the counter stays a shop. `QaInnRebuild1114cBugTests` (2).
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the
@@ -352,8 +383,14 @@ malformed gift file fails; a `gifted` attachment of "none" or a removed gift mak
 for each of the four; Silver Tongue on 5, 20 and 64 emeralds (4, 16, 52) and gone with `giftedChance` 0; the Night
 Owl's hours at every edge; the night schedule for a miner, never for a child, a nitwit or the jobless, kept through a
 save and dropped when the gift goes.
+QA (lane D): `QaInnCounters1111dGameTests`: an inn 10.05 blocks from the Hall is the inn of a village of radius 11 and
+not of one of radius 10. Open: B1205 (the inn stops being one while its Innkeeper is out past the village's edge).
 
 Showcase scenes: `legend`, `legend_announce`, `legends_hall`, `legend_guest`, `legend_sites`, `legend_strike`,
 `strange_mood`, `gifted`, `gifted_born`, `research_trees`, `legend_architect`, `legend_pathfinder`, `legend_sage`,
 `legend_golem_smith`, `legend_seer`, `legend_merchant_prince`, `legend_grand_chef`, `legend_bard`,
 `legend_beastmaster`, `legend_professor`, `legend_ranger`, `legend_founder`, `founder_colony`, `merchant_prince_board`.
+
+QA (lane C, 2026-11-14, B1222): `QaFarHall1114cGameTests#aLegendSiteSkipsAFarHallAndStillOffersForTheLoadedOneBehindIt`:
+a far village nearer the site than the player's own is passed over without loading its hall's chunk, and the player's
+loaded village behind it still qualifies.

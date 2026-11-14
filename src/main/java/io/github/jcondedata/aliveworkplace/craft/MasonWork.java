@@ -13,10 +13,11 @@ import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A vanilla Mason's work for the builders nearby: the stonecutter's recipes, and the village's crusher, glassblower and
- * kiln besides — cobblestone crushed to gravel and gravel to sand at the stonecutter, and, when there's a furnace by the
- * stonecutter, sand fired into glass and the rest of the kiln's work ({@link Crafting.Kind#KILN}: stone, smooth stone,
- * terracotta, bricks from clay...), a coal or charcoal for every {@link #GLASS_PER_FUEL} things fired.
+ * A vanilla Mason's work for the builders nearby: the stonecutter's recipes, and the village's crusher and kiln besides —
+ * cobblestone crushed to gravel and gravel to sand at the stonecutter, and, when there's a furnace by the stonecutter,
+ * the kiln's work ({@link Crafting.Kind#KILN}: stone, smooth stone, terracotta, bricks from clay...), a coal or charcoal
+ * for every {@link #GLASS_PER_FUEL} things fired. Glass is the Glassblower's since 46.6 ({@link GlassblowerWork}): the
+ * Mason fires it only as the Glassblower's stand-in, which no version has today.
  */
 public class MasonWork extends CrafterWork {
 	/** Glass fired per coal or charcoal (a furnace's rate). */
@@ -31,6 +32,15 @@ public class MasonWork extends CrafterWork {
 		super(Crafting.Kind.STONECUTTING, false);
 	}
 
+	/**
+	 * 46.3: the bricks the Florist's flower pots and decorated pots need, fired from the clay in the chests; 46.6: the sand
+	 * the Glassblower's glass needs, crushed from the gravel or cobblestone in them.
+	 */
+	@Override
+	protected boolean helps(CraftJobs.Job maker) {
+		return maker == CraftJobs.Job.FLORIST || maker == CraftJobs.Job.GLASSBLOWER;
+	}
+
 	@Nullable
 	@Override
 	protected Job choose(ServerLevel level, Villager villager, net.minecraft.core.BlockPos station) {
@@ -42,7 +52,7 @@ public class MasonWork extends CrafterWork {
 	@Override
 	protected Crafting.Plan planFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
 		int n = Math.min(count, Crafting.MAX_CRAFTS);
-		if (item == Items.GLASS) {
+		if (item == Items.GLASS && CraftJobs.makes(level, CraftJobs.Job.MASON, item)) {
 			if (!hasFurnace(level)) {
 				return null;
 			}
@@ -58,7 +68,20 @@ public class MasonWork extends CrafterWork {
 			return convert(level, item, n, usable, Map.of());
 		}
 		Crafting.Plan cut = super.planFor(level, item, count, usable);
-		if (fits(cut) || !hasFurnace(level)) {
+		if (fits(cut)) {
+			return cut;
+		}
+		// 46.1: concrete mixed and set, and his list's crafting-table work (dyed terracotta, panes, a brick block from bricks)
+		Crafting.Plan set = DyerWork.concrete(level, item, count, usable);
+		if (set != null) {
+			return set;
+		}
+		Crafting.Plan crafted = chains() ? chainPlan(level, Crafting.Kind.CRAFTING, item, count, usable)
+			: Crafting.plan(level, Crafting.Kind.CRAFTING, item, count, usable);
+		if (fits(crafted)) {
+			return crafted;
+		}
+		if (!hasFurnace(level)) {
 			return cut;
 		}
 		// The kiln: stone, smooth stone, terracotta, bricks... fired in the furnace by the stonecutter (and cut or laid after).
@@ -96,6 +119,13 @@ public class MasonWork extends CrafterWork {
 	@Override
 	protected Map<Item, Integer> lackFor(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
 		Map<Item, Integer> cut = super.lackFor(level, item, count, usable);
+		Item powder = DyerWork.powderFor(item);
+		Item made = powder != null ? powder : item;
+		if (cut.isEmpty() && Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
+				&& !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, made).isEmpty() && (!hasFurnace(level) || powder != null)) {
+			// 46.1: what he makes at the crafting table (dyed terracotta, concrete's powder): its makings
+			cut = Crafting.lacking(level, Crafting.Kind.CRAFTING, made, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable);
+		}
 		if (!hasFurnace(level) || Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty()) {
 			return cut;
 		}
@@ -130,8 +160,12 @@ public class MasonWork extends CrafterWork {
 		return self != null && Builders.benchPos(self).map(p -> !SupplyContainers.furnaces(level, p).isEmpty()).orElse(false);
 	}
 
+	/**
+	 * 46.1: the Mason's own list ({@code aliveworkplace:crafts/mason}, every stonecutter cut, stone and bricks by their
+	 * recipe) and what he crushes (gravel, sand); the glass he fired before 46.6 is the Glassblower's now.
+	 */
 	@Override
-	protected boolean wants(Item item) {
-		return true;
+	protected boolean wants(ServerLevel level, Item item) {
+		return CRUSHED.containsKey(item) || CraftJobs.makes(level, CraftJobs.Job.MASON, item);
 	}
 }

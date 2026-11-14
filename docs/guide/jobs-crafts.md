@@ -22,8 +22,8 @@ village's food and potions.
 
 *Full article: [Carpenter](carpenter.md).*
 
-A **crafting table** and **planks**. When a builder nearby is waiting for something that can be crafted (stairs, slabs,
-doors, fences, torches, glass panes...), the carpenter makes it from what the village has and carries it to the
+A **crafting table** and **planks**. When a builder nearby is waiting for something wooden (stairs, slabs,
+doors, fences, signs, chests, torches...), the carpenter makes it from what the village has and carries it to the
 builder's chest. Give a builder only logs, and the carpenter makes the rest.
 
 ![A carpenter at the crafting table](https://jcondedata.github.io/minecraft-alive-workplace/carpenter/still-3.jpg)
@@ -33,14 +33,25 @@ builder's chest. Give a builder only logs, and the carpenter makes the rest.
 *Full article: [Mason](mason.md).*
 
 **Masons** (vanilla, at a stonecutter) cut stone bricks, stairs and walls for the builders, crush cobblestone into gravel
-and sand, and with a furnace by the stonecutter fire glass, smooth stone, terracotta and bricks.
+and sand, and with a furnace by the stonecutter fire smooth stone, terracotta and bricks. They also make concrete and
+dyed terracotta. Glass is the Glassblower's.
 
-## Leatherworker (the dyer)
+## Glassblower
+
+*Full article: [Glassblower](glassblower.md).*
+
+**Glassblowers** work at their own **Glass Kiln** (bricks round a furnace, an iron ingot on top): they fire glass from
+sand, a coal or charcoal for every eight, and make glass panes, stained glass and panes with the Florist's dyes, tinted
+glass and glass bottles for the builders and the Storehouse.
+
+## Leatherworker
 
 *Full article: [Leatherworker](leatherworker-dyer.md).*
 
-**Leatherworkers** (vanilla, at a cauldron) make anything colored a builder is waiting for: wool, carpet, stained glass,
-terracotta, candles, beds, dyes. They also turn concrete powder into concrete.
+**Leatherworkers** (vanilla, at a cauldron) make leather goods for builders and the Storehouse: item frames and glow
+item frames, leads, leather from rabbit hide, and leather armor. They dye nothing: wool, carpet, beds, banners and
+paintings are the [Shepherd](shepherd.md)'s, woven at the loom; flower pots, decorated pots, dyes and moss carpet the
+[Florist](florist.md)'s; candles the [Beekeeper](beekeeper.md)'s.
 
 ## Tinkerer
 
@@ -80,7 +91,8 @@ Snacks, Poké Bait and Aprijuice too. The chef's food feeds the village (see [Vi
 *Full article: [Cleric](cleric.md).*
 
 **Clerics** (vanilla, at a brewing stand) brew healing, regeneration and strength potions for the guards, from the
-ingredients in their chest. Guards drink them in a fight. Hire one with a glass bottle.
+ingredients in their chest. Guards drink them in a fight. They also make the magic blocks a builder is waiting for:
+brewing stands, blaze powder, eyes of ender, ender chests, end rods and beacons. Hire one with a glass bottle.
 
 ## Librarian
 

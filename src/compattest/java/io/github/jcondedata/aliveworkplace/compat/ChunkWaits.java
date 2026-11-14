@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -36,6 +37,39 @@ final class ChunkWaits {
 	static String state(ServerLevel level, BlockPos pos) {
 		return "loaded " + level.isLoaded(pos) + ", entity-ticking " + level.isPositionEntityTicking(pos) + ", entities loaded "
 			+ level.areEntitiesLoaded(ChunkPos.asLong(pos)) + ", forced " + level.getForcedChunks().contains(ChunkPos.asLong(pos));
+	}
+
+	/**
+	 * Every one of {@code chunks} (x and z each, as the far-away tests keep the chunks they force) is loaded and running
+	 * (B1125, B1150): a village a test has force-loaded is only then what a village with a player standing in it is, its
+	 * block entities ticking and its entities moving. {@code y} is any height inside the world.
+	 */
+	static boolean running(ServerLevel level, List<long[]> chunks, int y) {
+		for (long[] c : chunks) {
+			if (!running(level, middle(c, y))) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** Which of {@code chunks} aren't running yet and how far each has got, for a failure message. */
+	static String state(ServerLevel level, List<long[]> chunks, int y) {
+		StringBuilder out = new StringBuilder();
+		int waiting = 0;
+		for (long[] c : chunks) {
+			BlockPos pos = middle(c, y);
+			if (!running(level, pos)) {
+				if (waiting++ < 4) {
+					out.append(out.length() == 0 ? "" : "; ").append("chunk ").append(c[0]).append(' ').append(c[1]).append(": ").append(state(level, pos));
+				}
+			}
+		}
+		return waiting + " of " + chunks.size() + " chunks not running" + (waiting == 0 ? "" : " (" + out + (waiting > 4 ? "; ..." : "") + ")");
+	}
+
+	private static BlockPos middle(long[] chunk, int y) {
+		return new BlockPos(((int) chunk[0] << 4) + 8, y, ((int) chunk[1] << 4) + 8);
 	}
 
 	/** A clock started now: {@link Clock#overdue} once both the ticks and the seconds have run out. */

@@ -19,6 +19,12 @@ import com.cobblemon.mod.common.battles.actor.PlayerBattleActor;
 import com.cobblemon.mod.common.battles.ai.RandomBattleAI;
 import com.cobblemon.mod.common.battles.ai.StrongBattleAI;
 import com.cobblemon.mod.common.battles.pokemon.BattlePokemon;
+import com.cobblemon.mod.common.api.pokemon.feature.ChoiceSpeciesFeatureProvider;
+import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatureProvider;
+import com.cobblemon.mod.common.api.pokemon.feature.SpeciesFeatures;
+import com.cobblemon.mod.common.api.pokemon.feature.StringSpeciesFeature;
+import com.cobblemon.mod.common.api.properties.CustomPokemonPropertyType;
+import com.cobblemon.mod.common.pokemon.Gender;
 import com.cobblemon.mod.common.pokemon.Pokemon;
 import com.cobblemon.mod.common.pokemon.Species;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
@@ -207,7 +213,8 @@ public final class CobblemonTrainers {
 			Species species = pool.remove(random.nextInt(pool.size()));
 			int level = MIN_LEVEL[t] + random.nextInt(MAX_LEVEL[t] - MIN_LEVEL[t] + 1);
 			Pokemon pokemon = species.create(level);
-			// Its own random, so training doesn't change which species the trainer picks.
+			// Its own randoms, so its look and training don't change which species the trainer picks.
+			settle(pokemon, new Random(trainer.getMostSignificantBits() ^ (104729L * (i + 1)) ^ (17L * t) ^ LOOK));
 			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
 			team.add(pokemon);
 		}
@@ -242,6 +249,7 @@ public final class CobblemonTrainers {
 		for (int i = 0; i < theme.bring() && !pool.isEmpty(); i++) {
 			Species species = pool.remove(random.nextInt(pool.size()));
 			Pokemon pokemon = species.create(theme.level());
+			settle(pokemon, new Random(trainer.getMostSignificantBits() ^ (104729L * (i + 1)) ^ (17L * t) ^ LOOK));
 			train(pokemon, t, new Random(trainer.getLeastSignificantBits() ^ (7919L * (i + 1)) ^ (131L * t)));
 			pokemon.heal();
 			team.add(pokemon);
@@ -278,6 +286,59 @@ public final class CobblemonTrainers {
 			}
 		}
 		return false;
+	}
+
+	private static final long LOOK = 0x4C4F4F4BL;
+
+	// The same Pokémon every time the trainer's team is built (B1104, B1122): Cobblemon's create() rolls the gender,
+	// the shininess and any random form (Wormadam's cloak, Vivillon's pattern) afresh each time, so the Trainer screen
+	// showed another model on each opening and the battle fielded another form (and, through train(), another held
+	// item and other moves). Here they are drawn from the trainer's own seed instead, before train() reads the form.
+	// Nothing is saved: an existing trainer's team just stops changing.
+	static void settle(Pokemon pokemon, Random random) {
+		Species species = pokemon.getSpecies();
+		float genderRoll = random.nextFloat();
+		float shinyRoll = random.nextFloat();
+		Set<Gender> genders = species.getPossibleGenders();
+		if (genders.contains(Gender.MALE) && genders.contains(Gender.FEMALE)) {
+			pokemon.setGender(genderRoll < species.getMaleRatio() ? Gender.MALE : Gender.FEMALE);
+		} else if (genders.size() == 1) {
+			pokemon.setGender(genders.iterator().next());
+		}
+		float rate = Cobblemon.INSTANCE.getConfig().getShinyRate();
+		pokemon.setShiny(rate > 0 && shinyRoll * rate < 1);
+		for (SpeciesFeatureProvider<?> provider : SpeciesFeatures.getFeaturesFor(species)) {
+			// only the choices Cobblemon rolls at random (a fixed default stays as it is). The choices are read the
+			// 1.8-safe way (B1157: 1.8.1 has no ChoiceSpeciesFeatureProvider.getChoices()); a provider whose default
+			// or value this version can't read keeps the form create() gave it.
+			if (!(provider instanceof ChoiceSpeciesFeatureProvider choice)
+				|| !(provider instanceof CustomPokemonPropertyType<?> type)) {
+				continue;
+			}
+			List<String> choices = CobblemonDaycareKeeper.choicesOf(provider).stream().sorted().toList();
+			if (choices.isEmpty()) {
+				continue;
+			}
+			String fixed;
+			try {
+				fixed = choice.getDefault();
+			} catch (RuntimeException | LinkageError e) {
+				continue;
+			}
+			if (fixed != null && choices.contains(fixed)) {
+				continue;
+			}
+			String value = choices.get(random.nextInt(choices.size()));
+			try {
+				if (type.fromString(value) instanceof StringSpeciesFeature feature) {
+					feature.apply(pokemon);
+				}
+			} catch (RuntimeException | LinkageError e) {
+				// A value this version can't parse: keep create()'s form
+			}
+		}
+		pokemon.updateAspects();
+		pokemon.updateForm();
 	}
 
 	// Competitive touches for the stronger trainers: better IVs from Journeyman (15+), Expert (25+) and Master

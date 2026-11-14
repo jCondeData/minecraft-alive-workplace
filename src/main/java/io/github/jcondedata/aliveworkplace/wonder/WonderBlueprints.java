@@ -34,6 +34,14 @@ public final class WonderBlueprints {
 		return ResourceLocation.fromNamespaceAndPath(wonder.getNamespace(), FOLDER + wonder.getPath());
 	}
 
+	/**
+	 * Whether {@code id} is in a Wonder's folder, in any namespace: a Wonder's whole blueprint or one of its stage parts
+	 * ({@code wonder/<id>/stage_1_0}), which are only ever raised from the Wonder's plan (B1022).
+	 */
+	public static boolean inFolder(ResourceLocation id) {
+		return id.getPath().startsWith(FOLDER);
+	}
+
 	/** The loaded Wonder whose whole blueprint {@code id} is, if it is one (a part, {@code wonder/<id>/stage_1_0}, isn't). */
 	public static Optional<Wonder> wonderOf(ResourceLocation id) {
 		if (!id.getPath().startsWith(FOLDER)) {

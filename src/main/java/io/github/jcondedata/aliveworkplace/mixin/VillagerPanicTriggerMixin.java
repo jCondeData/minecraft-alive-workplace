@@ -17,6 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 abstract class VillagerPanicTriggerMixin {
 	@Inject(method = "start(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/npc/Villager;J)V", at = @At("HEAD"), cancellable = true)
 	private void aliveworkplace$guardsDontPanic(ServerLevel level, Villager villager, long gameTime, CallbackInfo ci) {
+		// B455: vanilla starts this every tick for every villager and does nothing unless one is hurt or sees a monster,
+		// so only then is there a panic to stop (the militia's hall and edicts were looked up 20 times a second each)
+		if (!VillagerPanicTrigger.isHurt(villager) && !VillagerPanicTrigger.hasHostile(villager)) {
+			return;
+		}
 		if (Guards.isGuard(villager) || io.github.jcondedata.aliveworkplace.legend.Gifted.noPanic(villager)
 			|| io.github.jcondedata.aliveworkplace.hall.Conscription.militia(villager) != null) {
 			ci.cancel();

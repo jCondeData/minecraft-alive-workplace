@@ -618,8 +618,8 @@ public class QaPactsBoardStewardGameTests implements FabricGameTest {
 	 * Approve (on the proposal's page) and Approve all start nothing; the friend's Approve all, shown once there are two
 	 * proposals, starts the builds for the hall's owner; the stranger can't cancel them.
 	 */
-	//$ gametest_ticks_batch HUGE '40' '"qaDeskApproveAll"'
-	@GameTest(template = HUGE, timeoutTicks = 40, batch = "qaDeskApproveAll")
+	//$ gametest_ticks_batch HUGE '40' '"qaPactsDeskApproveAll"'
+	@GameTest(template = HUGE, timeoutTicks = 40, batch = "qaPactsDeskApproveAll")
 	public void approveAllWorksForAFriendAndNotForAStranger(GameTestHelper helper) {
 		Desk d = desk(helper);
 		d.entity().setProtected(true);

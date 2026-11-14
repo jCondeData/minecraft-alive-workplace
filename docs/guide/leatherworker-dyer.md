@@ -1,19 +1,19 @@
-# Leatherworker (the dyer)
+# Leatherworker
 
 ```infobox
 type: Job
-image: https://jcondedata.github.io/minecraft-alive-workplace/dyer/still-2.jpg
-caption: Dyeing wool for a builder
+image: https://jcondedata.github.io/minecraft-alive-workplace/leatherworker_goods/still-2.jpg
+caption: Making item frames and leads
 Workstation: Cauldron (vanilla: a jobless villager takes one by themselves)
 Pick it with: leather
-Works for: the builders nearby
-Needs: dyes or flowers, and what's to be dyed
-Makes: colored wool, carpet, stained glass, terracotta, concrete, candles, beds and dyes
+Works for: the builders nearby and the Storehouse's stock orders
+Needs: leather (or rabbit hide), sticks, string and slime balls
+Makes: item frames, glow item frames, leads, leather and leather armor
 categories: Jobs, Builder
-related: jobs-crafts.md, builder.md, florist.md, shepherd.md, carpenter.md
+related: jobs-crafts.md, builder.md, beekeeper.md, shepherd.md, storehouse.md
 ```
 
-The Leatherworker is the village's dyer: anything a builder needs in a color, they make.
+The Leatherworker makes the village's leather goods.
 
 ## Getting a leatherworker
 
@@ -22,16 +22,23 @@ another job, sneak-right-click them with **leather**. (Gravel or sand at a cauld
 
 ## What they do
 
-When a builder nearby is waiting for something colored (wool, carpet, stained glass, terracotta, concrete, candles,
-beds, or the dyes themselves), the dyer makes it from what the builder can get at, with the game's own recipes. They
-make dyes from flowers too, and harden **concrete powder into concrete** in the cauldron's water. Everything else a
-builder waits for they leave to the [Carpenter](carpenter.md).
+When a builder nearby is waiting for leather goods, or the Storehouse has a stock order for them, the Leatherworker makes
+them from what's at hand, with the game's own recipes, step by step:
 
-Over their head: how many things they've made, and what they're working on.
+- **Item frames** from leather and sticks, and **glow item frames** from an item frame and a glow ink sac.
+- **Leads** from string and a slime ball.
+- **Leather** from four rabbit hides, when there's no leather.
+- **Leather armor**: helmets, chestplates, leggings and boots, and leather horse armor.
+
+They dye nothing any more: wool, carpet, beds, banners and paintings are the [Shepherd](shepherd.md)'s (at the loom),
+flower pots and dyes the [Florist](florist.md)'s, candles the [Beekeeper](beekeeper.md)'s, stained glass, terracotta and
+concrete the [Mason](mason.md)'s, and wooden things the [Carpenter](carpenter.md)'s.
+
+Over their head: "Leatherworker · 3 made for builders" and what they're working on.
 
 ## How the leatherworker fits in
 
-- **Fed by:** the [Florist](florist.md)'s flowers for dyes, the [Shepherd](shepherd.md)'s wool.
-- **Feeds:** the [Builder](builder.md), straight into their chests.
+- **Fed by:** the makings in the builder's chests or the Storehouse.
+- **Feeds:** the [Builder](builder.md), straight into their chests, and the [Storehouse](storehouse.md).
 
 See also [Crafters and smiths](jobs-crafts.md).

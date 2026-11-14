@@ -87,6 +87,8 @@ range is in brackets.
 | `minerCraftsPickaxe` | on |  | A Miner whose pickaxe wore out, or who has none, makes a new one at their workstation from what they mined (stone, iron from Journeyman, diamond from Expert). Off: they wait for a pickaxe from you or the Toolsmith. |
 | `quarryBuild` | on |  | The Quarry build (36.12): the Miner at its blast furnace digs its pit without a Quarry Marker, and what they dig grows back slowly from the bottom up. Off: the Quarry isn't offered and nothing grows back; the Quarry Marker works as before. |
 | `villageWaystones` | on |  | With Waystones installed, the Steward proposes a waystone plaza by the Village Hall in the village's own style, its waystone named after the village and renamed with it (41.1). Off: the plaza isn't proposed; stones already standing stay. Without Waystones it does nothing. See [Waystones](waystones.md). |
+| `movers` | on |  | A jobless villager by a free Mover's Crate becomes the village's Mover, who takes down the buildings moved on the Village Hall's Move page and puts them up again at their new spot (45.3). Off: no new Movers, those hired stand idle, and moves wait. |
+| `moveBuildings` | on |  | Players may move the village's own buildings on the Village Hall's Move page (45.6): never the Hall, a Wonder, a building the builders are still working on or one in another player's protected village, each refused with its reason. Off: the page refuses every building; a move already confirmed still goes ahead. |
 | `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |
 | `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
 | `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
@@ -262,7 +264,8 @@ Game rules (per world, `/gamerule`):
 
 None. The texts of the settings screen are in the lang file as `aliveworkplace.config.supplyRadius` and
 `aliveworkplace.config.supplyRadius.tooltip` (one pair per option); the game rules' as
-`gamerule.workplaceBuildDelay`.
+`gamerule.workplaceBuildDelay` (one line per rule, so the Edit Game Rules screen never shows a raw key; B1227 added the
+missing `gamerule.workplaceVillageFarms`).
 
 ## Decisions
 
@@ -298,6 +301,8 @@ expansions' builds wait the same way; the Table refuses a closed expansion's bui
 `CaravanRoadGameTests.withCaravanRoadsOffNoRoadIsPlanned`, `GiftedGameTests.giftedChanceZeroMeansNobody`,
 `QaVillageSpawns1103dGameTests` (3, QA, B211, `forceVillageSpawns`: forced golems, pups and relief horses are in the
 world and ticking, the riders stay mounted and a pup of two tame wolves keeps their owner; only what the world refuses
-is forced and logged; with the switch off a band's riders all come on foot and the log says so).
+is forced and logged; with the switch off a band's riders all come on foot and the log says so),
+QA's `QaBuilderSwitches1114bBugTests` (B1227: every game rule in the table above has its words on the Edit Game Rules
+screen).
 
 Showcase scenes: `config` (the settings screen).

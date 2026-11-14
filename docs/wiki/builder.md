@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187
 
 ## 1. What a player sees
 
@@ -131,6 +131,8 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   as in CLEAR (B868), so the build always ends; what is still there after that is counted in skipped once and left for
   the repair round. Sand a player puts in a room mid-build is dug out with it (never lost); on a finished hut it stays.
 - FOUNDATION fills under a build standing on uneven ground. How deep is the `workplaceFoundationDepth` rule.
+- `workplaceFoundationDepth` and `workplaceLevelGround` changed with /gamerule take effect at once on a build under way
+  (B1113): the foundation and the leveling still to come follow the new value, as after a restart (`QaBuilderRules1109BugTests`; QA's `QaBuilderFixesVerify1110GameTests`: the depth lowered to 0 while clearing or halfway through the foundation fills no more of the dip, the leveling switched on mid-STRUCTURE fills every pit, and a change made live holds through a restart).
 - STRUCTURE goes bottom-up so every block has something to stand on. A block a player puts mid-build where the
   drawing has another is taken out into the builder's chests and the drawn block laid (a Steward's build keeps the
   player's block instead; tests `QaBuilderDisruptionGameTests`, `StewardSafetyGameTests`).
@@ -169,7 +171,12 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
 material: grass, podzol, mycelium, farmland and a dirt path cost dirt; infested stone, cobblestone, deepslate and stone
 bricks (mossy, cracked and chiseled too) cost the same block uninfested, suspicious sand and gravel cost sand and gravel, and a petrified oak slab costs an oak
 slab, each still built as drawn; B874, `QaScanItemless1103BugTests`; `QaBuilderBugs1109bGameTests`: a paid build of all of them
-uses up just those base materials). A fixed set of blocks is never placed (bedrock, command blocks, spawners, portals, barrier, fire...).
+uses up just those base materials). Plants with no item a survival player can hold cost what grows them (B872,
+`QaScanItemless1103BugTests`): a bamboo shoot costs one bamboo and is planted as a shoot (one that has grown into bamboo since
+counts as built), and each piece of a chorus plant's stalk costs a chorus flower and is put down as drawn, from the end stone
+up, so a stalk two tall under its flower asks three chorus flowers. A fixed set of blocks is never placed (bedrock, command
+blocks, spawners, portals, barrier, fire, and frogspawn, which only frogs lay: a scanned pond is built without it; B1117,
+`QaScanFrogspawn1109eBugTests`).
 A Builder takes what it needs from the chests and barrels within `supplyRadius` of the bench (and 4 blocks up or
 down), carries up to 27 stacks in its bag (`BuilderBag`), never more of a thing than the stretch of work ahead still
 needs (B132: one block's worth too many on every trip left two Builders sharing a Storehouse each waiting for what the
@@ -202,6 +209,8 @@ that village's store, so the village's own Builder on a village build (or none) 
 village's 48 blocks from his table (the distance it gives is rounded up, so one just past the reach reads past it:
 48.3 blocks says 49, B355), someone else's, or no chest round it he can read.
 
+**What shared chests keep back (B31, 23.5, B1187).** Chests that serve more than one build keep back what the other builds still need (`Builders.reservedAt`, `Builders.reservedIn`, and a Storehouse's `Builders.reservedForOthers`), less what each of those builds' crews already carries for it: the builder's bag and his helpers' bags alike, as `Builders.computeMissing` and the crafters' `Builders.needFromChests` count them. Before B1187 only the builders' own bags were taken off, so logs a helper carried for one build were held back in its chest as well and another builder waited beside the spare (QA's `QaSharedStock1111bBugTests`). A helper counts only while he is on the crew: once he leaves it for another job, dies, or hasn't worked on the build for 10 seconds, his bag no longer lowers what is kept back. What the crew carries beyond the need, or of other materials, keeps nothing back and never makes a hold negative. QA's `QaSharedStockVerify1111dGameTests` (12, B1187: a helper carrying all of the need, one fewer and one more; two helpers splitting it; a helper carrying only other materials; the builder's and the helper's bags together beyond the need; the helper leaving the crew, killed, or idle past 10 seconds; the helper saved and loaded; and in play, the other builder taking every log the helper makes spare, taking only the 2 spare and waiting for 1 when the helper is one short, and after the helper is reloaded mid-job).
+
 **Speed.** Exactly `workplaceBuildDelay` ticks per block (default 8; B515: it was one tick more) times a share by Builder level,
 Novice to Master: 100%, 85%, 70%, 55%, 40%, rounded to whole ticks (at 30, a Novice places a block every 30 ticks and a
 Master every 12), and never faster than a block a tick. Then the village's mood, traits, edicts and so on change it
@@ -217,7 +226,18 @@ begins a whole wait at the rule (B845: under a huge rule he used to place one bl
 
 **Queue and crew.** A Builder takes up to 5 more blueprints on top of its current one (`MAX_QUEUE`). Up to 3 idle
 Builders (`MAX_HELPERS`; Guilds can change this) help one site, each claiming steps ahead of the lead. A helper that dies drops only its bag; the steps it claimed go back to the crew and the lead finishes the build (B516). The owner
-asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29% of the time alone (ROADMAP 23.1a).
+asked that time shrink with each Builder: tested at 2 builders = 50%, 4 = 29-35% of the time alone (ROADMAP 23.1a). A
+helper keeps the step it claimed even after the lead has caught up with it, helpers pick only steps that still need work
+(looking up to twice as far ahead), and a lead short of something a helper close by carries takes it from the helper
+instead of walking to the chests (B181; QA's `QaCrewBusy1110bGameTests`, 6: a material only the helper carries used
+exactly once, the helper never without a claim for long while open steps remain, the roof slabs passed over, a helper
+killed holding a claim, a player breaking and blocking the helper's claims, and a restart mid-STRUCTURE, each finishing
+from exactly the list). With helpers on the build, a lead whose next block is out of reach first does a block
+within reach (so it walks less), but only one it can do from where it stands with what it carries: a block it has
+nothing in its bag for is left to a helper, or to its own turn in the list (B1171: it used to walk off to the chests for
+that block, turn back to its next block once the first was out of reach, and go to and fro for good, when its bag held
+only part of the stretch, as when the Carpenter and the Mason bring the parts a few at a time;
+`LeadToAndFroB1171GameTests`, QA's `QaCrafterLoop1111cBugTests`).
 
 **Who may order.** With `workplaceBuilderOwnership` on, a Builder takes orders only from the player who hired it,
 their friends (`/workplace friend add|remove|list`) and operators. That includes orders from the Village Hall: the
@@ -248,7 +268,7 @@ else is told it isn't theirs. Not asked: what threats took (32.16a: a gate a ram
 repaired without asking as before, and a damaged Wonder's parts (35.8). `repairAsk` off: Builders repair by
 themselves, as before 36.15. After a build, it can lay a dirt path to the village bell or hall (at most 96 blocks long). The path skips every 16x16x16 section where a player placed or broke blocks (the Steward's ledger, see
 [Steward](steward.md)), even one built in after the path was planned, and paves the rest of the way. Ground a little lower than a full block (an old dirt path, a vanilla village's own paths round its bell, farmland, mud, soul sand) is walked over and left as it is, and a Steward's road crosses an old dirt path or mud the same way (B981; a road still never takes a field's farmland or soul sand, which aren't natural ground to it); furniture such as a lectern or a chest is never stood on, and neither is a big dripleaf, which tips over (B1030), or a magma block, which burns (B1105; workers never stand on one either, and a path goes round it or not at all), nor a lit
-campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`).
+campfire, a cactus, a pointed dripstone or a lava cauldron (`QaBuilderBugs1109bGameTests`); nor does it lead into a fire, as on a ruined portal's netherrack, where no worker stands (B1119, `QaBuilderBugs1109bBugTests`), nor into a soul fire on soul sand or soul soil, a cobweb, a berry bush, a wither rose or powder snow: a route goes round a soul fire on its causeway and a Steward's road through the one gap in a band of fire (`QaBuilderFixesVerify1110GameTests`).
 
 **Safe at height.** A Builder with a build (lead or helper) takes no fall damage: he stands on the build's own
 upper rows (a palisade's stake tops, a tower's platform before its parapet) and can step, jump or be shoved off them.
@@ -376,7 +396,8 @@ sites are remembered). Each site (`BuildSite.save`) holds:
 - `steward`, `hall` (a Steward's build from a Village Hall; absent for a player's own), `waiting_since` (absent:
   not waiting) and `player_blocks` (0): used by Stewards (27.19).
 - `rechecks` (0): how often the build went back for blocks broken mid-build; `left_out` (empty): the structure and
-  decoration blocks given up for good, which that look leaves be (B508; older saves have neither).
+  decoration blocks given up for good, which that look leaves be (B508; older saves have neither), but for a door or
+  bed whose other half's spot is free again (B47).
 - `clear_passes` (0): CLEAR's passes for what fell in, dig-outs included (B837); `dig_out` (absent: false): the build is
   back in CLEAR only to dig out sand fallen into its rooms (B869).
 
@@ -434,7 +455,12 @@ claims and trip counts.
   it mid-build; the same test the repair round uses, crops aside), the Builder goes back to the first such block and
   over the lists again, passing what still stands, and lays what's missing. It goes back at most twice a build; a
   block broken again after that is counted in skipped and left for the repair round. Blocks already given up
-  (deferred, then skipped) are not gone back for (B508, `aPlankBrokenMidBuildIsBackWhenTheBuildEnds`).
+  (deferred, then skipped) are not gone back for (B508, `aPlankBrokenMidBuildIsBackWhenTheBuildEnds`), but for one
+  kind: a door, bed or other two-block block given up because something stood in its other half's spot (a player's
+  block in a door's upper cell each time the Builder came to it). If that spot is free at the last look and the block
+  can stand, it is taken out of `left_out` and of skipped, and the Builder goes back and sets it, so a house is not
+  called done without its door; a block that stays in the way keeps it out, counted in skipped once (B47,
+  `B47GameTests`).
 - An upgrade is a whole new blueprint on the same spot. Where its new room's roof runs in under the old roof's edge,
   the wall is carried up to that edge, so the roofs meet with no open blocks between them; `tools/blueprints/holes.py`
   checks every blueprint for roof holes, gaps between roofs and stray empty blocks (owner's report, 2026-10-14).
@@ -780,3 +806,8 @@ every starter build), `preview` (ghost preview and status), `placing` (turn, mir
 missing-materials tooltip and list), `table`, `table_preview` (the library's 3D preview), `table_basement` (Starter Cottage IV and the Storehouse with their cellars), `shapes`, `scan`, `style_menu`, `crew` (four builders on one build),
 `pace` (speed cap), `partners_engine`, `builder_list` (B279: the list of a build under way, as a book and in chat),
 `builder_table_move` (B290: the Storehouse counted at a workshop table, and a sneak-click moving the builder).
+QA's `QaBuilderFixes1111bGameTests` (B872 and B1117; 6 of its tests): a paid bamboo shoot asks exactly one bamboo, uses
+it and is planted; a grown bamboo stalk three tall asks three bamboo and a lone chorus flower one chorus flower (they have
+items); a paid chorus stalk two tall under its flower asks three chorus flowers, no chorus plant, and stands again; a pond
+with frogspawn beside a lily pad and a spawner asks the lily pad and two water buckets, never frogspawn or a spawner, and
+is built without them; a paid frogspawn pond finishes.

@@ -11,7 +11,7 @@ import net.minecraft.world.entity.npc.Villager;
 /** The Carpenter's WORK activity (make what the builders nearby are waiting for), the Chef's (cook) and the Furnicrafter's. */
 public final class CarpenterPackages {
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> work(float speed) {
-		return work(new CrafterWork(Crafting.Kind.CRAFTING, true));
+		return work(new CrafterWork(Crafting.Kind.CRAFTING, true).forJob(CraftJobs.Job.CARPENTER)); // 46.1: only wood
 	}
 
 	/** The Chef's: cook the menu all shift. */
@@ -22,6 +22,11 @@ public final class CarpenterPackages {
 	/** The Tinkerer's: redstone and iron parts for the builders, iron golems patched up in between. */
 	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> tinkerer(float speed) {
 		return work(new TinkererWork());
+	}
+
+	/** The Glassblower's (46.6): glass fired from sand at the Glass Kiln, and the panes, stained glass and bottles made of it. */
+	public static ImmutableList<Pair<Integer, ? extends BehaviorControl<? super Villager>>> glassblower(float speed) {
+		return work(new GlassblowerWork());
 	}
 
 	/** The Furnicrafter's (38.12): furniture for the builders and the store, at CobbleFurnies' Furnicrafter. */

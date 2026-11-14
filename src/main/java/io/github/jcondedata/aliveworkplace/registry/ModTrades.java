@@ -26,6 +26,7 @@ public final class ModTrades {
 		scholarTrades();
 		sifterTrades();
 		tinkererTrades();
+		glassblowerTrades();
 		netherworkerTrades();
 		composterTrades();
 		ballSmithTrades();
@@ -417,6 +418,26 @@ public final class ModTrades {
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 5), new ItemStack(Items.HOPPER), 8, 20, 0.05f)));
 		Platform.get().addTrades(ModVillagers.TINKERER, 5, offers ->
 			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 8), new ItemStack(Items.CRAFTER), 4, 30, 0.05f)));
+	}
+
+	/** Glassblowers (46.6) buy sand and coal for the kiln and sell the glass they make. */
+	private static void glassblowerTrades() {
+		Platform.get().addTrades(ModVillagers.GLASSBLOWER, 1, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.SAND, 24), new ItemStack(Items.EMERALD), 16, 2, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.GLASS, 6), 12, 1, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GLASSBLOWER, 2, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.COAL, 12), new ItemStack(Items.EMERALD), 16, 10, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.GLASS_PANE, 16), 12, 5, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GLASSBLOWER, 3, offers -> {
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 1), new ItemStack(Items.GLASS_BOTTLE, 6), 12, 15, 0.05f));
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 2), new ItemStack(Items.LIGHT_BLUE_STAINED_GLASS, 8), 12, 15, 0.05f));
+		});
+		Platform.get().addTrades(ModVillagers.GLASSBLOWER, 4, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 4), new ItemStack(Items.TINTED_GLASS, 2), 8, 20, 0.05f)));
+		Platform.get().addTrades(ModVillagers.GLASSBLOWER, 5, offers ->
+			offers.add((entity, random) -> new MerchantOffer(new ItemCost(Items.EMERALD, 6), new ItemStack(Items.SPYGLASS), 4, 30, 0.05f)));
 	}
 
 	/** Netherworkers buy food for the road and sell what they bring back from the Nether. */

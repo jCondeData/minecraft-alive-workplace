@@ -530,7 +530,7 @@ public final class Sieges {
 
 	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
 	public static boolean ramparts(ServerLevel level, BlockPos hall) {
-		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
+		return level.isPositionEntityTicking(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
 			&& entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.RAMPARTS) >= 1;
 	}
 
@@ -629,7 +629,11 @@ public final class Sieges {
 	private static void tick(ServerLevel level) {
 		ThreatData data = ThreatData.get(level);
 		for (ThreatData.Siege siege : data.sieges()) {
-			step(level, data, siege);
+			// B1225: a siege whose village nobody is near (its hall's chunk isn't entity-ticking) is left as it is and loads
+			// nothing; it goes on (or ends and is lifted, if its dawn has passed) once someone is back
+			if (level.isPositionEntityTicking(siege.hall)) {
+				step(level, data, siege);
+			}
 		}
 	}
 
@@ -728,6 +732,14 @@ public final class Sieges {
 					director.through.add(mob.getUUID());
 				}
 				if (director.through.contains(mob.getUUID())) {
+					continue;
+				}
+				// One that got over the wall by a ladder or a sand ramp is past the wall as one through the breach is, and is
+				// left to its fight the same way: ordered, it was walked to the inside of the shut gate and stood there instead
+				// of going after the villagers (B1116). The ladder's set is the siege's saved one, so this holds after a restart.
+				// (Back outside the gate line, as one through is, it is the director's again.)
+				if ((siege.overByLadder.contains(mob.getUUID()) || SandRamps.over(level, siege.hall, mob.getUUID()))
+					&& d.x * siege.out.getStepX() + d.z * siege.out.getStepZ() <= 1) {
 					continue;
 				}
 				order(mob, Order.FOLLOW, ordered);

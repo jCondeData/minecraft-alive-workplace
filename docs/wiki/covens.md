@@ -36,7 +36,8 @@ Roadmap items: 32.11
   within 10 blocks of a villager and throw from there. They leave at dawn.
 - **Breaking the coven.** **Kill the Coven Mother**, or **break her cauldron** (the one on the bank). Either way the
   hut stands empty, her band is gone, chat and the chronicle say so, and **every hexed villager is cured at once**
-  (the happy puff of a cure). A hexed villager who was out of loaded ground is cured on the hall's next round.
+  (the happy puff of a cure). A hexed villager who was out of loaded ground is cured on the hall's next round. A coven
+  cleared by an operator (`/workplace threat clear`) lifts its hexes the same way.
 - **The loot** (`aliveworkplace:chests/coven_hut`): two to four potions (healing, regeneration, fire resistance,
   swiftness, slowness, night vision), glowstone dust, redstone, amethyst shards, glass bottles, spider eyes, nether
   wart, sugar, and now and then (one in five) an **enchanted book**.

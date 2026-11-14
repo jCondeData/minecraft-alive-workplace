@@ -44,7 +44,9 @@ import net.minecraft.world.level.saveddata.SavedData;
  * {@code ramped} (the players were told; all default to none and false). Since 32.6 also the morning report's numbers: {@code hp_factor} (what the gates' hit
  * points were multiplied by; default 1), {@code came}, {@code fled}, {@code to_guards}, {@code to_players},
  * {@code to_others} (default 0 and false), {@code kills} (per guard: {@code guard}, {@code count}, {@code name};
- * default none) and {@code players} (who killed a raider; default none).</li>
+ * default none) and {@code players} (who killed a raider; default none). Since B1126 also {@code over_by_ladder} (the
+ * raiders who climbed over a wall by a ladder, each {@code id}, so a restart doesn't send them back to it; default none). Since
+ * B1130 also {@code over_by_ramp} (the same for the raiders who got over a wall by a sand ramp; default none).</li>
  * <li>{@code broken} (32.4): per {@code hall}, the gate blocks rams broke that wait for a builder.</li>
  * <li>{@code damaged} (32.16a): every builder's block a threat took (a gate a ram broke, a block a village fire
  * burned) that no builder has put back yet, as packed positions; builders repair these even with {@code builderRepairs}
@@ -158,6 +160,16 @@ public final class ThreatData extends SavedData {
 		public final Map<java.util.UUID, String> names = new LinkedHashMap<>();
 		/** The players who fought: who killed a raider of this siege. */
 		public final Set<java.util.UUID> players = new java.util.LinkedHashSet<>();
+		/**
+		 * The raiders who climbed over a wall by a ladder (32.5; Ladders lets them go). Saved, so a restart doesn't hand them
+		 * the ladder again from inside the walls (B1126).
+		 */
+		public final Set<java.util.UUID> overByLadder = java.util.concurrent.ConcurrentHashMap.newKeySet();
+		/**
+		 * The raiders who got over a wall by a sand ramp (32.9; SandRamps lets them go). Saved, so a restart doesn't hand
+		 * them to the siege director or the ramp again from inside the walls (B1130).
+		 */
+		public final Set<java.util.UUID> overByRamp = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
 		public Siege(BlockPos hall, long began, long dawn) {
 			this.hall = hall.immutable();
@@ -177,6 +189,10 @@ public final class ThreatData extends SavedData {
 		long warned = -1;
 		/** The portcullis bars dropped ahead of a warned attack (32.14), to draw up again or hand to the siege. */
 		final List<BlockPos> braced = new ArrayList<>();
+		/** The village's gates were shut with no guard to open them (a warned day or a siege; B1158), to open again after. */
+		boolean gatesShut;
+		/** A guard's round shut the village's gates for the night (B1180), to open at dawn if no guard is left to. */
+		boolean nightShut;
 	}
 
 	/** The data of every dimension loaded since the server started (for the few callers that know a hall but no level). */
@@ -324,6 +340,39 @@ public final class ThreatData extends SavedData {
 		}
 	}
 
+	/**
+	 * Calls off every attack on the clock of the village round {@code hall} (32.21: a quiet village, or the threats
+	 * cleared), and the warning of one with them (B1146): nothing braces on the day for an attack that won't come.
+	 */
+	public void callOff(BlockPos hall) {
+		drop(hall, Long.MAX_VALUE, false);
+		Clock clock = clocks.get(hall);
+		if (clock != null && clock.warned >= 0) {
+			clock.warned = -1;
+			setDirty();
+		}
+	}
+
+	/**
+	 * Calls off the attacks of {@code culture} on the clock of the village round {@code hall} (B1155: its lair is broken
+	 * up, so its band can't come), and the warning if it was of one of them and no other culture's attack comes that
+	 * day: other cultures' attacks and warnings stay.
+	 */
+	public void callOff(BlockPos hall, ResourceLocation culture) {
+		Clock clock = clocks.get(hall);
+		if (clock == null) {
+			return;
+		}
+		long day = clock.warned;
+		boolean itsWarning = day >= 0 && clock.attacks.stream().anyMatch(a -> a.day() == day && a.culture().equals(culture));
+		if (clock.attacks.removeIf(a -> a.culture().equals(culture))) {
+			if (itsWarning && clock.attacks.stream().noneMatch(a -> a.day() == day)) {
+				clock.warned = -1;
+			}
+			setDirty();
+		}
+	}
+
 	/** The day of the attack the village round {@code hall} was warned of (32.14), or -1. */
 	public long warned(BlockPos hall) {
 		Clock clock = clocks.get(hall);
@@ -353,6 +402,36 @@ public final class ThreatData extends SavedData {
 		clock.braced.clear();
 		bars.forEach(b -> clock.braced.add(b.immutable()));
 		setDirty();
+	}
+
+	/** Whether the village round {@code hall} had its gates shut with no guard to open them (B1158). */
+	public boolean gatesShut(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock != null && clock.gatesShut;
+	}
+
+	/** Marks (or clears) the gates of the village round {@code hall} as shut with no guard to open them (B1158). */
+	public void gatesShut(BlockPos hall, boolean shut) {
+		Clock clock = shut ? clocks.computeIfAbsent(hall.immutable(), h -> new Clock()) : clocks.get(hall);
+		if (clock != null && clock.gatesShut != shut) {
+			clock.gatesShut = shut;
+			setDirty();
+		}
+	}
+
+	/** Whether a guard's round shut the gates of the village round {@code hall} for the night (B1180). */
+	public boolean nightShut(BlockPos hall) {
+		Clock clock = clocks.get(hall);
+		return clock != null && clock.nightShut;
+	}
+
+	/** Marks (or clears) the gates of the village round {@code hall} as shut for the night by a guard's round (B1180). */
+	public void nightShut(BlockPos hall, boolean shut) {
+		Clock clock = shut ? clocks.computeIfAbsent(hall.immutable(), h -> new Clock()) : clocks.get(hall);
+		if (clock != null && clock.nightShut != shut) {
+			clock.nightShut = shut;
+			setDirty();
+		}
 	}
 
 	/** Forgets the hall's clock (the hall is gone; tests). */
@@ -555,6 +634,8 @@ public final class ThreatData extends SavedData {
 			c.put("attacks", attacks);
 			c.putLong("warned", e.getValue().warned);
 			c.putLongArray("braced", e.getValue().braced.stream().mapToLong(BlockPos::asLong).toArray());
+			c.putBoolean("gatesShut", e.getValue().gatesShut);
+			c.putBoolean("nightShut", e.getValue().nightShut);
 			halls.add(c);
 		}
 		tag.put("clock", halls);
@@ -629,6 +710,20 @@ public final class ThreatData extends SavedData {
 				fought.add(k);
 			}
 			g.put("players", fought);
+			ListTag climbed = new ListTag();
+			for (java.util.UUID id : siege.overByLadder) {
+				CompoundTag k = new CompoundTag();
+				k.putString("id", id.toString());
+				climbed.add(k);
+			}
+			g.put("over_by_ladder", climbed);
+			ListTag ramped = new ListTag();
+			for (java.util.UUID id : siege.overByRamp) {
+				CompoundTag k = new CompoundTag();
+				k.putString("id", id.toString());
+				ramped.add(k);
+			}
+			g.put("over_by_ramp", ramped);
 			laid.add(g);
 		}
 		tag.put("sieges", laid);
@@ -781,6 +876,22 @@ public final class ThreatData extends SavedData {
 					// (not an id: the entry is skipped)
 				}
 			}
+			ListTag climbed = Nbt.getList(g, "over_by_ladder", Tag.TAG_COMPOUND);
+			for (int j = 0; j < climbed.size(); j++) {
+				try {
+					siege.overByLadder.add(java.util.UUID.fromString(Nbt.getString(Nbt.compoundAt(climbed, j), "id")));
+				} catch (IllegalArgumentException e) {
+					// (not an id: the entry is skipped)
+				}
+			}
+			ListTag ramped = Nbt.getList(g, "over_by_ramp", Tag.TAG_COMPOUND);
+			for (int j = 0; j < ramped.size(); j++) {
+				try {
+					siege.overByRamp.add(java.util.UUID.fromString(Nbt.getString(Nbt.compoundAt(ramped, j), "id")));
+				} catch (IllegalArgumentException e) {
+					// (not an id: the entry is skipped)
+				}
+			}
 			sieges.put(siege.hall, siege);
 		}
 		ListTag holes = Nbt.getList(tag, "broken", Tag.TAG_COMPOUND);
@@ -836,6 +947,8 @@ public final class ThreatData extends SavedData {
 			for (long bar : Nbt.getLongArray(c, "braced")) {
 				clock.braced.add(BlockPos.of(bar));
 			}
+			clock.gatesShut = Nbt.getBoolean(c, "gatesShut"); // false in a save from before B1158
+			clock.nightShut = Nbt.getBoolean(c, "nightShut"); // false in a save from before B1180
 			clocks.put(BlockPos.of(Nbt.getLong(c, "hall")), clock);
 		}
 	}

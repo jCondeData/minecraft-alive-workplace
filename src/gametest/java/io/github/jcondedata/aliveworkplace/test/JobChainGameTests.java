@@ -198,7 +198,7 @@ public class JobChainGameTests {
 
 	/**
 	 * What no job here makes stays unmade and is named: a builder short of oak stairs with only a Mason in the village
-	 * (who cuts stone, not boards) is told "Nobody here makes: Oak Stairs" once the jobs have had their look.
+	 * (who cuts stone, not boards) is told "Hire a Carpenter to make Oak Stairs" (46.1) once the jobs have had their look.
 	 */
 	//$ gametest_ticks_batch AREA '1400' '"jobChainNobody"'
 	@GameTest(template = AREA, timeoutTicks = 1400, batch = "jobChainNobody")
@@ -214,7 +214,7 @@ public class JobChainGameTests {
 		});
 		helper.runAfterDelay(1000, () -> {
 			Component line = JobShortages.line(helper.getLevel(), a.site().id(), a.site().missing());
-			helper.assertTrue(line != null && line.getString().equals("Nobody here makes: Oak Stairs"), "the builder's line: " + (line == null ? null : line.getString()));
+			helper.assertTrue(line != null && line.getString().equals("Hire a Carpenter to make Oak Stairs"), "the builder's line: " + (line == null ? null : line.getString()));
 			helper.assertTrue(((Container) helper.getBlockEntity(a.chest())).countItem(Items.OAK_LOG) == 4, "something took the logs");
 			helper.succeed();
 		});
@@ -256,9 +256,10 @@ public class JobChainGameTests {
 	}
 
 	/**
-	 * A dyer's concrete mixed from sand, gravel and dye is made step by step like any chain (the powder mixed, then
-	 * hardened at the cauldron): saved and loaded just as it starts, it carries on, the build gets its three white
-	 * concrete and the five spare powder (a mix makes eight) come back to the chest instead of being lost in the reload.
+	 * Concrete mixed from sand, gravel and dye is made step by step like any chain (the powder mixed, then set): saved
+	 * and loaded just as it starts, it carries on, the build gets its three white concrete and the five spare powder (a
+	 * mix makes eight) come back to the chest instead of being lost in the reload. Since 46.1 concrete is the Mason's (at
+	 * his stonecutter), no longer the dyer's at the cauldron: the same chain, the job the spec gives it.
 	 */
 	//$ gametest_ticks_batch AREA '3600' '"jobChainDyer"'
 	@GameTest(template = AREA, timeoutTicks = 3600, batch = "jobChainDyer")
@@ -266,9 +267,9 @@ public class JobChainGameTests {
 		prepare(helper);
 		Asker a = asker(helper, BENCH, CHEST, new BlockPos(6, 2, 9), Blocks.WHITE_CONCRETE, new ItemStack(Items.SAND, 4), new ItemStack(Items.GRAVEL, 4),
 			new ItemStack(Items.WHITE_DYE, 1));
-		helper.setBlock(STATION, Blocks.CAULDRON);
+		helper.setBlock(STATION, Blocks.STONECUTTER);
 		Villager first = helper.spawn(EntityType.VILLAGER, STATION.south());
-		Jobs.employ(helper.getLevel(), first, helper.absolutePos(STATION), PoiTypes.LEATHERWORKER, VillagerProfession.LEATHERWORKER);
+		Jobs.employ(helper.getLevel(), first, helper.absolutePos(STATION), PoiTypes.MASON, VillagerProfession.MASON);
 		AtomicReference<Villager> dyer = new AtomicReference<>(first);
 		AtomicReference<CrafterJob> saved = new AtomicReference<>();
 		java.util.concurrent.atomic.AtomicInteger steps = new java.util.concurrent.atomic.AtomicInteger();

@@ -87,6 +87,15 @@ public final class JobShortages {
 		}
 	}
 
+	/** B1148: whether a job said lately it can make {@code item} for {@code site}, or is making it (not short, not full). */
+	public static boolean coveredFor(UUID site, Item item, long now) {
+		synchronized (NOTES) {
+			Map<Item, Note> notes = NOTES.get(site);
+			Note note = notes == null ? null : notes.get(item);
+			return note != null && note.lack() == null && !note.full() && now - note.at() <= FRESH_TICKS;
+		}
+	}
+
 	/** Forgets everything about {@code site} (the build is over). */
 	public static void forget(UUID site) {
 		synchronized (NOTES) {
@@ -122,6 +131,16 @@ public final class JobShortages {
 	 */
 	@Nullable
 	public static Component line(ServerLevel level, UUID site, Map<Item, Integer> missing) {
+		return line(level, site, missing, null);
+	}
+
+	/**
+	 * As {@link #line(ServerLevel, UUID, Map)}, for a builder at {@code near}: a crafted part whose job (46.1,
+	 * {@link CraftJobs#maker}) has no worker within {@link io.github.jcondedata.aliveworkplace.work.Village#RADIUS} of it
+	 * reads "Hire a Cleric to make Brewing Stands" instead of "Nobody here makes" (with no {@code near}, always).
+	 */
+	@Nullable
+	public static Component line(ServerLevel level, UUID site, Map<Item, Integer> missing, @Nullable net.minecraft.core.BlockPos near) {
 		long now = level.getGameTime();
 		long waitingSince;
 		synchronized (NOTES) {
@@ -172,24 +191,55 @@ public final class JobShortages {
 			return fullLine;
 		}
 		if (!nobody.isEmpty()) {
-			MutableComponent list = Component.empty();
-			for (int i = 0; i < Math.min(SHOWN, nobody.size()); i++) {
-				if (i > 0) {
-					list.append(", ");
+			// 46.1: what a job of the table makes, and none of that job works here: the job to hire, grouped by job; the
+			// first SHOWN things in all, the rest counted at the end
+			Map<CraftJobs.Job, List<Item>> hire = new LinkedHashMap<>();
+			List<Item> none = new ArrayList<>();
+			for (Item item : nobody.subList(0, Math.min(SHOWN, nobody.size()))) {
+				CraftJobs.Job job = CraftJobs.maker(level, item);
+				if (job != null && job.profession() != null && (near == null
+						|| CraftJobs.workersNear(level, near, io.github.jcondedata.aliveworkplace.work.Village.RADIUS, job.profession()).isEmpty())) {
+					hire.computeIfAbsent(job, k -> new ArrayList<>()).add(item);
+				} else {
+					none.add(item);
 				}
-				list.append(nobody.get(i).getDescription());
 			}
-			if (nobody.size() > SHOWN) {
-				list.append(Component.translatable("message.aliveworkplace.status.and_more", nobody.size() - SHOWN));
+			MutableComponent out = null;
+			for (Map.Entry<CraftJobs.Job, List<Item>> e : hire.entrySet()) {
+				MutableComponent one = Component.translatable("message.aliveworkplace.job_chain.hire",
+					io.github.jcondedata.aliveworkplace.work.Stations.name(e.getKey().profession()), names(e.getValue(), true));
+				out = out == null ? one : out.append("; ").append(one);
 			}
-			return Component.translatable("message.aliveworkplace.job_chain.nobody_makes", list);
+			if (!none.isEmpty()) {
+				MutableComponent nob = Component.translatable("message.aliveworkplace.job_chain.nobody_makes", names(none, false));
+				out = out == null ? nob : out.append(". ").append(nob);
+			}
+			if (nobody.size() > SHOWN && out != null) {
+				out.append(Component.translatable("message.aliveworkplace.status.and_more", nobody.size() - SHOWN));
+			}
+			return out;
 		}
 		return null;
 	}
 
-	/** Whether {@code item} is a crafted part (some crafting-table, stonecutter or furnace recipe makes it). */
+	/** "Barrels, Oak Stairs": {@code items}, plural or as named. */
+	private static MutableComponent names(List<Item> items, boolean plural) {
+		MutableComponent list = Component.empty();
+		for (int i = 0; i < items.size(); i++) {
+			if (i > 0) {
+				list.append(", ");
+			}
+			list.append(plural ? io.github.jcondedata.aliveworkplace.work.Words.itemName(items.get(i), 2) : items.get(i).getDescription());
+		}
+		return list;
+	}
+
+	/**
+	 * Whether {@code item} is a crafted part: on a job's list ({@code aliveworkplace:crafts/<job>}; B1134: concrete is the
+	 * Mason's though no recipe makes it, he sets it in water), or some crafting-table, stonecutter or furnace recipe makes it.
+	 */
 	static boolean crafted(ServerLevel level, Item item) {
-		return !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty() || !Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
+		return CraftJobs.tagged(item) != null || !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty() || !Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
 			|| !Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty() || FurnitureRecipes.makes(level.getServer(), item);
 	}
 

@@ -407,9 +407,15 @@ public final class TableServer {
 		}
 	}
 
+	/**
+	 * Whether {@code player} stands within reach of a Blueprint Table at {@code table} (a client-given position). Reach is
+	 * checked first and then whether the land there is loaded, so a request naming a far Table never makes the server load
+	 * or generate the chunk there (B1037).
+	 */
 	static boolean atTable(ServerPlayer player, BlockPos table) {
-		return player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE)
-			&& player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE;
+		return player.position().distanceToSqr(Vec3.atCenterOf(table)) <= MAX_DISTANCE * MAX_DISTANCE
+			&& player.level().isLoaded(table)
+			&& player.level().getBlockState(table).is(ModBlocks.BLUEPRINT_TABLE);
 	}
 
 	/**
@@ -431,8 +437,11 @@ public final class TableServer {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.sold_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}
-		if (!BlueprintUnlocks.ENABLED && io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isPresent()) {
-			// B1002: Wonders are never handed out, whatever the switch (with it on, the state below says VIEW_ONLY).
+		if (io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.inFolder(id)
+			&& (!BlueprintUnlocks.ENABLED || io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.wonderOf(id).isEmpty())) {
+			// B1002, B1022: Wonders are never handed out, whatever the switch, nor any stage of one (wonder/<id>/stage_1_0),
+			// which BlueprintUnlocks doesn't manage. With the switch on, a whole Wonder's id goes on to the state below
+			// (HIDDEN while "???", so its name stays hidden, else VIEW_ONLY).
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.table.wonder_only", Blueprints.displayName(id)).withStyle(ChatFormatting.YELLOW));
 			return false;
 		}

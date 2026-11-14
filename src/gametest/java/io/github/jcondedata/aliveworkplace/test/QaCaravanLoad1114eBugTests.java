@@ -16,8 +16,9 @@ import net.minecraft.world.item.Items;
  * QA (lane E, 2026-11-14, B1233) from the spec ("Don't break existing saves"; B1217: a missing name falls back to the
  * made-up name): an old or hand-edited caravan list whose village entry has no "name" key, or a name that isn't text
  * JSON, keeps that village's other saved data through a load: its place on the list, what it wants, when it last sent
- * a caravan, its trade routes and its banner color. Only the name is lost (the made-up one stands in). Not registered:
- * fails on main, where Caravans.load drops the whole entry ("Skipping a saved caravan village").
+ * a caravan, its trade routes and its banner color. Only the name is lost (the made-up one stands in). Written failing
+ * before B1233's fix (Caravans.load dropped the whole entry); registered with the fix (lane-e-1114-1612), with a second
+ * plain save and load so the recovered entries also survive the next autosave.
  */
 public class QaCaravanLoad1114eBugTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:big_area";
@@ -55,6 +56,16 @@ public class QaCaravanLoad1114eBugTests implements FabricGameTest {
 			helper.assertTrue(read.colour(h) == DyeColor.LIME, "its banner color after the load (" + which + "): " + read.colour(h));
 			Component name = VillageHalls.nameIfLoaded(level, h);
 			helper.assertTrue(name.getString().equals(VillageHalls.madeUpName(h).getString()), "its name after the load (" + which + "): '" + name.getString() + "'");
+		}
+		Caravans.Data again = QaFarVillageName1114eGameTests.reload(helper, tag -> { });
+		for (BlockPos h : List.of(noName, broken)) {
+			String which = h.equals(noName) ? "no name" : "a broken name";
+			Caravans.Village v = again.village(h);
+			helper.assertTrue(v != null, "the recovered village with " + which + " was dropped at the next save and load");
+			helper.assertTrue(v.wants().size() == 1 && v.lastCaravanDay() == 12, "its wants and last caravan day after the next save and load (" + which + "): " + v.wants() + ", " + v.lastCaravanDay());
+			helper.assertTrue(again.routesFrom(h).contains(other) && again.colour(h) == DyeColor.LIME, "its route and color after the next save and load (" + which + "): " + again.routesFrom(h) + ", " + again.colour(h));
+			Component name = VillageHalls.nameIfLoaded(level, h);
+			helper.assertTrue(name.getString().equals(VillageHalls.madeUpName(h).getString()), "its name after the next save and load (" + which + "): '" + name.getString() + "'");
 		}
 		helper.succeed();
 	}

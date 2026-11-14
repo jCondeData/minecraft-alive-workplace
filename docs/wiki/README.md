@@ -32,6 +32,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Village houses](village-houses.md): our workplaces in generated villages, their villagers already in the job; no holes in front of their doors, nobody stuck in a wall (B5, B6).
 - [Pokémon jobs' village houses](pokemon-village-houses.md): villages grow a house for each Pokémon job, its villager already in it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
+- [Friendship](friendship.md): hearts with each named villager, the favors and what each earns, the cost of a hit, the look-up in the action bar and the hall's tooltip (31.5).
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
 - [Heart events and life stories](heart-events.md): what villagers tell their friends at 2 to 10 hearts, their
   keepsakes, the life story page and event files (31.7, 31.8).

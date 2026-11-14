@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1234, B1235, B1236, B1238
 
 ## What a player sees
 
@@ -285,12 +285,15 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   that still meets one never breaks it: the one block that would stand there is skipped (counted in `skipped`). So is a
   block whose spot gets a crate set down after the move is confirmed. A skipped block with packed data (a chest, a
   lectern and its book, a jukebox's disc, a decorated pot, Create's vault or depot) is dropped on top of the crate with
-  everything it holds, so nothing packed is ever deleted (B1172, B1184): `MoveSite.dropPacked` puts it up for a moment
-  at the first free spot above the crate with its packed data and breaks it there, so the block's own code drops what it
-  holds however it keeps it (B1172's first fix read only an `Items` list, which lost a vault's emeralds and a lectern's
-  book). With no free spot within 16 blocks above, the block and its `Items` are dropped as items, so what such a block
-  holds another way (a lectern's book) is lost: B1234, its failing test on the tests/mover-crate-roof-1114b branch. A block with no data
-  (a plank) is skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
+  everything it holds, so nothing packed is ever deleted, however the crate is roofed (B1172, B1184, B1234-B1236, B1238):
+  `MoveSite.dropPacked` puts it up for a moment with its packed data and takes it away again, so the block's own code
+  spills what it holds however it keeps it (B1172's first fix read only an `Items` list, which lost a vault's emeralds
+  and a lectern's book). The spot (`MoveSite.dropSpot`) is the first free one within 16 blocks above the crate, else the
+  nearest free one within 2 round it, else a plain block above or round it (no block entity, not unbreakable) borrowed
+  for that moment and put back as it stood, with no neighbor told. The block itself drops as its loot broken by hand, or
+  as its own item when that loot is nothing (a chiseled bookshelf drops only to Silk Touch: B1236). Only if no spot at
+  all is found, the block's item and its contents read back into a block entity of its kind (any container) are dropped
+  as items. A block with no data (a plank) is skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
   workstation and would never move by itself.
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
@@ -402,6 +405,14 @@ shulker box with 64 emeralds and 5 bread, each where the chest stood so it lands
 block skipped and the block and all it held still exist (the box's things inside its item); a lectern with its book over
 a crate roofed solid 15 high (the only room 16 up): the lectern and book dropped there, and nothing standing above the
 crate replaced for it.
+`QaMoverCrateDrop1114bBugTests`, `QaMoverCrateDrop1114eBugTests` and `QaMoverCrateHolds1114cBugGameTests` (the QA lane,
+B1234-B1236, B1238): a lectern and a jukebox with the 16 blocks over the crate built up keep their book and disc, and a
+chiseled bookshelf on the crate is dropped itself with its book. `QaMoverCrateHolds1114cGameTests` (3, the bug lane):
+a decorated pot's gold and a chiseled bookshelf with no room above, and a crate walled in all round (every block
+within 2 stone: the lectern borrows the block over the crate, its book kept, the block put back).
+`QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
+as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
+and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.
 `QaMovePutBack1114bGameTests` (4, the QA lane, B1204): a move called off while the building is still coming down is
 refused a new spot ("The Mover is still putting it back...") until it stands, then taken; with one block left to put back
 still refused, with none left taken; another building's move planned and carried out while one is put back; and a move

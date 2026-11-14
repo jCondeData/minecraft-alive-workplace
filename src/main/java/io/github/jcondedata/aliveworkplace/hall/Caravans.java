@@ -914,6 +914,25 @@ public final class Caravans {
 			return tag;
 		}
 
+		/**
+		 * A caravan-list entry's saved village name (B1233): a missing or unreadable one (a hand-edited or damaged save)
+		 * falls back to the village's made-up name, so the rest of the entry (its routes, wants and trade data) still loads.
+		 */
+		private static Component savedName(CompoundTag t, BlockPos hall, HolderLookup.Provider registries) {
+			String json = Nbt.getString(t, "name");
+			if (!json.isBlank()) {
+				try {
+					Component name = Component.Serializer.fromJson(json, registries);
+					if (name != null) {
+						return name;
+					}
+				} catch (Exception e) {
+					AliveWorkplace.LOG.warn("A saved caravan village at {} had an unreadable name, using its made-up name: {}", hall.toShortString(), e.getMessage());
+				}
+			}
+			return VillageHalls.madeUpName(hall);
+		}
+
 		public static Data load(CompoundTag tag, HolderLookup.Provider registries) {
 			Data data = new Data();
 			ListTag list = Nbt.getList(tag, "villages", Tag.TAG_COMPOUND);
@@ -921,7 +940,7 @@ public final class Caravans {
 				try {
 					CompoundTag t = Nbt.compoundAt(list, i);
 					BlockPos hall = BlockPos.of(Nbt.getLong(t, "hall"));
-					Component name = Component.Serializer.fromJson(Nbt.getString(t, "name"), registries);
+					Component name = savedName(t, hall, registries); // B1233: a missing or broken name no longer drops the entry
 					List<Want> wants = new ArrayList<>();
 					ListTag wl = Nbt.getList(t, "wants", Tag.TAG_COMPOUND);
 					for (int j = 0; j < wl.size(); j++) {
@@ -930,7 +949,7 @@ public final class Caravans {
 							wants.add(new Want(Lookup.value(BuiltInRegistries.ITEM, id), Nbt.getInt(Nbt.compoundAt(wl, j), "count")));
 						}
 					}
-					data.villages.put(hall, new Village(hall, name == null ? Component.empty() : name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
+					data.villages.put(hall, new Village(hall, name, List.copyOf(wants), Nbt.getLong(t, "lastCaravanDay")));
 					ListTag rl = Nbt.getList(t, "routes", Tag.TAG_COMPOUND);
 					for (int j = 0; j < rl.size(); j++) {
 						data.routes.computeIfAbsent(hall, k -> new LinkedHashSet<>()).add(BlockPos.of(Nbt.getLong(Nbt.compoundAt(rl, j), "to")));

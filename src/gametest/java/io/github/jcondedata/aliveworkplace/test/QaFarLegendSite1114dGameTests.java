@@ -83,7 +83,7 @@ public class QaFarLegendSite1114dGameTests implements FabricGameTest {
 			"with the nearer hall unloaded, the player's loaded hall 700 blocks off should get the Legend: " + first);
 
 		// Someone goes to the far village: its chunk ticks again, with the player's hall standing there.
-		level.setChunkForced(farChunk.x, farChunk.z, true);
+		FarChunks.bringBack(level, farChunk);
 		level.setBlock(far, ModBlocks.VILLAGE_HALL.defaultBlockState(), 3);
 		own(level, far, owner);
 		helper.onEachTick(() -> {

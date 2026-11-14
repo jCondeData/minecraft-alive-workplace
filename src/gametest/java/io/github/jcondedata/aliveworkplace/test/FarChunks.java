@@ -65,4 +65,14 @@ final class FarChunks {
 		}
 		return out;
 	}
+
+	/** Force-loads the chunk with every chunk within two of it generated first, so it ticks entities within a few ticks (lane D). */
+	static void bringBack(ServerLevel level, ChunkPos chunk) {
+		for (int dx = -2; dx <= 2; dx++) {
+			for (int dz = -2; dz <= 2; dz++) {
+				level.getChunk(chunk.x + dx, chunk.z + dz);
+			}
+		}
+		level.setChunkForced(chunk.x, chunk.z, true);
+	}
 }

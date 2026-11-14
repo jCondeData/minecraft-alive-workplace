@@ -14,6 +14,9 @@ import io.github.jcondedata.aliveworkplace.story.Places;
 import io.github.jcondedata.aliveworkplace.story.Quest;
 import io.github.jcondedata.aliveworkplace.story.QuestTracker;
 import io.github.jcondedata.aliveworkplace.story.Stories;
+import io.github.jcondedata.aliveworkplace.threat.Sieges;
+import io.github.jcondedata.aliveworkplace.threat.ThreatData;
+import io.github.jcondedata.aliveworkplace.threat.Threats;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import java.util.Optional;
 import java.util.UUID;
@@ -223,6 +226,45 @@ public class QaUnloadedHallLoads1114eBugTests implements FabricGameTest {
 			}
 			helper.assertTrue(!loaded(level, hall), "the banquet tick loaded the far hall's chunk again " + unloadedFor[0] + " ticks after it unloaded");
 			if (++unloadedFor[0] >= 120) {
+				helper.succeed();
+			}
+		});
+	}
+
+	/**
+	 * Sieges: everyone leaves a village while its siege is going (the raid isn't over: it ends only on the hall's own tick,
+	 * which doesn't run while the hall's chunk isn't loaded). The siege director (every 20 ticks, for every saved siege)
+	 * reads the block at each standing gate to pick the next one to ram, and every 10 steps to show the cracks, with no
+	 * loaded check, so the village's gate chunk is loaded again and again for as long as the raid stays frozen, and after
+	 * a restart with the siege saved; the guards' battle stations (BattleStations, every 20 ticks, at once for a new siege)
+	 * look the hall up for the village's finished builds. Expected: a siege whose village isn't loaded loads nothing.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qa1114eSiegeUnloaded"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa1114eSiegeUnloaded")
+	public void aFarSiegeNeverLoadsItsGateChunk(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = far(helper, 7400, 7400);
+		BlockPos gate = hall.offset(40, 0, 0);
+		ThreatData data = ThreatData.get(level);
+		helper.assertTrue(!loaded(level, hall) && !loaded(level, gate), "setup: the far chunks are already loaded");
+		Leftovers.after(helper, () -> {
+			data.forgetSiege(hall);
+			data.end(hall);
+			Sieges.forget();
+		});
+		data.begin(new ThreatData.Under(hall, Threats.MONSTERS, 4, level.getGameTime()));
+		ThreatData.Siege siege = new ThreatData.Siege(hall, level.getGameTime(), level.getDayTime() + 12000);
+		siege.came = 4;
+		siege.breach = gate;
+		siege.gates.add(new ThreatData.Gate(gate, 100, 0, false, false));
+		data.beginSiege(siege);
+
+		int[] ticks = {0};
+		helper.onEachTick(() -> {
+			helper.assertTrue(!loaded(level, gate), "the siege director loaded the far gate's chunk (tick " + ticks[0] + ")");
+			helper.assertTrue(!loaded(level, hall), "the siege director loaded the far hall's chunk (tick " + ticks[0] + ")");
+			if (++ticks[0] >= 120) {
 				helper.succeed();
 			}
 		});

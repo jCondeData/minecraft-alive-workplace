@@ -88,10 +88,28 @@ public final class Innkeepers {
 				known.forget(site);
 			}
 		}
+		// Worked counters nobody in the village was seen at: whoever works one is out past the village's edge (B1214). A
+		// loaded villager anywhere in the level whose job site it is says whose it is (no chunk is loaded to ask).
+		List<BlockPos> worked = poi.findAll(h -> h.is(ModVillagers.SHOP_COUNTER_POI), p -> !out.contains(p) && !shops.contains(p),
+			center, radius, PoiManager.Occupancy.IS_OCCUPIED).map(BlockPos::immutable).toList();
+		if (!worked.isEmpty()) {
+			Set<BlockPos> open = new java.util.HashSet<>(worked);
+			for (Villager v : level.getEntities(net.minecraft.world.entity.EntityType.VILLAGER, v -> v.isAlive() && !v.isBaby())) {
+				BlockPos site = Builders.benchPos(v).filter(open::contains).map(BlockPos::immutable).orElse(null);
+				if (site == null) {
+					continue;
+				}
+				if (isInnkeeper(v)) {
+					known.remember(site, v.getUUID());
+				} else {
+					shops.add(site);
+					known.forget(site);
+				}
+			}
+		}
 		// An Innkeeper's counter while he is away (B1203, B1205): still worked (its ticket held), and he still works it
 		// when he is loaded anywhere in the level; in an unloaded chunk his counter is taken at its word.
-		List<BlockPos> away = poi.findAll(h -> h.is(ModVillagers.SHOP_COUNTER_POI), p -> known.keeper(p) != null && !shops.contains(p),
-			center, radius, PoiManager.Occupancy.IS_OCCUPIED).map(BlockPos::immutable).toList();
+		List<BlockPos> away = worked.stream().filter(p -> known.keeper(p) != null && !shops.contains(p)).toList();
 		for (BlockPos p : away) {
 			net.minecraft.world.entity.Entity keeper = level.getEntity(known.keeper(p));
 			if (keeper == null || keeper instanceof Villager v && v.isAlive() && isInnkeeper(v) && Builders.benchPos(v).filter(p::equals).isPresent()) {

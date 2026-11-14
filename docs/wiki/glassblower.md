@@ -119,4 +119,7 @@ the builder's four glass.
 
 `QaCrafterOwnModdedStore1111eBugCompatTests` (B1196, B1197, the compat suite with Create): no sand anywhere, the line
 reads "Can't be made yet: short of 4 Sand to make 4 Glass"; eight sand and two coal in his own chest become eight glass
-on exactly one coal.
+on exactly one coal. `QaGlassCreate1114cCompatTests` (QA, with the pack's mods): nine sand and three coal become nine
+glass on exactly two coal; six sand and no fuel for a pane reads "Can't be made yet: short of 1 Coal to make 1 Glass
+Pane"; eight sand and a coal with no dye for red stained glass reads "Can't be made yet: short of 1 Red Dye to make 1 Red
+Stained Glass".

@@ -455,6 +455,11 @@ a Novice with no experience, keeps his job with his lectern packed even when his
 is held for him the moment it's put up; the builder's bench is his the moment it's put up, and his queued build's bench
 follows it; all of it through a save and reload every 7 steps (the residents and their inn beds survive); and a move
 called off half way gives everyone their old bed, lectern and bench back.
+`QaMoverResidents1114cGameTests` (QA lane, 4) adds the stay bed's order and the moment a bed is back: an inn with a
+free bed comes before a free bed nearer the Hall; with both inn beds someone's the resident sleeps in the bed by the
+Hall (the guests keep theirs) and it's given back after; with no inn and no free bed in the village the residents have no
+bed while the house is away (the neighbor keeps hers) and their own moved beds after; and the moved bed is the
+resident's, held, with her inn bed given back, as soon as both its halves stand, before the move is over.
 `QaInnShopCounter1111cGameTests` (QA lane, B1177) adds the inn's edges for the stay beds: with the inn's Shop Counter
 broken, its Innkeeper given No job or retrained as the counter's Shopkeeper, the residents stay by the Hall; with the
 Innkeeper asleep they still stay at the inn. `QaInnShopCounter1111cBugTests` (B1203): with the Innkeeper stepped out

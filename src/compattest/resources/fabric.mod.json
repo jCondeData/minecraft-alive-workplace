@@ -320,6 +320,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneRaiseStone1107dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneRenamedBroken1110dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneBlankName1114dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneBlankName1114dBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaHiredDollars1108dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMegaAi1107dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPartnerChecks1107dCompatTests",

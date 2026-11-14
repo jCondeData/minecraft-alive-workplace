@@ -516,7 +516,18 @@ never a planned move that vanishes when the put-back ends (QA's reproduction); a
 put-back, the row and the gray Confirm say the putting-back line word for word, the picker shows the whole building,
 nothing is planned, and once the building stands again Confirm takes the spot and the Mover carries the move out.
 
+`QaMoverCrateQa1114c4GameTests` (13, the QA lane, B1236, B1246-B1250, B1252, B1253): a bee nest keeps both bees and
+its honey, a soul campfire and its four foods drop once each (also with the site reloaded before every step), a
+chiseled bookshelf with six books, a shulker box and a brewing stand in a storage room keep everything exactly once,
+lava and fire on the crate are never borrowed (the lava is still a source), and packed ice, blue ice, tinted glass, a
+glass pane and a sea lantern drop as themselves once, never their bare-hand loot. `QaMoveSpotQa1114c4GameTests` (2,
+B1230): a hut sharing only one corner block of a called-off move's spot is refused word for word during the take-down,
+also over two reloads, and the spot is taken once the building is back.
+
 ## Known limits
+
+- A door or bed with one half on a Mover's Crate drops as one item, but its other half is still put up alone (B1260,
+  open).
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
 

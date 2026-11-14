@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Recipes;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -459,6 +460,9 @@ public final class Crafting {
 			if (lenient && unpacks(level, kind, recipe, target)) {
 				continue;
 			}
+			if (lenient && best != null && loops(level, holder)) {
+				break; // B1255: what's short is said by a way from scratch, not by one that loops back (they come last)
+			}
 			if (!pool.budget.tryOne()) {
 				if (best != null) {
 					break;
@@ -469,7 +473,10 @@ public final class Crafting {
 			// Try it on a copy, so a recipe that doesn't work out leaves everything as it was.
 			Pool trial = pool.copy();
 			List<Step> trialSteps = new ArrayList<>();
-			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, depth, allowed);
+			// B1255: a way that loops back is only taken from what's to hand (Create's Tiled Glass Panes in the chest), never
+			// by making its makings from what the other ways use (the glass of the plain panes): that's the long way round
+			int down = loops(level, holder) ? 0 : depth;
+			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, down, allowed);
 			if (in == null) {
 				continue;
 			}
@@ -775,7 +782,8 @@ public final class Crafting {
 	 * ({@link #warm}), so no villager's first look at the recipes goes through them all in one tick (B101: 400 ms on the
 	 * pack); a recipe manager that wasn't warmed (another one in a test) is still indexed on first use.
 	 */
-	private record Index(Map<Kind, Map<Item, List<RecipeHolder<?>>>> byResult, Map<Ingredient, List<Item>> options) {
+	private record Index(Map<Kind, Map<Item, List<RecipeHolder<?>>>> byResult, Map<Ingredient, List<Item>> options,
+			Set<RecipeHolder<?>> loops) {
 	}
 
 	/** One index per recipe manager (by identity: a reload makes a new manager, so an old index is never read again). */
@@ -785,7 +793,7 @@ public final class Crafting {
 
 	private static Index index(RecipeManager manager) {
 		synchronized (INDEX) {
-			return INDEX.computeIfAbsent(manager, m -> new Index(new HashMap<>(), new IdentityHashMap<>()));
+			return INDEX.computeIfAbsent(manager, m -> new Index(new HashMap<>(), new IdentityHashMap<>(), java.util.concurrent.ConcurrentHashMap.newKeySet()));
 		}
 	}
 
@@ -862,6 +870,11 @@ public final class Crafting {
 			index.options().put(ingredient, list);
 			return list;
 		}
+	}
+
+	/** Whether {@code holder} loops back ({@link #loopsBack}): listed after the other ways to make its result. */
+	private static boolean loops(ServerLevel level, RecipeHolder<?> holder) {
+		return index(Recipes.manager(level)).loops().contains(holder);
 	}
 
 	/** The recipes of this kind that make {@code target} (indexed once per recipe load). */
@@ -954,7 +967,12 @@ public final class Crafting {
 				if (e.getValue().size() > 1) {
 					Item target = e.getKey();
 					List<RecipeHolder<?>> sorted = new ArrayList<>(e.getValue());
-					sorted.sort(java.util.Comparator.comparingInt(h -> loopsBack(index, made, h.value(), target) ? 1 : 0)); // stable
+					for (RecipeHolder<?> h : sorted) {
+						if (loopsBack(index, made, h.value(), target)) {
+							index.loops().add(h);
+						}
+					}
+					sorted.sort(java.util.Comparator.comparingInt(h -> index.loops().contains(h) ? 1 : 0)); // stable
 					e.setValue(sorted);
 				}
 			}
@@ -965,30 +983,86 @@ public final class Crafting {
 
 	/**
 	 * Whether {@code recipe} (one way to make {@code target}) loops back: one of its ingredients is only ever made, by the
-	 * recipes in {@code byResult}, from {@code target} itself (glass from Create's Tiled Glass, which is cut from glass).
-	 * An ingredient with an option no recipe makes (a raw material) or one made some other way doesn't count.
+	 * recipes in {@code byResult} and over any number of steps, from {@code target} itself or from what another of
+	 * {@code target}'s recipes already uses (glass from Create's Tiled Glass, cut from glass; B1255: glass panes fired
+	 * from Create's Tiled Glass Panes, crafted from Tiled Glass, cut from the glass the plain pane recipe takes). An
+	 * ingredient with an option no recipe makes (a raw material) or one made some other way doesn't count.
 	 */
 	private static boolean loopsBack(Index index, Map<Item, List<RecipeHolder<?>>> byResult, Recipe<?> recipe, Item target) {
-		ItemStack made = new ItemStack(target);
-		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
-			if (ingredient.isEmpty()) {
+		Set<Item> upstream = new HashSet<>();
+		upstream.add(target);
+		for (RecipeHolder<?> other : byResult.getOrDefault(target, List.of())) {
+			if (other.value() == recipe) {
 				continue;
 			}
-			List<Item> options = options(index, ingredient);
-			boolean onlyFromTarget = !options.isEmpty();
-			for (Item option : options) {
-				List<RecipeHolder<?>> ways = byResult.getOrDefault(option, List.of());
-				if (option == target || ways.isEmpty()
-						|| ways.stream().anyMatch(w -> Recipes.ingredients(w.value()).stream().noneMatch(i -> !i.isEmpty() && i.test(made)))) {
-					onlyFromTarget = false;
-					break;
+			for (Ingredient ingredient : Recipes.ingredients(other.value())) {
+				if (!ingredient.isEmpty()) {
+					upstream.addAll(options(index, ingredient));
 				}
 			}
-			if (onlyFromTarget) {
+		}
+		Map<Item, Boolean> memo = new HashMap<>();
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (!ingredient.isEmpty() && onlyFrom(index, byResult, options(index, ingredient), upstream, memo, 0)) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Whether every one of {@code options} is only made from {@code upstream}: each has recipes and every one of them takes
+	 * only ingredients that can be an upstream item or (a few steps deep) another item only made from them.
+	 */
+	private static boolean onlyFrom(Index index, Map<Item, List<RecipeHolder<?>>> byResult, List<Item> options, Set<Item> upstream,
+			Map<Item, Boolean> memo, int depth) {
+		if (options.isEmpty() || depth > 4) {
+			return false;
+		}
+		for (Item option : options) {
+			if (upstream.contains(option)) {
+				return false; // the ingredient is the upstream thing itself, not something made from it
+			}
+			if (!madeOnlyFrom(index, byResult, option, upstream, memo, depth)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean madeOnlyFrom(Index index, Map<Item, List<RecipeHolder<?>>> byResult, Item item, Set<Item> upstream,
+			Map<Item, Boolean> memo, int depth) {
+		Boolean known = memo.get(item);
+		if (known != null) {
+			return known;
+		}
+		memo.put(item, false); // in progress: a cycle that never reaches upstream doesn't count
+		List<RecipeHolder<?>> ways = byResult.getOrDefault(item, List.of());
+		boolean result = !ways.isEmpty();
+		for (RecipeHolder<?> way : ways) {
+			// every making of this way is upstream or made from it (red stained glass, glass and a dye, isn't made from the
+			// dye the red panes' other recipe also takes)
+			boolean fromUpstream = false;
+			for (Ingredient ingredient : Recipes.ingredients(way.value())) {
+				if (ingredient.isEmpty()) {
+					continue;
+				}
+				List<Item> options = options(index, ingredient);
+				if (options.stream().anyMatch(upstream::contains)
+						|| depth < 4 && options.stream().anyMatch(o -> madeOnlyFrom(index, byResult, o, upstream, memo, depth + 1))) {
+					fromUpstream = true;
+				} else {
+					fromUpstream = false;
+					break;
+				}
+			}
+			if (!fromUpstream) {
+				result = false;
+				break;
+			}
+		}
+		memo.put(item, result);
+		return result;
 	}
 
 	/** Whether every making of {@code recipe} is one of {@code dishes} (each of its ingredient's items is one). */

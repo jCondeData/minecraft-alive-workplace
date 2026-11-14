@@ -1,5 +1,8 @@
 package io.github.jcondedata.aliveworkplace.test;
 
+import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.VillageNeeds;
 import io.github.jcondedata.aliveworkplace.threat.Sieges;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.threat.Threats;
@@ -159,6 +162,48 @@ public class QaFarSiege1114dGameTests implements FabricGameTest {
 				helper.assertTrue(data.siege(notYet).get().over, "a near siege whose raid has ended was not marked over");
 				helper.assertTrue(data.siege(far).isPresent(), "the far siege was lifted while nobody was near");
 				helper.assertTrue(!data.siege(far).get().over, "the far siege's director ran (it was marked over) while nobody was near");
+				helper.succeed();
+			}
+		});
+	}
+
+	/**
+	 * The evening of a warned attack (32.14), B1225's "the warned-evening check uses isPositionEntityTicking": a far
+	 * village warned of today's attack, at dusk, with nobody near it. The guards' stations wait and no chunk of it loads.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qa1114dFarWarnedEvening"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa1114dFarWarnedEvening")
+	public void aFarVillageWarnedOfTonightsAttackLoadsNothingAtDusk(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = far(helper, 7600, 7600);
+		ThreatData data = ThreatData.get(level);
+		long time = level.getDayTime();
+		helper.assertTrue(!loaded(level, hall), "setup: the far chunk is already loaded");
+		net.minecraft.world.Difficulty difficulty = level.getDifficulty();
+		boolean raids = VillageRaids.ENABLED;
+		Leftovers.after(helper, () -> {
+			VillageRaids.ENABLED = raids;
+			data.forgetClock(hall);
+			level.setDayTime(time);
+			level.getServer().setDifficulty(difficulty, true);
+		});
+		level.getServer().setDifficulty(net.minecraft.world.Difficulty.NORMAL, true);
+		VillageRaids.ENABLED = true; // (the test server runs with village raids off)
+		long day = Math.floorDiv(time, VillageNeeds.DAY);
+		level.setDayTime(day * VillageNeeds.DAY + VillageRaids.DUSK + 100);
+		data.warned(hall, Chronicle.day(level));
+		helper.assertTrue(data.warnedHalls().contains(hall), "setup: the far hall isn't on the warned list");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.guard.Warnings.evening(level, hall), "setup: it isn't the warned evening: day " + Chronicle.day(level) + " warned " + data.warned(hall) + " time " + level.getDayTime() + " difficulty " + level.getDifficulty() + " level " + io.github.jcondedata.aliveworkplace.threat.Threats.LEVEL + " raids " + VillageRaids.ENABLED + " raid " + data.raid(hall));
+		helper.assertTrue(!loaded(level, hall), "setup: asking whether it is the warned evening loaded the hall");
+
+		int[] ticks = {0};
+		helper.onEachTick(() -> {
+			helper.assertTrue(!loaded(level, hall), "the warned evening's check loaded a far village's hall chunk (tick " + ticks[0] + ")");
+			if (++ticks[0] >= 120) {
+				level.setDayTime(time);
+				level.getServer().setDifficulty(difficulty, true);
+				VillageRaids.ENABLED = raids;
 				helper.succeed();
 			}
 		});

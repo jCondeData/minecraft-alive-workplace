@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A Shop Counter that was an inn is no longer the village's inn after you break it and a Shopkeeper takes the new one, even while the old Innkeeper is far away; and an Innkeeper standing past the village's edge still makes his counter inside the village its inn.
+
 ## 0.155.1 — 2026-11-13
 
 ### Fixed

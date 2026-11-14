@@ -144,9 +144,11 @@ public class ScanToolItem extends Item {
 		if (!fits(box)) {
 			return tooBig(box).withStyle(ChatFormatting.RED);
 		}
+		// B1195: "nothing built" means nothing the Table's preview would draw, not only air (a pond, a lava pool or a
+		// bubble column alone was saved, spent a Blank and showed an empty picture on the Table).
 		boolean empty = true;
 		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
-			if (!level.getBlockState(pos).isAir()) {
+			if (io.github.jcondedata.aliveworkplace.table.TableServer.previewShows(level.getBlockState(pos))) {
 				empty = false;
 				break;
 			}

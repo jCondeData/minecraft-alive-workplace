@@ -530,7 +530,7 @@ public final class Sieges {
 
 	/** Whether the village round {@code hall} has the Ramparts research (32.6). */
 	public static boolean ramparts(ServerLevel level, BlockPos hall) {
-		return level.isLoaded(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
+		return level.isPositionEntityTicking(hall) && level.getBlockEntity(hall) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
 			&& entity.research().level(io.github.jcondedata.aliveworkplace.research.Research.Topic.RAMPARTS) >= 1;
 	}
 
@@ -629,7 +629,11 @@ public final class Sieges {
 	private static void tick(ServerLevel level) {
 		ThreatData data = ThreatData.get(level);
 		for (ThreatData.Siege siege : data.sieges()) {
-			step(level, data, siege);
+			// B1225: a siege whose village nobody is near (its hall's chunk isn't entity-ticking) is left as it is and loads
+			// nothing; it goes on (or ends and is lifted, if its dawn has passed) once someone is back
+			if (level.isPositionEntityTicking(siege.hall)) {
+				step(level, data, siege);
+			}
 		}
 	}
 

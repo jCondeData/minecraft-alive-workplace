@@ -707,6 +707,7 @@
 			"io.github.jcondedata.aliveworkplace.test.LegendEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WonderDataGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderRulesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonders1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishingConfigGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnitureSpotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FurnishedRoomsGameTests",

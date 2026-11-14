@@ -29,6 +29,9 @@ at the Cup (or a Cup delegate), asleep, busy with another player, you're already
 the village's Leader (it names the one to challenge), one challenge a day (Leaders), or no Cobblemon. Only a
 challenge that starts a battle uses up a Leader's one a day: a refused one (busy, already in a battle, no Pokémon)
 leaves it for later the same day. A Leader's day turns over at sunrise (day time a multiple of 24000).
+A battle Cobblemon had to stop because of an error (its log says "Exception while ticking a battle") is called
+off: the trainer takes challenges again right away instead of staying busy until the server restarts, and the stopped
+battle counts as neither a win nor a loss (B1256).
 **Trade** opens
 the trainer's trades, as a sneak-click does; it is gray while they're asleep or have nothing to sell. **Close** closes.
 Sneak-click still goes straight to the trades. The three buttons always stay inside the panel (B1131): with room to
@@ -119,7 +122,8 @@ none
 `TrainerScreenButtonsGameTests.trainerButtonsStayInsideThePanel`,
 `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`,
 `QaLeaderBeatenCompatTests.aLeaderCountsOnlyWhenBeatenInBattle` (Cobblemon), `QaLeaderBeatenGameTests.aLeaderCountsOnlyWhenBeaten`
-and `QaLeaderBeatenGameTests.anOrdinaryTrainerCountsWhenBeaten`.
+`QaLeaderBeatenGameTests.anOrdinaryTrainerCountsWhenBeaten` and
+`TrainerCrashedBattleCompatTests.aTrainerWhoseBattleCrashedTakesTheNextChallenge` (Cobblemon).
 
 QA (lane D, 2026-11-09): `QaPokemonScreens1109dCompatTests` (trainer part, 9): a screen left open while the trainer
 fell asleep, started a battle with another player or died, or after the player walked away, starts no battle when

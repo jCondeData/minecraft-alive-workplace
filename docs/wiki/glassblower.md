@@ -122,4 +122,7 @@ reads "Can't be made yet: short of 4 Sand to make 4 Glass"; eight sand and two c
 on exactly one coal. `QaGlassblowerCreateVerify1114fCompatTests` (5, the QA lane, B1196, B1197, with Create): the line
 names 1 Sand for 1 glass and 9 Sand for 9; nine glass burn two coal; sixteen glass burn two coal through a save and
 reload while firing and while carrying; with only Create's Tiled Glass and no sand, glass and tiled glass never add up
-to more than eight (no loop), and an unfinished build still names the sand.
+to more than eight (no loop), and an unfinished build still names the sand. `QaGlassCreate1114cCompatTests` (QA, with the pack's mods): nine sand and three coal become nine
+glass on exactly two coal; six sand and no fuel for a pane reads "Can't be made yet: short of 1 Coal to make 1 Glass
+Pane"; eight sand and a coal with no dye for red stained glass reads "Can't be made yet: short of 1 Red Dye to make 1 Red
+Stained Glass".

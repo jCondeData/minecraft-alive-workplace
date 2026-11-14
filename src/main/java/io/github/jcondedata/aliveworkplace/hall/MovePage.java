@@ -208,6 +208,9 @@ public final class MovePage {
 			if (pending.forBuilding(from).isPresent() && MoveSites.get(level).forBuilding(from).isEmpty() && MoveRules.underBuilders(level, f)) {
 				lore.add(VillageHallScreen.line("screen.aliveworkplace.move.waits_builders", ChatFormatting.YELLOW)); // B1182
 			}
+			if (puttingBack(level, from).isPresent()) {
+				lore.add(VillageHallScreen.line("message.aliveworkplace.move.putting_back", ChatFormatting.YELLOW)); // B1204
+			}
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.move.click", ChatFormatting.DARK_GRAY));
 			menu.button(slot++, marked(VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
 				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), LIST_MARK, 1), p -> {
@@ -237,8 +240,10 @@ public final class MovePage {
 		Optional<BuildSiteManager.Finished> building = BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
 			.filter(f -> f.placement().origin().equals(from)).findFirst();
 		// a move under way (B1181): the building is half (or wholly) taken down at its old spot, so its plan is the one the
-		// Mover took when it started, not what is left standing; the picker still opens, with Call off
-		Optional<MovePlan> plan = underWay(level, from).map(MoveSite::plan).or(() -> building.flatMap(f -> MovePlan.capture(level, f)));
+		// Mover took when it started, not what is left standing; the picker still opens, with Call off. The same while a
+		// called-off move is put back (B1204): half the building stands, so the site's plan is the whole one
+		Optional<MovePlan> plan = underWay(level, from).or(() -> puttingBack(level, from)).map(MoveSite::plan)
+			.or(() -> building.flatMap(f -> MovePlan.capture(level, f)));
 		if (plan.isEmpty()) {
 			Chat.actionBar(player, Component.translatable("message.aliveworkplace.move.cannot").withStyle(ChatFormatting.RED));
 			level.playSound(null, player.blockPosition(), SoundEvents.VILLAGER_NO, SoundSource.NEUTRAL, 0.8f, 1f);
@@ -303,11 +308,15 @@ public final class MovePage {
 		menu.button(VERDICT, verdict(fit), null);
 		boolean mover = Movers.hired(level, hall);
 		boolean moving = underWay(level, p.from()).isPresent(); // B1192: the Mover has started; a new spot would not be followed
-		boolean ready = fit.fits() && mover && !moving;
+		// B1204: a called-off move still being put back; a spot confirmed now would be cleared when the put-back ends
+		boolean back = puttingBack(level, p.from()).isPresent();
+		boolean ready = fit.fits() && mover && !moving && !back;
 		List<Component> confirmLore = new ArrayList<>();
 		confirmLore.add(VillageHallScreen.line("screen.aliveworkplace.move.confirm_hint", ChatFormatting.GRAY));
 		if (moving) {
 			confirmLore.add(VillageHallScreen.line("message.aliveworkplace.move.under_way", ChatFormatting.RED));
+		} else if (back) {
+			confirmLore.add(VillageHallScreen.line("message.aliveworkplace.move.putting_back", ChatFormatting.RED));
 		} else if (!fit.fits()) {
 			confirmLore.add(VillageHallScreen.line(fit.line(), ChatFormatting.RED));
 		}
@@ -541,6 +550,9 @@ public final class MovePage {
 		if (refusal == null && underWay(level, p.from()).isPresent()) {
 			refusal = Component.translatable("message.aliveworkplace.move.under_way"); // B1192: call it off first
 		}
+		if (refusal == null && puttingBack(level, p.from()).isPresent()) {
+			refusal = Component.translatable("message.aliveworkplace.move.putting_back"); // B1204: once it stands again
+		}
 		if (refusal == null) {
 			refusal = !fit.fits() ? fit.line() : !Movers.hired(level, p.hall()) ? Component.translatable("message.aliveworkplace.move.needs_mover") : null;
 		}
@@ -561,6 +573,14 @@ public final class MovePage {
 	/** The Mover's site moving the building at {@code from}, while the move is under way (started, not called off, not done). */
 	static Optional<MoveSite> underWay(ServerLevel level, BlockPos from) {
 		return MoveSites.get(level).forBuilding(from).filter(s -> !s.canceled() && s.stage() != MoveSite.Stage.DONE);
+	}
+
+	/**
+	 * The Mover's site putting the building at {@code from} back after its move was called off (B1204). Until it's done the
+	 * building can't be sent anywhere: the site ends by clearing the building's waiting move ({@code MoveSites.finish}).
+	 */
+	static Optional<MoveSite> puttingBack(ServerLevel level, BlockPos from) {
+		return MoveSites.get(level).forBuilding(from).filter(s -> s.canceled() && s.stage() != MoveSite.Stage.DONE);
 	}
 
 	/** Cancel (or Back): the pick is forgotten, the ghost goes, and the list shows again; nothing is saved. */

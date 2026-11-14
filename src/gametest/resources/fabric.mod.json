@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1114eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStockVerify1111dGameTests",
@@ -433,6 +434,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotBuild1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCallOff1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveLiveSite1111eBugTests",

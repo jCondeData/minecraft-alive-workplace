@@ -424,7 +424,9 @@ public final class Shops {
 	 * (raised or lowered the price, changed the lot), nothing is taken: the buyer is told the new price (or, B1147, the new
 	 * goods and their price when the lot changed) and the row is
 	 * drawn again at it, still gold, so a second Confirm buys at the price now on screen. A lot taken off the counter
-	 * is no longer chosen. A lot whose stock ran out is left to {@link #buy}, which says it's sold out and takes nothing.
+	 * is no longer chosen. A changed lot the chests hold none of (B1189) isn't listed anymore, so the buyer is told it's
+	 * sold out instead of being asked to Confirm again. An unchanged lot whose stock ran out is left to {@link #buy},
+	 * which says it's sold out and takes nothing.
 	 */
 	private static boolean confirmAsShown(net.minecraft.server.level.ServerPlayer player, Villager villager, Pending pending, int column) {
 		ShopCounterBlockEntity counter = counter((ServerLevel) villager.level(), villager).orElse(null);
@@ -437,6 +439,15 @@ public final class Shops {
 			pending.column = -1;
 			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.withdrawn",
 				pending.goods[column].getHoverName()).withStyle(net.minecraft.ChatFormatting.YELLOW));
+			return false;
+		}
+		// B1189: the lot now on the counter has no stock, so the redrawn list leaves its row out and there is no Confirm to
+		// click again. Say it's sold out (as buy does) instead of asking for a second Confirm.
+		ServerLevel level = (ServerLevel) villager.level();
+		if (SupplyContainers.countMatching(level, stock(level, counter), goods) < goods.getCount()) {
+			pending.column = -1;
+			Chat.actionBar(player, net.minecraft.network.chat.Component.translatable("message.aliveworkplace.shop.sold_out",
+				goods.getHoverName()).withStyle(net.minecraft.ChatFormatting.YELLOW));
 			return false;
 		}
 		// B1147: say what changed. Other goods (or a different lot size) get "This counter now sells ...", even when the

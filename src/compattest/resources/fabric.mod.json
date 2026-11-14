@@ -184,6 +184,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverVaults1110e3CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverTanks1110gCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverTanks1111eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverCrateSpot1111eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverArm1110eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverTurns1110hCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedCraftJobs1110eCompatTests",

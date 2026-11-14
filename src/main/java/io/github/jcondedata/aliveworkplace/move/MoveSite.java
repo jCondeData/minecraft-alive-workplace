@@ -530,7 +530,7 @@ public final class MoveSite {
 			if (stays(there) && !stays(st)) {
 				// B1129: a Mover's Crate stands there (it stays where it stood, B1120; the fit check refuses such a spot, but a
 				// move confirmed before that check may still meet one). Never broken: it's a Mover's workstation. Not put up;
-				// a block holding items (a chest, a barrel) is dropped there with them, so nothing packed is lost (B1172)
+				// a block holding things (a chest, a lectern, a vault) is dropped there with them, so nothing packed is lost (B1172, B1184)
 				dropPacked(level, j, at, st);
 				where[j] = LOST;
 				skipped++;
@@ -564,22 +564,50 @@ public final class MoveSite {
 	}
 
 	/**
-	 * B1172: block {@code j} can't go up at {@code at} (a Mover's Crate stands there) and holds items: it and everything
-	 * packed in it are dropped on top of the crate, never deleted. A block with no items is left out as before (B1129).
+	 * B1172, B1184: block {@code j} can't go up at {@code at} (a Mover's Crate stands there). A block with packed data (a
+	 * chest, a lectern with its book, a jukebox's disc, a decorated pot, Create's vault or depot) is dropped on top of the
+	 * crate with everything it holds, never deleted. It is dropped the way breaking it drops it: it goes up for a moment
+	 * at the first free spot above the crate with its packed data and is broken there, so the block's own code drops
+	 * whatever it holds, however it holds it (an {@code Items} list, a book, a vault's inventory). A block with no data
+	 * (a wall's plank) is left out as before, nothing dropped (B1129).
 	 */
 	private void dropPacked(ServerLevel level, int j, BlockPos at, BlockState state) {
 		CompoundTag data = data(j);
-		if (data == null || !data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
+		if (data == null) {
 			return;
 		}
+		BlockPos spot = null;
+		for (BlockPos up = at.above(); up.getY() < level.getMaxBuildHeight() && up.getY() <= at.getY() + 16; up = up.above()) {
+			if (level.isLoaded(up) && level.getBlockState(up).isAir()) {
+				spot = up;
+				break;
+			}
+		}
+		if (spot != null) {
+			level.setBlock(spot, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			BlockEntity be = level.getBlockEntity(spot);
+			if (level.getBlockState(spot).is(state.getBlock()) && be != null) {
+				be.loadWithComponents(data.copy(), level.registryAccess());
+				be.setChanged();
+				level.destroyBlock(spot, true); // the block's own drops (its loot with its data) and what it holds spilled
+				if (!level.getBlockState(spot).isAir()) {
+					level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+				}
+				return;
+			}
+			level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+		}
+		// no free spot above the crate (or the block wouldn't stand there): the block itself and its packed Items list
 		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>();
 		net.minecraft.world.item.Item block = state.getBlock().asItem();
 		if (block != net.minecraft.world.item.Items.AIR) {
 			drops.add(new net.minecraft.world.item.ItemStack(block));
 		}
-		net.minecraft.nbt.ListTag items = data.getList("Items", net.minecraft.nbt.Tag.TAG_COMPOUND);
-		for (int k = 0; k < items.size(); k++) {
-			net.minecraft.world.item.ItemStack.parse(level.registryAccess(), items.getCompound(k)).filter(s -> !s.isEmpty()).ifPresent(drops::add);
+		if (data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
+			net.minecraft.nbt.ListTag items = data.getList("Items", net.minecraft.nbt.Tag.TAG_COMPOUND);
+			for (int k = 0; k < items.size(); k++) {
+				net.minecraft.world.item.ItemStack.parse(level.registryAccess(), items.getCompound(k)).filter(s -> !s.isEmpty()).ifPresent(drops::add);
+			}
 		}
 		for (net.minecraft.world.item.ItemStack stack : drops) {
 			net.minecraft.world.Containers.dropItemStack(level, at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5, stack);

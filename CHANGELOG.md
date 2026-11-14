@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Cobblemon, a trainer whose battle Cobblemon had to stop because of an error takes challenges again right away, instead of answering "already in a battle" to everyone until the server restarts; the stopped battle counts as neither a win nor a loss (B1256).
 - A builder no longer takes a blueprint on the new spot of a called-off move while the Mover is still taking the building back down there: he says the spot isn't free yet, and takes it once the building stands where it was (B1230).
 - A block the Mover can't put up because a Mover's Crate stands on its spot is dropped as itself with everything it held, never deleted: an ender chest or a campfire is no longer turned into obsidian or charcoal, a beehive keeps its bees, a lectern or a Create Item Vault keeps its book or items even when the crate is boxed in by containers, and lava next to the crate is never used as the drop spot; a plain block there (glass, a bookshelf, ice, the wall's plank) is dropped as itself too instead of vanishing (B1246-B1250, B1252, B1253).
 - With Create installed, a builder waiting for glass with no sand anywhere is told "short of 4 Sand to make 4 Glass" again, instead of being asked for Create's Tiled Glass, which is itself made from glass (B1196).

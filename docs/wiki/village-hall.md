@@ -213,8 +213,9 @@ Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell ca
 festival. A festival or a Grand Chef's banquet goes on only while someone is near the village: once everyone has left, nothing of it
 loads the hall again (B1224), and one still on when someone comes back carries on (or is over, at dusk). A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
 the charter, it works from the off hand when the main hand is empty, B360); otherwise it gets a made-up
-name such as Thornholm. A blank name (only possible by commands) counts as none, on the hall and on the caravan list
-that names an unloaded village in `/workplace quests` and letters: the made-up name again, never an empty one (B1229).
+name such as Thornholm. A blank name (empty, or only spaces, tabs and line breaks, styled or not; only possible by
+commands) counts as none, on the hall and on the caravan list that names an unloaded village in `/workplace quests` and
+letters: the made-up name again, never an empty one, and the hall's round saves that made-up name on the list (B1229).
 
 ## How it works
 
@@ -504,6 +505,10 @@ point of interest, saved by Minecraft).
 - Upgrades: the space check names the first blocking spot only; clear it and the row names the next one, if any. Spots
   in chunks that aren't loaded aren't checked (the page never loads a chunk); the Builder deals with them when he gets
   there, as for any build. The page lists up to 36 builds.
+- A name made only of characters Java doesn't count as whitespace (no-break spaces, zero-width spaces; commands only)
+  isn't treated as blank: the village is listed by it and reads empty.
+- B1233: a caravan-list entry saved with no name or a broken one (an old or hand-edited save) is skipped whole on load,
+  its trade routes, wants and banner color with it; the village is still named by its made-up name.
 
 ## Proof
 
@@ -589,6 +594,9 @@ hall keeps its owner).
 QA's `QaFarVillageName1114eGameTests` (B1217: a far village is named without loading its hall: a renamed one by its
 saved name, through a save and load and in a letter, an old or broken entry and a never-listed village by the made-up
 name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back to the made-up name).
+`QaFarVillageBlankName1114e2GameTests` (B1229: whitespace and styled empty names, saved or from a Name Tag on a loaded
+hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
+paths, the round saves the made-up name, and a real name, spaces and all, still wins).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

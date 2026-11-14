@@ -61,7 +61,9 @@ Roadmap items: 31.2, 31.3
   looked at while its chunk is loaded. A hall nobody is near is never loaded for that: its open quests are listed and
   kept as saved, and the old ones move in once it loads (B1212). No kill, revival or place reached loads it either
   (B1220, B1223): a kill or a place reached far from it still counts, and a quest that finishes is paid at the hall's
-  next round, once someone is near it; a grave revived for a request of that hall answers it then.
+  next round, once someone is near it; a grave revived for a request of that hall answers it then. If the player who
+  finished it is offline at that round, the quest waits, done and still theirs (its deadline no longer applies, and it
+  takes no place on the board), until a round finds them online; it is never paid to nobody (B1231).
 
 ## Items, blocks, jobs, commands
 
@@ -95,4 +97,5 @@ counts and its quest is paid at the hall's next round; a revival while it's unlo
 as a control hall; tracking and accepting by id never load a far hall) and `QaFarVillageName1114eGameTests` (a far,
 unloaded village is named in `/workplace quests` and in a letter written again by its own name as its last round saved
 it, through a save and load word for word, else by its made-up name, also for a saved entry with no name or a broken
-one, and its hall stays unloaded).
+one, and its hall stays unloaded) and `QaFarVillageResumes1114e2BugTests` (a far kill or place reached by a player who
+then logs off waits, past its deadline and through a save, and is paid to them at the first round they're back).

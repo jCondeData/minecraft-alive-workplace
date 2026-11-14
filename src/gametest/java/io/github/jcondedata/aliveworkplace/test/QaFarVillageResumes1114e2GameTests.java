@@ -103,17 +103,13 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 		};
 	}
 
-	/** Waits (at most {@code max} ticks) until every one of {@code halls} is entity-ticking. */
-	private static Step ticking(GameTestHelper helper, int max, BlockPos... halls) {
-		ServerLevel level = helper.getLevel();
-		int[] n = {0};
+	/**
+	 * Waits until every one of {@code halls} is entity-ticking: by the clock, not in ticks, since that waits for world
+	 * generation (B1242, {@link FarChunks}).
+	 */
+	private static Step ticking(GameTestHelper helper, BlockPos... halls) {
 		return () -> {
-			for (BlockPos h : halls) {
-				if (!level.isPositionEntityTicking(h)) {
-					helper.assertTrue(++n[0] < max, "the forced chunk at " + h + " isn't entity-ticking after " + max + " ticks");
-					return false;
-				}
-			}
+			FarChunks.awaitEntityTicking(helper, halls);
 			return true;
 		};
 	}
@@ -184,7 +180,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 				helper.assertTrue(OldHouses.result(level, hall).isPresent(), "the far hall's finished survey was dropped while nobody was there");
 			}),
 			comeBack(helper, hall),
-			ticking(helper, 1000, hall),
+			ticking(helper, hall),
 			hold(40, () -> helper.assertTrue(OldHouses.result(level, hall).isPresent(), "the survey was dropped once someone was back, though the hall stands")),
 			() -> {
 				Optional<OldHouses.Survey> again = OldHouses.request(level, hall);
@@ -219,7 +215,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 				return true;
 			},
 			comeBack(helper, hall),
-			ticking(helper, 1000, hall),
+			ticking(helper, hall),
 			hold(5, () -> { }),
 			() -> {
 				helper.assertTrue(OldHouses.result(level, hall).isEmpty(), "the survey of a hall broken while away is still kept once someone is back");
@@ -271,7 +267,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 				return true;
 			},
 			comeBack(helper, hall),
-			ticking(helper, 1000, hall),
+			ticking(helper, hall),
 			() -> {
 				Optional<LegendSites.Match> match = LegendSites.qualifying(level, owner, "ruined_portal", site);
 				helper.assertTrue(match.isPresent(), "once the village is loaded again the same site doesn't qualify (the skip disqualified it)");
@@ -338,7 +334,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 				helper.assertTrue(on(Banquets.class, level).contains(banquet), "the far banquet left the list while nobody was there");
 			}),
 			comeBack(helper, festival, banquet),
-			ticking(helper, 1000, festival, banquet),
+			ticking(helper, festival, banquet),
 			() -> {
 				player[0] = goer(helper, festival.offset(2, 0, 2));
 				return true;
@@ -388,7 +384,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 					"a far festival or banquet left the list while nobody was there");
 			}),
 			comeBack(helper, festival, banquet),
-			ticking(helper, 1000, festival, banquet),
+			ticking(helper, festival, banquet),
 			() -> {
 				player[0] = goer(helper, festival.offset(2, 0, 2));
 				return true;
@@ -530,7 +526,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 				helper.assertTrue(data.siege(hall).get().ladders.equals(List.of(ladder)), "the far ladder was taken off the siege while nobody was there");
 			}),
 			comeBack(helper, hall),
-			ticking(helper, 1000, hall),
+			ticking(helper, hall),
 			() -> {
 				helper.assertTrue(++waited[0] < 500, "once someone was back the siege past its dawn wasn't lifted in 500 ticks: raid "
 					+ data.raid(hall).isPresent() + ", siege " + data.siege(hall).map(s -> "over=" + s.over).orElse("gone"));
@@ -570,7 +566,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 					"the far siege moved on while nobody was there");
 			}),
 			comeBack(helper, hall),
-			ticking(helper, 1000, hall),
+			ticking(helper, hall),
 			() -> {
 				helper.assertTrue(++waited[0] < 500, "once someone was back the raid with nobody left didn't end in 500 ticks");
 				return data.raid(hall).isEmpty();

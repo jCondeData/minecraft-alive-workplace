@@ -458,10 +458,7 @@ public class QaFarOffline1114eGameTests implements FabricGameTest {
 			if (ticks[0] == 1) {
 				level.setDayTime(Math.floorDiv(level.getDayTime(), 24000L) * 24000L + 100); // away from the drill while it loads
 				level.setChunkForced(chunk.x, chunk.z, true);
-				return;
-			}
-			if (!level.isPositionEntityTicking(hall)) {
-				helper.assertTrue(ticks[0] < 800, "setup: the force-loaded hall chunk never became entity-ticking");
+				FarChunks.awaitEntityTicking(helper, hall); // by the clock: it waits for world generation (B1242)
 				return;
 			}
 			helper.assertTrue(!e.drillDone, "the drill ended before its time once someone was near");
@@ -512,10 +509,7 @@ public class QaFarOffline1114eGameTests implements FabricGameTest {
 			if (ticks[0] == 1) {
 				level.setDayTime(Math.floorDiv(level.getDayTime(), 24000L) * 24000L + 100);
 				level.setChunkForced(chunk.x, chunk.z, true);
-				return;
-			}
-			if (!level.isPositionEntityTicking(hall)) {
-				helper.assertTrue(ticks[0] < 800, "setup: the force-loaded hall chunk never became entity-ticking");
+				FarChunks.awaitEntityTicking(helper, hall); // by the clock: it waits for world generation (B1242)
 				return;
 			}
 			BellBlockEntity be = (BellBlockEntity) level.getBlockEntity(bell);
@@ -561,10 +555,7 @@ public class QaFarOffline1114eGameTests implements FabricGameTest {
 			if (ticks[0] == 1) {
 				level.setDayTime(Math.floorDiv(level.getDayTime(), 24000L) * 24000L + 100);
 				level.setChunkForced(chunk.x, chunk.z, true);
-				return;
-			}
-			if (!level.isPositionEntityTicking(hall)) {
-				helper.assertTrue(ticks[0] < 800, "setup: the force-loaded hall chunk never became entity-ticking");
+				FarChunks.awaitEntityTicking(helper, hall); // by the clock: it waits for world generation (B1242)
 				return;
 			}
 			tickAt(level, ReformStories.NIGHT - 1);

@@ -86,12 +86,8 @@ public class QaFarLegendSite1114dGameTests implements FabricGameTest {
 		level.setChunkForced(farChunk.x, farChunk.z, true);
 		level.setBlock(far, ModBlocks.VILLAGE_HALL.defaultBlockState(), 3);
 		own(level, far, owner);
-		int[] ticks = {0};
 		helper.onEachTick(() -> {
-			if (!level.isPositionEntityTicking(far)) {
-				helper.assertTrue(++ticks[0] < 700, "setup: the force-loaded far chunk never became entity-ticking");
-				return;
-			}
+			FarChunks.awaitEntityTicking(helper, far); // by the clock: it waits for world generation (B1242)
 			Optional<LegendSites.Match> then = LegendSites.qualifying(level, owner, "ruined_portal", site);
 			helper.assertTrue(then.map(LegendSites.Match::hall).equals(Optional.of(far)),
 				"once the far village ticks again it is the nearest hall and gets the Legend: " + then);

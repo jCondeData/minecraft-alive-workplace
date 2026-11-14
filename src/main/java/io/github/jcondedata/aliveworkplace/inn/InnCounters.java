@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
  * Shop Counter is an inn while an Innkeeper works it, and the village has to know that while he is out past its edge,
  * asleep or in an unloaded chunk. {@link Innkeepers#counters} checks a remembered counter against its Innkeeper while
  * he is loaded, and a counter is forgotten when another trade is seen working it or its Innkeeper is gone for good
- * (killed, discarded, turned into a zombie villager). Older worlds have none saved and learn them as the Innkeepers work.
+ * (killed, discarded, turned into a zombie villager) or the counter is broken (B1213, B1215). Older worlds have none saved and learn them as the Innkeepers work.
  */
 public final class InnCounters extends SavedData {
 	public static final String NAME = "aliveworkplace_inn_counters";

@@ -612,9 +612,9 @@ public final class RequestErrands {
 		stack.set(DataComponents.MAX_STACK_SIZE, 1);
 	}
 
-	/** The giver's village name, as the letter says it. */
+	/** The giver's village name, as the letter says it (B1217: never loading a far hall to say it). */
 	private static Component home(ServerLevel level, BlockPos hall) {
-		return VillageHalls.name(level, hall);
+		return VillageHalls.nameIfLoaded(level, hall);
 	}
 
 	/** The sealed letter (paper) to {@code deliver}'s relative, or ({@code reply}) their reply to the giver. */

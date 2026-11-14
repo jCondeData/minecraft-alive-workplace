@@ -27,10 +27,10 @@ best friends among the players. Players two and three never see each other's poi
   added, no hearts are shown, a Gift is turned down.
 - **Points** stay within 0 to 1000. A heart is 100 points, so 0 to 99 is no hearts and 1000 is ten. Points are per
   player, per villager.
-- **Favours**. Most count once a day per player and villager (the world's day, the same count the chronicle uses): a
+- **Favors**. Most count once a day per player and villager (the world's day, the same count the chronicle uses): a
   second one the same day adds nothing, the first one after the day turns counts again.
 
-| Favour | Points | Limit | What counts |
+| Favor | Points | Limit | What counts |
 |---|---|---|---|
 | Trade | +5 | once a day | Completing a trade with them (any villager that keeps a friendship). |
 | Hall quest done | +40 | once a day | You finish a quest of the hall's village (giver `hall`) that they posted. |
@@ -73,7 +73,7 @@ Player-facing sentences (American English, `en_us.json`):
 
 | Switch | Default | What it does |
 |---|---|---|
-| `friendship` | on once 1.5 is complete | Off: no points move (favours, hits, gifts, heart events, rewards all add nothing), no hearts are shown in the action bar or the hall's tooltip, and cheaper trades from hearts fall away. What is saved stays and comes back when switched on again. |
+| `friendship` | on once 1.5 is complete | Off: no points move (favors, hits, gifts, heart events, rewards all add nothing), no hearts are shown in the action bar or the hall's tooltip, and cheaper trades from hearts fall away. What is saved stays and comes back when switched on again. |
 
 The expansion gate (`Expansions`, group M31) decides the default and forces it off until Milestone 31 is complete.
 There is no game rule.
@@ -84,7 +84,7 @@ There is no game rule.
   someone earns a point or a field is first written. It holds `players`: player UUID to a record. Reads as nobody
   having any points when absent.
 - Each player's record: `name` (their last known name, shown under Best friends; default empty), `points` (default 0),
-  `favours` (a map from favour id, such as `trade` or `hand_in`, to the day it last counted; default none),
+  `favours` (a map from favor id, such as `trade` or `hand_in`, to the day it last counted; default none),
   `hit_tick` (the game time of the last hit that cost points; default -1: none).
 - The same record also holds fields other features own, each with a default so older saves read cleanly: `gift_day`,
   `gift_week` (-1) and `gifts_week` (0) for gifts; `told` (none) and `keepsake` (false) for heart events; `festival_gift`
@@ -103,7 +103,7 @@ None of its own. The quest reward type is `friendship` (a data file field of a q
   owner's spec).
 - Only named villagers in a hall's village keep friendships: a name marks who the villager is to the player, and the
   hall makes the village a place that remembers (31.5).
-- Defending is the only favour with no daily limit, so protecting a village in a raid keeps paying (31.5).
+- Defending is the only favor with no daily limit, so protecting a village in a raid keeps paying (31.5).
 - The look-up never loads a chunk: it was reading chunks from disk on the server thread for every player each check
   (B93).
 - Hits are free at 0 points and do not start the minute, so nobody can be pushed to 0 and then be hit for nothing
@@ -111,12 +111,12 @@ None of its own. The quest reward type is `friendship` (a data file field of a q
 
 ## Known limits
 
-- Points are only added to named villagers in a village with a hall. Players are told nothing in chat when a favour
+- Points are only added to named villagers in a village with a hall. Players are told nothing in chat when a favor
   counts, only hearts puff over the villager.
 - No decay, no way to lose a friend's heart events once told, and no game rule: the one switch is `friendship`.
 - Differences from the roadmap spec, so nobody trusts the spec text over the code: the config default follows the
-  expansion gate (off until 1.5 is complete) rather than a plain `true`; the daily hand-in favour is shared between
-  hall quests and the requests board; a hit at 0 points costs nothing; the wedding and festival favours go to every
+  expansion gate (off until 1.5 is complete) rather than a plain `true`; the daily hand-in favor is shared between
+  hall quests and the requests board; a hit at 0 points costs nothing; the wedding and festival favors go to every
   player inside the village's area, not to those who stood at the ceremony.
 
 ## Proof

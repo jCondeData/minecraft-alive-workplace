@@ -71,6 +71,10 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 | The Lamplighters | a Porter (else anyone) | two Street Lamp blueprints for whoever finished it, and a chronicle line on the first lamplit night |
 | The Militia Drill | a Guard | drill day: at noon the next day every grown villager spars at the village's Training Dummies (the guards alone with none, by the hall), then a chronicle line ("... sparred at the dummies.", or "... sparred by the hall." with no dummy) |
 
+The Shift Bell, the lamplit line and the drill only happen at a village someone is near: with everyone gone (the hall's
+chunk loaded but not ticking, as at the edge of a player's view) the bell stays quiet, the lamplit line waits for a
+night someone is there, and the drill day passes without a drill, so a far village loads no chunk round its hall (B1232).
+
 Reform stories are `side` arcs: they run beside another story and don't count against `arcsAtOnce` or the cooldown.
 While one runs, its M30 step stays off the quest page. With `storyArcs` off, the story listed in `disabledArcs`, or when nobody of the
 trade lives there to ask, the steps go up on the quest page as before, and progress made either way carries over, a half-done step too:
@@ -178,7 +182,7 @@ with no dummies only the guards drill; a baby at the dummies doesn't), `QaReform
 villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies), QA's `QaDrillHallWords1102GameTests` (B797: "2 villagers sparred by the hall." and "1 villager" word for word, still "by the hall" across a restart mid-drill, and a village with a dummy still "at the dummies" across one) and QA's `QaReformAskers1102GameTests`
 (B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
 neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
-restart).
+restart), QA's `QaFarHall1114cBugTests` (B1232: a drill day at a hall nobody is near loads no chunk 32 blocks out).
 Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen

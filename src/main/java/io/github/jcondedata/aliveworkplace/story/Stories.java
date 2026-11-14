@@ -67,11 +67,11 @@ public final class Stories {
 		Entry e = data.entry(hall);
 		for (Quest q : List.copyOf(e.quests)) {
 			if (q.done()) { // B1220: moved on to the end while the hall wasn't loaded: paid now
-				finish(level, hall, entity, q, q.last == null ? null : level.getServer().getPlayerList().getPlayer(q.last));
+				finishOrWait(level, hall, entity, q);
 			}
 		}
 		boolean changed = PersonalRequests.overdue(level, hall, now) > 0; // a missed personal request costs friendship (31.9)
-		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due);
+		changed |= e.quests.removeIf(q -> q.due >= 0 && now >= q.due && !q.done()); // B1231: a finished one waiting for its helper stays
 		changed |= swapUnfinishable(level, hall, entity, e);
 		long today = Chronicle.day(level);
 		changed |= e.moods.removeIf(m -> m.until < today);
@@ -83,7 +83,7 @@ public final class Stories {
 					q.progress[i] = days;
 					changed = true;
 					if (q.done()) {
-						finish(level, hall, entity, q, q.last == null ? null : level.getServer().getPlayerList().getPlayer(q.last));
+						finishOrWait(level, hall, entity, q);
 					}
 				}
 			}
@@ -106,9 +106,22 @@ public final class Stories {
 		Arcs.round(level, hall, entity); // story arcs move on, end or begin (31.4)
 	}
 
-	/** The open quests of the hall's board (giver {@code hall}). */
+	/**
+	 * B1231: a quest finished (while its hall wasn't loaded) is paid to its last helper at the round; one who is offline
+	 * then keeps it waiting, done, until a round finds them online (never paid to nobody). A villager's own request pays
+	 * every helper, away ones included ({@link PersonalRequests#done}), so it is finished now.
+	 */
+	private static void finishOrWait(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, Quest q) {
+		ServerPlayer player = q.last == null ? null : level.getServer().getPlayerList().getPlayer(q.last);
+		if (player == null && q.last != null && !q.personal()) {
+			return;
+		}
+		finish(level, hall, entity, q, player);
+	}
+
+	/** The open quests of the hall's board (giver {@code hall}); a finished one waiting for its helper (B1231) takes no slot. */
 	static List<Quest> daily(Entry e) {
-		return e.quests.stream().filter(q -> q.giver.equals("hall")).toList();
+		return e.quests.stream().filter(q -> q.giver.equals("hall") && !q.done()).toList();
 	}
 
 	/** Puts an already resolved and located quest up in the village round {@code hall} (arcs, tests). */

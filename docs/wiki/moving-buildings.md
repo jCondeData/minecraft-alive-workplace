@@ -288,7 +288,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   everything it holds, so nothing packed is ever deleted (B1172, B1184): `MoveSite.dropPacked` puts it up for a moment
   at the first free spot above the crate with its packed data and breaks it there, so the block's own code drops what it
   holds however it keeps it (B1172's first fix read only an `Items` list, which lost a vault's emeralds and a lectern's
-  book). With no free spot within 16 blocks above, the block and its `Items` are dropped as items. A block with no data
+  book). With no free spot within 16 blocks above, the block and its `Items` are dropped as items, so what such a block
+  holds another way (a lectern's book) is lost: B1234, its failing test on the tests/mover-crate-roof-1114b branch. A block with no data
   (a plank) is skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
   workstation and would never move by itself.
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
@@ -396,6 +397,15 @@ B1219 (both failing tests are on the tests/create-mover-chains-1113e branch).
 `QaCreateMoverCrateSpot1111eBugCompatTests` (2, compat suite, the QA lane, B1184): an Item Vault with 48 emeralds and a
 lectern with its book, each moved a quarter turn onto a spot where a Mover's Crate was set down after the move was
 confirmed: all 48 emeralds and the book still exist (dropped on the crate).
+`QaMoverCrateDrop1114bGameTests` (4, the QA lane, B1184): a jukebox with its disc, a decorated pot with 40 emeralds and a
+shulker box with 64 emeralds and 5 bread, each where the chest stood so it lands on his crate: the move ends with one
+block skipped and the block and all it held still exist (the box's things inside its item); a lectern with its book over
+a crate roofed solid 15 high (the only room 16 up): the lectern and book dropped there, and nothing standing above the
+crate replaced for it.
+`QaMovePutBack1114bGameTests` (4, the QA lane, B1204): a move called off while the building is still coming down is
+refused a new spot ("The Mover is still putting it back...") until it stands, then taken; with one block left to put back
+still refused, with none left taken; another building's move planned and carried out while one is put back; and a move
+under way, not called off, never said to be put back (its row has no put-back line; Confirm says the under-way line).
 `QaMoverHomecomingSaves1111eGameTests` (4, the QA lane): a resident unloaded when his bed goes up is still waited for
 after a restart, his bed held half the wait later, and loaded back he sleeps in it; one who never comes back has the bed
 let go five days on, also after a restart, and another restart doesn't hold it again; a restart mid-move with him

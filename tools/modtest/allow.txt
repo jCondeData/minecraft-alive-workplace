@@ -10,6 +10,8 @@
 UUID of added entity already exists: (Vindicator|IronGolem)\['(Vindicator|Iron Golem)'
 # QaThreatFixes1031GameTests (B709) refuses the bandit camp's chief to prove the camp is then simply not made (and is made once allowed); the lair says why.
 made no camp near the village hall at BlockPos\{.*\}: its captain could not spawn
+# QaCaravanLoad1114eGameTests (B1233) loads a caravan list whose village name is cut off mid-write, to prove the entry is kept under its made-up name.
+A saved caravan village at -?\d+, -?\d+, -?\d+ has an unreadable name; using its made-up name
 # QaRoadGameTests ships three broken road style files in the test pack to prove each is skipped and the shipped styles still load (27.15).
 Skipping road style aliveworkplace_test:road_styles/qa_
 # QaRenewalGameTests loads five broken renewal lists through a fake resource manager to prove each is skipped and the good lists still load (27.21).

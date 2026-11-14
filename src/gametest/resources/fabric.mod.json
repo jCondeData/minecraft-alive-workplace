@@ -962,6 +962,7 @@
 			"io.github.jcondedata.aliveworkplace.test.UnloadedHallQuestsB1212GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1112cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarVillageName1114eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCaravanLoad1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEdictsBug1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHallLoads1114eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarVillageResumes1114e2BugTests",

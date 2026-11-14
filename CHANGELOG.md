@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A village on the caravan list whose saved name is missing or damaged (only by editing the save) no longer loses its trade routes and caravan data on load: it is kept and named with its made-up name (B1233).
 - A quest you finish for a far-away village (a kill or a place reached while nobody is near its Village Hall) is no longer lost if you log off before the village catches up: it waits, done and yours, and you get its pay, standing, friendship and chronicle line at the village's first round after you're back (B1231).
 - Less lag from far-away villages: a Militia Drill day at a village nobody is near no longer loads the chunks round its Village Hall; the drill, the Shift Bell and the lamplit chronicle line now happen only while someone is near the village (B1232).
 - A block a Mover can't put up because a Mover's Crate was set down on its spot is now dropped there with everything it holds, however it holds it: a Create Item Vault keeps its items, a lectern its book, a jukebox its disc. Before, only a chest's or barrel's items were dropped and the rest was deleted with the block (B1184).

@@ -214,7 +214,8 @@ festival. A festival or a Grand Chef's banquet goes on only while someone is nea
 loads the hall again (B1224), and one still on when someone comes back carries on (or is over, at dusk). A named Name Tag used on the hall names the village (the tag isn't used up; like the City Plan, the Village Ledger and
 the charter, it works from the off hand when the main hand is empty, B360); otherwise it gets a made-up
 name such as Thornholm. A blank name (only possible by commands) counts as none, on the hall and on the caravan list
-that names an unloaded village in `/workplace quests` and letters: the made-up name again, never an empty one (B1229).
+that names an unloaded village in `/workplace quests` and letters: the made-up name again, never an empty one (B1229). A caravan-list entry saved with no name or a broken one (a hand-edited save) keeps its trade routes, wants,
+last caravan day and banner color and takes the made-up name; before B1233 the whole entry was dropped.
 
 ## How it works
 
@@ -589,6 +590,8 @@ hall keeps its owner).
 QA's `QaFarVillageName1114eGameTests` (B1217: a far village is named without loading its hall: a renamed one by its
 saved name, through a save and load and in a letter, an old or broken entry and a never-listed village by the made-up
 name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back to the made-up name).
+`QaCaravanLoad1114eGameTests` (B1233: a caravan-list entry with no name and one with a broken name keep their place,
+wants, last caravan day, route and banner color through a reload, under the made-up name).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

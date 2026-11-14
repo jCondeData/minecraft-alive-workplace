@@ -391,7 +391,7 @@ public final class VillageWaystones {
 			BlockPos s = stone.get();
 			State state = !EXTENSION.call(x -> x.standing(level, s), false) ? State.BROKEN
 				: viewer != null && EXTENSION.call(x -> x.discovered(viewer, level, s), false) ? State.DISCOVERED : State.UNDISCOVERED;
-			Component name = level.isLoaded(at) ? VillageHalls.name(level, at) : v.getValue();
+			Component name = level.isLoaded(at) ? VillageHalls.name(level, at) : VillageHalls.savedName(v.getValue(), at); // B1244
 			out.add(new Village(at, name, s, state, at.equals(hall)));
 		}
 		out.sort(Comparator.comparing((Village v) -> !v.here()).thenComparingDouble(v -> v.stone().distSqr(hall)));

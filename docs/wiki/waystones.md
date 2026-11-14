@@ -4,7 +4,7 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2, 41.3, B996
+Roadmap items: 41.1, 41.2, 41.3, B996, B1244
 
 ## What a player sees
 
@@ -179,7 +179,9 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
 
 - An unloaded village is listed by its last kept stone and the name its last hall round saw; whether its stone stands
   is asked of Waystones' saved list (QA's `WaystoneMapQaCompatTests` checks a village 1,500 blocks off whose chunks
-  are unloaded: discovered for one player, not yet for another, never broken).
+  are unloaded: discovered for one player, not yet for another, never broken). A blank saved name (empty, only spaces,
+  or none at all in an older save) lists it by its made-up name instead, as the hall and letters do (B1244;
+  `QaWaystoneBlankName1114dBugTests`).
 
 - (41.3) The visible caravan party (33.7) only shows with a player near the village; the stones' sound and particles
   play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not

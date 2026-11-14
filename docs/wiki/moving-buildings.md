@@ -66,7 +66,9 @@ its new spot without it and the Mover keeps his workstation; move the crate your
 even half way, what went up at the new spot comes down again and everything goes back up where it was: the building's
 row opens on the planned spot at every stage of the move, with Call off, even once nothing is left at the old spot. Once
 the Mover has started, Confirm is gray and a new spot is refused ("The Mover is already moving it: call the move off
-first to pick another spot"); call it off, then pick again. Whoever confirmed the move is told when it's over.
+first to pick another spot"); call it off, then pick again. While a called-off move is still being put back, the
+building's row and its gray Confirm say "The Mover is still putting it back: pick a new spot once it stands again" and a
+new spot is refused; once the building stands where it was, Confirm takes one (B1204). Whoever confirmed the move is told when it's over.
 
 ![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
 
@@ -167,6 +169,9 @@ building (its placement's origin and turn), and the waiting move is cleared. The
 `PendingMoves` entry gone) cancels a started site. While a site is under way (`MovePage.underWay`: started, not
 canceled, not done), the picker takes the site's own plan (the building as the Mover captured it) instead of capturing the
 old spot, which may be empty by then (B1181), and Confirm is refused, so the saved move and the site never part (B1192).
+A canceled site not yet done (`MovePage.puttingBack`) refuses Confirm too, with `message.aliveworkplace.move.putting_back`,
+and lends the picker its plan the same way: `MoveSites.finish` clears the building's `PendingMoves` entry when the
+put-back ends, so a move saved in that window was dropped without a word (B1204). Nothing new is saved.
 
 **The residents (45.4).** `move/MoveResidents`. As a site starts (`MoveSites.begin`), every loaded villager within 128
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on
@@ -427,6 +432,11 @@ B1182): a site overlapping the hut by one column holds the move and one just bes
 edge from both sides); a site at the hut's coordinates in the Nether doesn't; another building's confirmed move goes
 ahead, whole, while the hut's waits; and a whole save (build sites, moves and Mover sites) keeps it held until the
 reloaded site is done.
+
+`QaMoveUnderWay1111eBugTests` (2, B1204): a move called off at STRUCTURE and half put back: a spot confirmed then is
+never a planned move that vanishes when the put-back ends (QA's reproduction); and, through a save and reload of the
+put-back, the row and the gray Confirm say the putting-back line word for word, the picker shows the whole building,
+nothing is planned, and once the building stands again Confirm takes the spot and the Mover carries the move out.
 
 ## Known limits
 

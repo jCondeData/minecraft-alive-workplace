@@ -407,9 +407,16 @@ a crate roofed solid 15 high (the only room 16 up): the lectern and book dropped
 crate replaced for it.
 `QaMoverCrateDrop1114bBugTests`, `QaMoverCrateDrop1114eBugTests` and `QaMoverCrateHolds1114cBugGameTests` (the QA lane,
 B1234-B1236, B1238): a lectern and a jukebox with the 16 blocks over the crate built up keep their book and disc, and a
-chiseled bookshelf on the crate is dropped itself with its book. `QaMoverCrateHolds1114cGameTests` (3, the bug lane):
-a decorated pot's gold and a chiseled bookshelf with no room above, and a crate walled in all round (every block
-within 2 stone: the lectern borrows the block over the crate, its book kept, the block put back).
+chiseled bookshelf on the crate is dropped itself with its book. `QaMoverCrateHolds1114cGameTests` (9, the QA lane):
+a jukebox, a decorated pot, a chiseled bookshelf, a furnace's three slots and a sign on the crate, two blocks on two
+crates, a lectern through reloads every 3 steps and under a 15-block column. `QaMoverCrateEdges1114bGameTests` (5, the
+QA lane, B1234-B1236, B1238): a barrel's three stacks and a lectern's book with the crate walled in all round and 16 up
+(every free spot kept filled until the drop): the waterlogged top-half stair on the crate is borrowed and stands again
+exactly as it stood, no stair dropped; a crate in a storage room (a barrel on every spot within 2): the barrel on the
+crate keeps every item and not one barrel round it is touched; and the bug lane's pot and bookshelf with no room above
+(restored: a merge had dropped them). `QaMoverCrateEdges1114bBugTests` (2, on `tests/mover-crate-lastresort-1114b`):
+a lectern in that storage room loses its book (the last resort reads back only a container), and an ender chest on the
+crate is dropped as 8 obsidian.
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.

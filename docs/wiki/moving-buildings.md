@@ -183,7 +183,9 @@ put-back ends, so a move saved in that window was dropped without a word (B1204)
 the site at once (`MoveSites.cancel`), so from that click the row and Confirm say it's being put back, not "call the
 move off first" (B1237: the site used to turn only on the Mover's next work step, all night while he sleeps).
 `QaMovePutBack1114cBugGameTests` (1, B1237): right after Call off, before any step, the row, Confirm's gray line and
-a pressed Confirm all say the put-back line, and nothing is saved.
+a pressed Confirm all say the put-back line, and nothing is saved. `QaMovePutBackVerify1114fGameTests` (4, the QA lane, B1237):
+called off and saved and loaded before any step, still put back; the Mover dead, the put-back line at once and 60 ticks
+later; called off while coming down; and a move never begun, called off, leaves nothing to put back (Confirm taken).
 
 **The residents (45.4).** `move/MoveResidents`. As a site starts (`MoveSites.begin`), every loaded villager within 128
 blocks whose home (`MemoryModuleType.HOME`, a bed's head) or job site (`JOB_SITE`) is in the building's box is noted on
@@ -427,7 +429,10 @@ crates, a lectern through reloads every 3 steps and under a 15-block column. `Qa
 QA lane, B1234-B1236, B1238): a barrel's three stacks and a lectern's book with the crate walled in all round and 16 up
 (every free spot kept filled until the drop): the waterlogged top-half stair on the crate is borrowed and stands again
 exactly as it stood, no stair dropped; a crate in a storage room (a barrel on every spot within 2): the barrel on the
-crate keeps every item and not one barrel round it is touched. `MoverCrateNoRoomB1234GameTests` (the bug lane): a decorated
+crate keeps every item and not one barrel round it is touched. `QaMoverCrateVerify1114fGameTests` (6, the QA lane, B1236):
+a bee nest, a sculk sensor and a sculk catalyst on the crate each dropped itself once; a chiseled bookshelf with no room
+above but air beside, itself and each of its 6 books once; walled in, the borrowed upside-down stair and the borrowed
+glass stand again exactly as they stood, nothing of theirs dropped. `MoverCrateNoRoomB1234GameTests` (the bug lane): a decorated
 pot's gold and a chiseled bookshelf with no room above. `QaMoverCrateEdges1114bBugTests` (2, the QA lane, B1246, B1247):
 a lectern in that storage room keeps its book (the last resort), and an ender chest on the crate is dropped as itself.
 `QaMoverCrateBorrow1114c3GameTests` (4, the QA lane): the borrowed block is a door's lower half (both halves stand as

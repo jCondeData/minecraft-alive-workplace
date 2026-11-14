@@ -12,7 +12,6 @@
 # Milestone 23: every shipped build reviewed, village house looks
 
 # Milestone 24: visual bugs, screens, words
-24.3
 
 # Milestone 26: the store page kit, the Guide Book, hygiene
 26.2 26.2a 26.3

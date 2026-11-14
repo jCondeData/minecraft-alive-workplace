@@ -12,6 +12,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWaterVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateVerify1114fGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateVerify1114fBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBackVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bBugTests",
@@ -432,6 +433,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCancelReload1110fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverResidentsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1110cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverResidents1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.InnShopCounterB1177GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRedrawn1111cGameTests",

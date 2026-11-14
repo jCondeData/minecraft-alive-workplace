@@ -180,8 +180,8 @@ public class QaMoverCrate1111bGameTests implements FabricGameTest {
 
 	/**
 	 * B1129, turned a quarter: the new spot's west wall column falls on his crate (an overlap of exactly one block). The
-	 * one wall block that would stand there is left out, his crate is never broken or dropped, he keeps it as his
-	 * workstation, and the rest of the house (with the chest's items) stands at the new spot.
+	 * one wall block that would stand there is left out (dropped as itself, B1253), his crate is never broken or dropped,
+	 * he keeps it as his workstation, and the rest of the house (with the chest's items) stands at the new spot.
 	 */
 	//$ gametest_batch AREA '"qaB1111CrateOverlapTurned"'
 	@GameTest(template = AREA, batch = "qaB1111CrateOverlapTurned")
@@ -199,7 +199,8 @@ public class QaMoverCrate1111bGameTests implements FabricGameTest {
 			helper.assertTrue(site.skipped() == 1, "skipped " + site.skipped() + ", not just the block where his crate stands");
 			String wrong = wrongAtNewSpot(level, s, Rotation.CLOCKWISE_90, crate);
 			helper.assertTrue(wrong == null, "the house at its new spot: " + wrong);
-			helper.assertTrue(MoverGameTests.loose(level, helper) == 0, "something was dropped: " + MoverGameTests.loose(level, helper) + " items");
+			String lying = MoverGameTests.looseOnlyOne(level, helper, on.state().getBlock().asItem());
+			helper.assertTrue(lying == null, "not just the one " + on.state().getBlock() + " dropped (B1253): " + lying);
 			helper.assertTrue(count(helper, Items.BREAD) == bread && count(helper, Items.EMERALD) == emeralds,
 				"the chest's items changed: bread " + bread + " -> " + count(helper, Items.BREAD) + ", emeralds " + emeralds + " -> " + count(helper, Items.EMERALD));
 			helper.succeed();

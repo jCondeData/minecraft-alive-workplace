@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.state.properties.Half;
  * sculk catalyst: nothing to a bare hand), and a chiseled bookshelf with six books (each once) with no room above but air
  * beside, on a walled-in crate whose borrowed block is an upside-down stair, and on one whose borrowed block is glass
  * (itself Silk-Touch-only: it must stand again, not drop). Plain blocks with no block entity (glass, a bookshelf, ice, an
- * ender chest) are QaMoverCrateVerify1114fBugTests (unregistered: they vanish, as B1129 left a plain wall block out). Same house and Mover as MoverCrateNoRoomB1234GameTests.
+ * ender chest) are QaMoverCrateVerify1114fBugTests (dropped as themselves since B1253). Same house and Mover as MoverCrateNoRoomB1234GameTests.
  */
 public class QaMoverCrateVerify1114fGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";

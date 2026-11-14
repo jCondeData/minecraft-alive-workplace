@@ -308,8 +308,10 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   its loot broken by hand, else its own item (a chiseled bookshelf drops only to Silk Touch: B1236). Only if no spot at
   all is found, the same drops are worked out from a block entity read back from the packed data, and every item that
   data holds is dropped: a container's slots, else any item saved anywhere in it (a lectern's book, Create's vault
-  `Inventory`: B1246, B1252), unless the block's own item keeps them (a shulker box), all at that open spot. A block with no data (a plank) is
-  skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
+  `Inventory`: B1246, B1252), unless the block's own item keeps them (a shulker box), all at that open spot. A block with no data (glass, ice, a
+  bookshelf, an ender chest, the wall's plank that lands there) drops as itself the same way at that open spot, worked
+  out without being placed, so ice leaves no water (B1253: nothing packed is lost; a wall's block counts too, since the
+  crate never moves and nobody would ever put that block back). A waiting step was ruled out because the crate is the Mover's
   workstation and would never move by itself.
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
@@ -384,7 +386,7 @@ half way (whoever broke it has it, not put up again, nothing doubled); called of
 (everything back, the new spot empty); two Movers sharing one site; his crate broken half way down (he waits, says why,
 and finishes once it's back); his own crate inside the house (it stays standing, the house moves without it and the move
 ends), also on a save from before the fix with the crate already packed (put back, the move ends); a move confirmed onto
-the spot where his crate stands (B1129: the crate isn't broken, only the one plank there is skipped, nothing dropped); `QaMoverCrate1111bGameTests` adds a chest whose spot is his crate (B1172: the chest and its 12 bread and 64 emeralds dropped there, none lost), a lectern there (B1184: the lectern and its book dropped there), a turned spot over the crate, a spot one block off it, reloads in every stage, the crate broken going down and going up, the Move page's crate refusals at the spot's edge, and B1154's 128-block line; config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
+the spot where his crate stands (B1129: the crate isn't broken, only the one plank there is skipped and dropped as itself, B1253); `QaMoverCrateVerify1114fBugTests` drops glass, a bookshelf, ice (no water left) and an ender chest landing there as themselves (B1253); `QaMoverCrate1111bGameTests` adds a chest whose spot is his crate (B1172: the chest and its 12 bread and 64 emeralds dropped there, none lost), a lectern there (B1184: the lectern and its book dropped there), a turned spot over the crate, a spot one block off it, reloads in every stage, the crate broken going down and going up, the Move page's crate refusals at the spot's edge, and B1154's 128-block line; config `movers` off (he does nothing, the house stands, the move waits, a jobless villager
 doesn't see the crate).
 
 `MoverBelongingsGameTests` (4, 45.5): a house with a chest (a named sword in it), a double chest, a barrel, a shulker
@@ -471,6 +473,11 @@ a Novice with no experience, keeps his job with his lectern packed even when his
 is held for him the moment it's put up; the builder's bench is his the moment it's put up, and his queued build's bench
 follows it; all of it through a save and reload every 7 steps (the residents and their inn beds survive); and a move
 called off half way gives everyone their old bed, lectern and bench back.
+`QaMoverResidents1114cGameTests` (QA lane, 4) adds the stay bed's order and the moment a bed is back: an inn with a
+free bed comes before a free bed nearer the Hall; with both inn beds someone's the resident sleeps in the bed by the
+Hall (the guests keep theirs) and it's given back after; with no inn and no free bed in the village the residents have no
+bed while the house is away (the neighbor keeps hers) and their own moved beds after; and the moved bed is the
+resident's, held, with her inn bed given back, as soon as both its halves stand, before the move is over.
 `QaInnShopCounter1111cGameTests` (QA lane, B1177) adds the inn's edges for the stay beds: with the inn's Shop Counter
 broken, its Innkeeper given No job or retrained as the counter's Shopkeeper, the residents stay by the Hall; with the
 Innkeeper asleep they still stay at the inn. `QaInnShopCounter1111cBugTests` (B1203): with the Innkeeper stepped out

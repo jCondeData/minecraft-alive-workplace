@@ -165,6 +165,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStoreScanCreate1111eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateGlassLoop1114eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaGlassCreate1114cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesTheHall1107eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateIntoProtectedVillage1107eCompatTests",

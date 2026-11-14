@@ -115,6 +115,17 @@ public final class JobSiteTickets extends SavedData {
 		return Optional.of(held.breaks() == breaks(level, site.pos()));
 	}
 
+	/**
+	 * {@code villager}'s job site in this level unless we know its ticket isn't theirs: a site broken and put back since they
+	 * got it (another villager may hold its record now) is stale, though vanilla keeps the memory while a workstation of the
+	 * kind stands there (B1228).
+	 */
+	public static Optional<BlockPos> heldSite(ServerLevel level, Villager villager) {
+		return villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+			.filter(g -> g.dimension().equals(level.dimension()) && theirs(level, villager, g).orElse(true))
+			.map(GlobalPos::pos);
+	}
+
 	@Override
 	public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
 		long[] spots = new long[breaks.size()];

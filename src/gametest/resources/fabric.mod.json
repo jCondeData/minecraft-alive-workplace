@@ -28,6 +28,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaUploadFluids1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateEdges1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateEdges1114bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateLastResort1114e2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateLastResort1114e2BugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStockVerify1111dGameTests",

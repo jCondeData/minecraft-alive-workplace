@@ -410,6 +410,11 @@ B1234-B1236, B1238): a lectern and a jukebox with the 16 blocks over the crate b
 chiseled bookshelf on the crate is dropped itself with its book. `QaMoverCrateHolds1114cGameTests` (3, the bug lane):
 a decorated pot's gold and a chiseled bookshelf with no room above, and a crate walled in all round (every block
 within 2 stone: the lectern borrows the block over the crate, its book kept, the block put back).
+`QaMoverCrateBorrow1114c3GameTests` (4, the QA lane): the borrowed block is a door's lower half (both halves stand as
+before, no door item), ice with a wall torch (ice again, no water, the torch kept), water all round (lectern and book
+dropped, the water back), and a barrel of 27 stacks over reloads (every count exact, the borrowed stone not doubled).
+Still open: an ender chest or campfire drops as its no-tool loot (obsidian, charcoal) instead of itself (B1248), a
+beehive's bees are lost (B1249), and lava can be borrowed, burning the drop (B1250).
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.

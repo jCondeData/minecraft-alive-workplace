@@ -404,6 +404,9 @@ empty unless a default is given here:
 - Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
   or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
   was lost without a word). The Steward's `steward` and `steward_desk` are still read whole (B821).
+- A village on the caravan list (`aliveworkplace_caravans`) whose saved name is missing or can't be read (an old or
+  hand-edited save) keeps its trade routes, wants, banner color, stations and tracks and is named by its made-up name
+  (B1233; before, the whole entry was dropped).
 
 The calendar keeps the last day it fired for with the overworld. Friends are saved in `aliveworkplace_friends`.
 Not saved: the census (counted again every 600 ticks) and the screen's layout. The Free job blocks page saves
@@ -507,8 +510,10 @@ point of interest, saved by Minecraft).
   there, as for any build. The page lists up to 36 builds.
 - A name made only of characters Java doesn't count as whitespace (no-break spaces, zero-width spaces; commands only)
   isn't treated as blank: the village is listed by it and reads empty.
-- B1233: a caravan-list entry saved with no name or a broken one (an old or hand-edited save) is skipped whole on load,
-  its trade routes, wants and banner color with it; the village is still named by its made-up name.
+- A caravan-list entry saved with no name, a broken one, or one that reads as no name (`{}`, `""`, a number; an old or
+  hand-edited save) is kept on load with its trade routes, wants, banner color, stations and track, under the village's
+  made-up name, which stays the same over later reloads; a warning is logged (B1233, fixed; it used to drop the entry
+  whole). Long and non-Latin names come back exactly (`CaravanSavedNameB1233GameTests`, `QaCaravanNames1114c3GameTests`).
 
 ## Proof
 
@@ -597,6 +602,11 @@ name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back
 `QaFarVillageBlankName1114e2GameTests` (B1229: whitespace and styled empty names, saved or from a Name Tag on a loaded
 hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
 paths, the round saves the made-up name, and a real name, spaces and all, still wins).
+`CaravanSavedNameB1233GameTests` and QA's `QaCaravanNames1114dGameTests` (B1233: a caravan-list entry saved with no
+name, an unreadable one, `null`, a name of the wrong kind such as a number, or JSON that isn't text keeps its routes,
+wants, banner color, stations and tracks and gets the village's made-up name, the same through further saves and loads;
+two broken entries get their own made-up names, a good name stays, and the hall's routes page and a colony charter list
+the village by its made-up name).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
 `hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end

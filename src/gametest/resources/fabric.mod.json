@@ -20,6 +20,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploadPreview1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUploadPreview1114bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUploadFluids1114bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateEdges1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStockVerify1111dGameTests",
@@ -455,6 +457,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateHolds1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateHolds1114cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MoverCrateNoRoomB1234GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateBorrow1114c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
@@ -1724,7 +1727,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaFarOffline1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReform1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCaravanLoad1114eBugTests",
-			"io.github.jcondedata.aliveworkplace.test.CaravanSavedNameB1233GameTests"
+			"io.github.jcondedata.aliveworkplace.test.CaravanSavedNameB1233GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCaravanNames1114dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStandDown1114dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCaravanNames1114c3GameTests"
 		]
 	},
 	"depends": {

@@ -622,6 +622,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidReachHeight1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSentryPostTaken1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSentryLeash1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatClockSaves1113dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",

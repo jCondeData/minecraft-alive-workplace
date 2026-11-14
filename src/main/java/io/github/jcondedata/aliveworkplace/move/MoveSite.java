@@ -574,12 +574,16 @@ public final class MoveSite {
 	 * itself (B1247, B1248: its loot as broken with Silk Touch, so an ender chest or a campfire is never its obsidian or
 	 * charcoal, and a beehive keeps its bees, B1249), else its loot broken by hand, else its own item. With no spot at
 	 * all, the same drops are worked out from a block entity read back from the packed data, and every item its data
-	 * holds is dropped by the crate, however it keeps them (B1246, B1252). A block with no data (a wall's plank) is left
-	 * out as before, nothing dropped (B1129).
+	 * holds is dropped by the crate, however it keeps them (B1246, B1252). A block with no data (glass, ice, a bookshelf,
+	 * an ender chest, a wall's plank) drops as itself the same way at the open spot nearest the crate, never placed (B1253).
 	 */
 	private void dropPacked(ServerLevel level, int j, BlockPos at, BlockState state) {
 		CompoundTag data = data(j);
 		if (data == null) {
+			// B1253: a block with no data (glass, a bookshelf, ice, an ender chest, a wall's plank) drops as itself too, worked
+			// out without placing it (so ice leaves no water), at the open spot nearest the crate: nothing packed is lost (B1172)
+			BlockEntity fresh = state.getBlock() instanceof net.minecraft.world.level.block.EntityBlock eb ? eb.newBlockEntity(at, state) : null;
+			land(level, at, at.above(), itself(level, at, state, fresh));
 			return;
 		}
 		BlockPos spot = dropSpot(level, at);

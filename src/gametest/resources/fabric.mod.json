@@ -13,6 +13,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStockVerify1111dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCarpenterSpare1114bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWonderCrafters1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrewPass1107bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1101GameTests",

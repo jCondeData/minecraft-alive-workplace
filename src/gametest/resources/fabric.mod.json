@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
@@ -959,6 +960,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QuestEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.UnloadedHallQuestsB1212GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1112cBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarVillageName1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEdictsBug1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHallLoads1114eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.UnloadedHallCountsB1220GameTests",

@@ -433,6 +433,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMovePage1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotBuild1111eBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotBuild1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111eGameTests",
@@ -1685,6 +1686,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaInnCounters1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnKeeperAway1111dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnKeeperGone1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.InnCountersB1203GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatesDawnEdge1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRallyBanner1111dGameTests",
@@ -1692,6 +1694,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveInnMutants1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveInnVerify1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuilt1111dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnRebuiltVerify1114dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarSiege1114dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFarLegendSite1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnRebuild1114cGameTests"
 		]
 	},

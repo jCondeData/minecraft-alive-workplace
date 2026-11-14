@@ -467,6 +467,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   siege saved without its over_by_ladder list loads with nobody over and goes on (the zombie inside counted over again within
   about 45 ticks, then saved); a new siege at the same village after a call-off remembers nobody over; two saves in a
   row keep the set, and one over the wall that died breaks nothing (every rung gone at the call-off).
+- A siege nobody is near (QA, lane D, 2026-11-14, B1225): `QaFarSiege1114dGameTests` (3, 10 of 10 runs): a far siege
+  past its dawn with ladders and a sand ramp saved stays saved and loads no chunk for 160 ticks; once its hall's chunk
+  ticks again it is lifted; a near siege is still marked over and lifted while a far one waits, and a near one whose dawn
+  is still to come stands.
 - Far villages (QA, lane E, 2026-11-14, B1225): `QaFarVillageResumes1114e2GameTests` (3 siege tests, 3 of 3 runs): a far
   siege read back after a restart loads no hall, gate, ladder or sand chunk and changes nothing for 120 ticks; once someone
   is back the raid ends, is lifted at once past its dawn and its ladder taken away, and before its dawn it waits for it.

@@ -510,6 +510,10 @@ point of interest, saved by Minecraft).
   there, as for any build. The page lists up to 36 builds.
 - A name made only of characters Java doesn't count as whitespace (no-break spaces, zero-width spaces; commands only)
   isn't treated as blank: the village is listed by it and reads empty.
+- A caravan-list entry saved with no name, a broken one, or one that reads as no name (`{}`, `""`, a number; an old or
+  hand-edited save) is kept on load with its trade routes, wants, banner color, stations and track, under the village's
+  made-up name, which stays the same over later reloads; a warning is logged (B1233, fixed; it used to drop the entry
+  whole). Long and non-Latin names come back exactly (`CaravanSavedNameB1233GameTests`, `QaCaravanNames1114c3GameTests`).
 
 ## Proof
 

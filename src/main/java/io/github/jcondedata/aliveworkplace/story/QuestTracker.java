@@ -210,9 +210,14 @@ public final class QuestTracker {
 		for (Map.Entry<BlockPos, Stories.Entry> en : List.copyOf(data.halls.entrySet())) {
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
+				// B1223: who may help is asked first, and a hall whose chunk isn't loaded isn't loaded for this (the place
+				// counts, and a quest it finishes is paid at the hall's next round, B1220)
 				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Reach reach && reach.inside(player.blockPosition())
-					&& level.getBlockEntity(en.getKey()) instanceof VillageHallBlockEntity entity && Stories.mayHelp(level, en.getKey(), q, player)) {
-					Stories.progress(level, en.getKey(), entity, q, i, 1, player);
+					&& Stories.mayHelp(level, en.getKey(), q, player)) {
+					VillageHallBlockEntity entity = Stories.ticking(level, en.getKey());
+					if (Stories.counts(level, en.getKey(), entity)) {
+						Stories.progress(level, en.getKey(), entity, q, i, 1, player);
+					}
 				}
 			}
 		}

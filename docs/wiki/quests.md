@@ -59,7 +59,9 @@ Roadmap items: 31.2, 31.3
   rest of the file loads (B763).
 - A hall's quests from before 1.5 (saved on the hall itself) move into the engine the first time its quests are
   looked at while its chunk is loaded. A hall nobody is near is never loaded for that: its open quests are listed and
-  kept as saved, and the old ones move in once it loads (B1212).
+  kept as saved, and the old ones move in once it loads (B1212). No kill, revival or place reached loads it either
+  (B1220, B1223): a kill or a place reached far from it still counts, and a quest that finishes is paid at the hall's
+  next round, once someone is near it; a grave revived for a request of that hall answers it then.
 
 ## Items, blocks, jobs, commands
 
@@ -88,4 +90,5 @@ tick with the switch off, where a bring goes, once per player or repeatable, kil
 `QaStoryVerify1103cGameTests` (two broken files each skipped with exactly one warning naming it, the real `/reload`, an
 arc's quest still going up and counting with the switch off) and `UnloadedHallQuestsB1212GameTests` (a hall in a chunk
 that isn't loaded stays unloaded through the errand tick and quest checks, keeps its request through save and reload,
-and its old quests move in once it loads).
+and its old quests move in once it loads) and `UnloadedHallCountsB1220GameTests` (a kill far from an unloaded hall
+counts and its quest is paid at the hall's next round; a revival while it's unloaded answers its request then).

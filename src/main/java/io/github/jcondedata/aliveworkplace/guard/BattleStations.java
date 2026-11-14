@@ -329,7 +329,8 @@ public final class BattleStations {
 			if (!siege.over && Sieges.ENABLED) {
 				Key key = new Key(level.dimension(), siege.hall);
 				live.add(key);
-				if (!onlyNew || !WATCHES.containsKey(key)) {
+				// B1225: a village nobody is near keeps its watch, and nothing loads its hall for it till someone is back
+				if ((!onlyNew || !WATCHES.containsKey(key)) && level.isPositionEntityTicking(siege.hall)) {
 					step(level, siege, WATCHES.computeIfAbsent(key, k -> new Watch()));
 				}
 			}
@@ -337,7 +338,7 @@ public final class BattleStations {
 		// The evening of a warned attack (32.14): the guards take their stations before the raiders come.
 		for (BlockPos hall : data.warnedHalls()) {
 			Key key = new Key(level.dimension(), hall);
-			if (!Sieges.ENABLED || live.contains(key) || data.siege(hall).isPresent() || !level.isLoaded(hall) || !Warnings.evening(level, hall)) {
+			if (!Sieges.ENABLED || live.contains(key) || data.siege(hall).isPresent() || !level.isPositionEntityTicking(hall) || !Warnings.evening(level, hall)) {
 				continue;
 			}
 			live.add(key);

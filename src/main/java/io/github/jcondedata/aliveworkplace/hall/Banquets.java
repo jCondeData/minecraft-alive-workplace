@@ -215,6 +215,9 @@ public final class Banquets {
 			return;
 		}
 		for (BlockPos hall : List.copyOf(on)) {
+			if (!level.isPositionEntityTicking(hall)) {
+				continue; // B1224: nobody is there; it stays in the list, and nothing loads the hall's chunk for it
+			}
 			if (!isOn(level, hall)) {
 				on.remove(hall);
 				continue;

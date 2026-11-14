@@ -284,7 +284,7 @@ public final class Ladders {
 	private static void tick(ServerLevel level) {
 		ThreatData data = ThreatData.get(level);
 		for (ThreatData.Siege siege : data.sieges()) {
-			if (siege.over) {
+			if (siege.over || !level.isPositionEntityTicking(siege.hall)) { // B1225: not while nobody is near the village
 				continue; // (the director takes the ladders away)
 			}
 			Optional<Culture> culture = data.raid(siege.hall).flatMap(r -> Threats.get(r.culture()));

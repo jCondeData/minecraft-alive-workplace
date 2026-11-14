@@ -474,3 +474,6 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   past its dawn with ladders and a sand ramp saved stays saved and loads no chunk for 160 ticks; once its hall's chunk
   ticks again it is lifted; a near siege is still marked over and lifted while a far one waits, and a near one whose dawn
   is still to come stands.
+- Far villages (QA, lane E, 2026-11-14, B1225): `QaFarVillageResumes1114e2GameTests` (3 siege tests, 3 of 3 runs): a far
+  siege read back after a restart loads no hall, gate, ladder or sand chunk and changes nothing for 120 ticks; once someone
+  is back the raid ends, is lifted at once past its dawn and its ladder taken away, and before its dawn it waits for it.

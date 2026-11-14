@@ -304,6 +304,7 @@
   "message.aliveworkplace.entities_left": "%s item frames, paintings or armor stands weren't put up: put them in the chests and hand the blueprint over again.",
   "message.aliveworkplace.entities_left.one": "%s item frame, painting or armor stand wasn't put up: put it in the chests and hand the blueprint over again.",
   "gamerule.workplaceLevelGround": "Alive Workplace: how many blocks around a finished build the builder levels the ground (0 = never)",
+  "gamerule.workplaceVillageFarms": "Alive Workplace: a village farmer with no field takes on the farm by their composter, once a chest is near it",
   "message.aliveworkplace.status.state.starting": "starting",
   "message.aliveworkplace.status.state.working": "working",
   "message.aliveworkplace.status.state.fetching": "fetching materials",

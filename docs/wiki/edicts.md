@@ -182,7 +182,7 @@ with no dummies only the guards drill; a baby at the dummies doesn't), `QaReform
 villager asks with no Bard, a mother with no Nurse, the ask names who asks), QA's `QaDrillNoDummiesBug1102Tests` (B797: with no dummy the drill line doesn't name dummies), QA's `QaDrillHallWords1102GameTests` (B797: "2 villagers sparred by the hall." and "1 villager" word for word, still "by the hall" across a restart mid-drill, and a village with a dummy still "at the dummies" across one) and QA's `QaReformAskers1102GameTests`
 (B632, B633 from the other side: the Bard asks though a Cheerful villager is about, the Nurse though a mother is; with
 neither, the story still starts and one villager asks; B634: the ask names the Farmer who asked, Bram, also after a
-restart), QA's `QaFarHall1114cBugTests` (B1232: a drill day at a hall nobody is near loads no chunk 32 blocks out).
+restart), QA's `QaFarHall1114cBugTests` (B1232: a drill day at a hall nobody is near loads no chunk 32 blocks out), QA's `QaReformNearHall1114c2GameTests` (a hall someone is near still rings its bell, drills and writes its lines; a far hall's lamplit line, held back, comes once on a later night someone is near, and its bell rings again).
 Showcase scene `reform_story`.
 
 A season under the edicts (30.22): `SEASON=true tools/packtest/run.sh` lays out a City of 35 with six farms, a kitchen

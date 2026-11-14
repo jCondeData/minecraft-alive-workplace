@@ -22,6 +22,7 @@ asks for the steps, `latest.log` and any crash report).
 - Scanning a box that holds only water, lava or a bubble column is now refused with "There's nothing built in that box" and keeps your Blank Blueprint, instead of saving a build the Blueprint Table showed with an empty picture (B1195).
 - A building whose called-off move is still being put back can no longer be sent to a new spot that was then silently forgotten: its row on the Move page and its gray Confirm now say "The Mover is still putting it back: pick a new spot once it stands again", and Confirm works as soon as the building stands where it was (B1204).
 - A builder no longer takes a blueprint placed on the spot a building is moving to; he says the spot is kept for that building's move, so the Mover never puts it up over a new house.
+- Shops: when the owner swaps a counter's goods (or changes its price) to a lot the shop's chests hold none of, a buyer's Confirm on the old row now says "Iron Ingot is sold out." instead of "Click Confirm again to buy that" for a row the list no longer shows (B1189).
 - Listing your quests with `/workplace quests`, or asking a relative to write a lost reply again, no longer loads a far-away village's hall just to say its name, which caused a small lag spike (B1217).
 
 - A Shop Counter that was an inn is no longer the village's inn after you break it and a Shopkeeper takes the new one, even while the old Innkeeper is far away; and an Innkeeper standing past the village's edge still makes his counter inside the village its inn.

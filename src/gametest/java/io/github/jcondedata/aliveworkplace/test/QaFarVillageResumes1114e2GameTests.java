@@ -96,8 +96,7 @@ public class QaFarVillageResumes1114e2GameTests implements FabricGameTest {
 		}
 		return () -> {
 			for (BlockPos h : halls) {
-				ChunkPos c = new ChunkPos(h);
-				level.setChunkForced(c.x, c.z, true);
+				FarChunks.bringBack(level, new ChunkPos(h)); // the chunks round it generated first (flaked 3 of 10 waiting on worldgen)
 			}
 			return true;
 		};

@@ -53,6 +53,9 @@ public class QaUnloadedHall1112cBugGameTests implements FabricGameTest {
 	public void listingQuestsWithAFarTrackedQuestDoesNotLoadItsHall(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.players(helper);
+		// a hall another batch left near this area (PrinterGameTests' 'Bring 16 Bread', in a full build) adds its quests
+		// to the list as the player's nearest village
+		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos hall = far(helper, 0);
 		Leftovers.after(helper, () -> Stories.Data.get(level).remove(hall));

@@ -381,9 +381,12 @@ public final class VillageHalls {
 		NEAREST.clear();
 	}
 
-	/** The village's name: the hall's own (from a Name Tag or an anvil), else one made up from where it stands. */
+	/**
+	 * The village's name: the hall's own (from a Name Tag or an anvil), else one made up from where it stands. A blank
+	 * custom name (only reachable by commands) counts as none (B1229).
+	 */
 	public static Component name(ServerLevel level, BlockPos hall) {
-		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && entity.getCustomName() != null) {
+		if (level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity && readable(entity.getCustomName())) {
 			return entity.getCustomName();
 		}
 		return madeUpName(hall);
@@ -392,14 +395,19 @@ public final class VillageHalls {
 	/**
 	 * {@link #name} without loading the hall's chunk (B1217): for a one-shot line that names a village that may be far
 	 * away (the quest list, a letter). A loaded hall gives its own name; an unloaded one the name its last round saved on
-	 * the caravan list, else the made-up one.
+	 * the caravan list, else (none saved, or a blank one) the made-up one.
 	 */
 	public static Component nameIfLoaded(ServerLevel level, BlockPos hall) {
 		if (level.isLoaded(hall)) {
 			return name(level, hall);
 		}
 		Caravans.Village known = Caravans.Data.get(level).village(hall);
-		return known != null ? known.name() : madeUpName(hall);
+		return known != null && readable(known.name()) ? known.name() : madeUpName(hall); // B1229: a blank saved name too
+	}
+
+	/** A name a player can read: not missing and not blank. */
+	private static boolean readable(@Nullable Component name) {
+		return name != null && !name.getString().isBlank();
 	}
 
 	/** "Oakbrook", "Ashford"... always the same for the same spot. */

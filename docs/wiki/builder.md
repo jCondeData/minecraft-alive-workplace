@@ -546,11 +546,13 @@ claims and trip counts.
 - The question in chat goes only to a player who is online when the Builder asks; otherwise it waits on the Repairs page.
 - A refresh (36.21) knows only the older drawings the mod ships (`data/aliveworkplace/blueprint_history/`, written by
   `tools/blueprints/history.py`: every earlier version of the blueprints changed since 1.0, and every version of the
-  Stone House line), and always the drawing of the latest release (its `v*` tag), so a build players put up from the
+  Stone House line), and always the drawing of every release since 1.0 (each `v*` tag), so a build players put up from a
   release before a redraw is always known (B661/B662: the Clinic before its real ward beds, B639, was missing, so an old
   Clinic with slab-and-carpet cots was offered no refresh; `history.py --check` lists any release drawing missing). A
-  build of an older drawing not shipped, an imported or uploaded build, and a modded-furniture
-  variant drawn only in the `modded/` files show no button. A furnished build (37.3) is matched as it was furnished:
+  build from the modded library (37.12) is matched against its modded copy's older drawings,
+  `blueprint_history/modded/<blueprint>/`, written the same way (B680: the tool skipped them, so a modded Clinic of
+  0.151.0 got no refresh to its white beds). A build of an older drawing not shipped and an imported or uploaded build
+  show no button. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
   (B642). A furnished build whose spots file has gained spots since it was furnished (the Terraces before B281) is
@@ -624,6 +626,9 @@ and reload keeps a player's block on an old piece's spot and one where a new pie
 no second refresh on the page.
 `QaClinicTerrace1028BugTests` (B661/B662, the tester's): a Clinic built from 0.151.0's drawing (one bed and three
 slab-and-carpet cots) is offered the refresh to real ward beds from the drawings the mod ships.
+`ModdedClinicRefreshCompatTests` (B680, with the pack's building mods, through the same page): a Clinic from the modded
+library built as 0.151.0 drew it is offered the refresh, taken up from that drawing, and ends as today's modded Clinic
+with white beds where the cots were; one built from today's modded drawing is offered none.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),

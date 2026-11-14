@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.OldHouses;
+import io.github.jcondedata.aliveworkplace.hall.Banquets;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.Festivals;
@@ -183,6 +184,44 @@ public class QaUnloadedHallLoads1114eBugTests implements FabricGameTest {
 				return;
 			}
 			helper.assertTrue(!loaded(level, hall), "the festival tick loaded the far hall's chunk again " + unloadedFor[0] + " ticks after it unloaded");
+			if (++unloadedFor[0] >= 120) {
+				helper.succeed();
+			}
+		});
+	}
+
+	/** Banquets (the Grand Chef's): the same as a festival, through Banquets.tick and Banquets.isOn every 40 ticks. */
+	//$ gametest_ticks_batch AREA '600' '"qa1114eBanquetUnloaded"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa1114eBanquetUnloaded")
+	public void aFarBanquetNeverLoadsItsHallAgainOnceUnloaded(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = far(helper, -7300, -7300);
+		helper.assertTrue(!loaded(level, hall), "setup: the far hall's chunk is already loaded");
+		long time = level.getDayTime();
+		Leftovers.after(helper, () -> {
+			level.setDayTime(time);
+			if (loaded(level, hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL)) {
+				level.setBlock(hall, Blocks.AIR.defaultBlockState(), 3);
+			}
+		});
+		level.setDayTime(Math.floorDiv(time, 24000L) * 24000L + Festivals.START + 500);
+		level.getChunk(hall);
+		level.setBlock(hall, ModBlocks.VILLAGE_HALL.defaultBlockState(), 3);
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setBanquet(Chronicle.day(level), true); // today's banquet, already eaten (no feast to set out)
+		Banquets.round(level, hall, entity);
+		helper.assertTrue(Banquets.isOn(level, hall), "setup: the banquet isn't on");
+
+		int[] unloadedFor = {-1};
+		helper.onEachTick(() -> {
+			if (unloadedFor[0] < 0) {
+				if (!loaded(level, hall)) {
+					unloadedFor[0] = 0;
+				}
+				return;
+			}
+			helper.assertTrue(!loaded(level, hall), "the banquet tick loaded the far hall's chunk again " + unloadedFor[0] + " ticks after it unloaded");
 			if (++unloadedFor[0] >= 120) {
 				helper.succeed();
 			}

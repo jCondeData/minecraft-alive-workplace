@@ -63,7 +63,7 @@ dead with no grave (or turned into a witch by lightning) they fall 7 days later 
   the world is already taken.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
   the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
-  every 5 seconds for each player; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
+  every 5 seconds for each player; only villages whose hall is loaded, with someone near it, are looked at, B1222; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
   `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
   each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
   breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank

@@ -63,7 +63,8 @@ dead with no grave (or turned into a witch by lightning) they fall 7 days later 
   the world is already taken.
 - *Found* (29.9): at a ruined portal, a pillager outpost or a shipwreck, for a player who owns (or is a friend of
   the owner of) a qualifying hall within 1500 blocks, with the Legend's slot free and their conditions met (checked
-  every 5 seconds for each player; only villages whose hall is loaded, with someone near it, are looked at, B1222; the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
+  every 5 seconds for each player; only villages whose hall is loaded, with someone near it, are looked at, B1222 (a nearer far hall is skipped and the
+  next loaded one gets the Legend; `QaFarLegendSite1114dGameTests`); the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
   `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
   each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
   breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank
@@ -326,6 +327,10 @@ edge (asleep, on a walk) still keeps his Shop Counter the inn (the counters Innk
 `QaMoveInnVerify1111cGameTests` (QA lane): an Innkeeper in an unloaded chunk keeps his Shop Counter the inn through a
 save and reload; one given No job or killed while out past the edge leaves no inn; the edge (11 yes, 10 no) holds with
 him away too.
+`QaInnKeeperGone1114dGameTests` (QA lane D, 2026-11-14): with the Innkeeper away, his counter broken leaves no inn, and
+him turned Farmer leaves none and forgets the counter; a remembered counter of an Innkeeper the level doesn't have (an
+unloaded chunk) is the inn only while its job-site ticket is held, and no inn once it is freed (kills the mutant that
+counts a free counter).
 Bugs B1213, B1214, B1215: a Shop Counter that is broken (by a player, an explosion, or replaced by another block) is
 forgotten, so one put back for a Shopkeeper is a shop, not the inn of its old Innkeeper in an unloaded chunk; only turning
 the counter keeps it. An Innkeeper who has only ever stood past the village's edge still makes his counter inside the

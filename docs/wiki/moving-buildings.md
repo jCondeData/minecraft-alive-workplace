@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1185
 
 ## What a player sees
 
@@ -68,7 +68,11 @@ row opens on the planned spot at every stage of the move, with Call off, even on
 the Mover has started, Confirm is gray and a new spot is refused ("The Mover is already moving it: call the move off
 first to pick another spot"); call it off, then pick again. While a called-off move is still being put back, the
 building's row and its gray Confirm say "The Mover is still putting it back: pick a new spot once it stands again" and a
-new spot is refused; once the building stands where it was, Confirm takes one (B1204). Whoever confirmed the move is told when it's over.
+new spot is refused; once the building stands where it was, Confirm takes one (B1204). The other way round (B1185), `Builders.assign` asks
+`MoveFit.moving` too: a builder handed a blueprint whose footprint (turned or mirrored, on x and z) overlaps a planned
+or under-way move's new spot refuses it with "That spot is kept for <building>, which is moving there."
+(`message.aliveworkplace.assign.move_spot`), also for a sneak take-down and after a save and reload; a spot one block
+clear is taken, and the spot is free once the move is over or called off and put back (QaMoveSpotBuild1114bGameTests). Whoever confirmed the move is told when it's over.
 
 ![The Mover half way](https://jcondedata.github.io/minecraft-alive-workplace/mover/still-2.jpg)
 

@@ -33,6 +33,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.Clearable;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -43,10 +44,13 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LecternBlock;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.LecternBlockEntity;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.phys.AABB;
 
@@ -240,6 +244,32 @@ public class QaMoverCrate1111bGameTests implements FabricGameTest {
 			assertDoneCrateKept(helper, level, s, site, "the chest's spot over the crate");
 			helper.assertTrue(count(helper, Items.BREAD) == 12 && count(helper, Items.EMERALD) == 64,
 				"the chest's items were lost: " + count(helper, Items.BREAD) + " bread and " + count(helper, Items.EMERALD) + " emeralds left of 12 and 64");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B1184: the same spot, but a lectern holding a book stands where the chest stood (it holds its book without an Items
+	 * list). His crate stays, and neither the lectern nor its book is deleted: both lie on top of his crate.
+	 */
+	//$ gametest_batch AREA '"qaB1184CrateUnderLectern"'
+	@GameTest(template = AREA, batch = "qaB1184CrateUnderLectern")
+	public void aLecternWhoseSpotIsHisCrateKeepsItsBook(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		MoverGameTests.Setup s = crateInside(helper, "qacratelectern", new BlockPos(4, 2, 4), Rotation.NONE);
+		BlockPos chest = helper.absolutePos(new BlockPos(4, 3, 4));
+		Clearable.tryClear(level.getBlockEntity(chest));
+		level.setBlock(chest, Blocks.LECTERN.defaultBlockState().setValue(LecternBlock.HAS_BOOK, true), Block.UPDATE_CLIENTS);
+		helper.assertTrue(level.getBlockEntity(chest) instanceof LecternBlockEntity, "setup: no lectern");
+		((LecternBlockEntity) level.getBlockEntity(chest)).setBook(new ItemStack(Items.WRITABLE_BOOK));
+		helper.runAfterDelay(2, () -> {
+			MovePlan.Placed on = landingOn(s, Rotation.NONE, helper.absolutePos(OWN_CRATE));
+			helper.assertTrue(on != null, "setup: nothing lands on his crate");
+			MoveSite site = work(level, s, x -> false);
+			assertDoneCrateKept(helper, level, s, site, "the lectern's spot over the crate");
+			helper.assertTrue(site.skipped() == 1, "skipped " + site.skipped() + ", not just the lectern where his crate stands");
+			helper.assertTrue(count(helper, Items.WRITABLE_BOOK) == 1, "the lectern's book was lost: " + count(helper, Items.WRITABLE_BOOK) + " lie loose");
+			helper.assertTrue(count(helper, Items.LECTERN) == 1, "the lectern was lost: " + count(helper, Items.LECTERN) + " lie loose");
 			helper.succeed();
 		});
 	}

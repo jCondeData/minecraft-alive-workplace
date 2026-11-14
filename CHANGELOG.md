@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Less lag from far-away villages: killing a monster, a villager being revived, standing at a quest's place or at a ruined portal, outpost or shipwreck no longer loads a far village's hall. A kill or a place reached still counts for its quests, and a quest it finishes is paid (or a revival answers its request) when someone is next near that village; Legends are found at sites only for villages someone is near (B1220, B1222, B1223).
 - Scanning a box that holds only water, lava or a bubble column is now refused with "There's nothing built in that box" and keeps your Blank Blueprint, instead of saving a build the Blueprint Table showed with an empty picture (B1195).
 - A builder no longer takes a blueprint placed on the spot a building is moving to; he says the spot is kept for that building's move, so the Mover never puts it up over a new house.
 - Listing your quests with `/workplace quests`, or asking a relative to write a lost reply again, no longer loads a far-away village's hall just to say its name, which caused a small lag spike (B1217).

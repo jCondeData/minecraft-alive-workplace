@@ -108,11 +108,8 @@ public class QaFarSiege1114dGameTests implements FabricGameTest {
 				return;
 			}
 			if (ticks[0] == 80) {
-				FarChunks.bringBack(level, chunk);
-				return;
-			}
-			if (!level.isPositionEntityTicking(hall)) {
-				helper.assertTrue(ticks[0] < 800, "setup: the force-loaded hall chunk never became entity-ticking");
+				level.setChunkForced(chunk.x, chunk.z, true);
+				FarChunks.awaitEntityTicking(helper, hall); // by the clock: it waits for world generation (B1242)
 				return;
 			}
 			if (data.siege(hall).isEmpty()) {

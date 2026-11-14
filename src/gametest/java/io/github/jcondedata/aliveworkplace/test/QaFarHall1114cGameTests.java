@@ -298,7 +298,8 @@ public class QaFarHall1114cGameTests implements FabricGameTest {
 				helper.assertTrue(!loaded(level, hall), "the far siege loaded its hall's chunk (tick " + ticks[0] + ")");
 				helper.assertTrue(data.siege(hall).isPresent(), "the far siege was lifted while nobody was near (tick " + ticks[0] + ")");
 				if (ticks[0] == 60) {
-					FarChunks.bringBack(level, new net.minecraft.world.level.ChunkPos(cx, cz)); // someone is back
+					level.setChunkForced(cx, cz, true); // someone is back
+					FarChunks.awaitEntityTicking(helper, hall); // by the clock: it waits for world generation (B1242)
 				}
 				return;
 			}

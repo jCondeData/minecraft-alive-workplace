@@ -17,6 +17,7 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A blueprint file uploaded at the Blueprint Table (or imported with /workplace import) that holds only water or only lava is now refused like an empty file, instead of being listed with an empty picture; a build with a pond in it still imports, as does a lone chest (B1239).
 - A village whose saved name was missing or damaged (a hand-edited or broken save) is no longer wiped from the caravan list on load, taking its trade routes, wants, banner color, stations and track with it: it keeps all of that and goes by its made-up name until its Village Hall next does its round (B1233).
 - A quest you finish for a far-away village (a kill or a place reached while nobody is near its Village Hall) is no longer lost if you log off before the village catches up: it waits, done and yours, and you get its pay, standing, friendship and chronicle line at the village's first round after you're back (B1231).
 - Less lag from far-away villages: a Militia Drill day at a village nobody is near no longer loads the chunks round its Village Hall; the drill, the Shift Bell and the lamplit chronicle line now happen only while someone is near the village (B1232).

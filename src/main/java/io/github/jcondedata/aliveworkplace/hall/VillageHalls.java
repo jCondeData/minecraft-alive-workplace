@@ -389,6 +389,19 @@ public final class VillageHalls {
 		return madeUpName(hall);
 	}
 
+	/**
+	 * {@link #name} without loading the hall's chunk (B1217): for a one-shot line that names a village that may be far
+	 * away (the quest list, a letter). A loaded hall gives its own name; an unloaded one the name its last round saved on
+	 * the caravan list, else the made-up one.
+	 */
+	public static Component nameIfLoaded(ServerLevel level, BlockPos hall) {
+		if (level.isLoaded(hall)) {
+			return name(level, hall);
+		}
+		Caravans.Village known = Caravans.Data.get(level).village(hall);
+		return known != null ? known.name() : madeUpName(hall);
+	}
+
 	/** "Oakbrook", "Ashford"... always the same for the same spot. */
 	public static Component madeUpName(BlockPos hall) {
 		long seed = hall.asLong() * 0x9E3779B97F4A7C15L;

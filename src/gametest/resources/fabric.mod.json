@@ -427,6 +427,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveRefusals1110cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePage1111cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotSaves1111eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotBuild1111eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveUnderWay1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaInnShopCounter1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCallOff1111eBugTests",
@@ -623,6 +624,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRaidReachHeight1104dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSentryPostTaken1103dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSentryLeash1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaThreatClockSaves1113dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeDamage1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisingsWall1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLairBounty1108dGameTests",
@@ -948,6 +950,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallIconGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestEngineGameTests",
 			"io.github.jcondedata.aliveworkplace.test.UnloadedHallQuestsB1212GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1112cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFriendshipGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GiftGameTests",
@@ -1670,7 +1673,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaGatesDawnEdge1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRallyBanner1111dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveInnVerify1111cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaMoveInnMutants1111cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaMoveInnMutants1111cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoveInnVerify1111cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaInnRebuilt1111dBugTests"
 		]
 	},
 	"depends": {

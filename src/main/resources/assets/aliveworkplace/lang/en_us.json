@@ -271,6 +271,7 @@
   "message.aliveworkplace.assign.too_far_village": "That spot is outside %s and %s blocks from the builder's Blueprint Table — keep it within %s.",
   "message.aliveworkplace.assign.work_block": "workstation",
   "message.aliveworkplace.assign.overlaps": "That spot overlaps another build in progress (%s).",
+  "message.aliveworkplace.assign.move_spot": "That spot is kept for %s, which is moving there.",
   "message.aliveworkplace.assign.started": "%s will build %s! Put the materials in chests within %s blocks of their Blueprint Table.",
   "message.aliveworkplace.assign.over_top": "The top of %s reaches over the world's build limit (y %s). Nothing can stand up there, so those blocks will be left out and need no materials.",
   "message.aliveworkplace.assign.under_bottom": "The bottom of %s reaches below the bottom of the world (y %s). Nothing can be built down there, so those blocks will be left out and need no materials.",

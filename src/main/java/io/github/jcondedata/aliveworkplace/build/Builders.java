@@ -375,6 +375,13 @@ public final class Builders {
 				io.github.jcondedata.aliveworkplace.wonder.Wonders.name(wonder.get().wonder())), ChatFormatting.RED);
 			return InteractionResult.CONSUME;
 		}
+		// B1185: a building's planned or under-way move will stand there (the Mover puts it up over whatever is in the way)
+		for (io.github.jcondedata.aliveworkplace.move.MoveFit.Other move : io.github.jcondedata.aliveworkplace.move.MoveFit.moving(level, null)) {
+			if (move.box().minX() <= box.maxX() && move.box().maxX() >= box.minX() && move.box().minZ() <= box.maxZ() && move.box().maxZ() >= box.minZ()) {
+				tell(player, Component.translatable("message.aliveworkplace.assign.move_spot", move.name()), ChatFormatting.RED);
+				return InteractionResult.CONSUME;
+			}
+		}
 		// B718: a build (or take-down) reaching into a protected village the player may not change is refused, wherever
 		// its click lies; he's told whose village it is
 		if (!io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayChange(level, player, box)) {

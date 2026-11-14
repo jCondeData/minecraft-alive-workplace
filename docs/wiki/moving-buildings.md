@@ -293,11 +293,17 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   `MoveSite.dropPacked` puts it up for a moment with its packed data and takes it away again, so the block's own code
   spills what it holds however it keeps it (B1172's first fix read only an `Items` list, which lost a vault's emeralds
   and a lectern's book). The spot (`MoveSite.dropSpot`) is the first free one within 16 blocks above the crate, else the
-  nearest free one within 2 round it, else a plain block above or round it (no block entity, not unbreakable) borrowed
-  for that moment and put back as it stood, with no neighbor told. The block itself drops as its loot broken by hand, or
-  as its own item when that loot is nothing (a chiseled bookshelf drops only to Silk Touch: B1236). Only if no spot at
-  all is found, the block's item and its contents read back into a block entity of its kind (any container) are dropped
-  as items. A block with no data (a plank) is skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
+  nearest free one within 2 round it, else a plain block above or round it (no block entity, not unbreakable, never a
+  liquid: lava would burn the drop, B1250) borrowed for that moment and put back as it stood, with no neighbor told;
+  what a borrowed spot spills is picked up and dropped with the block at the nearest open spot within 8 (air on a floor,
+  no liquid touching it: `MoveSite.land`), never left inside the borrowed block to drift out into lava. The
+  block itself drops as itself (`MoveSite.itself`): its loot as broken with Silk Touch, so an ender chest or a campfire
+  is never its obsidian or charcoal (B1247, B1248) and a beehive or bee nest keeps its bees inside its item (B1249), else
+  its loot broken by hand, else its own item (a chiseled bookshelf drops only to Silk Touch: B1236). Only if no spot at
+  all is found, the same drops are worked out from a block entity read back from the packed data, and every item that
+  data holds is dropped: a container's slots, else any item saved anywhere in it (a lectern's book, Create's vault
+  `Inventory`: B1246, B1252), unless the block's own item keeps them (a shulker box), all at that open spot. A block with no data (a plank) is
+  skipped with nothing dropped (B1129). A waiting step was ruled out because the crate is the Mover's
   workstation and would never move by itself.
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
@@ -418,14 +424,15 @@ QA lane, B1234-B1236, B1238): a barrel's three stacks and a lectern's book with 
 (every free spot kept filled until the drop): the waterlogged top-half stair on the crate is borrowed and stands again
 exactly as it stood, no stair dropped; a crate in a storage room (a barrel on every spot within 2): the barrel on the
 crate keeps every item and not one barrel round it is touched. `MoverCrateNoRoomB1234GameTests` (the bug lane): a decorated
-pot's gold and a chiseled bookshelf with no room above. Open (B1246, B1247; two bug tests on the branch
-`tests/mover-crate-lastresort-1114b`): a lectern in that storage room loses its book (the last resort reads back only a container), and an ender chest on the
-crate is dropped as 8 obsidian.
+pot's gold and a chiseled bookshelf with no room above. `QaMoverCrateEdges1114bBugTests` (2, the QA lane, B1246, B1247):
+a lectern in that storage room keeps its book (the last resort), and an ender chest on the crate is dropped as itself.
 `QaMoverCrateBorrow1114c3GameTests` (4, the QA lane): the borrowed block is a door's lower half (both halves stand as
 before, no door item), ice with a wall torch (ice again, no water, the torch kept), water all round (lectern and book
 dropped, the water back), and a barrel of 27 stacks over reloads (every count exact, the borrowed stone not doubled).
-Also open: a campfire drops as 2 charcoal instead of itself (B1248, with B1247's ender chest), a
-beehive's bees are lost (B1249), and lava can be borrowed, burning the drop (B1250).
+`QaMoverCrateBorrow1114c3BugGameTests` (4, the QA lane, B1247-B1250): an ender chest and a campfire with 2 beef are
+dropped as themselves (no obsidian, no charcoal, the beef loose), a beehive's 2 bees are kept (in the hive's item), and
+lava over a walled-in crate is never borrowed (the lectern and its book kept). `QaCreateMoverCrateLastResort1114eBugCompatTests`
+(compat suite, B1252): an Item Vault with 48 emeralds on a crate in a storage room is dropped with all 48.
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.

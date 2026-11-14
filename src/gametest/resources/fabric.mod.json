@@ -15,6 +15,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1114bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrop1114bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrop1114bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStock1111bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSharedStockVerify1111dGameTests",

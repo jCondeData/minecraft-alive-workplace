@@ -181,7 +181,9 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   is asked of Waystones' saved list (QA's `WaystoneMapQaCompatTests` checks a village 1,500 blocks off whose chunks
   are unloaded: discovered for one player, not yet for another, never broken). A blank saved name (empty, only spaces,
   or none at all in an older save) lists it by its made-up name instead, as the hall and letters do (B1244;
-  `QaWaystoneBlankName1114dBugTests`).
+  `QaWaystoneBlankName1114dBugTests`). A tab, a newline or an empty name with only a color count as blank too, and
+  the made-up name is the same one after a restart; a far village saved under a real name keeps it, and the village
+  whose Map is open is named by its own hall whatever the list saved (QA, `QaWaystoneBlankNameVerify1114dCompatTests`).
 
 - (41.3) The visible caravan party (33.7) only shows with a player near the village; the stones' sound and particles
   play where the stone's chunk is loaded. The scene `waystone_caravan` films it; the compat tests check the trip, not

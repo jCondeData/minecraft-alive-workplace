@@ -157,3 +157,7 @@ refused on two turns running; the battle goes on), `QaTrainerBattle1111dCompatTe
 (the player's Pokémon knocked out one by one, the next one picked as a player does; the battle ends) and
 `QaTrainerBattle1111dCompatTests.aTrainersBadForcedSwitchDoesNotStopTheBattle` (a trainer's forced switch that picks
 its fainted Pokémon; the battle still ends).
+
+QA (lane D, 2026-11-14, B43): `QaTrainerRefusedEveryTurn1114dCompatTests.aTrainerRefusedOnFiveTurnsInARowStillBattlesOn`
+(Cobblemon): the trainer's choice refused on five turns in a row, more refusals than one request's limit of 3, and the
+battle still reaches turn 6 (the limit counts per request; kills the mutant that never resets the count).

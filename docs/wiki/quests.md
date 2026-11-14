@@ -91,4 +91,8 @@ tick with the switch off, where a bring goes, once per player or repeatable, kil
 arc's quest still going up and counting with the switch off) and `UnloadedHallQuestsB1212GameTests` (a hall in a chunk
 that isn't loaded stays unloaded through the errand tick and quest checks, keeps its request through save and reload,
 and its old quests move in once it loads) and `UnloadedHallCountsB1220GameTests` (a kill far from an unloaded hall
-counts and its quest is paid at the hall's next round; a revival while it's unloaded answers its request then).
+counts and its quest is paid at the hall's next round; a revival while it's unloaded answers its request then) and `QaUnloadedHall1114eGameTests` (a visited far hall with a request unloads with the level's own quest ticks as soon
+as a control hall; tracking and accepting by id never load a far hall) and `QaFarVillageName1114eGameTests` (a far,
+unloaded village is named in `/workplace quests` and in a letter written again by its own name as its last round saved
+it, through a save and load word for word, else by its made-up name, also for a saved entry with no name or a broken
+one, and its hall stays unloaded).

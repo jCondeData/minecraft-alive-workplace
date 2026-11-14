@@ -108,7 +108,7 @@ public class QaFarSiege1114dGameTests implements FabricGameTest {
 				return;
 			}
 			if (ticks[0] == 80) {
-				level.setChunkForced(chunk.x, chunk.z, true);
+				FarChunks.bringBack(level, chunk);
 				return;
 			}
 			if (!level.isPositionEntityTicking(hall)) {

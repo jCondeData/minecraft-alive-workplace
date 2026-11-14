@@ -3,6 +3,8 @@ package io.github.jcondedata.aliveworkplace.test;
 import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.OldHouses;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
+import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.Festivals;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.legend.LegendSites;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
@@ -141,5 +143,49 @@ public class QaUnloadedHallLoads1114eBugTests implements FabricGameTest {
 		helper.assertTrue(quest.progress[0] == 0, "a player who may not help moved the request on");
 		helper.assertTrue(!loaded(level, hall), "the reach check loaded the far hall's chunk for a player who may not help");
 		helper.succeed();
+	}
+
+	/**
+	 * Festivals: a far village's festival is on (its round put the hall in the festival list) when everyone leaves. The
+	 * festival tick (every 40 ticks) asks Festivals.isOn, which looks the hall's block entity up, so the hall's chunk is
+	 * loaded again every 2 seconds until the festival ends at dusk. Expected: once its chunk has unloaded, nothing of the
+	 * festival loads it again (watched for 120 ticks after it first unloaded).
+	 */
+	//$ gametest_ticks_batch AREA '600' '"qa1114eFestivalUnloaded"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qa1114eFestivalUnloaded")
+	public void aFarFestivalNeverLoadsItsHallAgainOnceUnloaded(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = far(helper, -7000, -7000);
+		helper.assertTrue(!loaded(level, hall), "setup: the far hall's chunk is already loaded");
+		long time = level.getDayTime();
+		Leftovers.after(helper, () -> {
+			level.setDayTime(time);
+			if (loaded(level, hall) && level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL)) {
+				level.setBlock(hall, Blocks.AIR.defaultBlockState(), 3);
+			}
+		});
+		// Festival time today (the festival starts at 9000), and the far village's festival is today.
+		level.setDayTime(Math.floorDiv(time, 24000L) * 24000L + Festivals.START + 500);
+		level.getChunk(hall);
+		level.setBlock(hall, ModBlocks.VILLAGE_HALL.defaultBlockState(), 3);
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		entity.setFestivalDay(Chronicle.day(level));
+		Festivals.round(level, hall, entity, 0);
+		helper.assertTrue(Festivals.isOn(level, hall), "setup: the festival isn't on");
+
+		int[] unloadedFor = {-1};
+		helper.onEachTick(() -> {
+			if (unloadedFor[0] < 0) {
+				if (!loaded(level, hall)) {
+					unloadedFor[0] = 0;
+				}
+				return;
+			}
+			helper.assertTrue(!loaded(level, hall), "the festival tick loaded the far hall's chunk again " + unloadedFor[0] + " ticks after it unloaded");
+			if (++unloadedFor[0] >= 120) {
+				helper.succeed();
+			}
+		});
 	}
 }

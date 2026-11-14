@@ -470,10 +470,10 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 - A far siege (QA, lane C, 2026-11-14, B1225): `QaFarHall1114cGameTests#aFarSiegePastItsDawnWaitsAndIsLiftedOnceSomeoneIsBack`:
   a siege whose raid is over and whose dawn has passed is neither lifted nor loads its hall's chunk for 60 ticks while
   nobody is near, and is lifted once the village's chunk is loaded and ticking again.
-- A siege nobody is near (QA, lane D, 2026-11-14, B1225): `QaFarSiege1114dGameTests` (3, 10 of 10 runs): a far siege
+- A siege nobody is near (QA, lane D, 2026-11-14, B1225): `QaFarSiege1114dGameTests` (4, 5 to 10 of as many runs): a far siege
   past its dawn with ladders and a sand ramp saved stays saved and loads no chunk for 160 ticks; once its hall's chunk
   ticks again it is lifted; a near siege is still marked over and lifted while a far one waits, and a near one whose dawn
-  is still to come stands.
+  is still to come stands; a far village warned of tonight's attack loads nothing at dusk (the guards' stations wait).
 - Far villages (QA, lane E, 2026-11-14, B1225): `QaFarVillageResumes1114e2GameTests` (3 siege tests, 3 of 3 runs): a far
   siege read back after a restart loads no hall, gate, ladder or sand chunk and changes nothing for 120 ticks; once someone
   is back the raid ends, is lifted at once past its dawn and its ladder taken away, and before its dawn it waits for it.

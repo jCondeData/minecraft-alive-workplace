@@ -60,7 +60,16 @@ public final class BlueprintImporter {
 	public static Imported importAs(MinecraftServer server, ResourceLocation id, byte[] bytes) throws BlueprintFormatException {
 		StructureTemplateManager manager = server.getStructureManager();
 		BlueprintFiles.Result result = BlueprintFiles.read(id, bytes, server.getFixerUpper(), BlueprintFiles.DEFAULT_MAX_VOLUME);
-		if (result.blueprint().solidBlockCount() == 0) {
+		// B1239 (as B1195 for scans): "empty" means nothing the Blueprint Table's preview draws, not only air (a file of
+		// only water or lava was listed with an empty picture)
+		boolean drawn = false;
+		for (Blueprint.Entry e : result.blueprint().blocks()) {
+			if (io.github.jcondedata.aliveworkplace.table.TableServer.previewShows(e.state())) {
+				drawn = true;
+				break;
+			}
+		}
+		if (!drawn) {
 			if (result.unknownBlocks() > 0) {
 				throw new BlueprintFormatException("only_unknown", names(result.unknownNames()));
 			}

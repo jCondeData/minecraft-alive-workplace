@@ -570,13 +570,20 @@ public final class MoveSite {
 	 * drops it: it goes up for a moment at a spot by the crate with its packed data and is taken away again, so the block's
 	 * own code spills whatever it holds, however it holds it (an {@code Items} list, a book, a vault's {@code Inventory}).
 	 * The spot is the first free one above the crate, else the nearest free one round it, else a plain block above or
-	 * round it borrowed for that moment and put back as it stood (see {@link #dropSpot}). The block itself drops as its
-	 * loot when broken by hand, or as its own item when that loot is nothing (a chiseled bookshelf, which drops only to
-	 * Silk Touch, B1236). A block with no data (a wall's plank) is left out as before, nothing dropped (B1129).
+	 * round it borrowed for that moment and put back as it stood (see {@link #dropSpot}). The block itself drops as
+	 * itself (B1247, B1248: its loot as broken with Silk Touch, so an ender chest or a campfire is never its obsidian or
+	 * charcoal, and a beehive keeps its bees, B1249), else its loot broken by hand, else its own item. With no spot at
+	 * all, the same drops are worked out from a block entity read back from the packed data, and every item its data
+	 * holds is dropped by the crate, however it keeps them (B1246, B1252). A block with no data (glass, ice, a bookshelf,
+	 * an ender chest, a wall's plank) drops as itself the same way at the open spot nearest the crate, never placed (B1253).
 	 */
 	private void dropPacked(ServerLevel level, int j, BlockPos at, BlockState state) {
 		CompoundTag data = data(j);
 		if (data == null) {
+			// B1253: a block with no data (glass, a bookshelf, ice, an ender chest, a wall's plank) drops as itself too, worked
+			// out without placing it (so ice leaves no water), at the open spot nearest the crate: nothing packed is lost (B1172)
+			BlockEntity fresh = state.getBlock() instanceof net.minecraft.world.level.block.EntityBlock eb ? eb.newBlockEntity(at, state) : null;
+			land(level, at, at.above(), itself(level, at, state, fresh));
 			return;
 		}
 		BlockPos spot = dropSpot(level, at);
@@ -588,14 +595,12 @@ public final class MoveSite {
 			if (placed.is(state.getBlock()) && be != null) {
 				be.loadWithComponents(data.copy(), level.registryAccess());
 				be.setChanged();
-				// the block's own drops (its loot with its data, as broken by hand), or the block itself when that's nothing
-				List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(placed, level, spot, be));
-				drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
-				if (drops.isEmpty()) {
-					net.minecraft.world.item.ItemStack own = state.getBlock().getCloneItemStack(level, spot, placed);
-					if (!own.isEmpty()) {
-						drops.add(own);
-					}
+				// the block itself, with its data (its loot as broken with Silk Touch), what it holds spilled by its own code
+				List<net.minecraft.world.item.ItemStack> drops = itself(level, spot, placed, be);
+				AABB near = new AABB(spot).inflate(2);
+				java.util.Set<UUID> lying = new java.util.HashSet<>();
+				if (!was.isAir()) {
+					level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, near).forEach(e -> lying.add(e.getUUID()));
 				}
 				if (was.isAir()) {
 					level.destroyBlock(spot, false); // what it holds spilled (onRemove), the block's breaking shown
@@ -605,45 +610,163 @@ public final class MoveSite {
 				if (!level.getBlockState(spot).isAir()) {
 					level.setBlock(spot, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 				}
-				for (net.minecraft.world.item.ItemStack stack : drops) {
-					Block.popResource(level, spot, stack); // a borrowed block's spot: pushed out of it once it's back
+				if (was.isAir()) {
+					for (net.minecraft.world.item.ItemStack stack : drops) {
+						Block.popResource(level, spot, stack);
+					}
+					return;
 				}
-				if (!was.isAir()) {
-					level.setBlock(spot, was, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // the borrowed block back as it stood
+				// a borrowed block's spot: what was spilled is picked up again and everything lands at an open spot nearby,
+				// never left inside the borrowed block, where it would be pushed out into whatever is next to it (B1250: lava)
+				for (net.minecraft.world.entity.item.ItemEntity e : level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, near)) {
+					if (!lying.contains(e.getUUID()) && !e.getItem().isEmpty()) {
+						drops.add(e.getItem().copy());
+						e.discard();
+					}
 				}
+				level.setBlock(spot, was, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // the borrowed block back as it stood
+				land(level, at, spot, drops);
 				return;
 			}
 			level.setBlock(spot, was, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
-		// the block won't stand anywhere by the crate: the block itself, and what its data holds read back into a block
-		// entity of its kind (any Container, however it saves its items), else its packed Items list
-		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>();
-		net.minecraft.world.item.Item block = state.getBlock().asItem();
-		if (block != net.minecraft.world.item.Items.AIR) {
-			drops.add(new net.minecraft.world.item.ItemStack(block));
-		}
+		// the block won't stand anywhere by the crate (B1246, B1252): the block itself, worked out from a block entity of
+		// its kind read back from the packed data, and every item that data holds: a Container's slots, else any item
+		// saved anywhere in it (a lectern's Book, a vault's Inventory), unless the block's item keeps them (a shulker box)
 		BlockEntity loaded = BlockEntity.loadStatic(at, state, data.copy(), level.registryAccess());
-		if (loaded instanceof net.minecraft.world.Container container) {
-			for (int k = 0; k < container.getContainerSize(); k++) {
-				if (!container.getItem(k).isEmpty()) {
-					drops.add(container.getItem(k).copy());
+		List<net.minecraft.world.item.ItemStack> drops = itself(level, at, state, loaded);
+		boolean inside = drops.stream().anyMatch(d -> {
+			net.minecraft.world.item.component.ItemContainerContents in = d.get(net.minecraft.core.component.DataComponents.CONTAINER);
+			return in != null && !in.equals(net.minecraft.world.item.component.ItemContainerContents.EMPTY);
+		});
+		if (!inside) {
+			if (loaded instanceof net.minecraft.world.Container container) {
+				for (int k = 0; k < container.getContainerSize(); k++) {
+					if (!container.getItem(k).isEmpty()) {
+						drops.add(container.getItem(k).copy());
+					}
+				}
+			} else {
+				for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(data)) { // the data itself is the block, never an item
+					itemsIn(level, data.get(key), drops);
 				}
 			}
-		} else if (data.contains("Items", net.minecraft.nbt.Tag.TAG_LIST)) {
-			net.minecraft.nbt.ListTag items = data.getList("Items", net.minecraft.nbt.Tag.TAG_COMPOUND);
-			for (int k = 0; k < items.size(); k++) {
-				net.minecraft.world.item.ItemStack.parse(level.registryAccess(), items.getCompound(k)).filter(s -> !s.isEmpty()).ifPresent(drops::add);
+		}
+		land(level, at, at.above(), drops);
+	}
+
+	/**
+	 * Drops {@code drops} at the open spot nearest the crate at {@code at} (air on a floor within 8, no liquid touching
+	 * it, so nothing lands in lava or drifts out of a block into it, B1250), else at {@code fallback}.
+	 */
+	private static void land(ServerLevel level, BlockPos at, BlockPos fallback, List<net.minecraft.world.item.ItemStack> drops) {
+		List<BlockPos> open = new ArrayList<>();
+		for (BlockPos p : BlockPos.betweenClosed(at.offset(-8, -8, -8), at.offset(8, 8, 8))) {
+			open.add(p.immutable());
+		}
+		open.sort(Comparator.<BlockPos>comparingInt(p -> p.distManhattan(at)).thenComparingInt(p -> p.getY() < at.getY() ? 1 : 0));
+		BlockPos to = fallback;
+		for (BlockPos p : open) {
+			if (p.getY() > level.getMinBuildHeight() && p.getY() < level.getMaxBuildHeight() && level.isLoaded(p) && level.getBlockState(p).isAir()
+				&& !level.getBlockState(p.below()).isAir() && dry(level, p)) {
+				to = p;
+				break;
 			}
 		}
 		for (net.minecraft.world.item.ItemStack stack : drops) {
-			net.minecraft.world.Containers.dropItemStack(level, at.getX() + 0.5, at.getY() + 1, at.getZ() + 0.5, stack);
+			net.minecraft.world.Containers.dropItemStack(level, to.getX() + 0.5, to.getY() + 0.25, to.getZ() + 0.5, stack);
 		}
+	}
+
+	/** Whether no liquid stands at {@code p} or next to it (below included). */
+	private static boolean dry(ServerLevel level, BlockPos p) {
+		if (!level.getFluidState(p).isEmpty()) {
+			return false;
+		}
+		for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+			if (!level.getFluidState(p.relative(d)).isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * What the block {@code state} drops as itself, with {@code be}'s data: its loot as broken with Silk Touch (an ender
+	 * chest, a campfire, a beehive with its bees: never their obsidian or charcoal, B1247-B1249), else its loot broken by
+	 * hand, else its own item (a block that drops nothing at all). Never what it holds in slots: its own code spills those.
+	 */
+	private static List<net.minecraft.world.item.ItemStack> itself(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity be) {
+		net.minecraft.world.item.ItemStack silk = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NETHERITE_PICKAXE);
+		net.minecraft.core.Registry<net.minecraft.world.item.enchantment.Enchantment> enchantments =
+			io.github.jcondedata.aliveworkplace.mc.Lookup.registry(level.registryAccess(), net.minecraft.core.registries.Registries.ENCHANTMENT);
+		io.github.jcondedata.aliveworkplace.mc.Lookup.holder(enchantments, net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)
+			.ifPresent(h -> silk.enchant(h, 1));
+		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, be, null, silk));
+		drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
+		if (drops.isEmpty()) {
+			drops.addAll(Block.getDrops(state, level, pos, be));
+			drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
+		}
+		if (drops.isEmpty() && state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
+			drops.add(new net.minecraft.world.item.ItemStack(state.getBlock().asItem()));
+		}
+		return drops;
+	}
+
+	/**
+	 * Every item saved anywhere in {@code tag} (a compound with an item's {@code id} and a {@code count}, as an item is
+	 * saved), whatever the key or list it's under; an item's own data isn't searched further (a bundle's items stay in it).
+	 */
+	private static void itemsIn(ServerLevel level, net.minecraft.nbt.Tag tag, List<net.minecraft.world.item.ItemStack> out) {
+		if (tag instanceof CompoundTag c) {
+			net.minecraft.world.item.ItemStack stack = savedItem(level, c);
+			if (stack != null) {
+				int max = Math.max(1, stack.getMaxStackSize());
+				for (int left = stack.getCount(); left > 0; left -= max) {
+					out.add(stack.copyWithCount(Math.min(left, max)));
+				}
+				return;
+			}
+			for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(c)) {
+				itemsIn(level, c.get(key), out);
+			}
+		} else if (tag instanceof net.minecraft.nbt.ListTag list) {
+			for (net.minecraft.nbt.Tag t : list) {
+				itemsIn(level, t, out);
+			}
+		}
+	}
+
+	/** The item {@code tag} saves, or null when it isn't a saved item (no item id, no count). */
+	@Nullable
+	private static net.minecraft.world.item.ItemStack savedItem(ServerLevel level, CompoundTag tag) {
+		if (!tag.contains("id", net.minecraft.nbt.Tag.TAG_STRING)) {
+			return null;
+		}
+		String countKey = tag.contains("count", net.minecraft.nbt.Tag.TAG_ANY_NUMERIC) ? "count" : tag.contains("Count", net.minecraft.nbt.Tag.TAG_ANY_NUMERIC) ? "Count" : null;
+		net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(io.github.jcondedata.aliveworkplace.mc.Nbt.getString(tag, "id"));
+		if (countKey == null || id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) {
+			return null;
+		}
+		int count = io.github.jcondedata.aliveworkplace.mc.Nbt.getInt(tag, countKey);
+		if (count <= 0) {
+			return null;
+		}
+		CompoundTag one = tag.copy();
+		one.remove("Count");
+		one.putInt("count", 1);
+		net.minecraft.world.item.ItemStack stack = net.minecraft.world.item.ItemStack.parseOptional(level.registryAccess(), one);
+		if (stack.isEmpty()) {
+			stack = new net.minecraft.world.item.ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id));
+		}
+		return stack.isEmpty() ? null : stack.copyWithCount(count);
 	}
 
 	/**
 	 * Where a block that can't go up on a Mover's Crate at {@code at} is put up for a moment to be dropped: the first free
 	 * (air) spot within 16 above the crate; else the nearest free one within 2 round it; else a plain block (no block
-	 * entity, breakable, not a crate) above or round the crate, borrowed and put back. Null when there's none of these.
+	 * entity, breakable, not a crate, no liquid) above or round the crate, borrowed and put back. Null when there's none of these.
 	 */
 	@Nullable
 	private static BlockPos dropSpot(ServerLevel level, BlockPos at) {
@@ -671,7 +794,9 @@ public final class MoveSite {
 		for (BlockPos p : borrow) {
 			if (p.getY() < level.getMaxBuildHeight() && level.isLoaded(p)) {
 				BlockState there = level.getBlockState(p);
-				if (!there.hasBlockEntity() && !stays(there) && there.getDestroySpeed(level, p) >= 0) {
+				// never a liquid (B1250: lava would burn what the block holds); a waterlogged block is a block
+				boolean liquid = !there.getFluidState().isEmpty() && !there.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.WATERLOGGED);
+				if (!there.hasBlockEntity() && !stays(there) && there.getDestroySpeed(level, p) >= 0 && !liquid) {
 					return p;
 				}
 			}

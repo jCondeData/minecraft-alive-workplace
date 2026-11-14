@@ -233,6 +233,16 @@ public class MoverGameTests implements FabricGameTest {
 		return level.getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(30)).size();
 	}
 
+	/**
+	 * B1253: what lies loose round the test, unless it is exactly one {@code own} (the block that couldn't go up on his
+	 * crate, dropped as itself) and nothing else; null when it is.
+	 */
+	static String looseOnlyOne(ServerLevel level, GameTestHelper helper, net.minecraft.world.item.Item own) {
+		java.util.List<ItemEntity> all = level.getEntitiesOfClass(ItemEntity.class, new AABB(helper.absolutePos(new BlockPos(0, 1, 0))).inflate(30));
+		boolean ok = all.size() == 1 && all.get(0).getItem().is(own) && all.get(0).getItem().getCount() == 1;
+		return ok ? null : all.stream().map(e -> e.getItem().toString()).toList().toString();
+	}
+
 	/** The job: its id is the one the Hall asks for, its crate is its workstation, in the creative tab and craftable. */
 	//$ gametest_batch '"aliveworkplace_test:build_area"' '"moverJob"'
 	@GameTest(template = "aliveworkplace_test:build_area", batch = "moverJob")
@@ -466,7 +476,7 @@ public class MoverGameTests implements FabricGameTest {
 	/**
 	 * B1129: a move confirmed with the house's new spot over the Mover's own crate (it stays where it stood, B1120). The
 	 * house going up never breaks it: the one wall block that would stand there is skipped, his crate stays his
-	 * workstation, nothing is dropped and the move ends.
+	 * workstation, that plank is dropped as itself (B1253: nothing packed is lost), nothing else, and the move ends.
 	 */
 	//$ gametest_batch AREA '"moverCrateInTheWay"'
 	@GameTest(template = AREA, batch = "moverCrateInTheWay")
@@ -487,7 +497,8 @@ public class MoverGameTests implements FabricGameTest {
 			helper.assertTrue(MoverWork.hasCrate(level, s.mover()), "the Mover lost his crate");
 			helper.assertTrue(site.skipped() == 1, "skipped " + site.skipped() + ", not just the plank where his crate stands");
 			helper.assertTrue(level.getBlockState(helper.absolutePos(new BlockPos(6, 3, 2))).is(Blocks.OAK_PLANKS), "the rest of the west wall isn't up");
-			helper.assertTrue(loose(level, helper) == 0, "something was dropped");
+			String lying = looseOnlyOne(level, helper, Items.OAK_PLANKS);
+			helper.assertTrue(lying == null, "not just the one plank dropped (B1253): " + lying);
 			helper.succeed();
 		});
 	}

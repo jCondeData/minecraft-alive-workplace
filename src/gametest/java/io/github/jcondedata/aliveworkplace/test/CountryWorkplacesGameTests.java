@@ -263,11 +263,11 @@ public class CountryWorkplacesGameTests implements net.fabricmc.fabric.api.gamet
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage());
 			if (!hired[0]) {
+				if (w.shore()) {
+					jettyStands(helper, blueprint, house); // (before anyone is hired: a failure here is reported, not hidden by an empty crew)
+				}
 				hired[0] = true;
 				hiredAt[0] = helper.getTick();
-				if (w.shore()) {
-					jettyStands(helper, blueprint, house);
-				}
 				helper.setDayTime(2000); // a working day ahead of them
 				// The workers come once it stands: from the street in front, or for the hut on the shore from the land behind.
 				int streetZ = w.shore() ? house.getZ() + blueprint.size().getZ() + 1 : house.getZ() - 2;
@@ -280,6 +280,7 @@ public class CountryWorkplacesGameTests implements net.fabricmc.fabric.api.gamet
 					workers.add(worker);
 				}
 			}
+			helper.assertTrue(workers.size() == w.workers().size(), "only " + workers.size() + " of the " + w.workers().size() + " workers were hired");
 			Set<BlockPos> taken = new HashSet<>();
 			for (int i = 0; i < workers.size(); i++) {
 				Villager worker = workers.get(i);

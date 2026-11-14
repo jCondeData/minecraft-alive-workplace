@@ -20,6 +20,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Blueprint library](blueprint-library.md): the Blueprint Table as a collection each village unlocks (26.10).
 - [Workplace looks](workplace-looks.md): the twelve workplaces, each its own building (26.11).
 - [Textures and item icons](textures.md): every texture drawn from a recipe in vanilla's style, and the item icons the owner picked (21.1, 21.1b).
+- [Riding looks right](riding-looks.md): villagers sit in saddles and boats like a player, the ferry boat floats, and the scenes were checked for clipping, floating and z-fighting (24.3).
 - [More decorations](more-decorations.md): fourteen small decorations that aren't houses, from a market cross to a footbridge (26.14).
 - [Basements and cellars](basements.md): the Level 4s with a basement dug under them, and the cellars from Level 1: the Butcher's freezer, the Smith's coal store, the Cook's larder, the Storehouse's vault (26.15).
 - [Cellars for the Level IIs and for old builds](cellars.md): eight Level IIIs, each its Level II with a cellar dug under it, and "Dig the cellar" for a Smithy, Storehouse or Kitchen built before it had one (36.7).
@@ -32,6 +33,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Village houses](village-houses.md): our workplaces in generated villages, their villagers already in the job; no holes in front of their doors, nobody stuck in a wall (B5, B6).
 - [Pokémon jobs' village houses](pokemon-village-houses.md): villages grow a house for each Pokémon job, its villager already in it (Cobblemon).
 - [The Pokémon Trader](pokemon-trader.md): the day's Pokémon offers and the trader's own trade screen (Cobblemon).
+- [Friendship](friendship.md): hearts with each named villager, the favors and what each earns, the cost of a hit, the look-up in the action bar and the hall's tooltip (31.5).
 - [Gifts](gifts.md): Gift Wrap, the Gift, what villagers think of it, name days and taste files (31.6).
 - [Heart events and life stories](heart-events.md): what villagers tell their friends at 2 to 10 hearts, their
   keepsakes, the life story page and event files (31.7, 31.8).

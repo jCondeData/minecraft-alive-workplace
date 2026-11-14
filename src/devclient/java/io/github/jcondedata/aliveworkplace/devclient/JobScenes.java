@@ -1072,7 +1072,8 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.forget(hall);
 			io.github.jcondedata.aliveworkplace.threat.ThreatData.get(level).forgetSiege(hall);
 			io.github.jcondedata.aliveworkplace.threat.Lairs.forget(level);
-			// The hall of a Town, for as long as the camp is made and the raid sets out (its own round would end a raid by day).
+			// The hall of a Town. It stays: breaking it calls its raid off (B1176), and its round ends a raid only after the raid's
+			// first minute (B1209).
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("pillager_warband");
@@ -1085,7 +1086,6 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 24, 0, Math.PI / 2,
 				culture, net.minecraft.util.RandomSource.create(7L));
-			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 			List<net.minecraft.world.entity.Mob> raiders = io.github.jcondedata.aliveworkplace.guard.VillageRaids.raiders(level, hall);
 			Showcase.check(raid != null && raiders.stream().filter(m -> m.getType() == EntityType.RAVAGER).count() == 1,
 				"the warband's raid set out with one ravager ram, as at a Town");
@@ -1120,7 +1120,8 @@ final class JobScenes {
 				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(-3 + 3 * i, 0, -3), MobSpawnType.COMMAND);
 				villager.setNoAi(true);
 			}
-			// The hall of a Town, for as long as the ship anchors and the crew comes ashore (its own round would end the raid by dusk).
+			// The hall of a Town. It stays: breaking it calls its raid off (B1176), and its round ends a raid only after the raid's
+			// first minute (B1209).
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("drowned_pirates");
@@ -1131,7 +1132,6 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 24, 0, Double.NaN,
 				culture, net.minecraft.util.RandomSource.create(7L));
-			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 			List<net.minecraft.world.entity.Mob> raiders = io.github.jcondedata.aliveworkplace.guard.VillageRaids.raiders(level, hall);
 			BlockPos beach = new BlockPos(0, -60, 3);
 			Showcase.check(raid != null && !raiders.isEmpty() && raiders.stream().allMatch(m -> m.blockPosition().distManhattan(beach) <= 8),
@@ -1966,7 +1966,7 @@ final class JobScenes {
 				Villager villager = EntityType.VILLAGER.spawn(level, STATION.offset(2 + i * 2, 0, -1 + i), MobSpawnType.COMMAND);
 				villager.setNoAi(true);
 			}
-			// The Blackstone Outpost (the hall of a Town for as long as it is made).
+			// The Blackstone Outpost, by the hall of a Town (which stays: breaking it calls its raid off, B1176, B1209).
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.TOWN);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("piglin_incursion");
@@ -1977,7 +1977,6 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
 				Double.NaN, culture, net.minecraft.util.RandomSource.create(3L));
-			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 			Showcase.check(raid != null && raid.raiders() > 0, "a raid stepped out of the outpost's portal");
 			long[] took = {-1};
 			return l -> {
@@ -2228,7 +2227,7 @@ final class JobScenes {
 				villager.setNoAi(true);
 				people.add(villager);
 			}
-			// The Coven Hut (the hall of a Village for as long as the raid is made).
+			// The Coven Hut, by the hall of a Village (which stays: breaking it calls its raid off, B1176, B1209).
 			level.setBlockAndUpdate(hall, ModBlocks.VILLAGE_HALL.defaultBlockState());
 			((io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity) level.getBlockEntity(hall)).setRank(io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.VILLAGE);
 			net.minecraft.resources.ResourceLocation id = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("witch_coven");
@@ -2241,7 +2240,6 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.threat.Culture culture = io.github.jcondedata.aliveworkplace.threat.Threats.get(id).orElseThrow();
 			io.github.jcondedata.aliveworkplace.guard.VillageRaids.Raid raid = io.github.jcondedata.aliveworkplace.guard.VillageRaids.start(level, hall, 12, 0,
 				Double.NaN, culture, net.minecraft.util.RandomSource.create(4L));
-			level.setBlockAndUpdate(hall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
 			Showcase.check(raid != null && raid.raiders() > 0, "the coven's witches came out to raid");
 			List<BlockPos> walls = io.github.jcondedata.aliveworkplace.threat.Sieges.wallBlocks(level, hall);
 			int[] potions = {0};

@@ -4,7 +4,7 @@ Milestone 46, item 46.6 (owner, 2026-11-09; each job crafts its own kind of thin
 own Glass Kiln: he fires glass from sand (a coal or charcoal for every eight) and makes the panes, stained glass with the
 Florist's dyes, tinted glass and bottles builders wait for. He replaces the stand-in 46.1 left in place: the Mason fired
 the glass until now.
-Roadmap items: 46.6, B1156
+Roadmap items: 46.6, B1156, B1196, B1197
 
 ## 1. What a player sees
 
@@ -16,6 +16,10 @@ Roadmap items: 46.6, B1156
 - A builder near a Glassblower who is short of glass gets it from him: he fetches the makings from the builder's chests
   (and the village's), makes them at his kiln and puts them in the builder's chest. Sand and coal kept in his own
   chests (the two by his kiln) are used too (B1156).
+  - With Create installed he still fires the sand: Create's recipes that fire glass back out of its Tiled and Framed
+    Glass (themselves cut from glass) come last, so eight glass take one coal, not two, and a builder with no sand is
+    told "short of 4 Sand to make 4 Glass", never Create's Tiled Glass (B1196, B1197). Glass panes too: Create's
+    panes fired back into plain panes come last, so 6 sand and a coal make 16 panes on that one coal (B1254, B1255).
   - Glass from sand, a coal or charcoal for every eight fired (nine glass take two coal).
   - Glass panes from sand, the glass fired first (a builder with sand and coal gets panes).
   - Stained glass and stained panes with a dye: red stained glass from eight sand, a coal and a red dye.
@@ -47,6 +51,16 @@ Roadmap items: 46.6, B1156
 - B1156: the Glassblower takes part in the village (`Village.takesPart`), so his chests are a village-mate's stash the
   builder's requests draw on (`CrafterWork` pools the builder's chests with those stashes). Before, his own sand and coal
   were never counted.
+- B1196, B1197: `Crafting`'s recipe index lists, per thing made, the recipes that loop back (an ingredient only ever
+  made from that thing: Create's `glass_from_vertical_framed_glass`, framed glass cut from `#c:glass_blocks/colorless`)
+  after the others. Before, Create's came first, so eight glass were planned as sand into glass, into Tiled and Framed
+  Glass, into glass again (sixteen fired, two coal), and the shortage line named the Tiled Glass.
+- B1254, B1255: the loop check looks several steps deep and also counts what the thing's other recipes already use.
+  Create's `glass_pane_from_tiled_glass_pane` fires a Tiled Glass Pane, crafted from Tiled Glass, cut from the glass the
+  plain pane recipe takes, so it now comes after that recipe. Before, panes were planned as sand into glass, Tiled
+  Glass, Tiled Glass Panes and panes again, a coal for every eight panes fired on top of the glass's.
+  A way that loops back is now only taken from what's to hand (its makings aren't made for it), and the shortage line
+  never goes down one, so the planning no longer runs out on Create's glass and the line names the sand.
 - `CraftJobs.Job.GLASSBLOWER` now names the job; its stand-in (the Mason) is gone, so the Mason no longer fires glass.
   He helps instead (`MasonWork.helps`): with a Glassblower at work by a builder whose glass lacks sand, the Mason crushes
   it from gravel or cobblestone into the builder's chests (`CrafterWork.makingsFor` reads a Glassblower's lack with the
@@ -109,3 +123,16 @@ a child and a working Mason leaving a free kiln alone, and the kiln dropping its
 
 `QaGlassblowerStash1110cBugTests` (B1156): eight sand and a coal in the chest by his kiln, none in the builder's, become
 the builder's four glass.
+
+`QaCrafterOwnModdedStore1111eBugCompatTests` (B1196, B1197, the compat suite with Create): no sand anywhere, the line
+reads "Can't be made yet: short of 4 Sand to make 4 Glass"; eight sand and two coal in his own chest become eight glass
+on exactly one coal. `QaGlassblowerCreateVerify1114fCompatTests` (5, the QA lane, B1196, B1197, with Create): the line
+names 1 Sand for 1 glass and 9 Sand for 9; nine glass burn two coal; sixteen glass burn two coal through a save and
+reload while firing and while carrying; with only Create's Tiled Glass and no sand, glass and tiled glass never add up
+to more than eight (no loop), and an unfinished build still names the sand. `QaGlassCreate1114cCompatTests` (QA, with the pack's mods): nine sand and three coal become nine
+glass on exactly two coal; six sand and no fuel for a pane reads "Can't be made yet: short of 1 Coal to make 1 Glass
+Pane"; eight sand and a coal with no dye for red stained glass reads "Can't be made yet: short of 1 Red Dye to make 1 Red
+Stained Glass".
+
+`QaCreateGlassLoop1114eBugCompatTests` and `QaGlassCreate1114cBugCompatTests` (B1255, B1254, the compat suite with
+Create): 6 sand and a coal make 16 panes on that one coal, 4 panes too, and with no sand the line names the 6 sand.

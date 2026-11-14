@@ -3,14 +3,14 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239
 
 ## 1. What a player sees
 
 - **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
-  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out. A block drawn by its block entity (a banner, a decorated pot, a sign) shows in a preview as its item, so a scan of one banner is never an empty picture (B798). Another mod's block never crashes the preview (B1020): tinted blocks (Cozy Home's chairs and sofas) get their color from the preview's own blocks and the biome you stand in, a block whose color still fails is drawn untinted, and one that can't be drawn at all is left out, logged once. The ghost of a held blueprint is guarded the same way.
+  villager of its trade"). Their 3D preview is still drawn, dimmed, with the materials; Get Blueprint is grayed out. A block drawn by its block entity (a banner, a decorated pot, a sign) shows in a preview as its item, so a scan of one banner is never an empty picture (B798). A file uploaded at the Table, or put in the folder `/workplace import` reads, whose blocks the preview would draw none of (only water or lava, only barriers or light blocks) is refused like an empty one, "Could not import Pond.nbt: the build is empty", and nothing is listed or saved; an upload refused under the id of a blueprint already there leaves that one as it was. One block the preview draws is enough: a pond with a waterlogged slab, a file of only waterlogged stairs, barriers with one glass block (B1239, `QaUploadPreview1114bGameTests`, `QaUploadFluids1114bGameTests`). Another mod's block never crashes the preview (B1020): tinted blocks (Cozy Home's chairs and sofas) get their color from the preview's own blocks and the biome you stand in, a block whose color still fails is drawn untinted, and one that can't be drawn at all is left out, logged once. The ghost of a held blueprint is guarded the same way.
 - **Rare builds** (the builder-only grander homes, the Wonders, and `rare.json`'s Chapel, Market Square, Map Room,
   Bandstand, Guildhall, Nether Gate and Library III) are a dark **???** at the end of the list, with no name, preview or
   materials, until the village unlocks one.

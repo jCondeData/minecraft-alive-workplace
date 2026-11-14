@@ -77,8 +77,23 @@ public final class CobblemonTrainers {
 		});
 	}
 
+	// Whether the trainer is in a battle Cobblemon still runs. A battle Cobblemon closed without a victory or a flight
+	// (its tick threw, so it stopped the battle as a tie, B1256) is called off here: dropped without a win, a loss or
+	// a count, so the trainer takes challenges again instead of staying busy until the server restarts.
 	public static boolean isBattling(Villager trainer) {
-		return BATTLES.values().stream().anyMatch(c -> c.trainer().equals(trainer.getUUID()));
+		UUID id = trainer.getUUID();
+		boolean busy = false;
+		for (Map.Entry<UUID, Challenge> e : BATTLES.entrySet()) {
+			if (!e.getValue().trainer().equals(id)) {
+				continue;
+			}
+			if (BattleRegistry.getBattle(e.getKey()) == null) {
+				BATTLES.remove(e.getKey(), e.getValue());
+			} else {
+				busy = true;
+			}
+		}
+		return busy;
 	}
 
 	// Starts a battle between {@code player} and {@code trainer}; whether it started.

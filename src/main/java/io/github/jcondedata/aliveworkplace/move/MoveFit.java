@@ -175,8 +175,14 @@ public final class MoveFit {
 		return y;
 	}
 
-	/** Another building of the village, with its box and name. */
-	public record Other(BoundingBox box, Component name) {
+	/**
+	 * Another building of the village, with its box and name. {@code puttingBack}: a called-off move's new spot, where the
+	 * Mover is still taking down what it put up (B1230).
+	 */
+	public record Other(BoundingBox box, Component name, boolean puttingBack) {
+		public Other(BoundingBox box, Component name) {
+			this(box, name, false);
+		}
 	}
 
 	/** The village's buildings, finished or going up, but the one at {@code from}. */
@@ -202,19 +208,22 @@ public final class MoveFit {
 	/**
 	 * The new spots of the other buildings on the move in this dimension (B1174): each move under way by its site's new
 	 * box, each move still waiting for a Mover by its new lowest corner and its blueprint's turned size. The building at
-	 * {@code from} is left out, and so is a move being called off (it goes back where it was).
+	 * {@code from} is left out. A called-off move keeps its new spot only while the Mover is still taking down what went up
+	 * there (RESTORE_DOWN, B1230, marked {@code puttingBack}); once that's down it goes back up where it was, and the new
+	 * spot is free.
 	 */
 	public static List<Other> moving(ServerLevel level, @Nullable BlockPos from) {
 		List<Other> out = new ArrayList<>();
 		List<BlockPos> started = new ArrayList<>();
 		for (MoveSite site : MoveSites.get(level).all()) {
 			started.add(site.from());
-			if (site.from().equals(from) || site.canceled() || site.stage() == MoveSite.Stage.DONE) {
+			boolean puttingBack = site.canceled() && site.stage() == MoveSite.Stage.RESTORE_DOWN;
+			if (site.from().equals(from) || (site.canceled() && !puttingBack) || site.stage() == MoveSite.Stage.DONE) {
 				continue;
 			}
 			Component name = site.plan().structure() == null ? Component.translatable("screen.aliveworkplace.move.another_building")
 				: Blueprints.displayName(site.plan().structure());
-			out.add(new Other(site.newBox(), name));
+			out.add(new Other(site.newBox(), name, puttingBack));
 		}
 		for (PendingMoves.Move move : PendingMoves.get(level).all()) {
 			if (move.from().equals(from) || started.contains(move.from())) {

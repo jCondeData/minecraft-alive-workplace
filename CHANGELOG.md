@@ -16,7 +16,20 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.155.2 — 2026-11-14
+
 ### Fixed
+- A building put up from the modded library (furnished builds with the pack's building mods) is offered "Refresh to the latest look" again when its blueprint was redrawn: a modded Clinic built on 0.151.0 now refreshes to its new white ward beds, and 44 other modded buildings redrawn since 1.0 (Farmsteads, Healing Centers, Inns, the Map Room, Storage Hall, Warehouse and more) are recognized too (B680).
+- With Create installed, the Glassblower makes glass panes straight from the glass he fires: 6 sand and a coal make 16 panes, instead of the coal running short because the panes were planned through Create's Tiled Glass Panes and fired again (B1254, B1255).
+- With Cobblemon, a trainer whose battle Cobblemon had to stop because of an error takes challenges again right away, instead of answering "already in a battle" to everyone until the server restarts; the stopped battle counts as neither a win nor a loss (B1256).
+- A builder no longer takes a blueprint on the new spot of a called-off move while the Mover is still taking the building back down there: he says the spot isn't free yet, and takes it once the building stands where it was (B1230).
+- A block the Mover can't put up because a Mover's Crate stands on its spot is dropped as itself with everything it held, never deleted: an ender chest or a campfire is no longer turned into obsidian or charcoal, a beehive keeps its bees, a lectern or a Create Item Vault keeps its book or items even when the crate is boxed in by containers, and lava next to the crate is never used as the drop spot; a plain block there (glass, a bookshelf, ice, the wall's plank) is dropped as itself too instead of vanishing (B1246-B1250, B1252, B1253).
+- With Create installed, a builder waiting for glass with no sand anywhere is told "short of 4 Sand to make 4 Glass" again, instead of being asked for Create's Tiled Glass, which is itself made from glass (B1196).
+- With Create installed, the Glassblower fires eight glass on one coal again, instead of two: he fires the sand, rather than firing glass, cutting it into Create's Tiled and Framed Glass and firing that back into glass (B1197).
+- A far-off village whose saved name was blank (or missing, from an older save) is listed on a Village Hall's Map waystone network by its made-up name, as everywhere else, instead of with no name at all (B1244).
+- Right after you call a move off on the Move page, picking a new spot says "The Mover is still putting it back" at once, instead of telling you to call the move off first (with no Call off button there) until the Mover's next swing (B1237).
+- A building clicked onto the bed of a pond or lake no longer ends with its room flooded: the Builder takes away the water standing where the building goes before he starts the walls (as you would with a bucket) and dams the water just outside with a little dirt, so the room ends dry (B1243).
+- A blueprint file uploaded at the Blueprint Table (or imported with /workplace import) that holds only water or only lava is now refused like an empty file, instead of being listed with an empty picture; a build with a pond in it still imports, as does a lone chest (B1239).
 - A village whose saved name was missing or damaged (a hand-edited or broken save) is no longer wiped from the caravan list on load, taking its trade routes, wants, banner color, stations and track with it: it keeps all of that and goes by its made-up name until its Village Hall next does its round (B1233).
 - A quest you finish for a far-away village (a kill or a place reached while nobody is near its Village Hall) is no longer lost if you log off before the village catches up: it waits, done and yours, and you get its pay, standing, friendship and chronicle line at the village's first round after you're back (B1231).
 - Less lag from far-away villages: a Militia Drill day at a village nobody is near no longer loads the chunks round its Village Hall; the drill, the Shift Bell and the lamplit chronicle line now happen only while someone is near the village (B1232).

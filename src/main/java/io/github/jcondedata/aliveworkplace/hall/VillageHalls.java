@@ -405,6 +405,11 @@ public final class VillageHalls {
 		return known != null && readable(known.name()) ? known.name() : madeUpName(hall); // B1229: a blank saved name too
 	}
 
+	/** A village's saved name ({@code saved}), else (none saved, or a blank one) the made-up one for {@code hall} (B1229, B1244). */
+	public static Component savedName(@Nullable Component saved, BlockPos hall) {
+		return readable(saved) ? saved : madeUpName(hall);
+	}
+
 	/** A name a player can read: not missing and not blank. */
 	private static boolean readable(@Nullable Component name) {
 		return name != null && !name.getString().isBlank();

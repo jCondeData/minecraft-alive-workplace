@@ -330,6 +330,13 @@ him away too.
 him turned Farmer leaves none and forgets the counter; a remembered counter of an Innkeeper the level doesn't have (an
 unloaded chunk) is the inn only while its job-site ticket is held, and no inn once it is freed (kills the mutant that
 counts a free counter).
+Bugs B1213, B1214, B1215: a Shop Counter that is broken (by a player, an explosion, or replaced by another block) is
+forgotten, so one put back for a Shopkeeper is a shop, not the inn of its old Innkeeper in an unloaded chunk; only turning
+the counter keeps it. An Innkeeper who has only ever stood past the village's edge still makes his counter inside the
+village the inn (any loaded villager whose job site it is says whose it is; a baby never does).
+`QaInnRebuild1114cGameTests` (QA lane, 7): those cases, the never-seen Innkeeper's inn through a save, his return and
+his retraining to Shopkeeper (then a shop), two counters worked from past the edge (only the Innkeeper's is the inn),
+and the edge (11 yes, 10 no) on that path.
 QA (lane d, 29.14 to 29.16): `QaOldSageGameTests` (7): the hint on the second miss and not the first, a right answer
 starting the count again; one answer taken from a stack, the off hand's answer taken and a wrong off-hand item kept; a
 wet sponge is a sponge; the quest half done through a save and reload; the rumor told once to the owner with the

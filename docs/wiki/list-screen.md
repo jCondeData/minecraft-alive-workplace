@@ -86,7 +86,8 @@ nothing: "The price changed: 16 Cobblestone now costs 900 CobbleDollars. Click C
 the row stays gold at the new price, so a second Confirm buys at what the screen shows. A lot taken off the counter
 says "Cobblestone isn't for sale anymore." and a lot sold out says so; neither takes anything. A smaller lot or other goods at the
 same price are refused the same way, and the message says what changed (B1147): "This counter now sells 1 Diamond for
-200 CobbleDollars. Click Confirm again to buy that." Each buyer pays what their own
+200 CobbleDollars. Click Confirm again to buy that." If the shop's chests hold none of the new goods, the row is gone
+from the list, so it says "Diamond is sold out." instead (B1189). Each buyer pays what their own
 screen shows: two buyers on one counter are charged separately, and clicking Confirm twice charges once.
 
 In all of them, pointing at the top right line shows the menu's own tooltip (what the job does, the price rules, the odds), and a

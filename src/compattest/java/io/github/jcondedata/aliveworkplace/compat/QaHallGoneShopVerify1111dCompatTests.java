@@ -509,7 +509,7 @@ public class QaHallGoneShopVerify1111dCompatTests implements FabricGameTest {
 
 	/**
 	 * Goods swapped to something the chest doesn't hold (16 Cobblestone to 4 Iron Ingot, same 200): Confirm takes nothing
-	 * and says "This counter now sells 4 Iron Ingot for 200 CobbleDollars."; a second click on the row's slot still takes
+	 * and says "Iron Ingot is sold out." (B1189; before it, "This counter now sells ... Click Confirm again"); a second click on the row's slot still takes
 	 * nothing; the chest keeps its cobblestone, the owner gets nothing. (What the buyer is told then is
 	 * QaHallGoneShopVerify1111dBugCompatTests'.)
 	 */
@@ -531,7 +531,9 @@ public class QaHallGoneShopVerify1111dCompatTests implements FabricGameTest {
 		QaJobShopLists1109cCompatTests.lot(helper, 0, new ItemStack(Items.IRON_INGOT, 4), emeralds(2));
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(paid(before, buyer) == 0, "Confirm on the swapped lot took " + paid(before, buyer));
-		helper.assertTrue(seen.contains(goodsChanged(4, "Iron Ingot", "200 CobbleDollars")), "the buyer read: " + seen);
+		// B1189: no stock of the new goods, so the row is gone: "sold out", never "Click Confirm again".
+		helper.assertTrue(seen.contains("Iron Ingot is sold out.") && !seen.contains(goodsChanged(4, "Iron Ingot", "200 CobbleDollars")),
+			"the buyer read: " + seen);
 		QaJobShopLists1109cCompatTests.click(buyer, menu.containerId, SLOT);
 		helper.assertTrue(paid(before, buyer) == 0 && buyer.getInventory().countItem(Items.IRON_INGOT) == 0 && buyer.getInventory().countItem(Items.COBBLESTONE) == 0,
 			"second Confirm on goods not in stock: paid " + paid(before, buyer) + ", iron " + buyer.getInventory().countItem(Items.IRON_INGOT)

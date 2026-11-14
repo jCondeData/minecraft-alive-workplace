@@ -166,7 +166,9 @@ public final class OldHouses {
 		Map<BlockPos, Survey> surveys = SURVEYS.get(level);
 		int left = BLOCKS_PER_TICK;
 		if (surveys != null) {
-			surveys.values().removeIf(s -> !(level.getBlockEntity(s.hall) instanceof VillageHallBlockEntity));
+			// B1221: a survey of a hall whose chunk isn't entity-ticking is kept (its hall isn't looked up: that would load the
+			// chunk again, as one waiting to unload counts as loaded); its reads load nothing either
+			surveys.values().removeIf(s -> level.isPositionEntityTicking(s.hall) && !(level.getBlockEntity(s.hall) instanceof VillageHallBlockEntity));
 			for (Survey survey : surveys.values()) {
 				if (left <= 0) {
 					break;
@@ -380,10 +382,12 @@ public final class OldHouses {
 			if (state != null) {
 				return state;
 			}
-			if (!level.isLoaded(pos)) {
+			// B1221: only a chunk that is there, read without a ticket (getBlockState would load one waiting to unload again)
+			net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
+			if (chunk == null || level.isOutsideBuildHeight(pos)) {
 				return null;
 			}
-			state = level.getBlockState(pos);
+			state = chunk.getBlockState(pos);
 			reads++;
 			read.put(key, state);
 			return state;

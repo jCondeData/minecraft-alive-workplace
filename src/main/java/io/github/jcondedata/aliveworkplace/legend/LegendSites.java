@@ -170,7 +170,9 @@ public final class LegendSites {
 		halls.sort(Comparator.comparingDouble(h -> h.distSqr(where)));
 		Friends friends = Friends.get(level.getServer());
 		for (BlockPos hall : halls) {
-			if (!(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || entity.owner() == null
+			// B1222: a village whose hall isn't loaded is never loaded for this (its people, whom the conditions count,
+			// aren't loaded either); it qualifies once someone is there
+			if (!level.isPositionEntityTicking(hall) || !(level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) || entity.owner() == null
 				|| !friends.mayDirect(entity.owner(), player.getUUID())) {
 				continue;
 			}

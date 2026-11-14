@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130, B1225
 
 ## What a player sees
 
@@ -12,6 +12,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **The gates shut at once**, whatever the hour and with or without guards, and the **portcullis drops**: iron bars
   come down across the gateway of every finished Gatehouse, under the drawn-up ones. Players can still open the fence
   gates by hand. Both open again at the first dawn after, once the raid is over.
+- **A siege waits for you.** While nobody is near the village (its hall isn't loaded), the siege, its ladders and
+  sand ramps and the guards' battle stations stand still and load nothing (B1225); when someone comes back it carries
+  on, and a raid that is over is lifted at once if its dawn has passed.
 - **Every night the guards shut the gates** (no siege needed): in a village with a Village Hall and at least one guard,
   the fence gates of every finished Gatehouse and Palisade Gate in the village shut at dusk (day time 12,500) and open
   again just before dawn (23,500), on the hall's round, so within half a minute; the same every day, and for a gate

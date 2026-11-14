@@ -66,5 +66,10 @@ of the move. Once he has started, you can't send it to a different spot: call th
 While he is still putting a called-off building back, its row says "The Mover is still putting it back: pick a new spot
 once it stands again" and Confirm stays gray; pick the new spot as soon as the building stands where it was.
 
+**The new spot is kept.** From the moment you confirm a move until the building stands at its new spot, a Builder
+won't take a blueprint whose footprint touches that spot, turned or mirrored, even after a restart; he says "That spot
+is kept for Smithy, which is moving there." (with the building's name). A blueprint one block clear of it is taken.
+Once the move is over, or called off and the building stands where it was, the spot is free again.
+
 **Turning it off.** The server's config switch `movers` turns the job off: no new Movers, those hired stand idle, and
 confirmed moves wait.

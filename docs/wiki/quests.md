@@ -110,4 +110,4 @@ a place reached far away counts only for the player standing there; a one-time q
 Also `QaFarVillageResumes1114e2BugTests` (a far kill or place reached by a player who then logs off waits, past its
 deadline and through a save, and is paid to them at the first round they're back) and `QaFarQuestOffline1114c2GameTests`
 (QA, lane C: paid exactly once over three rounds and a save, nothing to another player online, no board slot taken, a
-one-time quest theirs once paid, a villager's own request done at once).
+one-time quest theirs once paid, a villager's own request done at once), and `QaFarOffline1114eGameTests` (QA, lane E: a waiting one-time quest survives a real world save to disk and the hall's chunk unloading, and is paid once when its offline helper rejoins; two offline helpers each get their own quest, a bystander nothing; a hall broken before the helper is back pays and records nothing).

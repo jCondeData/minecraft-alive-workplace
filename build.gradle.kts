@@ -463,6 +463,12 @@ tasks {
         // runs, and on the pack that first link stalled a tick by 80 to 110 ms (B103: a day's report line, a farmer's
         // first look at a field). Same strings, no runtime linking.
         options.compilerArgs.add("-XDstringConcat=inline")
+        // The GameTest sources (1,700 classes, 28 MB) outgrew javac inside the 2 GB Gradle daemon: CI build 4076 died
+        // with "OutOfMemoryError: Java heap space" in compileGametestJava. Big source sets compile in their own JVM.
+        if (name == "compileGametestJava" || name == "compileCompattestJava") {
+            options.isFork = true
+            options.forkOptions.memoryMaximumSize = findProperty("javacHeap")?.toString() ?: "3g"
+        }
     }
 
     withType<ProcessResources>().configureEach {

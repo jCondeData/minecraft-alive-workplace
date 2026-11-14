@@ -1544,6 +1544,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillagerVerify1104c3BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplyReach1104bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardOrders1104dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRallySafe1114dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1104eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLaneC1104fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderEdges1104bGameTests",

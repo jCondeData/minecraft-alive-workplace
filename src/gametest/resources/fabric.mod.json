@@ -443,6 +443,8 @@
 			"io.github.jcondedata.aliveworkplace.test.MoveLiveSiteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveLiveSiteVerify1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrate1111bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateHolds1114cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",

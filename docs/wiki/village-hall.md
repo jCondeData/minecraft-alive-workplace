@@ -228,6 +228,10 @@ Repairs page (B616) and the builder's reach (36.20): a Topiary Garden in a zone 
 unpainted corner as far away doesn't (`BuildSiteManager.finishedInVillage`, tested in `ZoneVillageBuildingsGameTests`).
 A painted cell whose middle is nearer another hall (one placed after it was painted) is that hall's village's only
 (B805): a Stone Wall there makes the nearer village walled, not both (`QaVillageReach1102BugTests`).
+A cell exactly as far from both halls stays the painting village's, and breaking the nearer hall gives the cell back
+(`QaZoneNearerHall1115bGameTests`: the boundary one block either way, level and off to the side, a save and reload, a
+farmer's field there, and painting leaving out only the cell nearer another hall with "1 cell is nearer another village:
+left out").
 Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's overlap) still measure one.
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32

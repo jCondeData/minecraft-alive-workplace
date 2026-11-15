@@ -1766,6 +1766,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJettyPost1114gBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererChain1115eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGoingDown1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCupCore1115dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMaterialRulesMutants1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115cBugTests",

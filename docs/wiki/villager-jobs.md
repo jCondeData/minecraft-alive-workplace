@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296
 
 ## What a player sees
 
@@ -170,9 +170,14 @@ your pair back.") and she keeps the pair; the rancher's Daycare refuses Collect 
 collected without Cobbreeding with nowhere to put the hatchling is refunded and keeps waiting ("make room for the
 hatchling first"); with Cobbreeding, an egg that doesn't fit in a full inventory is refunded with "Your inventory is
 full: make room for the egg first." (not the price line, which is only for a player short of money). When a keeper or
-rancher dies and the trainer's PC is full, the Pokémon go to Cobblemon's own PC overflow (the PC's backup store, saved
-with it and moved into the boxes when Cobblemon resizes them; `PokemonHome.toPcOrOverflow`), and a warning names them in
-the log. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5) and `QaDaycareFallbacks1115dCompatTests` (12).
+rancher dies and the trainer's PC is full, the Pokémon wait on the mod's side (`WaitingPokemon`, saved with the world as
+`aliveworkplace_waiting_pokemon`; `PokemonHome.toPcOrWaiting`), never in Cobblemon's PC overflow, which Cobblemon 1.7.3
+saves but never loads back or shows (B1295, B1296, B1287). An online trainer is told "Your PC is full: Charmander is
+waiting for you and will come to your PC as soon as a place in it is free."; while they're online, each one comes into
+the PC as soon as a place is free ("Charmander came to your PC from the daycare."), and at each login with Pokémon still
+waiting they're reminded how many. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
+`QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2)
+and `DaycareWaitingCompatTests` (3).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

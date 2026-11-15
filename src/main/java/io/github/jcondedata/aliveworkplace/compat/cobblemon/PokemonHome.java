@@ -1,10 +1,9 @@
 package io.github.jcondedata.aliveworkplace.compat.cobblemon;
 
 import com.cobblemon.mod.common.Cobblemon;
-import com.cobblemon.mod.common.api.storage.pc.PCStore;
 import com.cobblemon.mod.common.pokemon.Pokemon;
-import io.github.jcondedata.aliveworkplace.AliveWorkplace;
-import kotlin.Unit;
+import java.util.UUID;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -34,17 +33,13 @@ final class PokemonHome {
 	}
 
 	/**
-	 * To {@code pc}, else (no box has room) to its overflow: Cobblemon's own backup store, where it puts the Pokémon of
-	 * boxes it removes, saved with the PC and moved back into the boxes when room is made by a resize.
+	 * To {@code owner}'s PC, else (no box has room) to {@link WaitingPokemon}, saved with the world, until a place is
+	 * free (B1295, B1296, B1287). Never Cobblemon's PC overflow: 1.7.3 saves it but never loads it back.
 	 */
-	@SuppressWarnings("unchecked")
-	static void toPcOrOverflow(PCStore pc, Pokemon pokemon, String owner) {
-		if (pc.add(pokemon)) {
+	static void toPcOrWaiting(MinecraftServer server, UUID owner, String ownerName, Pokemon pokemon) {
+		if (Cobblemon.INSTANCE.getStorage().getPC(owner, server.registryAccess()).add(pokemon)) {
 			return;
 		}
-		pc.getBackupStore().add(pokemon);
-		// The backup store's changes don't mark the PC for saving by themselves
-		pc.getPcChangeObservable().emit(Unit.INSTANCE);
-		AliveWorkplace.LOG.warn("{}'s PC is full: {} went to its overflow store", owner, pokemon.getSpecies().getName());
+		WaitingPokemon.keep(server, owner, ownerName, pokemon);
 	}
 }

@@ -407,6 +407,15 @@ with its clock), the stand's helmet, nothing loose and every item in the area co
 frame's diamond and the stand's helmet taken and an apple put in the chest after the move started (the changes move,
 not the plan's picture); saved and reloaded half way down (the packed things in the save) and half way up; a saved
 move whose fence reads as an unknown Cozy Home chair (the piece left out, `skipped` 1, everything else arrives).
+`QaMoverGaps1115cGameTests` (8, the QA lane, 45.3): a jobless villager by a free Mover's Crate becomes its Mover by
+himself; his line while it comes down ("Taking it down: 17 of 175 blocks packed"); his crate broken once it's all packed
+and he puts the whole house up anyway, never waiting; called off half way up with his crate gone (he takes nothing down,
+says why, and with a crate again it all goes back where it stood); two Movers with a restart every 5 swings, called off
+half way down (every block back in its spot, the chest and barrel with their own items, the frame once, the confirmer
+told once); two Movers where one loses his crate (he waits and says why, the other finishes, nothing doubled, the
+confirmer told "stands at its new spot: 175 blocks moved" once); a chest and a barrel both holding bread and coal,
+changed after the plan, each arriving slot for slot with its own through a restart every 3 swings; a wall block broken,
+then called off half way down (everything else back, its spot empty, only that plank lying there).
 `MoverFurnitureCompatTests` (1, compat suite): CobbleFurnies' chair, table and cabinet, Handcrafted's cupboard, shelf
 and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emeralds), filled through `ItemStores`,
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.

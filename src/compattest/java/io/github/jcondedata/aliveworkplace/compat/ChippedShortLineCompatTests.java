@@ -71,4 +71,39 @@ public class ChippedShortLineCompatTests implements FabricGameTest {
 			helper.succeed();
 		});
 	}
+
+	/**
+	 * B1290's premise checked: with Carved Wood's wooden bookshelves on and its mixed bookshelves off (its defaults, as in the
+	 * pack), Minecraft's bookshelf is made of oak planks only (other planks make Carved Wood's own), so Chipped's acacia
+	 * mosaic planks don't make one and the line names the oak logs; oak planks there make it, and a crafting table, with
+	 * nothing short. B1288: a smoker from a furnace names 4 of Minecraft's logs, though Carved Wood's log bundles make oak logs too.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void withCarvedWoodABookshelfTakesOakPlanksNotChippedOnes(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		Item mosaic = BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("chipped", "acacia_planks_mosaic"));
+		helper.assertTrue(mosaic != Items.AIR, "setup: no chipped:acacia_planks_mosaic");
+		for (Item made : List.of(Items.BOOKSHELF)) {
+			for (var holder : Crafting.recipesFor(level.getRecipeManager(), level.registryAccess(), Crafting.Kind.CRAFTING, made)) {
+				for (var ingredient : io.github.jcondedata.aliveworkplace.mc.Recipes.ingredients(holder.value())) {
+					helper.assertTrue(!Crafting.options(level, ingredient).contains(mosaic), "setup: " + holder.id() + " takes Chipped's mosaic planks (Carved Wood's switch off?)");
+				}
+			}
+		}
+		Crafting.Kind k = Crafting.Kind.CRAFTING;
+		Map<Item, Integer> mosaicShelf = Crafting.lacking(level, k, Items.BOOKSHELF, 1, Map.of(mosaic, 6L, Items.BOOK, 3L));
+		helper.assertTrue(mosaicShelf.equals(Map.of(Items.OAK_LOG, 2)), "a bookshelf from 6 mosaic planks and 3 books lacks " + mosaicShelf + ", expected {minecraft:oak_log=2}");
+		Map<Item, Integer> oakShelf = Crafting.lacking(level, k, Items.BOOKSHELF, 1, Map.of(Items.OAK_PLANKS, 6L, Items.BOOK, 3L));
+		helper.assertTrue(oakShelf.isEmpty(), "a bookshelf from 6 oak planks and 3 books lacks " + oakShelf);
+		Map<Item, Integer> oakTable = Crafting.lacking(level, k, Items.CRAFTING_TABLE, 1, Map.of(Items.OAK_PLANKS, 4L));
+		helper.assertTrue(oakTable.isEmpty(), "a crafting table from 4 oak planks lacks " + oakTable);
+		for (Crafting.Kind kind : List.of(Crafting.Kind.CRAFTING, Crafting.Kind.WORKSHOP)) {
+			Map<Item, Integer> smoker = Crafting.lacking(level, kind, Items.SMOKER, 1, Map.of(Items.FURNACE, 1L));
+			boolean oneBaseGameLog = smoker.size() == 1 && smoker.values().iterator().next() == 4 && smoker.keySet().stream()
+				.allMatch(i -> i.builtInRegistryHolder().is(ItemTags.LOGS) && BuiltInRegistries.ITEM.getKey(i).getNamespace().equals("minecraft"));
+			helper.assertTrue(oneBaseGameLog, "a smoker from a furnace (" + kind + ") lacks " + smoker + ", expected 4 of one of Minecraft's logs");
+		}
+		helper.succeed();
+	}
 }

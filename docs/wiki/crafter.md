@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1293
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293
 
 ## 1. What a player sees
 
@@ -79,7 +79,11 @@ ingredient is itself what's short when its only ways are another mod's (a sticky
 Dough and Wheat Flour, B1277), pack several of one thing into one (a book or bookshelves with no leather at all name
 Leather, not Rabbit Hide; with some hide there it still names the rest of the hide, B1278) or need an ore (a piston names
 Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
-sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273).
+sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273). A thing
+whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
+Cobblemon's Apricorn Logs through Apricorn Wood (B1288). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
+is made of oak planks only, so Chipped's mosaic planks don't make one and the line names the oak logs (B1290's premise);
+Minecraft's chest is made only by Carved Wood's special mixed-chest recipe, which the crafters can't read (B1286).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -266,8 +270,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaLogsSlot1115e3BugGameTests` (2, B1293): four logs of four woods, or 2 stripped oak logs and 2 dark oak wood, make a
   smoker with nothing short; a chest from 4 oak and 4 spruce planks is planned. `QaLogsSlot1115e3GameTests` (3): a
   smoker from 8 cobblestone, or a furnace, lacks exactly 4 logs of one base-game wood; with 2 oak logs the other 2.
-- `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
-  Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
+- `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
+  Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
+  Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a
+  furnace lacks 4 of one of Minecraft's logs (B1288, B1290).
+- `QaShortageGathers1115fBugCompatTests` (2, B1288): a smoker from nothing or from a furnace names 4 of Minecraft's logs,
+  and a builder short of a smoker reads Minecraft's logs, never Apricorn Logs.
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
   (about 3,200), read from an empty chest the way that job's shortage line reads it, names no ore (`c:ores`) and no
   Create crushed raw metal. Kills a mutant dropping the ore rule and one dropping B1279's raw-metal rank.

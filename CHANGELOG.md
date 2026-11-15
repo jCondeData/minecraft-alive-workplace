@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Carved Wood and Cobblemon, a builder short of a smoker reads "short of 4 Dark Oak Logs", not "8 Apricorn Log", and
+  other modded things made of logs or planks (Handcrafted's oven, Create's chassis, Tom's Storage terminals, Sophisticated
+  Storage upgrades) name Minecraft's oak logs or planks instead of Cobblemon's logs or Chipped's mosaic planks (B1288).
 - Crafting jobs take any mix of a kind for a recipe that takes any of it, as a crafting table does: a chest from 4 oak
   and 4 spruce planks, or a smoker from four different woods' logs, is made instead of the builder reading "short of 3
   Oak Logs". When something is really short, the line counts every wood that's there (B1293).

@@ -374,4 +374,55 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 		helper.assertValueEqual(CobbleDollarsBank.balance(player), price - 1, "balance");
 		helper.succeed();
 	}
+
+	/**
+	 * The rancher dies: each boarder goes back with what it gained while boarded (her own comment: "with what it
+	 * gained"), the boundary both sides: 19 ticks is under a second and gains nothing, 20 ticks gains, a long stay
+	 * gains in full. Three offline trainers, so each lands in its own PC.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaDaycareRoom1115d2DeathGains"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaDaycareRoom1115d2DeathGains")
+	public void qaRanchersDeathReturnsEachBoarderWithWhatItGained(GameTestHelper helper) {
+		Villager rancher = rancher(helper);
+		var access = helper.getLevel().registryAccess();
+		long now = helper.getLevel().getGameTime();
+		long[] stays = {19, 20, 40_000};
+		List<UUID> owners = new ArrayList<>();
+		List<Pokemon> kids = new ArrayList<>();
+		List<Daycare.Boarder> boarders = new ArrayList<>();
+		for (long stay : stays) {
+			UUID owner = UUID.randomUUID();
+			Pokemon kid = make("charmander level=5");
+			owners.add(owner);
+			kids.add(kid);
+			boarders.add(new Daycare.Boarder(owner, "away", kid.saveToNBT(access, new CompoundTag()), now - stay));
+		}
+		Daycare.setBoarders(rancher, boarders);
+		int[] before = new int[stays.length];
+		for (int i = 0; i < stays.length; i++) {
+			before[i] = kids.get(i).getExperience();
+		}
+		int[] expected = new int[stays.length];
+		for (int i = 0; i < stays.length; i++) {
+			expected[i] = Daycare.experience(rancher, stays[i]);
+		}
+		helper.assertTrue(expected[0] == 0 && expected[1] > 0 && expected[2] > expected[1], "setup: gains " + java.util.Arrays.toString(expected));
+		rancher.kill();
+		helper.runAfterDelay(2, () -> {
+			for (int i = 0; i < stays.length; i++) {
+				PCStore pc = Cobblemon.INSTANCE.getStorage().getPC(owners.get(i), access);
+				Pokemon back = null;
+				for (Pokemon p : pc) {
+					if (p.getUuid().equals(kids.get(i).getUuid())) {
+						back = p;
+					}
+				}
+				helper.assertTrue(back != null, "boarded " + stays[i] + " ticks: not in its trainer's PC");
+				int gained = back.getExperience() - before[i];
+				helper.assertTrue(gained == expected[i], "boarded " + stays[i] + " ticks: came back with "
+					+ gained + " experience gained, expected " + expected[i] + " (level " + back.getLevel() + ")");
+			}
+			helper.succeed();
+		});
+	}
 }

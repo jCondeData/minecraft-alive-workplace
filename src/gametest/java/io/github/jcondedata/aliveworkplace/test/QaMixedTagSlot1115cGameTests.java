@@ -103,6 +103,25 @@ public class QaMixedTagSlot1115cGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * Planks made from two woods' logs fill one slot: one oak and one spruce log are 8 planks, a chest at a crafting table,
+	 * so the chest is planned (taking just the two logs) and nothing is short; the Carpenter's chain plans it too.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void aChestFromTwoWoodsLogs(GameTestHelper helper) {
+		Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L);
+		Map<Item, Integer> lack = lacking(helper, Items.CHEST, 1, chest);
+		Crafting.Plan logs = plan(helper, Items.CHEST, 1, chest);
+		Crafting.Plan chain = Crafting.chain(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, chest);
+		helper.assertTrue(logs != null && chain != null && lack.isEmpty(), "one oak and one spruce log: plan " + (logs == null ? "none" : logs.takes())
+			+ ", chain " + (chain == null ? "none" : chain.takes()) + ", lacks " + lack);
+		helper.assertTrue(logs.takes().equals(Map.of(Items.OAK_LOG, 1, Items.SPRUCE_LOG, 1)), "the chest from two logs takes " + logs.takes());
+		Map<Item, Long> left = MixedTagSlotGameTests.play(helper, logs);
+		helper.assertTrue(left.getOrDefault(Items.CHEST, 0L) == 1, "the steps make " + left.getOrDefault(Items.CHEST, 0L) + " chests: " + logs.steps());
+		helper.succeed();
+	}
+
+	/**
 	 * A recipe for one wood (oak stairs take oak planks) is never made from another: 3 oak and 6 spruce planks lack exactly
 	 * 3 Oak Planks; 6 of each take the 6 oak; 4 oak planks and a stripped oak log (an oak log too) take no spruce.
 	 */

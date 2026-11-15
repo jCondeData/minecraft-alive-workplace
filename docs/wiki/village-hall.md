@@ -226,8 +226,12 @@ buildings fires and disasters strike, the advice's upgrade tips, class needs and
 whose middle lies in the hall's radius or in a cell painted into one of its City Plan zones, the same rule as the
 Repairs page (B616) and the builder's reach (36.20): a Topiary Garden in a zone past the radius adds its beauty, one in an
 unpainted corner as far away doesn't (`BuildSiteManager.finishedInVillage`, tested in `ZoneVillageBuildingsGameTests`).
-A painted cell whose middle is nearer another hall (one placed after it was painted) is that hall's village's only
-(B805): a Stone Wall there makes the nearer village walled, not both (`QaVillageReach1102BugTests`).
+A painted cell whose middle is nearer another hall (one placed after it was painted) stops being this village's
+(B805): a Stone Wall there makes the nearer village walled, not both (`QaVillageReach1102BugTests`). It is the nearer
+village's only where that hall's radius or its own plan's zone covers it; past that radius it is neither village's until the
+nearer one paints it. A cell exactly as far from both halls stays the painter's, and breaking the nearer hall gives the
+cell back (`QaZoneNearerHall1115cGameTests`, 6: the tie and one block either side from both halls, past the radius,
+the hall broken and put back, a Wall Tower and the rank, a save and load).
 Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's overlap) still measure one.
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32

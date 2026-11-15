@@ -1,0 +1,7 @@
+{
+  "_comment": "B1302: Carved Wood's chest_from_modded_chests (on in the owner's pack) makes a plain chest from any one wooden chest that isn't trapped or plain; with its wooden_chests switch on, 8 planks make that wood's carved chest, so this is how a player gets the plain chest. Counts only while that recipe is loaded.",
+  "serializer": "carved_wood:chest_from_modded_chests",
+  "from": ["#c:chests/wooden"],
+  "except": ["#c:chests/trapped", "minecraft:chest"],
+  "result": "minecraft:chest"
+}

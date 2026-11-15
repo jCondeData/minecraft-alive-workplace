@@ -83,7 +83,11 @@ sticks go down to oak logs or bamboo, never Chipped's decorative planks that no 
 whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
 Cobblemon's Apricorn Logs through Apricorn Wood (B1288). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
 is made of oak planks only, so Chipped's mosaic planks don't make one and the line names the oak logs (B1290's premise);
-Minecraft's chest is made only by Carved Wood's special mixed-chest recipe, which the crafters can't read (B1286).
+Minecraft's chest has no planks recipe there: 8 planks make that wood's Carved Wood chest, and a player turns any one
+of those into a plain chest with Carved Wood's special chest_from_modded_chests recipe. The crafters read that special
+recipe through a `recipe_stand_ins` data file (below), so the Carpenter makes a builder's plain chest from 8 oak planks
+in two crafts (the Oak Chest of Carved Wood, then the chest), turns a carved chest of any wood that's there into one,
+and a chest from nothing names the logs (B1302, B1286). A carved trapped chest is never used for it.
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -135,6 +139,15 @@ The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMi
 `aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim
 released), the bag's contents dropped where it stands, trades, level and experience cleared, its brain rebuilt. The
 profession can't acquire a workbench any more, and the workbench left the `acquirable_job_site` tag.
+
+**Special recipes as data (B1302).** A mod's special crafting recipe is code with no ingredients to read, so the
+planner skips it. A file in `data/<namespace>/recipe_stand_ins/` stands in for one:
+`{"serializer": "carved_wood:chest_from_modded_chests", "from": ["#c:chests/wooden"], "except": ["#c:chests/trapped",
+"minecraft:chest"], "result": "minecraft:chest"}` adds an in-memory one-slot recipe (any one of `from`, not `except`,
+makes the result) to every kind that uses the crafting table's recipes (`RecipeStandIns`, joined in `Crafting.byResult`).
+It counts only while a recipe of that serializer id is loaded (the mod installed and its config switch on), and of
+`from` only what a crafting recipe makes is kept when anything is (Carved Wood's Pale Oak Chest without pale oak in the
+game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more.
 
 ## 3. Switches
 
@@ -285,10 +298,16 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and 6 spruce lack 3 Oak Planks); 10 chests use 80 planks of four woods; a Carpenter makes 3 tables from 5 oak, 4
   spruce and 3 birch planks and leaves the chest's logs and cobblestone alone; one short of oak planks for oak stairs
   names them and takes no spruce.
-- `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
+- `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks, piston or chest from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
   Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a
-  furnace lacks 4 of one of Minecraft's logs (B1288, B1290).
+  furnace lacks 4 of one of Minecraft's logs (B1288, B1290); a chest from nothing names logs too (B1286).
+- `RecipeStandInsCompatTests` (4, B1302, B1286 with Carved Wood): the shipped stand-in is read and is the one way to a
+  plain chest; a chest is planned from 8 oak planks as Carved Wood's Oak Chest then the chest (7 planks: none); two
+  carved spruce chests make two in one step, a carved or vanilla trapped chest none; a chest from nothing lacks logs.
+- `QaCarvedChest1115eCompatTests` (1) and `QaCarvedChest1115eBugCompatTests` (2, B1302): a one-block blueprint with a
+  Carpenter hired gets its plain barrel from 3 spruce logs, and its plain chest from 8 oak planks or from a carved oak
+  chest in the builder's chest.
 - `QaShortageGathers1115fBugCompatTests` (2, B1288): a smoker from nothing or from a furnace names 4 of Minecraft's logs,
   and a builder short of a smoker reads Minecraft's logs, never Apricorn Logs.
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes

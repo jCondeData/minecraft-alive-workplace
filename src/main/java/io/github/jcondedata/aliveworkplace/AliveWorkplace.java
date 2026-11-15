@@ -167,6 +167,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.init(); // ROADMAP 37.2: furniture spots
 		io.github.jcondedata.aliveworkplace.furnish.FurnishingTable.init(); // ROADMAP 37.3: the furniture mods' pieces
 		io.github.jcondedata.aliveworkplace.craft.CrafterBenches.init(); // ROADMAP 37.14: a furniture mod's bench, for the Crafter
+		io.github.jcondedata.aliveworkplace.craft.RecipeStandIns.init(); // B1302: a mod's special crafting recipes, as plain ones
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureEquivalents.init(); // ROADMAP 37.13: any mod's spruce chair will do
 		io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary.init(); // ROADMAP 37.12: the modded build library
 		io.github.jcondedata.aliveworkplace.city.RoadStyles.init();

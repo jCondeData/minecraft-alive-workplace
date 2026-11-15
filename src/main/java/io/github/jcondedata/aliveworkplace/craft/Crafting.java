@@ -1281,6 +1281,10 @@ public final class Crafting {
 					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 				}
 			}
+			if (kind != Kind.STONECUTTING) {
+				// B1302: a mod's special crafting recipe a player uses (Carved Wood's plain chest from a carved one), as data
+				all.addAll(RecipeStandIns.recipes(manager, registries));
+			}
 			for (RecipeHolder<?> holder : all) {
 				// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.
 				if (holder.value().isSpecial() || Recipes.ingredients(holder.value()).stream().allMatch(Ingredient::isEmpty)) {

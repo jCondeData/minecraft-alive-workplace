@@ -462,9 +462,9 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			}
 			return Words.articled("message.aliveworkplace.daycare_keeper.egg", 0, baby.getSpecies().getTranslatedName());
 		}
-		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
-		if (!party.add(baby)) {
-			Cobblemon.INSTANCE.getStorage().getPC(player).add(baby);
+		// Party and PC full: no hatchling (B1284), so the egg is refunded and keeps waiting
+		if (!PokemonHome.toPartyOrPc(player, baby)) {
+			return null;
 		}
 		return Component.translatable("message.aliveworkplace.daycare_keeper.hatched", baby.getDisplayName(false));
 	}
@@ -682,6 +682,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		}
 		int price = DaycareKeepers.EGG_PRICE;
 		int collected = 0;
+		boolean noRoom = false;
 		List<Component> names = new ArrayList<>();
 		for (int i = 0; i < pair.eggs(); i++) {
 			if (!Money.charge(player, (long) price * Money.DOLLARS_PER_EMERALD, price)) {
@@ -690,6 +691,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 			Component name = giveEgg(player, a, b, keeper.getRandom());
 			if (name == null) {
 				Money.pay(player, (long) price * Money.DOLLARS_PER_EMERALD, price);
+				noRoom = true;
 				break;
 			}
 			names.add(name);
@@ -697,6 +699,11 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		}
 		pairs.set(index, pair.withEggs(pair.eggs() - collected, pair.day()));
 		DaycareKeepers.setPairs(keeper, pairs);
+		if (collected == 0 && noRoom) {
+			// Paid for but not given: the reason is room, not money (B1285)
+			return Component.translatable(cobbreeding() ? "message.aliveworkplace.daycare_keeper.no_room_egg"
+				: "message.aliveworkplace.daycare_keeper.no_room_hatchling").withStyle(ChatFormatting.RED);
+		}
 		if (collected == 0) {
 			return Component.translatable("message.aliveworkplace.daycare_keeper.cant_afford", Money.describe((long) price * Money.DOLLARS_PER_EMERALD, price))
 				.withStyle(ChatFormatting.RED);
@@ -716,15 +723,21 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 		if (pair == null || pair.eggs() > 0) {
 			return Component.empty();
 		}
-		pairs.remove(pair);
-		DaycareKeepers.setPairs(keeper, pairs);
-		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
+		// Both to the party or the PC, or neither: with no room for both she keeps the pair (B1284)
+		List<Pokemon> placed = new ArrayList<>();
 		for (CompoundTag tag : List.of(pair.first(), pair.second())) {
 			Pokemon pokemon = load(Players.level(player), tag);
-			if (pokemon != null && !party.add(pokemon)) {
-				Cobblemon.INSTANCE.getStorage().getPC(player).add(pokemon);
+			if (pokemon == null) {
+				continue;
 			}
+			if (!PokemonHome.toPartyOrPc(player, pokemon)) {
+				placed.forEach(p -> PokemonHome.takeOut(player, p));
+				return Component.translatable("message.aliveworkplace.daycare_keeper.no_room_pair").withStyle(ChatFormatting.RED);
+			}
+			placed.add(pokemon);
 		}
+		pairs.remove(pair);
+		DaycareKeepers.setPairs(keeper, pairs);
 		return Component.translatable("message.aliveworkplace.daycare_keeper.taken_back").withStyle(ChatFormatting.GREEN);
 	}
 
@@ -737,7 +750,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 					continue;
 				}
 				try {
-					Cobblemon.INSTANCE.getStorage().getPC(pair.owner(), level.registryAccess()).add(pokemon);
+					PokemonHome.toPcOrOverflow(Cobblemon.INSTANCE.getStorage().getPC(pair.owner(), level.registryAccess()), pokemon, pair.ownerName());
 				} catch (RuntimeException e) {
 					AliveWorkplace.LOG.error("Could not return {}'s Pokémon from the daycare keeper", pair.ownerName(), e);
 				}

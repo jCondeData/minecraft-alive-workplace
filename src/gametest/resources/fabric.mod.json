@@ -10,6 +10,8 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaMoverSnowMix1115hGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTagMix1115hGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMoverVerify1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMoverVerify1115bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDrainEdges1115bGameTests",
@@ -1782,7 +1784,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrops1114gB1259BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3BugGameTests",
-			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests"
+			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests"
 		]
 	},
 	"depends": {

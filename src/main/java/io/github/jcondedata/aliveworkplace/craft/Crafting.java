@@ -989,7 +989,33 @@ public final class Crafting {
 					continue;
 				}
 			}
-			if (pick == null && makeable) {
+			boolean triedAll = false;
+			if (pick == null && makeable && slot.options().size() > 1) {
+				// B1301: no one option can be made in full (one oak and one spruce log: 4 planks of each, not 8 of one);
+				// first one option as before, else each option made as far as it goes and the slot takes the mix
+				boolean lenient = pool.budget.lenient;
+				pool.budget.lenient = false;
+				try {
+					Pool trial = pool.copy();
+					List<Step> trialSteps = new ArrayList<>();
+					Item made = makeOne(level, kind, slot, need, trial, trialSteps, depth, allowed);
+					if (made != null && trial.have(made) >= need) {
+						pool.set(trial);
+						steps.addAll(trialSteps);
+						pick = made;
+					} else {
+						List<Map.Entry<Item, Long>> mixed = makeMix(level, kind, slot, need, pool, steps, depth, allowed);
+						if (mixed != null) {
+							taken.add(mixed);
+							continue;
+						}
+						triedAll = !lenient; // planning for real, nothing more to try down there
+					}
+				} finally {
+					pool.budget.lenient = lenient;
+				}
+			}
+			if (pick == null && makeable && !triedAll) {
 				pick = makeOne(level, kind, slot, need, pool, steps, depth, allowed);
 			}
 			if (pick == null || pool.have(pick) < need) {
@@ -1021,6 +1047,68 @@ public final class Crafting {
 			taken.add(List.of(Map.entry(pick, need)));
 		}
 		return crafts(taken, counts, times);
+	}
+
+	/**
+	 * B1301: fills {@code need} of a slot that takes any of its options from what's there of them and then from each option
+	 * made from further down as far as it goes (planks from an oak log and from a spruce log), as a crafting table takes
+	 * any mix; the items used in order, or null (and the pool untouched) if even that falls short. Called while planning
+	 * for real (not lenient).
+	 */
+	@Nullable
+	private static List<Map.Entry<Item, Long>> makeMix(ServerLevel level, Kind kind, Slot slot, long need, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
+		Pool trial = pool.copy();
+		List<Step> trialSteps = new ArrayList<>();
+		List<Map.Entry<Item, Long>> used = new ArrayList<>(useMix(slot.options(), need, trial));
+		long rest = need - used.stream().mapToLong(Map.Entry::getValue).sum();
+		for (Item option : slot.options()) {
+			if (rest <= 0) {
+				break;
+			}
+			long n = mostMade(level, kind, option, rest, trial, depth, allowed);
+			if (n <= 0) {
+				continue;
+			}
+			if (!make(level, kind, option, (int) (n - trial.have(option)), trial, trialSteps, depth - 1, allowed) || trial.have(option) < n) {
+				return null; // it just could (mostMade): not expected
+			}
+			trial.use(option, n);
+			used.add(Map.entry(option, n));
+			rest -= n;
+		}
+		if (rest > 0) {
+			return null;
+		}
+		pool.set(trial);
+		steps.addAll(trialSteps);
+		return used;
+	}
+
+	/** B1301: the most of {@code option}, up to {@code up}, the pool has or can make (each count tried on a trial pool). */
+	private static long mostMade(ServerLevel level, Kind kind, Item option, long up, Pool pool, int depth, Predicate<LuxuryRecipes.Recipe> allowed) {
+		if (canMake(level, kind, option, up, pool, depth, allowed)) {
+			return up;
+		}
+		if (!canMake(level, kind, option, 1, pool, depth, allowed)) {
+			return 0;
+		}
+		long lo = 1;
+		long hi = up; // lo can be made, hi can't
+		while (hi - lo > 1) {
+			long mid = (lo + hi) >>> 1;
+			if (canMake(level, kind, option, mid, pool, depth, allowed)) {
+				lo = mid;
+			} else {
+				hi = mid;
+			}
+		}
+		return lo;
+	}
+
+	private static boolean canMake(ServerLevel level, Kind kind, Item option, long n, Pool pool, int depth, Predicate<LuxuryRecipes.Recipe> allowed) {
+		Pool trial = pool.copy();
+		return make(level, kind, option, (int) (n - trial.have(option)), trial, new ArrayList<>(), depth - 1, allowed) && trial.have(option) >= n;
 	}
 
 	/**
@@ -1280,6 +1368,10 @@ public final class Crafting {
 					}
 					all.addAll(Recipes.all(manager, RecipeType.CRAFTING));
 				}
+			}
+			if (kind != Kind.STONECUTTING) {
+				// B1302: a mod's special crafting recipe a player uses (Carved Wood's plain chest from a carved one), as data
+				all.addAll(RecipeStandIns.recipes(manager, registries));
 			}
 			for (RecipeHolder<?> holder : all) {
 				// Special recipes (fireworks, map copies) and ones that don't list their ingredients can't be planned.

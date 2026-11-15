@@ -778,16 +778,28 @@ public final class MoveSite {
 			io.github.jcondedata.aliveworkplace.mc.Lookup.registry(level.registryAccess(), net.minecraft.core.registries.Registries.ENCHANTMENT);
 		io.github.jcondedata.aliveworkplace.mc.Lookup.holder(enchantments, net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)
 			.ifPresent(h -> silk.enchant(h, 1));
-		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, be, null, silk));
+		if (be == null && state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+			&& state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
+			// B1275: a two-block thing (a door, a tall flower, tall grass) is its one item, whichever half: never its loot,
+			// whose roll (tall grass: a wheat seed 1 time in 8, else nothing) would make the whole thing a seed by chance
+			return new ArrayList<>(List.of(new net.minecraft.world.item.ItemStack(state.getBlock().asItem())));
+		}
+		// B1274: broken by someone (an unspawned marker where it stands): vanilla's snow loot gives nothing with no
+		// breaking entity, so 4 snow layers came back as the 1 snow of the fallback below
+		net.minecraft.world.entity.Entity breaker = net.minecraft.world.entity.EntityType.MARKER.create(level);
+		if (breaker != null) {
+			breaker.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+		}
+		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, be, breaker, silk));
 		drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
 		if (drops.isEmpty()) {
-			drops.addAll(Block.getDrops(state, level, pos, be));
+			drops.addAll(Block.getDrops(state, level, pos, be, breaker, net.minecraft.world.item.ItemStack.EMPTY));
 			drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
 		}
 		if (drops.isEmpty() && state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
 			drops.add(new net.minecraft.world.item.ItemStack(state.getBlock().asItem()));
 		}
-		eachOfMany(level, pos, state, be, silk, drops);
+		eachOfMany(level, pos, state, be, breaker, silk, drops);
 		return drops;
 	}
 
@@ -806,7 +818,8 @@ public final class MoveSite {
 	 * each of the others. A block whose loot counts them already (candles, sea pickles) is left as it is.
 	 */
 	private static void eachOfMany(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity be,
-			net.minecraft.world.item.ItemStack tool, List<net.minecraft.world.item.ItemStack> drops) {
+			@Nullable net.minecraft.world.entity.Entity breaker, net.minecraft.world.item.ItemStack tool,
+			List<net.minecraft.world.item.ItemStack> drops) {
 		net.minecraft.world.item.Item item = state.getBlock().asItem();
 		if (item == net.minecraft.world.item.Items.AIR) {
 			return;
@@ -821,7 +834,7 @@ public final class MoveSite {
 				return;
 			}
 			int whole = count(drops, item);
-			int one = count(Block.getDrops(state.setValue(p, min), level, pos, be, null, tool), item);
+			int one = count(Block.getDrops(state.setValue(p, min), level, pos, be, breaker, tool), item);
 			if (one <= 0 || whole > one) {
 				return; // its loot counts them already (or drops something else)
 			}

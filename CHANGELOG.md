@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Four snow layers that a Mover's Crate is in the way of now drop as 4 snow, not 1 (B1274).
+- Tall grass whose upper half lands on a Mover's Crate now always drops as tall grass, never a wheat seed (B1275).
+- A player's barrel standing where the Mover's Crate would have moved to no longer becomes the Mover's job site when
+  the move ends: he keeps his crate (B1259).
 - A building move called off while the building is still coming down at its old spot no longer keeps the new spot:
   a builder handed a blueprint there is no longer told the Mover is still taking it back down there (B1264).
 - A building whose middle is in a City Plan cell nearer another Village Hall now counts only for that hall's village;

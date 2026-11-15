@@ -168,6 +168,34 @@ final class Leftovers {
 	}
 
 	/**
+	 * Removes every job block (an acquirable job site, vanilla's or one of our stations) a jobless villager anywhere in
+	 * the test area could claim: within vanilla's claim range ({@code AcquirePoi.SCAN_RANGE}, 48) of the area. A
+	 * workstation an earlier batch's test left outside its own area (never cleared) is a free job site, and a jobless
+	 * villager takes the nearest free one it can walk to: the Healing Center's jobless villager, out by the shut door,
+	 * could take such a block instead of the brewing stand behind the door (B1292, as B1084 with a bed). Call it before
+	 * the test places its own job blocks. Only for tests alone in their batch.
+	 */
+	static void jobSites(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		AABB box = helper.getBounds();
+		double halfDiagonal = Math.sqrt(box.getXsize() * box.getXsize() + box.getYsize() * box.getYsize() + box.getZsize() * box.getZsize()) / 2;
+		int reach = net.minecraft.world.entity.ai.behavior.AcquirePoi.SCAN_RANGE + (int) Math.ceil(halfDiagonal);
+		java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> job = h ->
+			h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)
+				|| io.github.jcondedata.aliveworkplace.work.Stations.ALL.stream().anyMatch(s -> s.poi().test(h));
+		java.util.List<net.minecraft.core.BlockPos> sites = level.getPoiManager().findAll(job, p -> true,
+			net.minecraft.core.BlockPos.containing(box.getCenter()), reach, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(net.minecraft.core.BlockPos::immutable).toList();
+		for (net.minecraft.core.BlockPos site : sites) {
+			level.removeBlock(site, false);
+			// a point with no block under it (as B427's halls) isn't taken away by removing the block: take the point itself
+			if (level.getPoiManager().getType(site).filter(job).isPresent()) {
+				level.getPoiManager().remove(site);
+			}
+		}
+	}
+
+	/**
 	 * Forgets every build a Steward started from a hall in or near the test area, and removes every Storehouse whose
 	 * village reaches it. Both outlive their test: a site is saved world data, and a Storehouse built outside its own
 	 * area is never cleared. A Steward's rounds visit both, so a Steward test at the same spot as an earlier batch's

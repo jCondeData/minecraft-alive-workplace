@@ -147,17 +147,29 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		// villagers look for a job by day and go to bed at dusk (B258): at whatever hour the suite had reached, this one
 		// failed whenever it began at night. It starts in the morning.
 		helper.setDayTime(2000);
+		// B1292: a job block an earlier batch left outside its area is a free job site this jobless villager could take
+		Leftovers.jobSites(helper);
 		place(helper, "healing_center", new BlockPos(8, 1, 6));
 		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 4));
 		villager.getRandom().setSeed(203L);
 		// the brewing stand is template (3, 1, 7), behind the door (5, 1, 2)
 		double past = helper.absolutePos(new BlockPos(0, 0, 10)).getZ();
+		BlockPos stand = helper.absolutePos(new BlockPos(11, 2, 13));
+		BlockPos door = helper.absolutePos(new BlockPos(13, 2, 8));
 		// (a job of the brewing stand's: the Cleric or, since 36.17 and at random, one of ours who share it)
 		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() != VillagerProfession.NONE
 			&& io.github.jcondedata.aliveworkplace.work.Stations.at(net.minecraft.world.level.block.Blocks.BREWING_STAND).orElseThrow()
 				.has(villager.getVillagerData().getProfession()),
 			"the villager hasn't come in and taken the brewing stand: at " + villager.position() + ", "
-				+ villager.getVillagerData().getProfession()));
+				+ villager.getVillagerData().getProfession() + (villager.isAlive() ? "" : " (dead)")
+				+ ", job site " + villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)
+				+ ", potential job site " + villager.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE)
+				+ ", walk target " + villager.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> w.getTarget().currentBlockPosition())
+				+ ", activity " + villager.getBrain().getActiveNonCoreActivity()
+				+ ", day time " + helper.getLevel().getDayTime() % 24000
+				+ ", stand " + stand + " " + helper.getLevel().getBlockState(stand).getBlock()
+				+ " free " + helper.getLevel().getPoiManager().getFreeTickets(stand)
+				+ ", door " + door + " " + helper.getLevel().getBlockState(door)));
 	}
 
 	/**

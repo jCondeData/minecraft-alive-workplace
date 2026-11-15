@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.155.3 — 2026-11-15
+
 ### Fixed
 - A chest (or anything else that takes any planks) is made from the logs of several woods, as at a crafting table:
   one oak and one spruce log make 4 planks each and the chest, instead of the builder reading "short of 1 Oak Log to

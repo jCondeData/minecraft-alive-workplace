@@ -260,6 +260,7 @@ public final class Crafting {
 		pool.budget.types = types;
 		pool.budget.lenient = lenient;
 		pool.budget.raw = RAW.get();
+		pool.budget.stock = usable;
 		List<Step> steps = new ArrayList<>();
 		boolean made = make(level, kind, target, count, pool, steps, depth, allowed);
 		tick[1] += pool.budget.tried;
@@ -312,6 +313,10 @@ public final class Crafting {
 		boolean lenient;
 		/** Things counted as raw, never made from further down (46.2: planning what's short; 46.3: {@link #asRaw}). */
 		Predicate<Item> raw = i -> false;
+		/** The chests' stock the plan started from (what {@link #reachable} starts from). */
+		Map<Item, Long> stock = Map.of();
+		/** {@link #reachable}'s answers, by item and depth: whether anything in {@link #stock} could lead to it at all. */
+		final Map<Item, Boolean[]> reach = new HashMap<>();
 
 		Budget(int max) {
 			this.max = max;
@@ -439,6 +444,12 @@ public final class Crafting {
 				return true;
 			}
 		}
+		// B1268: making it for real needs something in the chests that leads to it at all; when nothing does, every way down
+		// would fail, and trying them all (the pack's many ways to an iron nugget, under a chain or a lantern) used up the
+		// plan's and the tick's trials before what's short was ever said
+		if (!pool.budget.lenient && kind != Kind.CRAFTER && kind != Kind.LUXURY && !reachable(level, kind, target, depth, pool.budget)) {
+			return false;
+		}
 		// Planning what's short (B489, the B409 rule across recipes): not the first recipe that can be noted as short, but
 		// the one closest to what's there (raw iron fired into ingots when the chest holds raw iron, not the iron ore no
 		// one has); a recipe that only unpacks a storage block is no way to say what's short (raw iron from its block).
@@ -448,7 +459,14 @@ public final class Crafting {
 		Step bestStep = null;
 		long bestMade = 0;
 		int bestRank = -1;
-		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
+		List<RecipeHolder<?>> ways = recipesFor(level, kind, target);
+		if (lenient && ways.size() > 1) {
+			// B1267: the thing's own mod's ways are tried first, so the plan's trials (B101) go to them before the rest (the
+			// pack's many other ways to an iron nugget); the ways that loop back still come last (B1255)
+			ways = new ArrayList<>(ways);
+			ways.sort(java.util.Comparator.comparingInt(h -> (loops(level, h) ? 2 : 0) + (fromOwnMod(h, target) ? 0 : 1))); // stable
+		}
+		for (RecipeHolder<?> holder : ways) {
 			Recipe<?> recipe = holder.value();
 			if (!pool.budget.types.test(recipe.getType())) {
 				continue; // a bench's recipe while the bench isn't there (37.14)
@@ -488,7 +506,10 @@ public final class Crafting {
 				pool.addMade(target, (long) out.getCount() * times);
 				return true;
 			}
-			int rank = shortRank(pool, trial);
+			// B1267, B1268: of two ways that fit as well, the one from the thing's own mod (iron ingots fired from raw iron,
+			// not from Create's Crushed Raw Iron that only a crushing wheel makes; chains of iron, not Create's of zinc;
+			// nuggets from an ingot, not Cobblemon's plaques melted down), so the line names what a player mines
+			int rank = shortRank(pool, trial) * 2 + (fromOwnMod(holder, target) ? 1 : 0);
 			if (rank > bestRank) {
 				best = trial;
 				bestSteps = trialSteps;
@@ -496,7 +517,7 @@ public final class Crafting {
 				bestMade = (long) out.getCount() * times;
 				bestRank = rank;
 			}
-			if (rank == RANK_ALL_THERE) {
+			if (rank >= RANK_ALL_THERE * 2) {
 				break;
 			}
 		}
@@ -511,6 +532,57 @@ public final class Crafting {
 			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
 		}
 		return false;
+	}
+
+	/**
+	 * Whether some recipe of {@code kind} for {@code target} could be made, {@code depth} steps down, from what the plan's
+	 * chests held at the start, counts aside: each of its ingredients has an option the chests held or one reachable a
+	 * step further down. A plan only ever has those items or what's made from them, so a target this says no to can't be
+	 * made by it at all (B1268). Answers are kept for the plan (depth only goes down, so nothing asks about itself).
+	 */
+	private static boolean reachable(ServerLevel level, Kind kind, Item target, int depth, Budget budget) {
+		Boolean[] known = budget.reach.computeIfAbsent(target, k -> new Boolean[CHAIN_DEPTH + 2]);
+		int at = Math.min(Math.max(depth, 0), known.length - 1);
+		if (known[at] != null) {
+			return known[at];
+		}
+		boolean any = false;
+		for (RecipeHolder<?> holder : recipesFor(level, kind, target)) {
+			if (!budget.types.test(holder.value().getType())) {
+				continue;
+			}
+			boolean all = true;
+			boolean some = false;
+			for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+				if (ingredient.isEmpty()) {
+					continue;
+				}
+				some = true;
+				boolean slot = false;
+				for (Item option : options(level, ingredient)) {
+					if (budget.stock.getOrDefault(option, 0L) > 0 || (depth > 0 && reachable(level, kind, option, depth - 1, budget))) {
+						slot = true;
+						break;
+					}
+				}
+				if (!slot) {
+					all = false;
+					break;
+				}
+			}
+			if (all && some) {
+				any = true;
+				break;
+			}
+		}
+		known[at] = any;
+		return any;
+	}
+
+	/** Whether {@code holder} comes from {@code target}'s own mod (its recipe id's namespace is the item's). */
+	private static boolean fromOwnMod(RecipeHolder<?> holder, Item target) {
+		net.minecraft.resources.ResourceLocation item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(target);
+		return Recipes.id(holder).getNamespace().equals(item.getNamespace());
 	}
 
 	/** {@link #shortRank}: nothing short at all. */

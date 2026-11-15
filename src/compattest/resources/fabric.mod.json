@@ -204,6 +204,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverCrateLastResort1114eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverCrateToolbox1114e2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverCrateGhost1114e2BugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverCrateFixes1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverArm1110eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMoverTurns1110hCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedCraftJobs1110eCompatTests",
@@ -404,6 +405,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaLeaderVerify1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaLeaderBeatenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateForgeKiln1115eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateForge1115eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateChain1115eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateChain1115eCompatTests"
 		]
 	},

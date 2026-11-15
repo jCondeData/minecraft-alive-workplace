@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Create loaded, a builder waiting on a Tinkerer names the raw metal you mine: "short of 6 Raw Iron to make 16
+  Iron Bars", not Create's Crushed Raw Iron or Cobblemon's plaques (B1267), and chains short name the Raw Iron instead
+  of showing no line at all (B1268).
 - A block whose new spot is a Mover's Crate in a full storage room is dropped with exactly what was packed: a beehive
   keeps its bees (B1262), a Create Toolbox drops with its own items once instead of one extra, and a Create chute, funnel
   or deployer set to a filter no longer drops that filter item from nothing (B1261).

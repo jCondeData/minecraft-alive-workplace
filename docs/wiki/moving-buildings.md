@@ -534,6 +534,12 @@ whose lower half and a cyan bed whose head land on the crate each drop as one it
 `QaMoverCrateDrops1114gBugTests` (B1258): 3 turtle eggs in one block on the crate drop as 3 eggs. `QaMoveSpotQa1114c4GameTests` (2,
 B1230): a hut sharing only one corner block of a called-off move's spot is refused word for word during the take-down,
 also over two reloads, and the spot is taken once the building is back.
+`QaMoverCrateFixes1115eGameTests` (7, the QA lane, B1258, B1260, B1262): 2 and 4 turtle eggs (the 4 in a storage room)
+and 3 sea pickles drop as exactly that many; a warped door whose upper half and a lime bed whose foot land on the crate
+drop as one item, no half left standing; a full beehive in a storage room, reloaded every 3 steps, keeps its 3 bees and
+honey level 5; an empty pot with 4 sherds drops as that pot, no loose sherds. `QaCreateMoverCrateFixes1115eCompatTests`
+(2, B1261): an empty Deployer set to emeralds drops no emerald; a Basin with 8 iron, 5 gold and a diamond filter drops
+exactly 8 iron and 5 gold.
 
 ## Known limits
 

@@ -209,15 +209,15 @@ public final class MoveFit {
 	 * The new spots of the other buildings on the move in this dimension (B1174): each move under way by its site's new
 	 * box, each move still waiting for a Mover by its new lowest corner and its blueprint's turned size. The building at
 	 * {@code from} is left out. A called-off move keeps its new spot only while the Mover is still taking down what went up
-	 * there (RESTORE_DOWN, B1230, marked {@code puttingBack}); once that's down it goes back up where it was, and the new
-	 * spot is free.
+	 * there (RESTORE_DOWN with something of it still at the new spot, B1230, B1264, marked {@code puttingBack}); once
+	 * that's down it goes back up where it was, and the new spot is free.
 	 */
 	public static List<Other> moving(ServerLevel level, @Nullable BlockPos from) {
 		List<Other> out = new ArrayList<>();
 		List<BlockPos> started = new ArrayList<>();
 		for (MoveSite site : MoveSites.get(level).all()) {
 			started.add(site.from());
-			boolean puttingBack = site.canceled() && site.stage() == MoveSite.Stage.RESTORE_DOWN;
+			boolean puttingBack = site.puttingBack();
 			if (site.from().equals(from) || (site.canceled() && !puttingBack) || site.stage() == MoveSite.Stage.DONE) {
 				continue;
 			}

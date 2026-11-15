@@ -39,6 +39,9 @@ import net.minecraft.world.phys.Vec3;
 public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final long TICK_NANOS = 5_000_000L;
+	/** The player's party against the Master: six Shuckles, so the battle outlasts both refusals even when one faints a turn. */
+	private static final String[] PARTY = {"shuckle level=100", "shuckle level=100", "shuckle level=100", "shuckle level=100",
+		"shuckle level=100", "shuckle level=100"};
 
 	private static void keepRealTime(long startedNanos, long ticks) {
 		long ahead = startedNanos + ticks * TICK_NANOS - System.nanoTime();
@@ -52,10 +55,45 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 		}
 	}
 
-	/** A Master's choice refused on two turns in a row (a switch to the Pokémon already out): the battle still goes on. */
+	/** Where a battle stands, for a failure message: the turn, who won, and each side's requests and team. */
+	private static String state(PokemonBattle battle, BattleActor us, BattleActor them) {
+		List<String> lines = new java.util.ArrayList<>();
+		for (String message : battle.getShowdownMessages()) {
+			for (String line : message.split("\n")) {
+				if (line.startsWith("|move|") || line.startsWith("|faint|") || line.startsWith("|win|") || line.startsWith("|-crit|")
+						|| line.startsWith("|-supereffective|") || line.startsWith("|error|") || line.startsWith("|turn|")) {
+					lines.add(line);
+				}
+			}
+		}
+		return "turn " + battle.getTurn() + ", ended " + battle.getEnded() + ", won by "
+			+ battle.getWinners().stream().map(a -> a == us ? "the player" : "the Master").toList() + "; the player " + side(us) + "; the Master "
+			+ side(them) + "; the battle's last lines " + lines.subList(Math.max(0, lines.size() - 8), lines.size());
+	}
+
+	private static String side(BattleActor actor) {
+		return "request=" + (actor.getRequest() != null) + " mustChoose=" + actor.getMustChoose() + " answers=" + actor.getResponses().size() + " team "
+			+ actor.getPokemonList().stream().map(p -> p.getEffectedPokemon().getSpecies().getResourceIdentifier().getPath() + " L"
+				+ p.getEffectedPokemon().getLevel() + " " + p.getHealth() + "/" + p.getMaxHealth()).toList();
+	}
+
+	/**
+	 * A Master's choice refused on two turns in a row (a switch to the Pokémon already out): the battle still goes on.
+	 *
+	 * <p>B1276: the player had one Shuckle, and the test counted on it standing through turn 1. A refused Master answers
+	 * with Showdown's "default", the first move of the Pokémon out, and when that move knocked the Shuckle out on turn 1
+	 * the Master had won: the battle was over (rightly) before a second choice could be refused, and the test waited out
+	 * its 40 seconds for "only 1 refusal(s) made (turn 1, ended true)" (CI build 43683603331). So the player brings a
+	 * full party and sends in the next Shuckle when one faints, as a player does: both refusals are always made.
+	 */
 	//$ gametest_ticks_batch AREA '8000' '"qa1111d_master_refused"'
 	@GameTest(template = AREA, timeoutTicks = 8000, batch = "qa1111d_master_refused")
 	public void aMastersChoiceRefusedTwiceInARowDoesNotStopTheBattle(GameTestHelper helper) {
+		mastersChoiceRefusedTwice(helper, PARTY);
+	}
+
+	/** {@link #aMastersChoiceRefusedTwiceInARowDoesNotStopTheBattle} with the player's {@code party} (Pokémon properties). */
+	static void mastersChoiceRefusedTwice(GameTestHelper helper, String... party) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		helper.setDayTime(2000);
 		BlockPos post = new BlockPos(2, 2, 2);
@@ -70,7 +108,9 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 		player.setGameMode(GameType.SURVIVAL);
 		player.moveTo(helper.absoluteVec(new Vec3(6.5, 2, 6.5)));
 		// Shuckle: walls up against a Master's team for many turns, and barely scratches it back.
-		Cobblemon.INSTANCE.getStorage().getParty(player).add(PokemonProperties.Companion.parse("shuckle level=100", " ", "=").create());
+		for (String pokemon : party) {
+			Cobblemon.INSTANCE.getStorage().getParty(player).add(PokemonProperties.Companion.parse(pokemon, " ", "=").create());
+		}
 		PartnerShowsCompatTests.after(helper, () -> {
 			PokemonBattle left = BattleRegistry.getBattleByParticipatingPlayer(player);
 			if (left != null) {
@@ -91,11 +131,21 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 		});
 		int[] refusedOn = {-1, -1};
 		int[] refusals = {0};
+		int[] sentIn = {0};
 		long started = System.nanoTime();
 		long[] ticks = {0};
 		helper.onEachTick(() -> {
 			keepRealTime(started, ++ticks[0]);
 			if (battle.getEnded() || us.getRequest() == null || !us.getMustChoose() || !us.getResponses().isEmpty()) {
+				return;
+			}
+			if (us.getRequest().getForceSwitch().contains(true)) {
+				// B1276: the Shuckle out fainted. As a player does on the screen: the next Pokémon that can still fight.
+				var next = us.getPokemonList().stream().filter(bp -> bp.getHealth() > 0
+					&& us.getActivePokemon().stream().noneMatch(a -> a.getBattlePokemon() == bp)).findFirst();
+				helper.assertTrue(next.isPresent(), "a forced switch with nobody left to send in [" + state(battle, us, them[0]) + "]");
+				us.setActionResponses(List.<ShowdownActionResponse>of(new SwitchActionResponse(next.get().getUuid())));
+				sentIn[0]++;
 				return;
 			}
 			int turn = battle.getTurn();
@@ -119,14 +169,15 @@ public class QaTrainerBattle1111dCompatTests implements FabricGameTest {
 			us.setActionResponses(List.<ShowdownActionResponse>of(new MoveActionResponse(move.getId(), target, null)));
 		});
 		helper.succeedWhen(() -> {
-			helper.assertTrue(refusals[0] == 2, "only " + refusals[0] + " refusal(s) made (turn " + battle.getTurn() + ", ended "
-				+ battle.getEnded() + ")");
-			helper.assertTrue(refusedOn[1] == refusedOn[0] + 1, "the refusals weren't on two turns in a row: turns " + refusedOn[0]
-				+ " and " + refusedOn[1]);
-			helper.assertTrue(battle.getTurn() >= refusedOn[1] + 2 || battle.getEnded(), "the battle stands at turn " + battle.getTurn()
-				+ " after refusals on turns " + refusedOn[0] + " and " + refusedOn[1] + ": the Master mustChoose=" + them[0].getMustChoose()
-				+ " request=" + (them[0].getRequest() != null) + " (" + ticks[0] + " ticks in " + (System.nanoTime() - started) / 1_000_000L
-				+ " ms)");
+			String where = " [" + state(battle, us, them[0]) + "; " + sentIn[0] + " sent in after a faint, " + ticks[0] + " ticks in "
+				+ (System.nanoTime() - started) / 1_000_000L + " ms]";
+			helper.assertTrue(refusals[0] == 2, "check 1 of 3, two of the Master's choices refused: only " + refusals[0] + " refusal(s) made (turn "
+				+ battle.getTurn() + ", ended " + battle.getEnded() + ")" + where);
+			helper.assertTrue(refusedOn[1] == refusedOn[0] + 1, "check 2 of 3: the refusals weren't on two turns in a row: turns " + refusedOn[0]
+				+ " and " + refusedOn[1] + where);
+			helper.assertTrue(battle.getTurn() >= refusedOn[1] + 2 || battle.getEnded(), "check 3 of 3, the battle goes on: the battle stands at turn "
+				+ battle.getTurn() + " after refusals on turns " + refusedOn[0] + " and " + refusedOn[1] + ": the Master mustChoose="
+				+ them[0].getMustChoose() + " request=" + (them[0].getRequest() != null) + where);
 			if (!battle.getEnded()) {
 				CobblemonTrainers.finishForTest(battle, false);
 			}

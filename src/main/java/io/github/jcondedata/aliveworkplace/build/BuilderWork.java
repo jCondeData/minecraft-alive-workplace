@@ -2413,6 +2413,12 @@ public class BuilderWork extends Behavior<Villager> {
 	 * on purpose, open to the outside (under a jetty, round its posts, a moat), is not in a room and stays, as does a pool
 	 * the drawing has. Nothing is saved: run again after a reload it finds nothing left to do.
 	 */
+	/** B1272: the world spot under the box's floor lets water through: it holds fluid or has no collision. */
+	private static boolean openBelow(ServerLevel level, BlockPos below) {
+		BlockState state = level.getBlockState(below);
+		return !state.getFluidState().isEmpty() || state.getCollisionShape(level, below).isEmpty();
+	}
+
 	static int drainBox(ServerLevel level, BuildPlan plan) {
 		Map<BlockPos, BlockState> targets = plan.targets();
 		Set<BlockPos> box = new HashSet<>();
@@ -2428,7 +2434,11 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
-				if (!box.contains(p.relative(d))) {
+				// B1272: through the bottom face only onto open ground (water under a jetty's deck, a pit): a spot of the
+				// floor that shuts nothing (the drawing's own pool, a carpet, a pressure plate) standing on the solid bed
+				// of a pond made the whole room count as open, and nothing was drained
+				if (!box.contains(p.relative(d))
+					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below()))) {
 					if (outside.add(p)) {
 						open.add(p);
 					}

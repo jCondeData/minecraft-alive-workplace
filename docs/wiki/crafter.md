@@ -258,6 +258,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   a builder short of 2 Blocks of Zinc reads Raw Zinc, never Crushed, and the Tinkerer takes nothing.
 - `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
+- `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
+  (about 3,200), read from an empty chest the way that job's shortage line reads it, names no ore (`c:ores`) and no
+  Create crushed raw metal. Kills a mutant dropping the ore rule and one dropping B1279's raw-metal rank.
+- `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
+  base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
+  slot are B1293's.
 - `QaShortageGathers1115fGameTests` (8, QA past B1273/B1277/B1278/B1279): a book from 3 paper lacks 1 Leather, with 1
   rabbit hide the 3 more hides, with 4 hides or 1 leather nothing; three bookshelves lack 9 Leather, 8 with one leather,
   35 Rabbit Hides with one hide; two item frames, a leather cap and a book and quill name Leather; a sticky piston and a

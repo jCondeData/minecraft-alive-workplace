@@ -17,6 +17,14 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A crafter's "Can't be made yet" line with Chipped loaded no longer names Chipped's decorative planks for a torch's
+  sticks; it goes down to the oak logs a player gathers (B1273).
+- With no leather in the chests, a book, an item frame or bookshelves now read "short of Leather", not Rabbit Hide
+  nobody has (B1278).
+- With Create loaded, a builder short of a Sticky Piston now reads "Slimeball", not Create's Wheat Flour, and a piston
+  names Redstone Dust, not Redstone Ore (B1277).
+- With Create loaded, a builder short of Blocks of Zinc now reads "Raw Zinc", never the Crushed Raw Zinc only a
+  crushing wheel makes (B1279).
 - Four snow layers that a Mover's Crate is in the way of now drop as 4 snow, not 1 (B1274).
 - Tall grass whose upper half lands on a Mover's Crate now always drops as tall grass, never a wheat seed (B1275).
 - A player's barrel standing where the Mover's Crate would have moved to no longer becomes the Mover's job site when

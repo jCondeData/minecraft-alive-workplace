@@ -261,6 +261,7 @@ public final class Crafting {
 		pool.budget.lenient = lenient;
 		pool.budget.raw = RAW.get();
 		pool.budget.stock = usable;
+		pool.budget.topDepth = depth;
 		List<Step> steps = new ArrayList<>();
 		boolean made = make(level, kind, target, count, pool, steps, depth, allowed);
 		tick[1] += pool.budget.tried;
@@ -317,6 +318,8 @@ public final class Crafting {
 		Map<Item, Long> stock = Map.of();
 		/** {@link #reachable}'s answers, by item and depth: whether anything in {@link #stock} could lead to it at all. */
 		final Map<Item, Boolean[]> reach = new HashMap<>();
+		/** How deep the thing asked for was planned from: anything planned less deep is one of its ingredients. */
+		int topDepth;
 
 		Budget(int max) {
 			this.max = max;
@@ -460,6 +463,9 @@ public final class Crafting {
 		long bestMade = 0;
 		int bestRank = -1;
 		List<RecipeHolder<?>> ways = recipesFor(level, kind, target);
+		// B1277, B1278, B1279: an ingredient's ways that are no way to say what's short when nothing there leads to them
+		boolean ingredient = lenient && depth < pool.budget.topDepth;
+		boolean ownWay = !ingredient || hasOwnWay(level, kind, target, ways, pool.budget);
 		if (lenient && ways.size() > 1) {
 			// B1267: the thing's own mod's ways are tried first, so the plan's trials (B101) go to them before the rest (the
 			// pack's many other ways to an iron nugget); the ways that loop back still come last (B1255)
@@ -480,6 +486,12 @@ public final class Crafting {
 			}
 			if (lenient && best != null && loops(level, holder)) {
 				break; // B1255: what's short is said by a way from scratch, not by one that loops back (they come last)
+			}
+			// B1278: an ingredient that's several of one thing packed into one (4 rabbit hide into a leather) is itself what's
+			// short when none of that thing is there: the line names the Leather a player gathers, not the hide nobody has
+			Item packed = ingredient ? packs(level, recipe, out) : null;
+			if (packed != null && pool.have(packed) <= 0) {
+				continue;
 			}
 			if (!pool.budget.tryOne()) {
 				if (best != null) {
@@ -509,7 +521,21 @@ public final class Crafting {
 			// B1267, B1268: of two ways that fit as well, the one from the thing's own mod (iron ingots fired from raw iron,
 			// not from Create's Crushed Raw Iron that only a crushing wheel makes; chains of iron, not Create's of zinc;
 			// nuggets from an ingot, not Cobblemon's plaques melted down), so the line names what a player mines
-			int rank = shortRank(pool, trial) * 2 + (fromOwnMod(holder, target) ? 1 : 0);
+			int fit = shortRank(pool, trial);
+			if (ingredient && fit < 2) {
+				// Using nothing that's there, an ingredient isn't said by another mod's way when its own mod has none (B1277:
+				// a slimeball, not Create's Dough and the Wheat Flour only a millstone makes), nor by a way short of an ore a
+				// player only gets with Silk Touch (redstone dust, not Redstone Ore): the thing itself is what's short
+				if (!ownWay && !fromOwnMod(holder, target)) {
+					continue;
+				}
+				if (trial.lacks.entrySet().stream().anyMatch(e -> e.getValue() > 0 && e.getKey().builtInRegistryHolder().is(ORES))) {
+					continue;
+				}
+			}
+			// B1279: then, of two ways that fit as well and are both the thing's own mod's, the one short only of raw metal a
+			// player mines (Create's Raw Zinc, not the Crushed Raw Zinc only a crushing wheel makes)
+			int rank = fit * 4 + (fromOwnMod(holder, target) ? 2 : 0) + (rawOnly(trial) ? 1 : 0);
 			if (rank > bestRank) {
 				best = trial;
 				bestSteps = trialSteps;
@@ -517,7 +543,7 @@ public final class Crafting {
 				bestMade = (long) out.getCount() * times;
 				bestRank = rank;
 			}
-			if (rank >= RANK_ALL_THERE * 2) {
+			if (rank >= RANK_ALL_THERE * 4) {
 				break;
 			}
 		}
@@ -577,6 +603,69 @@ public final class Crafting {
 		}
 		known[at] = any;
 		return any;
+	}
+
+	/** Ores (the common tag): a player gets the block only with Silk Touch, so a line never names one for an ingredient. */
+	private static final net.minecraft.tags.TagKey<Item> ORES = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "ores"));
+	/** Raw metals as mined (the common tag): raw iron, Create's raw zinc; never a crushing wheel's crushed ore. */
+	private static final net.minecraft.tags.TagKey<Item> RAW_MATERIALS = net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.ITEM,
+		net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("c", "raw_materials"));
+
+	/** Whether everything {@code trial} notes short is a raw metal as mined ({@link #RAW_MATERIALS}), and something is. */
+	private static boolean rawOnly(Pool trial) {
+		boolean any = false;
+		for (Map.Entry<Item, Long> e : trial.lacks.entrySet()) {
+			if (e.getValue() > 0) {
+				if (!e.getKey().builtInRegistryHolder().is(RAW_MATERIALS)) {
+					return false;
+				}
+				any = true;
+			}
+		}
+		return any;
+	}
+
+	/**
+	 * The one item {@code recipe} packs several of into fewer of a non-block item ({@code out}: 4 rabbit hide into 1 leather),
+	 * or null if it isn't that kind of recipe.
+	 */
+	@Nullable
+	private static Item packs(ServerLevel level, Recipe<?> recipe, ItemStack out) {
+		if (out.getItem() instanceof net.minecraft.world.item.BlockItem) {
+			return null;
+		}
+		Item from = null;
+		int n = 0;
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			List<Item> options = options(level, ingredient);
+			if (options.size() != 1 || (from != null && from != options.get(0))) {
+				return null;
+			}
+			from = options.get(0);
+			n++;
+		}
+		return from != null && from != out.getItem() && n > out.getCount() ? from : null;
+	}
+
+	/** Whether one of {@code ways} (those this plan may use, not unpacking a storage block) is from {@code target}'s own mod. */
+	private static boolean hasOwnWay(ServerLevel level, Kind kind, Item target, List<RecipeHolder<?>> ways, Budget budget) {
+		for (RecipeHolder<?> holder : ways) {
+			if (budget.types.test(holder.value().getType()) && fromOwnMod(holder, target) && !unpacks(level, kind, holder.value(), target)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The base game's options first (B1273: oak planks before Chipped's mosaic planks in the planks tag), else in order. */
+	private static List<Item> vanillaFirst(List<Item> options) {
+		List<Item> sorted = new ArrayList<>(options);
+		sorted.sort(java.util.Comparator.comparingInt(i -> "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(i).getNamespace()) ? 0 : 1));
+		return sorted;
 	}
 
 	/** Whether {@code holder} comes from {@code target}'s own mod (its recipe id's namespace is the item's). */
@@ -786,9 +875,11 @@ public final class Crafting {
 				}
 				// 37.14, what's short: an option the chests hold some of (B409: the leather, not the rabbit hide that
 				// makes it), else the first raw option (logs, not wood made from logs), or the first one
+				// (B1273: of the raw options, the base game's first: oak logs, not Chipped's decorative planks no recipe makes)
 				if (pick == null) {
+					List<Item> ordered = vanillaFirst(slot.options());
 					pick = slot.options().stream().filter(o -> pool.chest(o) > 0).findFirst()
-						.orElseGet(() -> slot.options().stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(slot.options().get(0)));
+						.orElseGet(() -> ordered.stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(ordered.get(0)));
 				}
 				pool.lacks.merge(pick, need - Math.max(0, pool.have(pick)), Long::sum);
 			}
@@ -820,7 +911,12 @@ public final class Crafting {
 			} finally {
 				pool.budget.lenient = true;
 			}
-			if (slot.options().stream().anyMatch(o -> recipesFor(level, kind, o).isEmpty())) {
+			// B1273: a raw option counts when it's the base game's, or the slot has none of the base game's (the planks tag
+			// with Chipped holds its decorative planks no crafting recipe makes: the line goes down to oak logs, not those)
+			List<Item> ordered = vanillaFirst(slot.options());
+			boolean vanilla = !ordered.isEmpty() && "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(ordered.get(0)).getNamespace());
+			if (ordered.stream().filter(o -> !vanilla || "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(o).getNamespace()))
+					.anyMatch(o -> recipesFor(level, kind, o).isEmpty())) {
 				return null; // a raw material: noted as short
 			}
 			if (slot.options().stream().anyMatch(o -> pool.chest(o) > 0)) {
@@ -840,7 +936,7 @@ public final class Crafting {
 				return null; // noted as short
 			}
 		}
-		for (Item option : slot.options()) {
+		for (Item option : pool.budget.lenient ? vanillaFirst(slot.options()) : slot.options()) {
 			if (make(level, kind, option, (int) (need - pool.have(option)), pool, steps, depth - 1, allowed)) {
 				return option;
 			}

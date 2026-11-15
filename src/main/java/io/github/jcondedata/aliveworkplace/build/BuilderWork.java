@@ -2413,10 +2413,68 @@ public class BuilderWork extends Behavior<Villager> {
 	 * on purpose, open to the outside (under a jetty, round its posts, a moat), is not in a room and stays, as does a pool
 	 * the drawing has. Nothing is saved: run again after a reload it finds nothing left to do.
 	 */
-	/** B1272: the world spot under the box's floor lets water through: it holds fluid or has no collision. */
-	private static boolean openBelow(ServerLevel level, BlockPos below) {
-		BlockState state = level.getBlockState(below);
-		return !state.getFluidState().isEmpty() || state.getCollisionShape(level, below).isEmpty();
+	/** B1272: the world spot {@code at} lets water through: it holds fluid or has no collision. */
+	private static boolean letsWaterThrough(ServerLevel level, BlockPos at) {
+		BlockState state = level.getBlockState(at);
+		return !state.getFluidState().isEmpty() || state.getCollisionShape(level, at).isEmpty();
+	}
+
+	/** B1280: the most spots under the box {@link #openBelow} looks through before it takes them for open water. */
+	private static final int MOST_BELOW = 4096;
+
+	/**
+	 * B1272, B1280: whether the world spot {@code below}, under the box's floor, is a way in from outside: it lets water
+	 * through and, through spots that let water through and aren't the box's, reaches past the box's footprint or up to
+	 * its height (water under a jetty's deck, a lake running on below). A pocket in a pond's bed shut in by stone (or a
+	 * hole that holds only the drawing's pool's water) is no way in. {@code known} keeps the answer for each spot looked
+	 * at, so a pocket is searched once.
+	 */
+	private static boolean openBelow(ServerLevel level, BlockPos below, Set<BlockPos> box, net.minecraft.world.level.levelgen.structure.BoundingBox bounds,
+			Map<BlockPos, Boolean> known) {
+		Boolean seen = known.get(below);
+		if (seen != null) {
+			return seen;
+		}
+		if (!level.isLoaded(below) || !letsWaterThrough(level, below)) {
+			known.put(below.immutable(), !level.isLoaded(below));
+			return !level.isLoaded(below);
+		}
+		Set<BlockPos> reached = new HashSet<>();
+		java.util.ArrayDeque<BlockPos> next = new java.util.ArrayDeque<>();
+		reached.add(below.immutable());
+		next.add(below.immutable());
+		boolean out = false;
+		while (!next.isEmpty() && !out) {
+			BlockPos at = next.poll();
+			Boolean before = known.get(at);
+			if (before != null && before) {
+				out = true;
+				break;
+			}
+			if (at.getY() >= bounds.minY() || at.getX() < bounds.minX() || at.getX() > bounds.maxX() || at.getZ() < bounds.minZ()
+				|| at.getZ() > bounds.maxZ() || reached.size() > MOST_BELOW) {
+				out = true; // past the footprint, at the box's height, or more water than a pocket
+				break;
+			}
+			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
+				BlockPos n = at.relative(d);
+				if (box.contains(n) || reached.contains(n)) {
+					continue;
+				}
+				if (!level.isLoaded(n)) {
+					out = true;
+					break;
+				}
+				if (letsWaterThrough(level, n)) {
+					reached.add(n);
+					next.add(n);
+				}
+			}
+		}
+		for (BlockPos r : reached) {
+			known.put(r, out);
+		}
+		return out;
 	}
 
 	static int drainBox(ServerLevel level, BuildPlan plan) {
@@ -2429,6 +2487,9 @@ public class BuilderWork extends Behavior<Villager> {
 		// the open spots of the box (drawn air, or a block that shuts nothing: a torch, a flower) reached from outside it
 		Set<BlockPos> outside = new HashSet<>();
 		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		net.minecraft.world.level.levelgen.structure.BoundingBox bounds =
+			net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(box).orElse(null);
+		Map<BlockPos, Boolean> below = new HashMap<>();
 		for (BlockPos p : box) {
 			if (!opens(level, plan, p)) {
 				continue;
@@ -2438,7 +2499,7 @@ public class BuilderWork extends Behavior<Villager> {
 				// floor that shuts nothing (the drawing's own pool, a carpet, a pressure plate) standing on the solid bed
 				// of a pond made the whole room count as open, and nothing was drained
 				if (!box.contains(p.relative(d))
-					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below()))) {
+					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below(), box, bounds, below))) {
 					if (outside.add(p)) {
 						open.add(p);
 					}

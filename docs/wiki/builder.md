@@ -132,7 +132,8 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   as open). The floor of the build's box counts as a way in only where the spot under it holds water or lets it
   through (under a jetty's deck): over a pond's solid bed (stone, gravel, sand) a drawn pool, a drawn hole in the floor
   or a drawn waterlogged slab leaves the room shut, and it ends dry, also when saved and loaded mid-CLEAR; over a
-  water-filled pocket in the bed the room floods (B1280, open). Before, CLEAR passed over water,
+  water-filled pocket in the bed, shut in by stone, it ends dry too: the water under the floor counts only when it
+  reaches past the box's footprint or up to its height (B1280: the pocket made the room flood). Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
 - A post's footing on the bed of shallow water (the Fisher's Hut's jetty posts, two blocks under its deck) is always laid:
   when no bank or floor in reach is dry, the builder wades into the water beside it, on the bed, to lay the footing,
@@ -847,5 +848,5 @@ ends dry with the pool still a water source, and every material adds up.
 `QaBuilderMoverVerify1115bGameTests` (6 of its 15 here, the QA lane, B1272): the sunk basin's drawn pool beside the
 walls, under a wall on the box's edge and over a gravel bed, a drawn floor hole over sand, a drawn waterlogged slab, and
 the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every material adding up.
-The bug tests QaBuilderMoverVerify1115bBugTests (1 of its 3 here, B1280, on tests/builder-mover-verify-1115b): the pool basin over a
-water-filled pocket in the pond's bed ends dry but the pool.
+`QaBuilderMoverVerify1115bBugTests` (1 of its 3 here, B1280): the pool basin over a water-filled pocket in the pond's bed
+(shut in by stone but for its top) ends dry but the pool.

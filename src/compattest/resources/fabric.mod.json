@@ -392,7 +392,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareFormsVerify1109dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonScreens1109dBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaLeaderVerify1109dCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaLeaderBeatenCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaLeaderBeatenCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateForgeKiln1115eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateChain1115eCompatTests"
 		]
 	},
 	"depends": {

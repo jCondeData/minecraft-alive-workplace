@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281
 
 ## What a player sees
 
@@ -324,8 +324,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
   than for one, so candles, sea pickles and pink petals, whose loot counts them, are left as they drop, never doubled:
   B1258). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
-  nothing without one: 4 snow layers are 4 snow, never snowballs (B1274: vanilla's snow loot asks for a breaking
-  entity, so they came back as 1 snow). A two-block thing
+  nothing without one: 1 to 7 snow layers are that many snow, never snowballs (B1274: vanilla's snow loot asks for a
+  breaking entity, so they came back as 1 snow); 8 layers still drop as 1 snow block and 7 snow (B1281, open). A two-block thing
   (a door, a tall flower, tall grass, a bed) with one half on the crate drops once, as the whole thing's one item, and its other
   half is never put up alone, or is taken away again with no drop if it went up first (`MoveSite.otherHalfGone`,
   B1260: the door's upper half stood alone over the crate, the bed's foot beside it). A door, tall flower or tall grass
@@ -571,6 +571,15 @@ a beehive keeps its bees and honey, a named chest its name and exact items, a de
 `QaMoverCrateFixes1115cBugTests` (2, B1274, B1275): 4 snow layers on the crate drop as 4 snow and no snowballs; tall
 grass with its upper half on the crate is one tall grass item in 64 of 64 drops.
 `QaMoverCrateDrops1114gB1259BugTests` (B1259): a barrel where his crate would have moved to doesn't take his job site.
+`QaBuilderMoverVerify1115bGameTests` (9 of its 15 here, the QA lane, B1264, B1259, B1274, B1275): a move called off with
+exactly one block up at its new spot keeps the spot with the put-back line until that block is down, and one called off
+before the Mover's first swing frees it at once; snow layers 1-7 and a snow block drop as themselves, one layer on the
+crate in a full move is one snow; every half of a large fern, lilac, peony, rose bush, pitcher plant, tall grass and
+sunflower is its one item in 64 of 64 drops, and a large fern's upper half on the crate is one large fern; a lectern or a
+composter where his crate would have moved to doesn't take his job site, and a librarian in the same house still gets
+his moved lectern.
+The bug tests QaBuilderMoverVerify1115bBugTests (2 of its 3 here, B1281, on tests/builder-mover-verify-1115b): 8 snow layers on the
+crate drop as 8 snow (they drop as 1 snow block and 7 snow).
 
 ## Known limits
 

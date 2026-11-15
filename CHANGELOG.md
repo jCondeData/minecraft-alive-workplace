@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A building whose middle is in a City Plan cell nearer another Village Hall now counts only for that hall's village;
+  before, its corner in a cell the first village painted (or in its radius) made a Stone Wall there wall both (B1271).
 - A Village Hall on higher ground now takes a City Plan cell it is nearer to across the ground; before, the height
   counted, so a Stone Wall in that cell walled both villages and counted for both ranks (B1270).
 - A build with its own pool in the floor, built sunk in a pond, now ends with its room dry and the pool full; before,

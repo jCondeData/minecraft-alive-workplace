@@ -316,7 +316,20 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 	 * nearer to; the halls are looked up in a square column at any height.
 	 */
 	public static boolean nearerAnotherHall(ServerLevel level, BlockPos hall, int cell) {
-		BlockPos centre = cellCentre(hall, cell);
+		return nearerAnotherHallFrom(level, hall, cellCentre(hall, cell));
+	}
+
+	/**
+	 * True if {@code pos} lies nearer another Village Hall than this one, in the sense of {@link #nearerAnotherHall(ServerLevel,
+	 * BlockPos, int)}: measured from the middle of the grid cell {@code pos} is in, or from {@code pos} itself off the grid.
+	 * B1271: a finished building only its corner ties to this village, whose middle lies so, is that other hall's village's.
+	 */
+	public static boolean nearerAnotherHall(ServerLevel level, BlockPos hall, BlockPos pos) {
+		int cell = cellAt(hall, pos);
+		return nearerAnotherHallFrom(level, hall, cell >= 0 ? cellCentre(hall, cell) : new BlockPos(pos.getX(), hall.getY(), pos.getZ()));
+	}
+
+	private static boolean nearerAnotherHallFrom(ServerLevel level, BlockPos hall, BlockPos centre) {
 		long own = VillageHalls.across(centre, hall);
 		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), centre, (int) Math.ceil(Math.sqrt((double) own)) + 1,
 			PoiManager.Occupancy.ANY).map(PoiRecord::getPos).anyMatch(p -> !p.equals(hall) && VillageHalls.across(p, centre) < own);

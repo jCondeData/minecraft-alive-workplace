@@ -414,7 +414,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115e2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateZinc1115e2BugCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.ChippedShortLineCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.ChippedShortLineCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaShortLineSweep1115e3CompatTests"
 		]
 	},
 	"depends": {

@@ -603,6 +603,7 @@ public class QaCityPlanGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	@GameTest(template = AREA, timeoutTicks = 20, batch = "qaCityPlanUndo")
 	public void undoSkipsRefusedStrokesAndStopsAtTen(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
+		otherHalls(helper, HALL); // B805: a hall another batch left 13 blocks off was nearer the first stroke's cell, so it was refused
 		VillageHallBlockEntity entity = hall(helper, HALL);
 		BlockPos hall = entity.getBlockPos();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();

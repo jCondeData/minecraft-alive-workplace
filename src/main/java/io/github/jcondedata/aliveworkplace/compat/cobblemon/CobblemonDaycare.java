@@ -232,7 +232,7 @@ public final class CobblemonDaycare {
 			pokemon.addExperienceWithPlayer(player, new SidemodExperienceSource(Daycare.XP_SOURCE), gained);
 		}
 		if (!PokemonHome.toPartyOrPc(player, pokemon)) {
-			PokemonHome.toPcOrOverflow(Cobblemon.INSTANCE.getStorage().getPC(player), pokemon, player.getGameProfile().getName());
+			PokemonHome.toPcOrWaiting(player.server, player.getUUID(), player.getGameProfile().getName(), pokemon);
 		}
 		rancher.level().playSound(null, rancher, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1.1f);
 		return Component.translatable("message.aliveworkplace.daycare.collected", pokemon.getDisplayName(false), before, pokemon.getLevel())
@@ -251,7 +251,7 @@ public final class CobblemonDaycare {
 				pokemon.addExperience(new SidemodExperienceSource(Daycare.XP_SOURCE), gained);
 			}
 			try {
-				PokemonHome.toPcOrOverflow(Cobblemon.INSTANCE.getStorage().getPC(boarder.owner(), level.registryAccess()), pokemon, boarder.ownerName());
+				PokemonHome.toPcOrWaiting(level.getServer(), boarder.owner(), boarder.ownerName(), pokemon);
 			} catch (RuntimeException e) {
 				AliveWorkplace.LOG.error("Could not return {}'s Pokémon from the daycare", boarder.ownerName(), e);
 			}

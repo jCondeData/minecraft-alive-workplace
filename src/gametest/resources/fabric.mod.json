@@ -815,6 +815,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BlueprintNamesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupply1026bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupplies1103GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseShare1115hGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSupply1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSoak1027GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWaitStatus1027GameTests",
@@ -1784,7 +1785,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrops1114gB1259BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3BugGameTests",
-			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests"
+			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests"
 		]
 	},
 	"depends": {

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Carved Wood and Cobblemon, a builder short of a smoker reads "short of 4 Dark Oak Logs", not "8 Apricorn Log", and
+  other modded things made of logs or planks (Handcrafted's oven, Create's chassis, Tom's Storage terminals, Sophisticated
+  Storage upgrades) name Minecraft's oak logs or planks instead of Cobblemon's logs or Chipped's mosaic planks (B1288).
 - Crafting jobs take any mix of a kind for a recipe that takes any of it, as a crafting table does: a chest from 4 oak
   and 4 spruce planks, or a smoker from four different woods' logs, is made instead of the builder reading "short of 3
   Oak Logs". When something is really short, the line counts every wood that's there (B1293).
@@ -26,6 +29,10 @@ asks for the steps, `latest.log` and any crash report).
 - With Cobblemon, a full party and PC no longer make Pokémon vanish at the daycares: Take back and Collect are refused
   until there's room, an egg's hatchling waits (refunded), and a keeper's or rancher's death sends them to Cobblemon's
   PC overflow (B1284). An egg that doesn't fit in a full inventory now says to make room, not what it costs (B1285).
+- With Cobblemon, the Pokémon a Daycare Keeper or rancher gives back at their death while your PC is full are no longer
+  lost at the next restart: they wait for you (you're told so), saved with the world, and come into your PC as soon as
+  a place in it is free, or at your next login once there's room. Before, they went to a hidden PC store that Cobblemon
+  never loads again (B1295, B1296, B1287).
 - A crafter's "Can't be made yet" line with Chipped loaded no longer names Chipped's decorative planks for a torch's
   sticks; it goes down to the oak logs a player gathers (B1273).
 - With no leather in the chests, a book, an item frame or bookshelves now read "short of Leather", not Rabbit Hide

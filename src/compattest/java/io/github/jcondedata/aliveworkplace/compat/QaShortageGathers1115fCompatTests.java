@@ -208,9 +208,6 @@ public class QaShortageGathers1115fCompatTests implements FabricGameTest {
 			}
 			Item item = next.next();
 			String id = BuiltInRegistries.ITEM.getKey(item).getPath();
-			if (item == Items.SMOKER) {
-				return; // QaShortageGathers1115fBugCompatTests: names Cobblemon's Apricorn Logs (filed, on tests/shortage-gathers-1115f)
-			}
 			Map<Item, Integer> lack = Crafting.lacking(level, Crafting.Kind.CRAFTING, item, 1, Map.of());
 			if (lack.isEmpty()) {
 				nothing.add(id);

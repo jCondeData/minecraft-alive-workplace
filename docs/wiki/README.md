@@ -58,6 +58,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [The price board](price-board.md): the hall's Trade page, what a village is known for and short of, and its prices (33.4).
 - [The showcase](showcase.md): a filmed scene for every job, screen and feature, judged and published every night (22.3).
 - [The player guide](player-guide.md): the separate, plain-language site for players, published with the showcase (22.10).
+- [The Guide Book](guide-book.md): the in-game book every player is given, its chapters of screenshot pages and how its pictures are made (26.2a).
 - [Trading at the board](board-trade.md): selling to a village and buying from it on the Prices tab, the treasury on the page and who collects it (33.5).
 - [Caravans that trade](caravan-trade.md): what a caravan takes to sell, how the other village pays, what comes home, and the Routes tab's earnings (33.6).
 - [Caravans you can see](visible-caravans.md): the carter and two pack llamas that show a caravan leaving or arriving, and why they are only a sight (33.7).

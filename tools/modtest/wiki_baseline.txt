@@ -14,7 +14,7 @@
 # Milestone 24: visual bugs, screens, words
 
 # Milestone 26: the store page kit, the Guide Book, hygiene
-26.2 26.2a 26.3
+26.2 26.3
 
 # Milestone 27: the new workplaces
 

@@ -780,9 +780,19 @@ public final class MoveSite {
 			.ifPresent(h -> silk.enchant(h, 1));
 		if (be == null && state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
 			&& state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
-			// B1275: a two-block thing (a door, a tall flower, tall grass) is its one item, whichever half: never its loot,
-			// whose roll (tall grass: a wheat seed 1 time in 8, else nothing) would make the whole thing a seed by chance
-			return new ArrayList<>(List.of(new net.minecraft.world.item.ItemStack(state.getBlock().asItem())));
+			if (!growing(state)) {
+				// B1275: a two-block thing (a door, a tall flower, tall grass) is its one item, whichever half: never its loot,
+				// whose roll (tall grass: a wheat seed 1 time in 8, else nothing) would make the whole thing a seed by chance
+				return new ArrayList<>(List.of(new net.minecraft.world.item.ItemStack(state.getBlock().asItem())));
+			}
+			// B1283: a two-block crop (a pitcher crop) is what its lower half's loot says, as a player harvests it: a grown
+			// one the pitcher plant, an ungrown one its pod. Its block item is the seed, so the rule above made it a pod
+			if (state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+				== net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER) {
+				state = state.setValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF,
+					net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER);
+				pos = pos.below();
+			}
 		}
 		// B1274: broken by someone (an unspawned marker where it stands): vanilla's snow loot gives nothing with no
 		// breaking entity, so 4 snow layers came back as the 1 snow of the fallback below
@@ -834,15 +844,39 @@ public final class MoveSite {
 				return;
 			}
 			int whole = count(drops, item);
-			int one = count(Block.getDrops(state.setValue(p, min), level, pos, be, breaker, tool), item);
+			List<net.minecraft.world.item.ItemStack> single = Block.getDrops(state.setValue(p, min), level, pos, be, breaker, tool);
+			int one = count(single, item);
 			if (one <= 0 || whole > one) {
 				return; // its loot counts them already (or drops something else)
+			}
+			if (whole < one) {
+				// B1281: the whole block's loot is another item (8 snow layers broken with Silk Touch: one snow block), so
+				// adding the others to it would double them up: it drops as its pieces, each as one break of one
+				drops.clear();
+				for (int k = min - 1; k < many; k++) {
+					for (net.minecraft.world.item.ItemStack st : single) {
+						if (!st.isEmpty()) {
+							drops.add(st.copy());
+						}
+					}
+				}
+				return;
 			}
 			for (int k = min; k < many; k++) {
 				drops.add(new net.minecraft.world.item.ItemStack(item, one));
 			}
 			return;
 		}
+	}
+
+	/** Whether {@code state} is a plant that grows (an age property: a crop), whose loot depends on how far it has grown. */
+	private static boolean growing(BlockState state) {
+		for (net.minecraft.world.level.block.state.properties.Property<?> p : state.getProperties()) {
+			if (p.getName().equals("age")) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static int count(List<net.minecraft.world.item.ItemStack> stacks, net.minecraft.world.item.Item item) {

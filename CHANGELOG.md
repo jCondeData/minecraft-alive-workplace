@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A chest (or anything else that takes any planks) is made from the logs of several woods, as at a crafting table:
+  one oak and one spruce log make 4 planks each and the chest, instead of the builder reading "short of 1 Oak Log to
+  make 1 Chest" while his chest holds enough. Only the logs needed are used (B1301).
 - With Carved Wood (as in the Cobbleverse pack, where 8 planks make a carved chest), a builder whose build needs a plain
   chest no longer waits forever on "Nobody here makes: Chest": the Carpenter makes it from 8 oak planks the way a player
   does (Carved Wood's Oak Chest, then the chest) or from any carved chest in the builder's chest, and a chest short reads

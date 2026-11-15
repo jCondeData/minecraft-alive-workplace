@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293, B1301
 
 ## 1. What a player sees
 
@@ -107,6 +107,8 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 - fills a slot that takes any of a tag (planks, logs) from any mix of it, as a crafting table does (B1293): one kind
   when one has enough, else what's there of them all, the best-stocked first, and only the rest made from further down;
   when the crafts' mix differs from one to the next, the recipe is several steps, each saying what one craft takes;
+  when no one kind can be made in full, each kind is made as far as it goes and the slot takes the mix (B1301: a
+  chest from one oak and one spruce log, 4 planks of each; `Crafting.makeMix`), taking only the makings needed;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`: of several recipes for one thing, the
   one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; on a tie the recipe from the item's own mod, by `Crafting.fromOwnMod`, tried first too, B1267; a plan for real gives up at once on what nothing in the chests leads to, `Crafting.reachable`, so the pack's many recipes don't use up the tick's planning before the line is said, B1268; or the Furnicrafter's own; the Mason's
@@ -292,12 +294,15 @@ game was what a chest from nothing named). By id only, never the other mod's cla
 - `QaLogsSlot1115e3BugGameTests` (2, B1293): four logs of four woods, or 2 stripped oak logs and 2 dark oak wood, make a
   smoker with nothing short; a chest from 4 oak and 4 spruce planks is planned. `QaLogsSlot1115e3GameTests` (3): a
   smoker from 8 cobblestone, or a furnace, lacks exactly 4 logs of one base-game wood; with 2 oak logs the other 2.
-- `QaMixedTagSlot1115cGameTests` (7, QA past B1293): a chest from 3 oak, 3 spruce and 2 birch planks takes exactly those,
+- `QaMixedTagSlot1115cGameTests` (8, QA past B1293): a chest from 3 oak, 3 spruce and 2 birch planks takes exactly those,
   one fewer reads "short of 1 … Planks to make 1 Chest"; a wooden pickaxe's head and sticks share 5 mixed planks (4
   are 1 short); an oak log tops up 2 oak and 2 spruce planks into a chest; oak stairs never take spruce planks (3 oak
   and 6 spruce lack 3 Oak Planks); 10 chests use 80 planks of four woods; a Carpenter makes 3 tables from 5 oak, 4
   spruce and 3 birch planks and leaves the chest's logs and cobblestone alone; one short of oak planks for oak stairs
-  names them and takes no spruce.
+  names them and takes no spruce; `aChestFromTwoWoodsLogs` (B1301): one oak and one spruce log are a chest, nothing short.
+- `MixedLogsSlotGameTests` (3, B1301): 2 chests from 2 oak, 1 spruce and 1 birch log take all four logs; a chest from
+  three woods' logs takes two, and 3 oak planks are topped up from two logs; one log alone is still short; a Carpenter
+  makes the builder's row of 3 chests from 3 oak, 3 spruce and 1 birch log, leaving one log and no plank.
 - `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks, piston or chest from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
   Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a

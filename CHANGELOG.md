@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Mover's Crate under 8 snow layers gives back 8 snow, not a snow block and 7 snow, and a fully grown pitcher crop on
+  one gives back a Pitcher Plant, not its pod. A Builder's sunk room with a pool in its floor ends dry over a
+  water-filled hole in the pond's bed too (it used to flood).
 - With Cobblemon, a full party and PC no longer make Pokémon vanish at the daycares: Take back and Collect are refused
   until there's room, an egg's hatchling waits (refunded), and a keeper's or rancher's death sends them to Cobblemon's
   PC overflow (B1284). An egg that doesn't fit in a full inventory now says to make room, not what it costs (B1285).

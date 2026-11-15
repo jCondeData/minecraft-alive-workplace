@@ -264,6 +264,24 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
   base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
   slot are B1293's.
+- `QaShortageGathers1115fGameTests` (8, QA past B1273/B1277/B1278/B1279): a book from 3 paper lacks 1 Leather, with 1
+  rabbit hide the 3 more hides, with 4 hides or 1 leather nothing; three bookshelves lack 9 Leather, 8 with one leather,
+  35 Rabbit Hides with one hide; two item frames, a leather cap and a book and quill name Leather; a sticky piston and a
+  lead name the Slimeball (never a Slime Block), and a slimeball or slime block there is used; a block of iron, copper or
+  gold names 9 of its raw metal and no redstone or metal thing names an ore; a smoker names its 4 logs and a campfire its
+  3; a Librarian's builder reads exactly "short of 35 Rabbit Hides to make 3 Bookshelves" and a Tinkerer's "short of 3
+  Slimeballs to make 3 Sticky Pistons", the same after the villagers are saved and loaded, and nothing is taken.
+- `QaShortageGathers1115fCompatTests` (8, the same with the pack): with Create, Minecraft's metal blocks, ingots and a
+  bucket name the raw metal, never Crushed; zinc lacks 9 Raw Zinc (8 with one there), 9 nuggets 1, and crushed raw zinc
+  there is used; a sticky piston, a lead, a magma cream and a slime block name the Slimeball, never Dough or Wheat Flour,
+  while dough and a lime dye there may be used; leather and hide read as in the plain game; sticks, ladders, a crafting
+  table, a barrel, a bowl, a sign, an item frame, a painting, a torch, a wooden pickaxe, a tripwire hook and a lever name
+  no Chipped, Create or Cobblemon item nor an ore, and Chipped's planks or an oak log there make the sticks; every
+  Minecraft block a Minecraft crafting recipe makes (579), asked one a tick, names only Minecraft's things (but the
+  smoker, below); a builder short of a sticky piston reads exactly "short of 1 Slimeball to make 1 Sticky Piston", and of
+  a copper block "short of 9 Raw Copper", never Crushed.
+- Open bug B1288 (its 2 failing tests, QaShortageGathers1115fBugCompatTests, are on the tests/shortage-gathers-1115f branch): with Cobblemon a smoker reads
+  "short of 8 Apricorn Log to make 1 Smoker", not 4 of Minecraft's logs.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

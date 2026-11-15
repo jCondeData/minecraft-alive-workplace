@@ -192,4 +192,11 @@ Later additions:
 - QA (28.18): `QaCupBoutGameTests` (all 324 match-ups of the chart against the games', two-type multipliers; on time the
   side with more health wins from either box and never past 90 seconds; a bout nobody can hurt in ends on time; a
   moveless Pokémon struggles).
+- QA (28.20, lane-d-1115-1308): `QaCupWatchBoard1115d2CompatTests` (a click on the Arena's notice board during a players'
+  bout reads "Being fought now: Pia against Quinn. [Watch]", and nothing before it begins, after its battle ends or 3
+  blocks from the board; the Cup page has "Watch the bout" only while a bout is fought; [Watch] picks the nearest of two
+  bouts; the start is called with [Watch] at the Arena and not 70 blocks away; a player already in a battle is told to
+  click [I'm ready] again, keeps their battle and gets a new two minutes, alone or as a players' bout's second player; the
+  villager trainer steps into their box). Found: B1291 (the [I'm ready] reply says the bout begins when it couldn't
+  start; test on `tests/cup-ready-reply-1115d2`).
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

@@ -1243,6 +1243,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStoreSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShortLineGatheredGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaShortageGathers1115fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShortLineGathered1115c4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTestResetOrderGameTests",

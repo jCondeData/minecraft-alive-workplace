@@ -21,6 +21,8 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - The Fisher's Hut's jetty posts always reach the bed: when the builder can't reach a post's lowest block from the bank, he wades in beside it, instead of sometimes leaving the post short of the bed with the water under it (B1257).
 - A building put up from the modded library (furnished builds with the pack's building mods) is offered "Refresh to the latest look" again when its blueprint was redrawn: a modded Clinic built on 0.151.0 now refreshes to its new white ward beds, and 44 other modded buildings redrawn since 1.0 (Farmsteads, Healing Centers, Inns, the Map Room, Storage Hall, Warehouse and more) are recognized too (B680).
+- A City Plan cell painted for a village before a nearer Village Hall was placed counts only for the nearer village: a
+  Stone Wall finished there no longer makes both villages walled or counts for both ranks (B805).
 - With Create installed, the Glassblower makes glass panes straight from the glass he fires: 6 sand and a coal make 16 panes, instead of the coal running short because the panes were planned through Create's Tiled Glass Panes and fired again (B1254, B1255).
 - With Cobblemon, a trainer whose battle Cobblemon had to stop because of an error takes challenges again right away, instead of answering "already in a battle" to everyone until the server restarts; the stopped battle counts as neither a win nor a loss (B1256).
 - A builder no longer takes a blueprint on the new spot of a called-off move while the Mover is still taking the building back down there: he says the spot isn't free yet, and takes it once the building stands where it was (B1230).

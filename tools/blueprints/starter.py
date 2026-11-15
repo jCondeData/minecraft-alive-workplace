@@ -1405,25 +1405,42 @@ def terrace_2():
     return b
 
 
-# --- Inn: a tavern below, guest rooms above -----------------------------------------------------------------------
-# Since ROADMAP 26.11 the inn has its own look: a stone tavern with the guest storey jettied out over the street on
-# brackets, under two gables side by side (an M roof with a lead valley between them), the inn's banner on a tall post
-# at the corner. Redrawn after the owner played it (2026-11-11): a real taproom — a bar down the east side with a
-# walk-in space behind it for the innkeeper and the Shop Counter in its middle, a back bar of casks and shelves, a
-# kitchen corner, a hearth in the back wall, two tables, a staircase up the west wall — and every piece
-# of furniture one of 37.4's furniture spots. Outside, every sill and shutter stands on something: the ground windows
-# on a stone skirt, the upper ones on a moulding under the jetty; the banner faces the street.
+# --- Inn: the Coaching Inn (redrawn 2026-11-15) -------------------------------------------------------------------
+# Design notes, written before the code (name a part to give feedback on it):
+#   Story      A coaching inn on the high road: a stone taproom below where the road's dust stops at the door, guest
+#              rooms in the timber storey above, a stable for the coach horses beside it once the inn does well
+#              (Level II) and an ale cellar dug under it last (Level III). The same inn growing, never a new one.
+#   Footprint  13 x 13 (walls x 1-11, z 2-11); Level II adds the Stable to the east (to x 18); Level III digs 4 down.
+#   Masses     ENTRANCE GABLE (the hero): x 4-8 over the door, two full storeys and a steep gable, 16 tall.
+#              WEST WING and EAST WING: x 0-4 and 8-12, a storey and a half under steep gables 12 tall (the hero is a
+#              third taller), the guest rooms under them lit by DORMERS. CHIMNEY: a stone stack up the west side.
+#              Level II: the STABLE, a lean-to 8 tall against the east wall, with its YARD in front.
+#   Parts      COMMON ROOM (ground floor; under the West Wing it is open to the rafters, two storeys tall, with the
+#              GALLERY looking down into it), BAR (east side, the Shop Counter in its middle, the innkeeper's walk-in
+#              behind it), KITCHEN (back east corner against the stone back wall), HEARTH (west wall), GUEST ROOMS
+#              (West, East-front, East-back: two beds each, a light and a chest in each), GALLERY (upstairs under the
+#              Entrance Gable, 2 wide), ROOF, STABLE, YARD, CELLAR.
+#   Palette    stone ground storey (stone bricks, mossy low down, a cobblestone plinth), white plaster (white concrete
+#              with a little polished diorite) in a dark oak frame, a spruce roof with dark oak trim; red banner,
+#              flowers and lanterns as the only bright colours.
+# The jobs read from it (QaInnRedrawn1111cGameTests, Innkeepers): one Shop Counter at (8, 1, 6) facing west with dark oak
+# planks either side and air behind it two high; six beds, all on the guest floor (y 6); the front door at (6, 1, 2);
+# one standing banner (rotation 8) on a fence post; no fire east of x 11; (10, 1-2, 3) clear for the Inn III's hatch.
 INN_FRAME = "dark_oak_log"
-INN_INFILL = "birch_planks"
-INN_ROOF = SPRUCE
+INN_PLASTER = Mix((8, "white_concrete"), (2, "polished_diorite"), seed=27)
+INN_STONE = Mix((6, "stone_bricks"), (3, "cracked_stone_bricks"), (1, "mossy_stone_bricks"), seed=29)
+INN_STONE_LOW = Mix((4, "stone_bricks"), (4, "mossy_stone_bricks"), (2, "cracked_stone_bricks"), seed=30)
+INN_PLINTH = Mix((6, "cobblestone"), (3, "mossy_cobblestone"), seed=31)
+INN_ROOF = DEEPSLATE_TILE
+INN_TRIM = DARK_OAK
 
 
 def inn_window(b, x, y, z, out, width, flowers=()):
     """A window two high looking `out`, `width` wide from (x, y, z) along the wall: open shutters either side, and under
-    the glass and the shutters one sill of upside-down spruce stairs, so nothing beside the window hangs in the air
-    (the sill itself stands on the skirt or the jetty's moulding). `flowers`: potted plants on the sill, one per pane."""
+    the glass and the shutters one sill of upside-down spruce stairs (standing on the plinth's skirt), so nothing
+    beside the window hangs in the air. `flowers`: potted plants on the sill, one per pane."""
     along = CW[out]
-    cells = [step(x, z, along, i) for i in range(-1, width + 1)]  # a shutter's cell, the panes, the other shutter's
+    cells = [step(x, z, along, i) for i in range(-1, width + 1)]
     for i, (cx, cz) in enumerate(cells):
         ox, oz = step(cx, cz, out)
         stairs(b, ox, y - 1, oz, SPRUCE, OPP[out], top=True)
@@ -1437,48 +1454,109 @@ def inn_window(b, x, y, z, out, width, flowers=()):
                 b.set(ox, y, oz, flowers[(i - 1) % len(flowers)])
 
 
+def inn_dormer(b, face, inner, z):
+    """A gabled dormer for a guest room on a wing's side slope: its window at x `face` (over the eave) between two dark
+    oak posts, a plaster gable over it under a little roof back to the wing's roof at x `inner`, and the roof opened
+    behind the glass."""
+    pane(b, face, 8, z)
+    for dz, rise in ((-1, "south"), (1, "north")):
+        log(b, face, 8, z + dz, INN_FRAME)
+        for x in (face, inner):
+            stairs(b, x, 9, z + dz, INN_ROOF, rise)
+    b.set(face, 9, z, INN_PLASTER)
+    b.set(inner, 9, z, INN_PLASTER)
+    b.set(inner, 8, z, "air")  # (the wing's roof behind the glass, opened into the room)
+    for x in (face, inner):
+        slab(b, x, 10, z, INN_ROOF)
+
+
+def inn_verges(b, rows):
+    """A steep roof's ends drawn thin: at each overhanging gable end (`rows`: the z of each), the full block under each
+    roof stair becomes an upside-down dark oak stair, a barge board that steps with the roof instead of a solid wedge."""
+    for z in rows:
+        for x in range(b.w):
+            for y in range(b.h - 1):
+                here, over = b.get(x, y, z), b.get(x, y + 1, z)
+                if here and over and here[0] == "minecraft:" + INN_ROOF.full and over[0] == "minecraft:" + INN_ROOF.stairs:
+                    rise = dict(over[1])["facing"]
+                    stairs(b, x, y, z, INN_TRIM, OPP[rise], top=True)
+
+
+def inn_upper_window(b, x0, x1, z, y=6, height=2):
+    for x in range(x0, x1 + 1):
+        for dy in range(height):
+            pane(b, x, y + dy, z)
+
+
 def inn():
-    """13 x 16 x 13: a two-storey inn. Downstairs a stone taproom: the bar down the east side with room behind it for
-    the innkeeper (the Shop Counter in its middle: hand the villager there a bed and they become the innkeeper), casks
-    and shelves on the back bar, a kitchen corner, a hearth in the back wall, two tables with chairs, and a
-    staircase up the west wall. Upstairs, in a timber storey jettied over the street: three guest rooms with six beds
-    off a landing. Twin gables to the street; the inn's banner on a post at the corner, facing the street."""
+    """13 x 16 x 13: the coaching inn. A stone taproom with a bar down the east side (the Shop Counter in its middle:
+    hand the villager behind it a bed and they become the innkeeper), a kitchen in the back corner, a hearth in the west
+    wall and a corner of the room open two storeys to the rafters with a gallery over it; a staircase up from the door
+    to three guest rooms (six beds) in the timber storey. Outside: a tall steep Entrance Gable over the door between
+    two lower wings, dormers, a stone chimney up the west side, the inn's banner on a post facing the street."""
     b = Build(13, 16, 13)
-    # Stone storey: walls x 1-11, z 2-11, on a skirt of stone-brick stairs (the front's middle one is the door step)
-    plinth(b, 1, 2, 11, 11, FOUNDATION_MIX, floor=Mix((3, "stone_bricks"), (1, "polished_andesite"), seed=26))  # flagstones
+    # --- Structure: the stone storey on its plinth, a stair skirt round it ------------------------------------------
+    plinth(b, 1, 2, 11, 11, INN_PLINTH, floor=Mix((3, "stone_bricks"), (1, "polished_andesite"), seed=26))
     skirt(b, 1, 2, 11, 11, STONE_BRICK)
-    walls(b, 1, 2, 11, 11, 1, 4, STONE_MIX)
-    for x, z in ((1, 2), (11, 2), (1, 11), (11, 11)):
-        box(b, x, 1, z, x, 4, z, "stone_bricks")
+    walls(b, 1, 2, 11, 11, 1, 1, INN_STONE_LOW)  # weathered low down, cleaner going up
+    walls(b, 1, 2, 11, 11, 2, 4, INN_STONE)
+    for x, z in ((1, 2), (11, 2), (1, 11), (11, 11)):  # quoins
+        for y in range(1, 5):
+            b.set(x, y, z, "stone_bricks" if y % 2 else "polished_andesite")
+    # Pilasters a block proud of the front and the back (the frame's posts carry on up them), capped under the beam
+    for x in (1, 4, 8, 11):
+        for z in (1, 12):
+            for y in range(0, 4):
+                b.set(x, y, z, "stone_bricks")
+            b.set(x, 4, z, "chiseled_stone_bricks")
+    # The skirt's front row out at the street (z 0), a stone path to the door between the planters
+    for x in list(range(1, 5)) + list(range(8, 12)):
+        stairs(b, x, 0, 0, STONE_BRICK, "south")
+    for x in (5, 6, 7):
+        stairs(b, x, 0, 1, STONE_BRICK, "south")  # the door's step, three wide under the porch
+        slab(b, x, 0, 0, STONE_BRICK)  # the path
+    # Planters under the front windows, each in its own soil between the pilasters
+    flower_bed(b, 2, 1, 3, 1, 0, ("red_tulip", "oxeye_daisy", "poppy"))
+    flower_bed(b, 9, 1, 10, 1, 0, ("oxeye_daisy", "red_tulip", "poppy"))
+
+    # The door, recessed in the porch between the Entrance Gable's pilasters, a lamp either side
     door(b, 6, 1, 2, "spruce_door", "south")
     log(b, 6, 3, 2, INN_FRAME, axis="x")
-    flowers = ("potted_red_tulip", "potted_oxeye_daisy")
-    inn_window(b, 2, 2, 2, "north", 2, flowers)  # the taproom's front windows, under the guest rooms'
-    inn_window(b, 9, 2, 2, "north", 2, flowers)
-    inn_window(b, 1, 2, 10, "west", 2)  # by the back table
-    inn_window(b, 3, 2, 11, "south", 1)
-    inn_window(b, 9, 2, 11, "south", 1)  # the kitchen's
+    lantern(b, 5, 4, 1, hanging=True)
+    lantern(b, 7, 4, 1, hanging=True)
+    # Front windows: glass set back between the pilasters, a stone lip over each, flowers under
+    for x0 in (2, 9):
+        for x in (x0, x0 + 1):
+            for y in (2, 3):
+                pane(b, x, y, 2)
+            stairs(b, x, 4, 1, STONE_BRICK, "south", top=True)
+    # Side windows (shutters and sills on the skirt), back windows (sills and lips; the pilasters leave no room for
+    # shutters, as at the front)
+    inn_window(b, 1, 2, 3, "west", 1)
+    inn_window(b, 1, 2, 9, "west", 1)
+    inn_window(b, 11, 2, 3, "east", 1)
     inn_window(b, 11, 2, 9, "east", 1)
+    for x in (3, 6, 9):
+        for y in (2, 3):
+            pane(b, x, y, 11)
+        stairs(b, x, 1, 12, STONE_BRICK, "north", top=True)
+        stairs(b, x, 4, 12, STONE_BRICK, "north", top=True)
 
-    # The hearth in the middle of the back wall: the fire in the wall under a chimney breast, a mantel with candles
-    b.set(6, 1, 11, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
-    b.set(6, 2, 11, "chiseled_stone_bricks")
-    for x in (5, 7):
+    # The hearth in the west wall: the fire in the wall under a chiselled lintel, a mantel with candles; outside, the
+    # chimney's breast on the skirt, shoulders, and the stack up past the West Wing's ridge
+    b.set(1, 1, 6, "campfire", facing="east", lit=True, signal_fire=False, waterlogged=False)
+    b.set(1, 2, 6, "chiseled_stone_bricks")
+    for z in (5, 7):
         for y in range(1, 5):
-            b.set(x, y, 11, "stone_bricks")
-    for x in (5, 6, 7):
-        stairs(b, x, 3, 10, SPRUCE, "south", top=True)
-    for x in (5, 7):
-        b.set(x, 4, 10, "candle", candles=2, lit=True, waterlogged=False)
-    for x in (5, 6, 7):  # the chimney's foot outside, shoulders, then the stack up past the valley
-        for y in range(0, 5):
-            b.set(x, y, 12, STONE_MIX.at(x, y, 12))
-    stairs(b, 5, 5, 12, COBBLE, "east")
-    stairs(b, 7, 5, 12, COBBLE, "west")
+            b.set(1, y, z, "stone_bricks")
+    for z in (5, 6, 7):
+        stairs(b, 2, 3, z, STONE_BRICK, "west", top=True)
+    for z in (5, 7):
+        b.set(2, 4, z, "candle", candles=2, lit=True, waterlogged=False)
 
-    # The bar down the east side: a counter (x 8) with the Shop Counter in its middle facing the room, the walk-in
+    # --- The bar down the east side: a counter (x 8) with the Shop Counter in its middle facing the room, the walk-in
     # space behind it (x 9, entered round the counter's back end), the back bar of casks and shelves along the wall
-    for z in (3, 4, 5, 7, 8):  # dark oak, to stand out from the spruce tables and benches
+    for z in (3, 4, 5, 7, 8):
         b.set(8, 1, z, "dark_oak_planks")
         slab(b, 8, 2, z, DARK_OAK)
         furnish(b, "counter", 8, 1, z, "west", cells=((0, 0, 0), (0, 1, 0)), wood="dark_oak")
@@ -1493,172 +1571,255 @@ def inn():
     for z in (5, 6):
         shelf(b, 10, 3, z, "west", "spruce")
     # (10, 1, 3) stays clear: the Inn III's cellar hatch is there, behind the bar
-    # The kitchen corner behind the bar: worktops along the back wall, a shelf of crockery, herbs hanging over them
-    for x in (9, 10):
-        slab(b, x, 1, 10, DARK_OAK, top=True)
-        furnish(b, "counter", x, 1, 10, "south", wood="dark_oak")
+    # The kitchen in the back corner, against the stone back wall: a worktop, the stove, a flour barrel, crockery on a
+    # shelf, herbs hanging over the worktop
+    slab(b, 9, 1, 10, DARK_OAK, top=True)
+    furnish(b, "counter", 9, 1, 10, "south", wood="dark_oak")
+    b.set(10, 1, 10, "furnace", facing="west", lit=False)
+    b.set(10, 1, 9, "barrel", facing="up", open=False)
     shelf(b, 10, 3, 10, "north", "spruce")
     hanging_pot(b, 9, 4, 9, "potted_fern", "spruce")
 
-    # The staircase up the west wall, from the front to the landing at the back, boxed in underneath with a cask store
+    # --- The staircase up from the door (x 5, rising to the back), boxed in underneath
     for i in range(5):
-        stairs(b, 2, 1 + i, 4 + i, SPRUCE, "south")
+        stairs(b, 5, 1 + i, 4 + i, SPRUCE, "south")
         for y in range(1, 1 + i):
-            b.set(2, y, 4 + i, "spruce_planks")
-    b.set(2, 1, 7, "barrel", facing="east", open=False)
-    b.set(2, 1, 8, "barrel", facing="east", open=False)
+            b.set(5, y, 4 + i, "spruce_planks")
 
-    # The room: two tables with three chairs each, a runner from the door, a clock
-    for tx, tz in ((4, 5), (4, 9)):
+    # --- The common room: a table by the front window and one at the back, a settle facing the hearth, a table under
+    # the back window, a runner from the door, a clock
+    for tx, tz in ((3, 4), (3, 9)):
         fence(b, tx, 1, tz, "spruce_fence")
         b.set(tx, 2, tz, "spruce_pressure_plate", powered=False)
         chair(b, tx - 1, 1, tz, SPRUCE, "east")
         chair(b, tx + 1, 1, tz, SPRUCE, "west")
-    chair(b, 4, 1, 4, SPRUCE, "south")
-    chair(b, 4, 1, 10, SPRUCE, "north")  # the back table's third chair, its back to the wall
+    chair(b, 3, 1, 3, SPRUCE, "south")
+    chair(b, 3, 1, 10, SPRUCE, "north")
+    couch(b, 3, 1, 7, "west", "spruce", "red", length=2)  # the settle, its back to the room, facing the fire
+    fence(b, 6, 1, 10, "spruce_fence")
+    b.set(6, 2, 10, "spruce_pressure_plate", powered=False)
+    chair(b, 7, 1, 10, SPRUCE, "west")
     box(b, 6, 1, 4, 6, 1, 9, "red_carpet")  # (a block in from the door: on a carpet under its lintel a villager hits its head)
-    clock(b, 5, 1, 3, "south", "spruce")
-    picture(b, 4, 4, 10, "north", "red", "spruce")
+    clock(b, 7, 1, 3, "south", "spruce")
+    picture(b, 7, 3, 10, "north", "red", "spruce")
     for x in (2, 3, 9, 10):
         blinds(b, x, 4, 3, "south", "spruce")
-    for x, z in ((4, 7), (7, 5), (9, 7), (6, 9)):
+    for x, z in ((3, 9), (6, 5), (7, 9), (9, 7)):
         lantern(b, x, 4, z, hanging=True)
 
-    # Timber storey, y 6-8, jettied a block out over the street (its front wall at z 1) on stair brackets
-    beam_ring(b, 1, 1, 11, 11, 5, INN_FRAME)
-    box(b, 2, 5, 2, 10, 5, 10, "spruce_planks")
-    for z in (5, 6, 7):
-        b.set(2, 5, z, "air")  # the stairwell (open over the step below each, for the head of whoever climbs it)
-    stairs(b, 2, 5, 8, SPRUCE, "south")  # the top step, level with the floor
-    for x in (1, 4, 8, 11):
-        stairs(b, x, 4, 1, INN_ROOF, "south", top=True)
-    for x in range(1, 12):  # the moulding along the jetty the upper sills and shutters stand on (clear of the banner)
-        stairs(b, x, 5, 0, SPRUCE, "south", top=True)
-    lantern(b, 5, 4, 1, hanging=True)  # the lamps either side of the door, under the jetty
-    lantern(b, 7, 4, 1, hanging=True)
-    walls(b, 1, 1, 11, 11, 6, 8, INN_INFILL)
-    posts(b, [(1, 1), (4, 1), (6, 1), (8, 1), (11, 1), (1, 6), (1, 8), (11, 6), (11, 8), (1, 11), (4, 11), (8, 11),
-              (11, 11)], 6, 8, INN_FRAME)
-    beam_ring(b, 1, 1, 11, 11, 9, INN_FRAME)
-    # Upstairs windows, stacked over the taproom's: shutters and sills in front on the moulding, plain casements at the
-    # sides and back
-    inn_window(b, 2, 6, 1, "north", 2, ("potted_red_tulip",))
-    inn_window(b, 9, 6, 1, "north", 2, ("potted_red_tulip",))
-    for z0 in (3, 9):
-        for z in (z0, z0 + 1):
-            for y in (6, 7):
-                pane(b, 1, y, z)
-                pane(b, 11, y, z)
-    for x0 in (2, 9):
-        for x in (x0, x0 + 1):
-            for y in (6, 7):
-                pane(b, x, y, 11)
+    # --- The timber storey: a floor on a beam at the wall line and beams a block proud at the front and the back -----
+    box(b, 2, 5, 3, 10, 5, 10, "spruce_planks")
+    beam_ring(b, 1, 2, 11, 11, 5, INN_FRAME)
+    for x in range(1, 12):
+        log(b, x, 5, 1, INN_FRAME, axis="x")
+        log(b, x, 5, 12, INN_FRAME, axis="x")
+    for z in range(4, 8):
+        b.set(5, 5, z, "air")  # the stairwell (open over each step, for the head of whoever climbs it)
+    stairs(b, 5, 5, 8, SPRUCE, "south")  # the top step, level with the floor
+    for x in (2, 3):
+        for z in range(3, 7):
+            b.set(x, 5, z, "air")  # the common room's corner open to the rafters
 
-    # Guest rooms: two at the front either side of a partition (x 6), one at the back east; a landing at the back
-    for x in range(3, 11):  # (x 2 is the stairwell)
+    # --- The roof: the steep Entrance Gable between the two lower wings, a dark oak ridge and soffit ---------------
+    def hero(t):
+        gable_roof(t, 3, 9, 0, 12, 9, INN_ROOF, axis="z", gable=INN_PLASTER, gable_at=(1, 11), ridge=INN_ROOF,
+                   steep=True, eave_trim=INN_TRIM)
+
+    def west(t):
+        gable_roof(t, 0, 4, 1, 12, 7, INN_ROOF, axis="z", gable=INN_PLASTER, gable_at=(2, 11), ridge=INN_ROOF,
+                   steep=True, eave_trim=INN_TRIM)
+
+    def east(t):
+        gable_roof(t, 8, 12, 1, 12, 7, INN_ROOF, axis="z", gable=INN_PLASTER, gable_at=(2, 11), ridge=INN_ROOF,
+                   steep=True, eave_trim=INN_TRIM)
+    roofs(b, hero, west, east)
+    inn_verges(b, (0, 1, 12))
+
+    # The wings' walls: a plaster knee wall under a beam at the eaves along the sides
+    for x in (1, 11):
+        for z in range(2, 12):
+            b.set(x, 6, z, INN_PLASTER)
+            log(b, x, 7, z, INN_FRAME, axis="z")
+    # The frame: posts a block proud of the plaster at the front and the back, on the pilasters
+    for z in (1, 12):
+        for x in (1, 11):
+            for y in (6, 7):
+                log(b, x, y, z, INN_FRAME)
+        for x in (4, 8):
+            for y in (6, 7, 8):
+                log(b, x, y, z, INN_FRAME)
+        for x in range(4, 9):
+            log(b, x, 9, z, INN_FRAME, axis="x")
+    for x in (4, 8):  # the valley courses where the wings' roofs meet the Entrance Gable's walls
+        for z in range(1, 13):
+            if b.get(x, 9, z) is None or "log" not in b.get(x, 9, z)[0]:
+                b.set(x, 9, z, INN_ROOF.full)  # (slate: seen from outside it is the valley's floor)
+    # The wings' fronts and backs: plaster round two-pane windows, the front ones' flowers on the proud beam
+    for z in (2, 11):
+        for x in (2, 3, 9, 10):
+            b.set(x, 6, z, INN_PLASTER)
+        for x in (4, 8):
+            for y in (6, 7, 8):
+                b.set(x, y, z, INN_PLASTER)
+    for x in (2, 10):  # one tall window under each wing's peak, front and back, flowers on the beam in front
+        for z in (2, 11):
+            inn_upper_window(b, x, x, z, height=4)
+        b.set(x, 6, 1, "potted_red_tulip")
+    for x in (3, 9):
+        b.set(x, 7, 2, INN_PLASTER)
+        b.set(x, 7, 11, INN_PLASTER)
+    # The Entrance Gable's front: one tall window of nine panes set back in the frame, pots on the beam, a king post
+    # and an attic light in the gable; its back: plaster, a window, the same king post
+    for x in (5, 6, 7):
         for y in (6, 7, 8):
-            b.set(x, y, 6, "spruce_planks")
-    for z in range(7, 11):
+            b.set(x, y, 1, "air")
+            pane(b, x, y, 2)
+        b.set(x, 6, 1, "potted_red_tulip" if x != 6 else "potted_poppy")
+    for x in (5, 6, 7):
         for y in (6, 7, 8):
-            b.set(8, y, z, "spruce_planks")
-    for z in range(2, 6):
-        for y in (6, 7, 8):
-            b.set(6, y, z, "spruce_planks")
-    door(b, 4, 6, 6, "spruce_door", "south")
-    door(b, 7, 6, 6, "spruce_door", "south")
+            b.set(x, y, 11, INN_PLASTER)
+    for y in (6, 7):
+        pane(b, 6, y, 11)
+    for z in (1, 11):
+        pane(b, 6, 10, z)
+        pane(b, 6, 11, z)
+        for y in (12, 13):
+            log(b, 6, y, z, INN_FRAME)
+    # Dormers for the guest rooms (and one over the open corner of the common room)
+    for z in (3, 9):
+        inn_dormer(b, 0, 1, z)
+    for z in (4, 9):
+        inn_dormer(b, 12, 11, z)
+
+    # --- Upstairs: the gallery under the Entrance Gable, three guest rooms in the wings -------------------------------
+    # The gallery's rail over the open corner of the common room (on the floor's edge beam), the West room's partition
+    for z in range(3, 7):
+        fence(b, 4, 6, z, "spruce_fence")
+    for x, top in ((2, 9), (3, 7)):
+        for y in range(6, top + 1):
+            b.set(x, y, 7, "spruce_planks")
+    for x in (4, 8):  # the wings' inner walls, with the guest rooms' doors
+        for z in range(3 if x == 8 else 7, 11):
+            for y in (6, 7, 8):
+                b.set(x, y, z, "spruce_planks")
+    for x, top in ((9, 7), (10, 9)):  # the East rooms' partition
+        for y in range(6, top + 1):
+            b.set(x, y, 7, "spruce_planks")
+    door(b, 4, 6, 8, "spruce_door", "east")
+    door(b, 8, 6, 5, "spruce_door", "west")
     door(b, 8, 6, 8, "spruce_door", "west")
-    # the west room (red): beds heads to the front wall, a nightstand between them, a lamp, a picture, blinds
-    for x in (2, 5):
-        b.bed(x, 6, 3, "red", facing="north")
-    nightstand(b, 3, 6, 2, "south", "spruce")
-    floor_lamp(b, 4, 6, 2, "spruce")
-    picture(b, 5, 8, 4, "west", "red", "spruce")
-    # the east room (green)
-    for x in (7, 10):
-        b.bed(x, 6, 3, "green", facing="north")
-    nightstand(b, 8, 6, 2, "south", "spruce")
-    floor_lamp(b, 9, 6, 5, "spruce")
-    picture(b, 7, 8, 4, "east", "green", "spruce")
-    for x in (2, 3, 9, 10):
-        blinds(b, x, 8, 2, "south", "spruce")
-    # the back room (blue): beds heads to the back wall, a chest by the door, a lamp
+    # Tie beams across the Entrance Gable, a lantern under each
+    for z in (5, 9):
+        for x in (5, 6, 7):
+            log(b, x, 9, z, INN_FRAME, axis="x")
+        lantern(b, 6, 8, z, hanging=True)
+    # The West room (red): beds heads to the wall, a chest by the door, a lantern under the ridge
+    for z in (9, 10):
+        b.bed(3, 6, z, "red", facing="west")
+    b.set(2, 6, 8, "chest", facing="east", type="single", waterlogged=False)
+    lantern(b, 2, 9, 9, hanging=True)
+    # The East-front room (green): beds heads to the front, a chest, a nightstand and a lamp
+    for x in (9, 10):
+        b.bed(x, 6, 4, "green", facing="north")
+    b.set(10, 6, 5, "chest", facing="west", type="single", waterlogged=False)
+    nightstand(b, 9, 6, 6, "north", "spruce")
+    floor_lamp(b, 10, 6, 6, "spruce")
+    lantern(b, 10, 9, 4, hanging=True)
+    # The East-back room (blue): beds heads to the back, a chest, a lantern
     for x in (9, 10):
         b.bed(x, 6, 9, "blue", facing="south")
     b.set(10, 6, 8, "chest", facing="west", type="single", waterlogged=False)
-    nightstand(b, 10, 6, 7, "west", "spruce")
-    floor_lamp(b, 9, 6, 7, "spruce")
-    picture(b, 9, 8, 7, "south", "blue", "spruce")
-    # the landing: a rail round the stairwell, a couch under the back window, a lamp, a clock
-    for x, z in ((2, 4), (3, 5), (3, 7), (3, 8)):  # the rail round the stairwell, from the west room and the landing
-        fence(b, x, 6, z, "spruce_fence")
-    couch(b, 4, 6, 10, "north", "spruce", "red", length=2)
-    floor_lamp(b, 2, 6, 10, "spruce")
+    lantern(b, 10, 9, 9, hanging=True)
+    # The gallery: a settle at the back, a clock, a lamp by the big window, a picture
+    couch(b, 5, 6, 10, "north", "spruce", "red", length=2, arms=False)
     clock(b, 7, 6, 10, "north", "spruce")
-    for x in range(2, 11):  # a tie beam over the landing for its light
-        log(b, x, 9, 8, INN_FRAME, axis="x")
-    lantern(b, 5, 8, 8, hanging=True)
+    floor_lamp(b, 5, 6, 3, "spruce")
+    picture(b, 5, 8, 10, "north", "green", "spruce")
+    # A lantern on a chain from the West Wing's ridge, over the open corner
+    for y in (7, 8, 9):
+        b.set(2, y, 4, "chain", axis="y", waterlogged=False)
+    lantern(b, 2, 6, 4, hanging=True)
 
-    # The roof: two gables side by side to the street (an M), a valley gutter between them
-    def west(t):
-        gable_roof(t, 0, 6, 0, 12, 9, INN_ROOF, axis="z", gable=INN_INFILL, gable_at=(1, 11), ridge=SPRUCE)
-
-    def east(t):
-        gable_roof(t, 6, 12, 0, 12, 9, INN_ROOF, axis="z", gable=INN_INFILL, gable_at=(1, 11), ridge=SPRUCE)
-    roofs(b, west, east)
-    for z in range(0, 13):
-        b.set(6, 9, z, "spruce_planks")
-    for z in (1, 11):  # each gable framed: a king post, a collar beam, a little window
-        for cx in (3, 9):
-            for y in (10, 11):
-                log(b, cx, y, z, INN_FRAME)
-            pane(b, cx, 10, z)
-        for x in (2, 4, 8, 10):
-            log(b, x, 10, z, INN_FRAME)
-    chimney(b, 6, 12, 5, 13, STONE_MIX)  # the hearth's stack, up the back between the gables
     # The inn's banner on a tall post at the corner, facing the street (rotation 8: north, the front; 0 is south)
     for y in range(0, 4):
         fence(b, 0, y, 1, "spruce_fence")
     b.set(0, 4, 1, "red_banner", rotation=8)
+    # The hearth's chimney: its breast three wide up to the eave, shoulders, then the stack past the West Wing's ridge
+    for z in (5, 6, 7):
+        for y in range(0, 8):
+            b.set(0, y, z, INN_PLINTH.at(0, y, z) if y == 0 else INN_STONE.at(0, y, z))
+    stairs(b, 0, 8, 5, STONE_BRICK, "south")
+    stairs(b, 0, 8, 7, STONE_BRICK, "north")
+    chimney(b, 0, 6, 8, 12, INN_STONE)
     b.fill_air()
     return b
 
 
 def inn_2():
-    """Upgrade of the Inn (same origin and front): a stable on the east side for travellers' horses, its roof along the
-    inn's east wall — a smoker, hay and water inside (hand the villager there a saddle and they become the
-    rancher). 19 x 16 x 13."""
+    """Upgrade of the Inn (same origin and front): the Stable on the east side for the coaches' horses, a lean-to
+    against the inn's east wall, with a yard in front — a smoker, hay and water inside (hand the villager there a saddle
+    and they become the rancher). 19 x 16 x 13."""
     b = inn().grow(19, 16, 13)
-    plinth(b, 13, 3, 17, 10, STONE_MIX, floor="coarse_dirt")
-    for y in range(1, 4):
-        for x in range(13, 18):
-            if x not in (14, 15, 16) or y == 3:
-                b.set(x, y, 3, "spruce_planks")
-            b.set(x, y, 10, "spruce_planks")
-        for z in range(4, 10):
-            b.set(13, y, z, "spruce_planks")
+    # The kitchen's east window now looks into the stable: its shutters and sill come off
+    b.clear(12, 1, 8, 12, 3, 10)
+    # Plinth and floor; walls of spruce boards on dark oak posts, x 12-17, z 5-10
+    for x in range(12, 18):
+        for z in range(5, 11):
+            b.set(x, 0, z, "coarse_dirt" if 12 < x < 17 and 5 < z < 10 else INN_PLINTH.at(x, 0, z))
+    # The lean-to's roof, half pitch (a stair, then a slab half a block lower): from under the inn's eave to x 18
+    for z in range(4, 12):
+        stairs(b, 13, 6, z, INN_ROOF, "west")
+        slab(b, 14, 6, z, INN_ROOF)
+        stairs(b, 15, 5, z, INN_ROOF, "west")
+        slab(b, 16, 5, z, INN_ROOF)
+        stairs(b, 17, 4, z, INN_ROOF, "west")
+        slab(b, 18, 4, z, INN_ROOF)
+        if z in (4, 11):
+            continue
+        stairs(b, 18, 3, z, INN_TRIM, "west", top=True)
+    tops = {12: 5, 13: 5, 14: 5, 15: 4, 16: 4, 17: 3}  # the highest wall block under the roof, by x
+    for x, top in tops.items():
+        for z in (5, 10):
+            for y in range(1, top + 1):
+                b.set(x, y, z, "spruce_planks")
+    for z in range(6, 10):
+        for y in range(1, 4):
             b.set(17, y, z, "spruce_planks")
-    posts(b, [(13, 3), (17, 3), (13, 10), (17, 10), (17, 6), (13, 6)], 1, 3, INN_FRAME)
-    beam_ring(b, 13, 3, 17, 10, 4, INN_FRAME)
-    # The way in: a gate between fences under the beam
-    fence(b, 14, 1, 3, "spruce_fence")
-    fence(b, 16, 1, 3, "spruce_fence")
-    b.set(15, 1, 3, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
-    for z in (5, 8):  # little windows high in the side wall
-        trapdoor(b, 17, 3, z, "spruce_trapdoor", "east", open_=True)
-        b.set(17, 3, z, "air")
-    # Inside: the smoker (the rancher's) with a chest beside it, hay, water
-    b.set(14, 1, 9, "smoker", facing="north", lit=False)
-    b.set(15, 1, 9, "chest", facing="north", type="single", waterlogged=False)
+    for x, z in ((12, 5), (12, 10), (17, 5), (17, 10)):
+        for y in range(1, tops[x] + 1):
+            log(b, x, y, z, INN_FRAME)
+    for x in range(12, 18):
+        log(b, x, 3, 5, INN_FRAME, axis="x")
+    for z in range(5, 11):
+        log(b, 17, 3, z, INN_FRAME, axis="z")
+    # The way in: a double gate under the beam; windows of fence rails in the east wall
+    for x in (14, 15):
+        b.set(x, 1, 5, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+        b.set(x, 2, 5, "air")
+    for z in (7, 8):
+        fence(b, 17, 2, z, "spruce_fence")
+    # Inside: the smoker (the rancher's) with a chest beside it, hay, water, a tie beam and its lantern
+    b.set(13, 1, 9, "smoker", facing="north", lit=False)
+    b.set(14, 1, 9, "chest", facing="north", type="single", waterlogged=False)
     b.set(16, 1, 9, "hay_block", axis="y")
     b.set(16, 2, 9, "hay_block", axis="x")
-    b.set(16, 1, 8, "water_cauldron", level=3)
-    lantern(b, 15, 3, 6, hanging=True)
-    for x in range(14, 17):
-        log(b, x, 4, 6, INN_FRAME, axis="x")
-    gable_roof(b, 12, 18, 2, 11, 5, INN_ROOF, axis="z", gable="spruce_planks", gable_at=(3, 10), ridge=SPRUCE)
-    # A hitching post by the gate
-    fence(b, 18, 0, 1, "spruce_fence")
-    fence(b, 18, 1, 1, "spruce_fence")
+    b.set(15, 1, 9, "hay_block", axis="z")
+    b.set(16, 1, 6, "water_cauldron", level=3)
+    for x in range(12, 17):
+        log(b, x, 4, 7, INN_FRAME, axis="x")
+    lantern(b, 14, 3, 7, hanging=True)
+    # The yard in front: a rail fence with a gate to the road, hay, a hitching post, a lamp at the stable door
+    for x in range(13, 19):
+        if x != 15:
+            fence(b, x, 0, 0, "spruce_fence")
+    b.set(15, 0, 0, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
+    for z in range(1, 5):
+        fence(b, 18, 0, z, "spruce_fence")
+    b.set(17, 0, 3, "hay_block", axis="y")
+    b.set(17, 0, 2, "hay_block", axis="x")
+    fence(b, 13, 0, 2, "spruce_fence")
+    fence(b, 13, 1, 2, "spruce_fence")
+    lamp_post(b, 16, 0, 4, "spruce_fence", height=2)
     b.fill_air()
     return b
 

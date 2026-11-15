@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271
 
 ## What a player sees
 
@@ -234,6 +234,12 @@ cell back (`QaZoneNearerHall1115bGameTests`: the boundary one block either way, 
 reload, a farmer's field there, and painting leaving out only the cell nearer another hall with "1 cell is nearer another
 village: left out"; `QaZoneNearerHall1115cGameTests`, 6: the tie and one block either side from both halls, past the
 radius, the hall broken and put back, a Wall Tower and the rank, a save and load).
+Nearer means across the ground, as the radius measures it, so a hall on higher ground still takes a cell it is nearer
+to across (B1270, `QaZoneNearerHall1115bBugTests`).
+A building also counts by its corner (B620, so nothing that counted before stops counting), but only when its middle
+doesn't lie nearer another hall (B1271): a Stone Wall whose middle is in a cell nearer hall B is village B's only, even
+with its corner in a cell village A painted or inside A's radius (`QaZoneNearerHall1115bBugTests`). A building whose
+middle lies inside A's own radius still counts for A, as the radius always does.
 Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's overlap) still measure one.
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32

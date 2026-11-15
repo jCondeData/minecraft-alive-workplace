@@ -238,6 +238,10 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   6 Raw Iron to make 16 Iron Bars" and the Tinkerer takes nothing.
 - `QaCreateChain1115eBugCompatTests` (B1268, with Create): 4 chains short with a coal and no iron name the Raw Iron,
   never Zinc or a Crushed ore, and nothing is taken.
+- `QaCreateRivals1115e2CompatTests` (4, B1267/B1268's fix with Create): bread at the kitchen names wheat (never Wheat
+  Flour), a book, an item frame and chains at the table or forge name no Create item; Crushed Raw Iron or zinc ingots
+  and nuggets the chests hold are used (nothing short, and the forge has a plan), and from nothing there is no plan;
+  3 zinc ingots from 1 raw zinc lack 2 Raw Zinc.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

@@ -17,6 +17,18 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Four snow layers that a Mover's Crate is in the way of now drop as 4 snow, not 1 (B1274).
+- Tall grass whose upper half lands on a Mover's Crate now always drops as tall grass, never a wheat seed (B1275).
+- A player's barrel standing where the Mover's Crate would have moved to no longer becomes the Mover's job site when
+  the move ends: he keeps his crate (B1259).
+- A building move called off while the building is still coming down at its old spot no longer keeps the new spot:
+  a builder handed a blueprint there is no longer told the Mover is still taking it back down there (B1264).
+- A building whose middle is in a City Plan cell nearer another Village Hall now counts only for that hall's village;
+  before, its corner in a cell the first village painted (or in its radius) made a Stone Wall there wall both (B1271).
+- A Village Hall on higher ground now takes a City Plan cell it is nearer to across the ground; before, the height
+  counted, so a Stone Wall in that cell walled both villages and counted for both ranks (B1270).
+- A build with its own pool in the floor, built sunk in a pond, now ends with its room dry and the pool full; before,
+  the pool made the builder think the room was open to the pond, and it stayed flooded (B1272).
 - With Create loaded, a builder waiting on a Tinkerer names the raw metal you mine: "short of 6 Raw Iron to make 16
   Iron Bars", not Create's Crushed Raw Iron or Cobblemon's plaques (B1267), and chains short name the Raw Iron instead
   of showing no line at all (B1268).

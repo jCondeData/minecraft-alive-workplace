@@ -1344,8 +1344,16 @@ public class BuilderWork extends Behavior<Villager> {
 				// every repair came for it again: out of the chest, over to the chimney, back in the chest, for good.
 				spot = findStandingSpot(level, null, target, villager.blockPosition(), null, reach - 0.3, true, helping);
 			}
+			boolean wading = false;
+			if (spot == null && site.stage() == BuildPlan.Stage.FOUNDATION) {
+				// B1257: a post's footing on the bed of shallow water (a jetty's log posts), out of reach from the banks and
+				// with nothing yet to stand on over it: the builder wades in beside it, as a player would, rather than skip
+				// it and call the build done with the post short of the bed
+				spot = findStandingSpot(level, plan, target, villager.blockPosition(), null, reach - 0.5, false, helping, true);
+				wading = spot != null;
+			}
 			if (spot != null) {
-				hop(level, villager, spot);
+				hop(level, villager, spot, wading);
 			} else if (deferIfImpossible && !helping && plan != null && scaffolds.plan(level, villager, site, plan, target, reach)) {
 				return false; // 35.6: it would be skipped: scaffolding goes up to work from instead
 			} else if (deferIfImpossible) {
@@ -1409,6 +1417,13 @@ public class BuilderWork extends Behavior<Villager> {
 	@Nullable
 	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
 									 double maxEyeDistance, boolean roofs, boolean offScaffolding) {
+		return findStandingSpot(level, plan, target, from, avoid, maxEyeDistance, roofs, offScaffolding, false);
+	}
+
+	/** ... and, with {@code wading}, in water too, on the bed under it (B1257: a jetty post's footing). */
+	@Nullable
+	static BlockPos findStandingSpot(ServerLevel level, @Nullable BuildPlan plan, BlockPos target, BlockPos from, @Nullable AABB avoid,
+									 double maxEyeDistance, boolean roofs, boolean offScaffolding, boolean wading) {
 		BlockPos best = null;
 		double bestScore = Double.MAX_VALUE;
 		BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
@@ -1416,7 +1431,7 @@ public class BuilderWork extends Behavior<Villager> {
 			for (int dx = -4; dx <= 4; dx++) {
 				for (int dz = -4; dz <= 4; dz++) {
 					p.set(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
-					if (!canStandAt(level, p, roofs)) {
+					if (!canStandAt(level, p, roofs, wading)) {
 						continue;
 					}
 					if (offScaffolding && (level.getBlockState(p).is(net.minecraft.world.level.block.Blocks.SCAFFOLDING)
@@ -1454,13 +1469,19 @@ public class BuilderWork extends Behavior<Villager> {
 	 * at the block's top, as on a roof's slope. (A stair upside down has a sturdy top already.)
 	 */
 	private static boolean canStandAt(ServerLevel level, BlockPos feet, boolean roofs) {
+		return canStandAt(level, feet, roofs, false);
+	}
+
+	/** ... and, with {@code wading}, with water (not lava) where its feet and head go (B1257). */
+	private static boolean canStandAt(ServerLevel level, BlockPos feet, boolean roofs, boolean wading) {
 		BlockPos below = feet.below();
 		BlockState under = level.getBlockState(below);
 		return (under.isFaceSturdy(level, below, Direction.UP) || under.is(net.minecraft.world.level.block.Blocks.SCAFFOLDING) // 35.6: a column's top
 			|| roofs && under.getBlock() instanceof net.minecraft.world.level.block.StairBlock)
 			&& level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()
 			&& level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty()
-			&& level.getFluidState(feet).isEmpty();
+			&& (level.getFluidState(feet).isEmpty() || wading && level.getFluidState(feet).is(net.minecraft.tags.FluidTags.WATER)
+				&& (level.getFluidState(feet.above()).isEmpty() || level.getFluidState(feet.above()).is(net.minecraft.tags.FluidTags.WATER)));
 	}
 
 	/** A place to step aside to from {@code from} that's free right now (with the plan's rules first, then without). */
@@ -1529,7 +1550,12 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/** Teleports the builder onto {@code spot}, only if there's still room to stand there (B60). */
 	private static void hop(ServerLevel level, Villager villager, BlockPos spot) {
-		if (!canStandAt(level, spot, true)) { // (a roof's stair too, where the search found only that)
+		hop(level, villager, spot, false);
+	}
+
+	/** ... with {@code wading}, into water on the bed under it too (B1257). */
+	private static void hop(ServerLevel level, Villager villager, BlockPos spot, boolean wading) {
+		if (!canStandAt(level, spot, true, wading)) { // (a roof's stair too, where the search found only that)
 			return;
 		}
 		level.sendParticles(ParticleTypes.POOF, villager.getX(), villager.getY() + 0.5, villager.getZ(), 6, 0.2, 0.3, 0.2, 0.01);

@@ -130,6 +130,10 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   kept. Water a build stands in or over on purpose, open to the outside (under the Fisher's Hut's jetty, round its
   posts), and a pool the drawing has stay. Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
+- A post's footing on the bed of shallow water (the Fisher's Hut's jetty posts, two blocks under its deck) is always laid:
+  when no bank or floor in reach is dry, the builder wades into the water beside it, on the bed, to lay the footing,
+  as a player would. Before, such a footing was deferred and skipped about one build in three, and the hut was called
+  done with a post that stopped short of the bed (B1257; only while laying the foundation, nothing saved).
 - Sand or gravel that falls into the rooms later (a prop under a pile broken mid-build) is dug out before the build is
   called done: once LANDSCAPE has run out, the builder goes back over CLEAR in a dig-out that takes only sand, gravel,
   concrete powder and the like standing where the drawing has air (never a block of the build, an anvil, a dragon egg or

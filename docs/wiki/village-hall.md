@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270
 
 ## What a player sees
 
@@ -228,6 +228,8 @@ Repairs page (B616) and the builder's reach (36.20): a Topiary Garden in a zone 
 unpainted corner as far away doesn't (`BuildSiteManager.finishedInVillage`, tested in `ZoneVillageBuildingsGameTests`).
 A painted cell whose middle is nearer another hall (one placed after it was painted) is that hall's village's only
 (B805): a Stone Wall there makes the nearer village walled, not both (`QaVillageReach1102BugTests`).
+Nearer means across the ground, as the radius measures it, so a hall on higher ground still takes a cell it is nearer
+to across (B1270, `QaZoneNearerHall1115bBugTests`).
 A cell exactly as far from both halls stays the painting village's, and breaking the nearer hall gives the cell back
 (`QaZoneNearerHall1115bGameTests`: the boundary one block either way, level and off to the side, a save and reload, a
 farmer's field there, and painting leaving out only the cell nearer another hall with "1 cell is nearer another village:

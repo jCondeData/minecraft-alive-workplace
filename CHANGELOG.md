@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Village Hall on higher ground now takes a City Plan cell it is nearer to across the ground; before, the height
+  counted, so a Stone Wall in that cell walled both villages and counted for both ranks (B1270).
 - A build with its own pool in the floor, built sunk in a pond, now ends with its room dry and the pool full; before,
   the pool made the builder think the room was open to the pond, and it stayed flooded (B1272).
 - With Create loaded, a builder waiting on a Tinkerer names the raw metal you mine: "short of 6 Raw Iron to make 16

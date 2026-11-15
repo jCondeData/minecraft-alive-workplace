@@ -17,6 +17,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.entity.ai.village.poi.PoiRecord;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -308,12 +309,17 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 		return entity.plan().zoneAt(hall.get(), pos);
 	}
 
-	/** True if {@code cell}'s middle is nearer another Village Hall than this one: such a cell is that village's. */
+	/**
+	 * True if {@code cell}'s middle is nearer another Village Hall than this one: such a cell is that village's. B1270:
+	 * nearer across the ground ({@link VillageHalls#across}), as the village's radius and {@link
+	 * io.github.jcondedata.aliveworkplace.work.Reach#claims} measure, so a hall on higher ground still takes a cell it is
+	 * nearer to; the halls are looked up in a square column at any height.
+	 */
 	public static boolean nearerAnotherHall(ServerLevel level, BlockPos hall, int cell) {
 		BlockPos centre = cellCentre(hall, cell);
-		double own = centre.distSqr(hall);
-		return level.getPoiManager().findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> !p.equals(hall) && p.distSqr(centre) < own,
-			centre, (int) Math.ceil(Math.sqrt(own)) + 1, PoiManager.Occupancy.ANY).findAny().isPresent();
+		long own = VillageHalls.across(centre, hall);
+		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), centre, (int) Math.ceil(Math.sqrt((double) own)) + 1,
+			PoiManager.Occupancy.ANY).map(PoiRecord::getPos).anyMatch(p -> !p.equals(hall) && VillageHalls.across(p, centre) < own);
 	}
 
 	// --- changes ----------------------------------------------------------------------------------------------------

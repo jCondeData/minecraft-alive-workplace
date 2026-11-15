@@ -715,6 +715,12 @@ nothing, `withNoVillageSharingTheStorehouseIsNotTaken`; a Storehouse broken mid-
 `aStorehouseBrokenMidJobStopsFeedingTheBuilderUntilPlacedBack`; barrels do as chests, `aStorehouseOfBarrelsFeedsTheBuilder`;
 a Storehouse with its Porter counts once, `aStorehouseWithItsPorterIsCountedOnce`; a built Terminal Nook (37.17) feeds
 the village's Builder, `aBuiltTerminalNookFeedsTheVillagesBuilder`).
+`QaStorehouseShare1115hGameTests` (4, QA of a shared Storehouse, the cobblestone counted at every tick: two Builders
+sharing exactly one hut's stone each read an honest "Needs" and both finish once topped up,
+`twoBuildersSharingExactlyOneHutsStoneAreHonestAndFinishWhenToppedUp`; a Builder saved and loaded carrying Storehouse
+stone carries the same after, `aBuilderSavedAndLoadedWhileCarryingStorehouseStoneDoublesAndLosesNone`; the same with a
+second Builder sharing it, `twoBuildersSharingTheStorehouseBothFinishAfterOneIsReloadedCarrying`; `workplaceFreeMaterials`
+on leaves the Storehouse's stone alone and its board empty, `withFreeMaterialsTheStorehouseStoneIsLeftAlone`).
 `QaBuilderStockBugTests` (1, B355: a Storehouse just past the reach, 20.4 blocks off in a 20-block village, is too far and
 the status says so with numbers that agree, the distance rounded up to 21, `aStorehouseJustPastTheReachIsTooFarAndTheNumbersSaySo`).
 `QaBuilderLimitsBugTests` (1, B378: a spot 48.5 blocks from the table is refused with a number past the 48-block reach,

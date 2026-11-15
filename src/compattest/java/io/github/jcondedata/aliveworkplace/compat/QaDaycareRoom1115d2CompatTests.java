@@ -32,8 +32,8 @@ import net.minecraft.world.entity.npc.Villager;
  * neither (a PC with room for just one, or one party slot and a full PC: she keeps the pair and says to make room for
  * both); the rancher's Collect is refused before charging when party and PC are full, then works and charges once; a
  * hatchling with nowhere to go isn't put anywhere (so the refunded egg is the only outcome), then hatches once room is
- * made; a keeper's or rancher's death with a full PC puts the Pokémon in Cobblemon's PC overflow (both of the pair, for
- * an online or an offline trainer, saved with the PC); the egg's price line only when the money ran out, by one dollar
+ * made; a keeper's or rancher's death with a full PC keeps the Pokémon waiting for a free PC place (B1295; both of the pair, for
+ * an online or an offline trainer, saved with the world); the egg's price line only when the money ran out, by one dollar
  * either side of the price. Every new line is checked word for word against the spec's text.
  */
 public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
@@ -53,6 +53,11 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 
 	static boolean inBackup(PCStore pc, UUID id) {
 		return pc.getBackupStore().getPokemon().stream().anyMatch(p -> p.getUuid().equals(id));
+	}
+
+	/** Whether {@code id} waits for a free place in {@code pc}'s owner's PC (our saved list, B1295; not Cobblemon's overflow). */
+	static boolean waiting(PCStore pc, UUID id) {
+		return io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.count(pc.getUuid(), id) > 0;
 	}
 
 	/** Frees {@code slots} places in a full PC (removing filler Magikarp). */
@@ -225,12 +230,13 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	// ---- a death with a full PC: Cobblemon's overflow ----
+	// ---- a death with a full PC: kept waiting for a free place (B1295; never Cobblemon's overflow, which 1.7.3 never loads) ----
 
 	/**
-	 * The keeper dies while the online trainer's party and PC are full: both of the pair are in the PC's overflow (two,
-	 * not in the boxes or the party) and the PC is marked changed (so it's saved). Whether the overflow survives a save
-	 * and load is QaDaycareRoom1115d2BugCompatTests's.
+	 * The keeper dies while the online trainer's party and PC are full: both of the pair wait for a free PC place (two,
+	 * not in the boxes, the party or Cobblemon's overflow) and the waiting list is marked for saving (B1295; it was
+	 * Cobblemon's overflow until Cobblemon was found never to load it back). Whether they survive a save and load is
+	 * QaDaycareRoom1115d2BugCompatTests's and DaycareWaitingCompatTests's.
 	 */
 	//$ gametest_ticks_batch AREA '100' '"qaDaycareRoom1115d2DeathOnline"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaDaycareRoom1115d2DeathOnline")
@@ -242,22 +248,25 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 		fillParty(player);
 		PCStore pc = QaDaycareFallbacks1115dBugCompatTests.fillPc(Cobblemon.INSTANCE.getStorage().getPC(player));
 		int before = pc.getBackupStore().getPokemon().size();
+		int full = pcCount(pc);
 		int[] changed = {0};
 		var subscription = pc.getPcChangeObservable().subscribe(Priority.NORMAL, (Consumer<Unit>) u -> changed[0]++);
 		keeper.kill();
 		helper.runAfterDelay(2, () -> {
 			pc.getPcChangeObservable().unsubscribe(subscription);
-			helper.assertTrue(inBackup(pc, pair[0]) && inBackup(pc, pair[1]), "not both in the overflow (mother " + inBackup(pc, pair[0]) + ", father "
-				+ inBackup(pc, pair[1]) + ")");
-			helper.assertValueEqual(pc.getBackupStore().getPokemon().size() - before, 2, "Pokémon added to the overflow");
+			helper.assertTrue(waiting(pc, pair[0]) && waiting(pc, pair[1]), "not both waiting for the PC (mother " + waiting(pc, pair[0]) + ", father "
+				+ waiting(pc, pair[1]) + ")");
+			helper.assertValueEqual(pc.getBackupStore().getPokemon().size() - before, 0, "Pokémon added to Cobblemon's overflow (never loaded back)");
 			helper.assertTrue(!inPc(pc, pair[0]) && !inPc(pc, pair[1]) && !inParty(player, pair[0]) && !inParty(player, pair[1]), "one is also elsewhere");
 			helper.assertTrue(DaycareKeepers.pairs(keeper).isEmpty(), "she still holds them");
-			helper.assertTrue(changed[0] > 0, "the PC wasn't marked changed, so the overflow may not be saved");
+			helper.assertValueEqual(pcCount(pc), full, "Pokémon in the full PC's boxes");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.get(helper.getLevel().getServer()).isDirty(),
+				"the waiting list wasn't marked for saving");
 			helper.succeed();
 		});
 	}
 
-	/** The keeper dies while an offline trainer's PC is full: both of the pair go to that trainer's overflow, two of them. */
+	/** The keeper dies while an offline trainer's PC is full: both of the pair wait for that trainer's PC, two of them (B1295). */
 	//$ gametest_ticks_batch AREA '100' '"qaDaycareRoom1115d2DeathOffline"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaDaycareRoom1115d2DeathOffline")
 	public void qaKeepersDeathWithAnOfflineTrainersFullPcPutsThePairInTheOverflow(GameTestHelper helper) {
@@ -273,17 +282,19 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 		keeper.kill();
 		helper.runAfterDelay(2, () -> {
 			PCStore now = Cobblemon.INSTANCE.getStorage().getPC(owner, access);
-			helper.assertTrue(inBackup(now, mother.getUuid()) && inBackup(now, father.getUuid()), "not both in the offline trainer's overflow (mother "
-				+ inBackup(now, mother.getUuid()) + ", father " + inBackup(now, father.getUuid()) + ")");
-			long ours = now.getBackupStore().getPokemon().stream().filter(p -> p.getUuid().equals(mother.getUuid()) || p.getUuid().equals(father.getUuid())).count();
-			helper.assertValueEqual(ours, 2L, "the pair's entries in the overflow");
+			helper.assertTrue(waiting(now, mother.getUuid()) && waiting(now, father.getUuid()), "not both waiting for the offline trainer's PC (mother "
+				+ waiting(now, mother.getUuid()) + ", father " + waiting(now, father.getUuid()) + ")");
+			int ours = io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.count(owner, mother.getUuid())
+				+ io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.count(owner, father.getUuid());
+			helper.assertValueEqual(ours, 2, "the pair's entries in the waiting list");
+			helper.assertTrue(now.getBackupStore().getPokemon().isEmpty(), "something went to Cobblemon's overflow");
 			helper.assertValueEqual(pcCount(now), full, "Pokémon in the full PC's boxes");
 			helper.assertTrue(DaycareKeepers.pairs(keeper).isEmpty(), "she still holds them");
 			helper.succeed();
 		});
 	}
 
-	/** The rancher dies while the trainer's PC is full: the boarder is in the overflow, once. */
+	/** The rancher dies while the trainer's PC is full: the boarder waits for the PC, once (B1295). */
 	//$ gametest_ticks_batch AREA '100' '"qaDaycareRoom1115d2DeathRancher"'
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaDaycareRoom1115d2DeathRancher")
 	public void qaRanchersDeathWithAFullPcPutsTheBoarderInTheOverflow(GameTestHelper helper) {
@@ -297,8 +308,8 @@ public class QaDaycareRoom1115d2CompatTests implements FabricGameTest {
 		PCStore pc = QaDaycareFallbacks1115dBugCompatTests.fillPc(Cobblemon.INSTANCE.getStorage().getPC(player));
 		rancher.kill();
 		helper.runAfterDelay(2, () -> {
-			long n = pc.getBackupStore().getPokemon().stream().filter(p -> p.getUuid().equals(id)).count();
-			helper.assertValueEqual(n, 1L, "the boarder's entries in the overflow");
+			helper.assertValueEqual(io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.count(player.getUUID(), id), 1, "the boarder's entries in the waiting list");
+			helper.assertTrue(!inBackup(pc, id), "the boarder went to Cobblemon's overflow");
 			helper.assertTrue(!inPc(pc, id) && !inParty(player, id), "the boarder is also elsewhere");
 			helper.assertTrue(Daycare.boarders(rancher).isEmpty(), "she still boards it");
 			helper.succeed();

@@ -48,7 +48,7 @@ public class QaDaycareFallbacks1115dBugCompatTests implements FabricGameTest {
 	static boolean anywhere(ServerPlayer player, UUID id) {
 		PCStore pc = Cobblemon.INSTANCE.getStorage().getPC(player);
 		boolean backup = pc.getBackupStore().getPokemon().stream().anyMatch(p -> p.getUuid().equals(id));
-		return inParty(player, id) || inPc(pc, id) || backup;
+		return inParty(player, id) || inPc(pc, id) || backup || io.github.jcondedata.aliveworkplace.compat.cobblemon.WaitingPokemon.count(player.getUUID(), id) > 0;
 	}
 
 	/** Party and PC full when the pair is taken back: neither Pokémon may vanish (she keeps them, or they go somewhere the trainer owns). */

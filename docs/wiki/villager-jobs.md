@@ -176,8 +176,9 @@ saves but never loads back or shows (B1295, B1296, B1287). An online trainer is 
 waiting for you and will come to your PC as soon as a place in it is free."; while they're online, each one comes into
 the PC as soon as a place is free ("Charmander came to your PC from the daycare."), and at each login with Pokémon still
 waiting they're reminded how many. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
-`QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2)
-and `DaycareWaitingCompatTests` (3).
+`QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2),
+`DaycareWaitingCompatTests` (3) and `QaWaitingPokemon1115eCompatTests` (4: every field and trainer kept through a
+save, damaged old data, a waiting pair one freed slot at a time, an offline trainer's pair at login).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

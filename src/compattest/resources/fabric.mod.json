@@ -371,6 +371,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareRoom1115cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareRoom1115d2BugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.DaycareWaitingCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaitingPokemon1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCup1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCupWatchBoard1115d2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonListEdges1109eCompatTests",

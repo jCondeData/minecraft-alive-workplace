@@ -330,6 +330,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   3 honey blocks from nothing read "short of 6 Honey Blocks, 12 Glass Bottles, 24 Glass", not 12 Honey Bottles.
 - Open bug B1307 (its 3 failing tests, QaShortPlurals1115bBugTests, are on the tests/short-plurals-1115b branch): 24
   countable things a line names have no plural, so a builder reads "short of 12 Snowball to make 3 Snow Blocks".
+- Open bug B1308 (its 2 failing compat tests, QaMinedStoneSelf1115bBugCompatTests, are on the
+  tests/mined-stone-self-1115b branch): with Create a builder short of 3 Andesite and a Mason reads "short of 3 Andesite
+  to make 3 Andesite" (Create's stonecutting recipes make the mined stones from a tag that holds them).
 - Open bug B1303 (its 2 failing tests, QaDyedWoolLine1115bBugTests, are on the tests/dyed-wool-line-1115b branch): a
   builder short of 2 Blue Wool with 2 Blue Dye there reads "short of 4 Black Dye, 2 Blue Dye, 4 Blue Wool to make 2 Blue
   Wool"; every dyed wool from nothing names another color's wool and dye, not white wool or string; carpets the same.

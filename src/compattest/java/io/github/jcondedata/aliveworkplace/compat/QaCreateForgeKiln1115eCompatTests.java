@@ -31,9 +31,9 @@ public class QaCreateForgeKiln1115eCompatTests implements FabricGameTest {
 	}
 
 	/**
-	 * The forge (Tinkerer) with Create, where Create adds no rival: a copper block and a gold plate name the raw metal short
-	 * of what's there (B489's boundaries). Iron, where Create fires its Crushed Raw Iron too, is
-	 * QaCreateForge1115eBugCompatTests (B-filed, on tests/create-forge-crushed-1115e).
+	 * The forge (Tinkerer) with Create, some raw metal on hand: a copper block and a gold plate name the raw metal short of
+	 * what's there (B489's boundaries), not Create's crushed ores. From nothing at all the forge names the crushed ores:
+	 * B1267, QaCreateForge1115eBugCompatTests on tests/create-forge-crushed-1115e.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)

@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285
 
 ## What a player sees
 
@@ -163,6 +163,16 @@ Tested in `QaDaycareBugs1103dCompatTests`, `QaDaycareRegional1104d2CompatTests` 
 `QaDaycareChoiceForms1108dCompatTests` (5), and `QaDaycareFormsVerify1109dCompatTests` (14: Oricorio, Burmy,
 Wormadam, Deerling, Sawsbuck, Lycanroc, Polteageist, Sinistcha and every Tauros breed, as hatchlings and Cobbreeding eggs,
 through reloads). In the pack, Mega Showdown renames Oricorio's styles to `pom-pom` and `pau` (form "Pa’u").
+
+**A full party and PC (B1284, B1285).** No Pokémon a daycare hands back is ever lost. With the trainer's party and PC
+both full, Take back at the Daycare Keeper's is refused ("Your party and PC are full: make room for both before taking
+your pair back.") and she keeps the pair; the rancher's Daycare refuses Collect the same way, before charging. An egg
+collected without Cobbreeding with nowhere to put the hatchling is refunded and keeps waiting ("make room for the
+hatchling first"); with Cobbreeding, an egg that doesn't fit in a full inventory is refunded with "Your inventory is
+full: make room for the egg first." (not the price line, which is only for a player short of money). When a keeper or
+rancher dies and the trainer's PC is full, the Pokémon go to Cobblemon's own PC overflow (the PC's backup store, saved
+with it and moved into the boxes when Cobblemon resizes them; `PokemonHome.toPcOrOverflow`), and a warning names them in
+the log. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5) and `QaDaycareFallbacks1115dCompatTests` (12).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

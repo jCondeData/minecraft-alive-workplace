@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Cobblemon, a full party and PC no longer make Pokémon vanish at the daycares: Take back and Collect are refused
+  until there's room, an egg's hatchling waits (refunded), and a keeper's or rancher's death sends them to Cobblemon's
+  PC overflow (B1284). An egg that doesn't fit in a full inventory now says to make room, not what it costs (B1285).
 - A crafter's "Can't be made yet" line with Chipped loaded no longer names Chipped's decorative planks for a torch's
   sticks; it goes down to the oak logs a player gathers (B1273).
 - With no leather in the chests, a book, an item frame or bookshelves now read "short of Leather", not Rabbit Hide

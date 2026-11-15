@@ -632,13 +632,15 @@ public final class MoveSite {
 		}
 		// the block won't stand anywhere by the crate (B1246, B1252): the block itself, worked out from a block entity of
 		// its kind read back from the packed data, and every item that data holds: a Container's slots, else any item
-		// saved anywhere in it (a lectern's Book, a vault's Inventory), unless the block's item keeps them (a shulker box)
-		BlockEntity loaded = BlockEntity.loadStatic(at, state, data.copy(), level.registryAccess());
+		// saved anywhere in it (a lectern's Book, a vault's Inventory), unless the block's item keeps them (a shulker box,
+		// Create's Toolbox). The block entity is made by the block and then given the data: packed data has no 'id', so
+		// BlockEntity.loadStatic read nothing back and a beehive dropped without its bees (B1262)
+		BlockEntity loaded = state.getBlock() instanceof net.minecraft.world.level.block.EntityBlock eb ? eb.newBlockEntity(at, state) : null;
+		if (loaded != null) {
+			loaded.loadWithComponents(data.copy(), level.registryAccess());
+		}
 		List<net.minecraft.world.item.ItemStack> drops = itself(level, at, state, loaded);
-		boolean inside = drops.stream().anyMatch(d -> {
-			net.minecraft.world.item.component.ItemContainerContents in = d.get(net.minecraft.core.component.DataComponents.CONTAINER);
-			return in != null && !in.equals(net.minecraft.world.item.component.ItemContainerContents.EMPTY);
-		});
+		boolean inside = drops.stream().anyMatch(d -> holdsItems(level, d));
 		if (!inside) {
 			if (loaded instanceof net.minecraft.world.Container container) {
 				for (int k = 0; k < container.getContainerSize(); k++) {
@@ -648,7 +650,9 @@ public final class MoveSite {
 				}
 			} else {
 				for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(data)) { // the data itself is the block, never an item
-					itemsIn(level, data.get(key), drops);
+					if (!filter(key)) {
+						itemsIn(level, data.get(key), drops);
+					}
 				}
 			}
 		}
@@ -715,8 +719,29 @@ public final class MoveSite {
 	}
 
 	/**
+	 * Whether the dropped item {@code stack} keeps items in its own data (a shulker box's container, Create's Toolbox
+	 * inventory, any mod's): those are dropped inside it, never again loose (B1261).
+	 */
+	private static boolean holdsItems(ServerLevel level, net.minecraft.world.item.ItemStack stack) {
+		net.minecraft.world.item.component.ItemContainerContents in = stack.get(net.minecraft.core.component.DataComponents.CONTAINER);
+		if (in != null && !in.equals(net.minecraft.world.item.component.ItemContainerContents.EMPTY)) {
+			return true;
+		}
+		if (stack.getComponentsPatch().isEmpty() || !(stack.save(level.registryAccess()) instanceof CompoundTag saved)
+			|| !saved.contains("components", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+			return false;
+		}
+		List<net.minecraft.world.item.ItemStack> held = new ArrayList<>();
+		itemsIn(level, saved.getCompound("components"), held);
+		return !held.isEmpty();
+	}
+
+	/**
 	 * Every item saved anywhere in {@code tag} (a compound with an item's {@code id} and a {@code count}, as an item is
 	 * saved), whatever the key or list it's under; an item's own data isn't searched further (a bundle's items stay in it).
+	 * A filter is never searched (any key naming one: Create's {@code Filter} on a chute, funnel or deployer, a Toolbox's
+	 * {@code filters}): those are ghost copies a player sets, not items anyone put in, and breaking the block drops none
+	 * (B1261).
 	 */
 	private static void itemsIn(ServerLevel level, net.minecraft.nbt.Tag tag, List<net.minecraft.world.item.ItemStack> out) {
 		if (tag instanceof CompoundTag c) {
@@ -729,13 +754,20 @@ public final class MoveSite {
 				return;
 			}
 			for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(c)) {
-				itemsIn(level, c.get(key), out);
+				if (!filter(key)) {
+					itemsIn(level, c.get(key), out);
+				}
 			}
 		} else if (tag instanceof net.minecraft.nbt.ListTag list) {
 			for (net.minecraft.nbt.Tag t : list) {
 				itemsIn(level, t, out);
 			}
 		}
+	}
+
+	/** Whether the data key {@code key} names a filter (a ghost item a player sets, never one he has, B1261). */
+	private static boolean filter(String key) {
+		return key.toLowerCase(java.util.Locale.ROOT).contains("filter");
 	}
 
 	/** The item {@code tag} saves, or null when it isn't a saved item (no item id, no count). */

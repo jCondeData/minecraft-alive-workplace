@@ -306,9 +306,14 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   block itself drops as itself (`MoveSite.itself`): its loot as broken with Silk Touch, so an ender chest or a campfire
   is never its obsidian or charcoal (B1247, B1248) and a beehive or bee nest keeps its bees inside its item (B1249), else
   its loot broken by hand, else its own item (a chiseled bookshelf drops only to Silk Touch: B1236). Only if no spot at
-  all is found, the same drops are worked out from a block entity read back from the packed data, and every item that
-  data holds is dropped: a container's slots, else any item saved anywhere in it (a lectern's book, Create's vault
-  `Inventory`: B1246, B1252), unless the block's own item keeps them (a shulker box), all at that open spot. A block with no data (glass, ice, a
+  all is found, the same drops are worked out from a block entity the block makes and fills with the packed data (packed
+  data has no `id`, so `BlockEntity.loadStatic` read nothing back and a beehive there lost its bees: B1262), and every
+  item that data holds is dropped: a container's slots, else any item saved anywhere in it (a lectern's book, Create's
+  vault `Inventory`: B1246, B1252), unless the block's own item keeps them (a shulker box, Create's Toolbox: any item
+  whose own data holds items, `MoveSite.holdsItems`), all at that open spot. A filter is never counted as an item (any
+  key naming one: Create's `Filter` on a chute, funnel or deployer, a Toolbox's `filters`): those are ghost copies a
+  player sets, and breaking the block by hand drops none either (B1261: a Toolbox of 8 ingots dropped 9, an empty Smart
+  Chute set to diamonds dropped a diamond). A block with no data (glass, ice, a
   bookshelf, an ender chest, the wall's plank that lands there) drops as itself the same way at that open spot, worked
   out without being placed, so ice leaves no water (B1253: nothing packed is lost; a wall's block counts too, since the
   crate never moves and nobody would ever put that block back). A waiting step was ruled out because the crate is the Mover's
@@ -444,6 +449,10 @@ dropped, the water back), and a barrel of 27 stacks over reloads (every count ex
 dropped as themselves (no obsidian, no charcoal, the beef loose), a beehive's 2 bees are kept (in the hive's item), and
 lava over a walled-in crate is never borrowed (the lectern and its book kept). `QaCreateMoverCrateLastResort1114eBugCompatTests`
 (compat suite, B1252): an Item Vault with 48 emeralds on a crate in a storage room is dropped with all 48.
+`QaMoverCrateLastResort1114e2GameTests` and `...BugGameTests` (the QA lane, B1262): a beehive with 2 bees on a crate in
+a storage room keeps exactly its bees. `QaCreateMoverCrateToolbox1114e2CompatTests` and
+`QaCreateMoverCrateGhost1114e2BugCompatTests` (compat suite, B1261): a Toolbox with 8 iron ingots drops with its 8, once,
+in the open and in a storage room, a depot keeps its 16, and an empty Smart Chute set to diamonds drops no diamond.
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.

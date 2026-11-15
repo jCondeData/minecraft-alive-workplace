@@ -250,7 +250,10 @@ public final class MoveResidents {
 	@Nullable
 	private static Resident note(ServerLevel level, MoveSite site, BoundingBox box, BlockPos min, Villager villager) {
 		BlockPos bed = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.HOME)).map(p -> p.subtract(min)).orElse(null);
-		BlockPos job = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.JOB_SITE)).map(p -> p.subtract(min)).orElse(null);
+		// B1259: a Mover's Crate never moves with the building (MoveSite.stays), so a Mover working from one in it keeps it
+		// where it stands: not noted as a workstation that moved, or whatever stood at its would-be new spot became his
+		BlockPos job = inside(level, box, villager.getBrain().getMemory(MemoryModuleType.JOB_SITE))
+			.filter(p -> !MoveSite.stays(level.getBlockState(p))).map(p -> p.subtract(min)).orElse(null);
 		if (bed == null && job == null) {
 			return null;
 		}
@@ -441,7 +444,8 @@ public final class MoveResidents {
 					r.bedAt = at;
 				}
 			}
-			if (r.job != null && r.jobAt == null) {
+			if (r.job != null && r.jobAt == null && !MoveSite.stays(level.getBlockState(site.oldMin().offset(r.job)))) {
+				// (a Mover's Crate stood there and stays: B1259, for a site noted before that fix)
 				BlockPos at = site.at(r.job);
 				if (reserve(level, at) || remembers(level, villager, MemoryModuleType.JOB_SITE, at)) {
 					r.jobAt = at;

@@ -16,10 +16,43 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A crafter's "Can't be made yet" line with Chipped loaded no longer names Chipped's decorative planks for a torch's
+  sticks; it goes down to the oak logs a player gathers (B1273).
+- With no leather in the chests, a book, an item frame or bookshelves now read "short of Leather", not Rabbit Hide
+  nobody has (B1278).
+- With Create loaded, a builder short of a Sticky Piston now reads "Slimeball", not Create's Wheat Flour, and a piston
+  names Redstone Dust, not Redstone Ore (B1277).
+- With Create loaded, a builder short of Blocks of Zinc now reads "Raw Zinc", never the Crushed Raw Zinc only a
+  crushing wheel makes (B1279).
+- Four snow layers that a Mover's Crate is in the way of now drop as 4 snow, not 1 (B1274).
+- Tall grass whose upper half lands on a Mover's Crate now always drops as tall grass, never a wheat seed (B1275).
+- A player's barrel standing where the Mover's Crate would have moved to no longer becomes the Mover's job site when
+  the move ends: he keeps his crate (B1259).
+- A building move called off while the building is still coming down at its old spot no longer keeps the new spot:
+  a builder handed a blueprint there is no longer told the Mover is still taking it back down there (B1264).
+- A building whose middle is in a City Plan cell nearer another Village Hall now counts only for that hall's village;
+  before, its corner in a cell the first village painted (or in its radius) made a Stone Wall there wall both (B1271).
+- A Village Hall on higher ground now takes a City Plan cell it is nearer to across the ground; before, the height
+  counted, so a Stone Wall in that cell walled both villages and counted for both ranks (B1270).
+- A build with its own pool in the floor, built sunk in a pond, now ends with its room dry and the pool full; before,
+  the pool made the builder think the room was open to the pond, and it stayed flooded (B1272).
+- With Create loaded, a builder waiting on a Tinkerer names the raw metal you mine: "short of 6 Raw Iron to make 16
+  Iron Bars", not Create's Crushed Raw Iron or Cobblemon's plaques (B1267), and chains short name the Raw Iron instead
+  of showing no line at all (B1268).
+- A block whose new spot is a Mover's Crate in a full storage room is dropped with exactly what was packed: a beehive
+  keeps its bees (B1262), a Create Toolbox drops with its own items once instead of one extra, and a Create chute, funnel
+  or deployer set to a filter no longer drops that filter item from nothing (B1261).
+- A block of several turtle eggs whose new spot is a Mover's Crate drops every egg, not one (B1258), and a door or bed
+  with one half on the crate drops as one item with no half left standing alone (B1260).
+
 ## 0.155.2 — 2026-11-14
 
 ### Fixed
+- The Fisher's Hut's jetty posts always reach the bed: when the builder can't reach a post's lowest block from the bank, he wades in beside it, instead of sometimes leaving the post short of the bed with the water under it (B1257).
 - A building put up from the modded library (furnished builds with the pack's building mods) is offered "Refresh to the latest look" again when its blueprint was redrawn: a modded Clinic built on 0.151.0 now refreshes to its new white ward beds, and 44 other modded buildings redrawn since 1.0 (Farmsteads, Healing Centers, Inns, the Map Room, Storage Hall, Warehouse and more) are recognized too (B680).
+- A City Plan cell painted for a village before a nearer Village Hall was placed counts only for the nearer village: a
+  Stone Wall finished there no longer makes both villages walled or counts for both ranks (B805).
 - With Create installed, the Glassblower makes glass panes straight from the glass he fires: 6 sand and a coal make 16 panes, instead of the coal running short because the panes were planned through Create's Tiled Glass Panes and fired again (B1254, B1255).
 - With Cobblemon, a trainer whose battle Cobblemon had to stop because of an error takes challenges again right away, instead of answering "already in a battle" to everyone until the server restarts; the stopped battle counts as neither a win nor a loss (B1256).
 - A builder no longer takes a blueprint on the new spot of a called-off move while the Mover is still taking the building back down there: he says the spot isn't free yet, and takes it once the building stands where it was (B1230).

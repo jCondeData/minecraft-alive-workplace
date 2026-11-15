@@ -256,13 +256,39 @@ public final class MoveSite {
 		return canceled ? oldMin.offset(rel) : plan.at(rel, newMin, rotation);
 	}
 
-	/** Cancels the move: what was put up at the new spot comes down again and everything goes back up where it was. */
+	/**
+	 * Cancels the move: what was put up at the new spot comes down again and everything goes back up where it was. Called
+	 * off before anything went up at the new spot (B1264), there's nothing to take down there, so it goes straight to
+	 * putting the building back up.
+	 */
 	void cancel() {
 		if (stage == Stage.DONE || canceled) {
 			return;
 		}
 		canceled = true;
-		stage = Stage.RESTORE_DOWN;
+		stage = anythingAtNew() ? Stage.RESTORE_DOWN : Stage.RESTORE_UP;
+	}
+
+	/**
+	 * Whether the Mover is still taking a called-off move back down off its new spot: something of it (a block, or the
+	 * things inside) is still there (B1230, B1264). Read from the blocks, so a site saved in RESTORE_DOWN with nothing at
+	 * the new spot (before B1264's fix) doesn't keep that spot either.
+	 */
+	public boolean puttingBack() {
+		return canceled && stage == Stage.RESTORE_DOWN && anythingAtNew();
+	}
+
+	/** Whether any of the building (a block, or the things inside) stands at the new spot. */
+	private boolean anythingAtNew() {
+		if (things == NEW) {
+			return true;
+		}
+		for (byte w : where) {
+			if (w == NEW) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// ---- work
@@ -534,6 +560,9 @@ public final class MoveSite {
 				dropPacked(level, j, at, st);
 				where[j] = LOST;
 				skipped++;
+				// B1260: a door's or bed's other half never stands alone: the half on the crate dropped the whole door or
+				// bed as one item, so the other half isn't put up (or is taken away again if it went up first), never dropped
+				otherHalfGone(level, j, at, st, now);
 				continue;
 			}
 			if (!there.isAir() && !there.canBeReplaced()) {
@@ -561,6 +590,49 @@ public final class MoveSite {
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}
+	}
+
+	/**
+	 * B1260: block {@code j} of a two-block thing (a door, a tall flower, a bed) was dropped by a Mover's Crate at
+	 * {@code at} as the whole thing's one item, so its other half (packed, or already put up) is gone too: never put up
+	 * alone, and taken away without a drop if it stands already. A block that isn't half of anything is left alone.
+	 */
+	private void otherHalfGone(ServerLevel level, int j, BlockPos at, BlockState st, byte now) {
+		BlockPos other = otherHalf(st, at);
+		if (other == null) {
+			return;
+		}
+		for (int k = 0; k < where.length; k++) {
+			if (k == j || (where[k] != PACKED && where[k] != now)) {
+				continue;
+			}
+			BlockPos pos = now == NEW ? newPos(k) : oldPos(k);
+			BlockState half = now == NEW ? newState(k) : plan.blocks().get(k).state();
+			if (!pos.equals(other) || !half.is(st.getBlock()) || !at.equals(otherHalf(half, pos))) {
+				continue;
+			}
+			if (where[k] == now && level.getBlockState(pos).is(st.getBlock())) {
+				// put up first: taken away again without a drop (the half on the crate already dropped the whole thing)
+				level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			}
+			where[k] = LOST; // not counted again in skipped: the door or bed is one thing skipped, dropped as one item
+			return;
+		}
+	}
+
+	/** Where the other half of the two-block thing {@code state} at {@code pos} stands (a door's, a bed's), or null. */
+	@Nullable
+	private static BlockPos otherHalf(BlockState state, BlockPos pos) {
+		if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+			return state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+				== net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER ? pos.above() : pos.below();
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.BedBlock
+			&& state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.BED_PART)
+			&& state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)) {
+			return pos.relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(state));
+		}
+		return null;
 	}
 
 	/**
@@ -632,13 +704,15 @@ public final class MoveSite {
 		}
 		// the block won't stand anywhere by the crate (B1246, B1252): the block itself, worked out from a block entity of
 		// its kind read back from the packed data, and every item that data holds: a Container's slots, else any item
-		// saved anywhere in it (a lectern's Book, a vault's Inventory), unless the block's item keeps them (a shulker box)
-		BlockEntity loaded = BlockEntity.loadStatic(at, state, data.copy(), level.registryAccess());
+		// saved anywhere in it (a lectern's Book, a vault's Inventory), unless the block's item keeps them (a shulker box,
+		// Create's Toolbox). The block entity is made by the block and then given the data: packed data has no 'id', so
+		// BlockEntity.loadStatic read nothing back and a beehive dropped without its bees (B1262)
+		BlockEntity loaded = state.getBlock() instanceof net.minecraft.world.level.block.EntityBlock eb ? eb.newBlockEntity(at, state) : null;
+		if (loaded != null) {
+			loaded.loadWithComponents(data.copy(), level.registryAccess());
+		}
 		List<net.minecraft.world.item.ItemStack> drops = itself(level, at, state, loaded);
-		boolean inside = drops.stream().anyMatch(d -> {
-			net.minecraft.world.item.component.ItemContainerContents in = d.get(net.minecraft.core.component.DataComponents.CONTAINER);
-			return in != null && !in.equals(net.minecraft.world.item.component.ItemContainerContents.EMPTY);
-		});
+		boolean inside = drops.stream().anyMatch(d -> holdsItems(level, d));
 		if (!inside) {
 			if (loaded instanceof net.minecraft.world.Container container) {
 				for (int k = 0; k < container.getContainerSize(); k++) {
@@ -648,7 +722,9 @@ public final class MoveSite {
 				}
 			} else {
 				for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(data)) { // the data itself is the block, never an item
-					itemsIn(level, data.get(key), drops);
+					if (!filter(key)) {
+						itemsIn(level, data.get(key), drops);
+					}
 				}
 			}
 		}
@@ -702,21 +778,107 @@ public final class MoveSite {
 			io.github.jcondedata.aliveworkplace.mc.Lookup.registry(level.registryAccess(), net.minecraft.core.registries.Registries.ENCHANTMENT);
 		io.github.jcondedata.aliveworkplace.mc.Lookup.holder(enchantments, net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)
 			.ifPresent(h -> silk.enchant(h, 1));
-		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, be, null, silk));
+		if (be == null && state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+			&& state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
+			// B1275: a two-block thing (a door, a tall flower, tall grass) is its one item, whichever half: never its loot,
+			// whose roll (tall grass: a wheat seed 1 time in 8, else nothing) would make the whole thing a seed by chance
+			return new ArrayList<>(List.of(new net.minecraft.world.item.ItemStack(state.getBlock().asItem())));
+		}
+		// B1274: broken by someone (an unspawned marker where it stands): vanilla's snow loot gives nothing with no
+		// breaking entity, so 4 snow layers came back as the 1 snow of the fallback below
+		net.minecraft.world.entity.Entity breaker = net.minecraft.world.entity.EntityType.MARKER.create(level);
+		if (breaker != null) {
+			breaker.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+		}
+		List<net.minecraft.world.item.ItemStack> drops = new ArrayList<>(Block.getDrops(state, level, pos, be, breaker, silk));
 		drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
 		if (drops.isEmpty()) {
-			drops.addAll(Block.getDrops(state, level, pos, be));
+			drops.addAll(Block.getDrops(state, level, pos, be, breaker, net.minecraft.world.item.ItemStack.EMPTY));
 			drops.removeIf(net.minecraft.world.item.ItemStack::isEmpty);
 		}
 		if (drops.isEmpty() && state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
 			drops.add(new net.minecraft.world.item.ItemStack(state.getBlock().asItem()));
 		}
+		eachOfMany(level, pos, state, be, breaker, silk, drops);
 		return drops;
+	}
+
+	/** Block state properties that say how many of its item one block is (eggs, sea pickles, candles, petals, snow layers). */
+	private static final List<net.minecraft.world.level.block.state.properties.IntegerProperty> HOW_MANY = List.of(
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.EGGS,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.PICKLES,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.CANDLES,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.FLOWER_AMOUNT,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.LAYERS);
+
+	/**
+	 * B1258: a block that is several of its item (3 turtle eggs) whose loot is one per break (a player breaks a 3-egg
+	 * block three times: vanilla's turtle egg loot has no count, its playerDestroy leaves 2 eggs behind) drops all of
+	 * them: when its loot gives no more of its item for the whole block than for one, that one break's item is added for
+	 * each of the others. A block whose loot counts them already (candles, sea pickles) is left as it is.
+	 */
+	private static void eachOfMany(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity be,
+			@Nullable net.minecraft.world.entity.Entity breaker, net.minecraft.world.item.ItemStack tool,
+			List<net.minecraft.world.item.ItemStack> drops) {
+		net.minecraft.world.item.Item item = state.getBlock().asItem();
+		if (item == net.minecraft.world.item.Items.AIR) {
+			return;
+		}
+		for (net.minecraft.world.level.block.state.properties.IntegerProperty p : HOW_MANY) {
+			if (!state.hasProperty(p)) {
+				continue;
+			}
+			int min = java.util.Collections.min(p.getPossibleValues());
+			int many = state.getValue(p);
+			if (many <= min) {
+				return;
+			}
+			int whole = count(drops, item);
+			int one = count(Block.getDrops(state.setValue(p, min), level, pos, be, breaker, tool), item);
+			if (one <= 0 || whole > one) {
+				return; // its loot counts them already (or drops something else)
+			}
+			for (int k = min; k < many; k++) {
+				drops.add(new net.minecraft.world.item.ItemStack(item, one));
+			}
+			return;
+		}
+	}
+
+	private static int count(List<net.minecraft.world.item.ItemStack> stacks, net.minecraft.world.item.Item item) {
+		int n = 0;
+		for (net.minecraft.world.item.ItemStack s : stacks) {
+			if (s.is(item)) {
+				n += s.getCount();
+			}
+		}
+		return n;
+	}
+
+	/**
+	 * Whether the dropped item {@code stack} keeps items in its own data (a shulker box's container, Create's Toolbox
+	 * inventory, any mod's): those are dropped inside it, never again loose (B1261).
+	 */
+	private static boolean holdsItems(ServerLevel level, net.minecraft.world.item.ItemStack stack) {
+		net.minecraft.world.item.component.ItemContainerContents in = stack.get(net.minecraft.core.component.DataComponents.CONTAINER);
+		if (in != null && !in.equals(net.minecraft.world.item.component.ItemContainerContents.EMPTY)) {
+			return true;
+		}
+		if (stack.getComponentsPatch().isEmpty() || !(stack.save(level.registryAccess()) instanceof CompoundTag saved)
+			|| !saved.contains("components", net.minecraft.nbt.Tag.TAG_COMPOUND)) {
+			return false;
+		}
+		List<net.minecraft.world.item.ItemStack> held = new ArrayList<>();
+		itemsIn(level, saved.getCompound("components"), held);
+		return !held.isEmpty();
 	}
 
 	/**
 	 * Every item saved anywhere in {@code tag} (a compound with an item's {@code id} and a {@code count}, as an item is
 	 * saved), whatever the key or list it's under; an item's own data isn't searched further (a bundle's items stay in it).
+	 * A filter is never searched (any key naming one: Create's {@code Filter} on a chute, funnel or deployer, a Toolbox's
+	 * {@code filters}): those are ghost copies a player sets, not items anyone put in, and breaking the block drops none
+	 * (B1261).
 	 */
 	private static void itemsIn(ServerLevel level, net.minecraft.nbt.Tag tag, List<net.minecraft.world.item.ItemStack> out) {
 		if (tag instanceof CompoundTag c) {
@@ -729,13 +891,20 @@ public final class MoveSite {
 				return;
 			}
 			for (String key : io.github.jcondedata.aliveworkplace.mc.Nbt.keys(c)) {
-				itemsIn(level, c.get(key), out);
+				if (!filter(key)) {
+					itemsIn(level, c.get(key), out);
+				}
 			}
 		} else if (tag instanceof net.minecraft.nbt.ListTag list) {
 			for (net.minecraft.nbt.Tag t : list) {
 				itemsIn(level, t, out);
 			}
 		}
+	}
+
+	/** Whether the data key {@code key} names a filter (a ghost item a player sets, never one he has, B1261). */
+	private static boolean filter(String key) {
+		return key.toLowerCase(java.util.Locale.ROOT).contains("filter");
 	}
 
 	/** The item {@code tag} saves, or null when it isn't a saved item (no item id, no count). */

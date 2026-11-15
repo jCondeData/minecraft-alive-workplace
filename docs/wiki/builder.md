@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280
 
 ## 1. What a player sees
 
@@ -128,8 +128,16 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   floor and roof right round them is taken away at once, as a player scoops it with a bucket, and the water just
   beside or above that would run back in is plugged with dirt, a little dam; blocks holding water are drained and
   kept. Water a build stands in or over on purpose, open to the outside (under the Fisher's Hut's jetty, round its
-  posts), and a pool the drawing has stay. Before, CLEAR passed over water,
+  posts), and a pool the drawing has stay, also a pool in a shut room's floor (B1272: it used to make the room count
+  as open). The floor of the build's box counts as a way in only where the spot under it holds water or lets it
+  through (under a jetty's deck): over a pond's solid bed (stone, gravel, sand) a drawn pool, a drawn hole in the floor
+  or a drawn waterlogged slab leaves the room shut, and it ends dry, also when saved and loaded mid-CLEAR; over a
+  water-filled pocket in the bed the room floods (B1280, open). Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
+- A post's footing on the bed of shallow water (the Fisher's Hut's jetty posts, two blocks under its deck) is always laid:
+  when no bank or floor in reach is dry, the builder wades into the water beside it, on the bed, to lay the footing,
+  as a player would. Before, such a footing was deferred and skipped about one build in three, and the hut was called
+  done with a post that stopped short of the bed (B1257; only while laying the foundation, nothing saved).
 - Sand or gravel that falls into the rooms later (a prop under a pile broken mid-build) is dug out before the build is
   called done: once LANDSCAPE has run out, the builder goes back over CLEAR in a dig-out that takes only sand, gravel,
   concrete powder and the like standing where the drawing has air (never a block of the build, an anvil, a dragon egg or
@@ -629,6 +637,10 @@ slab-and-carpet cots) is offered the refresh to real ward beds from the drawings
 `ModdedClinicRefreshCompatTests` (B680, with the pack's building mods, through the same page): a Clinic from the modded
 library built as 0.151.0 drew it is offered the refresh, taken up from that drawing, and ends as today's modded Clinic
 with white beds where the cots were; one built from today's modded drawing is offered none.
+`QaModdedRefresh1115cCompatTests` (B680, QA): a real Builder carries the modded 0.151.0 Clinic's refresh out from the
+hall's "Refresh to the latest look" and leaves white beds on every bed spot, its modded walls kept; eight other modded
+copies redrawn since 1.0 are offered the refresh from their shipped drawing and none at today's look; a vanilla Clinic of
+0.151.0 (the same history key) is refreshed from the vanilla drawing, no modded block in its plan.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),
@@ -823,3 +835,17 @@ it and is planted; a grown bamboo stalk three tall asks three bamboo and a lone 
 items); a paid chorus stalk two tall under its flower asks three chorus flowers, no chorus plant, and stands again; a pond
 with frogspawn beside a lily pad and a spawner asks the lily pad and two water buckets, never frogspawn or a spawner, and
 is built without them; a paid frogspawn pond finishes.
+QA's `QaBuilderDrainEdges1115bGameTests` (7, B1243): a shut room with no door sunk in a pond 3 deep, a waterfall
+pouring into the box (dry 300 ticks after it is done), a water canal and a lava canal past one side (plugged only beside
+the box, kept everywhere else), a player's waterlogged slab beside the wall kept, seagrass, kelp and a bubble column in a
+sunk room gone with nothing duplicated, a hut wholly under a lake 5 deep: each ends dry and as drawn.
+`QaBuilderDrainTurned1115bGameTests` (8): a 7x4 room sunk in a lake, turned a quarter, a half, three quarters and
+mirrored, drains exactly its turned box; the same turned room saved and loaded mid-CLEAR; a repair of a hut in a pond and a
+take-down there never drain or dam the pond; sand dug out of a sunk hut adds no dam.
+`QaBuilderDrainEdges1115bBugTests` (1, B1272): a shut basin room with a one-block pool in its floor, sunk in a pond,
+ends dry with the pool still a water source, and every material adds up.
+`QaBuilderMoverVerify1115bGameTests` (6 of its 15 here, the QA lane, B1272): the sunk basin's drawn pool beside the
+walls, under a wall on the box's edge and over a gravel bed, a drawn floor hole over sand, a drawn waterlogged slab, and
+the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every material adding up.
+The bug tests QaBuilderMoverVerify1115bBugTests (1 of its 3 here, B1280, on tests/builder-mover-verify-1115b): the pool basin over a
+water-filled pocket in the pond's bed ends dry but the pool.

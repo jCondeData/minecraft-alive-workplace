@@ -275,6 +275,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaLogsSlot1115e3BugGameTests` (2, B1293): four logs of four woods, or 2 stripped oak logs and 2 dark oak wood, make a
   smoker with nothing short; a chest from 4 oak and 4 spruce planks is planned. `QaLogsSlot1115e3GameTests` (3): a
   smoker from 8 cobblestone, or a furnace, lacks exactly 4 logs of one base-game wood; with 2 oak logs the other 2.
+- `QaMixedTagSlot1115cGameTests` (7, QA past B1293): a chest from 3 oak, 3 spruce and 2 birch planks takes exactly those,
+  one fewer reads "short of 1 … Planks to make 1 Chest"; a wooden pickaxe's head and sticks share 5 mixed planks (4
+  are 1 short); an oak log tops up 2 oak and 2 spruce planks into a chest; oak stairs never take spruce planks (3 oak
+  and 6 spruce lack 3 Oak Planks); 10 chests use 80 planks of four woods; a Carpenter makes 3 tables from 5 oak, 4
+  spruce and 3 birch planks and leaves the chest's logs and cobblestone alone; one short of oak planks for oak stairs
+  names them and takes no spruce.
 - `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes

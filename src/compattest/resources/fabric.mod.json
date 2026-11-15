@@ -408,7 +408,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateForge1115eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateChain1115eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateChain1115eCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115bCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115bCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115cCompatTests"
 		]
 	},
 	"depends": {

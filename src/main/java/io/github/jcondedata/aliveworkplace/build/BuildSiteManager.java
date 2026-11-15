@@ -233,7 +233,11 @@ public final class BuildSiteManager extends SavedData {
 	 * The finished buildings in the village round {@code hall}: its claimed area (36.20's rule, {@link
 	 * io.github.jcondedata.aliveworkplace.work.Reach#claims}: the hall's radius or a painted City Plan zone), each measured
 	 * from the spot the builder's reach is ({@link Builders#spot}) or from its origin corner (B620: the lists that went by
-	 * the corner keep every building they counted). B616: the Repairs page listed only those within the
+	 * the corner keep every building they counted). B1271: the corner counts only when the middle doesn't lie nearer
+	 * another hall ({@link io.github.jcondedata.aliveworkplace.city.CityPlan#nearerAnotherHall(ServerLevel,
+	 * net.minecraft.core.BlockPos, net.minecraft.core.BlockPos)}), so a building whose middle is in a cell nearer another
+	 * hall is that village's only; the middle itself counts by Reach.claims (within the radius, or in a painted cell not
+	 * nearer another hall). B616: the Repairs page listed only those within the
 	 * radius, so a build kept up in a zone past it never showed there; B620: every village-wide list of the village's
 	 * buildings (services, beauty, rank, market, defences, …) uses this too. The hall's plan is read once and each
 	 * building's spot is remembered for a minute (B620: these lists run on the hall's rounds and villagers' looks).
@@ -244,8 +248,11 @@ public final class BuildSiteManager extends SavedData {
 			? entity.plan() : null;
 		long radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
 		for (Finished f : finishedIn(level)) {
-			// its corner (what the lists went by before B620, so nothing that counted stops counting) or its middle
-			if (claims(level, hall, plan, radius, f.placement().origin()) || claims(level, hall, plan, radius, spot(level, f))) {
+			// its middle, or its corner (what the lists went by before B620, so nothing that counted stops counting) unless
+			// its middle lies nearer another hall (B1271: then it is that village's, not this one's as well)
+			net.minecraft.core.BlockPos middle = spot(level, f);
+			if (claims(level, hall, plan, radius, middle) || claims(level, hall, plan, radius, f.placement().origin())
+					&& !io.github.jcondedata.aliveworkplace.city.CityPlan.nearerAnotherHall(level, hall, middle)) {
 				out.add(f);
 			}
 		}

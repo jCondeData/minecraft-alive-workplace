@@ -136,3 +136,7 @@ Stained Glass".
 
 `QaCreateGlassLoop1114eBugCompatTests` and `QaGlassCreate1114cBugCompatTests` (B1255, B1254, the compat suite with
 Create): 6 sand and a coal make 16 panes on that one coal, 4 panes too, and with no sand the line names the 6 sand.
+`QaGlassLoopEdges1115cCompatTests` (7, QA, B1254, B1255, with Create): 5 sand and a coal for 16 panes read "short of
+1 Sand", 6 sand and no fuel "short of 1 Coal"; 12 sand and 2 coal make 32 panes burning both, 12 sand and 1 coal are a
+coal short; the builder's sand with the coal in the Glassblower's own chest make 16 panes; red stained panes from sand, a
+coal and a red dye; and 8 of Create's Tiled Glass Panes on hand are fired into 8 panes on one coal.

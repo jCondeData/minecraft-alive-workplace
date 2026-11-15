@@ -633,6 +633,10 @@ slab-and-carpet cots) is offered the refresh to real ward beds from the drawings
 `ModdedClinicRefreshCompatTests` (B680, with the pack's building mods, through the same page): a Clinic from the modded
 library built as 0.151.0 drew it is offered the refresh, taken up from that drawing, and ends as today's modded Clinic
 with white beds where the cots were; one built from today's modded drawing is offered none.
+`QaModdedRefresh1115cCompatTests` (B680, QA): a real Builder carries the modded 0.151.0 Clinic's refresh out from the
+hall's "Refresh to the latest look" and leaves white beds on every bed spot, its modded walls kept; eight other modded
+copies redrawn since 1.0 are offered the refresh from their shipped drawing and none at today's look; a vanilla Clinic of
+0.151.0 (the same history key) is refreshed from the vanilla drawing, no modded block in its plan.
 
 Compat tests (QA, lane E, from "Builders never copy what is inside containers"): `QaPastureCopyCompatTests` (a scanned
 Cobblemon Pasture Block with a Machop let out in it is built holding no Pokémon and lets out no second Machop),

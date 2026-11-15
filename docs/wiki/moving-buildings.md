@@ -320,10 +320,14 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   workstation and would never move by itself. A block that is several of its item drops all of them: 3 turtle eggs in
   one block are 3 eggs, though vanilla's turtle egg loot gives one per break (a player breaks that block three times;
   `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
-  than for one, so candles and sea pickles, whose loot counts them, are left as they drop: B1258). A two-block thing
+  than for one, so candles, sea pickles and pink petals, whose loot counts them, are left as they drop, never doubled:
+  B1258). Snow layers don't yet: vanilla's snow loot asks for a breaking entity, so 4 layers drop as 1 snow, 3 lost
+  (`QaMoverCrateFixes1115cBugTests`, not fixed yet). A two-block thing
   (a door, a tall flower, a bed) with one half on the crate drops once, as the whole thing's one item, and its other
   half is never put up alone, or is taken away again with no drop if it went up first (`MoveSite.otherHalfGone`,
-  B1260: the door's upper half stood alone over the crate, the bed's foot beside it).
+  B1260: the door's upper half stood alone over the crate, the bed's foot beside it). Tall grass is the exception: with
+  its upper half on the crate it is its loot as broken, so about 1 time in 4 it comes back as a wheat seed, not tall
+  grass (`QaMoverCrateFixes1115cBugTests`, not fixed yet).
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -416,6 +420,12 @@ told once); two Movers where one loses his crate (he waits and says why, the oth
 confirmer told "stands at its new spot: 175 blocks moved" once); a chest and a barrel both holding bread and coal,
 changed after the plan, each arriving slot for slot with its own through a restart every 3 swings; a wall block broken,
 then called off half way down (everything else back, its spot empty, only that plank lying there).
+`QaMoverCrateFixes1115cGameTests` (9, the QA lane, B1258, B1260, B1262): every count of turtle eggs, sea pickles (dry
+and waterlogged), candles (plain and lit red) and pink petals drops exactly that many, none doubled; 2 turtle eggs on
+the crate are 2 eggs; a door's upper half, a bed's foot (the site saved and read back every step), a rose bush's lower
+half and a sunflower's upper half on the crate each drop one item with no half left standing; in a storage room (the
+last resort) a beehive keeps its 3 bees and honey level 5, a chest named "Pantry" keeps its name and exactly its 12
+bread, 64 emeralds and 3 ender pearls, and a decorated pot exactly its 40 gold.
 `MoverFurnitureCompatTests` (1, compat suite): CobbleFurnies' chair, table and cabinet, Handcrafted's cupboard, shelf
 and side table, and a Sophisticated Storage chest and barrel (100 iron, 70 emeralds), filled through `ItemStores`,
 moved through a reload half way down: block for block, each store with exactly its items, nothing loose.

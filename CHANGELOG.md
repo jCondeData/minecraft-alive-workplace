@@ -20,6 +20,8 @@ asks for the steps, `latest.log` and any crash report).
 - A block whose new spot is a Mover's Crate in a full storage room is dropped with exactly what was packed: a beehive
   keeps its bees (B1262), a Create Toolbox drops with its own items once instead of one extra, and a Create chute, funnel
   or deployer set to a filter no longer drops that filter item from nothing (B1261).
+- A block of several turtle eggs whose new spot is a Mover's Crate drops every egg, not one (B1258), and a door or bed
+  with one half on the crate drops as one item with no half left standing alone (B1260).
 
 ## 0.155.2 — 2026-11-14
 

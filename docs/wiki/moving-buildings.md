@@ -317,7 +317,13 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   bookshelf, an ender chest, the wall's plank that lands there) drops as itself the same way at that open spot, worked
   out without being placed, so ice leaves no water (B1253: nothing packed is lost; a wall's block counts too, since the
   crate never moves and nobody would ever put that block back). A waiting step was ruled out because the crate is the Mover's
-  workstation and would never move by itself.
+  workstation and would never move by itself. A block that is several of its item drops all of them: 3 turtle eggs in
+  one block are 3 eggs, though vanilla's turtle egg loot gives one per break (a player breaks that block three times;
+  `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
+  than for one, so candles and sea pickles, whose loot counts them, are left as they drop: B1258). A two-block thing
+  (a door, a tall flower, a bed) with one half on the crate drops once, as the whole thing's one item, and its other
+  half is never put up alone, or is taken away again with no drop if it went up first (`MoveSite.otherHalfGone`,
+  B1260: the door's upper half stood alone over the crate, the bed's foot beside it).
 - Residents keep their own beds and workstations (45.4): each is held for them the moment it's put up, never left
   free for a neighbor to claim first. During the move they sleep at the inn, else by the hall (the spec's "the Hall or
   the inn": the Village Hall has no beds of its own, so "the Hall" is the free bed nearest it).
@@ -523,14 +529,13 @@ nothing is planned, and once the building stands again Confirm takes the spot an
 its honey, a soul campfire and its four foods drop once each (also with the site reloaded before every step), a
 chiseled bookshelf with six books, a shulker box and a brewing stand in a storage room keep everything exactly once,
 lava and fire on the crate are never borrowed (the lava is still a source), and packed ice, blue ice, tinted glass, a
-glass pane and a sea lantern drop as themselves once, never their bare-hand loot. `QaMoveSpotQa1114c4GameTests` (2,
+glass pane and a sea lantern drop as themselves once, never their bare-hand loot. `QaMoverCrateQa1114c4BugGameTests` (2, B1260): a crimson door
+whose lower half and a cyan bed whose head land on the crate each drop as one item, no half left standing.
+`QaMoverCrateDrops1114gBugTests` (B1258): 3 turtle eggs in one block on the crate drop as 3 eggs. `QaMoveSpotQa1114c4GameTests` (2,
 B1230): a hut sharing only one corner block of a called-off move's spot is refused word for word during the take-down,
 also over two reloads, and the spot is taken once the building is back.
 
 ## Known limits
-
-- A door or bed with one half on a Mover's Crate drops as one item, but its other half is still put up alone (B1260,
-  open).
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
 

@@ -534,6 +534,9 @@ public final class MoveSite {
 				dropPacked(level, j, at, st);
 				where[j] = LOST;
 				skipped++;
+				// B1260: a door's or bed's other half never stands alone: the half on the crate dropped the whole door or
+				// bed as one item, so the other half isn't put up (or is taken away again if it went up first), never dropped
+				otherHalfGone(level, j, at, st, now);
 				continue;
 			}
 			if (!there.isAir() && !there.canBeReplaced()) {
@@ -561,6 +564,49 @@ public final class MoveSite {
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}
+	}
+
+	/**
+	 * B1260: block {@code j} of a two-block thing (a door, a tall flower, a bed) was dropped by a Mover's Crate at
+	 * {@code at} as the whole thing's one item, so its other half (packed, or already put up) is gone too: never put up
+	 * alone, and taken away without a drop if it stands already. A block that isn't half of anything is left alone.
+	 */
+	private void otherHalfGone(ServerLevel level, int j, BlockPos at, BlockState st, byte now) {
+		BlockPos other = otherHalf(st, at);
+		if (other == null) {
+			return;
+		}
+		for (int k = 0; k < where.length; k++) {
+			if (k == j || (where[k] != PACKED && where[k] != now)) {
+				continue;
+			}
+			BlockPos pos = now == NEW ? newPos(k) : oldPos(k);
+			BlockState half = now == NEW ? newState(k) : plan.blocks().get(k).state();
+			if (!pos.equals(other) || !half.is(st.getBlock()) || !at.equals(otherHalf(half, pos))) {
+				continue;
+			}
+			if (where[k] == now && level.getBlockState(pos).is(st.getBlock())) {
+				// put up first: taken away again without a drop (the half on the crate already dropped the whole thing)
+				level.setBlock(pos, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			}
+			where[k] = LOST; // not counted again in skipped: the door or bed is one thing skipped, dropped as one item
+			return;
+		}
+	}
+
+	/** Where the other half of the two-block thing {@code state} at {@code pos} stands (a door's, a bed's), or null. */
+	@Nullable
+	private static BlockPos otherHalf(BlockState state, BlockPos pos) {
+		if (state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+			return state.getValue(net.minecraft.world.level.block.state.properties.BlockStateProperties.DOUBLE_BLOCK_HALF)
+				== net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER ? pos.above() : pos.below();
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.BedBlock
+			&& state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.BED_PART)
+			&& state.hasProperty(net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING)) {
+			return pos.relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(state));
+		}
+		return null;
 	}
 
 	/**
@@ -715,7 +761,59 @@ public final class MoveSite {
 		if (drops.isEmpty() && state.getBlock().asItem() != net.minecraft.world.item.Items.AIR) {
 			drops.add(new net.minecraft.world.item.ItemStack(state.getBlock().asItem()));
 		}
+		eachOfMany(level, pos, state, be, silk, drops);
 		return drops;
+	}
+
+	/** Block state properties that say how many of its item one block is (eggs, sea pickles, candles, petals, snow layers). */
+	private static final List<net.minecraft.world.level.block.state.properties.IntegerProperty> HOW_MANY = List.of(
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.EGGS,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.PICKLES,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.CANDLES,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.FLOWER_AMOUNT,
+		net.minecraft.world.level.block.state.properties.BlockStateProperties.LAYERS);
+
+	/**
+	 * B1258: a block that is several of its item (3 turtle eggs) whose loot is one per break (a player breaks a 3-egg
+	 * block three times: vanilla's turtle egg loot has no count, its playerDestroy leaves 2 eggs behind) drops all of
+	 * them: when its loot gives no more of its item for the whole block than for one, that one break's item is added for
+	 * each of the others. A block whose loot counts them already (candles, sea pickles) is left as it is.
+	 */
+	private static void eachOfMany(ServerLevel level, BlockPos pos, BlockState state, @Nullable BlockEntity be,
+			net.minecraft.world.item.ItemStack tool, List<net.minecraft.world.item.ItemStack> drops) {
+		net.minecraft.world.item.Item item = state.getBlock().asItem();
+		if (item == net.minecraft.world.item.Items.AIR) {
+			return;
+		}
+		for (net.minecraft.world.level.block.state.properties.IntegerProperty p : HOW_MANY) {
+			if (!state.hasProperty(p)) {
+				continue;
+			}
+			int min = java.util.Collections.min(p.getPossibleValues());
+			int many = state.getValue(p);
+			if (many <= min) {
+				return;
+			}
+			int whole = count(drops, item);
+			int one = count(Block.getDrops(state.setValue(p, min), level, pos, be, null, tool), item);
+			if (one <= 0 || whole > one) {
+				return; // its loot counts them already (or drops something else)
+			}
+			for (int k = min; k < many; k++) {
+				drops.add(new net.minecraft.world.item.ItemStack(item, one));
+			}
+			return;
+		}
+	}
+
+	private static int count(List<net.minecraft.world.item.ItemStack> stacks, net.minecraft.world.item.Item item) {
+		int n = 0;
+		for (net.minecraft.world.item.ItemStack s : stacks) {
+			if (s.is(item)) {
+				n += s.getCount();
+			}
+		}
+		return n;
 	}
 
 	/**

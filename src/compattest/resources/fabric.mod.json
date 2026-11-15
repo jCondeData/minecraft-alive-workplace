@@ -365,6 +365,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycare1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareFallbacks1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareFallbacks1115dBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycareNoRoom1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCup1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCupWatchBoard1115d2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonListEdges1109eCompatTests",

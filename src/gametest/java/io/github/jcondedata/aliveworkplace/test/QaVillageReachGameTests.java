@@ -267,6 +267,20 @@ public class QaVillageReachGameTests {
 		int cell = CityPlan.cellAt(hall, corner);
 		helper.assertTrue(cell >= 0, "the corner isn't on the plan's grid");
 		cells.set(cell);
+		// B805: a painted cell whose middle is nearer another hall is that hall's village's, not this one's. The corner cell
+		// is 79 blocks out, and halls earlier batches' tests left standing (GameTest never clears a passed test's area) can
+		// be nearer it than this test's own; this test runs in its own batch, so every other hall there is a finished test's.
+		BlockPos centre = CityPlan.cellCentre(hall, cell);
+		net.minecraft.world.entity.ai.village.poi.PoiManager pois = level.getPoiManager();
+		pois.findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> !p.equals(hall), centre, (int) Math.ceil(Math.sqrt(centre.distSqr(hall))) + 1,
+				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.toList().forEach(other -> {
+				level.setBlockAndUpdate(other, Blocks.AIR.defaultBlockState());
+				if (pois.getType(other).isPresent()) {
+					pois.remove(other);
+				}
+			});
+		VillageHalls.forgetNearest();
 		entity.setPlan(CityPlan.EMPTY.addZone("homes", "Homes 1", "").paint(0, cells));
 		taken(helper, kit, seen, corner.subtract(work), "a spot in a zone painted past the hall's radius");
 		entity.setPlan(CityPlan.EMPTY);

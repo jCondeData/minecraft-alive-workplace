@@ -16,6 +16,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWadeIn1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverGaps1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVillageMoverFixes1115c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWaterVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrops1114gGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrops1114gBugTests",

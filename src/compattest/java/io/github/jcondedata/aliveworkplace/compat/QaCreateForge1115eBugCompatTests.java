@@ -47,6 +47,11 @@ public class QaCreateForge1115eBugCompatTests implements FabricGameTest {
 		check(wrong, "a copper block from nothing", Crafting.lacking(level, kind, Items.COPPER_BLOCK, 1, Map.of()), Map.of(Items.RAW_COPPER, 9));
 		check(wrong, "a gold pressure plate from nothing", Crafting.lacking(level, kind, Items.LIGHT_WEIGHTED_PRESSURE_PLATE, 1, Map.of()),
 			Map.of(Items.RAW_GOLD, 2));
+		// a lantern: the plain suite's forge goes down to {raw_iron=1, charcoal=1, bamboo=2}; it must reach the raw iron here too
+		Map<Item, Integer> lantern = Crafting.lacking(level, kind, Items.LANTERN, 1, Map.of());
+		if (!lantern.containsKey(Items.RAW_IRON) || lantern.containsKey(Items.IRON_NUGGET)) {
+			wrong.put("a lantern from nothing", "lacks " + lantern + ", expected the raw iron named (the plain suite: {raw_iron=1, charcoal=1, bamboo=2})");
+		}
 		helper.assertTrue(wrong.isEmpty(), "the forge names the wrong thing short: " + wrong);
 		helper.succeed();
 	}

@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A build with its own pool in the floor, built sunk in a pond, now ends with its room dry and the pool full; before,
+  the pool made the builder think the room was open to the pond, and it stayed flooded (B1272).
 - With Create loaded, a builder waiting on a Tinkerer names the raw metal you mine: "short of 6 Raw Iron to make 16
   Iron Bars", not Create's Crushed Raw Iron or Cobblemon's plaques (B1267), and chains short name the Raw Iron instead
   of showing no line at all (B1268).

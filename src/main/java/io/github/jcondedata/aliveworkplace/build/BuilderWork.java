@@ -2428,7 +2428,10 @@ public class BuilderWork extends Behavior<Villager> {
 				continue;
 			}
 			for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
-				if (!box.contains(p.relative(d))) {
+				// B1272: not through the bottom face: water never rises, so what is under the box (the ground clicked,
+				// or a pond's bed) can't flood a room. A spot of the floor that shuts nothing (the drawing's own pool, a
+				// carpet, a pressure plate) made the whole room count as open, and nothing was drained
+				if (d != net.minecraft.core.Direction.DOWN && !box.contains(p.relative(d))) {
 					if (outside.add(p)) {
 						open.add(p);
 					}

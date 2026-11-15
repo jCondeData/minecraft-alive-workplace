@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1293
 
 ## 1. What a player sees
 
@@ -96,6 +96,9 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 - plans with `Crafting.chain(level, kind, ...)`: its own recipes (the crafting table's; the stonecutter's, and the
   kiln's with a furnace by it, for the Mason; the blast furnace's for the Tinkerer; CobbleFurnies' Furni Crafter's files
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
+- fills a slot that takes any of a tag (planks, logs) from any mix of it, as a crafting table does (B1293): one kind
+  when one has enough, else what's there of them all, the best-stocked first, and only the rest made from further down;
+  when the crafts' mix differs from one to the next, the recipe is several steps, each saying what one craft takes;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`: of several recipes for one thing, the
   one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; on a tie the recipe from the item's own mod, by `Crafting.fromOwnMod`, tried first too, B1267; a plan for real gives up at once on what nothing in the chests leads to, `Crafting.reachable`, so the pack's many recipes don't use up the tick's planning before the line is said, B1268; or the Furnicrafter's own; the Mason's
@@ -256,6 +259,13 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and bookshelves with no leather name Leather.
 - `QaCreateZinc1115e2BugCompatTests` (2, B1279 with Create): 3 zinc ingots from nothing lack 3 Raw Zinc and a zinc block 9;
   a builder short of 2 Blocks of Zinc reads Raw Zinc, never Crushed, and the Tinkerer takes nothing.
+- `MixedTagSlotGameTests` (5, B1293): a chest from 4 oak and 4 spruce planks and a smoker from four woods' logs are
+  planned taking exactly those, every step's makings in hand when it comes; 3 crafting tables from 6 oak and 6 spruce
+  planks use every plank; one oak and one spruce log lack 2 logs of a smoker's 4, 3 oak and 2 spruce planks 3 of a
+  chest's 8; a Carpenter makes the 3 tables from a chest of mixed planks, the row is built and no plank is left.
+- `QaLogsSlot1115e3BugGameTests` (2, B1293): four logs of four woods, or 2 stripped oak logs and 2 dark oak wood, make a
+  smoker with nothing short; a chest from 4 oak and 4 spruce planks is planned. `QaLogsSlot1115e3GameTests` (3): a
+  smoker from 8 cobblestone, or a furnace, lacks exactly 4 logs of one base-game wood; with 2 oak logs the other 2.
 - `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
 - `QaShortageGathers1115fGameTests` (8, QA past B1273/B1277/B1278/B1279): a book from 3 paper lacks 1 Leather, with 1

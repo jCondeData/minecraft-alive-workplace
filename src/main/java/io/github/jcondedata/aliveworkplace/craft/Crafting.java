@@ -436,13 +436,13 @@ public final class Crafting {
 				}
 				Pool trial = pool.copy();
 				List<Step> trialSteps = new ArrayList<>();
-				Map<Item, Integer> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
+				List<Crafts> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
 				if (in == null) {
 					continue;
 				}
 				pool.set(trial);
 				steps.addAll(trialSteps);
-				steps.add(new Step(in, new ItemStack(target, recipe.count()), times));
+				steps.addAll(steps(in, new ItemStack(target, recipe.count())));
 				pool.addMade(target, (long) recipe.count() * times);
 				return true;
 			}
@@ -459,7 +459,7 @@ public final class Crafting {
 		boolean lenient = pool.budget.lenient;
 		Pool best = null;
 		List<Step> bestSteps = null;
-		Step bestStep = null;
+		List<Step> bestStep = null;
 		long bestMade = 0;
 		int bestRank = -1;
 		List<RecipeHolder<?>> ways = recipesFor(level, kind, target);
@@ -506,15 +506,15 @@ public final class Crafting {
 			// B1255: a way that loops back is only taken from what's to hand (Create's Tiled Glass Panes in the chest), never
 			// by making its makings from what the other ways use (the glass of the plain panes): that's the long way round
 			int down = loops(level, holder) ? 0 : depth;
-			Map<Item, Integer> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, down, allowed);
+			List<Crafts> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, down, allowed);
 			if (in == null) {
 				continue;
 			}
-			Step step = new Step(in, out.copy(), times);
+			List<Step> step = steps(in, out);
 			if (!lenient) {
 				pool.set(trial);
 				steps.addAll(trialSteps);
-				steps.add(step);
+				steps.addAll(step);
 				pool.addMade(target, (long) out.getCount() * times);
 				return true;
 			}
@@ -550,7 +550,7 @@ public final class Crafting {
 		if (best != null) {
 			pool.set(best);
 			steps.addAll(bestSteps);
-			steps.add(bestStep);
+			steps.addAll(bestStep);
 			pool.addMade(target, bestMade);
 			return true;
 		}
@@ -762,13 +762,13 @@ public final class Crafting {
 			recipe.materials().forEach((item, n) -> slots.add(new Slot(List.of(item), n, true, false)));
 			Pool trial = pool.copy();
 			List<Step> trialSteps = new ArrayList<>();
-			Map<Item, Integer> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
+			List<Crafts> in = pick(level, kind, slots, times, trial, trialSteps, depth, allowed);
 			if (in == null) {
 				continue;
 			}
 			pool.set(trial);
 			steps.addAll(trialSteps);
-			steps.add(new Step(in, recipe.result().copy(), times));
+			steps.addAll(steps(in, recipe.result()));
 			pool.addMade(target, (long) each * times);
 			return true;
 		}
@@ -780,7 +780,7 @@ public final class Crafting {
 	 * and uses them up; returns how many of each one craft takes, or null if something is short.
 	 */
 	@Nullable
-	private static Map<Item, Integer> choose(ServerLevel level, Kind kind, List<Ingredient> ingredients, int times, Pool pool, List<Step> steps, int depth,
+	private static List<Crafts> choose(ServerLevel level, Kind kind, List<Ingredient> ingredients, int times, Pool pool, List<Step> steps, int depth,
 			Predicate<LuxuryRecipes.Recipe> allowed) {
 		// The same ingredient in several slots (six planks for stairs) is needed that many times over.
 		Map<List<Item>, Integer> slots = new LinkedHashMap<>();
@@ -806,16 +806,28 @@ public final class Crafting {
 	private record Slot(List<Item> options, int count, boolean makeable, boolean mix) {
 	}
 
+	/** {@code times} crafts that each take {@code in}: one step of a recipe. */
+	private record Crafts(Map<Item, Integer> in, int times) {
+	}
+
+	/** The steps that make {@code crafts} of a recipe making {@code out} a craft. */
+	private static List<Step> steps(List<Crafts> crafts, ItemStack out) {
+		List<Step> list = new ArrayList<>();
+		for (Crafts c : crafts) {
+			list.add(new Step(c.in(), out.copy(), c.times()));
+		}
+		return list;
+	}
+
 	/**
 	 * A mixed slot: every craft takes the same mix (so a step still says what one craft takes), the best-stocked options
 	 * first; what's still short is made from further down, as one of the options. False if it can't be filled.
 	 */
 	private static boolean pickMix(ServerLevel level, Kind kind, Slot slot, int times, Pool pool, List<Step> steps, int depth,
 			Predicate<LuxuryRecipes.Recipe> allowed, Map<Item, Integer> perCraft) {
-		List<Item> options = new ArrayList<>(slot.options());
+		List<Item> options = byStock(slot.options(), pool);
 		Map<Item, Long> stock = new HashMap<>();
 		options.forEach(o -> stock.put(o, pool.have(o)));
-		options.sort((a, b) -> Long.compare(stock.get(b), stock.get(a))); // a stable sort: ties stay in the tag's order
 		int left = slot.count();
 		for (Item option : options) {
 			int each = (int) Math.min(left, stock.get(option) / times);
@@ -841,22 +853,78 @@ public final class Crafting {
 		return false;
 	}
 
-	/** Picks an item for each slot made {@code times} times (from the pool, or made from further down) and uses them up. */
+	/** A slot's options, the best-stocked first (a stable sort: ties stay in the tag's order). */
+	private static List<Item> byStock(List<Item> options, Pool pool) {
+		List<Item> sorted = new ArrayList<>(options);
+		Map<Item, Long> stock = new HashMap<>();
+		sorted.forEach(o -> stock.put(o, pool.have(o)));
+		sorted.sort((a, b) -> Long.compare(stock.get(b), stock.get(a)));
+		return sorted;
+	}
+
+	/**
+	 * B1293: a slot that takes any of its options takes any mix of them, as a crafting table does (a chest from 4 oak and
+	 * 4 spruce planks, a smoker from four logs of four woods): uses up to {@code need} of what the pool has of them, the
+	 * best-stocked first, and returns the items used in order (the crafts take them one after another), or empty if the
+	 * pool has none.
+	 */
+	private static List<Map.Entry<Item, Long>> useMix(List<Item> options, long need, Pool pool) {
+		List<Map.Entry<Item, Long>> used = new ArrayList<>();
+		long left = need;
+		for (Item option : byStock(options, pool)) {
+			long n = Math.min(left, pool.have(option));
+			if (n <= 0) {
+				break; // sorted: the rest have none either
+			}
+			pool.use(option, n);
+			used.add(Map.entry(option, n));
+			left -= n;
+			if (left == 0) {
+				break;
+			}
+		}
+		return used;
+	}
+
+	/** How many of {@code options} the pool has in all. */
+	private static long haveAny(List<Item> options, Pool pool) {
+		long n = 0;
+		for (Item option : options) {
+			n += Math.max(0, pool.have(option));
+		}
+		return n;
+	}
+
+	/**
+	 * Picks items for each slot made {@code times} times (from the pool, or made from further down) and uses them up; the
+	 * crafts that take them (one step, or a few when a slot's mix differs from one craft to the next), or null.
+	 */
 	@Nullable
-	private static Map<Item, Integer> pick(ServerLevel level, Kind kind, List<Slot> slots, int times, Pool pool, List<Step> steps, int depth,
+	private static List<Crafts> pick(ServerLevel level, Kind kind, List<Slot> slots, int times, Pool pool, List<Step> steps, int depth,
 			Predicate<LuxuryRecipes.Recipe> allowed) {
 		if (slots.isEmpty()) {
 			return null;
 		}
-		Map<Item, Integer> perCraft = new LinkedHashMap<>();
+		// each slot's items, in the order the crafts take them, count() a craft
+		List<List<Map.Entry<Item, Long>>> taken = new ArrayList<>();
+		List<Integer> counts = new ArrayList<>();
 		for (Slot slot : slots) {
 			if (slot.mix()) {
-				if (!pickMix(level, kind, slot, times, pool, steps, depth, allowed, perCraft)) {
+				Map<Item, Integer> each = new LinkedHashMap<>();
+				if (!pickMix(level, kind, slot, times, pool, steps, depth, allowed, each)) {
 					return null;
 				}
+				// the same mix every craft: craft by craft
+				List<Map.Entry<Item, Long>> seq = new ArrayList<>();
+				for (int k = 0; k < times; k++) {
+					each.forEach((item, n) -> seq.add(Map.entry(item, (long) n)));
+				}
+				taken.add(seq);
+				counts.add(each.values().stream().mapToInt(Integer::intValue).sum());
 				continue;
 			}
 			long need = (long) slot.count() * times;
+			counts.add(slot.count());
 			Item pick = null;
 			long best = 0;
 			for (Item option : slot.options()) {
@@ -866,7 +934,36 @@ public final class Crafting {
 					best = have;
 				}
 			}
-			if (pick == null && depth > 0 && slot.makeable() && !(!slot.options().isEmpty() && slot.options().stream().allMatch(pool.budget.raw))) {
+			if (pick == null && slot.options().size() > 1 && haveAny(slot.options(), pool) >= need) {
+				taken.add(useMix(slot.options(), need, pool)); // B1293: a mix of what's there
+				continue;
+			}
+			boolean makeable = depth > 0 && slot.makeable() && !(!slot.options().isEmpty() && slot.options().stream().allMatch(pool.budget.raw));
+			if (pick == null && makeable && slot.options().size() > 1 && haveAny(slot.options(), pool) > 0) {
+				// B1293: what's there of the options, and only the rest made from further down (made for real, even while
+				// planning what's short: else the rest is what's short, below)
+				Pool trial = pool.copy();
+				List<Step> trialSteps = new ArrayList<>();
+				List<Map.Entry<Item, Long>> used = new ArrayList<>(useMix(slot.options(), need, trial));
+				long rest = need - used.stream().mapToLong(Map.Entry::getValue).sum();
+				boolean lenient = pool.budget.lenient;
+				pool.budget.lenient = false;
+				Item made;
+				try {
+					made = makeOne(level, kind, slot, rest, trial, trialSteps, depth, allowed);
+				} finally {
+					pool.budget.lenient = lenient;
+				}
+				if (made != null && trial.have(made) >= rest) {
+					trial.use(made, rest);
+					used.add(Map.entry(made, rest));
+					pool.set(trial);
+					steps.addAll(trialSteps);
+					taken.add(used);
+					continue;
+				}
+			}
+			if (pick == null && makeable) {
 				pick = makeOne(level, kind, slot, need, pool, steps, depth, allowed);
 			}
 			if (pick == null || pool.have(pick) < need) {
@@ -880,13 +977,58 @@ public final class Crafting {
 					List<Item> ordered = vanillaFirst(slot.options());
 					pick = slot.options().stream().filter(o -> pool.chest(o) > 0).findFirst()
 						.orElseGet(() -> ordered.stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(ordered.get(0)));
+					// B1293: what's there of the other options counts too (one oak and one spruce log: 2 short of 4, not 3)
+					List<Map.Entry<Item, Long>> used = new ArrayList<>(useMix(slot.options(), need, pool));
+					long rest = need - used.stream().mapToLong(Map.Entry::getValue).sum();
+					long had = Math.max(0, pool.have(pick));
+					pool.lacks.merge(pick, rest - had, Long::sum);
+					pool.use(pick, rest);
+					used.add(Map.entry(pick, rest));
+					taken.add(used);
+					continue;
 				}
 				pool.lacks.merge(pick, need - Math.max(0, pool.have(pick)), Long::sum);
 			}
 			pool.use(pick, need);
-			perCraft.merge(pick, slot.count(), Integer::sum);
+			taken.add(List.of(Map.entry(pick, need)));
 		}
-		return perCraft.isEmpty() ? null : perCraft;
+		return crafts(taken, counts, times);
+	}
+
+	/**
+	 * The crafts that take each slot's items in order, {@code counts} of each slot a craft: craft by craft, with the crafts
+	 * in a row that take the same things made one step.
+	 */
+	@Nullable
+	private static List<Crafts> crafts(List<List<Map.Entry<Item, Long>>> taken, List<Integer> counts, int times) {
+		List<Crafts> out = new ArrayList<>();
+		int[] at = new int[taken.size()];
+		long[] used = new long[taken.size()];
+		for (int k = 0; k < times; k++) {
+			Map<Item, Integer> in = new LinkedHashMap<>();
+			for (int s = 0; s < taken.size(); s++) {
+				List<Map.Entry<Item, Long>> seq = taken.get(s);
+				int left = counts.get(s);
+				while (left > 0 && at[s] < seq.size()) {
+					Map.Entry<Item, Long> e = seq.get(at[s]);
+					int n = (int) Math.min(left, e.getValue() - used[s]);
+					in.merge(e.getKey(), n, Integer::sum);
+					left -= n;
+					used[s] += n;
+					if (used[s] == e.getValue()) {
+						at[s]++;
+						used[s] = 0;
+					}
+				}
+			}
+			Crafts last = out.isEmpty() ? null : out.get(out.size() - 1);
+			if (last != null && last.in().equals(in)) {
+				out.set(out.size() - 1, new Crafts(last.in(), last.times() + 1));
+			} else {
+				out.add(new Crafts(in, 1));
+			}
+		}
+		return out.isEmpty() || out.get(0).in().isEmpty() ? null : out;
 	}
 
 	/**

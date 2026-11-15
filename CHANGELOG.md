@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Crafting jobs take any mix of a kind for a recipe that takes any of it, as a crafting table does: a chest from 4 oak
+  and 4 spruce planks, or a smoker from four different woods' logs, is made instead of the builder reading "short of 3
+  Oak Logs". When something is really short, the line counts every wood that's there (B1293).
 - A Mover's Crate under 8 snow layers gives back 8 snow, not a snow block and 7 snow, and a fully grown pitcher crop on
   one gives back a Pitcher Plant, not its pod. A Builder's sunk room with a pool in its floor ends dry over a
   water-filled hole in the pond's bed too (it used to flood).

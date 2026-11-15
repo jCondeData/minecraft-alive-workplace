@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280
 
 ## 1. What a player sees
 
@@ -129,7 +129,10 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   beside or above that would run back in is plugged with dirt, a little dam; blocks holding water are drained and
   kept. Water a build stands in or over on purpose, open to the outside (under the Fisher's Hut's jetty, round its
   posts), and a pool the drawing has stay, also a pool in a shut room's floor (B1272: it used to make the room count
-  as open; nothing under the build counts as a way in now, as water never rises). Before, CLEAR passed over water,
+  as open). The floor of the build's box counts as a way in only where the spot under it holds water or lets it
+  through (under a jetty's deck): over a pond's solid bed (stone, gravel, sand) a drawn pool, a drawn hole in the floor
+  or a drawn waterlogged slab leaves the room shut, and it ends dry, also when saved and loaded mid-CLEAR; over a
+  water-filled pocket in the bed the room floods (B1280, open). Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
 - A post's footing on the bed of shallow water (the Fisher's Hut's jetty posts, two blocks under its deck) is always laid:
   when no bank or floor in reach is dry, the builder wades into the water beside it, on the bed, to lay the footing,
@@ -841,3 +844,8 @@ mirrored, drains exactly its turned box; the same turned room saved and loaded m
 take-down there never drain or dam the pond; sand dug out of a sunk hut adds no dam.
 `QaBuilderDrainEdges1115bBugTests` (1, B1272): a shut basin room with a one-block pool in its floor, sunk in a pond,
 ends dry with the pool still a water source, and every material adds up.
+`QaBuilderMoverVerify1115bGameTests` (6 of its 15 here, the QA lane, B1272): the sunk basin's drawn pool beside the
+walls, under a wall on the box's edge and over a gravel bed, a drawn floor hole over sand, a drawn waterlogged slab, and
+the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every material adding up.
+The bug tests QaBuilderMoverVerify1115bBugTests (1 of its 3 here, B1280, on tests/builder-mover-verify-1115b): the pool basin over a
+water-filled pocket in the pond's bed ends dry but the pool.

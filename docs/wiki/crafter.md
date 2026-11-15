@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279
 
 ## 1. What a player sees
 
@@ -73,7 +73,13 @@ only when that uses something that's there (planks still to be sawn from the log
 Silk Touch; gold and copper read the same (B489). With Create (or Cobblemon) loaded it still names the raw metal a player
 mines: never Create's Crushed Raw Iron, which only a crushing wheel makes, nor Cobblemon's plaques melted into nuggets
 (B1267); and 4 chains short read "Raw Iron", never Create's Zinc (B1268). Of two ways that fit as well, the one from the
-thing's own mod comes first (iron ingots, chains and bread by Minecraft's own recipes).
+thing's own mod comes first (iron ingots, chains and bread by Minecraft's own recipes); of Create's two ways to its zinc,
+the one short of the Raw Zinc a player mines, never the Crushed Raw Zinc (B1279). With nothing there that leads to it, an
+ingredient is itself what's short when its only ways are another mod's (a sticky piston names the Slimeball, never Create's
+Dough and Wheat Flour, B1277), pack several of one thing into one (a book or bookshelves with no leather at all name
+Leather, not Rabbit Hide; with some hide there it still names the rest of the hide, B1278) or need an ore (a piston names
+Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
+sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -242,6 +248,16 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   Flour), a book, an item frame and chains at the table or forge name no Create item; Crushed Raw Iron or zinc ingots
   and nuggets the chests hold are used (nothing short, and the forge has a plan), and from nothing there is no plan;
   3 zinc ingots from 1 raw zinc lack 2 Raw Zinc.
+- `ShortLineGatheredGameTests` (5, B1278, B1277): with no leather a book and an item frame lack 1 Leather and a Librarian's
+  three bookshelves read "short of 9 Leather"; with 2 rabbit hides a book lacks the 2 more hides; leather asked for itself
+  still lacks 4 rabbit hide; a piston or sticky piston from nothing names Redstone Dust and no ore.
+- `QaCreateRivals1115cBugCompatTests` (4, B1277/B1278 with Create): every tinkering item from nothing names something and
+  no Create or Cobblemon item; a sticky piston's line names the Slimeball, never Wheat Flour or Dough; a book, an item frame
+  and bookshelves with no leather name Leather.
+- `QaCreateZinc1115e2BugCompatTests` (2, B1279 with Create): 3 zinc ingots from nothing lack 3 Raw Zinc and a zinc block 9;
+  a builder short of 2 Blocks of Zinc reads Raw Zinc, never Crushed, and the Tinkerer takes nothing.
+- `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
+  Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

@@ -274,7 +274,7 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   Minecraft block a Minecraft crafting recipe makes (579), asked one a tick, names only Minecraft's things (but the
   smoker, below); a builder short of a sticky piston reads exactly "short of 1 Slimeball to make 1 Sticky Piston", and of
   a copper block "short of 9 Raw Copper", never Crushed.
-- Open (on `tests/shortage-gathers-1115f`): `QaShortageGathers1115fBugCompatTests` (2): with Cobblemon a smoker reads
+- Open bug B1288 (its 2 failing tests, QaShortageGathers1115fBugCompatTests, are on the tests/shortage-gathers-1115f branch): with Cobblemon a smoker reads
   "short of 8 Apricorn Log to make 1 Smoker", not 4 of Minecraft's logs.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).

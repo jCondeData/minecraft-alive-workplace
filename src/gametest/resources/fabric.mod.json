@@ -1758,7 +1758,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCaravanNames1114c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJettyPost1114gBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTinkererChain1115eGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115eGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMaterialRulesMutants1115bGameTests"
 		]
 	},
 	"depends": {

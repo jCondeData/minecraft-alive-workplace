@@ -361,6 +361,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaTutorListEdges1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTutorHover1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaProfessorTooltips1115dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaycare1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCobblemonListEdges1109eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.TrainerScreenCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.StatusCardCompatTests",

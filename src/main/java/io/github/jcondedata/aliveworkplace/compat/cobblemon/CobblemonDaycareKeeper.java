@@ -750,7 +750,7 @@ public final class CobblemonDaycareKeeper implements DaycareKeepers.Breeding {
 					continue;
 				}
 				try {
-					PokemonHome.toPcOrOverflow(Cobblemon.INSTANCE.getStorage().getPC(pair.owner(), level.registryAccess()), pokemon, pair.ownerName());
+					PokemonHome.toPcOrWaiting(level.getServer(), pair.owner(), pair.ownerName(), pokemon);
 				} catch (RuntimeException e) {
 					AliveWorkplace.LOG.error("Could not return {}'s Pokémon from the daycare keeper", pair.ownerName(), e);
 				}

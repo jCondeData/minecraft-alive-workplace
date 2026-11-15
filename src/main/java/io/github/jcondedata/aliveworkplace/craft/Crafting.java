@@ -668,6 +668,32 @@ public final class Crafting {
 		return sorted;
 	}
 
+	/**
+	 * A slot's options to say what's short with (B1273, B1289): only the base game's when it has any (the planks tag with
+	 * Chipped holds its decorative planks no crafting recipe makes: the line goes down to oak logs, not those), else all.
+	 */
+	private static List<Item> baseGameFirst(List<Item> options) {
+		List<Item> ordered = vanillaFirst(options);
+		if (ordered.isEmpty() || !"minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(ordered.get(0)).getNamespace())) {
+			return ordered;
+		}
+		return ordered.stream().filter(o -> "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(o).getNamespace())).toList();
+	}
+
+	/**
+	 * Whether {@code item} is a raw material to a plan saying what's short: no recipe of {@code kind} makes it, or each one
+	 * only unpacks a storage form of it, which that plan never goes down (B1288: with Carved Wood an oak log's one recipe
+	 * unpacks its log bundle; the line named Cobblemon's Apricorn Logs for a smoker, not the oak logs a player chops).
+	 */
+	private static boolean raw(ServerLevel level, Kind kind, Item item) {
+		for (RecipeHolder<?> holder : recipesFor(level, kind, item)) {
+			if (!unpacks(level, kind, holder.value(), item)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	/** Whether {@code holder} comes from {@code target}'s own mod (its recipe id's namespace is the item's). */
 	private static boolean fromOwnMod(RecipeHolder<?> holder, Item target) {
 		net.minecraft.resources.ResourceLocation item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(target);
@@ -973,10 +999,12 @@ public final class Crafting {
 				// 37.14, what's short: an option the chests hold some of (B409: the leather, not the rabbit hide that
 				// makes it), else the first raw option (logs, not wood made from logs), or the first one
 				// (B1273: of the raw options, the base game's first: oak logs, not Chipped's decorative planks no recipe makes)
+				// (B1289: as makeOne says, of the base game's options only when the slot has any: oak planks, never Chipped's
+				// mosaic planks for another mod's thing; B1288: a log only unpacked from Carved Wood's bundle is raw too)
 				if (pick == null) {
-					List<Item> ordered = vanillaFirst(slot.options());
+					List<Item> ordered = baseGameFirst(slot.options());
 					pick = slot.options().stream().filter(o -> pool.chest(o) > 0).findFirst()
-						.orElseGet(() -> ordered.stream().filter(o -> recipesFor(level, kind, o).isEmpty()).findFirst().orElse(ordered.get(0)));
+						.orElseGet(() -> ordered.stream().filter(o -> raw(level, kind, o)).findFirst().orElse(ordered.get(0)));
 					// B1293: what's there of the other options counts too (one oak and one spruce log: 2 short of 4, not 3)
 					List<Map.Entry<Item, Long>> used = new ArrayList<>(useMix(slot.options(), need, pool));
 					long rest = need - used.stream().mapToLong(Map.Entry::getValue).sum();
@@ -1055,10 +1083,8 @@ public final class Crafting {
 			}
 			// B1273: a raw option counts when it's the base game's, or the slot has none of the base game's (the planks tag
 			// with Chipped holds its decorative planks no crafting recipe makes: the line goes down to oak logs, not those)
-			List<Item> ordered = vanillaFirst(slot.options());
-			boolean vanilla = !ordered.isEmpty() && "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(ordered.get(0)).getNamespace());
-			if (ordered.stream().filter(o -> !vanilla || "minecraft".equals(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(o).getNamespace()))
-					.anyMatch(o -> recipesFor(level, kind, o).isEmpty())) {
+			// B1288: raw also when its only ways unpack a storage form (Carved Wood's log bundles: an oak log is still raw)
+			if (baseGameFirst(slot.options()).stream().anyMatch(o -> raw(level, kind, o))) {
 				return null; // a raw material: noted as short
 			}
 			if (slot.options().stream().anyMatch(o -> pool.chest(o) > 0)) {

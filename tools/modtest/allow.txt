@@ -4,8 +4,6 @@
 # --- ours, triggered on purpose by tests ---
 # QaBuilderSwitches1114bGameTests loads world rules holding builder rules outside their ranges (a hand-edited level.dat), to prove each loads inside its range; Fabric's rule warns and keeps the default.
 \(GameRuleRegistry\) Failed to parse integer (50|9|0|-1|-3|-8|-2147483648)\. Was out of bounds (0 - 8|1 - 2147483647|0 - 2147483647)
-# QaDaycareFallbacks1115dBugCompatTests (B1284) fills a trainer's PC and kills a daycare keeper and a rancher, to prove the pair and the boarder go to Cobblemon's PC overflow instead of vanishing; the overflow is logged.
-'s PC is full: \S+ went to its overflow store
 # B208GameTests and B211GameTests make the world refuse hostile mobs and village golems, wolves, horses and llamas, as Cobbleverse's MobsBeGone does, and set Peaceful, to prove each refusal is logged plainly.
 (Another mod refused to let minecraft:\S+ spawn for the|Could not spawn minecraft:\S+ for the) 
 # QaHostileSpawnsForced1101dGameTests gives a captain and a golem a living villager's UUID so the world refuses them even when placed directly (REFUSED_FORCED); vanilla warns of the clash.

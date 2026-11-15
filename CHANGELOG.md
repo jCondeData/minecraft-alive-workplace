@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A building move called off while the building is still coming down at its old spot no longer keeps the new spot:
+  a builder handed a blueprint there is no longer told the Mover is still taking it back down there (B1264).
 - A building whose middle is in a City Plan cell nearer another Village Hall now counts only for that hall's village;
   before, its corner in a cell the first village painted (or in its radius) made a Stone Wall there wall both (B1271).
 - A Village Hall on higher ground now takes a City Plan cell it is nearer to across the ground; before, the height

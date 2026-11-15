@@ -256,13 +256,39 @@ public final class MoveSite {
 		return canceled ? oldMin.offset(rel) : plan.at(rel, newMin, rotation);
 	}
 
-	/** Cancels the move: what was put up at the new spot comes down again and everything goes back up where it was. */
+	/**
+	 * Cancels the move: what was put up at the new spot comes down again and everything goes back up where it was. Called
+	 * off before anything went up at the new spot (B1264), there's nothing to take down there, so it goes straight to
+	 * putting the building back up.
+	 */
 	void cancel() {
 		if (stage == Stage.DONE || canceled) {
 			return;
 		}
 		canceled = true;
-		stage = Stage.RESTORE_DOWN;
+		stage = anythingAtNew() ? Stage.RESTORE_DOWN : Stage.RESTORE_UP;
+	}
+
+	/**
+	 * Whether the Mover is still taking a called-off move back down off its new spot: something of it (a block, or the
+	 * things inside) is still there (B1230, B1264). Read from the blocks, so a site saved in RESTORE_DOWN with nothing at
+	 * the new spot (before B1264's fix) doesn't keep that spot either.
+	 */
+	public boolean puttingBack() {
+		return canceled && stage == Stage.RESTORE_DOWN && anythingAtNew();
+	}
+
+	/** Whether any of the building (a block, or the things inside) stands at the new spot. */
+	private boolean anythingAtNew() {
+		if (things == NEW) {
+			return true;
+		}
+		for (byte w : where) {
+			if (w == NEW) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// ---- work

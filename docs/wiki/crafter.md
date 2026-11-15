@@ -261,6 +261,9 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
   (about 3,200), read from an empty chest the way that job's shortage line reads it, names no ore (`c:ores`) and no
   Create crushed raw metal. Kills a mutant dropping the ore rule and one dropping B1279's raw-metal rank.
+- `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
+  base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
+  slot are B1293's.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

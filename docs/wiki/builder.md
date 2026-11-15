@@ -850,3 +850,7 @@ walls, under a wall on the box's edge and over a gravel bed, a drawn floor hole 
 the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every material adding up.
 `QaBuilderMoverVerify1115bBugTests` (1 of its 3 here, B1280): the pool basin over a water-filled pocket in the pond's bed
 (shut in by stone but for its top) ends dry but the pool.
+`QaBuilderPocketDrain1115gGameTests` (9, B1272, B1280): the pool basin over a water column four deep, an air pocket
+and a lava pocket shut in the bed (no fire), a drawn floor hole and a drawn waterlogged slab over a water pocket, the
+pocket case saved and loaded mid-CLEAR, turned a quarter and mirrored and turned: each ends dry but its pool; water under
+the pool running past the footprint to an open lake is never drained or dammed there.

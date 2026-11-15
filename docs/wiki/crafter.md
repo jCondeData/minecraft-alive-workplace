@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268
 
 ## 1. What a player sees
 
@@ -70,7 +70,10 @@ bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not 
 only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
 (B409). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
 "short of 1 Raw Iron", and with coal and no ore at all "short of 6 Raw Iron", never iron ore a player only gets with
-Silk Touch; gold and copper read the same (B489).
+Silk Touch; gold and copper read the same (B489). With Create (or Cobblemon) loaded it still names the raw metal a player
+mines: never Create's Crushed Raw Iron, which only a crushing wheel makes, nor Cobblemon's plaques melted into nuggets
+(B1267); and 4 chains short read "Raw Iron", never Create's Zinc (B1268). Of two ways that fit as well, the one from the
+thing's own mod comes first (iron ingots, chains and bread by Minecraft's own recipes).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -89,7 +92,7 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`: of several recipes for one thing, the
-  one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; or the Furnicrafter's own; the Mason's
+  one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; on a tie the recipe from the item's own mod, by `Crafting.fromOwnMod`, tried first too, B1267; a plan for real gives up at once on what nothing in the chests leads to, `Crafting.reachable`, so the pack's many recipes don't use up the tick's planning before the line is said, B1268; or the Furnicrafter's own; the Mason's
   kiln and the Tinkerer's forge add their coal, from `Crafting.shortfall`'s fired steps (`CrafterWork.fuelShort`), and
   name it when the clay or ore is all there) for that
   build site and item in `JobShortages`; when it can make it, or another job has claimed it, notes it as covered;
@@ -229,6 +232,12 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   coal alone "short of 6 Raw Iron", one raw gold for pressure plates "short of 5 Raw Gold", all taking nothing; read
   off the forge's recipes, five raw copper for a copper block lack 4 raw copper, nine nuggets from nothing 1 raw iron,
   and a raw iron block is unpacked rather than named.
+- `QaCreateForge1115eBugCompatTests` (2, B1267, the compat suite with Create): read off the forge's recipes, 16 iron
+  bars from nothing lack 6 Raw Iron (from 5 raw iron, 1), 9 nuggets 1 raw iron, a copper block 9 raw copper, a gold
+  pressure plate 2 raw gold, a lantern names the raw iron; the builder's line reads exactly "Can't be made yet: short of
+  6 Raw Iron to make 16 Iron Bars" and the Tinkerer takes nothing.
+- `QaCreateChain1115eBugCompatTests` (B1268, with Create): 4 chains short with a coal and no iron name the Raw Iron,
+  never Zinc or a Crushed ore, and nothing is taken.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

@@ -831,3 +831,10 @@ it and is planted; a grown bamboo stalk three tall asks three bamboo and a lone 
 items); a paid chorus stalk two tall under its flower asks three chorus flowers, no chorus plant, and stands again; a pond
 with frogspawn beside a lily pad and a spawner asks the lily pad and two water buckets, never frogspawn or a spawner, and
 is built without them; a paid frogspawn pond finishes.
+QA's `QaBuilderDrainEdges1115bGameTests` (7, B1243): a shut room with no door sunk in a pond 3 deep, a waterfall
+pouring into the box (dry 300 ticks after it is done), a water canal and a lava canal past one side (plugged only beside
+the box, kept everywhere else), a player's waterlogged slab beside the wall kept, seagrass, kelp and a bubble column in a
+sunk room gone with nothing duplicated, a hut wholly under a lake 5 deep: each ends dry and as drawn.
+`QaBuilderDrainTurned1115bGameTests` (8): a 7x4 room sunk in a lake, turned a quarter, a half, three quarters and
+mirrored, drains exactly its turned box; the same turned room saved and loaded mid-CLEAR; a repair of a hut in a pond and a
+take-down there never drain or dam the pond; sand dug out of a sunk hut adds no dam.

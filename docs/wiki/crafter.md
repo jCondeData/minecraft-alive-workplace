@@ -334,11 +334,32 @@ game was what a chest from nothing named). By id only, never the other mod's cla
   while dough and a lime dye there may be used; leather and hide read as in the plain game; sticks, ladders, a crafting
   table, a barrel, a bowl, a sign, an item frame, a painting, a torch, a wooden pickaxe, a tripwire hook and a lever name
   no Chipped, Create or Cobblemon item nor an ore, and Chipped's planks or an oak log there make the sticks; every
-  Minecraft block a Minecraft crafting recipe makes (579), asked one a tick, names only Minecraft's things (but the
-  smoker, below); a builder short of a sticky piston reads exactly "short of 1 Slimeball to make 1 Sticky Piston", and of
+  Minecraft block a Minecraft crafting recipe makes (579), asked one a tick, names only Minecraft's things (the
+  smoker too, since B1288's fix); a builder short of a sticky piston reads exactly "short of 1 Slimeball to make 1 Sticky Piston", and of
   a copper block "short of 9 Raw Copper", never Crushed.
-- Open bug B1288 (its 2 failing tests, QaShortageGathers1115fBugCompatTests, are on the tests/shortage-gathers-1115f branch): with Cobblemon a smoker reads
-  "short of 8 Apricorn Log to make 1 Smoker", not 4 of Minecraft's logs.
+- `QaUnpackedLogs1115bCompatTests` (2, QA past B1288 with the pack): a smoker from a furnace and 3 oak logs lacks 1 of
+  Minecraft's logs, with 4 nothing, with 4 Apricorn Logs (they are in `#logs`) nothing, and with 4 of Carved Wood's oak
+  log bundles nothing (4 logs pack into 4 bundles, each unpacks into 1 log); a campfire from 3 sticks and a coal lacks 3
+  of Minecraft's logs; a builder with a furnace and 4 bundles in his chest and a Carpenter at his bench gets his smoker,
+  with no shortage line on the way.
+- `QaStoneLine1115bGameTests` (2, QA): polished andesite, diorite and granite, an andesite slab, polished andesite stairs
+  and a diorite wall from nothing, by the stonecutter's plan, name the mined stone and never Nether Quartz; a builder
+  short of 3 Polished Andesite with a Mason reads a line naming Andesite (never Quartz or Cobblestone), and nothing is made.
+- Open bug B1304 (its 2 failing tests, QaBambooLine1115bBugTests, are on the tests/bamboo-line-1115b branch): a builder
+  short of 3 Bamboo Planks reads "short of 2 Block of Stripped Bamboo", not the bamboo a player gathers.
+- Open bug B1305 (its 3 failing tests, QaStorageBlockLine1115bBugTests, are on the tests/storage-block-line-1115b
+  branch): a builder 7 wheat short of his last hay bale, or with no wheat at all, gets no shortage line; a hay bale, a
+  slime block and a dried kelp block from nothing lack nothing.
+- Open bug B1306 (its 2 failing tests, QaHoneyBlockLine1115bBugTests, are on the tests/honey-block-line-1115b branch):
+  3 honey blocks from nothing read "short of 6 Honey Blocks, 12 Glass Bottles, 24 Glass", not 12 Honey Bottles.
+- Open bug B1307 (its 3 failing tests, QaShortPlurals1115bBugTests, are on the tests/short-plurals-1115b branch): 24
+  countable things a line names have no plural, so a builder reads "short of 12 Snowball to make 3 Snow Blocks".
+- Open bug B1308 (its 2 failing compat tests, QaMinedStoneSelf1115bBugCompatTests, are on the
+  tests/mined-stone-self-1115b branch): with Create a builder short of 3 Andesite and a Mason reads "short of 3 Andesite
+  to make 3 Andesite" (Create's stonecutting recipes make the mined stones from a tag that holds them).
+- Open bug B1303 (its 2 failing tests, QaDyedWoolLine1115bBugTests, are on the tests/dyed-wool-line-1115b branch): a
+  builder short of 2 Blue Wool with 2 Blue Dye there reads "short of 4 Black Dye, 2 Blue Dye, 4 Blue Wool to make 2 Blue
+  Wool"; every dyed wool from nothing names another color's wool and dye, not white wool or string; carpets the same.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

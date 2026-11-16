@@ -264,8 +264,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		Section s = section();
 		g.enableScissor(x, y, x + w, y + h);
 		if (s == Section.OVERVIEW) {
-			// Copperline (47.2, Main.png): the four stat cards, then "Needs you".
-			int top = renderCards(g, x, y, w);
+			// Copperline (47.2, Main.png): the village's name with its flag, rank chip and bar, the four stat cards, then "Needs you".
+			int top = renderCards(g, x, renderHeader(g, x, y, w), w);
 			// "What next?": every tip and how, from the advice button's lines (its first line is the count).
 			TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.needs_you"), x, top);
 			int ly = top + 13;
@@ -298,6 +298,55 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		}
 		g.disableScissor();
 		return true;
+	}
+
+	/**
+	 * The Overview's header (47.2, Main.png): a flag, the village's name large (the name button's name, so a rename shows at
+	 * once), then the rank chip ("Rank 3 Town" with a star) and the bar toward the next rank with its words. Returns the y
+	 * under it.
+	 */
+	private int renderHeader(GuiGraphics g, int x, int y, int w) {
+		// The flag: a pole and a red cloth with a notch, in the palette's colors.
+		g.fill(x + 1, y + 1, x + 3, y + 22, CopperStyle.COPPER_DARK);
+		g.fill(x + 3, y + 2, x + 14, y + 10, CopperStyle.REDSTONE);
+		g.fill(x + 11, y + 5, x + 14, y + 7, CopperStyle.DEEP_900);
+		int tx = x + 18;
+		int room = w - 4 - (tx - x);
+		String name = menu.slots.get(VillageHallScreen.NAME).getItem().getHoverName().getString();
+		boolean big = font.width(name) * 2 <= room;
+		if (big) {
+			g.pose().pushPose();
+			g.pose().translate(tx, y, 0);
+			g.pose().scale(2, 2, 1);
+			g.drawString(font, name, 0, 0, CopperStyle.QUARTZ, true);
+			g.pose().popPose();
+		} else {
+			CopperStyle.label(g, font, name, tx, y + 4, room, CopperStyle.QUARTZ);
+		}
+		int rankNo = menu.state(HallSections.RANK);
+		io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank[] ranks = io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.values();
+		io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank rank = ranks[Math.max(0, Math.min(ranks.length - 1, rankNo))];
+		String chip = Component.translatable("screen.aliveworkplace.hall.rank_chip", rank.ordinal() + 1, rank.title()).getString();
+		int cy = y + 19;
+		int cw = Math.min(room, font.width(chip) + 14);
+		g.fill(tx, cy - 1, tx + cw, cy + 10, CopperStyle.DEEP_700);
+		CopperStyle.glyph(g, "star", tx + 2, cy);
+		g.drawString(font, CopperStyle.trim(font, chip, cw - 13), tx + 12, cy + 1, CopperStyle.QUARTZ, false);
+		int progress = Math.max(0, Math.min(100, menu.state(HallSections.RANK_PROGRESS)));
+		io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank next = rank.next();
+		int bx = tx + cw + 6;
+		int bw = 30;
+		if (bx + bw <= x + w - 4) {
+			g.fill(bx, cy + 2, bx + bw, cy + 7, CopperStyle.VOID);
+			g.fill(bx + 1, cy + 3, bx + 1 + (bw - 2) * progress / 100, cy + 6, CopperStyle.COPPER);
+			String toward = next == null ? Component.translatable("screen.aliveworkplace.hall.rank_top").getString()
+				: Component.translatable("screen.aliveworkplace.hall.rank_toward", progress, next.title()).getString();
+			int lx = bx + bw + 4;
+			if (lx < x + w - 10) {
+				g.drawString(font, CopperStyle.trim(font, toward, x + w - 4 - lx), lx, cy + 1, CopperStyle.TUFF, false);
+			}
+		}
+		return y + 34;
 	}
 
 	/** The stat cards' words, in HallSections.CARD_SLOTS's order. */

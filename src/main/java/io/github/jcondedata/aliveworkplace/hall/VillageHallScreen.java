@@ -175,6 +175,8 @@ public final class VillageHallScreen {
 		VillageRanks.Score score = VillageRanks.score(level, hall, census.villagers());
 		VillageRanks.Rank rank = VillageRanks.rank(score);
 		VillageRanks.Rank next = rank.next();
+		menu.setState(HallSections.RANK, rank.ordinal()); // the Overview's rank chip and bar (47.2)
+		menu.setState(HallSections.RANK_PROGRESS, HallSections.rankProgress(score, rank));
 		List<Component> nameLore = new ArrayList<>();
 		nameLore.add(line(Component.translatable("screen.aliveworkplace.hall.rank", rank.title()), ChatFormatting.AQUA));
 		nameLore.add(line(Component.translatable(VillageRanks.growthCap(rank) > 0 ? "screen.aliveworkplace.hall.rank_perks"

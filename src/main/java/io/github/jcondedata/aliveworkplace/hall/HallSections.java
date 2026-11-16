@@ -46,6 +46,12 @@ public final class HallSections {
 	public static final int RAIL_WAITING = 10;
 	public static final int RAIL_DANGER = 11;
 	public static final int RAIL_QUESTS = 12;
+	/**
+	 * The Overview's header (Copperline, 47.2, Main.png): the village's rank ({@link VillageRanks.Rank}'s number) and how far
+	 * it is toward the next one, 0 to 100 (100 at the top rank). Not saved.
+	 */
+	public static final int RANK = 13;
+	public static final int RANK_PROGRESS = 14;
 	/** The mark on a main-page button: a bit for each section it sits in. */
 	public static final String MARK = "aliveworkplace:hall_sections";
 
@@ -233,6 +239,27 @@ public final class HallSections {
 			return "";
 		}
 		return compact && n > 9 ? "9+" : String.valueOf(n);
+	}
+
+	/**
+	 * How far {@code score} is from {@code rank} toward the next rank, 0 to 100: the average of the villagers', buildings'
+	 * and research's way from this rank's need to the next's, each capped at its full share (100 at the top rank).
+	 */
+	public static int rankProgress(VillageRanks.Score score, VillageRanks.Rank rank) {
+		VillageRanks.Rank next = rank.next();
+		if (next == null) {
+			return 100;
+		}
+		double sum = share(score.villagers(), rank.villagers, next.villagers) + share(score.buildings(), rank.buildings, next.buildings)
+			+ share(score.research(), rank.research, next.research);
+		return (int) Math.max(0, Math.min(100, Math.floor(sum / 3 * 100)));
+	}
+
+	private static double share(int have, int from, int to) {
+		if (to <= from) {
+			return 1;
+		}
+		return Math.max(0, Math.min(1, (have - from) / (double) (to - from)));
 	}
 
 	/** The Overview's stat cards' buttons (47.2), in order: People, Mood, Food, Defense. */

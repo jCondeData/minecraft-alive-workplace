@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.hall.HallSections;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
@@ -79,6 +80,13 @@ public class HallCopperlineGameTests {
 			for (String key : new String[]{"needs_you", "card.people", "card.mood", "card.food", "card.defense"}) {
 				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall." + key), "no text for " + key);
 			}
+			// The header's rank chip and bar (two villagers: a Hamlet on its way to Village).
+			helper.assertTrue(menu.state(HallSections.RANK) == 0, "the rank is " + menu.state(HallSections.RANK) + ", expected Hamlet");
+			int progress = menu.state(HallSections.RANK_PROGRESS);
+			helper.assertTrue(progress > 0 && progress < 100, "the bar toward Village reads " + progress);
+			for (String key : new String[]{"rank_chip", "rank_toward", "rank_top"}) {
+				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall." + key), "no text for " + key);
+			}
 			// A rail click keeps the counts (they're set with the main page).
 			helper.assertTrue(menu.clickMenuButton(player, Section.PEOPLE.ordinal()), "the rail didn't take People");
 			helper.assertTrue(menu.state(HallSections.RAIL_WAITING) == 2, "after the click the waiting count is " + menu.state(HallSections.RAIL_WAITING));
@@ -99,6 +107,27 @@ public class HallCopperlineGameTests {
 		for (Section s : new Section[]{Section.OVERVIEW, Section.HOMES, Section.BUILDINGS, Section.TRADE, Section.CALENDAR, Section.LAWS, Section.MAP}) {
 			helper.assertTrue(HallSections.railBadge(s, 3, 1, 5, false).isEmpty(), s + " has a badge");
 		}
+		helper.succeed();
+	}
+
+	/**
+	 * The rank bar's number: 0 at a rank's own needs, 100 at the next's, the three needs averaged and each capped (more
+	 * villagers can't make up for missing buildings), 100 at the top rank.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void rankProgressBar(GameTestHelper helper) {
+		VillageRanks.Rank hamlet = VillageRanks.Rank.HAMLET;
+		// Hamlet to Village needs 10 villagers, 5 buildings and no research (that share is full already).
+		int none = HallSections.rankProgress(new VillageRanks.Score(0, 0, 0), hamlet);
+		helper.assertTrue(none == 33, "nothing yet reads " + none);
+		int half = HallSections.rankProgress(new VillageRanks.Score(5, 0, 0), hamlet);
+		helper.assertTrue(half == 50, "5 villagers read " + half);
+		int many = HallSections.rankProgress(new VillageRanks.Score(40, 0, 0), hamlet);
+		helper.assertTrue(many == 66, "40 villagers and no buildings read " + many);
+		int town = HallSections.rankProgress(new VillageRanks.Score(20, 12, 3), VillageRanks.Rank.TOWN);
+		helper.assertTrue(town == 0, "a fresh Town reads " + town);
+		helper.assertTrue(HallSections.rankProgress(new VillageRanks.Score(0, 0, 0), VillageRanks.Rank.CITY) == 100, "the top rank isn't full");
 		helper.succeed();
 	}
 

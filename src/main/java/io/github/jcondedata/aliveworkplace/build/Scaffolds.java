@@ -1,15 +1,19 @@
 package io.github.jcondedata.aliveworkplace.build;
 
 import io.github.jcondedata.aliveworkplace.mc.Rules;
+import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -19,12 +23,14 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ScaffoldingBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -526,21 +532,100 @@ public final class Scaffolds {
 		all.sort(Comparator.comparingInt((BlockPos p) -> p.getY()).reversed());
 		int taken = 0;
 		for (BlockPos p : all) {
-			if (level.isLoaded(p) && level.getBlockState(p).is(Blocks.SCAFFOLDING)) {
+			if (!level.isLoaded(p)) {
+				// B1322: in a chunk nobody has loaded; it comes down when that chunk loads (takeDownLeft)
+				BuildSiteManager.get(level).leaveScaffold(p, site.bench());
+			} else if (level.getBlockState(p).is(Blocks.SCAFFOLDING)) {
 				remove(level, p);
 				taken++;
 			}
 			site.removeScaffold(p);
 		}
+		handIn(level, site.bench(), all.get(all.size() - 1), taken);
+	}
+
+	/**
+	 * {@code taken} scaffolding taken down at once goes into the supply chests by {@code bench} (when there is one), else
+	 * onto the ground there, or by {@code drop} with no bench. Nothing with free materials on.
+	 */
+	private static void handIn(ServerLevel level, @Nullable BlockPos bench, BlockPos drop, int taken) {
 		if (taken == 0 || Rules.on(level, ModGameRules.FREE_MATERIALS)) {
 			return;
 		}
 		MaterialLedger.gained(Items.SCAFFOLDING, taken);
-		BlockPos at = site.bench() != null ? site.bench() : all.get(all.size() - 1);
-		List<BlockPos> chests = site.bench() != null ? SupplyContainers.find(level, site.bench(), null) : List.of();
+		List<BlockPos> chests = bench != null ? SupplyContainers.find(level, bench, null) : List.of();
 		ItemStack rest = SupplyContainers.insert(level, chests, new ItemStack(Items.SCAFFOLDING, taken));
 		if (!rest.isEmpty()) {
-			Builders.dropNear(level, at, rest);
+			Builders.dropNear(level, bench != null ? bench : drop, rest);
+		}
+	}
+
+	// --- left in unloaded chunks (B1322) -----------------------------------------------------
+
+	/** Per dimension, the chunks that loaded with a removed site's scaffolding left in them: taken down on the next tick. Not saved (the list is). */
+	private static final Map<ResourceKey<Level>, LongOpenHashSet> LOADED = new HashMap<>();
+
+	/** Takes down a removed site's scaffolding that stood in an unloaded chunk once that chunk loads (B1322). */
+	public static void init() {
+		Platform.get().onChunkLoad(Scaffolds::chunkLoaded);
+		Platform.get().onLevelTick(Scaffolds::takeDownLeft);
+	}
+
+	/** A chunk loaded: if a removed site left scaffolding in it, that waits for the level's next tick (blocks aren't changed while a chunk loads). */
+	static void chunkLoaded(ServerLevel level, LevelChunk chunk) {
+		Map<BlockPos, BlockPos> left = BuildSiteManager.get(level).leftScaffolds();
+		if (left.isEmpty()) {
+			return;
+		}
+		long key = chunk.getPos().toLong();
+		for (BlockPos p : left.keySet()) {
+			if (ChunkPos.asLong(p) == key) {
+				LOADED.computeIfAbsent(level.dimension(), k -> new LongOpenHashSet()).add(key);
+				return;
+			}
+		}
+	}
+
+	/**
+	 * Takes down the scaffolding left in the chunks that loaded since the last tick, from the top, into the chests by its
+	 * site's bench as {@link #dismantle} does (on the ground by the column when the bench's chunk isn't loaded). A chunk
+	 * that unloaded again before this keeps its scaffolding on the list for its next load.
+	 */
+	static void takeDownLeft(ServerLevel level) {
+		LongOpenHashSet chunks = LOADED.get(level.dimension());
+		if (chunks == null || chunks.isEmpty()) {
+			return;
+		}
+		long[] keys = chunks.toLongArray();
+		chunks.clear();
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		for (long key : keys) {
+			if (level.getChunkSource().getChunkNow(ChunkPos.getX(key), ChunkPos.getZ(key)) == null) {
+				continue;
+			}
+			List<Map.Entry<BlockPos, BlockPos>> here = new ArrayList<>();
+			for (Map.Entry<BlockPos, BlockPos> e : manager.leftScaffolds().entrySet()) {
+				if (ChunkPos.asLong(e.getKey()) == key) {
+					here.add(e);
+				}
+			}
+			here.sort(Comparator.comparingInt((Map.Entry<BlockPos, BlockPos> e) -> e.getKey().getY()).reversed());
+			Map<BlockPos, Integer> taken = new LinkedHashMap<>(); // per bench (null: its site had none)
+			Map<BlockPos, BlockPos> lowest = new HashMap<>();
+			for (Map.Entry<BlockPos, BlockPos> e : here) {
+				BlockPos p = e.getKey();
+				BlockPos bench = e.getValue().equals(p) ? null : e.getValue(); // (no bench is saved as the scaffold itself)
+				if (level.getBlockState(p).is(Blocks.SCAFFOLDING)) {
+					remove(level, p);
+					taken.merge(bench, 1, Integer::sum);
+					lowest.put(bench, p); // the last is the lowest
+				}
+				manager.forgetLeftScaffold(p);
+			}
+			for (Map.Entry<BlockPos, Integer> t : taken.entrySet()) {
+				BlockPos bench = t.getKey();
+				handIn(level, bench != null && level.isLoaded(bench) ? bench : null, lowest.get(bench), t.getValue());
+			}
 		}
 	}
 

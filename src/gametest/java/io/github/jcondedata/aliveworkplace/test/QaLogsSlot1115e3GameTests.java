@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
  * same smoker reads 8 Apricorn Logs (B1289); these pin what it reads without them: 4 logs (the logs tag's first, dark oak
  * here), never 8 through wood. Mixed woods are B1293's (QaLogsSlot1115e3BugGameTests).
  */
-public class QaLogsSlot1115e3GameTests implements FabricGameTest {
+public class QaLogsSlot1115e3GameTests implements FreshPlanning {
 
 	/** One entry: 4 of a base-game log. */
 	static boolean fourLogsOfOneKind(Map<Item, Integer> lack) {

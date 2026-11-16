@@ -69,7 +69,8 @@ The line names what the chest is short of, not some other way to make it: a Libr
 bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not "4 Rabbit Hide". It goes further down
 only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
 (B409). Logs of every wood at hand count: an oak and a spruce log for 2 chests read "short of 2 Oak Logs", and
-with a birch log too "short of 1 Oak Log" (B1311). A block packed from 9 of one thing names that thing: "short of 27 Wheat to make 3 Hay
+with a birch log too "short of 1 Oak Log" (B1311). Planks of another wood count beside them: 4 spruce planks with an oak and a birch log read "short of 1 Oak
+Log" (B1333). A block packed from 9 of one thing names that thing: "short of 27 Wheat to make 3 Hay
 Bales", and with 20 wheat the third bale "short of 7 Wheat" (B1305). Nothing is ever made of itself: with Create, a
 stone a player mines (andesite, diorite, granite, tuff) is never "short of 3 Andesite to make 3 Andesite"; it is cut
 from another form of it only when one is in the chest (B1308). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says

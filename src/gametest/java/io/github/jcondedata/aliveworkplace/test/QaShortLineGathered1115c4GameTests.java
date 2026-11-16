@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.Blocks;
  * with no leather at all name Leather, not Rabbit Hide; with some hide there it still names the rest of the hide"; "a
  * piston names Redstone Dust, not Redstone Ore"; and B489: a line never names an ore a player only gets with Silk Touch.
  */
-public class QaShortLineGathered1115c4GameTests implements FabricGameTest {
+public class QaShortLineGathered1115c4GameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final TagKey<Item> ORES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"));
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);

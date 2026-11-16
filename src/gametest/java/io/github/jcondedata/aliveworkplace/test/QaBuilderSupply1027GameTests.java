@@ -63,7 +63,7 @@ import net.minecraft.world.level.block.Rotation;
  * blocks given up for good").</li>
  * </ul>
  */
-public class QaBuilderSupply1027GameTests {
+public class QaBuilderSupply1027GameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final String BIG = "aliveworkplace_test:big_area";
 	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("aliveworkplace-qa");

@@ -30,7 +30,7 @@ import net.minecraft.world.level.block.Blocks;
  * whose slabs need one wood, a wooden pickaxe), the Carpenter's other kind, a real Carpenter's job with a save and reload
  * mid-job, and a real job truly short of logs. Nothing here is random.
  */
-public class QaCrafterLogs1116cGameTests implements FabricGameTest {
+public class QaCrafterLogs1116cGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 
 	private static Crafting.Plan plan(GameTestHelper helper, Item target, int count, Map<Item, Long> chest) {

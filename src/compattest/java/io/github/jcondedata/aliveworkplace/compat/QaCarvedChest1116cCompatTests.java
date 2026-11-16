@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.craft.JobShortages;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -35,7 +36,7 @@ import net.minecraft.world.level.block.Blocks;
  * taken away before the Carpenter comes and given back, and the Carpenter saved and loaded mid-job. The plain chest built
  * is checked to be minecraft:chest itself, not a carved one. Nothing here is random.
  */
-public class QaCarvedChest1116cCompatTests implements FabricGameTest {
+public class QaCarvedChest1116cCompatTests implements FreshPlanning {
 	private static final String AREA = QaCarvedChest1115eCompatTests.AREA;
 	private static final BlockPos ROW = new BlockPos(6, 2, 9);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

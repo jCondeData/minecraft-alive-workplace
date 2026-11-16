@@ -6684,7 +6684,7 @@ stage, whisper line) the way its nearest board shows. 47.1 removes the `(blocked
 Same decision as Milestone 42 (owner, 2026-11-08). Lane E builds it, in order, with `TableStyle` and 42.1's pieces as
 in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay theirs. Depends on: nothing open.
 
-- [x] **44.1** (review: pending 2026-11-16) **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
+- [x] **44.1** (review: pending 2026-11-16) (verified 2026-11-16: QA lane E: 6 tests [QaSettingsExtremes1116e: every switch and every number at both range ends via the screen's clicks, Reset on every page, saved and read back at GUI scale 2 and 3; QaCopperSlotSaves1116e: counter, drop box and mailbox saves and old-shape saves into the new menus, the 3x3 parcel never loses items]. langcheck clean for the new sentences.) **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
   (the player's inventory included, framed like the Hall's cells). Done when: GameTests that slots, shift-clicks
   and the counter's sales still work; scenes `mail`, `counter` and a new `drop_box`.
 - [x] **44.2** (review: pending 2026-11-16) **The trading screen of the mod's own jobs** (Shopkeeper and Ferryman without CobbleDollars, the
@@ -6694,7 +6694,7 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
 - [x] **44.3** (review: pending 2026-11-16) **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
   frame, title, buttons and lists change). Done when: `CityPlanScreenGameTests` and the charter's tests pass; scenes
   `city_plan` and `colony_charter`.
-- [x] **44.4** (review: pending 2026-11-16) **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
+- [x] **44.4** (review: pending 2026-11-16) (verified 2026-11-16: QA lane E: 6 tests [QaSettingsExtremes1116e: every switch and every number at both range ends via the screen's clicks, Reset on every page, saved and read back at GUI scale 2 and 3; QaCopperSlotSaves1116e: counter, drop box and mailbox saves and old-shape saves into the new menus, the 3x3 parcel never loses items]. langcheck clean for the new sentences.) **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
   with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
   scenes `guide` and `config`.
 

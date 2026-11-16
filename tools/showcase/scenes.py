@@ -68,6 +68,12 @@ SCENES = [
       "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands", 30,
       [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
        ("02_hire_a_cleric_for_brewing_stands", "Brewing stands: hire a Cleric to make them")]),
+    # The Storehouse board in Copperline (ROADMAP 47.4, docs/design/copperline/boards/Storehouse.png)
+    S("storehouse_board", "Porter", "The Storehouse board in Copperline",
+      "the Storehouse board in Copperline listed five needs with who brings each, filtered to the builders, gave everything the player carried with Give all, and fit the 320x180 screen", 40,
+      [("01_board", "Who needs what, how much the store holds, who brings it, and Give or Stocked or Have 0"),
+       ("02_builders_only", "The rail's Builders filter"), ("03_gave_all", "Give all: everything carried handed over"),
+       ("04_compact", "At 320x180 (GUI scale 3): the rail as icons, no Needed by column")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -115,9 +121,9 @@ SCENES = [
        ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
     # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
     S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
-      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
+      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
       [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
-       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_last_line", "The Storehouse board, scrolled")]),
+       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_tooltip", "The Storehouse board: a row's every line in its icon's tooltip")]),
     # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
     S("table_basement", "Builder", "Blueprint Table: basements in the preview",
       "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
@@ -266,8 +272,8 @@ SCENES = [
     # Porter
     S("porter", "Porter", "Carrying goods to the storehouse", "the porter stocked the storehouse and the board opened", 90,
       [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
-       ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
-       ("22_request_read_out", "A request read out in the pane")]),
+       ("21_request_board", "The Storehouse board in Copperline: who needs what, how much the store holds, who brings it"),
+       ("22_request_read_out", "A request pointed at: what a click gives and who brings it, in the whisper line")]),
     # Modded storage networks in the Storehouse: part one (ROADMAP 37.9) a Sophisticated Storage controller and its linked
     # barrels and chests, part two (37.10) a Tom's Simple Storage inventory connector and its network, each one store
     S("modded_storehouse", "Porter", "The Storehouse reads a Sophisticated controller and a Tom's Simple Storage network each as one store",

@@ -42,6 +42,10 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The Storehouse board in Copperline (47.4): a table of what's needed with a bar of how much the store holds, who
+  needs it and who brings it ("Nobody: no Glassblower" in red), Give / Stocked / Have 0 on each row, a rail that filters
+  by Builders, Workers, Kitchen and Projects with Missing and I carry toggles, "In your pack" and one copper Give all
+  (also Shift-click), and a small-screen layout at 320x180.
 - Moving a building in Copperline: the Village Hall's Move page shows its three steps on the rail with "Your move", a
   table of buildings saying which can move and why not, the village map with the new spot green where it fits and red
   hatched where it can't go, and "Move the Starter Cottage?" with From, To, a checklist and one copper Move building (47.3).

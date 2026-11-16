@@ -1187,22 +1187,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen && readingSlot >= 0,
 				"the Storehouse board opened with rows (" + mc.screen + ")");
 			shot(mc, "04_board_hovered");
-			if (screen != null) {
-				intoPane(mc, screen);
-			}
-		}
-		if (tick == 275) {
-			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
-			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot,
-				"the board's hovered row stays read out with the mouse in the pane (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
-			if (screen != null) {
-				scrollToEnd(screen);
+			// 47.4: the board in Copperline has no reading pane; every line of a row is in its icon's tooltip
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board && readingSlot >= 0) {
+				int[] at = board.iconCentre(readingSlot);
+				double scale = mc.getWindow().getGuiScale();
+				setMouse(mc, at[0] * scale, at[1] * scale);
 			}
 		}
 		if (tick == 290) {
-			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
-			Showcase.check(scroll[0] == scroll[1], "the board's reading scrolled to its last line (" + scroll[0] + " of " + scroll[1] + ")");
-			shot(mc, "05_board_last_line");
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board
+					&& board.shownRows().contains(readingSlot),
+				"the board's longest row is in its table, its icon pointed at (" + mc.screen + ")");
+			shot(mc, "05_board_tooltip");
 		}
 		if (tick == 305) {
 			mc.stop();

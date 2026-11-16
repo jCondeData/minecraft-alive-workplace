@@ -6815,7 +6815,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
 - [x] **47.3** (review: pending 2026-11-16) **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with
   From and To, the green "Fits" and red hatched refusal, "What happens", the checklist, one copper "Move building").
   Done when: the 45.x Move tests pass; scenes `move_plan` and `move_refused`.
-- [ ] **47.4** **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes
+- [x] **47.4** (review: pending 2026-11-16) **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes
   `job_lists` and the board's scenes.
 
 ## Milestone 48: Copperline, the rest of the screens

@@ -458,6 +458,66 @@ final class JobScenes {
 		}
 	}
 
+	/**
+	 * storehouse_board (47.4): the storehouse 12 east of the benches (its store's chests out of the builders' reach), the
+	 * camera beside it (the board closes past 8 blocks), the askers and what they ask, and what the player carried before
+	 * and after Give all.
+	 */
+	private static final BlockPos STOREHOUSE_BOARD = STATION.east(12);
+	private static final Vec3 STOREHOUSE_BOARD_CAMERA = new Vec3(10.5, -58.4, 4.5);
+	private static final Villager[] STOREHOUSE_BOARD_ASKERS = new Villager[5];
+	private static final int[] storehouseBoardCarried = {-1, -1};
+
+	private static void storehouseBoardStage(ServerLevel level, ServerPlayer player) {
+		place(level, STOREHOUSE_BOARD, ModBlocks.STOREHOUSE);
+		chest(level, STOREHOUSE_BOARD.east(), new ItemStack(Items.OAK_LOG, 32), new ItemStack(Items.BRICK, 20), new ItemStack(Items.COBBLESTONE, 64),
+			new ItemStack(Items.WHEAT, 6));
+		String[] names = {"Mira", "Brann", "Pell", "Odile"};
+		for (int i = 0; i < 4; i++) {
+			BlockPos bench = STATION.west(2 * i);
+			place(level, bench, ModBlocks.BUILDERS_BENCH);
+			chest(level, bench.north());
+			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
+			builder.setNoAi(true);
+			io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, bench);
+			builder.setVillagerData(builder.getVillagerData().setProfession(ModVillagers.BUILDER));
+			builder.setCustomName(net.minecraft.network.chat.Component.literal(names[i]));
+			STOREHOUSE_BOARD_ASKERS[i] = builder;
+		}
+		// the chef's stove and chest well west, out of the store's reach (8 blocks round the storehouse)
+		Villager chef = worker(level, STATION.west(9), ModBlocks.KITCHEN_STOVE, ModVillagers.KITCHEN_STOVE_POI, ModVillagers.CHEF);
+		chef.setNoAi(true);
+		chef.setCustomName(net.minecraft.network.chat.Component.literal("Ilse"));
+		chest(level, STATION.west(9).north());
+		STOREHOUSE_BOARD_ASKERS[4] = chef;
+		Villager tomas = EntityType.VILLAGER.spawn(level, STATION.east(8).south(), MobSpawnType.COMMAND);
+		tomas.setNoAi(true);
+		tomas.setVillagerData(tomas.getVillagerData().setProfession(ModVillagers.LUMBERJACK));
+		tomas.setCustomName(net.minecraft.network.chat.Component.literal("Tomas"));
+		player.getInventory().clearContent();
+		player.getInventory().setItem(0, new ItemStack(Items.OAK_LOG, 16));
+		player.getInventory().setItem(1, new ItemStack(Items.GLASS, 12));
+		player.getInventory().setItem(2, new ItemStack(Items.WHEAT, 24));
+		storehouseBoardAsk();
+	}
+
+	private static void storehouseBoardAsk() {
+		Item[] wants = {Items.OAK_LOG, Items.GLASS, Items.BRICK, Items.COBBLESTONE, Items.WHEAT};
+		int[] counts = {48, 12, 40, 64, 30};
+		for (int i = 0; i < wants.length; i++) {
+			Villager v = STOREHOUSE_BOARD_ASKERS[i];
+			if (v != null) {
+				io.github.jcondedata.aliveworkplace.work.Requests.post(v, new ItemStack(wants[i]), counts[i], wants[i].getDescription(),
+					new io.github.jcondedata.aliveworkplace.work.Requests.ExactItem(wants[i]));
+			}
+		}
+	}
+
+	/** How many logs, glass and wheat the player carries. */
+	private static int carried(ServerPlayer player) {
+		return player.getInventory().countItem(Items.OAK_LOG) + player.getInventory().countItem(Items.GLASS) + player.getInventory().countItem(Items.WHEAT);
+	}
+
 	/** The fort's men hold still for the camera. */
 	private static void stillFortMen(ServerLevel level) {
 		for (var mob : io.github.jcondedata.aliveworkplace.guard.BanditFort.men(level, BANDIT_FORT_GROUND, 40)) {
@@ -5103,6 +5163,44 @@ final class JobScenes {
 				}
 				return lore.indexOf("Gathered by: the Lumberjack (Bo)") >= 0 && lore.indexOf("Hire a Cleric to make it") >= 0;
 			}));
+		// ROADMAP 47.4: the Storehouse board in Copperline, like boards/Storehouse.png
+		SCREENS.put("storehouse_board", new Screen("the Storehouse board in Copperline listed five needs with who brings each, filtered to the builders, "
+				+ "gave everything the player carried with Give all, and fit the 320x180 screen",
+			STOREHOUSE_BOARD_CAMERA, STOREHOUSE_BOARD_CAMERA.add(-2.5, -1.1, -5.3),
+			(level, player) -> storehouseBoardStage(level, player),
+			List.of(new Step("01_board", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST, 6,
+					(level, player) -> {
+						storehouseBoardAsk();
+						io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(player, STOREHOUSE_BOARD);
+					}, 30),
+				new Step("02_builders_only", -1, 6, (level, player) -> Minecraft.getInstance().execute(() -> {
+					if (Minecraft.getInstance().screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board) {
+						board.filter(io.github.jcondedata.aliveworkplace.store.BoardRows.Group.BUILDERS);
+					}
+				}), 20),
+				new Step("03_gave_all", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.GIVE_ALL_SLOT, 6, (level, player) -> {
+					Minecraft.getInstance().execute(() -> {
+						if (Minecraft.getInstance().screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board) {
+							board.filter(io.github.jcondedata.aliveworkplace.store.BoardRows.Group.EVERYONE);
+						}
+					});
+					if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu) {
+						storehouseBoardCarried[0] = carried(player);
+						menu.press(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.GIVE_ALL_SLOT, player);
+						storehouseBoardCarried[1] = carried(player);
+					}
+				}, 30),
+				new Step("04_compact", io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST + 1, 6, (level, player) -> Minecraft.getInstance().execute(() -> {
+					// GUI scale 3 on the 960x540 window: the 320x180 screen (vanilla caps the option, so the window's scale is set)
+					Minecraft mc = Minecraft.getInstance();
+					mc.getWindow().setGuiScale(3);
+					if (mc.screen != null) {
+						mc.screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+					}
+				}), 30)),
+			(level, player) -> storehouseBoardCarried[0] > 0 && storehouseBoardCarried[1] == 0
+				&& player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu menu
+				&& io.github.jcondedata.aliveworkplace.store.BoardRows.row(menu.icon(io.github.jcondedata.aliveworkplace.store.StorehouseBoard.FIRST_REQUEST)) != null));
 		SCREENS.put("daycare", new Screen("the daycare screen opened with a Charmander boarding", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				subject = picked(level, player, STATION, Blocks.SMOKER, Items.SADDLE);

@@ -503,6 +503,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StorehouseBoardCopperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShepherdWeavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShepherdWeavesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FloristPotsGameTests",

@@ -1129,7 +1129,27 @@ public final class Crafting {
 						if (lenient) {
 							// B1311: truly short, what each option can be made from goes in first (an oak and a spruce log:
 							// 4 planks of each), and only the rest is what's short (2 logs for 2 chests, not 3 of the first wood)
-							want = need - madeMix(level, kind, slot, need, pool, steps, depth, allowed, pre);
+							Pool mixTrial = pool.copy();
+							List<Step> mixSteps = new ArrayList<>();
+							List<Map.Entry<Item, Long>> mixPre = new ArrayList<>();
+							long mixMade = madeMix(level, kind, slot, need, mixTrial, mixSteps, depth, allowed, mixPre);
+							boolean keep = mixMade > 0;
+							if (keep && mixMade < need) {
+								// the rest is still said further down when the whole would be: 5 oak logs for 3 barrels, the
+								// last log goes into planks and the rest is short of logs, not of planks (the logs at hand are
+								// what makes going down worth saying, B409, and the mix just used them up)
+								pool.budget.lenient = true;
+								if (makeOne(level, kind, slot, need - mixMade, mixTrial.copy(), new ArrayList<>(), depth, allowed) == null) {
+									keep = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed) == null;
+								}
+								pool.budget.lenient = false;
+							}
+							if (keep) {
+								pool.set(mixTrial);
+								steps.addAll(mixSteps);
+								pre.addAll(mixPre);
+								want = need - mixMade;
+							}
 						} else {
 							triedAll = true; // planning for real, nothing more to try down there
 						}

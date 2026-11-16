@@ -6019,7 +6019,7 @@ Depends on: nothing open.
   (told, nothing past 64), save and reload deep in a quarry, the deep pit's stair reaching the bottom; text in
   `en_us.json`; wiki (the miner's page) and the guide (miner.md); scene `deep_quarry`.
 
-- [ ] **36.23** (owner, 2026-11-16: a new Tier 1 house, two versions; Opus builds it) **A new Level I house, built two
+- [x] **36.23** (owner, 2026-11-16: a new Tier 1 house, two versions; Opus builds it) (review: pending 2026-11-16) **A new Level I house, built two
   different ways so the owner can pick.** A new home for a village's first families (Level I, like the Starter
   Cottage; original, not a copy of an existing blueprint), drawn twice by two different methods, both furnished:
   **Version A** with the minecraft-architect skill and our Python kit, following `tools/blueprints/STYLE.md` including
@@ -6824,6 +6824,7 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
   their scenes.
 
 ## Notes / blocked
+- 2026-11-16 (lane-b-1116-0637, 36.23): **Both Level I houses are on `wip/house-t1` (a6c8f67d1), review package sent.** Version A 'the Hearthstead' (`tools/blueprints/house_t1_a.py`, architect skill and kit) and Version B 'the Daub House' (`tools/blueprints/js/house_t1_b/` JS plan + parts library via the minecraft-builder skill, `tools/blueprints/house_t1_b.py` adapter that records furniture spots and runs check.py), each by its own subagent; check.py and holes.py clean, no job block, 31 and 41 furniture spots. The branch also has a new screenshot scene `house_shots` (`HouseShotsScene.java`, `SCENE=house_shots [SHOTS=house_t1_a] tools/screenshots/run.sh`) that places any structure with a `tools/blueprints/shots/<name>.json` and films four sides, a corner view and eye-level shots from listed eye/look points (checks that no eye is inside a block); it fails with no shots files, so it stays off main until 36.23a. Neither house is registered in StarterBlueprints or villages. The two came out alike in massing (L plan, brick roof, east kitchen wing, west dormer, back chimney) although neither agent saw the other's; known rough edges: B's white table top and tight kitchen views, A's loft shows bare brick on the slopes. Note: the render tool's Playwright wants Chromium build 1194, the container has 1243; agents used a scratch copy with executablePath (repo unchanged).
 - 2026-11-16 (owner's chat, digest-1114-1353 session): **Decisions.** (1) The Inn stays as it is: the redraw on
   `wip/inn-redo` (bigger coaching inn, round 3) is not merged (roof holes still showed, no modded-furniture shots); it
   stays as a reference, and its `holes.py` `open` check (open wall panels) and STYLE.md note came to main. holes.py now

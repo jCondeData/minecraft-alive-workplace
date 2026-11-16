@@ -10,7 +10,7 @@ Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324, 44.4
 **The config file.** `config/aliveworkplace.json` is written with the defaults the first time the game starts. Edit
 it and restart. A value out of range is clamped to the nearest allowed one, however large (3000000000 gives the most allowed, B477), a missing value takes its default, and
 the file is written back complete, so every option is always listed. A number or a switch written in quotes ("1",
-"false") is read as meant, and so is a switch written as a word: yes or on is true, no or off is false, in any case and with spaces round it ("ON", " No "; B1324, `ConfigHandWrittenGameTests`); any other word takes that switch's default with a warning in the log naming it, never off, and the file is written back with plain true or false. and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
+"false") is read as meant, and so is a switch written as a word: yes or on is true, no or off is false, in any case and with spaces round it ("ON", " No "; B1324, `ConfigHandWrittenGameTests`); any other word takes that switch's default with a warning in the log naming it, never off, and the file is written back with plain true or false; an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
 the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
 read as a file without one, and entries of "expansionsOpen" that aren't names (null, a list) are skipped, so the rest
 of the file is still read (B457). A value of the wrong kind (a switch written 0, a number written "high") takes its

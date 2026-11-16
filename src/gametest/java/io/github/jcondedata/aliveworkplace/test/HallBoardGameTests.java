@@ -63,6 +63,8 @@ public class HallBoardGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "hallBoardOverview")
 	public void overviewCardsAndNeedsComeFromTheHall(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		Leftovers.village(helper, helper.absolutePos(HALL)); // B1339: the village reaches past the area
 		HallSections.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.spawn(EntityType.VILLAGER, new BlockPos(2, 2, 2));
@@ -131,6 +133,8 @@ public class HallBoardGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "hallBoardEmpty")
 	public void emptyVillageReadsPlainly(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		Leftovers.village(helper, helper.absolutePos(HALL)); // B1339: the village reaches past the area
 		HallSections.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
@@ -156,6 +160,8 @@ public class HallBoardGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 100, batch = "hallBoardMap")
 	public void mapSectionCarriesTheVillageMap(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper);
+		Leftovers.village(helper, helper.absolutePos(HALL)); // B1339: the village reaches past the area
 		HallSections.forget();
 		HallMap.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

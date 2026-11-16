@@ -381,6 +381,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareWaiting1115c2BugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MoneyGroupedCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTreasuryHint1116cCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.DollarRateTextCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaDaycareWaiting1115d3CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCup1115dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCupReadyReply1115d2CompatTests",

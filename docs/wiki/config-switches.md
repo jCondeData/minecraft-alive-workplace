@@ -241,7 +241,7 @@ range is in brackets.
 | `cupEveryFestivals` | 1 (1 to 8) | 1.2 | Which of a host's festivals are Cups: every one (1), every second (2), and so on. |
 | `seasonDays` | 16 (1 to 120) |  | Days in each of the village calendar's four seasons (each has a festival on its middle day). |
 | `treasuryPerWorker` | 20 (0 to 500) |  | Hundredths of an emerald each worker brings the treasury a day (before wellbeing and rank). |
-| `dollarsPerEmerald` | 100 (1 to 10000) |  | What an emerald price comes to in CobbleDollars (lessons, shops, fares). |
+| `dollarsPerEmerald` | 100 (1 to 10000) |  | What an emerald price comes to in CobbleDollars (lessons, shops, fares). A placed Shop Counter's welcome line and the realm treasury's give hint name this rate ("1 CobbleDollar" at 1; B1346, B1347). |
 | `retrainPrices` | 5, 10, 20, 35, 50 (each 0 to 1000) |  | Emeralds to retrain a villager who has a job as a Builder, by their level: Novice to Master (26.6; in CobbleDollars, times `dollarsPerEmerald`). In the file only; a short list is filled from the defaults. |
 
 Game rules (per world, `/gamerule`):

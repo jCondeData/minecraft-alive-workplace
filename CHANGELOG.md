@@ -22,6 +22,8 @@ asks for the steps, `latest.log` and any crash report).
 - Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three
   builds in his own village (his Blueprint Table's) and tells its players, instead of putting them in the server-wide
   set every later village starts with (B1345).
+- With CobbleDollars: placing a Shop Counter names your server's real CobbleDollar rate ("1,000 per emerald"), not
+  always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned

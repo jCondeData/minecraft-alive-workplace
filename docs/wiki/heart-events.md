@@ -277,3 +277,9 @@ level's event in turn, lowest first, then gives her keepsake once. `KeepsakeComp
 `QaHeartsSickness1031GameTests` (QA, 2 heart-event tests): each line reaches only the listener's chat, in gray, as
 "Cora: line", and a bystander just as near gets none; a listener exactly 8 blocks off is still told the next line, at
 8.5 it stops with nothing kept, and coming back starts over from the first line.
+
+`QaHeartEvents1116cGameTests` (QA, 5 tests): two friends reaching 2 hearts together are told one at a time, each once,
+and the one waiting hears nothing until his turn; the listener dying or logging out halfway, or the villager going to
+sleep or panicking halfway, stops the telling with nothing kept, and it starts over from the first line (a waiting
+friend gets it when the listener logs out); 600 points at once tells the 2-, 4- and 6-heart events in order, each
+counted once, and her next is at 8 hearts.

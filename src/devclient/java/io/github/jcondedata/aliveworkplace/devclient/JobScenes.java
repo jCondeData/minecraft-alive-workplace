@@ -9849,7 +9849,7 @@ final class JobScenes {
 			}
 			if (tick == 116) {
 				ScreenshotHarness.shot(mc, "04_dropbox_screen");
-				Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.ContainerScreen, "the Drop Box's screen opened");
+				Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.DropBoxScreen, "the Drop Box's screen opened");
 			}
 			if (tick == 120) {
 				mc.setScreen(null);

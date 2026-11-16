@@ -341,8 +341,8 @@ stand-in" warning naming it, and the server starts as usual (B1312).
   only while its serializer's recipe is loaded and is gone after a reload without it; without Carved Wood the shipped
   chest file adds nothing; `except` taking out all, a result from itself, and from only uncrafted things (both kept) or
   a tag of logs (only the crafted woods kept); broken files (no serializer or result, empty `from`, a bad result id,
-  not JSON, an array) are skipped and the rest load. A typo in a `from` or `except` entry crashes the server at start
-  (B1312; its tests are on the branch tests/recipe-standin-typos-1116e).
+  not JSON, an array) are skipped and the rest load. A typo in a `from` or `except` entry skips that file with the
+  warning, and the server starts (B1312: `QaRecipeStandInTypos1116eBugTests`, 3).
 - `QaCarvedChest1115eCompatTests` (1) and `QaCarvedChest1115eBugCompatTests` (2, B1302): a one-block blueprint with a
   Carpenter hired gets its plain barrel from 3 spruce logs, and its plain chest from 8 oak planks or from a carved oak
   chest in the builder's chest.

@@ -67,6 +67,48 @@ public final class Chronicle {
 		}
 	}
 
+	/**
+	 * The Chronicle page's "Show" filters (ROADMAP 48.4, boards/Chronicle.png): every entry is in ALL and in exactly one
+	 * other group, by its kind. The icon is a Copperline Hall icon ({@code CopperStyle.SECTION_ICONS}' names).
+	 */
+	public enum Group {
+		ALL("overview"), PEOPLE("people"), BUILDING("buildings"), TRADE("trade"), FESTIVALS("calendar"), DEFENSE("defense"),
+		STORIES("quests");
+
+		/** The Copperline icon's name. */
+		public final String icon;
+
+		Group(String icon) {
+			this.icon = icon;
+		}
+
+		public Component title() {
+			return Component.translatable("screen.aliveworkplace.hall.chronicle.group." + name().toLowerCase(Locale.ROOT));
+		}
+
+		/** Whether {@code kind}'s entries show under this filter. */
+		public boolean has(Kind kind) {
+			return this == ALL || of(kind) == this;
+		}
+
+		/** The group by its number (ALL for one out of range). */
+		public static Group of(int ordinal) {
+			return ordinal >= 0 && ordinal < values().length ? values()[ordinal] : ALL;
+		}
+
+		/** The one group (never ALL) a kind's entries are in. */
+		public static Group of(Kind kind) {
+			return switch (kind) {
+				case BIRTH, DEATH, REVIVED, ARRIVED, JOINED, MASTER, WEDDING, LIFE, FRIEND, CLASS, FUNERAL, TITLE -> PEOPLE;
+				case FOUNDED, BUILT, PLANS, RANK, WONDER, RESEARCH, EDICT, REFORM, BANNER -> BUILDING;
+				case MARKET, CARAVAN, GUILD, REALM -> TRADE;
+				case FESTIVAL, CUP -> FESTIVALS;
+				case RAID, PROTECTION, SIGHTING, SIEGE, BOUNTY, FEUD, FIRE, DROUGHT, PLAGUE -> DEFENSE;
+				case QUEST, LEGEND, STORY -> STORIES;
+			};
+		}
+	}
+
 	/** One line of the chronicle: the day (1 for the world's first), what kind of thing, and what happened. */
 	public record Entry(long day, Kind kind, Component text) {
 	}

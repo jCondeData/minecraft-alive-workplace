@@ -7,8 +7,9 @@ Roadmap items: 28.23, B312, 43.2
 ## What a player sees
 
 A villager working at a Trade Board becomes a Pokémon Trader. Right-click one with an empty hand and their trade screen
-opens, in the Village Hall's look (43.2): a dark panel with a slate-blue edge, the trader's name in gold at the top and
-their book (hover it for the rules of the day) in a framed cell beside it. On the left, a dark list of the day's offers,
+opens, in Copperline (43.2, 48.4): a dark window with the trader's name on the copper plaque, and on the bar under it
+how many offers there are today, their book (hover it for the rules of the day) in a framed cell and a close X. The line
+at the foot names the offer under the mouse and what it costs. On the left, a dark list of the day's offers,
 one row each: the Pokémon in a framed cell, its name and level in white with a gold ★ if it's shiny, what the trader
 wants for it on a gray-blue line under it ("For: any Water, Lv. 20+", or for a special request "For: a Pikachu line,
 Lv. 25+") and the ball it comes in at the row's end. On the right, "Your party" in gold over two rows of three framed

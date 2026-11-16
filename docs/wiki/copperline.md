@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4
 
 ## What a player sees
 
@@ -208,6 +208,32 @@ shell; `guide/GuideBook.Reader` and `ui/SettingsEditor` (core) do what a click d
 layouts at 427x240, 480x270 and 320x180. Every setting has its section (`SettingsLayout`'s list; the test fails for a
 new one left out). Saving is as before: closing the screen writes the file and applies it.
 
+## The Chronicle, the list menus and the Pokémon Trader (48.4)
+
+**The Chronicle** (the Village Hall's Calendar, Chronicle) is the board's **Chronicle** (`boards/Chronicle.png`), laid
+out by `ui/ChronicleLayout` (pure arithmetic, checked by the GameTests) beside the Hall's section rail: the plaque reads
+"Chronicle" and the lintel "Oakhaven · 128 entries since day 1" (on a small screen "128 entries"). On the left a **Show**
+column: All, People, Building, Trade, Festivals, Defense and Stories, each with its Copperline icon and how many entries it
+holds, the open one copper-marked; a click lists only that kind (every entry kind is in exactly one group:
+`Chronicle.Group`), and Back is at the column's foot. At 320x180 the column is icons with their counts and the whisper line
+names them. On the right the entries, newest first, under **day headers** ("DAY 47 · AUTUMN 5" over a rule, the season
+and its day worked out with the server's season length); each entry is a chevron, its icon and its text on one line, and
+a click **opens** it to its whole text (a copper-edged box) and closes it again. The mouse wheel scrolls the list. The
+whisper line says when an entry was written and that a click reads all of it, what a filter shows, or the page's hint.
+
+**The list menus** (ROADMAP 42, `ChoiceTableScreen` in list mode: the Move Tutor, the daycares and their keeper, the
+Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
+and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
+research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
+scholars' research: Worked by the village's scholars at their desks"), and its tooltip shows as before. The list sits on
+the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
+line's right. Every row, button, price, tooltip and click is as before.
+
+**The Pokémon Trader** has the shell round its offers and party: the trader's name on the plaque, "3 offers today" on the
+lintel beside the trader's book (moved there from the corner, so the close X has room), the close X, and a whisper line
+that names the offer under the mouse and its price ("Pikachu · For: any Electric, Lv. 20+. Click to pick it.") or the
+Pokémon or book under it.
+
 ## Decisions
 
 - **The Settings screen saves on closing, as before (44.4).** The board's Save button and its red "fix this field"
@@ -223,6 +249,9 @@ new one left out). Saving is as before: closing the screen writes the file and a
 - **The team's Pokémon sit in wells (48.2).** Each team card puts its Pokémon's model in a sunken well as tall as the
   card (24 pixels), the same well a "???" card has, so the creature (the board's subject) reads first; the name and level
   get a few pixels less and trim with "..." on narrow cards (the whisper line gives them in full).
+- **The list menus' rail is icons (48.4).** A worded rail took a quarter of the window and cut the list's columns
+  ("Level 0 ..." for "Level 0 of 3" on Research); the icon grid takes 50 pixels, so every column reads as it did under
+  the old row of tabs, and the whisper line and tooltip give the tab's name.
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
 - **The village's name and date moved from the rail to the lintel** ("where you are"), so the rail is the sections only
@@ -236,14 +265,15 @@ new one left out). Saving is as before: closing the screen writes the file and a
 ## Known limits
 
 - The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Trainer screen, the status card
-  and the rest come in Milestones 44, 47 and 48. The Blueprint Table (48.1) and the Trainer screen (48.2) are (below).
+  and the rest come in Milestones 44, 47 and 48. The Blueprint Table (48.1), the Trainer screen (48.2), the status card (48.3) and the Chronicle, list menus and Pokémon Trader (48.4) are (above).
 - The Blueprint Table's material slots compare with what the player carries, not with the village's chests (the screen
   knows only the player's inventory). The board's coins, Walk through and favorite key are not in the table (it has none).
 - The rail shows no counts yet (the parts can draw them; the Hall sends none).
 - The Trainer screen's cards show no types or moves (the board's), and its rail no stars or last battle: the server
   doesn't send them. Challenge has no crossed-swords glyph (no such glyph yet).
-- The status cards and the Pokémon Trader have the new window, colors, buttons and whisper line but
-  no plaque yet (they draw their own titles).
+- The Chronicle (48.4) has no search box or sort menu (the board's): the page shows a hall's newest entries (up to 36 at
+  a time, of the 100 a hall keeps) and the filters already narrow it; nor the time of day or the people and places chips
+  of an entry, which the chronicle doesn't keep. A click on a name doesn't jump to that villager.
 
 ## Proof
 
@@ -286,6 +316,16 @@ they need; teams of one to eight cards inside the stage and apart in even rows; 
 new sentences in the lang file), with `TrainerScreenGameTests`, `TrainerScreenButtonsGameTests`,
 `QaTrainerScreen1111dGameTests` still passing. Scene: `copperline_trainer` (with Cobblemon: the mouse on Challenge and
 on Trade, then at 320x180).
+
+48.4: `CopperlineChronicleGameTests` (3: the Chronicle's column, filters, Back and list at 427x240, 480x270, 640x360 and
+320x180 with group words one and three times as long, the rows apart and an open entry taller, scrolling only when
+needed; a real hall's Chronicle page: newest first with dates, every kind in exactly one group, the filters' counts, a
+filter's click showing only its group, an empty group's line, All bringing every entry back, Back still first; the list
+menus' rail with no, 1, 6 and 12 tabs, the list beside it and the page arrows in the whisper line; the Trader's book on
+the lintel clear of the plaque and the close X; the new sentences), with `CopperlineShellGameTests`,
+`PokemonTradeLayoutGameTests`, `QaTradeRows1109dGameTests`, the hall page tests and the list menu tests still passing.
+Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
+list menu with its tab on the rail).
 
 48.3: `CopperlineStatusCardGameTests` (3: a builder's card, an empty card and a thirty-line card at 427x240, 480x270,
 640x360 and 320x180 with labels one, three and five times as long: the card inside the screen, portrait, name and close

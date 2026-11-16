@@ -95,6 +95,36 @@ final class Leftovers {
 	}
 
 	/**
+	 * Empties the village round {@code hall} (absolute) of what earlier batches left in it: every entity but players, every
+	 * bed, every Storehouse whose village reaches the test area, and every kitchen (smoker, Kitchen Stove) whose chests are
+	 * the hall's store. The village reaches {@code VillageHalls.RADIUS} (64) across, past {@link #clear}'s 48, and its
+	 * census counts the food in the chests by any kitchen or Storehouse in it: the Hall board's overview read "48 / 1 kind
+	 * of meal" for a hall with no food of its own once the full suite put it by another test's smoker chest (B1339). Call
+	 * it before the test sets its own. Only for tests alone in their batch.
+	 */
+	static void village(GameTestHelper helper, net.minecraft.core.BlockPos hall) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		for (Entity e : level.getEntitiesOfClass(Entity.class, io.github.jcondedata.aliveworkplace.hall.VillageHalls.area(hall), e -> !(e instanceof Player))) {
+			e.discard();
+		}
+		beds(helper, hall);
+		storehouses(helper);
+		java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> kitchen = h ->
+			h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.KITCHEN_STOVE_POI) || h.is(net.minecraft.world.entity.ai.village.poi.PoiTypes.BUTCHER);
+		java.util.List<net.minecraft.core.BlockPos> kitchens = level.getPoiManager().findAll(kitchen, p -> true, hall,
+			io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(net.minecraft.core.BlockPos::immutable).toList();
+		for (net.minecraft.core.BlockPos k : kitchens) {
+			level.removeBlock(k, false);
+			// a point with no block under it (as B427's halls) isn't taken away by removing the block: take the point itself
+			if (level.getPoiManager().getType(k).filter(kitchen).isPresent()) {
+				level.getPoiManager().remove(k);
+			}
+		}
+		io.github.jcondedata.aliveworkplace.hall.VillageNeeds.forget();
+	}
+
+	/**
 	 * Removes every bed (a home point of interest) within {@code VillageHalls.RADIUS} (as it is now) of {@code hall}
 	 * (absolute). A hall's reach goes past its test's area, and a bed an earlier batch's test left there (never cleared,
 	 * as it stood outside that test's area) is one of the village's beds: StewardCivicRulesGameTests counted a gray bed

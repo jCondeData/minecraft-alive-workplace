@@ -568,7 +568,9 @@ QUICK_MILESTONES = (36, 46)
 # Owner, 2026-10-26: the new Village Hall (40) goes to lane c, Waystones (41) to lane d; lane e keeps bug-testing
 # (40's items build on each other, and two lanes on one milestone with no claims would collide).
 # Owner, 2026-11-08: one look for every screen, Milestone 42 to lane c, 43 to lane d, 44 to lane e.
-BIG_ORDER = {"c": (45, 42, 40, 37, 38, 39), "d": (43, 41, 38, 37, 39), "e": (44, 39, 37, 38)}
+# Owner, 2026-11-16: Copperline, the new look for every screen: 47 (shared pieces and the Hall) to lane c, 48 to
+# lane d and 44 (redone in Copperline) to lane e; 48 and 44 wait for 47.1 (their "(blocked: ...)" marks).
+BIG_ORDER = {"c": (47, 45, 42, 40, 37, 38, 39), "d": (48, 43, 41, 38, 37, 39), "e": (44, 39, 37, 38)}
 
 
 def lane_of(who):

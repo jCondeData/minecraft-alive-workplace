@@ -5340,6 +5340,27 @@ final class JobScenes {
 				}, 30)),
 			(level, player) -> player.getInventory().items.stream().anyMatch(stack -> BlueprintItem.data(stack)
 				.map(d -> d.structure().getPath().startsWith("scans/")).orElse(false))));
+		// The Drop Box in Copperline (ROADMAP 44.1): its slots and the pack in wells, what waits on the lintel, where it goes beside.
+		SCREENS.put("drop_box", new Screen("the Drop Box opened in Copperline with its slots, the pack and where things go", new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				place(level, STATION, ModBlocks.DROP_BOX);
+				var box = (io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity) level.getBlockEntity(STATION);
+				box.setItem(0, new ItemStack(Items.OAK_LOG, 32));
+				box.setItem(1, new ItemStack(Items.COBBLESTONE, 64));
+				box.setItem(2, new ItemStack(Items.WHEAT, 18));
+				box.setItem(9, new ItemStack(Items.IRON_INGOT, 5));
+				player.getInventory().clearContent();
+				player.getInventory().setItem(0, new ItemStack(Items.IRON_PICKAXE));
+				player.getInventory().setItem(1, new ItemStack(Items.BREAD, 12));
+				player.getInventory().setItem(9, new ItemStack(Items.GLASS, 24));
+				player.getInventory().setItem(10, new ItemStack(Items.BRICKS, 40));
+				player.openMenu(box);
+			},
+			List.of(step("01_drop_box_screen", 0, 3),
+				new Step("02_drop_box_pack", io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity.SIZE + 1, 3, (level, player) ->
+					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getType() == ModBlocks.DROP_BOX_MENU && m.getRowCount() == 3,
+						"the Drop Box opened on its own Copperline menu"), 25)),
+			(level, player) -> player.containerMenu instanceof ChestMenu m && m.getType() == ModBlocks.DROP_BOX_MENU));
 		SCREENS.put("counter", new Screen("the Price Tag's screen opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				place(level, STATION, ModBlocks.SHOP_COUNTER);
@@ -5365,7 +5386,8 @@ final class JobScenes {
 				step("02_counter_price", io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity.COLUMNS + 1, 2),
 				// The owner's sales log in chat (sneak-right-click on the counter).
 				new Step("03_counter_sales", -1, 6, (level, player) -> {
-					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getRowCount() == 2, "the Shop Counter's price list opened");
+					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getRowCount() == 2 && m.getType() == ModBlocks.SHOP_COUNTER_MENU,
+						"the Shop Counter's price list opened on its Copperline menu");
 					player.closeContainer();
 					var counter = (io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity) level.getBlockEntity(STATION);
 					Showcase.check(counter.sales().size() == 2, "the owner's sales log lists both sales");

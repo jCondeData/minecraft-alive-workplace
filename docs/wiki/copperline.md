@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1
+Roadmap items: 47.1, 44.1
 
 ## What a player sees
 
@@ -28,6 +28,14 @@ Roadmap items: 47.1
   sink, unusable ones are flat and gray. Only the one main or chosen button is copper. Lists sit in sunken wells; the row
   under the mouse turns lighter with a yellow edge, the chosen row gets the copper mark. Bars, tabs, icon cells and
   scroll bars follow the same colors.
+- **Screens with item slots (44.1): the Mailbox, the Drop Box and the Shop Counter.** The same window, plaque, lintel
+  and whisper line round their real slots. Every slot, your inventory's included, is a sunken well, lit with a
+  lantern-yellow edge under the mouse, and each block of slots has a heading ("MAIL FOR YOU", "IN THE BOX", "PRICE
+  LIST", "YOUR PACK"). The lintel counts what waits: "3 items waiting" in the mailbox, "4 stacks waiting for a porter"
+  in the Drop Box, "2 columns for sale" on the counter. A panel on the right says what the screen is for: the mailbox's
+  "To:" and "Letter:" fields, its parcel (3x3 slots) and the one copper **Send** button (gray until a name is written);
+  the Drop Box's and the counter's "What happens". The counter names its two rows "Sells" and "Price" at the left. The
+  foot line says what the slot under the mouse is for ("What one sale hands over: the item and how many").
 - Nothing a screen did before is gone: every button, price, tooltip, sound, refusal and key works as before; only the
   look changed.
 
@@ -46,6 +54,13 @@ Roadmap items: 47.1
   color names stayed (the screens use them) with Copperline's values. `ChoiceTableScreen` puts the plaque, the lintel
   (with the money on list menus) and the close X on every Hall-look menu, and the whisper line at its foot.
   `VillageHallMenuScreen` draws the Hall's rail from `CopperLayout`.
+- **Slot screens (44.1):** `CopperSlots` (core, pure numbers) places the window, lintel, side panel and whisper line
+  round a menu's slot frame, which stays where the menu puts its slots: the Drop Box and the counter are still vanilla
+  chest menus (three rows; two rows) with a chest's slot places, now on their own menu types
+  (`aliveworkplace:drop_box`, `aliveworkplace:shop_counter`) so the client can draw them; the mailbox's inbox and pack
+  moved to a three-row chest's places and its parcel into the panel (`MailboxMenu`). `CopperSlotScreen` (client) draws
+  the frame; `MailboxScreen`, `DropBoxScreen` and `ShopCounterScreen` add their panels and words. No new art: the
+  wells, panel, buttons and glyphs are 47.1's.
 - **The art:** the nine-slices (window, plaque, panel, well and its focus and error states, tooltip, toast, the button and
   copper button in every state, danger) are drawn as letter grids on the palette by `tools/textures/art/copperline.py`;
   the 8-pixel status glyphs and the 16-pixel Hall icons start from the designer's sheets and are locked onto the palette
@@ -61,7 +76,11 @@ none (only the look changed)
 
 ## Items, blocks, jobs, commands
 
-- No new items, blocks, jobs or commands.
+- No new items, blocks, jobs or commands. Two new menu types (44.1), `aliveworkplace:drop_box` and
+  `aliveworkplace:shop_counter`, for the Drop Box's and the counter's screens.
+- New text (44.1): `screen.aliveworkplace.copperline.pack` ("YOUR PACK"), and the slot screens' headings, counts and
+  foot lines under `screen.aliveworkplace.mailbox.inbox_header`, `screen.aliveworkplace.drop_box.contents` and
+  `screen.aliveworkplace.shop_counter.prices` and the keys after them.
 - New text: `screen.aliveworkplace.copperline.key.esc`, `screen.aliveworkplace.copperline.key.close` (the whisper
   line's "Esc close"), `screen.aliveworkplace.copperline.where` (the village and the date on the Hall's lintel),
   `screen.aliveworkplace.copperline.rail_whisper` (a rail section and what it is for),
@@ -69,6 +88,12 @@ none (only the look changed)
   `screen.aliveworkplace.copperline.parts.title` and the keys after it (the showcase only).
 
 ## Decisions
+
+- **Slots keep their places (44.1).** The Drop Box and the counter keep a vanilla chest's slot positions and their
+  menus stay `ChestMenu`, so automation, inventory mods and every test that opens them see what they saw before; only
+  the mailbox's slots moved (its menu is the mod's own), to put the inbox and pack where a chest has them and the parcel
+  next to the address. The plaque on the counter says "Shop Counter"; its old title ("Goods on top, prices below") is
+  now the foot line's hint.
 
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
@@ -97,4 +122,12 @@ off the screen or overlapping, every rail entry clickable, the rail a grid only 
 Trainer's and the status card's buttons inside the window and clickable at both scales), with the screens' own tests
 still passing: `StatusCardButtonsGameTests`, `TrainerScreenButtonsGameTests`, `QaTrainerScreen1111dGameTests`.
 
-Showcase scene: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail).
+`CopperlineSlotScreensGameTests.mailboxSlotsFitCopperlineAndShiftClicksStillWork`,
+`CopperlineSlotScreensGameTests.dropBoxSlotsFitCopperlineAndShiftClicksStillWork`,
+`CopperlineSlotScreensGameTests.shopCounterPricesSetOnItsScreenStillSell` (44.1: each opened by using the block; every
+slot inside the window and off the lintel, panel and foot line, none overlapping, the window inside 427x240;
+shift-clicks both ways; the inbox refuses items; a price set on the counter's screen sells on the trade screen and is
+logged).
+
+Showcase scenes: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail), `mail`,
+`counter` and `drop_box` (44.1: the three slot screens).

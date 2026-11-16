@@ -6659,7 +6659,7 @@ stage, whisper line) the way its nearest board shows. 47.1 removes the `(blocked
 Same decision as Milestone 42 (owner, 2026-11-08). Lane E builds it, in order, with `TableStyle` and 42.1's pieces as
 in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay theirs. Depends on: nothing open.
 
-- [ ] **44.1** **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
+- [x] **44.1** (review: pending 2026-11-16) **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
   (the player's inventory included, framed like the Hall's cells). Done when: GameTests that slots, shift-clicks
   and the counter's sales still work; scenes `mail`, `counter` and a new `drop_box`.
 - [ ] **44.2** **The trading screen of the mod's own jobs** (Shopkeeper and Ferryman without CobbleDollars, the

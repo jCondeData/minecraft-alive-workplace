@@ -16,7 +16,7 @@ words on its page.
 ## Sending one
 
 Open your [Mailbox](mailbox.md), type the player's name in **To**, and write in the **Letter** line ("a note to go with
-it"). Put items in the top row to send with it if you like, and press **Send**. The letter goes first in the parcel. A
+it"). Put items in the parcel to send with it if you like, and press **Send**. The letter goes first in the parcel. A
 [Postman](postman.md) picks it up: within their 64-block round it's delivered on their next round; further away it
 goes with the night mail and arrives at dawn.
 

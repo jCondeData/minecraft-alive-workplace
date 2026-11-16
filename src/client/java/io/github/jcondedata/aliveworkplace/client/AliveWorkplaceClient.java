@@ -25,6 +25,8 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		io.github.jcondedata.aliveworkplace.guide.GuideBookItem.open = () -> Minecraft.getInstance()
 			.setScreen(new io.github.jcondedata.aliveworkplace.client.guide.GuideScreen());
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
+		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.DROP_BOX_MENU, DropBoxScreen::new);
+		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.SHOP_COUNTER_MENU, ShopCounterScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU, VillageHallMenuScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE_MENU, StorehouseScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.POKEMON_TRADER_MENU, PokemonTradeScreen::new);

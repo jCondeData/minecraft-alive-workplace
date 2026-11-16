@@ -175,6 +175,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<LuxuryWorkshopsScene> luxuryWorkshops = new Lazy<>(() -> new LuxuryWorkshopsScene());
 	private final Lazy<GrandHousesScene> grandHouses = new Lazy<>(() -> new GrandHousesScene());
 	private final Lazy<FurnishedHomeScene> furnishedHome = new Lazy<>(() -> new FurnishedHomeScene());
+	private RebuildScene rebuild;
 	private final Lazy<FurnitureAnyModScene> furnitureAnyMod = new Lazy<>(() -> new FurnitureAnyModScene());
 	private final Lazy<FurnishedWorkplacesScene> furnishedWorkplaces = new Lazy<>(() -> new FurnishedWorkplacesScene());
 	private final Lazy<SeatsAndBedsScene> seatsAndBeds = new Lazy<>(() -> new SeatsAndBedsScene());
@@ -422,6 +423,13 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			grandHouses.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if (rebuild != null || System.getProperty("aliveworkplace.scene", "").startsWith("rebuild_")) {
+			if (rebuild == null) {
+				rebuild = new RebuildScene(System.getProperty("aliveworkplace.scene").substring("rebuild_".length())); // 49.1: any family
+			}
+			rebuild.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {

@@ -1,0 +1,76 @@
+// Roofs and gables: a gable roof (steep or 45-degree, ridge along x or z), the gable wall under it, barge boards under
+// its rake, and a dormer (parts library, tools/blueprints/REBUILD.md). `roof` is the palette's {full, stairs, slab}.
+import { slab, stair } from './canvas.mjs'
+
+/** gableRoof: a roof over `across` (the span, eaves at both ends) running `along` (gable ends at both ends).
+ *  steep: a full block under each stair (two up per one across). `keep(x,y,z)` returns false for cells another roof
+ *  or wall owns. Returns the ridge's y and each column's underside (for gables and trim). */
+export function gableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY, steep }, roof, keep = () => true) {
+  const half = (a1 - a0) / 2
+  const mid = a0 + half
+  const put = (u, y, v, id, props) => {
+    const [x, z] = axis === 'z' ? [u, v] : [v, u]
+    if (keep(x, y, z)) c.set(x, y, z, id, props)
+  }
+  const ridgeY = steep ? eaveY + 2 * half - 1 : eaveY + half
+  for (let v = l0; v <= l1; v++) {
+    for (let i = 0; i < half; i++) {
+      for (const [u, rise] of [[a0 + i, axis === 'z' ? 'east' : 'south'], [a1 - i, axis === 'z' ? 'west' : 'north']]) {
+        if (steep) {
+          if (i > 0) put(u, eaveY + 2 * i - 1, v, roof.full)
+          put(u, eaveY + 2 * i, v, roof.stairs, { facing: rise, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+        } else {
+          put(u, eaveY + i, v, roof.stairs, { facing: rise, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+        }
+      }
+    }
+    put(mid, ridgeY, v, roof.full)
+  }
+  const under = {}
+  for (let i = 0; i <= half; i++) {
+    const y = i === 0 ? eaveY : steep ? (i === half ? ridgeY : eaveY + 2 * i - 1) : eaveY + i
+    under[a0 + i] = y; under[a1 - i] = y
+  }
+  return { ridgeY, under }
+}
+
+/** gableWall: fills a gable end under a roof from y0 up to each column's underside, `pick(u, y)` choosing the block
+ *  (an id, [id, props], or null to leave it). */
+export function gableWall(c, axis, line, [a0, a1], y0, under, pick) {
+  for (let u = a0; u <= a1; u++) for (let y = y0; y < under[u]; y++) {
+    const id = pick(u, y)
+    if (!id) continue
+    const [x, z] = axis === 'z' ? [u, line] : [line, u]
+    const [name, props] = Array.isArray(id) ? id : [id, {}]
+    c.set(x, y, z, name, props)
+  }
+}
+
+/** bargeTrim: a dark board under a gable's overhanging rake, stepping up with it (an upside-down slab under each
+ *  column's lowest roof cell on the overhang line), so the roof's edge reads apart from the gable. */
+export function bargeTrim(c, axis, line, [a0, a1], under, id) {
+  for (let u = a0; u <= a1; u++) {
+    const [x, z] = axis === 'z' ? [u, line] : [line, u]
+    if (!c.get(x, under[u] - 1, z)) slab(c, x, under[u] - 1, z, id, 'top')
+  }
+}
+
+/** dormer: a three-wide gabled dormer in a slope whose ridge runs along z, centred on z: its face on the knee line
+ *  (x = `face`, y0..y0+2, and y0+3 at the apex) of infill round a two-high window, corner posts, its little roof
+ *  (ridge along x) running from the eave line (`eave`, outward of the face) into the main slope. The Daub House's
+ *  is face 1, eave 0, y0 6 (the west slope); an east-slope dormer passes its own face and eave (eave = face + 1). */
+export function dormer(c, z, roof, infill, glass, frame, { face = 1, eave = 0, y0 = 6 } = {}) {
+  for (let dz = -1; dz <= 1; dz++) for (let y = y0; y <= y0 + 2; y++) c.set(face, y, z + dz, infill)
+  c.set(face, y0 + 3, z, infill)
+  c.set(face, y0, z, glass); c.set(face, y0 + 1, z, glass)
+  for (const dz of [-1, 1]) for (let y = y0; y <= y0 + 2; y++) c.set(face, y, z + dz, frame, { axis: 'y' })
+  const step = face >= eave ? 1 : -1
+  const xs = [eave, face]
+  for (const x of xs) {
+    stair(c, x, y0 + 2, z - 2, roof.stairs, 'south')
+    stair(c, x, y0 + 2, z + 2, roof.stairs, 'north')
+    stair(c, x, y0 + 3, z - 1, roof.stairs, 'south')
+    stair(c, x, y0 + 3, z + 1, roof.stairs, 'north')
+  }
+  for (const x of [eave, face, face + step]) c.set(x, y0 + 4, z, roof.full)
+}

@@ -10,8 +10,14 @@ the game counts as solid (a fence, a wall, a slab...), which it turns to dirt. S
 bottom slab, two in a row, where a bed belongs (the owner saw them as broken beds no one can sleep in). Since B648:
 glass panes and iron bars whose run ends in the air (joined on one side only), the Terrace's broken windows (B640). Since B656:
 glass joined to nothing with air beside it, a lone thin post (between two stairs it can't join, or a block out from
-a wall).
+a wall). Since 49.1, the owner's three rules (owner_problems): a fence, wall or pane run that doesn't join at a corner,
+a lamp under 2 blocks tall standing on a floor, and plates or crockery anywhere but a kitchen or a dining table. The
+blueprints drawn before them are listed in owner_rules_baseline.json until their rebuild (Milestones 49-52): theirs are
+reported as one line, not refused. `python3 tools/blueprints/check.py` runs every check over every shipped .nbt.
 """
+
+import json
+import os
 
 AIR = {"minecraft:air", "minecraft:cave_air", "minecraft:structure_void", "minecraft:jigsaw"}
 FACING = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0)}
@@ -157,6 +163,7 @@ def check(b, only=None, whole=None):
     problems += chair_problems(blocks, only)
     problems += doorway_problems(blocks, only)
     problems += headroom_problems(blocks, b.w, b.h, b.d, deep, drawn, only)
+    problems += owner_problems(blocks, getattr(b, "spots", None) or [], only)
     if (only is None) if whole is None else whole:
         problems += reach_problems(blocks, b.w, b.h, b.d, deep, drawn)
     return problems
@@ -615,3 +622,210 @@ def reach_problems(blocks, w, h, d, deep=0, drawn=None):
         elif sum(1 for g in group if not roofed(*g) and seated(*g)) >= 4:  # a row of seats under the sky, not a roof
             problems.append(f"an open stand or terrace {where} has no stairs or ladder up to it")
     return problems
+
+
+# --- The owner's three rules (49.1, owner 2026-11-16) ------------------------------------------------------------
+OWNER = "owner rule: "
+RUNS = (("_fence",), ("_wall",), ("glass_pane", "iron_bars"))
+BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "owner_rules_baseline.json")
+
+
+def _run_kind(block):
+    """Which kind of run a block belongs to (0 fence, 1 wall, 2 pane), or None: gates join fences but end a run."""
+    if block is None:
+        return None
+    s = _short(block)
+    if "gate" in s:
+        return None
+    for i, ends in enumerate(RUNS):
+        if s.endswith(ends):
+            return i
+    return None
+
+
+def corner_problems(blocks, only=None):
+    """Rule 1: two runs of fence, wall or glass meeting at a corner with the corner post left out: the end of a run
+    along x and the end of a run along z stand diagonally, the cell between them (where both would join) is air, so
+    the railing shows a gap at its corner."""
+    problems, seen = [], set()
+    for (x, y, z), block in sorted(blocks.items()):
+        kind = _run_kind(block)
+        if kind is None or (only is not None and (x, y, z) not in only):
+            continue
+        along_x = any(_run_kind(blocks.get((x + d, y, z))) == kind for d in (-1, 1))
+        if not along_x:
+            continue
+        for dx in (-1, 1):
+            if _run_kind(blocks.get((x + dx, y, z))) == kind:
+                continue  # the run goes on that way: this isn't its end on that side
+            for dz in (-1, 1):
+                other = (x + dx, y, z + dz)
+                if _run_kind(blocks.get(other)) != kind:
+                    continue
+                if not any(_run_kind(blocks.get((other[0], y, other[2] + e))) == kind for e in (-1, 1)):
+                    continue  # the other isn't a run along z
+                if _run_kind(blocks.get((other[0], y, other[2] - dz))) is not None:
+                    continue
+                corner = (x + dx, y, z)
+                if corner in blocks or corner in seen:
+                    continue  # a post, a log or a wall stands in the corner: both runs join it
+                seen.add(corner)
+                problems.append(f"{OWNER}{_short(block)} runs @{x},{y},{z} and @{other[0]},{y},{other[2]} meet at a corner "
+                                f"with no post @{corner[0]},{y},{corner[2]}: put one there so the run joins")
+    return problems
+
+
+LAMPS = ("lantern", "table_lamp")
+# What may stand under a short lamp: a table, side table or slab, a post (a lamp post), a stair's top, a chain.
+LAMP_STANDS = ("_slab", "_fence", "_wall", "chain", "_trapdoor", "_stairs", "_rod")
+# A piece of furniture is a stand too: a lamp on a barrel, a bookcase or a workbench stands two blocks tall.
+FURNITURE_STANDS = ("barrel", "bookshelf", "crafting_table", "_table", "loom", "composter", "cauldron", "lectern",
+                    "chest", "furnace", "smoker", "anvil", "grindstone", "jukebox", "note_block")
+SURFACES = ("table", "side_table", "desk", "counter", "cupboard", "shelf", "nightstand", "drawer")
+
+
+def lamp_problems(blocks, only=None, spots=()):
+    """Rule 2: a lamp under 2 blocks tall (a lantern) standing on a floor: on a full block that a person could stand
+    beside it on. It goes on a table, a side table or a slab, on a post, or hangs."""
+    problems = []
+    surfaces = {tuple(c) for spot in spots if spot.get("kind") in SURFACES for c in spot.get("cells", [])}
+    for (x, y, z), block in sorted(blocks.items()):
+        s, props = _short(block), block[1]
+        if not s.endswith(LAMPS) or props.get("hanging") == "true" or (only is not None and (x, y, z) not in only):
+            continue
+        below = blocks.get((x, y - 1, z))
+        if below is not None and (_short(below).endswith(LAMP_STANDS) or is_table(blocks, (x, y - 1, z))
+                                  or any(t in _short(below) for t in FURNITURE_STANDS) or (x, y - 1, z) in surfaces):
+            continue
+        if below is None and y != 0:
+            continue  # standing on air: the stands-on-air check says so
+        # a floor: a cell beside the lamp, at its height, open to stand in with a full block under it
+        floor = below is None or any(
+            passable(blocks.get((x + dx, y, z + dz))) and not _thin(blocks[(x + dx, y - 1, z + dz)])
+            and not passable(blocks.get((x + dx, y - 1, z + dz)))
+            for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y - 1, z + dz) in blocks)
+        if floor:
+            problems.append(f"{OWNER}{s}@{x},{y},{z} stands on the floor ({_short(below) if below else 'the ground'}): "
+                            f"a short lamp goes on a table, side table or slab, or hangs")
+    return problems
+
+
+KITCHEN = ("furnace", "smoker", "stove", "oven", "cooking_pot", "kitchen", "sink")
+CROCKERY = ("_plate", "plates", "cup", "mug", "teapot", "crockery")
+
+
+def _crockery_cells(blocks, spots):
+    cells = set()
+    for spot in spots:
+        if spot.get("kind") == "crockery":
+            cells |= {tuple(c) for c in spot.get("cells", [])}
+    for p, block in blocks.items():
+        s = _short(block)
+        if "pressure_plate" not in s and not block[0].startswith("minecraft:") and any(t in s for t in CROCKERY):
+            cells.add(p)
+    return {c for c in cells if c in blocks}
+
+
+def crockery_problems(blocks, spots=(), only=None):
+    """Rule 3: plates and crockery anywhere but a kitchen or a dining table: the crockery spots a drawing records (and
+    any modded plate or cup) must stand in a kitchen (a stove, furnace, smoker or counter within 4 blocks across and 3
+    up or down) or on a table with a chair at it."""
+    kitchen = {p for p, block in blocks.items() if any(t in _short(block) for t in KITCHEN)}
+    for spot in spots:
+        if spot.get("kind") == "counter":
+            kitchen |= {tuple(c) for c in spot.get("cells", [])}
+    seats = {tuple(c) for spot in spots if spot.get("kind") in ("chair", "bench", "stool") for c in spot.get("cells", [])}
+    problems = []
+    for x, y, z in sorted(_crockery_cells(blocks, spots)):
+        if only is not None and (x, y, z) not in only:
+            continue
+        if any(abs(kx - x) <= 4 and abs(kz - z) <= 4 and abs(ky - y) <= 3 for kx, ky, kz in kitchen):
+            continue
+        table = (x, y - 1, z)
+        if is_table(blocks, table) or is_table(blocks, (x, y - 2, z)):
+            tx, ty, tz = table if is_table(blocks, table) else (x, y - 2, z)
+            around = [(tx + dx, ty + dy, tz + dz) for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)) for dy in (-1, 0)]
+            if any(c in seats or (_short(blocks.get(c)).endswith("_stairs") and blocks[c][1].get("half") == "bottom")
+                   for c in around if c in blocks or c in seats):
+                continue
+        problems.append(f"{OWNER}{_short(blocks[(x, y, z)])}@{x},{y},{z} is crockery outside a kitchen or dining "
+                        f"table: plates go on a kitchen counter or shelf, or on a table with chairs")
+    return problems
+
+
+def owner_problems(blocks, spots=(), only=None):
+    return corner_problems(blocks, only) + lamp_problems(blocks, only, spots) + crockery_problems(blocks, spots, only)
+
+
+def baselined():
+    """The blueprints drawn before the owner's rules: {name: how many owner-rule problems it had}, until rebuilt."""
+    try:
+        with open(BASELINE) as f:
+            return json.load(f)["blueprints"]
+    except FileNotFoundError:
+        return {}
+
+
+def report(name, problems):
+    """check()'s lines for a saved blueprint, the owner-rule ones of a baselined blueprint folded into one line."""
+    if name in baselined():
+        owner = [p for p in problems if p.startswith(OWNER)]
+        problems = [p for p in problems if not p.startswith(OWNER)]
+        if owner:
+            problems.append(f"(baselined) {len(owner)} owner-rule problem(s) until its rebuild, e.g. {owner[0][len(OWNER):]}")
+    return problems
+
+
+def load_blueprint(path, name):
+    """A shipped .nbt as a kit Build, with its furniture spots (absolute cells) from blueprint_furniture/<name>.json."""
+    from holes import load
+    from kit import Build
+    (w, h, d), cells, states = load(path, props=True)
+    b = Build(w, h, d)
+    for p, block in cells.items():
+        if block is not None:
+            b.blocks[p] = (block, tuple(sorted(states[p].items())))
+    spots = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                         "src/main/resources/data/aliveworkplace/blueprint_furniture", name + ".json")
+    b.spots = []
+    if os.path.exists(spots):
+        with open(spots) as f:
+            for s in json.load(f)["spots"]:
+                px, py, pz = s["pos"]
+                b.spots.append({"kind": s["kind"], "cells": [(px + a[0], py + a[1], pz + a[2]) for a in
+                                                             (blk["at"] for blk in s.get("blocks", []))]})
+    return b
+
+
+def main(argv):
+    """Every check over every shipped blueprint; --owner: only the owner's three rules; --write-baseline: list every
+    blueprint the owner's rules flag in owner_rules_baseline.json (only when the rules first land: rebuilds clear it)."""
+    from kit import MAIN_STRUCTURES
+    names = sorted(os.path.relpath(os.path.join(r, f), MAIN_STRUCTURES)[:-4]
+                   for r, _, fs in os.walk(MAIN_STRUCTURES) for f in fs if f.endswith(".nbt"))
+    flagged = {}
+    for name in names:
+        b = load_blueprint(os.path.join(MAIN_STRUCTURES, name + ".nbt"), name)
+        if "--owner" in argv:
+            blocks = {p: (n, dict(props)) for p, (n, props) in b.blocks.items() if n not in AIR}
+            problems = owner_problems(blocks, b.spots)
+        else:
+            problems = check(b)
+        owner = [p for p in problems if p.startswith(OWNER)]
+        if owner:
+            flagged[name] = len(owner)
+        for p in (problems if "--write-baseline" in argv else report(name, problems)):
+            print(f"  CHECK {name}: {p}")
+    print(f"{len(names)} blueprints, {len(flagged)} with owner-rule problems ({sum(flagged.values())} in all)")
+    if "--write-baseline" in argv:
+        with open(BASELINE, "w") as f:
+            json.dump({"why": "Blueprints drawn before the owner's three rules (ROADMAP 49.1). Their owner-rule problems are "
+                              "reported as one line until their rebuild (Milestones 49-52), which removes them from this "
+                              "list. Never add a new blueprint here.", "blueprints": flagged}, f, indent=1, sort_keys=True)
+            f.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    import sys
+    sys.exit(main(sys.argv[1:]))

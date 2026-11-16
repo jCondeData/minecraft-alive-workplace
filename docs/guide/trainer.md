@@ -28,15 +28,18 @@ Trainer. A villager already at a Training Post becomes one with a **Poké Ball**
 ## Battling
 
 Right-click a trainer with an empty hand and their page opens (over their head you see "right-click to battle" and how
-many battles they've fought). On the left: their name and rank, your record against them, whether you've battled today
-and the rules. On the right: the prize, their team with the real Pokémon models (only the first half of it, rounded up,
-until you beat them once, the rest "???"; the same Pokémon every time you look, and the ones they send into battle), your party with a line each (ready, fainted, or over your level cap), and three buttons.
-**Challenge** starts the battle; **Trade** opens their trades (as sneaking and right-clicking does); **Close** closes.
-When they can't battle you right now, Challenge is gray and the reason is under it: they're asleep ("come back in the
-morning"), busy with someone else, or away at the Cup, or you have no Pokémon with you. The battle heals your team
-first.
+many battles they've fought). Their rank is on the bar at the top, by the close X. On the left: their portrait, name,
+your record against them and whether you've battled today, with three buttons at the foot. On the right: the prize,
+their team with the real Pokémon models (only the first half of it, rounded up, until you beat them once, the rest
+"???"; the same Pokémon every time you look, and the ones they send into battle), your party with a line each (ready,
+fainted, or over your level cap) and the rules. The line at the bottom says what the thing under your mouse is or does.
+**Challenge** starts the battle; **Trade** opens their trades (as sneaking and right-clicking does; it's gray when they
+have nothing to sell or are asleep); **Close** (or Esc) closes.
+When they can't battle you right now, Challenge is gray and a "Can't challenge now" box at the top of the right side
+says why: they're asleep ("come back in the morning"), busy with someone else, or away at the Cup, or you have no
+Pokémon with you. The battle heals your team first.
 
-![The Trainer screen](https://jcondedata.github.io/minecraft-alive-workplace/battle/still-1.jpg)
+![The Trainer screen](https://jcondedata.github.io/minecraft-alive-workplace/copperline_trainer/still-1.jpg)
 
 Every trainer starts as a **Novice** with two young Pokémon and ranks up as people battle them (more when the trainer
 wins), until a **Master** fields six fully evolved Pokémon and plays smart. Beating one pays **CobbleDollars**

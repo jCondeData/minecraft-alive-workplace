@@ -171,3 +171,14 @@ its fainted Pokémon; the battle still ends).
 QA (lane D, 2026-11-14, B43): `QaTrainerRefusedEveryTurn1114dCompatTests.aTrainerRefusedOnFiveTurnsInARowStillBattlesOn`
 (Cobblemon): the trainer's choice refused on five turns in a row, more refusals than one request's limit of 3, and the
 battle still reaches turn 6 (the limit counts per request; kills the mutant that never resets the count).
+
+QA (lane D, 2026-11-16, verifying 48.2): `QaTrainerCopper1116dGameTests` (4, without Cobblemon):
+`QaTrainerCopper1116dGameTests.closeClosesAndUnknownButtonsAreRefused` (Close, opened by an empty-hand click, closes
+the screen and opens no trades; a button the screen doesn't have is refused and leaves it open; the client's copy acts
+on no button), `QaTrainerCopper1116dGameTests.tradeIsGrayedOutWithNothingToSell` (Trade grayed out, and a forged press
+opens nothing, for a trainer with nothing to sell; on with a trade, off again for a baby trainer; Challenge off with a
+reason to show), `QaTrainerCopper1116dGameTests.theLayoutHoldsOnEveryCommonScreen` (GUI scale 2 and 3 on fifteen
+screens, the compact boundary 399x219 / 400x220 among them, and screens where the window stops growing: the window,
+rail, stage and buttons inside and apart, each button and each of one to six team cards hit at its middle) and
+`QaTrainerCopper1116dGameTests.everySentenceIsInTheLangFileInAmericanEnglish` (every Trainer screen sentence: American
+English, no "(s)", every argument filled, the whispers whole sentences, the capped card's and grayed-out Trade's words).

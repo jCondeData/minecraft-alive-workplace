@@ -6,7 +6,8 @@ autonomously from `ROADMAP.md`, keep `main` green, and explain results in plain 
 
 The goal (owner, 2026-10-03): the public **1.0** with nine expansions up to **2.0** (all built by 2026-10-17). Next
 (owner, 2026-10-17): quick additions (Milestone 36), furnished homes and modded storage (2.1), Cobblemon depth (2.2)
-and Create integration (2.3, the owner's port is in `libs/`). Speed comes from parallel lanes and lean checks,
+and Create integration (2.3, the owner's port is in `libs/`). Top priority now (owner, 2026-11-16): **Copperline**,
+the new look for every screen (`docs/design/copperline/`, Milestones 47, 48 and 44), and 36.23's two Tier 1 houses. Speed comes from parallel lanes and lean checks,
 never from thinner content.
 
 ## Skills (use them; they hold the details this file leaves out)
@@ -16,6 +17,19 @@ never from thinner content.
 - **minecraft-pixel-art:** every texture, item, outfit and GUI sprite, drawn the way vanilla draws its kind (a book
   like vanilla's books, a tool like its tools). No art outside it. Recipes: `tools/textures/art`.
 - **minecraft-architect:** every build and blueprint, checked against `tools/blueprints/STYLE.md` in a render.
+
+Added by the owner, 2026-11-16 (from online research; the first two are in this repo under `.claude/skills/`, MIT):
+- **pixel-art-studio:** with the pixel-art skill, for any set of sprites that must match: lock every texture, icon and
+  GUI sprite to one shared palette (the Copperline palette for screens, `docs/design/copperline/README.md`) and clean
+  up drawn or generated PNGs onto it; its critique-and-iterate loop for icons, faces and creatures.
+- **pxl-pixel-art (claude-pxl):** sprites as code with mirroring, outlines and palette-swap variants, and sprite
+  sheets: use it for the states of one piece (a button's normal, hover, pressed and disabled nine-slices).
+- **Design and UI Design Review (Anthropic plugins, when loaded in the session):** for every new or changed screen,
+  run a design critique (`design:design-critique` or `ui-design-review:ui-review`) on its screenshot before
+  `done --review`, fix what it ranks first, and `design:ux-copy` on new player-facing sentences.
+- **Building research:** `tools/blueprints/STYLE.md`, "From online research": design notes and named parts first,
+  build in passes, cutaways and eye-level interior shots in the client, furniture rules, and `holes.py`'s `open`
+  check for open wall panels.
 
 ## The session loop (sprint mode, owner 2026-10-03)
 

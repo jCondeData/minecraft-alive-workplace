@@ -13,6 +13,9 @@ Finds the holes a player would see in a shipped blueprint (.nbt), without the ga
          over the open top half of a roof stair beside it: where one roof meets another at a corner or a valley and a
          stair, shaped as the game shapes it, leaves a quarter of a block open into the attic behind (kit.seal_peeks
          fills them).
+  open   an opening in a wall or a gable (no glass, bars, door or trapdoor in it) through which the outside reaches a
+         room: four or more cells in under a roof, from open sky or the air beyond the build's sides (the Inn's open
+         timber-frame panels, 2026-11-16). Listed once per room, at the opening.
 
 Not reported (whitelisted by pattern): chimney tops and anything over the highest block of a column next to it (open
 sky outside), courtyards and yards (an open patch of more than four cells at its level, or any patch below y 3),
@@ -283,6 +286,96 @@ def scan(size, cells, only_slots=False):
     return found
 
 
+# What closes a wall's opening for the eye: glass (panes, glass blocks), bars, a door, a trapdoor or a gate. Anything
+# else small (a fence, a lantern, a pot, a carpet) leaves it open.
+SHUT = ("pane", "glass", "_bars", "door", "fence_gate", "leaves")
+
+
+def open_walls(size, cells):
+    """[("open", (x, y, z), why)]: an opening in a wall or a gable that lets you look from outside straight into a
+    room, with no glass, bars, door or trapdoor in it (the Inn, 2026-11-16: panels left empty between the frame's posts
+    and beams, missed because two stacked empty cells read as a window here).
+
+    The outside is every empty cell reached from the build's sides and top through empty cells (a fence or a lantern
+    doesn't stop it; glass, a door or a trapdoor does). Inside it, a cell under a roof (any block over it) is counted
+    by its distance from open sky or from the air beyond the build's sides. An eave, a porch, a soffit or a window's reveal is one or two cells deep; a run of
+    the outside four or more cells in under a roof, six cells or more, is a room the outside has got into. Each such
+    room is listed once, at the cell where the outside comes in (two in from open sky), so an opening open on purpose
+    (an archway, a stall's open front, a loggia, a stable's rail windows) takes one line in ALLOW."""
+    w, h, d = size
+
+    def inb(x, y, z):
+        return 0 <= x < w and 0 <= y < h and 0 <= z < d
+
+    def empty(x, y, z):
+        n = cells.get((x, y, z), "minecraft:air")
+        if n is None or n in OPEN:
+            return True
+        return any(t in n for t in THIN) and not any(t in n for t in SHUT) or "fence" in n and "gate" not in n
+
+    top = {}
+    for (x, y, z), b in cells.items():
+        if b is not None and b not in OPEN:
+            top[(x, z)] = max(top.get((x, z), -1), y)
+
+    def roofed(x, y, z):
+        return top.get((x, z), -1) > y
+
+    steps = ((1, 0, 0), (-1, 0, 0), (0, 1, 0), (0, -1, 0), (0, 0, 1), (0, 0, -1))
+    todo = [(x, y, z) for x in range(w) for y in range(h) for z in range(d)
+            if (x in (0, w - 1) or z in (0, d - 1) or y == h - 1) and empty(x, y, z)]
+    outside = set(todo)
+    while todo:
+        x, y, z = todo.pop()
+        for dx, dy, dz in steps:
+            q = (x + dx, y + dy, z + dz)
+            if inb(*q) and q not in outside and empty(*q):
+                outside.add(q)
+                todo.append(q)
+    # distance from open sky (or the air beyond the build's sides), through the outside
+    dist = {c: 0 for c in outside if not roofed(*c) or c[0] in (0, w - 1) or c[2] in (0, d - 1)}  # the open air beyond
+    front = list(dist)
+    while front:
+        nxt = []
+        for x, y, z in front:
+            for dx, dy, dz in steps:
+                q = (x + dx, y + dy, z + dz)
+                if q in outside and q not in dist:
+                    dist[q] = dist[(x, y, z)] + 1
+                    nxt.append(q)
+        front = nxt
+    deep = {c for c, k in dist.items() if k >= 3 and c[1] >= 1}
+    found, seen = [], set()
+    for c in sorted(deep):
+        if c in seen:
+            continue
+        group, todo = {c}, [c]
+        while todo:
+            x, y, z = todo.pop()
+            for dx, dy, dz in steps:
+                q = (x + dx, y + dy, z + dz)
+                if q in deep and q not in group:
+                    group.add(q)
+                    todo.append(q)
+        seen |= group
+        if len(group) < 6 or max(dist[q] for q in group) < 4:
+            continue
+        # the opening: back out from the shallowest cell of the room towards open sky, to the first cell in a wall's
+        # line (blocks either side of it along x or along z)
+        at = c = min(group, key=lambda q: (dist[q], q))
+        while dist[c] > 0:
+            x, y, z = c
+            if (not empty(x - 1, y, z) and not empty(x + 1, y, z)) or (not empty(x, y, z - 1) and not empty(x, y, z + 1)):
+                at = c
+                if dist[c] <= 2:
+                    break
+            c = min((q for q in ((x + dx, y + dy, z + dz) for dx, dy, dz in steps) if dist.get(q, 99) < dist[c]),
+                    key=lambda q: (dist[q], q))
+        found.append(("open", at, f"an opening with no glass, door or trapdoor: the outside reaches {len(group)} cells"
+                                   f" of a roofed space through it"))
+    return found
+
+
 def basements():
     """{name: depth} of the builds with a basement (26.15), read from StarterBlueprints.java: their files hold the
     basement at the bottom, so the checks here move them back down (the basement, under y 0, is left out: it has no
@@ -315,19 +408,19 @@ def main(argv):
     summary = "--summary" in argv
     show_all = "--all" in argv
     args = [a for a in argv if not a.startswith("--")]
-    total = {"roof": 0, "meet": 0, "stray": 0, "peek": 0}
+    total = {"roof": 0, "meet": 0, "stray": 0, "peek": 0, "open": 0}
     builds = allowed = 0
     under = basements()
     for path in blueprints(args):
         size, cells, states = load(path, props=True)
         name = os.path.relpath(path, STRUCTURES)[:-4]
-        deep = under.get(name, 0)
+        deep = under.get(name, under.get(name[len("modded/"):], 0) if name.startswith("modded/") else 0)
         if deep:
             size = (size[0], size[1] - deep, size[2])
             cells = {(x, y - deep, z): c for (x, y, z), c in cells.items() if y >= deep}
             states = {(x, y - deep, z): c for (x, y, z), c in states.items() if y >= deep}
         found = scan(size, cells) + [("peek", q, f"shut in under {cover.split(':')[-1]}, seen past a roof stair's open top")
-                                     for q, cover in peeks(size, cells, states)]
+                                     for q, cover in peeks(size, cells, states)] + open_walls(size, cells)
         kept = [f for f in found if (name, f[1]) not in ALLOW]
         allowed += len(found) - len(kept)
         found = found if show_all else kept
@@ -340,7 +433,7 @@ def main(argv):
             if not summary:
                 for kind, pos, why in found:
                     print(f"  {kind} {pos} {why}")
-    print(f"TOTAL {sum(total.values())} ({total['roof']} roof, {total['meet']} meet, {total['stray']} stray, {total['peek']} peek) in {builds} blueprints"
+    print(f"TOTAL {sum(total.values())} ({total['roof']} roof, {total['meet']} meet, {total['stray']} stray, {total['peek']} peek, {total['open']} open) in {builds} blueprints"
           + ("" if show_all else f"; {allowed} more on purpose (ALLOW; --all lists them)"))
     return 1 if any(total.values()) else 0
 

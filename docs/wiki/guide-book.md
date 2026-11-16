@@ -3,7 +3,7 @@
 An in-game book that teaches the mod with pictures: every page is a real screenshot of the game with a title and a few
 short steps. Every player is given one the first time they join. Part of 1.0 (Milestone 26).
 
-Roadmap items: 26.2a, B18, B29
+Roadmap items: 26.2a, B18, B29, 44.4
 
 ## What a player sees
 
@@ -11,11 +11,16 @@ Roadmap items: 26.2a, B18, B29
   Players who were already on a server get it on their next join. With a full inventory it lands at their feet.
   Dying doesn't give a second one. A lost book is crafted shapeless from a book and wheat. The creative tab lists it.
   Its tooltip says "Right-click to read how villagers' jobs work". It stacks to 1.
-- **Reading.** Right-click it (with a page-turn sound) and a book opens. Page 0 is the contents: the intro and the seven
-  chapters, each a link. Then one page per topic: the picture on top, the page's title, and the steps under it (at most
-  six lines). Turn pages with the arrow buttons, the Right/Left arrow keys, Page Down/Page Up, D/A or the mouse wheel;
-  Home or Backspace and the Contents button go back to the contents. The book opens where it was left (for this game
-  session).
+- **Reading.** Right-click it (with a page-turn sound) and the book opens in Copperline (44.4, the [new look](copperline.md)):
+  the plaque says "Guide Book", the bar under it the chapter and the page ("Builders · Page 5 of 36"). Down the left,
+  under "CHAPTERS", the rail: Contents, then the seven chapters by short name (Start, Builders, Village, Gathering,
+  Making, Safety, Pokémon) with their page counts; the open one is copper-marked, and a click opens a chapter at its
+  first page. The contents page has the intro and the chapters with the page each starts on, each a link. Then one page
+  per topic: the page's title, the picture (as big as the words under it leave room for) and the steps under it (at
+  most six lines). Turn pages with Back and Next (the copper button), the Right/Left arrow keys, Page Down/Page Up, D/A
+  or the mouse wheel; Home or Backspace and the rail's Contents go back to the contents; Esc or the close X closes it.
+  The line at the foot says what the thing under the mouse does. At GUI scale 3 (320x180) the rail is a two-column
+  icon grid and the arrows sit beside the title. The book opens where it was left (for this game session).
 - **Chapters (35 pages, 36 counting the City Plan):** Getting started (welcome, camp, jobs, status); Builders (table,
   place, stock, build, styles, library, shapes); Your village (hall, people, requests, storehouse, villages, city plan);
   Gathering jobs (miner, lumberjack, farmer, orchard, fisher, beekeeper); Making, carrying and trading (carpenter, chef,
@@ -29,11 +34,13 @@ Roadmap items: 26.2a, B18, B29
 - `guide/GuideBookItem` (core) is the item: on the client its `use` runs `GuideBookItem.open` and plays the sound; on the
   server it only counts the use, so the book is never used up. `AliveWorkplaceClient` sets `open` to open the screen
   (a dedicated server has no screens).
-- `client/guide/GuidePages` lists the pages in order (`Page(id, chapter)`), the chapter order, and `shown()`, which
-  drops the Pokémon chapter without Cobblemon and `city_plan` without the 1.1 expansion. `client/guide/GuideScreen`
-  draws the screen.
+- `guide/GuideBook` (core) lists the pages in order (`Entry(id, chapter)`), the chapter order, and `shown()`, which
+  drops the Pokémon chapter without Cobblemon and `city_plan` without the 1.1 expansion; its `Reader` is where the
+  reader is (turning, a chapter's first page). `ui/GuideLayout` (core) places the parts on the screen and says what a
+  click does. `client/guide/GuidePages` adds each page's words and picture, and `client/guide/GuideScreen` draws it.
 - Words are in `en_us.json`: `guide.aliveworkplace.chapter.<chapter>`, `.page.<id>.title` and `.page.<id>.text`, plus
-  `contents`, `chapters`, `intro` and the item's name and tooltip. The screen splits a page's text to its width and cuts
+  `contents`, `chapters`, `intro` and the item's name and tooltip; the rail's short names, the arrows, the bar's and the
+  foot line's words are `screen.aliveworkplace.guide.*`. The screen splits a page's text to its width and cuts
   it at the line limit, so a page's words must fit.
 - Pictures: `tools/guide/pages.py` says, for each page, which showcase scene and still to use and the crop;
   `tools/guide/build.py` fetches the stills from the published showcase (or `--local DIR`), crops and scales them to
@@ -75,6 +82,10 @@ open page is kept only in the client for the game session (the book opens at the
   after a rejoin; a full inventory leaves it at the player's feet; dying gives no second book; a book and wheat make it
   and match no other recipe; using it on the server keeps it; every page has its picture and words; our recipes appear
   in the recipe book once the player holds an ingredient.
+- `CopperlineGuideSettingsGameTests` (44.4): the book's parts at 427x240, 480x270 and 320x180 (every page's picture
+  and words on the stage, the picture 16:9 and big enough, the arrows and rail clickable, the rail a grid only at
+  320x180), and every page opened with Next, Back, the rail and the contents' rows, with Cobblemon and the City Plan and
+  without. The `guide` scene opens every page in the real client and checks the words fit at GUI scale 2 and 3.
 - `QaGuideClaimsGameTests`: the pages' job claims hold (every orchard item makes an Orchard Keeper; raw meat and fish
   at a smoker make a Chef). `QaGuideFloristGameTests`: any flower at a composter makes a Florist (B18, then B29's
   `QaB18FlowersGameTests` for all `#minecraft:flowers`).

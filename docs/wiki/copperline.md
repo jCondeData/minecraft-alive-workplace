@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 44.3, 48.1, 48.2, 48.3
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3
 
 ## What a player sees
 
@@ -183,8 +183,37 @@ How: `ui/CityPlanLayout` (core, pure numbers) places both screens' parts from `C
 long. The screens keep their widgets for the clicks (drawn in Copperline), so every button, tool, key (Enter, Esc,
 Ctrl+Z), drag and double-click works as before. The City Plan's scene now takes its third still at GUI scale 3.
 
+## The Guide Book and the Settings screen (44.4)
+
+**The Guide Book.** The plaque says "Guide Book"; the lintel the chapter and the page ("Builders · Page 5 of 36"), or
+"35 pages in 7 chapters" on the contents. The rail, under "CHAPTERS", holds Contents (the book) above a rule, then
+the chapters by short name with their icons and page counts (Start, Builders, Village, Gathering, Making, Safety,
+Pokémon), the open one copper-marked. The stage keeps the pictures and pages: the page's title, its screenshot in a
+Void frame (16:9, as big as the words under it leave room for) and its words; Back and Next (the copper button) along
+the foot with "5 / 36" between them. The contents page has the intro and the chapters, each with the page it starts on.
+At 320x180 the rail is the icon grid and the arrows ("<" ">") sit beside the title. The foot line says what the
+chapter, arrow or close X does.
+
+**The Settings screen** (Mod Menu, like `boards/Settings.png`). The plaque says "Alive Workplace Settings", the lintel
+the open section and its size ("Village · 29 settings"). The rail, under "SETTINGS FOR", holds the sections (Work,
+Jobs, Builders, Village, Villagers, Defense, Realms, Pokémon) with their counts. The stage lists the open section's
+settings: "DISTANCES AND NUMBERS" then "SWITCHES", each row its name and its control on the right: a toggle with On
+(Verdigris) or Off, [-] value [+] for a number of 20 steps or fewer, a slider and its value well for a bigger one; at
+the foot "Reset this page" and **Done**, the copper button. Pointing at a name shows its tooltip in a Copperline
+tooltip; the foot line says how to change it, and by default that a server keeps its own file.
+
+How: `ui/GuideLayout` and `ui/SettingsLayout` (core, pure numbers) place both screens' parts from `CopperLayout`'s
+shell; `guide/GuideBook.Reader` and `ui/SettingsEditor` (core) do what a click does, so
+`CopperlineGuideSettingsGameTests` opens every page and changes settings the way a player's clicks do, and checks the
+layouts at 427x240, 480x270 and 320x180. Every setting has its section (`SettingsLayout`'s list; the test fails for a
+new one left out). Saving is as before: closing the screen writes the file and applies it.
+
 ## Decisions
 
+- **The Settings screen saves on closing, as before (44.4).** The board's Save button and its red "fix this field"
+  state are left out: no setting is typed in (they're toggles, [-] [+] and sliders, all kept in range), so there's never a
+  value to refuse, and Done saves. Sections are the mod's own grouping of its 158 settings; the board's "Screen"
+  section has no settings to hold.
 - **Slots keep their places (44.1).** The Drop Box and the counter keep a vanilla chest's slot positions and their
   menus stay `ChestMenu`, so automation, inventory mods and every test that opens them see what they saw before; only
   the mailbox's slots moved (its menu is the mod's own), to put the inbox and pack where a chest has them and the parcel
@@ -265,3 +294,11 @@ card whole at 240 tall; one copper button, never Close or a grayed-out one; the 
 `StatusCardButtonsGameTests`, `QaStatusCardRows1111cGameTests`, `JobCardGameTests`, `NurseCardGameTests` and
 `CopperlineShellGameTests` still passing (23 of 23). Scene: `copperline_status_card` (a line's tooltip, a grayed-out
 button's reason, the toast, then at 320x180).
+
+44.4: `CopperlineGuideSettingsGameTests` (6: the Guide Book at 427x240, 480x270 and 320x180 with labels one and three
+times as long, every page's picture and words on the stage; every page opened with Next, Back, the rail and the
+contents' rows, with and without Cobblemon and the City Plan; every setting in a section; the Settings screen at the
+three sizes with every setting's name fitting beside its control; a switch, a small number and a slider changed by
+clicks, a page reset, and the file read back; the new sentences), with `GuideGameTests` and `ConfigGameTests` still
+passing. Scenes: `guide` (every page, a chapter from the rail, then at 320x180) and `config` (Work's numbers, Village's
+switches, Festivals turned off and saved, then at 320x180).

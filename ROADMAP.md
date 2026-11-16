@@ -6679,7 +6679,7 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
 - [x] **44.3** (review: pending 2026-11-16) **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
   frame, title, buttons and lists change). Done when: `CityPlanScreenGameTests` and the charter's tests pass; scenes
   `city_plan` and `colony_charter`.
-- [ ] **44.4** **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
+- [x] **44.4** (review: pending 2026-11-16) **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
   with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
   scenes `guide` and `config`.
 

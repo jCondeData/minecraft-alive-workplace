@@ -93,6 +93,16 @@ export function draw() {
   // a dormer on the long west slope over the hall's west window: the loft's window, under its own little gable
   dormer(c, 6, P.roof, P.infill, P.glass, P.frame)
 
+  // the loft's ceiling: pale boards lining the underside of the tiles (stepped with the steep pitch), leaving the
+  // dormer's window clear
+  for (let z = dB.z0; z <= dB.z1; z++) {
+    const dormerBay = z >= 5 && z <= 7
+    for (const [x, y] of [[2, 7], [3, 8], [3, 9], [4, 10], [4, 11], [5, 8], [5, 9], [6, 7]]) {
+      if (x === 2 && dormerBay) continue
+      c.set(x, y, z, P.lining)
+    }
+  }
+
   // barge boards under the overhanging rakes: the Hall's front and back, the Kitchen's east gable
   bargeTrim(c, 'z', H.roof.along[0], H.roof.across, main.under, `${P.trim}_slab`)
   bargeTrim(c, 'z', H.roof.along[1], H.roof.across, main.under, `${P.trim}_slab`)

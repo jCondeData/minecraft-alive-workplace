@@ -29,7 +29,8 @@ export const PALETTE = {
   frame: 'dark_oak_log',
   infill: 'mud_bricks',
   roof: { full: 'bricks', stairs: 'brick_stairs', slab: 'brick_slab' },
-  floor: 'spruce_planks',
+  floor: 'birch_planks', // pale boards underfoot and overhead (the loft floor is the hall's ceiling): light in a brown room
+  lining: 'birch_planks', // the loft's ceiling boards under the tiles
   kitchenFloor: 'stone_bricks',
   wood: 'spruce', // doors, trapdoors, stairs as chairs, fences
   trim: 'dark_oak',
@@ -95,6 +96,7 @@ export const FURNITURE = [
   { room: 'Hall', kind: 'chair', part: 'armchair', pos: [3, 1, 9], facing: 'east', wood: 'dark_oak', colour: 'red' },
   { room: 'Hall', kind: 'chair', part: 'armchair', pos: [5, 1, 9], facing: 'west', wood: 'dark_oak', colour: 'red' },
   { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [3, 3, 7], facing: 'north', wood: 'spruce' },
+  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [5, 3, 5], facing: 'north', wood: 'spruce' },
   { room: 'Hall', kind: 'lamp', part: 'floorLamp', pos: [6, 1, 3], facing: 'west', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
   { room: 'Hall', kind: 'clock', part: 'clock', pos: [2, 1, 3], facing: 'east', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
   { room: 'Hall', kind: 'shelf', part: 'shelf', pos: [3, 2, 3], facing: 'south', wood: 'spruce', crockery: 'flower_pot' },
@@ -122,7 +124,7 @@ export const FURNITURE = [
   { room: 'Loft', kind: 'nightstand', part: 'nightstand', pos: [3, 5, 2], facing: 'south', wood: 'spruce' },
   { room: 'Loft', kind: 'nightstand', part: 'nightstand', pos: [5, 5, 2], facing: 'south', wood: 'spruce' },
   { room: 'Loft', kind: 'rug', part: 'rug', cellsAbs: [[3, 5, 3], [4, 5, 3], [5, 5, 3], [3, 5, 4], [4, 5, 4], [5, 5, 4]], colour: 'light_gray' },
-  { room: 'Loft', kind: 'lamp', part: 'hangingLamp', pos: [4, 7, 4], facing: 'north', chain: 4, wood: 'spruce' },
+  { room: 'Loft', kind: 'lamp', part: 'hangingLamp', pos: [4, 7, 4], facing: 'north', chain: 2, wood: 'spruce' },
   // Loft, the parents' end (back): a double bed against the chimney, nightstands, a desk and its chair, a chest
   { room: 'Loft', kind: 'bed', part: 'bed', pos: [3, 5, 9], facing: 'south', colour: 'red' },
   { room: 'Loft', kind: 'bed', part: 'bed', pos: [4, 5, 9], facing: 'south', colour: 'red' },
@@ -132,7 +134,7 @@ export const FURNITURE = [
   { room: 'Loft', kind: 'chair', part: 'chair', pos: [3, 5, 8], facing: 'west', wood: 'spruce' },
   { room: 'Loft', kind: 'fixture', part: 'chest', pos: [2, 5, 6], facing: 'east', block: 'chest' },
   { room: 'Loft', kind: 'rug', part: 'rug', cellsAbs: [[3, 5, 6], [4, 5, 6], [3, 5, 7], [4, 5, 7]], colour: 'brown' },
-  { room: 'Loft', kind: 'lamp', part: 'hangingLamp', pos: [4, 7, 8], facing: 'north', chain: 4, wood: 'spruce' },
+  { room: 'Loft', kind: 'lamp', part: 'hangingLamp', pos: [4, 7, 8], facing: 'north', chain: 2, wood: 'spruce' },
 ]
 
 // The walking line: front step -> door -> hall -> kitchen doorway, and up the flight to the loft.

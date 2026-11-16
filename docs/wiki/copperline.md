@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2
+Roadmap items: 47.1, 44.1, 44.2, 48.1, 48.2
 
 ## What a player sees
 
@@ -104,6 +104,39 @@ none (only the look changed)
   `screen.aliveworkplace.copperline.what_happens`, and the parts screen's sample words under
   `screen.aliveworkplace.copperline.parts.title` and the keys after it (the showcase only).
 
+## The Blueprint Table (48.1)
+
+The table is the board's **Blueprint Book** (`boards/Blueprints.png`), laid out by `ui/BlueprintBookLayout` (pure
+arithmetic, checked by the GameTests): the plaque, the Library and Stored tabs on the lintel with the count text after
+them, a **style rail** (the board's STYLE filter: as drawn and each style the selected build takes, the chosen one
+copper-marked; the first entry reads "As drawn" beside a log, and its whisper names it in full, "Timber (as drawn)", so the
+rail never cuts the chosen style; at 320x180 an icon grid), the search box and a one-line list (NAME and SIZE; locked builds with the lock
+glyph in gray, "???" for rare ones), and on the right the 3D preview, the name with its tag chip (LOCKED or the style),
+the size, jobs and beds, how to unlock it, and a row of **material slots**: a slot the player doesn't carry enough of has
+the red well, and the line under the row says it with the warning glyph ("Not carried: Glass", or "You carry
+all of it" with the good glyph). One row of buttons along the stage's foot; the first is the view's one copper button
+(Get Blueprint, Take One Out, Upload), the others neutral. The game's own widgets still take the clicks; the screen draws
+them in Copperline. The whisper line says what each button, row, style, slot and the preview do.
+
+## The Trainer screen (48.2)
+
+The Trainer screen is the board's **Trainer Battle** (`boards/Trainer.png`), laid out by `ui/TrainerLayout` (pure
+arithmetic, checked by the GameTests): the plaque with the trainer's title, the trainer's rank and village on the lintel
+by the close X; a **rail** with the trainer's portrait (the real villager model, following the mouse), their name and
+title beside it, **Your record** and **Today** under it (today's line with its glyph: good, warning or info), and
+Challenge, Trade and Close at its foot. The buttons are fitted by `StatusCard.buttonRow` as before (B1131: never past the
+rail, wrapping onto more rows) and each row is then widened to fill the rail. **Challenge** is the screen's one copper
+button; Trade and Close are neutral, and an unavailable button is flat and gray. The **stage** shows a refusal box at the
+top when Challenge is off ("Can't challenge now" and the reason), "Challenge <name>" with the prize, the team as
+**cards** (the real Pokémon model, the name and level; a level brought down to the cap in Lantern with the warning
+glyph; "???" and "Not seen yet" until the player wins once), the team's hint line, **Your party** as striped rows (name,
+level, a status glyph and word: Ready, Fainted, Over the cap) and the rules. When it doesn't fit (a big team, a small
+screen) the stage scrolls with the wheel and shows a scroll bar. The team grid takes as many columns as fit at 64
+pixels or more and evens them out over its rows (a team of six: three and three on a roomy screen, two by three at
+320x180). The whisper line says what the thing under the mouse is or does (the trainer, the record, today, a card, a
+party line, the rules, each button; a grayed Challenge gives its reason); with nothing under the mouse it keeps the
+screen's hint.
+
 ## Decisions
 
 - **Slots keep their places (44.1).** The Drop Box and the counter keep a vanilla chest's slot positions and their
@@ -112,6 +145,9 @@ none (only the look changed)
   next to the address. The plaque on the counter says "Shop Counter"; its old title ("Goods on top, prices below") is
   now the foot line's hint.
 
+- **The team's Pokémon sit in wells (48.2).** Each team card puts its Pokémon's model in a sunken well as tall as the
+  card (24 pixels), the same well a "???" card has, so the creature (the board's subject) reads first; the name and level
+  get a few pixels less and trim with "..." on narrow cards (the whisper line gives them in full).
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
 - **The village's name and date moved from the rail to the lintel** ("where you are"), so the rail is the sections only
@@ -124,11 +160,14 @@ none (only the look changed)
 
 ## Known limits
 
-- The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Blueprint Book, the Trainer
-  screen, the status card and the rest come in Milestones 44, 47 and 48. The Blueprint Table's vanilla buttons and tabs
-  stay vanilla until 48.1.
+- The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Trainer screen, the status card
+  and the rest come in Milestones 44, 47 and 48. The Blueprint Table (48.1) and the Trainer screen (48.2) are (below).
+- The Blueprint Table's material slots compare with what the player carries, not with the village's chests (the screen
+  knows only the player's inventory). The board's coins, Walk through and favorite key are not in the table (it has none).
 - The rail shows no counts yet (the parts can draw them; the Hall sends none).
-- The Trainer screen, the status cards and the Pokémon Trader have the new window, colors, buttons and whisper line but
+- The Trainer screen's cards show no types or moves (the board's), and its rail no stars or last battle: the server
+  doesn't send them. Challenge has no crossed-swords glyph (no such glyph yet).
+- The status cards and the Pokémon Trader have the new window, colors, buttons and whisper line but
   no plaque yet (they draw their own titles).
 
 ## Proof
@@ -157,3 +196,18 @@ opening says so; every slot clear of the list, the level row, the arrow, the lin
 Showcase scenes: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail), `mail`,
 `counter` and `drop_box` (44.1: the three slot screens), `crafter_trades` (44.2: a Journeyman Tailor's trades, then an
 offer chosen).
+
+48.1: `CopperlineBlueprintsGameTests` (3: the table's three views at 427x240, 480x270 and 320x180 with labels one and
+three times as long, inside the window and apart, every button, tab, style and row clickable; one copper button per
+view and Store All, Store Held, Upload a File..., Open Folder and Back still there; the rows under the mouse, the empty
+states' and the materials' words, the search), with `QaBlueprintTableGameTests`, `QaBlueprintTableJobs1111bGameTests`,
+`TableSearchGameTests`, `TableLibraryGameTests`, `TableJobsGameTests`, `QaTableJobsGameTests` still passing. Scene:
+`copperline_blueprints` (the book, a style from the rail, the Stored tab, both at 320x180, a search for nothing).
+
+48.2: `CopperlineTrainerGameTests` (3: the Trainer screen at 427x240, 480x270, 640x360 and 320x180 with labels one,
+three and five times as long: the rail, portrait, name, record and stage inside the window and apart, clear of the
+whisper line and the close X; Challenge, Trade and Close inside the rail, in order, apart, clickable and as wide as
+they need; teams of one to eight cards inside the stage and apart in even rows; Challenge the one copper button; the
+new sentences in the lang file), with `TrainerScreenGameTests`, `TrainerScreenButtonsGameTests`,
+`QaTrainerScreen1111dGameTests` still passing. Scene: `copperline_trainer` (with Cobblemon: the mouse on Challenge and
+on Trade, then at 320x180).

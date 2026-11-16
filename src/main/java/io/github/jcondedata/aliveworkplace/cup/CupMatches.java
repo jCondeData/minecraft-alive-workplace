@@ -176,7 +176,10 @@ public final class CupMatches {
 			call.ready[s] = true;
 			CupData.get(level).setDirty();
 			if (allReady(e.getValue(), call, e.getKey())) {
-				start(level, e.getKey(), e.getValue());
+				if (!start(level, e.getKey(), e.getValue(), player)) {
+					// B1291: the battle couldn't start (already in one, or Cobblemon said no): this reply is the line that says so
+					return cantStart();
+				}
 				return Component.translatable("message.aliveworkplace.cup.ready_go").withStyle(ChatFormatting.GREEN);
 			}
 			return Component.translatable("message.aliveworkplace.cup.ready_wait").withStyle(ChatFormatting.GREEN);
@@ -225,7 +228,7 @@ public final class CupMatches {
 			}
 		}
 		if (loser < 0) {
-			start(level, host, cup);
+			start(level, host, cup, null);
 			return;
 		}
 		finish(level, host, cup, call.sides[1 - loser], How.ABSENT);
@@ -236,12 +239,21 @@ public final class CupMatches {
 		BATTLE, FLED, ABSENT, NO_TEAM, NO_OPPONENT
 	}
 
-	/** Starts the battle: each player told who goes and who's left out (and why); a player with nobody eligible loses. */
-	static void start(ServerLevel level, BlockPos host, CupData.Cup cup) {
+	/** "The bout couldn't start (are you already in a battle?). Click [I'm ready] again." */
+	private static Component cantStart() {
+		return Component.translatable("message.aliveworkplace.cup.cant_start").withStyle(ChatFormatting.RED);
+	}
+
+	/**
+	 * Starts the battle: each player told who goes and who's left out (and why); a player with nobody eligible loses.
+	 * Returns false only when the battle couldn't start and the bout is called again (B1291): the players are told so,
+	 * except {@code clicked}, the player whose [I'm ready] started it, who reads it as that click's reply instead.
+	 */
+	static boolean start(ServerLevel level, BlockPos host, CupData.Cup cup, @Nullable ServerPlayer clicked) {
 		Call call = cup.call;
 		CupThemes.Theme theme = Cups.theme(cup);
 		if (call == null || theme == null) {
-			return;
+			return true;
 		}
 		CupData.Entrant[] who = {CupBouts.entrant(cup, call.sides[0], host), CupBouts.entrant(cup, call.sides[1], host)};
 		ServerPlayer[] players = new ServerPlayer[2];
@@ -252,7 +264,7 @@ public final class CupMatches {
 			players[s] = level.getServer().getPlayerList().getPlayer(who[s].id());
 			if (players[s] == null || players[s].level() != level) {
 				finish(level, host, cup, call.sides[1 - s], How.ABSENT);
-				return;
+				return true;
 			}
 		}
 		for (int s = 0; s < 2; s++) {
@@ -268,7 +280,7 @@ public final class CupMatches {
 			if (team.going().isEmpty()) {
 				Chat.system(p, Component.translatable("message.aliveworkplace.cup.no_team").withStyle(ChatFormatting.RED));
 				finish(level, host, cup, call.sides[1 - s], How.NO_TEAM);
-				return;
+				return true;
 			}
 			Chat.system(p, Component.translatable("message.aliveworkplace.cup.going", join(team.going())).withStyle(ChatFormatting.GREEN));
 		}
@@ -280,7 +292,7 @@ public final class CupMatches {
 			int vs = 1 - ps;
 			if (!(CupDays.standIn(level, who[vs].id(), call.ring) instanceof Villager trainer) || !trainer.isAlive()) {
 				finish(level, host, cup, call.sides[ps], How.NO_OPPONENT);
-				return;
+				return true;
 			}
 			Vec3 box = Vec3.atBottomCenterOf(call.boxes[vs]);
 			if (trainer.position().distanceToSqr(box) < CupBouts.AT_THE_ARENA * CupBouts.AT_THE_ARENA) {
@@ -293,14 +305,14 @@ public final class CupMatches {
 		}
 		if (battle == null) { // a player already in a battle, or Cobblemon said no: ready again, in a new window
 			for (ServerPlayer p : players) {
-				if (p != null) {
-					Chat.system(p, Component.translatable("message.aliveworkplace.cup.cant_start").withStyle(ChatFormatting.RED));
+				if (p != null && p != clicked) {
+					Chat.system(p, cantStart());
 				}
 			}
 			call.ready[0] = call.ready[1] = false;
 			call.calledAt = level.getGameTime();
 			CupData.get(level).setDirty();
-			return;
+			return false;
 		}
 		call.fighting = true;
 		call.battle = battle;
@@ -308,6 +320,7 @@ public final class CupMatches {
 		tellAt(level, call.ring, Component.translatable("message.aliveworkplace.cup.bout_start", call.round, Component.translatable(theme.name()),
 			who[0].display(), CupBouts.villageName(level, who[0].village()), who[1].display(), CupBouts.villageName(level, who[1].village()))
 			.withStyle(ChatFormatting.GOLD).append(" ").append(watchButton()));
+		return true;
 	}
 
 	private static Component join(java.util.List<Component> parts) {

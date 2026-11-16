@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1
+Roadmap items: 47.1, 44.1, 44.2
 
 ## What a player sees
 
@@ -36,6 +36,16 @@ Roadmap items: 47.1, 44.1
   "To:" and "Letter:" fields, its parcel (3x3 slots) and the one copper **Send** button (gray until a name is written);
   the Drop Box's and the counter's "What happens". The counter names its two rows "Sells" and "Price" at the left. The
   foot line says what the slot under the mouse is for ("What one sale hands over: the item and how many").
+- **The trading screen of the mod's own jobs (44.2).** The crafters (Tailor, Vintner, Printer, Jeweler and the rest),
+  the Shopkeeper and the Ferryman without CobbleDollars, the retired jobs kept for old saves, and the sneak-click trades
+  of every mod job open in Copperline; vanilla's professions keep vanilla's screen. The villager's name is on the
+  plaque and the lintel counts the offers ("6 offers"). On the left, "OFFERS" is a sunken list of rows: the price, a
+  second price, an arrow and the goods, the chosen row with the copper mark, sold-out rows dimmed with the red cross,
+  rows cheaper for you with a green down arrow (the foot line says "Cheaper for you: 2 instead of 3."). Under "TRADE"
+  the level's name and its bar (earned experience in green, what the trade in the wells adds in lantern yellow; a
+  star at Master), then the two price wells, a copper arrow and the goods; "YOUR PACK" below. Clicking a row moves
+  its price from the pack into the wells, as vanilla's button does; the mouse wheel and the scroll bar scroll a long
+  list.
 - Nothing a screen did before is gone: every button, price, tooltip, sound, refusal and key works as before; only the
   look changed.
 
@@ -61,6 +71,13 @@ Roadmap items: 47.1, 44.1
   moved to a three-row chest's places and its parcel into the panel (`MailboxMenu`). `CopperSlotScreen` (client) draws
   the frame; `MailboxScreen`, `DropBoxScreen` and `ShopCounterScreen` add their panels and words. No new art: the
   wells, panel, buttons and glyphs are 47.1's.
+- **Trades (44.2):** the mod's own jobs open vanilla's merchant menu on its own type, `aliveworkplace:trades`
+  (`CopperTradeMenu`, core): `VillagerMixin` wraps the `openTradingScreen` call in vanilla's `startTrading`, and
+  `CopperTrades.open` does what vanilla's does (the same menu, offers and level packet) for any villager whose job is in
+  the mod's namespace. The offers packet, the trade choice, the shop's stock refresh and the level-up are vanilla's and
+  the mod's code as before. `CopperSlotScreen` learned a `shift` (the slot frame starts 100 pixels into vanilla's
+  276-wide merchant menu, so the list fills that gutter) and `CopperTradeScreen` (client) draws the list, the level
+  bar and the arrow from `CopperTrades`' boxes. No new art.
 - **The art:** the nine-slices (window, plaque, panel, well and its focus and error states, tooltip, toast, the button and
   copper button in every state, danger) are drawn as letter grids on the palette by `tools/textures/art/copperline.py`;
   the 8-pixel status glyphs and the 16-pixel Hall icons start from the designer's sheets and are locked onto the palette
@@ -129,5 +146,14 @@ slot inside the window and off the lintel, panel and foot line, none overlapping
 shift-clicks both ways; the inbox refuses items; a price set on the counter's screen sells on the trade screen and is
 logged).
 
+`CopperlineTradesGameTests` (44.2: a Tailor's sneak-click opens `aliveworkplace:trades` and every one of her offers
+trades through the packets a client sends; a Farmer keeps `minecraft:merchant`; every mod job with offers opens in
+Copperline; a shopkeeper's offers are rebuilt from the stock on each opening and a sale is paid into the chest; the
+level, experience and bar reach the client, the bar fills as vanilla's, a trade levels the villager up and the next
+opening says so; every slot clear of the list, the level row, the arrow, the lintel and the foot line), with
+`QaEveryMenuGameTests` pairing the new menu type and the shop tests (`QaClicksShops1101GameTests`, `ShopStockGameTests`,
+`QaShopFerry1031GameTests` and the rest) still passing.
+
 Showcase scenes: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail), `mail`,
-`counter` and `drop_box` (44.1: the three slot screens).
+`counter` and `drop_box` (44.1: the three slot screens), `crafter_trades` (44.2: a Journeyman Tailor's trades, then an
+offer chosen).

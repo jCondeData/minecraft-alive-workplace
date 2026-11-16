@@ -53,6 +53,12 @@ asks for the steps, `latest.log` and any crash report).
   counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
   for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
   counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
+- The trades of the mod's own jobs in Copperline (44.2): the crafters, the Shopkeeper and the Ferryman without
+  CobbleDollars, the retired jobs and every mod job's sneak-click trades open in the new look. The offers are a list on
+  the left (sold-out ones crossed and dimmed, cheaper ones marked with a down arrow), the villager's level and its bar
+  sit over the two price wells and the goods, and the line at the foot says what each part does ("8 of 10 XP to the
+  next level"). Clicking an offer still moves its price from your pack; every trade, the shop's stock and leveling up
+  work as before. Vanilla's professions keep vanilla's trading screen.
 - A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
   2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
 - A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what

@@ -389,6 +389,9 @@ SCENES = [
     # Porter (44.1): the Drop Box's screen in Copperline
     S("drop_box", "Porter", "The Drop Box", "the Drop Box opened in Copperline: its slots and your pack in wells, what waits for a porter, and where it goes", 45,
       [("01_drop_box_screen", "Drop Box"), ("02_drop_box_pack", "Your pack")]),
+    # Tailor (44.2): a mod job's trades in Copperline
+    S("crafter_trades", "Tailor", "Trading with a crafter", "a Journeyman Tailor's trades opened in Copperline: the offer list, her level bar, then an offer chosen with its price in the wells", 45,
+      [("01_crafter_trades", "Her offers"), ("02_crafter_trade_chosen", "An offer chosen")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),

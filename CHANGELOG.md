@@ -29,6 +29,8 @@ asks for the steps, `latest.log` and any crash report).
   always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
 - Showcase page: the Book of Edicts at GUI scale 4 no longer shows as broken. Nothing was missing in the game. The
   page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
+- Mover: a glow lichen on several faces (the floor and two walls) that lands on a Mover's Crate comes back as one
+  Glow Lichen per face (3, not 1) (B1300).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned

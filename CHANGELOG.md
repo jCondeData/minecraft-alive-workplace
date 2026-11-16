@@ -19,6 +19,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - A data pack with a typo in a recipe stand-in or a class no longer crashes the server or breaks villagers' classes; the
   bad entry is skipped with a warning (B1312, B1313).
+- A builder short of dyed wool, bamboo planks or honey blocks now reads what a player gathers: the wool's own dye and
+  String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
+  (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 
 ## 0.155.3 — 2026-11-15
 

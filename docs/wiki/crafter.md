@@ -81,7 +81,11 @@ Leather, not Rabbit Hide; with some hide there it still names the rest of the hi
 Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
 sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273). A thing
 whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
-Cobblemon's Apricorn Logs through Apricorn Wood (B1288). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
+Cobblemon's Apricorn Logs through Apricorn Wood (B1288). A stripped block is never raw (a player strips it from its
+block), so 3 bamboo planks from nothing read "short of 18 Bamboo", never the Stripped Block of Bamboo (B1304). The line
+never goes down through what the thing is being made for: 3 honey blocks read "short of 12 Honey Bottles", not honey
+blocks unpacked into bottles and packed back (B1306), and blue wool names its dye and the String for white wool, never
+black wool dyed from blue wool (B1303). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
 is made of oak planks only, so Chipped's mosaic planks don't make one and the line names the oak logs (B1290's premise);
 Minecraft's chest has no planks recipe there: 8 planks make that wood's Carved Wood chest, and a player turns any one
 of those into a plain chest with Carved Wood's special chest_from_modded_chests recipe. The crafters read that special

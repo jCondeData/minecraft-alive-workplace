@@ -96,3 +96,12 @@ village saved with a baby and a Noble household (no Burgher) catching up Born he
 capital its realm and realm edict. The takings are not caught up at dawn: they tick off at the next collection.
 `generate.py` checks that every quest in its `MOMENT_QUESTS` has that
 moment's advancement as its only task and says it completes by itself. `python3 tools/questbook/generate.py --check` says whether the chapters are up to date.
+`QaQuestbookClaims1116eGameTests` (19, QA from the quest text): every recipe a quest spells out crafts as written;
+the Village, Town and City ranks one short on each count stay put; rank, Steward and festival advancements reach the
+owner and a player 64 blocks away, not one at 65; festivals (6 villagers, every 8 days, a cake today or tomorrow at
+most every 3 days), babies (16 meals, half wellbeing, two grown, a day apart), edict room, takings, raid chance and
+trade-route reach (2048) at their boundaries; every reward unlock, claimed by the hall, puts its build on that
+village's Table and nothing in the server-wide set. `QaQuestbookClaims1116eCompatTests` (4): Poke Balls, the Healing
+Machine and the Pasture Block as written; no Cobblemon berry is a meal. Open, from that pass: a reward claimed away
+from the village goes to the server-wide set (B1318), the Bandstand is a ??? not gray (B1319), and the Barracks
+quest's raid size leaves out the guards' share (B1320).

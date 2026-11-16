@@ -17,12 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
+  start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
+- Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up
+  name instead of as a button with no name (B1298).
 - Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
   "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: None", where they read a bare 0 (B1325).
 - With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
   "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
-- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a
-  Pokémon from the daycare is waiting for a free place in it." (B1309).
+- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: 1
+  Pokémon from the daycare is waiting for a free place in it." (B1309, B1331).
 - Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
   case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
   the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so
@@ -65,6 +69,12 @@ asks for the steps, `latest.log` and any crash report).
   counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
   for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
   counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
+- The trades of the mod's own jobs in Copperline (44.2): the crafters, the Shopkeeper and the Ferryman without
+  CobbleDollars, the retired jobs and every mod job's sneak-click trades open in the new look. The offers are a list on
+  the left (sold-out ones crossed and dimmed, cheaper ones marked with a down arrow), the villager's level and its bar
+  sit over the two price wells and the goods, and the line at the foot says what each part does ("8 of 10 XP to the
+  next level"). Clicking an offer still moves its price from your pack; every trade, the shop's stock and leveling up
+  work as before. Vanilla's professions keep vanilla's trading screen.
 - A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
   2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
 - A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what
@@ -72,6 +82,17 @@ asks for the steps, `latest.log` and any crash report).
 - With Create, a builder short of andesite (diorite, granite, tuff, calcite, deepslate, dripstone) no longer reads
   "short of 3 Andesite to make 3 Andesite": a Mason never makes a stone out of itself, so it reads as a stone a player
   mines.
+- The Blueprint Table in Copperline (48.1), laid out like the Blueprint Book: a style rail on the left (as drawn and
+  each style the build takes), the search box and a one-line list with name and size, the build's 3D preview, size and
+  material slots (anything you don't carry framed in red, with "Not carried: Glass" under them), and one
+  copper button: Get Blueprint (Take One Out in the Stored tab, Upload in the upload view). The line at the foot says
+  what each button does. Every button, tab and search works as before; at GUI scale 3 the rail is a grid of icons.
+- The Trainer screen in Copperline (48.2), laid out like the Trainer board: the trainer's portrait, name and title on
+  the left with your record and today's line (a mark, a word and a color), and Challenge (the one copper button), Trade
+  and Close under them; the prize, the team as cards with the real Pokémon models ("???" until you win once), your
+  party with a mark per Pokémon and the rules on the right, scrolling when they don't fit. The rank sits in the top bar
+  by the close X, and the line at the foot says what Challenge, Trade, a team card or a party line means. When the
+  trainer can't battle, a red box at the top says why. Every button works as before; it fits at GUI scale 3 too.
 
 ## 0.155.3 — 2026-11-15
 

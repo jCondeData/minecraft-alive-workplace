@@ -5480,6 +5480,39 @@ final class JobScenes {
 					Showcase.check(player.containerMenu instanceof ChestMenu m && m.getType() == ModBlocks.DROP_BOX_MENU && m.getRowCount() == 3,
 						"the Drop Box opened on its own Copperline menu"), 25)),
 			(level, player) -> player.containerMenu instanceof ChestMenu m && m.getType() == ModBlocks.DROP_BOX_MENU));
+		// A crafter's trades in Copperline (ROADMAP 44.2): a Journeyman Tailor's offers in the list, her level and its bar
+		// over the payment wells, then one offer chosen: its price moved from the pack into the wells and the goods shown.
+		SCREENS.put("crafter_trades", new Screen("a Journeyman Tailor's trades opened in Copperline: the offer list, her level bar, then an offer chosen with its price in the wells",
+			new Vec3(2.5, -58.4, 4.5), TARGET,
+			(level, player) -> {
+				place(level, STATION, Blocks.LOOM);
+				subject = EntityType.VILLAGER.spawn(level, STATION.south(), MobSpawnType.COMMAND);
+				subject.setNoAi(true);
+				subject.setVillagerData(subject.getVillagerData().setProfession(ModVillagers.TAILOR).setLevel(1));
+				subject.getOffers(); // the Novice's trades, then two levels' more, as trading would have brought them
+				((io.github.jcondedata.aliveworkplace.mixin.VillagerAccessor) subject).aliveworkplace$increaseMerchantCareer();
+				((io.github.jcondedata.aliveworkplace.mixin.VillagerAccessor) subject).aliveworkplace$increaseMerchantCareer();
+				subject.setVillagerXp(110);
+				player.getInventory().clearContent();
+				player.getInventory().setItem(0, new ItemStack(Items.EMERALD, 40));
+				player.getInventory().setItem(1, new ItemStack(Items.WHITE_WOOL, 36));
+				player.getInventory().setItem(2, new ItemStack(Items.STRING, 20));
+				player.getInventory().setItem(9, new ItemStack(Items.LEATHER, 12));
+				player.getInventory().setItem(10, new ItemStack(Items.BREAD, 8));
+				subject.mobInteract(player, net.minecraft.world.InteractionHand.MAIN_HAND);
+			},
+			List.of(new Step("01_crafter_trades", -1, 0, null, 30),
+				new Step("02_crafter_trade_chosen", 2, 0, (level, player) -> {
+					Showcase.check(player.containerMenu instanceof io.github.jcondedata.aliveworkplace.ui.CopperTradeMenu m
+						&& m.getType() == io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRADES_MENU && m.getOffers().size() >= 6,
+						"the Tailor's trades opened on the Copperline menu with her three levels' offers");
+					Minecraft.getInstance().execute(() -> {
+						if (Minecraft.getInstance().screen instanceof io.github.jcondedata.aliveworkplace.client.CopperTradeScreen screen) {
+							screen.choose(1); // the Work Clothes, chosen as a click on the row does
+						}
+					});
+				}, 30)),
+			(level, player) -> player.containerMenu instanceof io.github.jcondedata.aliveworkplace.ui.CopperTradeMenu m && !m.getSlot(2).getItem().isEmpty()));
 		SCREENS.put("counter", new Screen("the Price Tag's screen opened", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				place(level, STATION, ModBlocks.SHOP_COUNTER);

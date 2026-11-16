@@ -100,6 +100,17 @@ public class QaEveryMenuGameTests implements FabricGameTest {
 				return counter.createMenu(11, player.getInventory(), player);
 			},
 			(id, inv) -> ModBlocks.SHOP_COUNTER_MENU.create(id, inv)));
+		// 44.2: the mod jobs' trades, vanilla's merchant menu on its own type for the Copperline screen.
+		pairs.put(ModBlocks.TRADES_MENU, new Pair(
+			() -> {
+				net.minecraft.world.entity.npc.Villager tailor = helper.spawn(net.minecraft.world.entity.EntityType.VILLAGER, new BlockPos(8, 2, 2));
+				tailor.setNoAi(true);
+				tailor.setVillagerData(tailor.getVillagerData().setProfession(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TAILOR));
+				tailor.setVillagerXp(1);
+				io.github.jcondedata.aliveworkplace.ui.CopperTrades.open(tailor, player, Component.literal("qa"), 1);
+				return player.containerMenu;
+			},
+			(id, inv) -> ModBlocks.TRADES_MENU.create(id, inv)));
 		return pairs;
 	}
 

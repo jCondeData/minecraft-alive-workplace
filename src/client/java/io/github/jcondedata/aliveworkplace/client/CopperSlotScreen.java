@@ -24,12 +24,19 @@ public abstract class CopperSlotScreen<T extends AbstractContainerMenu> extends 
 	protected final int frameH;
 	protected final int gutter;
 	protected final int panelW;
+	/** How far in the menu's own coordinates the slot frame starts (0, or the trades' {@code CopperTrades.SHIFT}, 44.2). */
+	protected final int shift;
 
 	protected CopperSlotScreen(T menu, Inventory inventory, Component title, int frameH, int gutter, int panelW) {
+		this(menu, inventory, title, frameH, gutter, panelW, 0);
+	}
+
+	protected CopperSlotScreen(T menu, Inventory inventory, Component title, int frameH, int gutter, int panelW, int shift) {
 		super(menu, inventory, title);
 		this.frameH = frameH;
 		this.gutter = gutter;
 		this.panelW = panelW;
+		this.shift = shift;
 		imageWidth = CopperSlots.FRAME_W;
 		imageHeight = frameH;
 	}
@@ -38,18 +45,23 @@ public abstract class CopperSlotScreen<T extends AbstractContainerMenu> extends 
 	protected void init() {
 		super.init();
 		int[] origin = CopperSlots.origin(width, height, frameH, gutter, panelW);
-		leftPos = origin[0];
+		leftPos = origin[0] - shift;
 		topPos = origin[1];
+	}
+
+	/** The slot frame's left edge, in screen pixels (the menu's {@code leftPos} plus {@link #shift}). */
+	protected int frameX() {
+		return leftPos + shift;
 	}
 
 	/** The window, in screen pixels. */
 	public int[] window() {
-		return CopperSlots.at(CopperSlots.window(frameH, gutter, panelW), leftPos, topPos);
+		return CopperSlots.at(CopperSlots.window(frameH, gutter, panelW), frameX(), topPos);
 	}
 
 	/** The side panel, in screen pixels. */
 	protected int[] panel() {
-		return CopperSlots.at(CopperSlots.panel(frameH, panelW), leftPos, topPos);
+		return CopperSlots.at(CopperSlots.panel(frameH, panelW), frameX(), topPos);
 	}
 
 	/** The middle of slot {@code index}, in screen pixels (the screenshot harness points at it). */
@@ -131,7 +143,7 @@ public abstract class CopperSlotScreen<T extends AbstractContainerMenu> extends 
 		int[] plaque = CopperStyle.plaque(g, font, plaqueTitle(), win);
 		CopperStyle.lintel(g, font, win, plaque, lintelText(), overClose(mouseX, mouseY));
 		for (Header header : headers()) {
-			heading(g, header.text(), leftPos + header.x(), topPos + header.y(), header.w());
+			heading(g, header.text(), frameX() + header.x(), topPos + header.y(), header.w());
 		}
 		renderGutter(g);
 		if (panelW > 0) {
@@ -148,7 +160,7 @@ public abstract class CopperSlotScreen<T extends AbstractContainerMenu> extends 
 			renderPanel(g, box, mouseX, mouseY);
 			g.disableScissor();
 		}
-		int[] w = CopperSlots.at(CopperSlots.whisper(frameH, gutter, panelW), leftPos, topPos);
+		int[] w = CopperSlots.at(CopperSlots.whisper(frameH, gutter, panelW), frameX(), topPos);
 		CopperStyle.whisper(g, font, whisperAt(mouseX, mouseY), w[0], w[1] + 3, w[2], TableStyle.compact());
 	}
 

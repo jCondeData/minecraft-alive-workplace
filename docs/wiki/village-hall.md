@@ -216,6 +216,8 @@ the charter, it works from the off hand when the main hand is empty, B360); othe
 name such as Thornholm. A blank name (empty, or only spaces, tabs and line breaks, styled or not; only possible by
 commands) counts as none, on the hall and on the caravan list that names an unloaded village in `/workplace quests` and
 letters: the made-up name again, never an empty one, and the hall's round saves that made-up name on the list (B1229).
+A blank name an old save still has on the list is read the same way on another hall's Routes page: the neighbor's
+button, and the lines its click shows, use its made-up name (B1298).
 
 **The Hall in Copperline (47.2).** The Overview, People and the Map are laid out like their boards
 (`docs/design/copperline/boards/Main.png`, `HallPeople.png`, `HallMap.png`, `Compact.png`). The **Overview** shows the
@@ -655,6 +657,8 @@ name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back
 `QaFarVillageBlankName1114e2GameTests` (B1229: whitespace and styled empty names, saved or from a Name Tag on a loaded
 hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
 paths, the round saves the made-up name, and a real name, spaces and all, still wins).
+QA's `QaCaravanRoutesBlankName1115eBugTests` (B1298: far neighbors saved with blank names, the list saved and read
+back, are listed on the Routes page by their made-up names, next to a named one).
 `CaravanSavedNameB1233GameTests` and QA's `QaCaravanNames1114dGameTests` (B1233: a caravan-list entry saved with no
 name, an unreadable one, `null`, a name of the wrong kind such as a number, or JSON that isn't text keeps its routes,
 wants, banner color, stations and tracks and gets the village's made-up name, the same through further saves and loads;

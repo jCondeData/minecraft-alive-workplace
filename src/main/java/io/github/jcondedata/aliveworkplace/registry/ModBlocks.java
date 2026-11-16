@@ -104,6 +104,13 @@ public final class ModBlocks {
 		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("shop_counter"),
 			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new net.minecraft.world.inventory.ChestMenu(ModBlocks.SHOP_COUNTER_MENU, id, inventory,
 				new net.minecraft.world.SimpleContainer(18), 2), net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+	/**
+	 * The trades of the mod's own jobs (ROADMAP 44.2): vanilla's merchant menu on its own type, so the client draws it in
+	 * Copperline; vanilla's professions keep {@code minecraft:merchant}.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<io.github.jcondedata.aliveworkplace.ui.CopperTradeMenu> TRADES_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("trades"),
+			new net.minecraft.world.inventory.MenuType<>(io.github.jcondedata.aliveworkplace.ui.CopperTradeMenu::new, net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
 
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));

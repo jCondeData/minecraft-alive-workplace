@@ -53,7 +53,7 @@ public class QaDaycareWaiting1115c2CompatTests implements FabricGameTest {
 	}
 
 	static String reminder(int n) {
-		return n == 1 ? "Your PC is full: a Pokémon from the daycare is waiting for a free place in it." // B1309: one reads in the singular
+		return n == 1 ? "Your PC is full: 1 Pokémon from the daycare is waiting for a free place in it." // B1309: one reads in the singular
 			: "Your PC is full: Pokémon from the daycare are waiting for a free place in it (" + n + ").";
 	}
 

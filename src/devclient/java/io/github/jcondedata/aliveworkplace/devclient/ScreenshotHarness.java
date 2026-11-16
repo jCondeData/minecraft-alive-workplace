@@ -225,6 +225,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<TableLibraryScene> tableLibrary = new Lazy<>(() -> new TableLibraryScene());
 	/** SCENE=copperline (ROADMAP 47.1): Copperline's shared parts in every state, at GUI scale 2 and 3. */
 	private final Lazy<CopperlineScene> copperline = new Lazy<>(() -> new CopperlineScene());
+	/** SCENE=copperline_blueprints (ROADMAP 48.1): the Blueprint Table in Copperline, like the Blueprint Book board, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineBlueprintsScene> copperlineBlueprints = new Lazy<>(() -> new CopperlineBlueprintsScene());
+	/** SCENE=copperline_trainer (ROADMAP 48.2): the Trainer screen in Copperline, like the Trainer board, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineTrainerScene> copperlineTrainer = new Lazy<>(() -> new CopperlineTrainerScene());
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -242,6 +246,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("copperline".equals(System.getProperty("aliveworkplace.scene"))) {
 			copperline.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_blueprints".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineBlueprints.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_trainer".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineTrainer.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -3693,7 +3705,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	/** Puts the mouse at window pixel ({@code x}, {@code y}); the harness has no real mouse. */
-	private static void setMouse(Minecraft mc, double x, double y) {
+	static void setMouse(Minecraft mc, double x, double y) {
 		try {
 			var xpos = net.minecraft.client.MouseHandler.class.getDeclaredField("xpos");
 			var ypos = net.minecraft.client.MouseHandler.class.getDeclaredField("ypos");

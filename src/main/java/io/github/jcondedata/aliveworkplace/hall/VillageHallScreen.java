@@ -623,6 +623,8 @@ public final class VillageHallScreen {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
+			// B1298: a blank name saved on the list (an old save's) reads as the village's made-up name, as B1229 did elsewhere
+			Component otherName = VillageHalls.savedName(other.name(), other.hall());
 			boolean sending = data.routesFrom(hall).contains(other.hall());
 			boolean receiving = data.routesFrom(other.hall()).contains(hall);
 			List<Component> lore = new ArrayList<>();
@@ -667,15 +669,15 @@ public final class VillageHallScreen {
 				sending ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			// Each village by its banner, when it has colours (30.13); else by a cart, loaded if this one sends it goods.
 			VillageBanners.Colours colours = VillageBanners.of(level, other.hall());
-			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
+			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), otherName.copy(),
 				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
 				if (sister) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", other.name()).withStyle(ChatFormatting.LIGHT_PURPLE));
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", otherName).withStyle(ChatFormatting.LIGHT_PURPLE));
 					return;
 				}
 				if (!sending && !io.github.jcondedata.aliveworkplace.realm.Pacts.mayRoute(level, hall, other.hall())) { // 33.18: another owner's village needs a pact
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.pact.route_needs_pact", other.name()).withStyle(ChatFormatting.YELLOW));
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.pact.route_needs_pact", otherName).withStyle(ChatFormatting.YELLOW));
 					return;
 				}
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))
@@ -683,7 +685,7 @@ public final class VillageHallScreen {
 				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
 				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"
-					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), max)
+					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", otherName, max)
 					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
 				again.run();
 			});

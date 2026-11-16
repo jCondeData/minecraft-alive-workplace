@@ -1855,7 +1855,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShortageLine1116bBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1333GameTests",
-			"io.github.jcondedata.aliveworkplace.test.B1321GameTests"
+			"io.github.jcondedata.aliveworkplace.test.B1321GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bBugGameTests"
 		]
 	},
 	"depends": {

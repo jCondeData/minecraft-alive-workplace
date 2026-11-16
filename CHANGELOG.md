@@ -26,6 +26,9 @@ asks for the steps, `latest.log` and any crash report).
 - The Village Hall in Copperline (47.2): the Overview opens on four cards (People, Mood, Food and Defense) with a
   green, yellow or red line each, over "Needs you"; the sidebar shows how many villagers wait for a job, how many quests
   are open and a red "!" when an attack is coming; the People table has striped rows, mood faces and slate buttons.
+- The Village Hall's Overview now opens with the village's flag, its name in large letters, a rank chip ("Rank 2
+  Village") and a bar toward the next rank, and shows "At work now": who is on a job, what they're doing and how far
+  along. The People table has tabs (All, No job, No bed) and an open row shows the villager's mood as a bar (47.2).
 
 ## 0.155.3 — 2026-11-15
 

@@ -6831,18 +6831,24 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
 
 ## Notes / blocked
 - 2026-11-16 (lane-c-1116-0652, 47.2 the Village Hall in Copperline, partial, on `wip/lane-c-1116`): done: the rail's
-  counts (three new menu numbers, not saved: `HallSections.RAIL_WAITING/RAIL_DANGER/RAIL_QUESTS`, `ChoiceMenu.STATE` 10 to
-  13; People the villagers waiting for a job, Defense a red "!" when `DefencePage.attackLine` warns, Quests the open
-  quests; "9+" on the compact rail), the Overview's four stat cards (People, Mood, Food, Defense; read from the main
-  page's own buttons by `HallSections.card`, the first non-gray tooltip line as the status line with its tone; places in
-  `CopperLayout.statCards`, four across or two by two) over "Needs you" with warning glyphs, and the People table's
-  Copperline rows, mood glyphs, "No job" in Lantern and slate buttons; `HallCopperlineGameTests` (3 tests). Left: the
-  Map section's map with its legend (`HallMap.png`) needs the village map sent with the Map section (MovePage's
-  `MapView` could be reused, 32 KB per send, so only while Map is open); People's Find field, filter tabs ("All 24",
-  "No job 1", "No bed 2") and the right-hand detail card with the mood bar (`HallPeople.png`); "At work now" on the
-  Overview (needs each worker's task and progress sent); the big name with flag, rank chip and XP bar (`Main.png`); a
-  design critique of the stills and the hall scenes' refilm. Decision: the cards show the buttons' numbers so the card
-  and the tooltip never disagree.
+  counts (three new menu numbers, not saved: `HallSections.RAIL_WAITING/RAIL_DANGER/RAIL_QUESTS`), the Overview's four
+  stat cards (People, Mood, Food, Defense; read from the main page's own buttons by `HallSections.card`, places in
+  `CopperLayout.statCards`) over "Needs you" with warning glyphs, and the People table's Copperline rows, mood glyphs,
+  "No job" in Lantern and slate buttons. Second subagent: the Overview's header (a flag drawn in palette fills, the
+  name at 2x from the name button, a "Rank 2 Village" chip with the star glyph and a copper bar "40% to Town";
+  `HallSections.RANK/RANK_PROGRESS`, `rankProgress` averages the three needs, each capped); "At work now" beside
+  "Needs you" (under it when narrower than 260): the first three People rows on a job, each person button marked with
+  its job's progress and its task's lore line (`HallSections.markWork/atWork`, from the same builder/worker status as
+  the tooltip), with a copper bar; the People tabs All / No job / No bed (`HallPeople.Filter`, a menu-button click of
+  900 + n, the server filters the rows, the header keeps the village's counts, another section goes back to All); an
+  open People row starts with a mood bar ("34% Unhappy", `mood_score` on the row). `ChoiceMenu.STATE` 13 to 19.
+  `HallCopperlineGameTests` 7 tests; 98 hall tests (HallPeople*, HallSidebar, QaHallScreen, VillageHall, HallPages,
+  QaHallPeopleCross1116c, QaHallCross1114c) pass. Left: People's Find field (needs a small serverbound packet with the
+  text, filtering by name and job on the server as the tabs do) and the right-hand detail card (HallPeople.png; today
+  the open row holds the details inline, with the mood bar); "At work now" shows the person glyph, not each villager's
+  face; the Map section's map with its legend (`HallMap.png`, MovePage's `MapView` could be reused, 32 KB per send, so
+  only while Map is open); a design critique of the stills and the hall scenes' refilm (not filmed this run: not
+  tested in the real client). Decision: the cards show the buttons' numbers so the card and the tooltip never disagree.
 - 2026-11-16 (lane-b-1116-0637, QA after 36.23; builders' scaffolding): **Filed B1322** (scaffold column in an unloaded chunk left standing and untracked after a cancel or site removal; QaScaffoldsUnloaded1116bGameTests, 2 tests, fail 6/6, on tests/scaffolds-unloaded-1116b). New on main: QaScaffoldsFullChest1116bGameTests (3: cancel with the only chest full drops all 7 scaffolds by the bench, the same across a save and reload, the bench broken keeps the site and a later cancel takes all 7 into the chest; each 3/3 alone; a planted 'skip the drop when chests are full' mutant was killed by both chest-full tests). Not done: an upgrade-mid-job-across-reload test and a Storehouse supply case (next lane B run); no mutant for the bench-broken test. Note: `sessions.py bug` pushes its own commit to main.
 - 2026-11-16 (lane-b-1116-0637, 36.23): **Both Level I houses are on `wip/house-t1` (a6c8f67d1), review package sent.** Version A 'the Hearthstead' (`tools/blueprints/house_t1_a.py`, architect skill and kit) and Version B 'the Daub House' (`tools/blueprints/js/house_t1_b/` JS plan + parts library via the minecraft-builder skill, `tools/blueprints/house_t1_b.py` adapter that records furniture spots and runs check.py), each by its own subagent; check.py and holes.py clean, no job block, 31 and 41 furniture spots. The branch also has a new screenshot scene `house_shots` (`HouseShotsScene.java`, `SCENE=house_shots [SHOTS=house_t1_a] tools/screenshots/run.sh`) that places any structure with a `tools/blueprints/shots/<name>.json` and films four sides, a corner view and eye-level shots from listed eye/look points (checks that no eye is inside a block); it fails with no shots files, so it stays off main until 36.23a. Neither house is registered in StarterBlueprints or villages. The two came out alike in massing (L plan, brick roof, east kitchen wing, west dormer, back chimney) although neither agent saw the other's; known rough edges: B's white table top and tight kitchen views, A's loft shows bare brick on the slopes. Note: the render tool's Playwright wants Chromium build 1194, the container has 1243; agents used a scratch copy with executablePath (repo unchanged).
 - 2026-11-16 (owner's chat, digest-1114-1353 session): **Decisions.** (1) The Inn stays as it is: the redraw on

@@ -26,7 +26,7 @@ chest. It's in the mod's creative tab too.
 ## Sending and getting mail
 
 Place it and it's yours. When mail arrives, the red flag goes up. To send something, open your mailbox, put the items
-in the top row, type a player's name and press **Send**; write in the **Letter** line to send a letter with it.
+in the parcel (the 3x3 slots on the right), type a player's name and press **Send**; write in the **Letter** line to send a letter with it.
 `/workplace mail` tells you where your parcels are. Only you, your friends (`/workplace friend add <name>`) and
 operators can open your mailbox.
 

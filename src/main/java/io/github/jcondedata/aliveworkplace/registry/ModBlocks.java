@@ -91,6 +91,20 @@ public final class ModBlocks {
 				(id, inventory, view) -> new io.github.jcondedata.aliveworkplace.trainer.TrainerMenu(id, inventory, view),
 				io.github.jcondedata.aliveworkplace.trainer.TrainerView.STREAM_CODEC));
 
+	/**
+	 * The Drop Box's and the Shop Counter's screens (ROADMAP 44.1): still a vanilla {@link net.minecraft.world.inventory.ChestMenu}
+	 * (three rows; two rows: goods over prices) with its slots where a chest has them, on their own menu types so the
+	 * client draws them in Copperline instead of the plain chest.
+	 */
+	public static final net.minecraft.world.inventory.MenuType<net.minecraft.world.inventory.ChestMenu> DROP_BOX_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("drop_box"),
+			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new net.minecraft.world.inventory.ChestMenu(ModBlocks.DROP_BOX_MENU, id, inventory,
+				new net.minecraft.world.SimpleContainer(27), 3), net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+	public static final net.minecraft.world.inventory.MenuType<net.minecraft.world.inventory.ChestMenu> SHOP_COUNTER_MENU =
+		Registry.register(BuiltInRegistries.MENU, AliveWorkplace.id("shop_counter"),
+			new net.minecraft.world.inventory.MenuType<>((id, inventory) -> new net.minecraft.world.inventory.ChestMenu(ModBlocks.SHOP_COUNTER_MENU, id, inventory,
+				new net.minecraft.world.SimpleContainer(18), 2), net.minecraft.world.flag.FeatureFlags.VANILLA_SET));
+
 	/** Workstation for the Postman profession: they collect and deliver mail within 64 blocks of it. */
 	public static final BuildersBenchBlock POSTAL_DESK = Reg.block("postal_desk", BuildersBenchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.CARTOGRAPHY_TABLE));
 

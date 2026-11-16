@@ -52,6 +52,11 @@ asks for the steps, `latest.log` and any crash report).
   your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
   says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
   GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
+- The Mailbox, the Drop Box and the Shop Counter in Copperline (44.1): every slot, your inventory's included, is a
+  sunken well that lights up under the mouse, with headings over the rows, a copper plaque and a close X. The lintel
+  counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
+  for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
+  counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
 - A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
   2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
 - A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what

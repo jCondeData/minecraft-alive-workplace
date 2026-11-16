@@ -14,15 +14,22 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The mailbox screen: a row of outgoing slots with a "To:" field and a Send button, the mail that
- * arrived (take-only), and the player's inventory.
+ * The mailbox screen: the mail that arrived (take-only) and the player's inventory where a chest puts its rows and the
+ * pack, and beside them (44.1, Copperline's side panel) the "To:" and letter fields over a 3x3 parcel of outgoing slots
+ * and the Send button.
  */
 public class MailboxMenu extends AbstractContainerMenu {
 	public static final int OUT = 9;
-	public static final int OUT_Y = 54;
-	public static final int INBOX_Y = 88;
-	public static final int INVENTORY_Y = 158;
-	public static final int HOTBAR_Y = 216;
+	/** The parcel's 3x3 outgoing slots, in the side panel right of the inbox. */
+	public static final int OUT_COLUMNS = 3;
+	public static final int OUT_X = 181;
+	public static final int OUT_Y = 67;
+	/** The inbox and the pack sit where a three-row chest puts its rows and the player's inventory. */
+	public static final int INBOX_Y = 18;
+	public static final int INVENTORY_Y = 85;
+	public static final int HOTBAR_Y = 143;
+	/** The slot frame's height (a three-row chest screen's). */
+	public static final int FRAME_H = 168;
 	private static final int INBOX_START = OUT;
 	private static final int PLAYER_START = OUT + MailboxBlockEntity.SIZE;
 	private static final int END = PLAYER_START + 36;
@@ -50,7 +57,7 @@ public class MailboxMenu extends AbstractContainerMenu {
 		this.mailbox = mailbox;
 		inbox.startOpen(inventory.player);
 		for (int i = 0; i < OUT; i++) {
-			addSlot(new Slot(outgoing, i, 8 + i * 18, OUT_Y));
+			addSlot(new Slot(outgoing, i, OUT_X + (i % OUT_COLUMNS) * 18, OUT_Y + (i / OUT_COLUMNS) * 18));
 		}
 		for (int row = 0; row < 3; row++) {
 			for (int col = 0; col < 9; col++) {

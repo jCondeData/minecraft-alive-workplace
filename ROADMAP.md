@@ -6819,7 +6819,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
 Same decision as Milestone 47 (owner, 2026-11-16). Lane D builds these once 47.1 has landed, in order, with 47.1's
 pieces; lane E redoes Milestone 44 in Copperline at the same time.
 
-- [ ] **48.1** **The Blueprint Table and the Blueprint Book in
+- [x] **48.1** (review: pending 2026-11-16) **The Blueprint Table and the Blueprint Book in
   Copperline**, like `Blueprints.png` (list, preview, size, materials, style filter, one copper Place). Done when: the
   table's tests pass; scenes of the table and the book.
 - [ ] **48.2** **The Trainer screen in Copperline**, like

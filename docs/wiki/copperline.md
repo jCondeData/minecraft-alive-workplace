@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1
+Roadmap items: 47.1, 48.1
 
 ## What a player sees
 
@@ -68,6 +68,19 @@ none (only the look changed)
   `screen.aliveworkplace.copperline.what_happens`, and the parts screen's sample words under
   `screen.aliveworkplace.copperline.parts.title` and the keys after it (the showcase only).
 
+## The Blueprint Table (48.1)
+
+The table is the board's **Blueprint Book** (`boards/Blueprints.png`), laid out by `ui/BlueprintBookLayout` (pure
+arithmetic, checked by the GameTests): the plaque, the Library and Stored tabs on the lintel with the count text after
+them, a **style rail** (the board's STYLE filter: as drawn and each style the selected build takes, the chosen one
+copper-marked; at 320x180 an icon grid), the search box and a one-line list (NAME and SIZE; locked builds with the lock
+glyph in gray, "???" for rare ones), and on the right the 3D preview, the name with its tag chip (LOCKED or the style),
+the size, jobs and beds, how to unlock it, and a row of **material slots**: a slot the player doesn't carry enough of has
+the red well, and the line under the row says it with the warning glyph ("Not carried: Glass", or "You carry
+all of it" with the good glyph). One row of buttons along the stage's foot; the first is the view's one copper button
+(Get Blueprint, Take One Out, Upload), the others neutral. The game's own widgets still take the clicks; the screen draws
+them in Copperline. The whisper line says what each button, row, style, slot and the preview do.
+
 ## Decisions
 
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
@@ -82,9 +95,10 @@ none (only the look changed)
 
 ## Known limits
 
-- The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Blueprint Book, the Trainer
-  screen, the status card and the rest come in Milestones 44, 47 and 48. The Blueprint Table's vanilla buttons and tabs
-  stay vanilla until 48.1.
+- The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Trainer screen, the status card
+  and the rest come in Milestones 44, 47 and 48. The Blueprint Table is (48.1, below).
+- The Blueprint Table's material slots compare with what the player carries, not with the village's chests (the screen
+  knows only the player's inventory). The board's coins, Walk through and favorite key are not in the table (it has none).
 - The rail shows no counts yet (the parts can draw them; the Hall sends none).
 - The Trainer screen, the status cards and the Pokémon Trader have the new window, colors, buttons and whisper line but
   no plaque yet (they draw their own titles).
@@ -98,3 +112,10 @@ Trainer's and the status card's buttons inside the window and clickable at both 
 still passing: `StatusCardButtonsGameTests`, `TrainerScreenButtonsGameTests`, `QaTrainerScreen1111dGameTests`.
 
 Showcase scene: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail).
+
+48.1: `CopperlineBlueprintsGameTests` (3: the table's three views at 427x240, 480x270 and 320x180 with labels one and
+three times as long, inside the window and apart, every button, tab, style and row clickable; one copper button per
+view and Store All, Store Held, Upload a File..., Open Folder and Back still there; the rows under the mouse, the empty
+states' and the materials' words, the search), with `QaBlueprintTableGameTests`, `QaBlueprintTableJobs1111bGameTests`,
+`TableSearchGameTests`, `TableLibraryGameTests`, `TableJobsGameTests`, `QaTableJobsGameTests` still passing. Scene:
+`copperline_blueprints` (the book, a style from the rail, the Stored tab, both at 320x180, a search for nothing).

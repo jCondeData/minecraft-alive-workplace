@@ -7,6 +7,9 @@ import io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintImporter;
 import io.github.jcondedata.aliveworkplace.table.TableLibrary;
 import io.github.jcondedata.aliveworkplace.table.TablePayloads;
 import io.github.jcondedata.aliveworkplace.table.TableSearch;
+import io.github.jcondedata.aliveworkplace.ui.BlueprintBookLayout;
+import io.github.jcondedata.aliveworkplace.ui.BlueprintBookLayout.View;
+import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +25,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,13 +38,14 @@ import org.jetbrains.annotations.Nullable;
  * to take a copy, and an "upload" view listing build files in the player's own blueprints folder. A search box above
  * the list (36.10) narrows it by name, id or job as the player types ({@link TableSearch}). The Stored tab (36.13) lists the
  * bought blueprints kept in this table, with how many of each, to store more in it or take one back out.
+ *
+ * <p>Drawn in Copperline like the Blueprint Book board (48.1, {@link BlueprintBookLayout}): the copper plaque, the lintel
+ * with the Library and Stored tabs, the style rail, the list with its NAME and SIZE heading, the build's 3D preview, size
+ * and materials (each slot framed in Redstone when the player doesn't carry it, with the word beside), one copper button
+ * per view and the whisper line saying what the thing under the mouse does. The buttons, tabs and search box are the
+ * game's own widgets taking the clicks and keys; the screen draws them in Copperline's parts.
  */
 public class BlueprintTableScreen extends Screen {
-	private static final int LIST_BG = TableStyle.LIST_BG;
-	private static final int ROW = TableStyle.ROW;
-
-	private enum Mode { LIBRARY, FILES, STORED }
-
 	private final BlockPos table;
 	private List<TablePayloads.Entry> entries;
 	private boolean canUpload;
@@ -56,13 +59,8 @@ public class BlueprintTableScreen extends Screen {
 	private final Map<ResourceLocation, List<TablePayloads.StyleChoice>> styles = new HashMap<>();
 	/** The style chosen for the selected build ("" as drawn). */
 	private String style = "";
-	private static final int STYLE_CELL = TableStyle.CELL;
-	/** Where the style row was drawn (its first cell; cells sit side by side), and how many cells: as drawn, then the styles. */
-	private int styleRowX, styleRowY, styleCells;
-	@Nullable
-	private Component hoveredStyle;
 	private boolean draggingPreview;
-	private Mode mode = Mode.LIBRARY;
+	private View mode = View.LIBRARY;
 	@Nullable
 	private ResourceLocation selectedId;
 	@Nullable
@@ -70,23 +68,25 @@ public class BlueprintTableScreen extends Screen {
 	@Nullable
 	private ResourceLocation selectAfterRefresh;
 	private Component status = Component.empty();
-	private int statusColor = 0xFFAAAAAA;
+	@Nullable
+	private CopperStyle.Status statusKind;
 	private boolean uploading;
 
+	private BlueprintBookLayout.Boxes boxes;
 	private int left, top, panelW, panelH;
-	private LibraryList library;
 	/** The search box over the library (36.10), what's typed in it and the entries it lets through, in the list's order. */
 	private EditBox search;
 	private String query = "";
 	private List<TablePayloads.Entry> shown = List.of();
-	private static final int SEARCH_H = 16;
-	private FileList files;
+	/** The rows scrolled past in each list. */
+	private int libScroll, storedScroll, filesScroll;
+	private List<Path> fileItems = List.of();
 	private Button takeButton, uploadViewButton, uploadButton, folderButton, backButton;
 	/** The full materials list over the right side: opened by "+N" or "All materials", closed by Esc or Back. */
 	private boolean allMaterials;
 	private Button allMaterialsButton, allBackButton;
 	private int allScroll;
-	/** Rows of the short materials grid scrolled past with the mouse wheel. */
+	/** Materials scrolled past in the short row of slots, with the mouse wheel. */
 	private int gridScroll;
 	private int gridX, gridY, gridW, gridH, moreX, moreY, moreW;
 	private static final int ALL_ROW = 18;
@@ -95,9 +95,12 @@ public class BlueprintTableScreen extends Screen {
 	private int capacity;
 	@Nullable
 	private ItemStack selectedStored;
-	private StoredList storedList;
 	private Button libraryTab, storedTab, takeOutButton, storeHeldButton, storeAllButton;
-	private static final int TAB_H = 14;
+	/** The empty library's button (Upload a File...), where it was drawn, or null. */
+	@Nullable
+	private int[] emptyAction;
+	/** What the whisper line says about the thing under the mouse this frame. */
+	private Component whisper = Component.empty();
 
 	public BlueprintTableScreen(TablePayloads.Open open) {
 		super(Component.translatable("block.aliveworkplace.blueprint_table"));
@@ -125,10 +128,8 @@ public class BlueprintTableScreen extends Screen {
 		this.canUpload = open.canUpload();
 		this.stored = open.stored();
 		this.capacity = open.capacity();
-		if (storedList != null) {
+		if (search != null) {
 			fillStored();
-		}
-		if (library != null) {
 			fillLibrary();
 			if (selectAfterRefresh != null) {
 				select(selectAfterRefresh);
@@ -203,9 +204,9 @@ public class BlueprintTableScreen extends Screen {
 	public void onUploadResult(TablePayloads.UploadResult result) {
 		uploading = false;
 		status = result.message();
-		statusColor = result.ok() ? 0xFF7CFC7C : 0xFFFF7070;
+		statusKind = result.ok() ? CopperStyle.Status.GOOD : CopperStyle.Status.BAD;
 		if (result.ok() && result.id().isPresent()) {
-			mode = Mode.LIBRARY;
+			mode = View.LIBRARY;
 			selectAfterRefresh = result.id().get();
 			updateVisibility();
 		}
@@ -213,79 +214,97 @@ public class BlueprintTableScreen extends Screen {
 
 	// --- layout ----------------------------------------------------------------------------
 
+	private int[] tabWidths() {
+		return new int[]{font.width(Component.translatable("screen.aliveworkplace.table.tab_library")) + 12,
+			font.width(Component.translatable("screen.aliveworkplace.table.tab_stored", 999)) + 12};
+	}
+
+	private int[] buttonWidths(View view) {
+		String[] keys = BlueprintBookLayout.buttons(view);
+		int[] out = new int[keys.length];
+		for (int i = 0; i < keys.length; i++) {
+			out[i] = Math.max(44, font.width(Component.translatable(keys[i])) + 12);
+		}
+		return out;
+	}
+
+	/** The rail's widest label: "As drawn" and the selected build's styles. */
+	private int railLabelWidth() {
+		int w = font.width(Component.translatable("style.aliveworkplace.as_drawn"));
+		for (TablePayloads.StyleChoice c : selectedStyles()) {
+			w = Math.max(w, font.width(c.title()));
+		}
+		return Math.max(w, font.width(Component.translatable("screen.aliveworkplace.table.rail_style")));
+	}
+
+	/** Lays the view out again (the rail's width follows the selected build's styles) and puts the widgets in their boxes. */
+	private void layout() {
+		boxes = BlueprintBookLayout.of(width, height, font.width(title), railLabelWidth(), tabWidths(), mode, buttonWidths(mode));
+		left = boxes.win()[0];
+		top = boxes.win()[1];
+		panelW = boxes.win()[2];
+		panelH = boxes.win()[3];
+		int[] s = boxes.search();
+		search.setPosition(s[0] + 14, s[1] + 3);
+		search.setWidth(s[2] - 18);
+		// The game's box doesn't cut its hint, so it is cut here with "..." to the well.
+		search.setHint(Component.literal(CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.search_hint").getString(), s[2] - 20))
+			.withStyle(st -> st.withColor(CopperStyle.OFF_TEXT & 0xFFFFFF)));
+		int[][] tabs = boxes.tabs();
+		place(libraryTab, tabs[0]);
+		place(storedTab, tabs[1]);
+		Button[] row = mode == View.LIBRARY ? new Button[]{takeButton, uploadViewButton}
+			: mode == View.STORED ? new Button[]{takeOutButton, storeHeldButton, storeAllButton}
+			: new Button[]{uploadButton, folderButton, backButton};
+		for (int i = 0; i < row.length; i++) {
+			place(row[i], boxes.buttons()[i]);
+		}
+	}
+
+	private static void place(Button b, int[] box) {
+		b.setPosition(box[0], box[1]);
+		b.setWidth(box[2]);
+		b.setHeight(box[3]);
+	}
+
 	@Override
 	protected void init() {
-		panelW = TableStyle.panelWidth(width);
-		panelH = TableStyle.panelHeight(height);
-		left = (width - panelW) / 2;
-		top = (height - panelH) / 2;
-		int listW = TableStyle.listWidth(panelW);
-		int listTop = top + 22;
-		int listH = panelH - 22 - 34;
-
-		// The search box (36.10) sits over the library, which starts below it; the upload view's list keeps the full height.
-		search = new EditBox(font, left + 9, listTop, listW - 2, SEARCH_H, Component.translatable("screen.aliveworkplace.table.search"));
+		// The search box (36.10) over the library: drawn without the game's border, in a Copperline well.
+		search = new EditBox(font, 0, 0, 100, 10, Component.translatable("screen.aliveworkplace.table.search"));
+		search.setBordered(false);
+		search.setTextColor(CopperStyle.QUARTZ);
 		search.setMaxLength(TableSearch.MAX_LENGTH);
-		search.setHint(Component.translatable("screen.aliveworkplace.table.search_hint").withStyle(net.minecraft.ChatFormatting.DARK_GRAY));
+		search.setHint(Component.translatable("screen.aliveworkplace.table.search_hint").withStyle(s -> s.withColor(CopperStyle.OFF_TEXT & 0xFFFFFF)));
 		search.setValue(query);
 		search.setResponder(this::onSearch);
 		addRenderableWidget(search);
-		int libraryTop = listTop + SEARCH_H + 3;
-		library = new LibraryList(minecraft, listW, listH - SEARCH_H - 3, libraryTop);
-		library.setX(left + 8);
 		fillLibrary();
-		addRenderableWidget(library);
-
-		files = new FileList(minecraft, listW, listH, listTop);
-		files.setX(left + 8);
-		files.fill();
-		addRenderableWidget(files);
-
-		// The Stored tab (36.13): its list keeps the full height, as the upload view's does.
-		storedList = new StoredList(minecraft, listW, listH, listTop);
-		storedList.setX(left + 8);
+		fillFiles();
 		fillStored();
-		addRenderableWidget(storedList);
-		// The tabs sit on the lintel, after the title's plaque (Copperline, 47.1).
-		Component libTitle = Component.translatable("screen.aliveworkplace.table.tab_library");
-		int[] plaque = io.github.jcondedata.aliveworkplace.ui.CopperLayout.plaque(new int[]{left, top, panelW, panelH}, font.width(title));
-		int tx = plaque[0] + plaque[2] + 4;
-		libraryTab = addRenderableWidget(Button.builder(libTitle, b -> showLibrary()).bounds(tx, top + 4, font.width(libTitle) + 12, TAB_H).build());
-		Component storedTitle = Component.translatable("screen.aliveworkplace.table.tab_stored", 999);
-		storedTab = addRenderableWidget(Button.builder(storedTabLabel(), b -> showStored())
-			.bounds(tx + libraryTab.getWidth() + 2, top + 4, font.width(storedTitle) + 12, TAB_H).build());
 
-		int by = top + panelH - 28;
-		int bw = (panelW - 24) / 2;
-		takeButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take"), b -> take())
-			.bounds(left + 8, by, bw, 20).build());
-		uploadViewButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.upload_view"), b -> {
-			mode = Mode.FILES;
-			files.fill();
+		// The widgets take the clicks; render draws them in Copperline (addWidget: the game doesn't draw them itself).
+		libraryTab = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.tab_library"), b -> showLibrary()).bounds(0, 0, 40, 13).build());
+		storedTab = addWidget(Button.builder(storedTabLabel(), b -> showStored()).bounds(0, 0, 40, 13).build());
+		takeButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take"), b -> take()).bounds(0, 0, 44, 14).build());
+		uploadViewButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.upload_view"), b -> {
+			mode = View.FILES;
+			fillFiles();
 			updateVisibility();
-		}).bounds(left + 16 + bw, by, bw, 20).build());
-
-		int bw3 = (panelW - 32) / 3;
-		uploadButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.upload"), b -> upload())
-			.bounds(left + 8, by, bw3, 20).build());
-		folderButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.open_folder"), b -> {
+		}).bounds(0, 0, 44, 14).build());
+		uploadButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.upload"), b -> upload()).bounds(0, 0, 44, 14).build());
+		folderButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.open_folder"), b -> {
 			Util.getPlatform().openFile(folder().toFile());
-		}).bounds(left + 16 + bw3, by, bw3, 20).build());
-		backButton = addRenderableWidget(Button.builder(Component.translatable("gui.back"), b -> {
-			mode = Mode.LIBRARY;
+		}).bounds(0, 0, 44, 14).build());
+		backButton = addWidget(Button.builder(Component.translatable("gui.back"), b -> {
+			mode = View.LIBRARY;
 			updateVisibility();
-		}).bounds(left + 24 + 2 * bw3, by, bw3, 20).build());
-		takeOutButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take_out"), b -> takeOut())
-			.bounds(left + 8, by, bw3, 20).build());
-		storeHeldButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_held"), b -> store(false))
-			.bounds(left + 16 + bw3, by, bw3, 20).build());
-		storeAllButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_all"), b -> store(true))
-			.bounds(left + 24 + 2 * bw3, by, bw3, 20).build());
-		// Placed in render (it sits beside the "Materials" heading, below the preview).
+		}).bounds(0, 0, 44, 14).build());
+		takeOutButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.take_out"), b -> takeOut()).bounds(0, 0, 44, 14).build());
+		storeHeldButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_held"), b -> store(false)).bounds(0, 0, 44, 14).build());
+		storeAllButton = addWidget(Button.builder(Component.translatable("screen.aliveworkplace.table.store_all"), b -> store(true)).bounds(0, 0, 44, 14).build());
+		// Placed in render (it sits beside the "Materials" heading).
 		Component all = Component.translatable("screen.aliveworkplace.table.all_materials");
-		allMaterialsButton = addRenderableWidget(Button.builder(all, b -> showAllMaterials())
-			.bounds(0, 0, font.width(all) + 10, 12).build());
-		// Drawn after the panel (not with the other widgets) so the panel can't cover it.
+		allMaterialsButton = addWidget(Button.builder(all, b -> showAllMaterials()).bounds(0, 0, font.width(all) + 10, 12).build());
 		Component back = Component.translatable("gui.back");
 		allBackButton = addWidget(Button.builder(back, b -> closeAllMaterials()).bounds(0, 0, font.width(back) + 12, 14).build());
 
@@ -301,8 +320,14 @@ public class BlueprintTableScreen extends Screen {
 	/** Lists the entries the search lets through (36.10). */
 	private void fillLibrary() {
 		shown = TableSearch.filter(entries, query);
-		library.fill();
-		library.clampScrollAmount();
+		libScroll = clampScroll(libScroll, shown.size(), BlueprintBookLayout.ROW);
+	}
+
+	private int clampScroll(int scroll, int count, int rowH) {
+		if (boxes == null) {
+			return Math.max(0, scroll);
+		}
+		return Math.max(0, Math.min(scroll, count - BlueprintBookLayout.visibleRows(boxes.list(), rowH)));
 	}
 
 	/** The box changed: narrow the list, and if the selected build is no longer listed, pick the first that is. */
@@ -335,27 +360,25 @@ public class BlueprintTableScreen extends Screen {
 	}
 
 	private void updateVisibility() {
-		boolean lib = mode == Mode.LIBRARY;
-		boolean st = mode == Mode.STORED;
-		library.visible = lib;
+		boolean lib = mode == View.LIBRARY;
+		boolean st = mode == View.STORED;
+		boolean files = mode == View.FILES;
 		search.visible = lib;
-		storedList.visible = st;
 		takeOutButton.visible = st;
 		storeHeldButton.visible = st;
 		storeAllButton.visible = st;
 		takeOutButton.active = selectedStoredEntry() != null;
 		storeHeldButton.active = minecraft.player != null && TableLibrary.storable(minecraft.player.getMainHandItem()) && storedCount() < capacity;
 		storeAllButton.active = minecraft.player != null && carriesStorable() && storedCount() < capacity;
-		libraryTab.active = mode != Mode.LIBRARY;
+		libraryTab.active = mode != View.LIBRARY;
 		storedTab.active = !st;
 		storedTab.setMessage(storedTabLabel());
 		takeButton.visible = lib;
 		uploadViewButton.visible = lib;
 		uploadViewButton.active = canUpload;
-		files.visible = mode == Mode.FILES;
-		uploadButton.visible = mode == Mode.FILES;
-		folderButton.visible = mode == Mode.FILES;
-		backButton.visible = mode == Mode.FILES;
+		uploadButton.visible = files;
+		folderButton.visible = files;
+		backButton.visible = files;
 		TablePayloads.Entry chosen = selectedEntry();
 		takeButton.active = chosen != null && chosen.unlocked(); // a locked or "???" build isn't handed out (26.10)
 		// The full list is of the build as shown, in the chosen style (26.11).
@@ -365,7 +388,8 @@ public class BlueprintTableScreen extends Screen {
 		}
 		allMaterialsButton.visible = lib && !allMaterials && materials != null && !materials.isEmpty();
 		allBackButton.visible = allMaterials;
-		uploadButton.active = mode == Mode.FILES && selectedFile != null && !uploading && canUpload;
+		uploadButton.active = files && selectedFile != null && !uploading && canUpload;
+		layout();
 	}
 
 	@Override
@@ -383,10 +407,13 @@ public class BlueprintTableScreen extends Screen {
 			allScroll = 0;
 		}
 		selectedId = id;
-		for (LibraryList.Row row : library.children()) {
-			if (row.entry.id().equals(id)) {
-				library.setSelected(row);
-				library.scrollTo(row);
+		int i = indexOf(id);
+		if (i >= 0 && boxes != null) {
+			int rows = BlueprintBookLayout.visibleRows(boxes.list(), BlueprintBookLayout.ROW);
+			if (i < libScroll) {
+				libScroll = i;
+			} else if (i >= libScroll + rows) {
+				libScroll = i - rows + 1;
 			}
 		}
 		TablePayloads.Entry entry = entry(id);
@@ -395,9 +422,18 @@ public class BlueprintTableScreen extends Screen {
 		}
 	}
 
+	private int indexOf(ResourceLocation id) {
+		for (int i = 0; i < shown.size(); i++) {
+			if (shown.get(i).id().equals(id)) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	/** Opens the full materials list of the selected build (also used by the screenshot harness). */
 	public void showAllMaterials() {
-		if (mode == Mode.LIBRARY && selectedId != null && details.containsKey(shownId())) {
+		if (mode == View.LIBRARY && selectedId != null && details.containsKey(shownId())) {
 			allMaterials = true;
 			allScroll = 0;
 			updateVisibility();
@@ -450,15 +486,9 @@ public class BlueprintTableScreen extends Screen {
 
 	/** The Stored tab's rows, keeping the pick if it's still stored (else the first). */
 	private void fillStored() {
-		storedList.fill();
 		TablePayloads.Stored keep = selectedStoredEntry();
 		selectedStored = keep != null ? keep.stack() : stored.isEmpty() ? null : stored.get(0).stack();
-		for (StoredList.Row row : storedList.children()) {
-			if (selectedStored != null && ItemStack.isSameItemSameComponents(row.stored.stack(), selectedStored)) {
-				storedList.setSelected(row);
-			}
-		}
-		storedList.clampScrollAmount();
+		storedScroll = clampScroll(storedScroll, stored.size(), BlueprintBookLayout.STORED_ROW);
 	}
 
 	@Nullable
@@ -498,13 +528,13 @@ public class BlueprintTableScreen extends Screen {
 
 	/** Switches to the library (tab button; also for the screenshot harness). */
 	public void showLibrary() {
-		mode = Mode.LIBRARY;
+		mode = View.LIBRARY;
 		updateVisibility();
 	}
 
 	/** Switches to the Stored tab (tab button; also for the screenshot harness). */
 	public void showStored() {
-		mode = Mode.STORED;
+		mode = View.STORED;
 		allMaterials = false;
 		fillStored();
 		requestStoredPreview();
@@ -513,7 +543,7 @@ public class BlueprintTableScreen extends Screen {
 
 	/** Whether the Stored tab is showing (for the screenshot harness). */
 	public boolean storedOpen() {
-		return mode == Mode.STORED;
+		return mode == View.STORED;
 	}
 
 	/** Picks a stored blueprint in the Stored tab. */
@@ -552,6 +582,20 @@ public class BlueprintTableScreen extends Screen {
 		ClientPlayNetworking.send(new TablePayloads.Store(table, all));
 	}
 
+	// --- the upload view -------------------------------------------------------------------------
+
+	private void fillFiles() {
+		List<Path> found = new ArrayList<>();
+		try (Stream<Path> stream = Files.list(folder())) {
+			stream.filter(Files::isRegularFile).filter(p -> BlueprintImporter.hasSupportedExtension(p.getFileName().toString()))
+				.sorted().forEach(found::add);
+		} catch (IOException ignored) {
+			// empty list
+		}
+		fileItems = found;
+		filesScroll = clampScroll(filesScroll, found.size(), BlueprintBookLayout.ROW);
+	}
+
 	/** Uploads the selected file (button action; public for the screenshot harness). */
 	public void upload() {
 		if (selectedFile == null || uploading) {
@@ -562,12 +606,12 @@ public class BlueprintTableScreen extends Screen {
 			bytes = Files.readAllBytes(selectedFile);
 		} catch (IOException e) {
 			status = Component.translatable("screen.aliveworkplace.table.read_failed", selectedFile.getFileName().toString());
-			statusColor = 0xFFFF7070;
+			statusKind = CopperStyle.Status.BAD;
 			return;
 		}
 		if (bytes.length > BlueprintFiles.MAX_FILE_BYTES) {
 			status = Component.translatable("message.aliveworkplace.import.error.file_too_big", bytes.length / 1024, BlueprintFiles.MAX_FILE_BYTES / 1024);
-			statusColor = 0xFFFF7070;
+			statusKind = CopperStyle.Status.BAD;
 			return;
 		}
 		String name = selectedFile.getFileName().toString();
@@ -577,7 +621,7 @@ public class BlueprintTableScreen extends Screen {
 		}
 		uploading = true;
 		status = Component.translatable("screen.aliveworkplace.table.uploading", name);
-		statusColor = 0xFFE0E0E0;
+		statusKind = CopperStyle.Status.INFO;
 	}
 
 	/** {@code .minecraft/blueprints} (or the instance folder in launchers like CurseForge). */
@@ -594,252 +638,502 @@ public class BlueprintTableScreen extends Screen {
 	// --- rendering -------------------------------------------------------------------------
 
 	@Override
-	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-		super.render(g, mouseX, mouseY, partialTick);
-		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
-		Component sub = mode == Mode.STORED ? Component.translatable("screen.aliveworkplace.table.stored_count", storedCount(), capacity)
-			: mode == Mode.LIBRARY
-			? !query.isBlank() ? Component.translatable("screen.aliveworkplace.table.search_count", shown.size(), entries.size())
-			: unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
-				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
-			: Component.translatable("screen.aliveworkplace.table.files_title");
-		TableStyle.header(g, font, title, sub, left, top, panelW, TableStyle.overClose(left, top, panelW, mouseX, mouseY));
-		if (mode == Mode.LIBRARY && shown.isEmpty() && !query.isBlank()) {
-			// Nothing matches (36.10): said in the empty list, with what was typed.
-			Component none = Component.translatable("screen.aliveworkplace.table.no_match", query.trim());
-			int lw = library.getWidth() - 12;
-			int ly = library.getY() + 8;
-			for (var line : font.split(none, lw)) {
-				g.drawString(font, line, library.getX() + 6, ly, TableStyle.LOADING, false);
-				ly += 10;
-			}
-			g.drawString(font, font.plainSubstrByWidth(Component.translatable("screen.aliveworkplace.table.no_match_help").getString(), lw),
-				library.getX() + 6, ly + 4, TableStyle.FAINT, false);
-		}
-
-		int dx = library.getX() + library.getWidth() + 10;
-		int dw = left + panelW - 8 - dx;
-		int dy = top + 24;
-		if (mode == Mode.LIBRARY && allMaterials) {
-			renderAllMaterials(g, dx, top + 22, dw, top + panelH - 34 - (top + 22), mouseX, mouseY, partialTick);
-		} else if (mode == Mode.LIBRARY) {
-			renderDetails(g, dx, dy, dw, mouseX, mouseY);
-			if (hoveredStyle != null) {
-				g.renderTooltip(font, List.of(hoveredStyle.getVisualOrderText(), Component.translatable("screen.aliveworkplace.table.style_hint")
-					.withStyle(net.minecraft.ChatFormatting.GRAY).getVisualOrderText()), mouseX, mouseY);
-			}
-		} else if (mode == Mode.STORED) {
-			renderStored(g, dx, dy, dw, mouseX, mouseY);
-		} else {
-			renderFileHelp(g, dx, dy, dw);
-		}
-		if (!status.getString().isEmpty()) {
-			int sy = top + panelH - 42;
-			for (var line : font.split(status, panelW - 16)) {
-				g.drawString(font, line, left + 8, sy, statusColor, false);
-				sy += 10;
-			}
+	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+		super.renderBackground(g, mouseX, mouseY, partialTick);
+		CopperStyle.window(g, left, top, panelW, panelH);
+		if (mode == View.LIBRARY) {
+			// The search well, under the game's box (drawn without its border).
+			int[] s = boxes.search();
+			g.blitSprite(search.isFocused() ? CopperStyle.WELL_FOCUS : CopperStyle.WELL, s[0], s[1], s[2], s[3]);
+			CopperStyle.glyph(g, "search", s[0] + 4, s[1] + 3);
 		}
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
-		super.renderBackground(g, mouseX, mouseY, partialTick);
-		TableStyle.panel(g, left, top, panelW, panelH);
+	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+		super.render(g, mouseX, mouseY, partialTick);
+		whisper = Component.empty();
+		emptyAction = null;
+		long unlocked = entries.stream().filter(TablePayloads.Entry::unlocked).count();
+		Component sub = mode == View.STORED ? Component.translatable("screen.aliveworkplace.table.stored_count", storedCount(), capacity)
+			: mode == View.LIBRARY
+			? !query.isBlank() ? Component.translatable("screen.aliveworkplace.table.search_count", shown.size(), entries.size())
+			: unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
+				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
+			: Component.translatable("screen.aliveworkplace.table.files_title");
+		boolean overClose = CopperLayout.inside(boxes.close(), mouseX, mouseY);
+		int[] plaque = CopperStyle.plaque(g, font, title, boxes.win());
+		CopperStyle.lintel(g, font, boxes.win(), plaque, Component.empty(), overClose);
+		int[] lt = boxes.lintelText();
+		if (lt[2] > 8) {
+			String text = CopperStyle.trim(font, sub.getString(), lt[2]);
+			g.drawString(font, text, lt[0] + lt[2] - font.width(text), lt[1] + 4, CopperStyle.TUFF, false);
+		}
+		if (overClose) {
+			whisper = Component.translatable("screen.aliveworkplace.table.whisper.close");
+		}
+		drawTab(g, libraryTab, mode == View.LIBRARY, mouseX, mouseY);
+		drawTab(g, storedTab, mode == View.STORED, mouseX, mouseY);
+
+		renderRail(g, mouseX, mouseY);
+		int[] d = boxes.detail();
+		ItemStack hoveredItem = null;
+		if (mode == View.LIBRARY) {
+			renderLibraryList(g, mouseX, mouseY);
+			if (allMaterials) {
+				renderAllMaterials(g, d[0], d[1], d[2], d[3], mouseX, mouseY, partialTick);
+			} else {
+				hoveredItem = renderDetails(g, d[0], d[1], d[2], d[3], mouseX, mouseY);
+			}
+		} else if (mode == View.STORED) {
+			renderStoredList(g, mouseX, mouseY);
+			renderStored(g, d[0], d[1], d[2], d[3]);
+		} else {
+			renderFilesList(g, mouseX, mouseY);
+			renderFileHelp(g, d[0], d[1], d[2], d[3]);
+		}
+		renderButtons(g, mouseX, mouseY);
+		if (allMaterialsButton.visible) {
+			drawButton(g, allMaterialsButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY);
+		}
+		if (allBackButton.visible) {
+			drawButton(g, allBackButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY);
+		}
+
+		// The whisper line: what the thing under the mouse does, else the last upload's word (its glyph, the sentence in its color).
+		int[] w = boxes.whisper();
+		int wy = w[1] + 3;
+		if (whisper.getString().isEmpty() && !status.getString().isEmpty() && statusKind != null) {
+			CopperStyle.whisper(g, font, Component.empty(), w[0] + 2, wy, w[2] - 4, boxes.compact());
+			g.blitSprite(statusKind.glyph, w[0] + 2, wy, 8, 8);
+			int room = w[2] - 4 - 12 - (font.width(Component.translatable("screen.aliveworkplace.copperline.key.esc")) + 6
+				+ (boxes.compact() ? 0 : 4 + font.width(Component.translatable("screen.aliveworkplace.copperline.key.close")))) - 6;
+			g.drawString(font, CopperStyle.trim(font, status.getString(), room), w[0] + 14, wy, statusKind.color, false);
+		} else {
+			CopperStyle.whisper(g, font, whisper, w[0] + 2, wy, w[2] - 4, boxes.compact());
+		}
+		if (hoveredItem != null) {
+			g.renderTooltip(font, hoveredItem, mouseX, mouseY);
+		}
 	}
 
-	private void renderDetails(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
-		styleCells = 0;
-		hoveredStyle = null;
+	private void drawTab(GuiGraphics g, Button tab, boolean open, int mouseX, int mouseY) {
+		boolean over = tab.isMouseOver(mouseX, mouseY);
+		CopperStyle.tab(g, tab.getX(), tab.getY(), tab.getWidth(), tab.getHeight(), open, over && !open);
+		String text = CopperStyle.trim(font, tab.getMessage().getString(), tab.getWidth() - 6);
+		g.drawString(font, text, tab.getX() + (tab.getWidth() - font.width(text)) / 2, tab.getY() + 3, open || over ? CopperStyle.QUARTZ : CopperStyle.TUFF, open);
+	}
+
+	private void drawButton(GuiGraphics g, Button b, CopperStyle.Kind kind, int mouseX, int mouseY) {
+		boolean over = b.active && b.isMouseOver(mouseX, mouseY);
+		CopperStyle.button(g, font, b.getMessage(), null, b.getX(), b.getY(), b.getWidth(), b.getHeight(), kind, over, false, !b.active);
+	}
+
+	/** The view's row of buttons: the first copper, the rest neutral; each says in the whisper line what it does. */
+	private void renderButtons(GuiGraphics g, int mouseX, int mouseY) {
+		Button[] row = mode == View.LIBRARY ? new Button[]{takeButton, uploadViewButton}
+			: mode == View.STORED ? new Button[]{takeOutButton, storeHeldButton, storeAllButton}
+			: new Button[]{uploadButton, folderButton, backButton};
+		String[] keys = BlueprintBookLayout.buttons(mode);
+		for (int i = 0; i < row.length; i++) {
+			drawButton(g, row[i], i == BlueprintBookLayout.COPPER ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL, mouseX, mouseY);
+			if (row[i].isMouseOver(mouseX, mouseY)) {
+				whisper = Component.translatable("screen.aliveworkplace.table.whisper." + keys[i].substring(keys[i].lastIndexOf('.') + 1));
+			}
+		}
+	}
+
+	/** The style rail (26.11): as drawn and each style the selected build takes, the chosen one copper-marked. */
+	private void renderRail(GuiGraphics g, int mouseX, int mouseY) {
+		int[] rail = boxes.rail();
+		if (rail[2] <= 0) {
+			return; // the Stored tab and the upload view have no rail
+		}
+		g.fill(rail[0], rail[1], rail[0] + rail[2], rail[1] + rail[3], CopperStyle.DEEP_800);
+		if (!boxes.compact()) {
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.rail_style").getString().toUpperCase(java.util.Locale.ROOT),
+				rail[2] - 8), rail[0] + 4, rail[1] + 3, CopperStyle.TUFF, false);
+		}
+		if (mode != View.LIBRARY || selectedEntry() == null || !selectedEntry().unlocked()) {
+			return;
+		}
+		List<TablePayloads.StyleChoice> choices = selectedStyles();
+		int[][] cells = BlueprintBookLayout.styleEntries(boxes, choices.size() + 1);
+		for (int i = 0; i < cells.length; i++) {
+			TablePayloads.StyleChoice choice = i == 0 ? null : choices.get(i - 1);
+			String name = choice == null ? "" : choice.name();
+			Component label = choice == null ? Component.translatable("style.aliveworkplace.as_drawn") : choice.title();
+			ItemStack icon = new ItemStack(choice == null ? net.minecraft.world.item.Items.SPRUCE_LOG : BuiltInRegistries.ITEM.get(choice.icon()));
+			boolean over = !allMaterials && CopperLayout.inside(cells[i], mouseX, mouseY);
+			CopperStyle.railEntry(g, font, cells[i], null, icon, label, 0, name.equals(style), over, boxes.compact());
+			if (over) {
+				whisper = Component.translatable("screen.aliveworkplace.table.whisper.style", label);
+			}
+		}
+	}
+
+	/** The list's well, its scroll bar, and the rows from {@code scroll}; returns the rows that fit. */
+	private int listFrame(GuiGraphics g, int count, int scroll, int rowH) {
+		int[] l = boxes.list();
+		CopperStyle.well(g, l[0], l[1], l[2], l[3]);
+		int rows = BlueprintBookLayout.visibleRows(l, rowH);
+		// In pixels: the thumb is as tall as the rows shown are of all of them.
+		CopperStyle.scrollbar(g, l[0] + l[2] - 5, l[1] + 1, l[3] - 2, scroll * rowH, Math.max(0, count - rows) * rowH, count * rowH, false);
+		return rows;
+	}
+
+	private void renderLibraryList(GuiGraphics g, int mouseX, int mouseY) {
+		int[] h = boxes.header();
+		g.drawString(font, Component.translatable("screen.aliveworkplace.table.col_name").getString().toUpperCase(java.util.Locale.ROOT), h[0] + 4, h[1] + 2, CopperStyle.TUFF, false);
+		String sizeHead = Component.translatable("screen.aliveworkplace.table.col_size").getString().toUpperCase(java.util.Locale.ROOT);
+		g.drawString(font, sizeHead, h[0] + h[2] - 8 - font.width(sizeHead), h[1] + 2, CopperStyle.TUFF, false);
+		CopperStyle.headerRow(g, h[0], h[1], h[2]);
+		int[] l = boxes.list();
+		int rowH = BlueprintBookLayout.ROW;
+		libScroll = clampScroll(libScroll, shown.size(), rowH);
+		int rows = listFrame(g, shown.size(), libScroll, rowH);
+		if (entries.isEmpty()) {
+			// The empty state (no blueprints on the server): what to do, and the button that does it.
+			boolean over = emptyAction != null && CopperLayout.inside(emptyAction, mouseX, mouseY);
+			emptyAction = CopperStyle.empty(g, font, "buildings", Component.translatable("screen.aliveworkplace.table.empty_title"),
+				Component.translatable("screen.aliveworkplace.table.empty_line"), canUpload ? Component.translatable("screen.aliveworkplace.table.upload_view") : null,
+				l[0] + 2, l[1] + 2, l[2] - 4, l[3] - 4, over);
+			return;
+		}
+		if (shown.isEmpty() && !query.isBlank()) {
+			// Nothing matches (36.10): said in the empty list, with what was typed.
+			Component none = Component.translatable("screen.aliveworkplace.table.no_match", query.trim());
+			int lw = l[2] - 12;
+			int ly = l[1] + 8;
+			for (var line : font.split(none, lw)) {
+				g.drawString(font, line, l[0] + 6, ly, CopperStyle.TUFF, false);
+				ly += 10;
+			}
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.no_match_help").getString(), lw),
+				l[0] + 6, ly + 4, CopperStyle.OFF_TEXT, false);
+			return;
+		}
+		int at = BlueprintBookLayout.rowAt(l, rowH, libScroll, shown.size(), mouseX, mouseY);
+		int rowW = l[2] - 7;
+		for (int k = 0; k < rows && libScroll + k < shown.size(); k++) {
+			int i = libScroll + k;
+			TablePayloads.Entry e = shown.get(i);
+			int x = l[0] + 1;
+			int y = l[1] + 1 + k * rowH;
+			boolean sel = e.id().equals(selectedId);
+			CopperStyle.rowBand(g, x, y, rowW, rowH, i % 2 == 1, i == at, sel);
+			int tx = x + 4;
+			int right = x + rowW - 3;
+			if (e.hidden()) {
+				g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), tx, y + 2, CopperStyle.OFF_TEXT, false);
+			} else {
+				String size = e.locked() ? "" : e.sizeX() + "×" + e.sizeZ();
+				int sw = size.isEmpty() ? 0 : font.width(size) + 4;
+				if (e.locked()) {
+					CopperStyle.glyph(g, "lock", tx, y + 2);
+					tx += 10;
+				}
+				String name = Blueprints.displayName(e.id()).getString();
+				if (e.id().getPath().startsWith("uploads/")) {
+					name += " · " + Component.translatable("screen.aliveworkplace.table.uploaded").getString();
+				}
+				g.drawString(font, CopperStyle.trim(font, name, right - sw - tx), tx, y + 2, e.locked() ? CopperStyle.OFF_TEXT : CopperStyle.QUARTZ, sel);
+				if (!size.isEmpty()) {
+					g.drawString(font, size, right - font.width(size), y + 2, sel ? CopperStyle.QUARTZ : CopperStyle.TUFF, false);
+				}
+			}
+			if (i == at) {
+				whisper = e.hidden() || e.locked() ? Component.translatable(e.hint()) : Component.translatable("screen.aliveworkplace.table.whisper.list");
+			}
+		}
+	}
+
+	private void renderStoredList(GuiGraphics g, int mouseX, int mouseY) {
+		int[] l = boxes.list();
+		int rowH = BlueprintBookLayout.STORED_ROW;
+		storedScroll = clampScroll(storedScroll, stored.size(), rowH);
+		int rows = listFrame(g, stored.size(), storedScroll, rowH);
+		if (stored.isEmpty()) {
+			CopperStyle.empty(g, font, "buildings", Component.translatable("screen.aliveworkplace.table.stored_none"),
+				Component.translatable("screen.aliveworkplace.table.stored_empty_line"), null, l[0] + 2, l[1] + 2, l[2] - 4, l[3] - 4, false);
+			return;
+		}
+		int at = BlueprintBookLayout.rowAt(l, rowH, storedScroll, stored.size(), mouseX, mouseY);
+		int rowW = l[2] - 7;
+		TablePayloads.Stored picked = selectedStoredEntry();
+		for (int k = 0; k < rows && storedScroll + k < stored.size(); k++) {
+			int i = storedScroll + k;
+			TablePayloads.Stored s = stored.get(i);
+			int x = l[0] + 1;
+			int y = l[1] + 1 + k * rowH;
+			boolean sel = s == picked;
+			CopperStyle.rowBand(g, x, y, rowW, rowH, i % 2 == 1, i == at, sel);
+			g.renderItem(s.stack(), x + 3, y + 2);
+			g.drawString(font, CopperStyle.trim(font, s.stack().getHoverName().getString(), rowW - 26), x + 22, y + 2, CopperStyle.QUARTZ, sel);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.stored_row", s.count()).getString(), rowW - 26),
+				x + 22, y + 11, CopperStyle.TUFF, false);
+		}
+	}
+
+	private void renderFilesList(GuiGraphics g, int mouseX, int mouseY) {
+		int[] l = boxes.list();
+		int rowH = BlueprintBookLayout.ROW;
+		filesScroll = clampScroll(filesScroll, fileItems.size(), rowH);
+		int rows = listFrame(g, fileItems.size(), filesScroll, rowH);
+		int at = BlueprintBookLayout.rowAt(l, rowH, filesScroll, fileItems.size(), mouseX, mouseY);
+		int rowW = l[2] - 7;
+		for (int k = 0; k < rows && filesScroll + k < fileItems.size(); k++) {
+			int i = filesScroll + k;
+			Path p = fileItems.get(i);
+			int x = l[0] + 1;
+			int y = l[1] + 1 + k * rowH;
+			boolean sel = p.equals(selectedFile);
+			CopperStyle.rowBand(g, x, y, rowW, rowH, i % 2 == 1, i == at, sel);
+			long size;
+			try {
+				size = Files.size(p);
+			} catch (IOException e) {
+				size = 0;
+			}
+			String kb = Math.max(1, size / 1024) + " KB";
+			int right = x + rowW - 3;
+			g.drawString(font, CopperStyle.trim(font, p.getFileName().toString(), right - font.width(kb) - 4 - (x + 4)), x + 4, y + 2, CopperStyle.QUARTZ, sel);
+			g.drawString(font, kb, right - font.width(kb), y + 2, CopperStyle.TUFF, false);
+		}
+	}
+
+	/** The selected build: its 3D preview, name and tags, size, jobs and beds, and a row of material slots. Returns the slot item under the mouse. */
+	@Nullable
+	private ItemStack renderDetails(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		int bottom = y + h;
+		gridW = 0;
 		TablePayloads.Entry entry = selectedEntry();
 		if (entry == null) {
-			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.empty"), x, y, w, 0xFFAAAAAA);
-			return;
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.empty"), x, y, w, CopperStyle.TUFF);
+			return null;
 		}
 		if (entry.hidden()) {
 			// A rare build not unlocked yet (26.10): like a hidden achievement, nothing but how to come by it.
-			g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), x, y, 0xFF6A6A6A, false);
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), x, y, CopperStyle.OFF_TEXT, true);
 			y += 12;
-			g.drawWordWrap(font, Component.translatable(entry.hint()), x, y, w, 0xFFB08850);
-			y += 9 * font.split(Component.translatable(entry.hint()), w).size() + 4;
-			g.fill(x, y, x + w, y + 60, 0xC0000000);
-			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.hidden_help"), x + 4, y + 6, w - 8, 0xFF777777);
-			return;
+			g.blitSprite(CopperStyle.Status.RARE.glyph, x, y, 8, 8);
+			g.drawWordWrap(font, Component.translatable(entry.hint()), x + 10, y, w - 10, CopperStyle.AMETHYST);
+			y += 9 * font.split(Component.translatable(entry.hint()), w - 10).size() + 4;
+			CopperStyle.well(g, x, y, w, Math.min(60, bottom - y));
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.hidden_help"), x + 4, y + 6, w - 8, CopperStyle.TUFF);
+			return null;
 		}
-		g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), w), x, y, entry.locked() ? 0xFF8A8A8A : 0xFFFFFFFF, false);
-		y += 12;
+		List<Component> lines = facts.getOrDefault(shownId(), List.of());
 		TablePreview shownPreview = previews.get(shownId());
 		int below = shownPreview == null ? 0 : shownPreview.below();
-		if (below > 0) { // a basement (36.1): wrapped, as "and N below ground" can run past the pane
-			Component size = io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size_below", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below);
-			g.drawWordWrap(font, size, x, y, w, 0xFF9AA8BA);
-			y += 10 * font.split(size, w).size();
-		} else {
-			g.drawString(font, io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks()),
-				x, y, 0xFF9AA8BA, false);
-			y += 10;
+		Component size = below > 0
+			? io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size_below", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks(), below)
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.table.size", entry.blocks(), entry.sizeX(), entry.sizeY(), entry.sizeZ(), entry.blocks());
+		boolean compact = boxes.compact();
+		// At 320x180 the size takes one line (cut with "...") and the id line goes, so the slots keep their room.
+		int sizeLines = compact ? 1 : Math.min(2, font.split(size, w).size());
+		boolean idLine = !compact || !entry.hint().isEmpty();
+		int factLines = 0;
+		for (Component line : lines) {
+			factLines += font.split(line, w).size();
 		}
-		// What jobs it brings and its beds (36.6a), wrapped; a build with neither shows nothing here.
-		List<Component> lines = facts.getOrDefault(shownId(), List.of());
-		if (!lines.isEmpty()) {
-			y += 1;
-			for (Component line : lines) {
-				g.drawWordWrap(font, line, x, y, w, 0xFFC8C0A8);
-				y += 9 * font.split(line, w).size();
-			}
-			y += 2;
+		if (compact) {
+			factLines = Math.min(factLines, 1);
 		}
-		if (!entry.hint().isEmpty()) {
-			// Locked (or a Wonder, raised from its plan): how to get it, where the id goes for the rest.
-			Component how = entry.locked()
-				? Component.translatable("screen.aliveworkplace.table.locked_hint", Component.translatable(entry.hint()))
-				: Component.translatable(entry.hint());
-			g.drawString(font, font.plainSubstrByWidth(how.getString(), w), x, y, 0xFFE0A050, false);
-		} else {
-			g.drawString(font, font.plainSubstrByWidth(entry.id().toString(), w), x, y, 0xFF5E6B7C, false);
-		}
-		y += 12;
-		// The build in 3D (26.9), above its materials; it keeps room for two rows of them.
+		// Under the preview: name (12), size, facts, the hint or id (10), "Materials" (11), a row of slots (18) and its word (10).
+		int under = 12 + 10 * sizeLines + 9 * factLines + (idLine ? 11 : 0) + 11 + BlueprintBookLayout.SLOT + 11;
+		// The build in 3D (26.9) at the top, as tall as the room left.
 		previewX = x;
 		previewY = y;
 		previewW = w;
-		List<TablePayloads.StyleChoice> choices = selectedStyles();
-		int styleRow = choices.isEmpty() ? 0 : STYLE_CELL + 3;
-		previewH = Math.max(40, Math.min(120, top + panelH - 46 - y - 11 - 40 - 4 - styleRow));
-		g.fill(previewX, previewY, previewX + previewW, previewY + previewH, LIST_BG);
-		TablePreview preview = previews.get(shownId());
-		if (preview == null) {
+		previewH = Math.max(30, Math.min(130, h - under - 4));
+		CopperStyle.well(g, previewX, previewY, previewW, previewH);
+		if (shownPreview == null) {
 			Component loading = Component.translatable("screen.aliveworkplace.table.preview_loading");
-			g.drawString(font, loading, x + (w - font.width(loading)) / 2, y + previewH / 2 - 4, 0xFF777777, false);
+			g.drawString(font, loading, x + (w - font.width(loading)) / 2, y + previewH / 2 - 4, CopperStyle.TUFF, false);
 		} else {
-			preview.render(g, previewX, previewY, previewW, previewH);
+			g.enableScissor(previewX + 1, previewY + 1, previewX + previewW - 1, previewY + previewH - 1);
+			shownPreview.render(g, previewX + 1, previewY + 1, previewW - 2, previewH - 2);
+			g.disableScissor();
 			if (entry.locked()) {
 				// A locked build's preview, dimmed (26.10), over whatever depth the 3D drawing left.
 				g.pose().pushPose();
 				g.pose().translate(0, 0, 400);
-				g.fill(previewX, previewY, previewX + previewW, previewY + previewH, 0x99101010);
+				g.fill(previewX + 1, previewY + 1, previewX + previewW - 1, previewY + previewH - 1, 0x99101010);
 				g.pose().popPose();
 			}
-			if (preview.count() > 0) {
-				g.drawString(font, Component.translatable("screen.aliveworkplace.table.preview_drag"), x + 3, y + previewH - 10, 0xFF5E6B7C, false);
+			if (overPreview(mouseX, mouseY) && shownPreview.count() > 0) {
+				whisper = Component.translatable("screen.aliveworkplace.table.preview_drag");
 			}
 		}
 		y += previewH + 4;
-		if (!choices.isEmpty()) {
-			// The styles (26.11): as drawn, then each style the build takes; the chosen one framed in gold, its name beside.
-			styleRowX = x;
-			styleRowY = y;
-			styleCells = Math.min(choices.size() + 1, Math.max(1, (w - 60) / STYLE_CELL));
-			Component chosen = Component.translatable("style.aliveworkplace.as_drawn");
-			for (int i = 0; i < styleCells; i++) {
-				TablePayloads.StyleChoice choice = i == 0 ? null : choices.get(i - 1);
-				String name = choice == null ? "" : choice.name();
-				Component title = choice == null ? Component.translatable("style.aliveworkplace.as_drawn") : choice.title();
-				int cx = x + i * STYLE_CELL;
-				boolean on = name.equals(style);
-				boolean over = mouseX >= cx && mouseX < cx + STYLE_CELL - 2 && mouseY >= y && mouseY < y + STYLE_CELL - 2;
-				TableStyle.cell(g, cx, y, on, over);
-				ItemStack icon = new ItemStack(choice == null ? net.minecraft.world.item.Items.SPRUCE_LOG : BuiltInRegistries.ITEM.get(choice.icon()));
-				g.renderItem(icon, cx + 1, y + 1);
-				if (on) {
-					chosen = title;
+		// The name in Quartz with a shadow, its tag (LOCKED, or the style it's shown in) at the right.
+		String tag = entry.locked() ? Component.translatable("screen.aliveworkplace.table.tag_locked").getString().toUpperCase(java.util.Locale.ROOT)
+			: style.isEmpty() ? "" : selectedStyles().stream().filter(c -> c.name().equals(style)).findFirst().map(c -> c.title().getString().toUpperCase(java.util.Locale.ROOT)).orElse("");
+		int tagW = tag.isEmpty() ? 0 : font.width(tag) + 6;
+		g.drawString(font, CopperStyle.trim(font, Blueprints.displayName(entry.id()).getString(), w - tagW - 4), x, y, entry.locked() ? CopperStyle.OFF_TEXT : CopperStyle.QUARTZ, true);
+		if (!tag.isEmpty()) {
+			CopperStyle.chip(g, font, tag, x + w - tagW, y - 2, entry.locked() ? CopperStyle.LANTERN : CopperStyle.COPPER_LIGHT);
+		}
+		y += 12;
+		if (sizeLines == 1) {
+			g.drawString(font, CopperStyle.trim(font, size.getString(), w), x, y, CopperStyle.TUFF, false);
+			y += 10;
+		} else {
+			int sy = y;
+			for (var line : font.split(size, w)) {
+				if (y >= sy + 10 * sizeLines) {
+					break;
 				}
-				if (over) {
-					hoveredStyle = title;
-				}
+				g.drawString(font, line, x, y, CopperStyle.TUFF, false);
+				y += 10;
 			}
-			int tx = x + styleCells * STYLE_CELL + 2;
-			g.drawString(font, font.plainSubstrByWidth(chosen.getString(), x + w - tx), tx, y + 5, TableStyle.TITLE, false);
-			y += styleRow;
+		}
+		// What jobs it brings and its beds (36.6a); at 320x180 only the first line, cut with "...".
+		int budget = factLines;
+		for (Component line : lines) {
+			for (var part : font.split(line, w)) {
+				if (budget-- <= 0) {
+					break;
+				}
+				if (compact && font.split(line, w).size() > 1) {
+					g.drawString(font, CopperStyle.trim(font, line.getString(), w), x, y, CopperStyle.QUARTZ, false);
+				} else {
+					g.drawString(font, part, x, y, CopperStyle.QUARTZ, false);
+				}
+				y += 9;
+			}
+		}
+		if (!entry.hint().isEmpty()) {
+			// Locked (or a Wonder, raised from its plan): how to get it, with its glyph and its word in Lantern.
+			Component how = entry.locked()
+				? Component.translatable("screen.aliveworkplace.table.locked_hint", Component.translatable(entry.hint()))
+				: Component.translatable(entry.hint());
+			CopperStyle.glyph(g, entry.locked() ? "lock" : "info", x, y);
+			g.drawString(font, CopperStyle.trim(font, how.getString(), w - 10), x + 10, y, entry.locked() ? CopperStyle.LANTERN : CopperStyle.LAPIS, false);
+			y += 11;
+		} else if (idLine) {
+			g.drawString(font, CopperStyle.trim(font, entry.id().toString(), w), x, y, CopperStyle.OFF_TEXT, false);
+			y += 11;
 		}
 		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.table.materials"), x, y);
 		allMaterialsButton.setPosition(x + w - allMaterialsButton.getWidth(), y - 2);
 		y += 11;
-
 		List<TablePayloads.Material> materials = details.get(shownId());
 		if (materials == null) {
-			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y, 0xFF777777, false);
-			return;
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y + 5, CopperStyle.TUFF, false);
+			return null;
 		}
-		// Each cell is an icon and its count beside it, as wide as the widest count needs (3-digit counts used to touch
-		// the next icon).
-		int countWidth = font.width("99");
-		for (TablePayloads.Material m : materials) {
-			countWidth = Math.max(countWidth, font.width(countText(m.count())));
-		}
-		int cell = 16 + 2 + countWidth + 5;
-		int cols = Math.max(1, w / cell);
-		int bottom = top + panelH - 46;
-		int maxRows = Math.max(1, (bottom - y) / 20);
-		// The mouse wheel over the grid scrolls it a row at a time; "+N" counts what's after the last cell shown.
-		int totalRows = (materials.size() + cols - 1) / cols;
-		gridScroll = Math.max(0, Math.min(gridScroll, totalRows - maxRows));
+		return renderSlots(g, materials, x, y, w, mouseX, mouseY);
+	}
+
+	/**
+	 * One row of material slots, scrolled with the wheel, "+N" at its end opening the full list; a slot the player doesn't
+	 * carry enough of is framed in Redstone, and the line under the row says so with the warning glyph (or the good one).
+	 */
+	@Nullable
+	private ItemStack renderSlots(GuiGraphics g, List<TablePayloads.Material> materials, int x, int y, int w, int mouseX, int mouseY) {
+		int step = BlueprintBookLayout.SLOT + 2;
+		int cols = Math.max(1, (w + 2) / step);
+		// With more than fit, the row keeps room at its end for the "+N" button, as wide as its widest label.
+		int moreBtn = font.width("+" + materials.size()) + 8;
+		int fit = materials.size() <= cols ? cols : Math.max(1, (w - moreBtn + 2) / step);
+		gridScroll = Math.max(0, Math.min(gridScroll, materials.size() - fit));
 		gridX = x;
 		gridY = y;
 		gridW = w;
-		gridH = maxRows * 20;
-		int first = gridScroll * cols;
-		int shown = Math.min(materials.size() - first, cols * maxRows);
-		if (first + shown < materials.size()) {
-			shown = Math.max(0, shown - 1); // leave room for the "+N more" cell
-		}
+		gridH = BlueprintBookLayout.SLOT;
+		int first = gridScroll;
+		int count = Math.min(materials.size() - first, fit);
 		moreX = -1;
 		ItemStack hovered = null;
-		for (int k = 0; k < shown; k++) {
+		for (int k = 0; k < count; k++) {
 			TablePayloads.Material m = materials.get(first + k);
-			int cx = x + (k % cols) * cell;
-			int cy = y + (k / cols) * 20;
+			int cx = x + k * step;
 			ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(m.item()));
-			g.renderItem(stack, cx, cy);
-			g.drawString(font, countText(m.count()), cx + 18, cy + 5, 0xFFE8E8E8, true);
-			if (mouseX >= cx && mouseX < cx + 16 && mouseY >= cy && mouseY < cy + 16) {
+			boolean short_ = carried(m.item()) < m.count();
+			g.blitSprite(short_ ? CopperStyle.WELL_ERROR : CopperStyle.WELL, cx, y, 18, 18);
+			g.renderItem(stack, cx + 1, y + 1);
+			String n = countText(m.count());
+			g.pose().pushPose();
+			g.pose().translate(0, 0, 200);
+			g.drawString(font, n, cx + 18 - font.width(n), y + 10, CopperStyle.QUARTZ, true);
+			g.pose().popPose();
+			if (mouseX >= cx && mouseX < cx + 18 && mouseY >= y && mouseY < y + 18) {
 				hovered = stack;
 			}
 		}
-		if (first + shown < materials.size()) {
-			int cx = x + (shown % cols) * cell;
-			int cy = y + (shown / cols) * 20;
+		if (first + count < materials.size()) {
+			int cx = x + count * step;
 			moreX = cx;
-			moreY = cy;
-			moreW = cell;
-			String more = "+" + (materials.size() - first - shown);
-			boolean over = mouseX >= cx && mouseX < cx + cell && mouseY >= cy && mouseY < cy + 16;
-			g.drawString(font, more, cx + 2, cy + 5, over ? 0xFFFFFFFF : 0xFF9AA8BA, false);
+			moreY = y;
+			String more = "+" + (materials.size() - first - count);
+			moreW = Math.min(x + w - cx, font.width(more) + 8);
+			boolean over = mouseX >= cx && mouseX < cx + moreW && mouseY >= y && mouseY < y + 18;
+			CopperStyle.button(g, font, Component.literal(more), null, cx, y, moreW, 18, CopperStyle.Kind.NEUTRAL, over, false, false);
 			if (over) {
-				g.fill(cx + 2, cy + 14, cx + 2 + font.width(more), cy + 15, 0xFFFFFFFF);
+				whisper = Component.translatable("screen.aliveworkplace.table.whisper.all_materials");
 			}
 		}
-		if (hovered != null) {
-			g.renderTooltip(font, hovered, mouseX, mouseY);
+		// The materials' word: all carried (good), or which isn't (warning), never the color alone.
+		List<String> missing = new ArrayList<>();
+		for (TablePayloads.Material m : materials) {
+			if (carried(m.item()) < m.count()) {
+				missing.add(new ItemStack(BuiltInRegistries.ITEM.get(m.item())).getHoverName().getString());
+			}
 		}
+		int ly = y + 21;
+		CopperStyle.Status st = missing.isEmpty() ? CopperStyle.Status.GOOD : CopperStyle.Status.WARNING;
+		Component word = missing.isEmpty() ? Component.translatable("screen.aliveworkplace.table.carried_all")
+			: missing.size() == 1 ? Component.translatable("screen.aliveworkplace.table.carried_missing_one", missing.get(0))
+			: Component.translatable("screen.aliveworkplace.table.carried_missing_more", missing.get(0));
+		g.blitSprite(st.glyph, x, ly, 8, 8);
+		g.drawString(font, CopperStyle.trim(font, word.getString(), w - 10), x + 10, ly, st.color, false);
+		return hovered;
+	}
+
+	/** How many of {@code item} the player carries. */
+	private int carried(ResourceLocation item) {
+		if (minecraft == null || minecraft.player == null) {
+			return 0;
+		}
+		var inv = minecraft.player.getInventory();
+		var it = BuiltInRegistries.ITEM.get(item);
+		int n = 0;
+		for (int i = 0; i < inv.getContainerSize(); i++) {
+			ItemStack s = inv.getItem(i);
+			if (s.is(it)) {
+				n += s.getCount();
+			}
+		}
+		return n;
 	}
 
 	/** Every material of the selected build, biggest first: icon, count and name, scrolled with the wheel. */
 	private void renderAllMaterials(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY, float partialTick) {
 		List<TablePayloads.Material> materials = details.get(shownId());
-		g.fill(x - 4, y, x + w + 4, y + h, TableStyle.OVERLAY_BG);
-		TableStyle.rule(g, x - 4, y, w + 8);
-		TableStyle.rule(g, x - 4, y + h - 1, w + 8);
+		CopperStyle.panel(g, x, y, w, h);
 		if (materials == null) {
 			// Another build was just picked and its list hasn't arrived yet (a click here used to crash the client).
-			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x, y + 5, 0xFF777777, false);
+			g.drawString(font, Component.translatable("screen.aliveworkplace.table.loading"), x + 4, y + 5, CopperStyle.TUFF, false);
 			return;
 		}
 		int total = 0;
 		for (TablePayloads.Material m : materials) {
 			total += m.count();
 		}
-		g.drawString(font, io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.table.all_materials_title", materials.size(), total, materials.size(), total), x, y + 5, TableStyle.TITLE, false);
-		allBackButton.setPosition(x + w - allBackButton.getWidth(), y + 2);
-		int listY = y + 18;
-		int listH = h - 20;
+		allBackButton.setPosition(x + w - allBackButton.getWidth() - 3, y + 3);
+		g.drawString(font, CopperStyle.trim(font, io.github.jcondedata.aliveworkplace.work.Words.countedTwo("screen.aliveworkplace.table.all_materials_title",
+			materials.size(), total, materials.size(), total).getString(), w - allBackButton.getWidth() - 12), x + 4, y + 6, CopperStyle.COPPER_LIGHT, false);
+		int listY = y + 20;
+		int listH = h - 22;
 		int maxScroll = Math.max(0, materials.size() * ALL_ROW - listH);
 		allScroll = Math.max(0, Math.min(allScroll, maxScroll));
 		int countW = 0;
 		for (TablePayloads.Material m : materials) {
 			countW = Math.max(countW, font.width(String.valueOf(m.count())));
 		}
-		g.enableScissor(x - 4, listY, x + w + 4, listY + listH);
+		g.enableScissor(x + 1, listY, x + w - 1, listY + listH);
 		for (int i = allScroll / ALL_ROW; i < materials.size(); i++) {
 			int ry = listY + i * ALL_ROW - allScroll;
 			if (ry > listY + listH) {
@@ -847,32 +1141,42 @@ public class BlueprintTableScreen extends Screen {
 			}
 			TablePayloads.Material m = materials.get(i);
 			ItemStack stack = new ItemStack(BuiltInRegistries.ITEM.get(m.item()));
-			if (i % 2 == 1) {
-				g.fill(x - 2, ry, x + w - 6, ry + ALL_ROW, 0x20FFFFFF);
-			}
-			g.renderItem(stack, x, ry + 1);
+			CopperStyle.rowBand(g, x + 2, ry, w - 10, ALL_ROW, i % 2 == 1, false, false);
+			g.renderItem(stack, x + 4, ry + 1);
 			String count = String.valueOf(m.count());
-			g.drawString(font, count, x + 20 + countW - font.width(count), ry + 5, 0xFFE8E8E8, false);
-			int nameX = x + 26 + countW;
-			g.drawString(font, font.plainSubstrByWidth(stack.getHoverName().getString(), x + w - 8 - nameX), nameX, ry + 5, 0xFFCCCCCC, false);
+			g.drawString(font, count, x + 24 + countW - font.width(count), ry + 5, CopperStyle.QUARTZ, false);
+			int nameX = x + 30 + countW;
+			boolean short_ = carried(m.item()) < m.count();
+			int glyphW = 10;
+			g.drawString(font, CopperStyle.trim(font, stack.getHoverName().getString(), x + w - 10 - glyphW - nameX), nameX, ry + 5, CopperStyle.TUFF, false);
+			g.blitSprite((short_ ? CopperStyle.Status.WARNING : CopperStyle.Status.GOOD).glyph, x + w - 8 - glyphW, ry + 5, 8, 8);
 		}
 		g.disableScissor();
-		TableStyle.thinScrollbar(g, x + w - 3, listY, listH, allScroll, maxScroll, materials.size() * ALL_ROW);
-		allBackButton.render(g, mouseX, mouseY, partialTick);
+		CopperStyle.scrollbar(g, x + w - 6, listY, listH, allScroll, maxScroll, materials.size() * ALL_ROW, false);
 	}
 
 	private boolean overGrid(double mx, double my) {
-		return mode == Mode.LIBRARY && !allMaterials && gridW > 0 && mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH;
+		return mode == View.LIBRARY && !allMaterials && gridW > 0 && mx >= gridX && mx < gridX + gridW && my >= gridY && my < gridY + gridH;
 	}
 
 	@Override
 	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
-		if (allMaterials && mx >= library.getX() + library.getWidth()) {
+		int[] d = boxes.detail();
+		if (allMaterials && mx >= d[0]) {
 			allScroll -= (int) Math.round(scrollY * ALL_ROW * 2);
 			return true;
 		}
 		if (overGrid(mx, my) && selectedId != null && details.containsKey(shownId())) {
 			gridScroll = Math.max(0, gridScroll - (int) Math.signum(scrollY));
+			return true;
+		}
+		if (CopperLayout.inside(boxes.list(), mx, my)) {
+			int step = -(int) Math.signum(scrollY);
+			switch (mode) {
+				case LIBRARY -> libScroll = clampScroll(libScroll + step, shown.size(), BlueprintBookLayout.ROW);
+				case STORED -> storedScroll = clampScroll(storedScroll + step, stored.size(), BlueprintBookLayout.STORED_ROW);
+				case FILES -> filesScroll = clampScroll(filesScroll + step, fileItems.size(), BlueprintBookLayout.ROW);
+			}
 			return true;
 		}
 		return super.mouseScrolled(mx, my, scrollX, scrollY);
@@ -892,54 +1196,77 @@ public class BlueprintTableScreen extends Screen {
 	}
 
 	/** The Stored tab's right side (36.13): the picked blueprint, how many are stored, its build in 3D, and what storing is. */
-	private void renderStored(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
-		int bottom = top + panelH - 46;
+	private void renderStored(GuiGraphics g, int x, int y, int w, int h) {
+		int bottom = y + h;
 		Component help = Component.translatable("screen.aliveworkplace.table.stored_help");
-		int helpH = 9 * font.split(help, w).size();
+		int helpLines = Math.min(boxes.compact() ? 2 : 4, font.split(help, w).size());
+		int helpH = 9 * helpLines;
 		if (stored.isEmpty()) {
-			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_empty"), x, y, w, TableStyle.BODY);
-			int ly = storedList.getY() + 8;
-			for (var line : font.split(Component.translatable("screen.aliveworkplace.table.stored_none"), storedList.getWidth() - 12)) {
-				g.drawString(font, line, storedList.getX() + 6, ly, TableStyle.LOADING, false);
-				ly += 10;
-			}
-			g.drawWordWrap(font, help, x, bottom - helpH, w, TableStyle.FAINT);
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_empty"), x, y, w, CopperStyle.QUARTZ);
+			drawLines(g, help, x, bottom - helpH, w, helpLines);
 			return;
 		}
 		TablePayloads.Stored entry = selectedStoredEntry();
 		if (entry == null) {
-			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_pick"), x, y, w, TableStyle.BODY);
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.stored_pick"), x, y, w, CopperStyle.QUARTZ);
 			return;
 		}
 		g.renderItem(entry.stack(), x, y);
-		g.drawString(font, font.plainSubstrByWidth(entry.stack().getHoverName().getString(), w - 20), x + 20, y, TableStyle.NAME, false);
-		g.drawString(font, font.plainSubstrByWidth(Component.translatable("screen.aliveworkplace.table.stored_here", entry.count()).getString(), w - 20),
-			x + 20, y + 9, TableStyle.TITLE, false);
+		g.drawString(font, CopperStyle.trim(font, entry.stack().getHoverName().getString(), w - 20), x + 20, y, CopperStyle.QUARTZ, true);
+		g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.stored_here", entry.count()).getString(), w - 20),
+			x + 20, y + 9, CopperStyle.COPPER_LIGHT, false);
 		y += 20;
 		// The blueprint's own lines (size, style, where it's placed), as its tooltip has them.
 		List<Component> lines = entry.stack().getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(minecraft.level), minecraft.player,
 			net.minecraft.world.item.TooltipFlag.Default.NORMAL);
-		for (int i = 1; i < lines.size() && i < 5; i++) {
-			g.drawString(font, font.plainSubstrByWidth(lines.get(i).getString(), w), x, y, TableStyle.SUBLINE, false);
+		int max = boxes.compact() ? 2 : 4;
+		for (int i = 1; i < lines.size() && i <= max; i++) {
+			g.drawString(font, CopperStyle.trim(font, lines.get(i).getString(), w), x, y, CopperStyle.TUFF, false);
 			y += 10;
 		}
 		y += 2;
 		ResourceLocation id = buildOf(entry.stack());
 		TablePreview preview = id == null ? null : previews.get(id);
 		int ph = Math.min(120, bottom - helpH - 6 - y);
-		if (preview != null && ph >= 40) {
-			g.fill(x, y, x + w, y + ph, LIST_BG);
-			preview.render(g, x, y, w, ph);
+		if (preview != null && ph >= 30) {
+			CopperStyle.well(g, x, y, w, ph);
+			g.enableScissor(x + 1, y + 1, x + w - 1, y + ph - 1);
+			preview.render(g, x + 1, y + 1, w - 2, ph - 2);
+			g.disableScissor();
 		}
-		g.drawWordWrap(font, help, x, bottom - helpH, w, TableStyle.FAINT);
+		drawLines(g, help, x, bottom - helpH, w, helpLines);
 	}
 
-	private void renderFileHelp(GuiGraphics g, int x, int y, int w) {
-		g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.table.files_help"), x, y, w, 0xFFCCCCCC);
+	/** {@code text} wrapped to {@code w}, at most {@code max} lines, the last cut with "..." if there is more. */
+	private void drawLines(GuiGraphics g, Component text, int x, int y, int w, int max) {
+		var split = font.split(text, w);
+		for (int i = 0; i < split.size() && i < max; i++) {
+			if (i == max - 1 && split.size() > max) {
+				g.drawString(font, lastLine(text, w, max), x, y, CopperStyle.TUFF, false);
+			} else {
+				g.drawString(font, split.get(i), x, y, CopperStyle.TUFF, false);
+			}
+			y += 9;
+		}
+	}
+
+	/** The {@code max}th line of {@code text} wrapped to {@code w}, with the rest cut off and "..." at its end. */
+	private String lastLine(Component text, int w, int max) {
+		var lines = font.getSplitter().splitLines(text.getString(), w, net.minecraft.network.chat.Style.EMPTY);
+		StringBuilder rest = new StringBuilder();
+		for (int i = max - 1; i < lines.size(); i++) {
+			rest.append(i > max - 1 ? " " : "").append(lines.get(i).getString().strip());
+		}
+		String r = rest.toString();
+		return font.width(r) <= w ? r : font.plainSubstrByWidth(r, Math.max(0, w - font.width("…"))) + "…";
+	}
+
+	private void renderFileHelp(GuiGraphics g, int x, int y, int w, int h) {
+		int max = Math.max(1, (h - 14) / 9);
+		drawLines(g, Component.translatable("screen.aliveworkplace.table.files_help"), x, y, w, max);
 		if (selectedFile != null) {
-			int fy = top + panelH - 70;
-			g.drawString(font, Component.translatable("screen.aliveworkplace.table.selected_file", selectedFile.getFileName().toString()),
-				x, fy, 0xFFFFFFFF, false);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.table.selected_file", selectedFile.getFileName().toString()).getString(), w),
+				x, y + h - 10, CopperStyle.QUARTZ, false);
 		}
 	}
 
@@ -959,34 +1286,68 @@ public class BlueprintTableScreen extends Screen {
 	}
 
 	private boolean overPreview(double mx, double my) {
-		return mode == Mode.LIBRARY && previewW > 0 && mx >= previewX && mx < previewX + previewW && my >= previewY && my < previewY + previewH;
+		return mode == View.LIBRARY && previewW > 0 && mx >= previewX && mx < previewX + previewW && my >= previewY && my < previewY + previewH;
+	}
+
+	private void click() {
+		minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
 	}
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
-		if (button == 0 && TableStyle.overClose(left, top, panelW, mx, my)) {
+		if (button == 0 && CopperLayout.inside(boxes.close(), mx, my)) {
 			// The lintel's close X (Copperline, 47.1): as Esc.
-			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(
-				net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+			click();
 			onClose();
 			return true;
 		}
 		if (allMaterials && allBackButton.mouseClicked(mx, my, button)) {
 			return true;
 		}
-		// The style row is covered while the full list is open (styleCells keeps the last drawn row).
-		if (button == 0 && mode == Mode.LIBRARY && !allMaterials && styleCells > 0 && my >= styleRowY && my < styleRowY + STYLE_CELL - 2
-			&& mx >= styleRowX && mx < styleRowX + styleCells * STYLE_CELL) {
-			int i = (int) ((mx - styleRowX) / STYLE_CELL);
-			List<TablePayloads.StyleChoice> choices = selectedStyles();
-			if (i <= choices.size()) {
-				chooseStyle(i == 0 ? "" : choices.get(i - 1).name());
-				minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(
-					net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
-			}
+		if (button == 0 && emptyAction != null && CopperLayout.inside(emptyAction, mx, my) && canUpload) {
+			click();
+			mode = View.FILES;
+			fillFiles();
+			updateVisibility();
 			return true;
 		}
-		if (button == 0 && overGrid(mx, my) && moreX >= 0 && mx >= moreX && mx < moreX + moreW && my >= moreY && my < moreY + 16) {
+		// The style rail (26.11); covered while the full list is open.
+		if (button == 0 && mode == View.LIBRARY && !allMaterials && selectedEntry() != null && selectedEntry().unlocked()) {
+			List<TablePayloads.StyleChoice> choices = selectedStyles();
+			int i = CopperLayout.at(BlueprintBookLayout.styleEntries(boxes, choices.size() + 1), mx, my);
+			if (i >= 0) {
+				chooseStyle(i == 0 ? "" : choices.get(i - 1).name());
+				click();
+				return true;
+			}
+		}
+		if (button == 0) {
+			int[] l = boxes.list();
+			switch (mode) {
+				case LIBRARY -> {
+					int i = BlueprintBookLayout.rowAt(l, BlueprintBookLayout.ROW, libScroll, shown.size(), mx, my);
+					if (i >= 0) {
+						select(shown.get(i).id());
+						return true;
+					}
+				}
+				case STORED -> {
+					int i = BlueprintBookLayout.rowAt(l, BlueprintBookLayout.STORED_ROW, storedScroll, stored.size(), mx, my);
+					if (i >= 0) {
+						selectStored(stored.get(i));
+						return true;
+					}
+				}
+				case FILES -> {
+					int i = BlueprintBookLayout.rowAt(l, BlueprintBookLayout.ROW, filesScroll, fileItems.size(), mx, my);
+					if (i >= 0) {
+						selectedFile = fileItems.get(i);
+						return true;
+					}
+				}
+			}
+		}
+		if (button == 0 && overGrid(mx, my) && moreX >= 0 && mx >= moreX && mx < moreX + moreW && my >= moreY && my < moreY + 18) {
 			showAllMaterials();
 			return true;
 		}
@@ -1020,225 +1381,25 @@ public class BlueprintTableScreen extends Screen {
 		return false;
 	}
 
-	// --- lists -----------------------------------------------------------------------------
-
-	private class LibraryList extends ObjectSelectionList<LibraryList.Row> {
-		LibraryList(Minecraft mc, int width, int height, int y) {
-			super(mc, width, height, y, ROW);
-		}
-
-		void fill() {
-			clearEntries();
-			for (TablePayloads.Entry e : shown) {
-				addEntry(new Row(e));
-			}
-		}
-
-		@Override
-		public int getRowWidth() {
-			return width - 12;
-		}
-
-		@Override
-		protected int getScrollbarPosition() {
-			return getX() + width - 6;
-		}
-
-		@Override
-		protected void renderListBackground(GuiGraphics g) {
-			TableStyle.listBackground(g, getX(), getY(), width, height);
-		}
-
-		@Override
-		protected void renderListSeparators(GuiGraphics g) {
-		}
-
-		void scrollTo(Row row) {
-			ensureVisible(row);
-		}
-
-		class Row extends ObjectSelectionList.Entry<Row> {
-			final TablePayloads.Entry entry;
-
-			Row(TablePayloads.Entry entry) {
-				this.entry = entry;
-			}
-
-			@Override
-			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
-				if (entry.hidden()) {
-					// "???" (26.10): a dark row with no name.
-					g.fill(x, y - 1, x + width - 2, y + height - 1, 0x60000000);
-					g.drawString(font, Component.translatable("screen.aliveworkplace.table.hidden_name"), x + 2, y + 1, 0xFF5A5A5A, false);
-					g.drawString(font, font.plainSubstrByWidth(Component.translatable(entry.hint()).getString(), width - 4), x + 2, y + 10, 0xFF4A4A4A, false);
-					return;
-				}
-				if (entry.locked()) {
-					// Greyed out, with how to get it (26.10).
-					g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 1, 0xFF8A8A8A, false);
-					g.drawString(font, font.plainSubstrByWidth(Component.translatable(entry.hint()).getString(), width - 4), x + 2, y + 10, 0xFF8C6A3C, false);
-					return;
-				}
-				g.drawString(font, font.plainSubstrByWidth(Blueprints.displayName(entry.id()).getString(), width - 4), x + 2, y + 1, 0xFFFFFFFF, false);
-				String size = entry.sizeX() + "×" + entry.sizeY() + "×" + entry.sizeZ();
-				String source = entry.id().getPath().startsWith("uploads/") ? " · " + Component.translatable("screen.aliveworkplace.table.uploaded").getString() : "";
-				g.drawString(font, size + source, x + 2, y + 10, 0xFF7F8C9E, false);
-			}
-
-			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				select(entry.id());
-				return true;
-			}
-
-			@Override
-			public Component getNarration() {
-				return entry.hidden() ? Component.translatable("screen.aliveworkplace.table.hidden_name") : Blueprints.displayName(entry.id());
-			}
-		}
-	}
-
-	/** The Stored tab's list (36.13): each stored blueprint with its icon and how many the table holds. */
-	private class StoredList extends ObjectSelectionList<StoredList.Row> {
-		StoredList(Minecraft mc, int width, int height, int y) {
-			super(mc, width, height, y, ROW);
-		}
-
-		void fill() {
-			clearEntries();
-			for (TablePayloads.Stored s : stored) {
-				addEntry(new Row(s));
-			}
-		}
-
-		@Override
-		public int getRowWidth() {
-			return width - 12;
-		}
-
-		@Override
-		protected int getScrollbarPosition() {
-			return getX() + width - 6;
-		}
-
-		@Override
-		protected void renderListBackground(GuiGraphics g) {
-			TableStyle.listBackground(g, getX(), getY(), width, height);
-		}
-
-		@Override
-		protected void renderListSeparators(GuiGraphics g) {
-		}
-
-		class Row extends ObjectSelectionList.Entry<Row> {
-			final TablePayloads.Stored stored;
-
-			Row(TablePayloads.Stored stored) {
-				this.stored = stored;
-			}
-
-			@Override
-			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
-				g.renderItem(stored.stack(), x + 1, y + 1);
-				g.drawString(font, font.plainSubstrByWidth(stored.stack().getHoverName().getString(), width - 24), x + 20, y + 1, TableStyle.NAME, false);
-				g.drawString(font, Component.translatable("screen.aliveworkplace.table.stored_row", stored.count()), x + 20, y + 10, TableStyle.SUBLINE, false);
-			}
-
-			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				StoredList.this.setSelected(this);
-				selectStored(stored);
-				return true;
-			}
-
-			@Override
-			public Component getNarration() {
-				return Component.translatable("screen.aliveworkplace.table.stored_narration", stored.stack().getHoverName(), stored.count());
-			}
-		}
-	}
-
-	private class FileList extends ObjectSelectionList<FileList.Row> {
-		FileList(Minecraft mc, int width, int height, int y) {
-			super(mc, width, height, y, ROW);
-		}
-
-		void fill() {
-			clearEntries();
-			List<Path> found = new ArrayList<>();
-			try (Stream<Path> stream = Files.list(folder())) {
-				stream.filter(Files::isRegularFile).filter(p -> BlueprintImporter.hasSupportedExtension(p.getFileName().toString()))
-					.sorted().forEach(found::add);
-			} catch (IOException ignored) {
-				// empty list
-			}
-			for (Path p : found) {
-				addEntry(new Row(p));
-			}
-		}
-
-		@Override
-		public int getRowWidth() {
-			return width - 12;
-		}
-
-		@Override
-		protected int getScrollbarPosition() {
-			return getX() + width - 6;
-		}
-
-		@Override
-		protected void renderListBackground(GuiGraphics g) {
-			TableStyle.listBackground(g, getX(), getY(), width, height);
-		}
-
-		@Override
-		protected void renderListSeparators(GuiGraphics g) {
-		}
-
-		class Row extends ObjectSelectionList.Entry<Row> {
-			final Path path;
-			final long size;
-
-			Row(Path path) {
-				this.path = path;
-				long s;
-				try {
-					s = Files.size(path);
-				} catch (IOException e) {
-					s = 0;
-				}
-				this.size = s;
-			}
-
-			@Override
-			public void render(GuiGraphics g, int index, int y, int x, int width, int height, int mouseX, int mouseY, boolean hovered, float partialTick) {
-				g.drawString(font, font.plainSubstrByWidth(path.getFileName().toString(), width - 4), x + 2, y + 1, 0xFFFFFFFF, false);
-				g.drawString(font, Math.max(1, size / 1024) + " KB", x + 2, y + 10, 0xFF7F8C9E, false);
-			}
-
-			@Override
-			public boolean mouseClicked(double mouseX, double mouseY, int button) {
-				FileList.this.setSelected(this);
-				selectedFile = path;
-				return true;
-			}
-
-			@Override
-			public Component getNarration() {
-				return Component.literal(path.getFileName().toString());
-			}
-		}
-	}
-
 	/** For the screenshot harness: switch to the upload view. */
 	public void showFiles() {
-		mode = Mode.FILES;
-		files.fill();
-		if (!files.children().isEmpty()) {
-			files.setSelected(files.children().get(0));
-			selectedFile = files.children().get(0).path;
+		mode = View.FILES;
+		fillFiles();
+		if (!fileItems.isEmpty()) {
+			selectedFile = fileItems.get(0);
 		}
 		updateVisibility();
+	}
+
+	/** The boxes as laid out now (for the screenshot harness's checks). */
+	public BlueprintBookLayout.Boxes boxes() {
+		return boxes;
+	}
+
+	/** The view's buttons as laid out, the copper one first (for the screenshot harness's checks). */
+	public List<Button> viewButtons() {
+		return mode == View.LIBRARY ? List.of(takeButton, uploadViewButton)
+			: mode == View.STORED ? List.of(takeOutButton, storeHeldButton, storeAllButton)
+			: List.of(uploadButton, folderButton, backButton);
 	}
 }

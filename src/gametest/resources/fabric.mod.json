@@ -1286,6 +1286,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaZoneNearerHall1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnishedMidJob1102GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFurnished1114cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaFurnishReload1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachEdgeUpkeepBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachRepairs1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageReachGameTests",

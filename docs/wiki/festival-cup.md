@@ -199,5 +199,8 @@ Later additions:
   click [I'm ready] again, keeps their battle and gets a new two minutes, alone or as a players' bout's second player; the
   villager trainer steps into their box). `QaCupReadyReply1115d2CompatTests` (B1291, fixed: when the battle can't
   start, the [I'm ready] reply is the one "The bout couldn't start (are you already in a battle?). Click [I'm ready]
-  again." line, not "The bout begins!", and both sides must be ready again).
+  again." line, not "The bout begins!", and both sides must be ready again). `QaCupReady1116dCompatTests` (3, through the button's
+  `/workplace cup ready`: alone, each player reads the line once and never "begins", then "begins" once when free; in a
+  players' bout with either player in a battle when the second clicks, both read it once, nobody stays ready, and two new
+  clicks start the bout).
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

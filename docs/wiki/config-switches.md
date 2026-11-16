@@ -298,7 +298,7 @@ missing `gamerule.workplaceVillageFarms`).
 ## Proof
 
 GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every radius and village number; every
-setting has its words and range; saved settings are read back), `ConfigHandWrittenGameTests` (5: every switch written as yes, on, no or off reads as meant and any other word takes its default; a normal file reads as before; a hand-written file is written back plain and reads the same again; ids with spaces or capitals in `disabledArcs` and `disabledWonders` are off; B1323, B1324), `ExpansionGateGameTests` (4: an old config with the
+setting has its words and range; saved settings are read back), `ConfigHandWrittenGameTests` (5: every switch written as yes, on, no or off reads as meant and any other word takes its default; a normal file reads as before; a hand-written file is written back plain and reads the same again; ids with spaces or capitals in `disabledArcs` and `disabledWonders` are off; B1323, B1324), `QaConfigIds1116dGameTests` (4: tabs and line breaks round names and mixed-case namespaced ids in both lists are off, written back plain; three spellings of one Wonder are one entry and the village is refused it; an entry that is no id is skipped and named in the log while the good ones beside it apply; `/workplace story start` says a story written " Bandit_King " is switched off, and no longer once the list is emptied), `ExpansionGateGameTests` (4: an old config with the
 switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
 the release takes the new defaults, a later choice holds),
 `ExpansionBuildsGameTests` (3: the Table holds no 1.2 build while 1.2 is off and holds them when on; the other

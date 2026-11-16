@@ -114,10 +114,10 @@ public abstract class CopperSlotScreen<T extends AbstractContainerMenu> extends 
 		return n;
 	}
 
-	/** {@code key + ".none"}, {@code ".one"} or {@code ".many"} with the count. */
+	/** {@code key + ".none"}, {@code key + ".one"} or the plural {@code key} itself with the count (the lang file's plural rule). */
 	protected static Component counted(String key, int n) {
 		return n == 0 ? Component.translatable(key + ".none")
-			: n == 1 ? Component.translatable(key + ".one") : Component.translatable(key + ".many", n);
+			: n == 1 ? Component.translatable(key + ".one", n) : Component.translatable(key, n);
 	}
 
 	private boolean overClose(double mx, double my) {

@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaPlunder1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPirateShips1115dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverSnowMix1115hGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTagMix1115hGameTests",
@@ -1791,6 +1792,7 @@
 			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MixedLogsSlotGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRecipeStandInFiles1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPocketPlants1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests"

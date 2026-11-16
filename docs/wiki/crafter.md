@@ -320,6 +320,12 @@ game was what a chest from nothing named). By id only, never the other mod's cla
 - `RecipeStandInsCompatTests` (4, B1302, B1286 with Carved Wood): the shipped stand-in is read and is the one way to a
   plain chest; a chest is planned from 8 oak planks as Carved Wood's Oak Chest then the chest (7 planks: none); two
   carved spruce chests make two in one step, a carved or vanilla trapped chest none; a chest from nothing lacks logs.
+- `QaRecipeStandInFiles1116eGameTests` (4, base game, a datapack's files through the real loader): a stand-in counts
+  only while its serializer's recipe is loaded and is gone after a reload without it; without Carved Wood the shipped
+  chest file adds nothing; `except` taking out all, a result from itself, and from only uncrafted things (both kept) or
+  a tag of logs (only the crafted woods kept); broken files (no serializer or result, empty `from`, a bad result id,
+  not JSON, an array) are skipped and the rest load. A typo in a `from` or `except` entry crashes the server at start
+  (B1312; its tests are on the branch tests/recipe-standin-typos-1116e).
 - `QaCarvedChest1115eCompatTests` (1) and `QaCarvedChest1115eBugCompatTests` (2, B1302): a one-block blueprint with a
   Carpenter hired gets its plain barrel from 3 spruce logs, and its plain chest from 8 oak planks or from a carved oak
   chest in the builder's chest.

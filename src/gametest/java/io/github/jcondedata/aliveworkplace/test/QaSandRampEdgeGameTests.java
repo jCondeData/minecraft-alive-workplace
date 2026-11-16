@@ -34,6 +34,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * QA (2026-10-24), ROADMAP 32.9 sand ramps, the let-go's far edge (the nightly mutant at SandRamps.java:547,
@@ -132,12 +133,43 @@ public class QaSandRampEdgeGameTests implements FabricGameTest {
 			((net.minecraft.world.entity.monster.Zombie) mob).setBaby(false);
 		}
 		mob.ejectPassengers();
-		mob.stopRiding();
+		// B446: finalizeSpawn rolls on the level's random, and one husk in 400 comes as a chicken jockey. Getting off left
+		// the chicken in the world on the husk's own spot (and the husk 0.7 up, on the chicken's back): once the chicken
+		// took a step it pushed the "still" husk a hundredth of a block (a push isn't a knockback, so nothing resists
+		// it). The chicken goes, and the husk is put back where it was asked to stand.
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 0f, 0f);
+		}
+		mob.getRandom().setSeed(1L);
 		mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
 		mob.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1);
 		mob.setTarget(villager);
 		level.addFreshEntity(mob);
 		return mob;
+	}
+
+	/** Everything that could explain a still husk that moved (B446): where from and to, when, and who and what was by it. */
+	private static String moved(GameTestHelper helper, Mob mob, Vec3 start, ThreatData.Siege siege) {
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		Vec3 zero = new Vec3(base.getX(), base.getY(), base.getZ());
+		StringBuilder near = new StringBuilder();
+		for (net.minecraft.world.entity.Entity e : helper.getLevel().getEntities(mob, mob.getBoundingBox().inflate(4))) {
+			near.append(near.isEmpty() ? "" : "; ").append(EntityType.getKey(e.getType()).getPath()).append(" at ").append(e.position().subtract(zero))
+				.append(e.getVehicle() != null ? " riding" : "").append(e.getTags().isEmpty() ? "" : " " + e.getTags());
+		}
+		return mob.position().subtract(zero) + " from " + start.subtract(zero) + " at tick " + helper.getTick()
+			+ ", moving " + mob.getDeltaMovement() + (mob.onGround() ? ", on the ground" : ", in the air")
+			+ ", speed " + mob.getAttributeValue(Attributes.MOVEMENT_SPEED) + ", hurt " + mob.hurtTime + ", health " + mob.getHealth()
+			+ ", vehicle " + (mob.getVehicle() == null ? "none" : EntityType.getKey(mob.getVehicle().getType()).getPath())
+			+ ", passengers " + mob.getPassengers().size() + (mob.isBaby() ? ", a baby" : ", an adult")
+			+ ", target " + (mob.getTarget() == null ? "none" : EntityType.getKey(mob.getTarget().getType()).getPath() + " at " + mob.getTarget().position().subtract(zero))
+			+ ", navigation " + (mob.getNavigation().isDone() ? "done" : "to " + mob.getNavigation().getTargetPos())
+			+ ", in " + helper.getLevel().getBlockState(mob.blockPosition()).getBlock().getName().getString()
+			+ ", within 4: [" + near + "]"
+			+ ", siege over " + siege.over + ", breached " + siege.breached + ", ramped " + siege.ramped + ", sand " + siege.sand.size() + ", ramp feet " + siege.rampFeet.size();
 	}
 
 	/**
@@ -171,15 +203,11 @@ public class QaSandRampEdgeGameTests implements FabricGameTest {
 		siege.rampDirs.add(Direction.NORTH.get3DDataValue());
 		siege.ramped = true;
 		SandRamps.forget(); // (the storm is restored from the siege's record)
-		double[] edgeAt = {Double.NaN, Double.NaN};
+		BlockPos base = helper.absolutePos(BlockPos.ZERO);
+		Vec3 start = edge.position();
 		helper.onEachTick(() -> {
-			if (Double.isNaN(edgeAt[0])) {
-				edgeAt[0] = edge.getX();
-				edgeAt[1] = edge.getZ();
-			}
-			BlockPos base = helper.absolutePos(BlockPos.ZERO);
 			helper.assertTrue(edge.getX() == base.getX() + 7.5 && edge.getZ() == base.getZ() + 11.5,
-				"the husk at the edge moved: " + edge.position().subtract(base.getX(), base.getY(), base.getZ()));
+				"the husk at the edge moved: " + moved(helper, edge, start, siege));
 			helper.assertFalse(SandRamps.over(level, hall, edge.getUUID()),
 				"the husk standing 3 past the landing column (5 in from the ramp's foot) was counted over the wall by the ramp");
 			if (helper.getTick() >= 120) {

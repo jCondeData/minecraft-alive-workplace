@@ -288,7 +288,13 @@ public class QaLadderOverShutGate1109dBugTests {
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
 		mob.finalizeSpawn(yard.level(), yard.level().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
 		mob.ejectPassengers();
-		mob.stopRiding();
+		// B446: a husk that came as a chicken jockey left its chicken in the yard, on its own spot, where it pushed it
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
+		}
 		if (mob instanceof net.minecraft.world.entity.monster.Zombie zombie) {
 			zombie.setBaby(false);
 		}

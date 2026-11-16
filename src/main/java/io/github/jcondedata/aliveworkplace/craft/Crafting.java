@@ -145,7 +145,10 @@ public final class Crafting {
 		return plan == null ? null : new Plan(plan.target(), plan.count(), merged(plan.steps()), plan.takes(), plan.makes());
 	}
 
-	/** What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}. */
+	/**
+	 * What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}.
+	 * Empty, and {@link #planningSpent} true, when the tick's planning ran out before it was all worked out (B1348).
+	 */
 	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
 		return lacks(shortfall(level, kind, target, count, usable));
 	}
@@ -269,6 +272,11 @@ public final class Crafting {
 		if (!made) {
 			return null;
 		}
+		if (lenient && pool.budget.cut && left < PLAN_TRIALS) {
+			// B1348: what's short, cut short by the tick's planning (another job used most of it), is only as far as it got
+			// (planks for chests from three woods' logs): not planned yet, asked again on a later tick with the whole plan's
+			return null;
+		}
 		if (lenient) {
 			// what's short, as negative takes (only {@link #lacking} reads a lenient plan)
 			Map<Item, Integer> lacks = new LinkedHashMap<>();
@@ -290,12 +298,21 @@ public final class Crafting {
 
 	/**
 	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
-	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
+	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11). A
+	 * shortfall cut short by it is null too (B1348), so what's short asked for in a tick that ends spent is not yet known.
 	 */
 	public static boolean planningSpent(ServerLevel level) {
 		synchronized (TICK_USE) {
 			long[] tick = TICK_USE.get(level);
 			return tick != null && tick[0] == level.getGameTime() && tick[1] >= TICK_TRIALS;
+		}
+	}
+
+	/** How many recipes this tick's plans may still try on {@code level} ({@link #TICK_TRIALS} less what they've tried). */
+	public static int planningLeft(ServerLevel level) {
+		synchronized (TICK_USE) {
+			long[] tick = TICK_USE.get(level);
+			return tick == null || tick[0] != level.getGameTime() ? TICK_TRIALS : (int) Math.max(0, TICK_TRIALS - tick[1]);
 		}
 	}
 
@@ -327,9 +344,13 @@ public final class Crafting {
 			this.max = max;
 		}
 
+		/** Whether the plan wanted to try more than {@link #max} (it was cut short). */
+		boolean cut;
+
 		/** Counts one more recipe tried; false once the plan has tried its most. */
 		boolean tryOne() {
 			if (tried >= max) {
+				cut = true;
 				return false;
 			}
 			tried++;

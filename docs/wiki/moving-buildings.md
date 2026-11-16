@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, 47.3
 
 ## What a player sees
 

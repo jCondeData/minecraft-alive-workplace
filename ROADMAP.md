@@ -6049,6 +6049,7 @@ Depends on: nothing open.
   client (`tools/screenshots/run.sh`, from a doorway or corner looking across each room) plus the outside in game; one
   labeled side-by-side sheet (A vs B) and the best 3 shots of each, sent as a review package (`sessions.py review 36.23
   ...`) so the next digest shows both; then `sessions.py done 36.23 --review`. The owner's pick lands as 36.23a.
+  - [ ] **36.23a** Change from the owner (2026-11-16): prefers the Daub House (B); wants to see it furnished with furniture-mod pieces (CobbleFurnies etc.) before the final pick
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

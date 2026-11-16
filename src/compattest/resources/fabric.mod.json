@@ -434,7 +434,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.RecipeStandInsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMixedTagPack1115eCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116cCompatTests"
 		]
 	},
 	"depends": {

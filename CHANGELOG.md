@@ -38,6 +38,8 @@ asks for the steps, `latest.log` and any crash report).
   your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
   says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
   GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
+- A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
+  2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
 
 ## 0.155.3 — 2026-11-15
 

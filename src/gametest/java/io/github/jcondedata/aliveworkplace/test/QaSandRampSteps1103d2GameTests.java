@@ -137,7 +137,14 @@ public class QaSandRampSteps1103d2GameTests implements FabricGameTest {
 			((net.minecraft.world.entity.monster.Zombie) mob).setBaby(false);
 		}
 		mob.ejectPassengers();
-		mob.stopRiding();
+		// B446: a husk that came as a chicken jockey left its chicken on its own spot, which then pushed it; see
+		// QaSandRampEdgeGameTests.still
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x, base.getY() + y, base.getZ() + z, 0f, 0f);
+		}
 		mob.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
 		mob.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1);
 		mob.setTarget(villager);

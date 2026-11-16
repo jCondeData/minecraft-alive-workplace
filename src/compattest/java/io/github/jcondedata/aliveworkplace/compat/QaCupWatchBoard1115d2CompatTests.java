@@ -476,9 +476,12 @@ public class QaCupWatchBoard1115d2CompatTests implements FabricGameTest {
 			long now = level.getGameTime();
 			cup.call.calledAt = now - 100; // the call came five seconds ago
 			seen.clear();
-			CupMatches.ready(p);
+			// the click's own command, so its reply reaches chat as in the game (B1291: that reply is the couldn't-start line)
+			level.getServer().getCommands().performPrefixedCommand(p.createCommandSourceStack(), "workplace cup ready");
 			List<String> lines = strings(seen);
-			helper.assertTrue(lines.contains("The bout couldn't start (are you already in a battle?). Click [I'm ready] again."), "a player in a battle wasn't told to click again: " + lines);
+			String again = "The bout couldn't start (are you already in a battle?). Click [I'm ready] again.";
+			helper.assertTrue(lines.contains(again), "a player in a battle wasn't told to click again: " + lines);
+			helper.assertTrue(lines.indexOf(again) == lines.lastIndexOf(again), "the player was told to click again twice: " + lines);
 			PokemonBattle current = BattleRegistry.getBattleByParticipatingPlayer(p);
 			helper.assertTrue(current != null && current.getBattleId().equals(ownId), "the player was taken out of their own battle: " + current);
 			helper.assertTrue(cup.call != null && !cup.call.fighting && cup.call.battle == null, "the bout counts as fought");

@@ -1112,6 +1112,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BenchmarkCostGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuildBudget1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBudgetScaffolds1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaScaffoldsFullChest1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SeasonSoakGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardHomesRulesGameTests",

@@ -1402,6 +1402,12 @@ SCENES = [
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),
            ("12_royal_hall", "The Royal Hall: a stone great hall with a gabled porch and a rose window"),
            ("15_royal_hall_2_back", "Royal Hall II from behind: the keep tower, the treasury wing and the vault")]),
+    # Level I houses for review (ROADMAP 36.23): each house in tools/blueprints/shots/<structure>.json, from its four sides,
+    # its front corner, then inside at eye level as the shots file says (SHOTS=house_t1_a films one)
+    S("house_shots", "Build families", "The Level I houses, outside and room by room at eye level",
+      "each house with a shots file placed whole on flat ground and filmed outside and in, every eye in the open",
+      120, [("*_01_front@first", "From the front"), ("*_05_three_quarter_front@first", "From the front corner"),
+            ("*_0[6-9]_*@first", "Inside at eye level"), ("*_1[0-9]_*@first", "")]),
     # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
     S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
       # each Wonder from the front (even) and from behind (odd): 10 the Great Cathedral, 12 the Lighthouse, 14 the Great

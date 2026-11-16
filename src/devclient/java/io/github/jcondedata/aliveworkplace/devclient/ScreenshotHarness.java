@@ -186,6 +186,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<VillageHallBuildScene> villageHallBuild = new Lazy<>(() -> new VillageHallBuildScene());
 	private final Lazy<BuildFixesScene> buildFixes = new Lazy<>(() -> new BuildFixesScene());
 	private final Lazy<RealmBuildsScene> realmBuilds = new Lazy<>(() -> new RealmBuildsScene());
+	/** SCENE=house_shots (ROADMAP 36.23): each house in tools/blueprints/shots/ from outside and, at eye level, room by room. */
+	private final Lazy<HouseShotsScene> houseShots = new Lazy<>(() -> new HouseShotsScene());
 	private final Lazy<WonderGalleryScene> wonderGallery = new Lazy<>(() -> new WonderGalleryScene());
 	/** SCENE=wonder_finished (ROADMAP 35.8): the folly's time-lapse, ending in its festival's fireworks. */
 	private final Lazy<WonderTimelapse> wonderFinished = new Lazy<>(() -> new WonderTimelapse(
@@ -340,6 +342,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("realm_builds".equals(System.getProperty("aliveworkplace.scene"))) {
 			realmBuilds.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("house_shots".equals(System.getProperty("aliveworkplace.scene"))) {
+			houseShots.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("wonder_gallery".equals(System.getProperty("aliveworkplace.scene"))) {

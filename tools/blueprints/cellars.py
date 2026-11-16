@@ -35,6 +35,8 @@ def inn_3():
     b.set(3, LOW, 3, "hay_block", axis="y")
     b.set(12, LOW, 3, "hay_block", axis="x")
     b.set(12, MID, 3, "hay_block", axis="z")
+    for x in (2, 14):  # the beam's corners over the cask racks, closed
+        log(b, x, TOP, 3, "dark_oak_log", axis="x")
     b.fill_air()
     return b
 

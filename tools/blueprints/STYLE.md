@@ -77,8 +77,10 @@ lines.
 
 `fill_air` also closes the slot where a lower roof runs in under a higher one's overhang (`seal_slots`: the wall behind
 is carried out to the overhang's edge), so a wing's roof meets the main one. After `generate.py`, run
-`python3 tools/blueprints/holes.py` for roof holes, gaps between roofs and stray empty blocks; what it still lists is
-on purpose (log-cabin corner notches, tent insides, embrasures, a fountain under an eave).
+`python3 tools/blueprints/holes.py` for roof holes, gaps between roofs, stray empty blocks and open wall panels (`open`:
+any opening that lets you look from outside into a room without glass, bars, a door or a trapdoor in it: every wall
+and gable panel between a frame's posts gets infill or glass); what it still lists is on purpose (log-cabin corner
+notches, tent insides, embrasures, a fountain under an eave).
 
 ## Rules the mod needs (the tests check most of them)
 

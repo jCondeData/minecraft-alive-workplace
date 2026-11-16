@@ -1474,14 +1474,29 @@ def inn_dormer(b, face, inner, z):
 
 
 def inn_verges(b, rows):
-    """A steep roof's ends drawn thin: at each overhanging gable end (`rows`: the z of each), the full block under each
-    roof stair becomes an upside-down dark oak stair, a barge board that steps with the roof instead of a solid wedge."""
-    for z in rows:
-        for x in range(b.w):
+    """A steep roof's ends drawn thin: at each overhanging gable end (`rows`: (z, x0, x1) of each), the full block under
+    each roof stair becomes an upside-down dark oak stair, a barge board that steps with the roof instead of a solid
+    wedge. (Only the overhang: on a gable's own wall the full blocks become its infill, inn_gable.)"""
+    for z, x0, x1 in rows:
+        for x in range(x0, x1 + 1):
             for y in range(b.h - 1):
                 here, over = b.get(x, y, z), b.get(x, y + 1, z)
                 if here and over and here[0] == "minecraft:" + INN_ROOF.full and over[0] == "minecraft:" + INN_ROOF.stairs:
                     stairs(b, x, y, z, INN_TRIM, OPP[dict(over[1])["facing"]], top=True)
+
+
+def inn_gable(b, z, x0, x1):
+    """A gable's own wall (z, x0..x1): the roof's full blocks standing in it (a steep roof's step under each stair)
+    become the infill, so the gable is one board panel up to the roof's edge, not boards among roof planks. A step
+    whose side is open to the sky (the riser above the stair below it) is the roof's own surface and stays spruce:
+    boards there showed as pale patches on the roof's slope."""
+    for x in range(x0, x1 + 1):
+        for y in range(7, b.h):
+            got = b.get(x, y, z)
+            if got and got[0] in ("minecraft:" + INN_ROOF.full, "minecraft:dark_oak_stairs"):
+                sides = [b.get(x + dx, y, z) for dx in (-1, 1)]
+                if all(s and s[0] != "minecraft:air" for s in sides):
+                    b.set(x, y, z, INN_INFILL)
 
 
 def inn_hook(b, x, y, z, facing):
@@ -1669,7 +1684,7 @@ def inn():
         gable_roof(t, 10, 16, 1, 14, 8, INN_ROOF, axis="z", gable=INN_INFILL, gable_at=(2, 13), ridge=INN_ROOF,
                    steep=True, eave_trim=INN_TRIM)
     roofs(b, hero, west, east)
-    inn_verges(b, (0, 1, 14))
+    inn_verges(b, ((0, 4, 12), (14, 4, 12), (1, 0, 3), (1, 13, 16), (14, 0, 3), (14, 13, 16)))
 
     # The wings' side walls: an oak knee wall under a beam at the eaves
     for x in (1, 15):
@@ -1689,6 +1704,11 @@ def inn():
     for x in (5, 11):  # the valley courses where the wings' roofs meet the Entrance Gable
         for z in range(2, 14):
             b.set(x, 9, z, INN_CAP.full)
+        # and the valleys themselves: the Entrance Gable's lowest step raised a block, so the two slopes meet in a V
+        # instead of leaving a channel open from front to back
+        for z in range(1, 14):
+            b.set(x, 11, z, INN_ROOF.full)
+            stairs(b, x, 12, z, INN_ROOF, "east" if x == 5 else "west")
     # The Entrance Gable's walls inside: the gallery's rail (west), the wall with the east rooms' doors
     for z in range(3, 8):
         fence(b, 5, 7, z, "spruce_fence")
@@ -1702,44 +1722,49 @@ def inn():
         for z in (2, 13):
             for y in (7, 8):
                 b.set(x, y, z, INN_INFILL)
-    # The wings' fronts: a cross of windows under each peak, flowers on the beam; their backs: one tall window
+    # The gables, framed alike front and back in a few large board panels: in each wing a three-light window under a
+    # collar beam, a small light over it; in the Entrance Gable a nine-light window set back in the frame (pots on the
+    # beam in front; at the back a single tall light), a collar beam over three lights, a king post to the ridge
     for x0 in (2, 12):
+        for z in (2, 13):
+            for x in (x0, x0 + 1, x0 + 2):
+                for y in (7, 8):
+                    pane(b, x, y, z) if z == 2 or x == x0 + 1 else b.set(x, y, z, INN_INFILL)
+                log(b, x, 9, z, INN_FRAME, axis="x")
+                b.set(x, 10, z, INN_INFILL)
+            pane(b, x0 + 1, 10, z)
+            b.set(x0 + 1, 11, z, INN_INFILL)
+            b.set(x0 + 1, 12, z, INN_INFILL)
         for x in (x0, x0 + 1, x0 + 2):
-            b.set(x, 7, 2, INN_INFILL)
-            for y in (7, 8):
-                pane(b, x, y, 2)
             b.set(x, 7, 1, "potted_red_tulip" if x != x0 + 1 else "potted_oxeye_daisy")
-        for y in (9, 10):
-            pane(b, x0 + 1, y, 2)
-        for x in (x0, x0 + 1, x0 + 2):
-            b.set(x, 7, 13, INN_INFILL)
-        for y in (7, 8, 9):
-            pane(b, x0 + 1, y, 13)
-    # The Entrance Gable's front: a big window set back in the frame (pots on the beam in front), a second row of
-    # lights in the gable over it, a king post; its back: a window and an attic light
     for x in (6, 10):
         for y in (7, 8):
             b.set(x, y, 1, INN_INFILL)
+            b.set(x, y, 2, INN_INFILL)  # the big window's jambs inside the frame
     for x in (7, 8, 9):
         for y in (7, 8):
             b.set(x, y, 1, "air")
             pane(b, x, y, 2)
-    for x in (6, 10):  # the window's jambs inside the frame
-        for y in (7, 8):
-            b.set(x, y, 2, INN_INFILL)
         b.set(x, 7, 1, "potted_red_tulip" if x != 8 else "potted_poppy")
-        for y in (10, 11):
-            pane(b, x, y, 1)
     for x in (6, 7, 8, 9, 10):
         for y in (7, 8):
             b.set(x, y, 13, INN_INFILL)
     for y in (7, 8):
         pane(b, 8, y, 13)
-    for y in (10, 11):
-        pane(b, 8, y, 13)
     for z in (1, 13):
-        for y in (12, 13, 14, 15):
+        for x in (6, 7, 8, 9, 10):
+            b.set(x, 10, z, INN_INFILL)
+            b.set(x, 11, z, INN_INFILL)
+        for x in (7, 8, 9):
+            for y in (10, 11):
+                pane(b, x, y, z)
+            log(b, x, 12, z, INN_FRAME, axis="x")
+        for x in (7, 9):
+            b.set(x, 13, z, INN_INFILL)
+        for y in (13, 14, 15):
             log(b, 8, y, z, INN_FRAME)
+    for z, x0, x1 in ((1, 5, 11), (13, 5, 11), (2, 1, 5), (2, 11, 15), (13, 1, 5), (13, 11, 15)):
+        inn_gable(b, z, x0, x1)
     # Dormers for the guest rooms (the hearth nook is lit by the West Wing's front windows; its chimney is on that side)
     for z in (10,):
         inn_dormer(b, 0, 1, z)
@@ -1876,13 +1901,14 @@ def inn_2():
         log(b, x, 4, 5, INN_FRAME, axis="x")
     for z in range(6, 12):
         log(b, 21, 4, z, INN_FRAME, axis="z")
-    # The way in: a double gate under the beam; windows of fence rails in the east wall
+    # The way in: a double door under the beam, boards over it; two glazed windows in the east wall (round 3: the
+    # open gate and the rail windows let you look straight into the stable)
+    door(b, 18, 1, 5, "spruce_door", "south", hinge="right")
+    door(b, 19, 1, 5, "spruce_door", "south", hinge="left")
     for x in (18, 19):
-        b.set(x, 1, 5, "spruce_fence_gate", facing="south", open=False, powered=False, in_wall=False)
-        for y in (2, 3):
-            b.set(x, y, 5, "air")
+        b.set(x, 3, 5, "spruce_planks")
     for z in (7, 10):
-        fence(b, 21, 2, z, "spruce_fence")
+        pane(b, 21, 2, z)
     # Inside: two stalls along the back (fence partitions), hay in each, the water trough, the smoker, a chest of
     # tack, hooks for bridles, a tie beam and its lantern
     for z in (9, 10, 11):

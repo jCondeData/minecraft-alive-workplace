@@ -42,7 +42,9 @@ A home or hall quest also unlocks the build's next level in your village's Bluep
 unlocks Starter Cottage II, then III; the Stone House, Stone House II and III; the Terrace, Terrace II; and the Village
 Hall, Village Hall II and III. And every build the story's main line asks for that a village doesn't start with (the
 Market Square, the Barracks, the Gatehouse, the Guildhall and the Manor) is unlocked by the quest before it, so you can
-always get it at the Table, which says "A questbook reward".
+always get it at the Table, which says "A questbook reward". The reward goes to your own village wherever you are
+when you claim it: the village whose Village Hall you own (or, if you own none, the one you were in when it last
+ranked up).
 
 **With Cobblemon**, side quests for your Pokémon join the story where they fit: your starter and first catch, Pokémon
 helping at work, the village's Trainers and Trainer Leader, the Pokémon jobs, the Arena and the Festival Cup, the

@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283
 
 ## What a player sees
 
@@ -323,13 +323,18 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   one block are 3 eggs, though vanilla's turtle egg loot gives one per break (a player breaks that block three times;
   `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
   than for one, so candles, sea pickles and pink petals, whose loot counts them, are left as they drop, never doubled:
-  B1258). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
+  B1258; a double slab is 2 slabs). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
   nothing without one: 1 to 7 snow layers are that many snow, never snowballs (B1274: vanilla's snow loot asks for a
-  breaking entity, so they came back as 1 snow); 8 layers still drop as 1 snow block and 7 snow (B1281, open). A two-block thing
+  breaking entity, so they came back as 1 snow), and 8 layers are 8 snow, also when the site is saved and loaded back with the snow packed, or the crate was set down on
+  the snow's new spot after the move was confirmed (B1281, B1282: vanilla's Silk Touch loot is one
+  snow block for 8 layers, and the 7 others were added on top, so they came back as 1 snow block and 7 snow; a block whose
+  whole loot is another item than its pieces now drops as its pieces, each one break of one). A two-block thing
   (a door, a tall flower, tall grass, a bed) with one half on the crate drops once, as the whole thing's one item, and its other
   half is never put up alone, or is taken away again with no drop if it went up first (`MoveSite.otherHalfGone`,
-  B1260: the door's upper half stood alone over the crate, the bed's foot beside it). A door, tall flower or tall grass
-  is always its own item, never its loot's roll (B1275: tall grass came back as a wheat seed about 1 time in 4).
+  B1260: the door's upper half stood alone over the crate, the bed's foot beside it). A door, tall flower, tall grass or small
+  dripleaf is always its own item, never its loot's roll (B1275: tall grass came back as a wheat seed about 1 time in 4). A
+  two-block crop (a pitcher crop) is what its lower half's loot gives, as a player harvests it, whichever half lands on
+  the crate: a grown one a pitcher plant, an ungrown one (any age below 4) a pitcher pod (B1283: B1275's rule made a grown one its pod, the crop's block item).
 - A Mover's Crate in the building stays where it stands, and so does the Mover's job: a block standing where the
   crate would have moved to (a player's barrel) is never made his job site when the move ends (B1259:
   `MoveResidents` noted him as a resident whose workstation moved with the house).
@@ -578,12 +583,27 @@ crate in a full move is one snow; every half of a large fern, lilac, peony, rose
 sunflower is its one item in 64 of 64 drops, and a large fern's upper half on the crate is one large fern; a lectern or a
 composter where his crate would have moved to doesn't take his job site, and a librarian in the same house still gets
 his moved lectern.
-The bug tests QaBuilderMoverVerify1115bBugTests (2 of its 3 here, B1281, on tests/builder-mover-verify-1115b): 8 snow layers on the
-crate drop as 8 snow (they drop as 1 snow block and 7 snow).
+`QaBuilderMoverVerify1115bBugTests` (2 of its 3 here, B1281): 8 snow layers worked out as dropped on the crate, and on his
+crate in a full move, are 8 snow and nothing else.
+`QaVillageMoverFixes1115c3BugTests` (3, B1282, B1283): 8 snow layers on a crate, alone and in a full move, are 8 snow (or
+one snow block), never both, and no snowballs; a grown pitcher crop's lower half on a crate is one pitcher plant in 16
+of 16 drops.
+`QaMoverSnowMix1115hGameTests` (18, the QA lane, past B1274, B1281-B1283): 2, 3, 5, 6 and 7 snow layers on his crate in
+a full move are exactly that many snow; 3 and 8 layers packed, the site saved and loaded back, then put up, are 3 and 8
+snow; 1, 4 and 8 layers whose new spot gets a player's Mover's Crate after the move is confirmed are that many snow, the
+crate left standing; every count 1-8 asked 16 times beside air, stone or snow is that many snow; sea pickles and candles
+1-4 (wet or lit) are that many, a slab 1 and a double slab 2, every time; a pitcher crop of each age, either half, is one
+pitcher plant at age 4 and one pitcher pod below it, and a grown one with either half on his crate in a full move (or an
+age-3 one, a pod) is that one item with no half standing; a small dripleaf and 15 kinds of door, either half, are their
+one item; a sculk vein on 3 faces is 3 sculk veins.
 
 ## Known limits
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
+
+- A glow lichen on several faces that lands on a Mover's Crate comes back as one glow lichen: its loot is shears-only
+  and counts no faces otherwise, so the others are lost (QA, 2026-11-15; a sculk vein, whose Silk Touch loot counts
+  its faces, is right).
 
 - A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still
   gets the moved bed or workstation (B1154): every occupied bed and workstation in the box is saved as a claim on the

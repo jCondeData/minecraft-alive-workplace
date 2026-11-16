@@ -386,6 +386,9 @@ SCENES = [
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
+    # Porter (44.1): the Drop Box's screen in Copperline
+    S("drop_box", "Porter", "The Drop Box", "the Drop Box opened in Copperline: its slots and your pack in wells, what waits for a porter, and where it goes", 45,
+      [("01_drop_box_screen", "Drop Box"), ("02_drop_box_pack", "Your pack")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
@@ -503,6 +506,13 @@ SCENES = [
     # The list screen (ROADMAP 42.3): her lure now at the top, Any snack first, a row per lure with its berries and Choose
     S("habitat_lures", "Habitat Keeper", "Choosing the habitat keeper's lure", "the lures list opened and the Fire type was chosen", 60,
       [("01_lures_screen", "The lures list (her lure now, at the top)"), ("02_lures_fire", "Fire chosen: gold, Chosen")], cobblemon=True),
+    # Copperline (ROADMAP 47.1): the new look's shared parts in every state, like docs/design/copperline/boards/Components.png
+    S("copperline", "Village Hall", "Copperline: the new look's shared parts",
+      "every Copperline sprite loaded; the shell with the Hall's rail, every part in every state and the boxes at GUI scale 2; at 320x180 the rail turned into a two-column icon grid", 30,
+      [("01_shell", "The shell: plaque, lintel with coins and close, the rail, the stage, the whisper line"),
+       ("02_parts", "Buttons, rail tabs, toggles, slider, number field, list rows, bars, slots, chips, text fields"),
+       ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
+       ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

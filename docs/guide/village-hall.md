@@ -34,8 +34,11 @@ leaves the caravans' trade routes and its open quests are dropped, so put it bac
 
 ## The hall's screen
 
-Right-click the hall. It looks like the Blueprint Table's screen, with a **sidebar** down the left: the village's
-name and today's date ("Spring, day 3 · Year 1") at the top, then ten buttons, each with a picture and a word:
+Right-click the hall. The screen is drawn in Copperline, the mod's look: a copper plaque at the top names the open
+section, the bar beside it shows the village's name and today's date ("Spring, day 3 · Year 1") with a close **X** at
+its end, and a **sidebar** (the rail) runs down the left with ten buttons, each with a picture and a word. The line at
+the bottom says what the thing under your mouse does, with "Esc close" on the right. On a small screen (GUI scale 3)
+the sidebar is a grid of pictures; point at one and the bottom line names it:
 
 | Button | What's in it |
 |---|---|

@@ -208,8 +208,44 @@ public final class SocialClasses implements ResourceManagerReloadListener {
 			jobs.add(job);
 		}
 		List<JsonElement> effects = new ArrayList<>();
-		GsonHelper.getAsJsonArray(o, "effects", new com.google.gson.JsonArray()).forEach(effects::add);
+		for (JsonElement e : GsonHelper.getAsJsonArray(o, "effects", new com.google.gson.JsonArray())) {
+			String bad = badEffect(e);
+			if (bad != null) {
+				AliveWorkplace.LOG.warn("Class {}: skipping effect {}: {}", id, e, bad);
+				continue;
+			}
+			effects.add(e);
+		}
 		return new SocialClass(id, tier, name, tax, outfit, needs(o, "needs"), needs(o, "wants"), List.copyOf(jobs), List.copyOf(effects));
+	}
+
+	/**
+	 * Why {@code effect} can't be used (null when it can): it must be an object whose {@code type}, {@code jobs} and
+	 * {@code sells} are ids (B1313: a typo in one threw later, for every villager with a class).
+	 */
+	@Nullable
+	private static String badEffect(JsonElement effect) {
+		if (!effect.isJsonObject()) {
+			return "not an object";
+		}
+		JsonObject o = effect.getAsJsonObject();
+		if (!o.has("type") || !o.get("type").isJsonPrimitive() || ResourceLocation.tryParse(o.get("type").getAsString()) == null) {
+			return "type is not an id";
+		}
+		for (String field : new String[] {"jobs", "sells"}) {
+			if (!o.has(field)) {
+				continue;
+			}
+			if (!o.get(field).isJsonArray()) {
+				return field + " is not a list";
+			}
+			for (JsonElement entry : o.getAsJsonArray(field)) {
+				if (!entry.isJsonPrimitive() || ResourceLocation.tryParse(entry.getAsString()) == null) {
+					return field + ": not an id: " + entry;
+				}
+			}
+		}
+		return null;
 	}
 
 	private static List<ClassNeeds.Need> needs(JsonObject o, String field) {

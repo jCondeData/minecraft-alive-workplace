@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293, B1301, B1311
 
 ## 1. What a player sees
 
@@ -68,7 +68,11 @@ of 1 Coal", not "Nobody here makes: Iron Bars", and the ore stays in the chest (
 The line names what the chest is short of, not some other way to make it: a Librarian with two leather where a
 bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not "4 Rabbit Hide". It goes further down
 only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
-(B409). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
+(B409). Logs of every wood at hand count: an oak and a spruce log for 2 chests read "short of 2 Oak Logs", and
+with a birch log too "short of 1 Oak Log" (B1311). A block packed from 9 of one thing names that thing: "short of 27 Wheat to make 3 Hay
+Bales", and with 20 wheat the third bale "short of 7 Wheat" (B1305). Nothing is ever made of itself: with Create, a
+stone a player mines (andesite, diorite, granite, tuff) is never "short of 3 Andesite to make 3 Andesite"; it is cut
+from another form of it only when one is in the chest (B1308). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
 "short of 1 Raw Iron", and with coal and no ore at all "short of 6 Raw Iron", never iron ore a player only gets with
 Silk Touch; gold and copper read the same (B489). With Create (or Cobblemon) loaded it still names the raw metal a player
 mines: never Create's Crushed Raw Iron, which only a crushing wheel makes, nor Cobblemon's plaques melted into nuggets
@@ -79,7 +83,19 @@ ingredient is itself what's short when its only ways are another mod's (a sticky
 Dough and Wheat Flour, B1277), pack several of one thing into one (a book or bookshelves with no leather at all name
 Leather, not Rabbit Hide; with some hide there it still names the rest of the hide, B1278) or need an ore (a piston names
 Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
-sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273).
+sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273). A thing
+whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
+Cobblemon's Apricorn Logs through Apricorn Wood (B1288). A stripped block is never raw (a player strips it from its
+block), so 3 bamboo planks from nothing read "short of 18 Bamboo", never the Stripped Block of Bamboo (B1304). The line
+never goes down through what the thing is being made for: 3 honey blocks read "short of 12 Honey Bottles", not honey
+blocks unpacked into bottles and packed back (B1306), and blue wool names its dye and the String for white wool, never
+black wool dyed from blue wool (B1303). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
+is made of oak planks only, so Chipped's mosaic planks don't make one and the line names the oak logs (B1290's premise);
+Minecraft's chest has no planks recipe there: 8 planks make that wood's Carved Wood chest, and a player turns any one
+of those into a plain chest with Carved Wood's special chest_from_modded_chests recipe. The crafters read that special
+recipe through a `recipe_stand_ins` data file (below), so the Carpenter makes a builder's plain chest from 8 oak planks
+in two crafts (the Oak Chest of Carved Wood, then the chest), turns a carved chest of any wood that's there into one,
+and a chest from nothing names the logs (B1302, B1286). A carved trapped chest is never used for it.
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -96,6 +112,11 @@ Librarian, `TinkererWork`, `ToolsmithWork`, `DyerWork`, `FurnicrafterWork`). Wit
 - plans with `Crafting.chain(level, kind, ...)`: its own recipes (the crafting table's; the stonecutter's, and the
   kiln's with a furnace by it, for the Mason; the blast furnace's for the Tinkerer; CobbleFurnies' Furni Crafter's files
   for the Furnicrafter), `Crafting.CHAIN_DEPTH` (3) steps down, a repeated recipe merged into one step;
+- fills a slot that takes any of a tag (planks, logs) from any mix of it, as a crafting table does (B1293): one kind
+  when one has enough, else what's there of them all, the best-stocked first, and only the rest made from further down;
+  when the crafts' mix differs from one to the next, the recipe is several steps, each saying what one craft takes;
+  when no one kind can be made in full, each kind is made as far as it goes and the slot takes the mix (B1301: a
+  chest from one oak and one spruce log, 4 planks of each; `Crafting.makeMix`), taking only the makings needed;
 - tries the whole count, then half, down to one, so a big order is made a bagful at a time (12 stacks of makings);
 - when nothing fits, notes the chain's raw materials short (`Crafting.lacking`: of several recipes for one thing, the
   one closest to what's there, by `Crafting.shortRank`, never one that only unpacks a storage block, B489; on a tie the recipe from the item's own mod, by `Crafting.fromOwnMod`, tried first too, B1267; a plan for real gives up at once on what nothing in the chests leads to, `Crafting.reachable`, so the pack's many recipes don't use up the tick's planning before the line is said, B1268; or the Furnicrafter's own; the Mason's
@@ -128,6 +149,17 @@ The retired Crafter: `Crafters.tick` (every villager's AI step, from `VillagerMi
 `aliveworkplace:crafter` and makes it jobless: the workbench's POI ticket let go, the `crafter_job` dropped (and its claim
 released), the bag's contents dropped where it stands, trades, level and experience cleared, its brain rebuilt. The
 profession can't acquire a workbench any more, and the workbench left the `acquirable_job_site` tag.
+
+**Special recipes as data (B1302).** A mod's special crafting recipe is code with no ingredients to read, so the
+planner skips it. A file in `data/<namespace>/recipe_stand_ins/` stands in for one:
+`{"serializer": "carved_wood:chest_from_modded_chests", "from": ["#c:chests/wooden"], "except": ["#c:chests/trapped",
+"minecraft:chest"], "result": "minecraft:chest"}` adds an in-memory one-slot recipe (any one of `from`, not `except`,
+makes the result) to every kind that uses the crafting table's recipes (`RecipeStandIns`, joined in `Crafting.byResult`).
+It counts only while a recipe of that serializer id is loaded (the mod installed and its config switch on), and of
+`from` only what a crafting recipe makes is kept when anything is (Carved Wood's Pale Oak Chest without pale oak in the
+game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more. A file
+with a typo in an id (a capital letter or a space, as in `"#c:Chests/Wooden"`) is skipped with a "Skipping recipe
+stand-in" warning naming it, and the server starts as usual (B1312).
 
 ## 3. Switches
 
@@ -256,8 +288,136 @@ profession can't acquire a workbench any more, and the workbench left the `acqui
   and bookshelves with no leather name Leather.
 - `QaCreateZinc1115e2BugCompatTests` (2, B1279 with Create): 3 zinc ingots from nothing lack 3 Raw Zinc and a zinc block 9;
   a builder short of 2 Blocks of Zinc reads Raw Zinc, never Crushed, and the Tinkerer takes nothing.
-- `ChippedShortLineCompatTests` (2, B1273 with Chipped): a lantern, torch, sticks or piston from nothing names no
-  Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken.
+- `MixedTagSlotGameTests` (5, B1293): a chest from 4 oak and 4 spruce planks and a smoker from four woods' logs are
+  planned taking exactly those, every step's makings in hand when it comes; 3 crafting tables from 6 oak and 6 spruce
+  planks use every plank; one oak and one spruce log lack 2 logs of a smoker's 4, 3 oak and 2 spruce planks 3 of a
+  chest's 8; a Carpenter makes the 3 tables from a chest of mixed planks, the row is built and no plank is left.
+- `QaTagMix1115hGameTests` (9, the QA lane, past B1293): a chest from 3 oak, 3 spruce and 2 birch planks takes exactly
+  those 8 (never the cobblestone, stone or sticks by them), from crimson, warped and cherry planks too, and a crafting
+  table from one plank of each of four woods; 8 oak by 3 spruce and 2 birch take the oak alone; 7 planks of three woods
+  are no plan and lack 1 plank of one wood, 8 are a chest; 16 mixed planks are two chests and lack 8 for a third. A
+  builder short of a chest with 3 oak, 3 spruce and 2 birch planks, 2 oak logs, cobblestone and sticks in his chest gets
+  it from the Carpenter, every plank used and the logs, cobblestone and sticks untouched; one plank short, nothing is
+  taken and his line reads "Can't be made yet: short of 1 … Planks to make 1 Chest", naming oak, spruce or birch
+  (a wood that's there, never 5 of one), then one
+  more birch plank and it's made; the Carpenter saved and loaded back mid-craft still makes it once, no plank lost.
+- `QaLogsSlot1115e3BugGameTests` (2, B1293): four logs of four woods, or 2 stripped oak logs and 2 dark oak wood, make a
+  smoker with nothing short; a chest from 4 oak and 4 spruce planks is planned. `QaLogsSlot1115e3GameTests` (3): a
+  smoker from 8 cobblestone, or a furnace, lacks exactly 4 logs of one base-game wood; with 2 oak logs the other 2.
+- `QaMixedTagSlot1115cGameTests` (8, QA past B1293): a chest from 3 oak, 3 spruce and 2 birch planks takes exactly those,
+  one fewer reads "short of 1 … Planks to make 1 Chest"; a wooden pickaxe's head and sticks share 5 mixed planks (4
+  are 1 short); an oak log tops up 2 oak and 2 spruce planks into a chest; oak stairs never take spruce planks (3 oak
+  and 6 spruce lack 3 Oak Planks); 10 chests use 80 planks of four woods; a Carpenter makes 3 tables from 5 oak, 4
+  spruce and 3 birch planks and leaves the chest's logs and cobblestone alone; one short of oak planks for oak stairs
+  names them and takes no spruce; `aChestFromTwoWoodsLogs` (B1301): one oak and one spruce log are a chest, nothing short.
+- `MixedLogsSlotGameTests` (3, B1301): 2 chests from 2 oak, 1 spruce and 1 birch log take all four logs; a chest from
+  three woods' logs takes two, and 3 oak planks are topped up from two logs; one log alone is still short; a Carpenter
+  makes the builder's row of 3 chests from 3 oak, 3 spruce and 1 birch log, leaving one log and no plank.
+- `QaCrafterLogs1116cGameTests` (6, QA past B1301): one log each of oak, spruce, birch and jungle are exactly 2 chests;
+  a crimson stem with a stripped birch log, or a bamboo block with an oak log and 2 spruce planks, make a chest; logs top
+  up loose planks of other woods and no plank beyond the 8 is used; an oak and a spruce log are never 2 chests; a barrel
+  and a wooden pickaxe from mixed logs; a Carpenter makes a row of 3 chests from planks and two woods' logs across a save
+  and load, and short of logs loses no wood and names logs.
+- `QaStorageBlockLine1115bBugTests` (3, B1305, QA): hay bales, a slime block and a dried kelp block from nothing lack
+  the 27 wheat, 9 slimeballs and 9 dried kelp; a builder with 20 wheat and a Carpenter gets 2 bales and reads "short of
+  7 Wheat to make 1 Hay Bale"; from an empty chest "short of 27 Wheat to make 3 Hay Bales".
+- `QaMinedStoneSelf1115bBugCompatTests` (2, B1308, QA, with Create): no mined stone's line names the stone itself; a
+  builder short of andesite with a Mason never reads "Andesite to make".
+- `QaCrafterLogs1116cBugGameTests` (1, B1311, QA): truly short, an oak and a spruce log for 2 chests lack 2 logs and
+  read "short of 2 … Logs to make 2 Chests"; with a birch log too, 1 log.
+- `QaMixedLogs1116bGameTests` (7, B1301, QA): a chest from a crimson and a warped stem, from oak wood and a stripped
+  spruce log, from an oak log and 2 bamboo blocks (2 planks each; one block is short); two chests from one log of each
+  of four woods (a third is short); an oak log and 3 spruce planks lack exactly one log or plank, with 4 they are a chest;
+  a barrel (planks and slabs) from three woods' logs; the Carpenter's job from four woods' logs saved and loaded mid-way
+  builds the row of 3 chests, one log left, no plank.
+- `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks, piston or chest from nothing names no
+  Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
+  Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a
+  furnace lacks 4 of one of Minecraft's logs (B1288, B1290); a chest from nothing names logs too (B1286).
+- `RecipeStandInsCompatTests` (4, B1302, B1286 with Carved Wood): the shipped stand-in is read and is the one way to a
+  plain chest; a chest is planned from 8 oak planks as Carved Wood's Oak Chest then the chest (7 planks: none); two
+  carved spruce chests make two in one step, a carved or vanilla trapped chest none; a chest from nothing lacks logs.
+- `QaRecipeStandInFiles1116eGameTests` (4, base game, a datapack's files through the real loader): a stand-in counts
+  only while its serializer's recipe is loaded and is gone after a reload without it; without Carved Wood the shipped
+  chest file adds nothing; `except` taking out all, a result from itself, and from only uncrafted things (both kept) or
+  a tag of logs (only the crafted woods kept); broken files (no serializer or result, empty `from`, a bad result id,
+  not JSON, an array) are skipped and the rest load. A typo in a `from` or `except` entry crashes the server at start
+  (B1312; its tests are on the branch tests/recipe-standin-typos-1116e).
+- `QaCarvedChest1115eCompatTests` (1) and `QaCarvedChest1115eBugCompatTests` (2, B1302): a one-block blueprint with a
+  Carpenter hired gets its plain barrel from 3 spruce logs, and its plain chest from 8 oak planks or from a carved oak
+  chest in the builder's chest.
+- `QaCarvedChest1116cCompatTests` (7, QA past B1302 and B1286 with Carved Wood): the block built is exactly Minecraft's
+  chest, from 2 oak logs, from 1 oak and 2 spruce logs (the spruce used, the oak left), or from a carved spruce chest
+  (the 8 planks kept); trapped chests (Minecraft's and Carved Wood's) are never used and the line names 2 logs, never Pale
+  Oak; planks taken away mid-job and given back make the chest losing nothing; a Carpenter saved and loaded mid-job.
+- `QaCarvedChest1116bCompatTests` (4, B1302, QA, with Carved Wood): a plain chest from 2 oak logs and a Carpenter is
+  built (planks, Oak Chest, chest; 1 log: none); 16 oak planks are two chests, 15 one; a carved oak chest and 8 spruce
+  planks are two; a carved trapped oak chest is never used and the line reads "short of 2 Oak Logs to make 1 Chest"; a
+  blueprint asking for the carved Oak Chest is never built with a plain chest.
+- `QaShortageGathers1115fBugCompatTests` (2, B1288): a smoker from nothing or from a furnace names 4 of Minecraft's logs,
+  and a builder short of a smoker reads Minecraft's logs, never Apricorn Logs.
+- `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
+  (about 3,200), read from an empty chest the way that job's shortage line reads it, names no ore (`c:ores`) and no
+  Create crushed raw metal. Kills a mutant dropping the ore rule and one dropping B1279's raw-metal rank.
+- `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
+  base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
+  slot are B1293's.
+- `QaShortageGathers1115fGameTests` (8, QA past B1273/B1277/B1278/B1279): a book from 3 paper lacks 1 Leather, with 1
+  rabbit hide the 3 more hides, with 4 hides or 1 leather nothing; three bookshelves lack 9 Leather, 8 with one leather,
+  35 Rabbit Hides with one hide; two item frames, a leather cap and a book and quill name Leather; a sticky piston and a
+  lead name the Slimeball (never a Slime Block), and a slimeball or slime block there is used; a block of iron, copper or
+  gold names 9 of its raw metal and no redstone or metal thing names an ore; a smoker names its 4 logs and a campfire its
+  3; a Librarian's builder reads exactly "short of 35 Rabbit Hides to make 3 Bookshelves" and a Tinkerer's "short of 3
+  Slimeballs to make 3 Sticky Pistons", the same after the villagers are saved and loaded, and nothing is taken.
+- `QaShortageGathers1115fCompatTests` (8, the same with the pack): with Create, Minecraft's metal blocks, ingots and a
+  bucket name the raw metal, never Crushed; zinc lacks 9 Raw Zinc (8 with one there), 9 nuggets 1, and crushed raw zinc
+  there is used; a sticky piston, a lead, a magma cream and a slime block name the Slimeball, never Dough or Wheat Flour,
+  while dough and a lime dye there may be used; leather and hide read as in the plain game; sticks, ladders, a crafting
+  table, a barrel, a bowl, a sign, an item frame, a painting, a torch, a wooden pickaxe, a tripwire hook and a lever name
+  no Chipped, Create or Cobblemon item nor an ore, and Chipped's planks or an oak log there make the sticks; every
+  Minecraft block a Minecraft crafting recipe makes (579), asked one a tick, names only Minecraft's things (the
+  smoker too, since B1288's fix); a builder short of a sticky piston reads exactly "short of 1 Slimeball to make 1 Sticky Piston", and of
+  a copper block "short of 9 Raw Copper", never Crushed.
+- `QaUnpackedLogs1115bCompatTests` (2, QA past B1288 with the pack): a smoker from a furnace and 3 oak logs lacks 1 of
+  Minecraft's logs, with 4 nothing, with 4 Apricorn Logs (they are in `#logs`) nothing, and with 4 of Carved Wood's oak
+  log bundles nothing (4 logs pack into 4 bundles, each unpacks into 1 log); a campfire from 3 sticks and a coal lacks 3
+  of Minecraft's logs; a builder with a furnace and 4 bundles in his chest and a Carpenter at his bench gets his smoker,
+  with no shortage line on the way.
+- `QaStoneLine1115bGameTests` (2, QA): polished andesite, diorite and granite, an andesite slab, polished andesite stairs
+  and a diorite wall from nothing, by the stonecutter's plan, name the mined stone and never Nether Quartz; a builder
+  short of 3 Polished Andesite with a Mason reads a line naming Andesite (never Quartz or Cobblestone), and nothing is made.
+- `QaDyedWoolLine1115bBugTests` (2, B1303, QA): every dyed wool from nothing names no dyed wool, and 2 blue wool with
+  2 blue dye there lack only the wool's makings; a builder short of 2 Blue Wool with 2 Blue Dye and a Shepherd reads a line
+  naming White Wool or String, never Blue Wool, Black Dye or Lapis, and the dye isn't taken.
+- `QaBambooLine1115bBugTests` (2, B1304, QA): bamboo planks, slabs, stairs, mosaic and fences from nothing name the Bamboo
+  (or a Block of Bamboo), never the Stripped Block of Bamboo; 9 bamboo or a block of bamboo make 2 planks; a builder short
+  of 3 Bamboo Planks reads a line naming Bamboo and nothing is made.
+- `QaHoneyBlockLine1115bBugTests` (2, B1306, QA): 3 honey blocks from nothing lack exactly 12 Honey Bottles, from 12
+  bottles nothing; a builder short of 3 honey blocks reads exactly "short of 12 Honey Bottles to make 3 Honey Blocks".
+- `QaShortPlurals1115bBugTests` (3, B1307, QA): the 24 countable things (snowballs, torchflowers, the chiseled blocks'
+  slabs, weathered copper doors and trapdoors, disc fragments, goat horns...) read their plural after 4; "short of 12
+  Snowballs to make 3 Snow Blocks", "short of 3 Vines to make 3 Mossy Cobblestone", also through a builder's line.
+- `QaShortageLineVerify1116bGameTests` (10, QA past B1303/B1304/B1306/B1307): each of the 16 colors' wool and carpet from
+  nothing names String or White Wool and no dyed wool or carpet; each dyed wool with its own dye there lacks only String or
+  White Wool, and with white wool (or 8 string) and its dye nothing; each carpet from its own wool nothing; every wood's
+  planks from nothing name exactly its log or stem (1 for 4, 2 for 8), never the stripped one, and its stripped log, wood
+  or log there makes them; 3 bamboo planks lack exactly 18 Bamboo, and a Stripped Block of Bamboo or a Block of Bamboo there
+  makes 2; a honey block from nothing lacks 4 Honey Bottles, 2 from 5 bottles 3, and 4 bottles from a honey block and
+  glass bottles nothing; an iron block from nothing never names the block or nuggets, and 9 ingots and a block turn into
+  each other; B1307's things read singular at 1 and plural above ("short of 1 Snowball to make 1 Snow Block", "short of 2
+  Torchflowers to make 2 Orange Dye"); everything a dyed wool, carpet or dye line names more than one of reads its plural
+  (bar String, Lapis Lazuli, Bone Meal, Bamboo, Cocoa Beans, dye and wool); a builder short of 3 Blue Carpets with a
+  Shepherd reads a line naming String or White Wool and no other color, one short of 3 Mangrove Planks with a Carpenter
+  reads exactly "short of 1 Mangrove Log to make 3 Mangrove Planks", and a builder with 2 Stripped Blocks of Bamboo gets
+  his 3 bamboo planks from the Carpenter.
+- Open bug B1305 (its 3 failing tests, QaStorageBlockLine1115bBugTests, are on the tests/storage-block-line-1115b
+  branch): a builder 7 wheat short of his last hay bale, or with no wheat at all, gets no shortage line; a hay bale, a
+  slime block and a dried kelp block from nothing lack nothing.
+- Open bug B1308 (its 2 failing compat tests, QaMinedStoneSelf1115bBugCompatTests, are on the
+  tests/mined-stone-self-1115b branch): with Create a builder short of 3 Andesite and a Mason reads "short of 3 Andesite
+  to make 3 Andesite" (Create's stonecutting recipes make the mined stones from a tag that holds them).
+- Open bug B1311 (its failing test, QaCrafterLogs1116cBugGameTests, is on the tests/crafter-logs-1116c branch): with
+  one oak and one spruce log for 2 chests the line reads "short of 3 Oak Logs", counting only the first wood (2 is right).
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

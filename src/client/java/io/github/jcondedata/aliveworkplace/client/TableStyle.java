@@ -3,48 +3,50 @@ package io.github.jcondedata.aliveworkplace.client;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 /**
- * The Blueprint Table's look (ROADMAP 26.12), shared by the screens drawn like it: the Table itself, the Village Hall's
- * screen and the Storehouse board. A dark panel with a slate-blue edge, a gold title with a grey-blue count on the
- * right, a dark list with white names over grey-blue second lines, gold headings, framed icon cells that light up under
- * the mouse (gold when chosen) and vanilla's list scrollbar and selection box.
+ * The Hall look's shared pieces, drawn in Copperline since ROADMAP 47.1 ({@link CopperStyle}, docs/design/copperline/):
+ * the Blueprint Table, the Village Hall's screen, the Storehouse board, the list menus, the Trainer screen, the status
+ * cards and the Pokémon Trader all draw through here, so every one of them switched at once. The window with its copper
+ * line, the copper plaque over its top edge naming the screen, the lintel (where you are or the coins, and the close X),
+ * wells for lists, Deepslate rows that take a Lantern edge under the mouse and the copper mark when chosen, the neutral
+ * and copper buttons, and the whisper line at the foot with "Esc close". The names of the colors below are the old ones
+ * (the screens use them); their values are the Copperline palette's.
  */
 public final class TableStyle {
-	public static final int PANEL_BG = 0xE0101418;
-	public static final int PANEL_EDGE = 0xFF3A4C66;
-	public static final int LIST_BG = 0x80000000;
+	public static final int PANEL_BG = CopperStyle.DEEP_900;
+	/** Lines and frames (Deepslate 600). */
+	public static final int PANEL_EDGE = CopperStyle.DEEP_600;
+	public static final int LIST_BG = CopperStyle.DEEP_800;
 	/** A box drawn over the panel (the full materials list). */
-	public static final int OVERLAY_BG = 0xF0161B22;
-	public static final int TITLE = 0xFFFFD66B;
-	public static final int SUBTITLE = 0xFF9AA8BA;
-	public static final int NAME = 0xFFFFFFFF;
-	public static final int SUBLINE = 0xFF7F8C9E;
-	public static final int FAINT = 0xFF5E6B7C;
-	public static final int LOADING = 0xFF777777;
-	public static final int BODY = 0xFFCCCCCC;
-	public static final int CELL_HOVER = 0xFF8A9BB4;
-	public static final int CELL_BG = 0xFF1C2430;
-	public static final int CELL_ON_BG = 0xFF4A3A14;
+	public static final int OVERLAY_BG = CopperStyle.DEEP_800;
+	/** Titles and headings, and the chosen thing's text: Copper Light. */
+	public static final int TITLE = CopperStyle.COPPER_LIGHT;
+	public static final int SUBTITLE = CopperStyle.TUFF;
+	public static final int NAME = CopperStyle.QUARTZ;
+	public static final int SUBLINE = CopperStyle.TUFF;
+	public static final int FAINT = CopperStyle.TUFF;
+	public static final int LOADING = CopperStyle.TUFF;
+	public static final int BODY = CopperStyle.QUARTZ;
+	/** Under the mouse: the Lantern edge. */
+	public static final int CELL_HOVER = CopperStyle.LANTERN;
+	public static final int CELL_BG = CopperStyle.DEEP_800;
+	public static final int CELL_ON_BG = CopperStyle.DEEP_600;
 	/** A list row's height, as the Table's library. */
 	public static final int ROW = 22;
 	/** An icon cell (18 wide and a 2-pixel gap), as the Table's style row. */
 	public static final int CELL = 20;
 	/** The panel's largest size; it shrinks to fit the screen with 8 pixels round it. */
-	public static final int MAX_W = 440;
-	public static final int MAX_H = 290;
-
-	private static final ResourceLocation SCROLLER = ResourceLocation.withDefaultNamespace("widget/scroller");
-	private static final ResourceLocation SCROLLER_BACKGROUND = ResourceLocation.withDefaultNamespace("widget/scroller_background");
+	public static final int MAX_W = io.github.jcondedata.aliveworkplace.ui.CopperLayout.MAX_W;
+	public static final int MAX_H = io.github.jcondedata.aliveworkplace.ui.CopperLayout.MAX_H;
 
 	/** The panel's width on a screen {@code screenWidth} wide. */
 	public static int panelWidth(int screenWidth) {
-		return Math.min(screenWidth - 16, MAX_W);
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.windowWidth(screenWidth);
 	}
 
 	public static int panelHeight(int screenHeight) {
-		return Math.min(screenHeight - 16, MAX_H);
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.windowHeight(screenHeight);
 	}
 
 	/** The left list's width in a panel {@code panelW} wide. */
@@ -52,49 +54,81 @@ public final class TableStyle {
 		return Math.min(180, panelW / 2 - 12);
 	}
 
-	/** The panel: its edge, then its background. */
+	/** Whether the game's screen is a small one (GUI scale 3 on a 960x540 window: the 320x180 rule). */
+	public static boolean compact() {
+		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+		return mc != null && mc.getWindow() != null
+			&& io.github.jcondedata.aliveworkplace.ui.CopperLayout.compact(mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+	}
+
+	/** The panel: Copperline's window. */
 	public static void panel(GuiGraphics g, int left, int top, int w, int h) {
-		g.fill(left - 1, top - 1, left + w + 1, top + h + 1, PANEL_EDGE);
-		g.fill(left, top, left + w, top + h, PANEL_BG);
+		CopperStyle.window(g, left, top, w, h);
 	}
 
-	/** The title in gold at the panel's top left and, if any, a grey-blue line at its top right. */
+	/** The title on the copper plaque over the panel's top edge and, if any, {@code right} on the lintel; the close X at its end. */
 	public static void header(GuiGraphics g, Font font, Component title, Component right, int left, int top, int w) {
-		int rw = right == null || right.getString().isEmpty() ? 0 : font.width(right);
-		g.drawString(font, font.plainSubstrByWidth(title.getString(), w - 16 - (rw > 0 ? rw + 8 : 0)), left + 8, top + 8, TITLE, false);
-		if (rw > 0) {
-			g.drawString(font, right, left + w - 8 - rw, top + 8, SUBTITLE, false);
-		}
+		header(g, font, title, right, left, top, w, false);
 	}
 
-	/** A list's dark background. */
+	/** {@link #header} with the close X lit when the mouse is over it ({@link #overClose}). */
+	public static void header(GuiGraphics g, Font font, Component title, Component right, int left, int top, int w, boolean overClose) {
+		int[] win = {left, top, w, 0};
+		int[] plaque = CopperStyle.plaque(g, font, title, win);
+		CopperStyle.lintel(g, font, win, plaque, right, overClose);
+	}
+
+	/** The close X's box on a panel at {@code left, top}, {@code w} wide. */
+	public static int[] closeBox(int left, int top, int w) {
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.close(new int[]{left, top, w, 0});
+	}
+
+	public static boolean overClose(int left, int top, int w, double mx, double my) {
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.inside(closeBox(left, top, w), mx, my);
+	}
+
+	/** Where the lintel's text ends on the right (the close X's left, less a gap). */
+	public static int lintelRight(int left, int top, int w) {
+		return closeBox(left, top, w)[0] - 4;
+	}
+
+	/** A list's background: a well. */
 	public static void listBackground(GuiGraphics g, int x, int y, int w, int h) {
-		g.fill(x, y, x + w, y + h, LIST_BG);
+		CopperStyle.well(g, x, y, w, h);
 	}
 
-	/** A heading in gold. */
+	/** A heading in Copper Light. */
 	public static void heading(GuiGraphics g, Font font, Component text, int x, int y) {
 		g.drawString(font, text, x, y, TITLE, false);
 	}
 
-	/** A thin line in the panel's edge colour. */
+	/** A thin line in Deepslate 600. */
 	public static void rule(GuiGraphics g, int x, int y, int w) {
 		g.fill(x, y, x + w, y + 1, PANEL_EDGE);
 	}
 
-	/** An 18x18 icon cell: framed in the edge colour, lighter under the mouse, gold with a brown inside when chosen. */
+	/** An 18x18 icon cell: a well, a Lantern edge under the mouse, a panel with the copper mark when chosen. */
 	public static void cell(GuiGraphics g, int x, int y, boolean on, boolean over) {
-		g.fill(x, y, x + CELL - 2, y + CELL - 2, on ? TITLE : over ? CELL_HOVER : PANEL_EDGE);
-		g.fill(x + 1, y + 1, x + CELL - 3, y + CELL - 3, on ? CELL_ON_BG : CELL_BG);
+		int s = CELL - 2;
+		if (on) {
+			g.blitSprite(CopperStyle.PANEL, x, y, s, s);
+			g.fill(x + 1, y + s - 2, x + s - 1, y + s, CopperStyle.COPPER);
+		} else {
+			g.blitSprite(over ? CopperStyle.WELL_FOCUS : CopperStyle.WELL, x, y, s, s);
+		}
 	}
 
-	/** Vanilla's list selection box round a row whose content starts at {@code top} and is {@code h} tall. */
+	/** The chosen row's band round a row whose content starts at {@code top} and is {@code h} tall: Deepslate 600, the copper mark. */
 	public static void selection(GuiGraphics g, int x, int top, int w, int h, boolean focused) {
-		g.fill(x, top - 2, x + w, top + h + 2, focused ? 0xFFFFFFFF : 0xFF808080);
-		g.fill(x + 1, top - 1, x + w - 1, top + h + 1, 0xFF000000);
+		CopperStyle.rowBand(g, x, top - 2, w, h + 4, false, false, true);
 	}
 
-	/** A row's two lines, as the Table's library draws them: the name in white (or its own colours), the second line grey-blue. */
+	/** A row under the mouse: Deepslate 700 with the Lantern edge. */
+	public static void hoverBand(GuiGraphics g, int x, int top, int w, int h) {
+		CopperStyle.rowBand(g, x, top, w, h, false, true, false);
+	}
+
+	/** A row's two lines: the name in Quartz (or its own colors), the second line in Tuff. */
 	public static void rowText(GuiGraphics g, Font font, Component name, String second, int x, int y, int w) {
 		g.drawString(font, trim(font, name, w), x, y + 1, NAME, false);
 		if (second != null && !second.isEmpty()) {
@@ -121,7 +155,7 @@ public final class TableStyle {
 			net.minecraft.network.chat.FormattedText.composite(cut, net.minecraft.network.chat.FormattedText.of(ellipsis)));
 	}
 
-	/** Vanilla's list scrollbar, 6 wide, at {@code x}: {@code scroll} of {@code max} pixels scrolled through {@code content} tall. */
+	/** The list scroll bar in the 6 pixels at {@code x}: {@code scroll} of {@code max} pixels scrolled through {@code content} tall. */
 	public static void scrollbar(GuiGraphics g, int x, int y, int h, int scroll, int max, int content) {
 		if (max <= 0) {
 			return;
@@ -129,8 +163,9 @@ public final class TableStyle {
 		int bar = Math.max(32, Math.min(h - 8, h * h / Math.max(1, content)));
 		bar = Math.min(bar, h);
 		int by = y + (h - bar) * scroll / max;
-		g.blitSprite(SCROLLER_BACKGROUND, x, y, 6, h);
-		g.blitSprite(SCROLLER, x, by, 6, bar);
+		g.fill(x + 1, y + 1, x + 5, y + h - 1, CopperStyle.VOID);
+		g.fill(x + 1, by + 1, x + 5, by + bar - 1, CopperStyle.DEEP_600);
+		g.fill(x + 1, by + 1, x + 2, by + bar - 1, CopperStyle.SLATE);
 	}
 
 	/** A thin scrollbar for a box (the Table's full materials list). */
@@ -140,8 +175,9 @@ public final class TableStyle {
 		}
 		int barH = Math.max(10, h * h / Math.max(1, content));
 		int barY = y + (h - barH) * scroll / max;
-		g.fill(x, y, x + 3, y + h, 0x40000000);
-		g.fill(x, barY, x + 3, barY + barH, 0xFF8090A8);
+		g.fill(x, y, x + 3, y + h, CopperStyle.VOID);
+		g.fill(x, barY, x + 3, barY + barH, CopperStyle.DEEP_600);
+		g.fill(x, barY, x + 1, barY + barH, CopperStyle.SLATE);
 	}
 
 	// --- shared list-menu pieces (ROADMAP 42.1) ----------------------------------------------------------------------
@@ -156,12 +192,12 @@ public final class TableStyle {
 	/** A tab's height. */
 	public static final int TAB_H = 18;
 	/** A row under the mouse, and a chosen row (waiting for the second click), behind its text. */
-	public static final int ROW_OVER = 0x30FFFFFF;
-	public static final int ROW_ON = 0x40FFD66B;
+	public static final int ROW_OVER = CopperStyle.DEEP_700;
+	public static final int ROW_ON = CopperStyle.DEEP_600;
 	/** A text button's inside, lighter under the mouse; a gray (unusable) one's text. */
-	public static final int BUTTON_BG = 0xFF1C2430;
-	public static final int BUTTON_OVER_BG = 0xFF2A3546;
-	public static final int OFF = 0xFF5E6B7C;
+	public static final int BUTTON_BG = CopperStyle.DEEP_700;
+	public static final int BUTTON_OVER_BG = CopperStyle.DEEP_600;
+	public static final int OFF = CopperStyle.OFF_TEXT;
 
 	/** How wide a text button with {@code label} is (at least 44 pixels). */
 	public static int buttonWidth(Font font, Component label) {
@@ -169,14 +205,11 @@ public final class TableStyle {
 	}
 
 	/**
-	 * A text button (the list's Teach, a footer's page arrow): a framed box in the edge color, lighter under the mouse,
-	 * gold with a brown inside when {@code on}, gray text when {@code off}; its label centered.
+	 * A text button (the list's Teach, a footer's page arrow): Copperline's neutral button, the Lantern edge under the
+	 * mouse, the copper button when {@code on} (the chosen one), flat with gray text when {@code off}; its label centered.
 	 */
 	public static void button(GuiGraphics g, Font font, Component label, int x, int y, int w, int h, boolean on, boolean over, boolean off) {
-		g.fill(x, y, x + w, y + h, on ? TITLE : over && !off ? CELL_HOVER : PANEL_EDGE);
-		g.fill(x + 1, y + 1, x + w - 1, y + h - 1, on ? CELL_ON_BG : over && !off ? BUTTON_OVER_BG : BUTTON_BG);
-		String text = trim(font, label.getString(), w - 6);
-		g.drawString(font, text, x + (w - font.width(text)) / 2, y + (h - 8) / 2, off ? OFF : on ? TITLE : NAME, false);
+		CopperStyle.button(g, font, label, null, x, y, w, h, on ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL, over && !off, false, off);
 	}
 
 	/** How wide a tab with {@code label} (and an icon, if {@code icon}) is, at most {@code max}. */
@@ -185,15 +218,14 @@ public final class TableStyle {
 	}
 
 	/**
-	 * A tab over a list (the Tutor's party): a framed box {@link #TAB_H} tall, gold when it's the open one, lighter under
-	 * the mouse; its label (cut to fit) after the icon's room when {@code iconRoom}. The caller draws the icon at
+	 * A tab over a list (the Tutor's party): {@link #TAB_H} tall, the open one a panel with the copper mark, the Lantern
+	 * edge under the mouse; its label (cut to fit) after the icon's room when {@code iconRoom}. The caller draws the icon at
 	 * {@code x + 3, y + 1}.
 	 */
 	public static void tab(GuiGraphics g, Font font, Component label, int x, int y, int w, boolean iconRoom, boolean on, boolean over) {
-		g.fill(x, y, x + w, y + TAB_H, on ? TITLE : over ? CELL_HOVER : PANEL_EDGE);
-		g.fill(x + 1, y + 1, x + w - 1, y + TAB_H - 1, on ? CELL_ON_BG : over ? BUTTON_OVER_BG : BUTTON_BG);
+		CopperStyle.tab(g, x, y, w, TAB_H, on, over);
 		int tx = x + 6 + (iconRoom ? 16 : 0);
-		g.drawString(font, trim(font, label.getString(), x + w - 4 - tx), tx, y + 5, on ? TITLE : NAME, false);
+		g.drawString(font, trim(font, label.getString(), x + w - 4 - tx), tx, y + 5, on ? CopperStyle.QUARTZ : CopperStyle.TUFF, on);
 	}
 
 	/**
@@ -221,11 +253,7 @@ public final class TableStyle {
 	 */
 	public static void listRow(GuiGraphics g, Font font, int[] columns, int x1, int y, Component name, Component second, Component price,
 		boolean off, boolean on, boolean over) {
-		if (on) {
-			g.fill(columns[0] - 2, y, x1, y + LIST_ROW, ROW_ON);
-		} else if (over) {
-			g.fill(columns[0] - 2, y, x1, y + LIST_ROW, ROW_OVER);
-		}
+		CopperStyle.rowBand(g, columns[0] - 2, y, x1 - columns[0] + 2, LIST_ROW, false, over && !on, on);
 		int ty = y + 6;
 		// A row with no second line and no price has the room up to the button for its name (42.4: the Shape Planner's rows).
 		boolean alone = (second == null || second.getString().isEmpty()) && (price == null || price.getString().isEmpty());
@@ -245,16 +273,17 @@ public final class TableStyle {
 		}
 	}
 
-	/** The footer hint at a panel's foot ({@code y}), in faint grey-blue, cut to {@code w}. */
+	/** The whisper line at a panel's foot ({@code y}): {@code hint} on the left, cut to fit, and "Esc close" on the right of {@code w}. */
 	public static void footerHint(GuiGraphics g, Font font, Component hint, int x, int y, int w) {
-		g.drawString(font, trim(font, hint.getString(), w), x, y, FAINT, false);
+		CopperStyle.whisper(g, font, hint, x, y, w, compact());
 	}
 
 	/** The money line, right-aligned to {@code right} at the panel's top ({@code y}); returns its width (for pointing at it). */
 	public static int money(GuiGraphics g, Font font, Component money, int right, int y) {
 		int w = font.width(money);
+		g.blitSprite(CopperStyle.glyph("coin"), right - w - 10, y, 8, 8);
 		g.drawString(font, money, right - w, y, BODY, false);
-		return w;
+		return w + 10;
 	}
 
 	// --- shared small-card pieces (ROADMAP 43.3; 42.5's job-status cards reuse them) -----------------------------------
@@ -267,26 +296,21 @@ public final class TableStyle {
 	public static final int CARD_PAD = 8;
 	public static final int CARD_LINE = 18;
 	/** A bar's empty part. */
-	public static final int BAR_BG = 0xFF0C1016;
+	public static final int BAR_BG = CopperStyle.DEEP_900;
 
 	/** A card's top line: {@code title} in gold at the left, {@code tag} in grey-blue right-aligned, both cut to fit. */
 	public static void cardHeader(GuiGraphics g, Font font, Component title, Component tag, int x, int y, int w) {
 		int tagW = tag.getString().isEmpty() ? 0 : Math.min(font.width(tag), w / 2);
-		g.drawString(font, trim(font, title, w - tagW - (tagW > 0 ? 8 : 0)), x, y, TITLE, false);
+		g.drawString(font, trim(font, title, w - tagW - (tagW > 0 ? 8 : 0)), x, y, TITLE, true);
 		if (tagW > 0) {
 			String text = trim(font, tag.getString(), tagW);
 			g.drawString(font, text, x + w - font.width(text), y, SUBTITLE, false);
 		}
 	}
 
-	/** A thin bar {@code fraction} full (0 to 1) in {@code color}, framed in the edge color. */
+	/** A thin bar {@code fraction} full (0 to 1) in {@code color}: Copperline's progress bar. */
 	public static void bar(GuiGraphics g, int x, int y, int w, int h, float fraction, int color) {
-		g.fill(x, y, x + w, y + h, PANEL_EDGE);
-		g.fill(x + 1, y + 1, x + w - 1, y + h - 1, BAR_BG);
-		int inner = Math.round((w - 2) * Math.max(0f, Math.min(1f, fraction)));
-		if (inner > 0) {
-			g.fill(x + 1, y + 1, x + 1 + inner, y + h - 1, color);
-		}
+		CopperStyle.progress(g, x, y, w, h, fraction, color);
 	}
 
 	/**

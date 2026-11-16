@@ -17,6 +17,76 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
+  "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: None", where they read a bare 0 (B1325).
+- With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
+  "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
+- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a
+  Pokémon from the daycare is waiting for a free place in it." (B1309).
+- Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
+  case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
+  the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so
+  " Bandit_King " or "LIGHTHOUSE" now switches that story or Wonder off (B1323).
+- A builder's shortage line names 24 more things in the plural after a count: "short of 12 Snowballs to make 3 Snow
+  Blocks", Torchflowers, the slabs, the weathered copper doors and trapdoors, Totems of Undying and more (B1307).
+- Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not
+  to the server-wide set every new village takes in; the Bandstand quest says it's a rare ??? found in chests, not a
+  gray name; and the Barracks quest's raid size counts the guards' share (B1318, B1319, B1320).
+- Personal requests: the Lucky Crystal's thanks and chronicle story start with a capital ("The Lucky Crystal! ...");
+  a player without 3 hearts with the villager can't hand in their heirloom, letter or reply and be paid for it; and a
+  couple who married at the bell no longer get the Chapel wedding paid and thanked when a Chapel is finished later
+  (B1314, B1315, B1316).
+- A data pack with a typo in a recipe stand-in or a class no longer crashes the server or breaks villagers' classes; the
+  bad entry is skipped with a warning (B1312, B1313).
+- A builder short of dyed wool, bamboo planks or honey blocks now reads what a player gathers: the wool's own dye and
+  String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
+  (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
+### Changed
+- Copperline, the new look (47.1): every screen drawn in the Village Hall's look (the Village Hall, the Storehouse
+  board, the list menus such as the Move Tutor and the shops, the Blueprint Table, the Trainer screen, the status cards
+  and the Pokémon Trader) now has deep slate-gray windows, a copper plaque naming the screen, a bar with where you are,
+  your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
+  says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
+  GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
+- The Mailbox, the Drop Box and the Shop Counter in Copperline (44.1): every slot, your inventory's included, is a
+  sunken well that lights up under the mouse, with headings over the rows, a copper plaque and a close X. The lintel
+  counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
+  for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
+  counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
+- A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
+  2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
+- A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what
+  to gather: "short of 27 Wheat to make 3 Hay Bales". Before, his line said nothing at all.
+- With Create, a builder short of andesite (diorite, granite, tuff, calcite, deepslate, dripstone) no longer reads
+  "short of 3 Andesite to make 3 Andesite": a Mason never makes a stone out of itself, so it reads as a stone a player
+  mines.
+
+## 0.155.3 — 2026-11-15
+
+### Fixed
+- A chest (or anything else that takes any planks) is made from the logs of several woods, as at a crafting table:
+  one oak and one spruce log make 4 planks each and the chest, instead of the builder reading "short of 1 Oak Log to
+  make 1 Chest" while his chest holds enough. Only the logs needed are used (B1301).
+- With Carved Wood (as in the Cobbleverse pack, where 8 planks make a carved chest), a builder whose build needs a plain
+  chest no longer waits forever on "Nobody here makes: Chest": the Carpenter makes it from 8 oak planks the way a player
+  does (Carved Wood's Oak Chest, then the chest) or from any carved chest in the builder's chest, and a chest short reads
+  the logs (B1302, B1286).
+- With Carved Wood and Cobblemon, a builder short of a smoker reads "short of 4 Dark Oak Logs", not "8 Apricorn Log", and
+  other modded things made of logs or planks (Handcrafted's oven, Create's chassis, Tom's Storage terminals, Sophisticated
+  Storage upgrades) name Minecraft's oak logs or planks instead of Cobblemon's logs or Chipped's mosaic planks (B1288).
+- Crafting jobs take any mix of a kind for a recipe that takes any of it, as a crafting table does: a chest from 4 oak
+  and 4 spruce planks, or a smoker from four different woods' logs, is made instead of the builder reading "short of 3
+  Oak Logs". When something is really short, the line counts every wood that's there (B1293).
+- A Mover's Crate under 8 snow layers gives back 8 snow, not a snow block and 7 snow, and a fully grown pitcher crop on
+  one gives back a Pitcher Plant, not its pod. A Builder's sunk room with a pool in its floor ends dry over a
+  water-filled hole in the pond's bed too (it used to flood).
+- With Cobblemon, a full party and PC no longer make Pokémon vanish at the daycares: Take back and Collect are refused
+  until there's room, an egg's hatchling waits (refunded), and a keeper's or rancher's death sends them to Cobblemon's
+  PC overflow (B1284). An egg that doesn't fit in a full inventory now says to make room, not what it costs (B1285).
+- With Cobblemon, the Pokémon a Daycare Keeper or rancher gives back at their death while your PC is full are no longer
+  lost at the next restart: they wait for you (you're told so), saved with the world, and come into your PC as soon as
+  a place in it is free, or at your next login once there's room. Before, they went to a hidden PC store that Cobblemon
+  never loads again (B1295, B1296, B1287).
 - A crafter's "Can't be made yet" line with Chipped loaded no longer names Chipped's decorative planks for a torch's
   sticks; it goes down to the oak logs a player gathers (B1273).
 - With no leather in the chests, a book, an item frame or bookshelves now read "short of Leather", not Rabbit Hide

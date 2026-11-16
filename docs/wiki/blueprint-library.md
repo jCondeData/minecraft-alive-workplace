@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23
 
 ## 1. What a player sees
 
@@ -50,6 +50,13 @@ Ways to unlock, all for the village round the nearest hall:
    The item is still sold.
 2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
+   Unlike the others, a reward (`/workplace unlock {p} <id>`, `BlueprintUnlocks.unlockFor`) goes to the claiming
+   player's own village wherever they stand when they claim it (B1318, `hall/HomeVillages`): the village they stand in
+   if they own it, else the hall they last came to own, else the village they were last in as it reached a rank, else a
+   village the realm list says is theirs (saves from before the record), else the village they stand in. Only a player
+   with none of these, standing in no village, puts it in the server-wide set. Before, a reward claimed away from the
+   village went into the server-wide set, which every village founded later takes in.
+   `QaQuestbookClaims1116eBugTests`, `QuestRewardVillageGameTests` (3).
 4. A Blueprint used on the Table, however it was had: found in a chest (village storehouses, carpenters', builders'
    workshops, inns and kitchens; pirate ships, war camps, coven huts, piglin hoards, bandit camps and the pharaoh's
    tomb), bought, or given. A Wonder Plan used on the Table names its Wonder there (view only). Either hand works: from
@@ -156,6 +163,8 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
+- 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
+  is on the Table or in villages until the owner picks one (36.23a).
 
 ## 8. Proof
 

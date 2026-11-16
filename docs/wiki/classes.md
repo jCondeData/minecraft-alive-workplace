@@ -90,7 +90,9 @@ Gazette, a third village's hall or a second copy once the quest is paid take not
 
 **Classes are data.** One file each in `data/aliveworkplace/classes/`: its tier, tax, needs, wants, the jobs it
 opens and its effects. A data pack replaces one, adds its own or switches ours off. Each file lists all of its needs;
-nothing is inherited from the class below.
+nothing is inherited from the class below. A broken file is skipped with a "Skipping class" warning; an effect with a
+typo in its `type` or in a `jobs` or `sells` id (a capital letter or a space, as in `"minecraft:Mason"`) is skipped with
+a "skipping effect" warning, and the rest of the class works (B1313).
 
 **The dawn check.** Each dawn the hall checks its households 8 at a time. When the next class's needs held
 `classRiseDays` dawns running (2) the household rises one class; when a need of its own class failed

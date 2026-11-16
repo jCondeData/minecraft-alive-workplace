@@ -3,14 +3,14 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324
 
 ## What a player sees
 
 **The config file.** `config/aliveworkplace.json` is written with the defaults the first time the game starts. Edit
 it and restart. A value out of range is clamped to the nearest allowed one, however large (3000000000 gives the most allowed, B477), a missing value takes its default, and
 the file is written back complete, so every option is always listed. A number or a switch written in quotes ("1",
-"false") is read as meant, and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
+"false") is read as meant, and so is a switch written as a word: yes or on is true, no or off is false, in any case and with spaces round it ("ON", " No "; B1324, `ConfigHandWrittenGameTests`); any other word takes that switch's default with a warning in the log naming it, never off, and the file is written back with plain true or false. and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
 the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
 read as a file without one, and entries of "expansionsOpen" that aren't names (null, a list) are skipped, so the rest
 of the file is still read (B457). A value of the wrong kind (a switch written 0, a number written "high") takes its
@@ -107,7 +107,7 @@ range is in brackets.
 | `legendNeeds` | on | 1.3 | A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. |
 | `legendSites` | on | 1.3 | Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). |
 | `strangeMoods` | on | 1.3 | Once a day a Master in a happy village may be taken by a strange mood, asking for three rare materials to make a Masterwork and become a Legend. |
-| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). |
+| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). At 0 the slider reads "None" (B1325). |
 | `mythicLegendCap` | 0, 0, 1, 2 |  | Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City (each 0 to 10). In the file only: a list isn't on the settings screen. |
 | `builderRepairs` | on |  | Idle builders repair the buildings they finished when blocks go missing. |
 | `repairAsk` | on |  | A builder who finds blocks missing from a finished build asks first (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page) and repairs only what was agreed (36.15). Off: they repair by themselves, as before. What raiders and village fires took is always repaired without asking. |
@@ -143,8 +143,8 @@ range is in brackets.
 | `rogueBounties` | on | 1.5 | With Cobblemon, half the bounties are on a rogue Pokémon: huge, level 35 to 65 by rank, roaming 150 to 250 blocks out; beaten or caught it pays 16 emeralds times the rank factor. Off: no rogue is posted. Never without Cobblemon. See [The bounty board](bounties.md). |
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
-| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none. |
-| `disabledArcs` | empty |  | Story arc ids that never start, not even by `/workplace story start` (it says the arc is switched off); a running one ends at its next round. In the file only. |
+| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none (the slider reads "Never", B1325). |
+| `disabledArcs` | empty |  | Story arc ids that never start (read trimmed and in lower case, so " Bandit_King " is `bandit_king`, B1323), not even by `/workplace story start` (it says the arc is switched off); a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |
 | `nurseHealingMachine` | on | 1.2 | A nurse at Cobblemon's Healing Machine heals your team in it, and keeps it charged while on shift. While it's busy with another team she treats nothing, and your minute isn't used. |
@@ -194,8 +194,8 @@ range is in brackets.
 | `wonderCaps` | 0, 0, 1, 2 (each 0 to 8) | 2.0 | Wonders a village may hold by rank: Hamlet, Village, Town, City. In the file only; a short list is filled from the defaults. |
 | `wonderLegends` | on | 2.0 | A Wonder needs its Legends in the village. Off: each Legend's stand-in is asked for instead. |
 | `builderScaffolding` | on | 2.0 | Builders put up scaffolding to reach what has nowhere to stand near it, and take it down after. Off: those blocks are skipped. |
-| `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit. |
-| `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`); one already finished keeps its blocks and powers. In the file only. |
+| `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit (the slider reads "No Limit", B1325; `ConfigZeroLabelGameTests`). |
+| `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`, read trimmed and in lower case, so "LIGHTHOUSE" is `lighthouse`, B1323); one already finished keeps its blocks and powers. In the file only. |
 | `wonderCrew` | 12 (1 to 32) | 2.0 | The most builders on one Wonder's crew, its lead included; a Wonder's own file may allow fewer. See [Wonders](wonders.md). |
 | `wonderStanding` | 90 (50 to 100) | 2.0 | The share (%) of a finished Wonder that must still stand for its powers; under it the Wonder is damaged, its powers stop and the village's builders repair it. See [Wonders](wonders.md). |
 | `furnishedBuilds` | on from 2.1 | 2.1 | Builds use the furniture mods the server has (Handcrafted, Lucky's Cozy Home, CobbleFurnies, Beautify) for chairs, tables, beds, lamps and blinds. Off: every build is the vanilla build. See [Furniture and storage mods](furniture-and-storage.md). |
@@ -291,7 +291,7 @@ missing `gamerule.workplaceVillageFarms`).
 ## Proof
 
 GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every radius and village number; every
-setting has its words and range; saved settings are read back), `ExpansionGateGameTests` (4: an old config with the
+setting has its words and range; saved settings are read back), `ConfigHandWrittenGameTests` (5: every switch written as yes, on, no or off reads as meant and any other word takes its default; a normal file reads as before; a hand-written file is written back plain and reads the same again; ids with spaces or capitals in `disabledArcs` and `disabledWonders` are off; B1323, B1324), `ExpansionGateGameTests` (4: an old config with the
 switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
 the release takes the new defaults, a later choice holds),
 `ExpansionBuildsGameTests` (3: the Table holds no 1.2 build while 1.2 is off and holds them when on; the other

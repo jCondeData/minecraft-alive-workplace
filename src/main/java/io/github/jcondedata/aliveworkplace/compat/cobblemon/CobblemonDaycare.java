@@ -215,6 +215,10 @@ public final class CobblemonDaycare {
 		if (pokemon == null) {
 			return Component.translatable("message.aliveworkplace.daycare.lost").withStyle(ChatFormatting.RED);
 		}
+		// Party and PC full: the rancher keeps it, uncharged (B1284)
+		if (!PokemonHome.hasRoom(player)) {
+			return Component.translatable("message.aliveworkplace.daycare.no_room", pokemon.getDisplayName(false)).withStyle(ChatFormatting.RED);
+		}
 		int gained = Daycare.experience(rancher, player.level().getGameTime() - boarder.since());
 		int price = Daycare.price(levelAfter(pokemon, gained) - pokemon.getLevel());
 		if (!Money.charge(player, (long) price * Money.DOLLARS_PER_EMERALD, price)) {
@@ -227,9 +231,8 @@ public final class CobblemonDaycare {
 		if (gained > 0 && pokemon.canLevelUpFurther()) {
 			pokemon.addExperienceWithPlayer(player, new SidemodExperienceSource(Daycare.XP_SOURCE), gained);
 		}
-		PlayerPartyStore party = Cobblemon.INSTANCE.getStorage().getParty(player);
-		if (!party.add(pokemon)) {
-			Cobblemon.INSTANCE.getStorage().getPC(player).add(pokemon);
+		if (!PokemonHome.toPartyOrPc(player, pokemon)) {
+			PokemonHome.toPcOrWaiting(player.server, player.getUUID(), player.getGameProfile().getName(), pokemon);
 		}
 		rancher.level().playSound(null, rancher, SoundEvents.VILLAGER_YES, SoundSource.NEUTRAL, 1f, 1.1f);
 		return Component.translatable("message.aliveworkplace.daycare.collected", pokemon.getDisplayName(false), before, pokemon.getLevel())
@@ -248,7 +251,7 @@ public final class CobblemonDaycare {
 				pokemon.addExperience(new SidemodExperienceSource(Daycare.XP_SOURCE), gained);
 			}
 			try {
-				Cobblemon.INSTANCE.getStorage().getPC(boarder.owner(), level.registryAccess()).add(pokemon);
+				PokemonHome.toPcOrWaiting(level.getServer(), boarder.owner(), boarder.ownerName(), pokemon);
 			} catch (RuntimeException e) {
 				AliveWorkplace.LOG.error("Could not return {}'s Pokémon from the daycare", boarder.ownerName(), e);
 			}

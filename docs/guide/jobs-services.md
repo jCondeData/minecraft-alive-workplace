@@ -46,7 +46,7 @@ straight into that worker's chest.
 *Full article: [Postman](postman.md).*
 
 Craft a **Mailbox** (iron nuggets round a chest, on a fence) and place it: it's yours, and mail for you arrives there
-(the red flag goes up). To send something, open your mailbox, put items in the top row, type a player's name and press
+(the red flag goes up). To send something, open your mailbox, put items in the parcel (the 3x3 slots under the name), type a player's name and press
 **Send**; write in the **Letter** line to send a letter too. `/workplace mail` shows where your parcels are.
 
 A **Postman** carries it: stand a villager by a Mailbox and sneak-right-click them with **paper**. They walk a round of 64

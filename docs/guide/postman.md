@@ -25,7 +25,7 @@ stand a villager by it and sneak-right-click them with **paper**.
 ## Mail
 
 Your mailbox is yours: mail for you arrives there (the red flag goes up), and only you, your friends and operators can
-open it. To send something, open your mailbox, put items in the top row, type a player's name and press **Send**; write
+open it. To send something, open your mailbox, put items in the parcel (the 3x3 slots under the name), type a player's name and press **Send**; write
 in the **Letter** line to send a letter too. `/workplace mail` shows where your parcels are.
 
 The postman collects parcels from the mailboxes near their own and carries each one to its player's mailbox when that's

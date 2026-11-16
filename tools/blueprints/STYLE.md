@@ -77,8 +77,39 @@ lines.
 
 `fill_air` also closes the slot where a lower roof runs in under a higher one's overhang (`seal_slots`: the wall behind
 is carried out to the overhang's edge), so a wing's roof meets the main one. After `generate.py`, run
-`python3 tools/blueprints/holes.py` for roof holes, gaps between roofs and stray empty blocks; what it still lists is
-on purpose (log-cabin corner notches, tent insides, embrasures, a fountain under an eave).
+`python3 tools/blueprints/holes.py` for roof holes, gaps between roofs, stray empty blocks and open wall panels (`open`:
+any opening that lets you look from outside into a room without glass, bars, a door or a trapdoor in it: every wall
+and gable panel between a frame's posts gets infill or glass); what it still lists is on purpose (log-cabin corner
+notches, tent insides, embrasures, a fountain under an eave).
+
+## From online research (owner, 2026-11-16)
+
+Gathered from building guides, AI-building projects and research papers for the Inn test (`wip/inn-redo`, not merged:
+the owner kept the original Inn). Use them on every new or redrawn build.
+- **Design notes before code:** the build's story, footprint, its 3-4 masses and its **named parts** (e.g. Common
+  room, Bar, Kitchen, Guest rooms, Stable, Roof) at the top of its generator, so review and the owner's feedback can
+  target a part.
+- **Build in passes, in this order:** block-out, structure (foundation, posts, walls, roof), depth, texture, detail,
+  interior, ground, light, review. (A construction-order cue helps AI builds; "think step by step" doesn't.)
+- **Massing:** never one box; side masses about 1/3-1/2 of the main one; odd bay widths (5, 7, 9) so doors and peaks
+  have a true centre; one hero gable or tower at least 25% taller than its neighbours.
+- **Walls:** frame posts a block proud of the wall; timber walls a block back from the stone plinth; any wall wider than
+  5 blocks gets depth; glass panes, never glass blocks; every panel between posts gets infill or glass (`holes.py`'s
+  `open` check).
+- **Roofs:** a calm, regular roofline; 1-block overhang with trim; steeper by alternating blocks and stairs; varied
+  heights across wings. Few, large gable panels in a regular pattern, not scattered pieces. Light enough not to read as
+  one dark mass.
+- **Furniture and interiors:** plan each room from its furniture first, then walls; one clear walking line through each
+  room; a block clear on each side of a table plus a block to walk round it; public rooms big, kitchens and stores
+  tight; stairs about 2 blocks of run per block of rise, as a feature. Chairs: a stair with trapdoor arms; tables: a
+  fence leg with a slab, plate or carpet top (long trestle tables with benches in halls); counters: a stone slab top over
+  trapdoor cabinet fronts, a cauldron sink; shelves full (crockery, pots, candles, books), never empty; clutter on
+  surfaces, not floors; no rows of chests along walls; a carpet rug marks each seating or sleeping zone; lanterns on
+  chains and fire for warm light, hidden light for evenness, no torch grids, daylight from windows. Record every piece
+  as a furniture spot (`furniture.py`, `Build.furniture(...)`) so the furniture mods swap in well.
+- **Look at it like a player:** besides the four outside views, render cutaways of each floor and take eye-level shots
+  inside each room in the real client, from a doorway or corner looking across the room. Zoom into walls, gables and
+  roofs for any see-through gap before calling it done.
 
 ## Rules the mod needs (the tests check most of them)
 

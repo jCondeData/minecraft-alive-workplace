@@ -446,7 +446,7 @@ public class PersonalErrandGameTests implements FabricGameTest {
 			helper.assertTrue(!RequestErrands.use(me, level, InteractionHand.MAIN_HAND, odo), "someone else took her heirloom");
 			helper.assertTrue(RequestErrands.use(me, level, InteractionHand.MAIN_HAND, dara), "Dara didn't take it back");
 			helper.assertTrue(PersonalRequests.of(dara) == null && me.getInventory().countItem(Items.EMERALD) == 8, "the heirloom home: " + quest);
-			helper.assertTrue(chronicle(level, hall, Chronicle.Kind.STORY).stream().anyMatch(l -> l.startsWith(name + " ") && l.contains("Dara") && l.contains(ME)),
+			helper.assertTrue(chronicle(level, hall, Chronicle.Kind.STORY).stream().anyMatch(l -> l.startsWith(Character.toUpperCase(name.charAt(0)) + name.substring(1) + " ") && l.contains("Dara") && l.contains(ME)),
 				"no story: " + chronicle(level, hall, Chronicle.Kind.STORY));
 
 			// Where the chests are gone: a new barrel on the ground (looking only in its own chunk, so no other test's chest is near).

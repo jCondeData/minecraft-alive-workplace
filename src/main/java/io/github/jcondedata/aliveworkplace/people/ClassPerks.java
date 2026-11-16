@@ -97,7 +97,7 @@ public final class ClassPerks {
 	public static List<JsonObject> effects(SocialClass c, ResourceLocation type) {
 		List<JsonObject> out = new ArrayList<>();
 		for (JsonElement e : c.effects()) {
-			if (e.isJsonObject() && type.toString().equals(ResourceLocation.parse(GsonHelper.getAsString(e.getAsJsonObject(), "type", "")).toString())) {
+			if (e.isJsonObject() && type.equals(ResourceLocation.tryParse(GsonHelper.getAsString(e.getAsJsonObject(), "type", "")))) {
 				out.add(e.getAsJsonObject());
 			}
 		}
@@ -109,7 +109,7 @@ public final class ClassPerks {
 			return true;
 		}
 		for (JsonElement j : GsonHelper.getAsJsonArray(effect, "jobs")) {
-			if (job.toString().equals(ResourceLocation.parse(j.getAsString()).toString())) {
+			if (j.isJsonPrimitive() && job.equals(ResourceLocation.tryParse(j.getAsString()))) {
 				return true;
 			}
 		}
@@ -262,7 +262,10 @@ public final class ClassPerks {
 				if (sums.atLeast(c) >= Math.max(1, GsonHelper.getAsInt(e, "households", 1)) && e.has("sells")) {
 					int price = GsonHelper.getAsInt(e, "price", 12);
 					for (JsonElement b : GsonHelper.getAsJsonArray(e, "sells")) {
-						out.add(new Offer(ResourceLocation.parse(b.getAsString()), price));
+						ResourceLocation blueprint = b.isJsonPrimitive() ? ResourceLocation.tryParse(b.getAsString()) : null;
+						if (blueprint != null) {
+							out.add(new Offer(blueprint, price));
+						}
 					}
 				}
 			}

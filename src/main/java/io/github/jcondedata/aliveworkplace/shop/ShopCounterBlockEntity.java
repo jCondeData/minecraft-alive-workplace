@@ -15,7 +15,6 @@ import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ChestMenu;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -120,7 +119,7 @@ public class ShopCounterBlockEntity extends BaseContainerBlockEntity implements 
 
 	@Override
 	protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-		return new ChestMenu(MenuType.GENERIC_9x2, id, inventory, this, 2);
+		return new ChestMenu(ModBlocks.SHOP_COUNTER_MENU, id, inventory, this, 2); // 44.1: drawn in Copperline
 	}
 
 	@Override

@@ -320,6 +320,8 @@ public final class Crafting {
 		final Map<Item, Boolean[]> reach = new HashMap<>();
 		/** How deep the thing asked for was planned from: anything planned less deep is one of its ingredients. */
 		int topDepth;
+		/** What's being made down the plan's current chain (the thing asked for, its ingredient, that one's...): B1303, B1306. */
+		final Set<Item> making = new HashSet<>();
 
 		Budget(int max) {
 			this.max = max;
@@ -421,6 +423,50 @@ public final class Crafting {
 		if (count <= 0) {
 			return true;
 		}
+		boolean added = pool.budget.making.add(target);
+		try {
+			return makeWays(level, kind, target, count, pool, steps, depth, allowed);
+		} finally {
+			if (added) {
+				pool.budget.making.remove(target);
+			}
+		}
+	}
+
+	/**
+	 * B1303, B1306: whether {@code recipe}, a way to make {@code target} for something further up the plan, takes back what
+	 * that is being made for: one of its ingredients accepts a thing being made up the chain, and the pool holds none of
+	 * its other options. That is the long way round: honey bottles unpacked from the honey block they are to make; black
+	 * wool dyed from the blue wool it is to be dyed into (1.21's "dye any wool" takes any color but its own), color into
+	 * color. The plan takes the other ways (white wool from string) or says what's short of the ingredient itself.
+	 */
+	private static boolean takesBack(ServerLevel level, Recipe<?> recipe, Item target, Pool pool) {
+		Set<Item> making = pool.budget.making;
+		if (making.size() < 2) {
+			return false; // the thing asked for itself: nothing further up
+		}
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			boolean back = false;
+			long other = 0;
+			for (Item option : options(level, ingredient)) {
+				if (option != target && making.contains(option)) {
+					back = true;
+				} else {
+					other += Math.max(0, pool.have(option));
+				}
+			}
+			if (back && other == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean makeWays(ServerLevel level, Kind kind, Item target, int count, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed) {
 		if (kind == Kind.LUXURY) {
 			for (LuxuryRecipes.Recipe recipe : LuxuryRecipes.making(target)) {
 				if (!allowed.test(recipe)) {
@@ -483,6 +529,9 @@ public final class Crafting {
 			}
 			if (lenient && unpacks(level, kind, recipe, target)) {
 				continue;
+			}
+			if (takesBack(level, recipe, target, pool)) {
+				continue; // B1303, B1306: never made from what it's being made for
 			}
 			if (lenient && best != null && loops(level, holder)) {
 				break; // B1255: what's short is said by a way from scratch, not by one that loops back (they come last)
@@ -686,6 +735,11 @@ public final class Crafting {
 	 * unpacks its log bundle; the line named Cobblemon's Apricorn Logs for a smoker, not the oak logs a player chops).
 	 */
 	private static boolean raw(ServerLevel level, Kind kind, Item item) {
+		if (io.github.jcondedata.aliveworkplace.wood.Trees.unstripped(item) != null) {
+			// B1304: a stripped block is no raw material: a player gets it only by stripping its block with an axe (the
+			// Stripped Block of Bamboo from a Block of Bamboo made of 9 bamboo), so the line goes down the block's way
+			return false;
+		}
 		for (RecipeHolder<?> holder : recipesFor(level, kind, item)) {
 			if (!unpacks(level, kind, holder.value(), item)) {
 				return false;

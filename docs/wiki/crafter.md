@@ -81,7 +81,11 @@ Leather, not Rabbit Hide; with some hide there it still names the rest of the hi
 Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
 sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273). A thing
 whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
-Cobblemon's Apricorn Logs through Apricorn Wood (B1288). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
+Cobblemon's Apricorn Logs through Apricorn Wood (B1288). A stripped block is never raw (a player strips it from its
+block), so 3 bamboo planks from nothing read "short of 18 Bamboo", never the Stripped Block of Bamboo (B1304). The line
+never goes down through what the thing is being made for: 3 honey blocks read "short of 12 Honey Bottles", not honey
+blocks unpacked into bottles and packed back (B1306), and blue wool names its dye and the String for white wool, never
+black wool dyed from blue wool (B1303). With Carved Wood's defaults (as in the pack) Minecraft's bookshelf
 is made of oak planks only, so Chipped's mosaic planks don't make one and the line names the oak logs (B1290's premise);
 Minecraft's chest has no planks recipe there: 8 planks make that wood's Carved Wood chest, and a player turns any one
 of those into a plain chest with Carved Wood's special chest_from_modded_chests recipe. The crafters read that special
@@ -149,7 +153,9 @@ planner skips it. A file in `data/<namespace>/recipe_stand_ins/` stands in for o
 makes the result) to every kind that uses the crafting table's recipes (`RecipeStandIns`, joined in `Crafting.byResult`).
 It counts only while a recipe of that serializer id is loaded (the mod installed and its config switch on), and of
 `from` only what a crafting recipe makes is kept when anything is (Carved Wood's Pale Oak Chest without pale oak in the
-game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more.
+game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more. A file
+with a typo in an id (a capital letter or a space, as in `"#c:Chests/Wooden"`) is skipped with a "Skipping recipe
+stand-in" warning naming it, and the server starts as usual (B1312).
 
 ## 3. Switches
 

@@ -236,12 +236,15 @@ public final class PersonalRequests {
 	// --- The texts ------------------------------------------------------------------------------------------------
 
 	/** What the villager's lines get: {@code %1$s} their name, {@code %2$s} the player, {@code %3$s} what they ask for. */
-	private static Object[] args(Quest quest, Component player) {
-		return new Object[] {Component.literal(quest.poster), player, quest.objectives.get(0).what()};
+	private static Object[] args(Quest quest, Component player, boolean start) {
+		Objectives.Objective first = quest.objectives.get(0);
+		return new Object[] {Component.literal(quest.poster), player, start ? first.whatStart() : first.what()};
 	}
 
 	private static Component text(Quest quest, String part, Component player) {
-		return io.github.jcondedata.aliveworkplace.work.Words.articledAuto((quest.text == null ? "request.aliveworkplace.unknown" : quest.text) + "." + part, args(quest, player));
+		String key = (quest.text == null ? "request.aliveworkplace.unknown" : quest.text) + "." + part;
+		// B1314: the thanks may open with what was asked ("%3$s! I never thought..."), so they get its sentence-start form.
+		return io.github.jcondedata.aliveworkplace.work.Words.articledAuto(key, args(quest, player, part.equals("thanks")));
 	}
 
 	/** How many days {@code quest} has left (at least 1). */
@@ -352,6 +355,10 @@ public final class PersonalRequests {
 			Villager giver = q.personal() ? giver(level, q) : null;
 			if (giver != null && i >= 0 && q.objectives.get(i) instanceof Objectives.LevelUp && !hasJob(giver)) {
 				callOff(level, hall, e, q); // jobless now (No job at the hall, B890): no level to reach, so nobody is let down
+				continue;
+			}
+			if (giver != null && i >= 0 && q.objectives.get(i) instanceof RequestErrands.Build build && build.wedding() && RequestErrands.wedAlready(giver)) {
+				miss(level, e, q); // B1316: married at the bell before the Chapel was finished, so there's no Chapel wedding left to pay for
 				continue;
 			}
 			if (giver != null && i >= 0 && q.objectives.get(i) instanceof Objectives.Looked looked) {
@@ -738,26 +745,33 @@ public final class PersonalRequests {
 			if (!quest.personal() || quest.due < 0 || now < quest.due) {
 				continue;
 			}
-			e.quests.remove(quest);
-			data.setDirty();
-			QuestTracker.changed(level.getServer(), quest.id);
+			miss(level, e, quest);
 			missed++;
-			Villager giver = giver(level, quest);
-			if (giver != null) {
-				ModAttachments.REQUEST_LET_DOWN.set(giver, new LetDown(Chronicle.day(level) + QUIET_DAYS, level.getGameTime() + VillageNeeds.DAY));
-				io.github.jcondedata.aliveworkplace.people.Moods.forget(giver);
-			}
-			for (UUID id : quest.helpers.keySet()) {
-				if (giver != null) {
-					Friendship.add(giver, id, "", -MISSED_COST);
-				}
-				ServerPlayer helper = online(level, id);
-				if (helper != null) {
-					Chat.chat(helper, Component.translatable("message.aliveworkplace.request.missed", quest.poster, quest.title()).withStyle(ChatFormatting.RED));
-				}
-			}
 		}
 		return missed;
+	}
+
+	/** Takes {@code quest} down, missed: its helpers lose friendship with who asked, who is glum and asks nobody for a while. */
+	static void miss(ServerLevel level, Stories.Entry e, Quest quest) {
+		if (!e.quests.remove(quest)) {
+			return;
+		}
+		Stories.Data.get(level).setDirty();
+		QuestTracker.changed(level.getServer(), quest.id);
+		Villager giver = giver(level, quest);
+		if (giver != null) {
+			ModAttachments.REQUEST_LET_DOWN.set(giver, new LetDown(Chronicle.day(level) + QUIET_DAYS, level.getGameTime() + VillageNeeds.DAY));
+			io.github.jcondedata.aliveworkplace.people.Moods.forget(giver);
+		}
+		for (UUID id : quest.helpers.keySet()) {
+			if (giver != null) {
+				Friendship.add(giver, id, "", -MISSED_COST);
+			}
+			ServerPlayer helper = online(level, id);
+			if (helper != null) {
+				Chat.chat(helper, Component.translatable("message.aliveworkplace.request.missed", quest.poster, quest.title()).withStyle(ChatFormatting.RED));
+			}
+		}
 	}
 
 	// --- Events ---------------------------------------------------------------------------------------------------

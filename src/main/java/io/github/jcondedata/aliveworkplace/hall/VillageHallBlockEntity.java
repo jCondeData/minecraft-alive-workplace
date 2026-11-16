@@ -679,6 +679,9 @@ public class VillageHallBlockEntity extends BlockEntity implements Nameable {
 		this.owner = owner;
 		this.ownerName = name;
 		setChanged();
+		if (owner != null && level instanceof net.minecraft.server.level.ServerLevel server) {
+			HomeVillages.owns(server, owner, getBlockPos()); // B1318: the owner's own village, for rewards claimed elsewhere
+		}
 	}
 
 	/** Whether the owner keeps other players from changing things in the village (off unless they turn it on). */

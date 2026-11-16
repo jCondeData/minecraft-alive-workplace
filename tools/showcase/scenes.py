@@ -503,6 +503,13 @@ SCENES = [
     # The list screen (ROADMAP 42.3): her lure now at the top, Any snack first, a row per lure with its berries and Choose
     S("habitat_lures", "Habitat Keeper", "Choosing the habitat keeper's lure", "the lures list opened and the Fire type was chosen", 60,
       [("01_lures_screen", "The lures list (her lure now, at the top)"), ("02_lures_fire", "Fire chosen: gold, Chosen")], cobblemon=True),
+    # Copperline (ROADMAP 47.1): the new look's shared parts in every state, like docs/design/copperline/boards/Components.png
+    S("copperline", "Village Hall", "Copperline: the new look's shared parts",
+      "every Copperline sprite loaded; the shell with the Hall's rail, every part in every state and the boxes at GUI scale 2; at 320x180 the rail turned into a two-column icon grid", 30,
+      [("01_shell", "The shell: plaque, lintel with coins and close, the rail, the stage, the whisper line"),
+       ("02_parts", "Buttons, rail tabs, toggles, slider, number field, list rows, bars, slots, chips, text fields"),
+       ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
+       ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

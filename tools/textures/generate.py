@@ -14,6 +14,7 @@ The recipes are in tools/textures/art/, one module per set, drawn with the owner
 - golems.py          the Golem Smith's golems: what each wears over the iron golem
 - items.py           the item icons, each drawn like vanilla draws its kind (books, maps, sticks...)
 - gui.py             screen backgrounds drawn like vanilla's workstation screens (the Village Hall's)
+- copperline.py      Copperline (47.1): the nine-slices, status glyphs and Hall section icons every screen is drawn with
 - banners.py         banner patterns of our own (the Cup), drawn like vanilla's emblem patterns
 - bounty.py          the Bounty Board, the Wanted Poster and the Captain's Insignia (31.13)
 - herbs.py           the eight far herbs, drawn like vanilla flowers, and the Three-Herb Tonic (31.17)
@@ -33,7 +34,7 @@ sys.path.insert(0, str(ART))
 import artlib  # noqa: E402
 from PIL import Image  # noqa: E402
 
-MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "classes", "golems", "items", "gui", "banners", "bounty", "herbs", "wonders", "megas"]
+MODULES = ["builders", "workstations_1", "workstations_2", "workstations_3", "villagers_1", "villagers_2", "classes", "golems", "items", "gui", "copperline", "banners", "bounty", "herbs", "wonders", "megas"]
 
 
 def icon():

@@ -72,7 +72,8 @@ village's festival mood) and a line, "Odo came back from the grave, and Dara mar
 but until the Chapel is finished, up to 5 days from when they began courting. The Chapel finished, they marry in it at
 once and the village holds a feast (everyone eats from the store and gets a festival's mood), and the chronicle says
 "Dara and Odo were married in the new Chapel, and the whole village sat down to a feast". With no Chapel by then they
-marry at the bell as before, and the request is missed.
+marry at the bell as before, and the request is missed: a Chapel finished after that pays nothing. If the Chapel is
+finished on the very day the 5 days run out, the Chapel wins and the bell waits.
 
 **The lost heirloom.** One of Grandmother's Compass (a compass), Grandfather's Pocket Watch (a clock), Mother's
 Spyglass (a spyglass), Father's Horn (a goat horn), the Lucky Crystal (an amethyst shard) or Great-aunt's Diary (a
@@ -104,7 +105,8 @@ don't chat or start a heart event.
 
 **Helping.** An accepted request is an open quest of the village with the giver `villager`. The one who accepted is
 its first helper. Another player with 3 hearts with that villager joins by clicking it on the Personal tab, by
-[I'll help], or by moving it on (handing in, winning the battle). A player with fewer hearts can't.
+[I'll help], or by moving it on (handing in, winning the battle, carrying the letter or the reply, bringing the
+heirloom back). A player with fewer hearts can't: the villager doesn't take it, and they're told they need 3 hearts.
 
 **Objectives.** `bring` hand-ins work as for the hall's quests. The objectives about the villager are looked at in
 the hall's round: their level (`level_up`), whether they sleep in a home of their own of the right tier (`home`),

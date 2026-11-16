@@ -22,6 +22,10 @@ middle stands a **jukebox** with two note blocks beside it: a stage made for the
 Take a Bandstand blueprint from the Blueprint Table and give it room: it's 11 blocks across. It needs a fair amount
 of stone bricks, birch and dark prismarine. See [The Builder and blueprints](builder.md).
 
+The Bandstand is a rare build: at first it's a dark ??? at the end of the Blueprint Table's list. Find its Blueprint in
+a chest out in the world (a pirate ship, war camp, coven hut, piglin hoard, bandit camp or the pharaoh's tomb) and
+right-click the Table with it to unlock it for your village.
+
 ## How it fits in
 
 - **The Bard.** The jukebox is the Bard's workstation. A villager who takes it up with a music disc becomes the

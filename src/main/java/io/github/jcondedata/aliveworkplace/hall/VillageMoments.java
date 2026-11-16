@@ -81,7 +81,11 @@ public final class VillageMoments {
 		double r2 = (double) VillageHalls.RADIUS * VillageHalls.RADIUS;
 		players.addAll(level.getPlayers(p -> p.blockPosition().distSqr(hall) <= r2));
 		int awarded = 0;
+		boolean rank = moment.startsWith("rank_");
 		for (ServerPlayer player : players) {
+			if (rank) {
+				HomeVillages.ranked(level, player.getUUID(), hall); // B1318: the village the player last ranked with
+			}
 			if (player.getAdvancements().award(advancement, CRITERION)) {
 				awarded++;
 			}

@@ -83,6 +83,11 @@ def job_steps(villager_by, item, job, step=None):
 
 
 LOCKED = "Its name is gray at the Blueprint Table at first: it's locked. Pick it there and the line under its name says how to get it."
+# A rare build (blueprint_unlocks/rare.json) is a nameless ??? at the Table, not a gray name (B1319); its Blueprint is in
+# the loot tables named here (data/aliveworkplace/loot_table/chests/).
+RARE_BANDSTAND = ("At first it's a dark ??? at the end of the Blueprint Table's list: the Bandstand is a rare build. "
+                  "Find its Blueprint in a chest out in the world (a pirate ship, war camp, coven hut, piglin hoard, bandit camp or the pharaoh's tomb) "
+                  "and right-click the Table with it to unlock it.")
 
 
 def done_built(name):
@@ -645,7 +650,7 @@ CHAPTERS = [
                      + build_steps("Bandstand")
                      + job_steps("Bandstand's jukebox", "a music disc", "Bard", 5)
                      + ["",
-                        LOCKED,
+                        RARE_BANDSTAND,
                         "",
                         "The Bard gives the village its music.",
                         "",
@@ -775,7 +780,7 @@ CHAPTERS = [
                      + job_steps("grindstone", "a sword", "Guard", 5)
                      + ["Do this at each of its two grindstones.",
                         "",
-                        "Bigger villages draw bigger raids: 3 raiders, plus one for every 4 villagers.",
+                        "Bigger villages draw bigger raids: 3 raiders, plus one for every 4 villagers and one for every 2 guards (up to 4 more, in iron), never more than 16.",
                         "",
                         done_built("Barracks")],
              "tasks": [built("barracks")], "rewards": [em(4)]},

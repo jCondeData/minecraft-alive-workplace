@@ -25,3 +25,14 @@ export function beamRing(c, x0, z0, x1, z1, y, log) {
     c.set(x, y, z, log, { axis: corner ? 'y' : (z === z0 || z === z1) ? 'x' : 'z' })
   }
 }
+
+/** steppedPlinth: a raised stone floor over a rectangle at y whose edge is a ring of stairs rising inward (a step up
+ *  from every side; kit.finish turns the corners), the inside full `stone`. `step(x, z)` picks the edge's stair id. */
+export function steppedPlinth(c, x0, z0, x1, z1, stone, step, y = 0) {
+  for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
+    const edge = x === x0 || x === x1 || z === z0 || z === z1
+    if (!edge) { c.set(x, y, z, stone); continue }
+    const facing = z === z0 ? 'south' : z === z1 ? 'north' : x === x0 ? 'east' : 'west'
+    c.set(x, y, z, step(x, z), { facing, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+  }
+}

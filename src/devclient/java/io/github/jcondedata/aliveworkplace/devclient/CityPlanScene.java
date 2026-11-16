@@ -27,7 +27,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * SCENE=city_plan (ROADMAP 27.3): a real plains village with a Village Hall in it; the City Plan opened on it with Homes,
- * Workshops and Gardens zones in three styles and a Keep Clear patch; stills at GUI scales 2 and 4, each checked for
+ * Workshops and Gardens zones in three styles and a Keep Clear patch; stills at GUI scales 2 and 3 (Copperline, 44.3), each checked for
  * clipped or overlapping text as 24.4 checks the other screens.
  */
 final class CityPlanScene {
@@ -73,17 +73,18 @@ final class CityPlanScene {
 		if (tick == 520) {
 			checkLayout(mc, "02_city_plan_scale2");
 			ScreenshotHarness.shot(mc, "02_city_plan_scale2");
-			// GUI scale 4 needs a window at least 1280x960 (as the hall scene does): resize first, then set the scale.
-			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
-		}
-		if (tick == 530) {
-			mc.options.guiScale().set(4);
-			mc.resizeDisplay();
+			// GUI scale 3 on the 960x540 window: the 320x180 screen of boards/Compact.png (Copperline, 44.3). Vanilla allows
+			// scale 3 only from 960x720 up, so the scale is put on the window directly, as the hall scene does.
+			mc.getWindow().setGuiScale(3);
+			if (mc.screen != null) {
+				mc.screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+			}
 		}
 		if (tick == 550) {
-			Showcase.check(mc.getWindow().getGuiScale() == 4, "the plan screen at GUI scale 4 (now " + mc.getWindow().getGuiScale() + ")");
-			checkLayout(mc, "03_city_plan_scale4");
-			ScreenshotHarness.shot(mc, "03_city_plan_scale4");
+			Showcase.check(mc.getWindow().getGuiScaledWidth() <= 320, "the plan screen at 320x180 (now " + mc.getWindow().getGuiScaledWidth() + "x"
+				+ mc.getWindow().getGuiScaledHeight() + ")");
+			checkLayout(mc, "03_city_plan_scale3");
+			ScreenshotHarness.shot(mc, "03_city_plan_scale3");
 			server.execute(() -> {
 				VillageHallBlockEntity entity = (VillageHallBlockEntity) server.overworld().getBlockEntity(hall);
 				CityPlan plan = entity.plan();

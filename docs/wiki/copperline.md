@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 48.1, 48.2, 48.3
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 48.1, 48.2, 48.3
 
 ## What a player sees
 
@@ -156,6 +156,32 @@ with the bad glyph and "Not yet".
 **Toasts.** `CopperToast` draws the board's toast (the Lantern edge, a section icon, a title and a line). A builder
 finishing (or taking down) a build sends one to the player it's for, "Stone House / Mira finished it.", through
 `CardToasts` (a client without the mod gets only the chat line, which still goes).
+
+## The City Plan and the Colony Charter (44.3)
+
+**The City Plan.** The plaque says "City Plan of Thornholm"; the lintel says which tool is in hand ("Tool: Brush") or
+"View only" for a player who may only look. The rail, under "TOOLS", holds Brush, Area, Erase, Road and Wall (each with
+its item: a brush, a map, a sponge, a dirt path, a stone brick wall), the chosen one copper-marked, and Undo below a rule
+with the steps left as its count; at 320x180 (GUI scale 3) the rail is the two-column icon grid. The map keeps its look:
+the land, the grid, each zone tinted and edged in its kind's color, Keep Clear hatched, roads, the wall line, the
+banners and the zone names, now in a Void frame with "N ^" in its corner. Under the map, the road width (Lane, Street,
+Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **New**, the
+one copper button; the zones in a sunken list (the kind's swatch, the name, the cells; the chosen one copper-marked);
+the chosen zone's name in a well, its style (with the style's icon), kind, Renew and a red Delete; and "LEGEND" when
+there's room (not at 320x180, where the zone swatches and the foot line do its work). The foot line says what the tool,
+button or row under the mouse does ("Drag a rectangle to fill it with the chosen zone."), on the map the zone under the
+mouse ("Homes: Homes, As drawn") or what to do next; the old hover tooltips moved there.
+
+**The Colony Charter.** The plaque says "Colony Charter of Thornholm", the lintel "Ring: 256 to 1024 blocks out". The
+map (unchanged: the land on parchment, banners, the ring, the circles round other halls, the red cross) fills the stage's
+left; on the right "THE SPOT" says where the colony goes with a glyph and its color (blue "No spot chosen yet.", green
+the spot, red the server's refusal), "THE RING" explains the ring, and **Done** is the copper button. Pointing at the
+map shows a Copperline tooltip (how far and which way, with a green "A colony can go here" or a red reason).
+
+How: `ui/CityPlanLayout` (core, pure numbers) places both screens' parts from `CopperLayout`'s shell, and
+`CopperlineCityPlanGameTests` checks them at 427x240, 480x270 and 320x180 with the English labels and three times as
+long. The screens keep their widgets for the clicks (drawn in Copperline), so every button, tool, key (Enter, Esc,
+Ctrl+Z), drag and double-click works as before. The City Plan's scene now takes its third still at GUI scale 3.
 
 ## Decisions
 

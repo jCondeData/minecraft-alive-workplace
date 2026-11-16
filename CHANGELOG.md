@@ -46,6 +46,10 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The City Plan and the Colony Charter in Copperline (44.3): the plan's tools (Brush, Area, Erase, Road, Wall) and Undo
+  with its steps on the rail, the map with its zone paint as before, the zones in a sunken list with one copper New, and
+  the foot line saying what each tool, button and cell does; the charter's map beside "The spot" (a green, red or blue
+  word) and "The ring", with a copper Done. Both fit at 320x180 (GUI scale 3).
 - The Storehouse board in Copperline (47.4): a table of what's needed with a bar of how much the store holds, who
   needs it and who brings it ("Nobody: no Glassblower" in red), Give / Stocked / Have 0 on each row, a rail that filters
   by Builders, Workers, Kitchen and Projects with Missing and I carry toggles, "In your pack" and one copper Give all

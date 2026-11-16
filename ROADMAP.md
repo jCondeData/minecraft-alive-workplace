@@ -6675,7 +6675,7 @@ in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay their
   crafters, the retirees, the sneak-click trades of every mod job) in the Hall's look; vanilla's own professions keep
   vanilla's screen. Done when: GameTests that every trade, the offer refresh (`VillagerMixin`) and the level bar
   still work; scene `shop` (sneak) and a new `crafter_trades`.
-- [ ] **44.3** **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
+- [x] **44.3** (review: pending 2026-11-16) **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
   frame, title, buttons and lists change). Done when: `CityPlanScreenGameTests` and the charter's tests pass; scenes
   `city_plan` and `colony_charter`.
 - [ ] **44.4** **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,

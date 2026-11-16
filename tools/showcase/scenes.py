@@ -555,10 +555,10 @@ SCENES = [
        ("08_hall_calendar", "The calendar"),
        ("09_hall_compact", "GUI scale 3 (320x180): the rail as an icon grid, Needs you across the stage"),
        ("10_hall_compact_map", "The Map at GUI scale 3")]),
-    # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
-    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
+    # Painting the plan (ROADMAP 27.3, in Copperline since 44.3): the City Plan screen over a real village, at GUI scales 2 and 3
+    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen in Copperline (the tools on the rail, the map, the zones with one copper New) opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
-       ("03_city_plan_scale4", "The finished plan, GUI scale 4")]),
+       ("03_city_plan_scale3", "The finished plan at 320x180, GUI scale 3")]),
     # The plan on the ground and on the hall's map (ROADMAP 27.4)
     S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
@@ -680,7 +680,7 @@ SCENES = [
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
         "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 170),
-    # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
+    # The Colony Charter (ROADMAP 33.8, in Copperline since 44.3): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
     S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
       "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "
       "the charter's map showed the loaded land like a vanilla map on parchment, a banner for Thornholm, Ashford and Farholt, the ring "

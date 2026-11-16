@@ -6854,6 +6854,133 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
   Milestones 42 and 43 in Copperline**, like `Chronicle.png` (each laid out in the shell). Done when: their tests pass;
   their scenes.
 
+## Milestone 49: Rebuild from scratch: the kit and the homes
+
+The owner, 2026-11-16 ("rebuild all the current builds with this skillset and logic"; his fear: "the builders will rely
+too much on the previous builds and be afraid to start from scratch to really enhance a build"): every blueprint the
+mod ships (107 families, 170-odd drawings with their levels) is designed again from nothing with the method that made
+36.23's Daub House (the owner's pick of the two: "I much prefer the Daub House", "everything else looks great"):
+rooms and furniture planned first, named parts, built in passes, furnished, filmed inside at eye level.
+`tools/blueprints/REBUILD.md` (49.1) is the method every item below follows; in short:
+
+- **Blind brief, blind design.** A first fresh subagent reads the old family (its recipe, `.nbt`s, furniture json, wiki
+  page, GameTests) and writes only what the building must DO to `tools/blueprints/briefs/<family>.md`: purpose, each
+  level and what it adds, job block(s), beds and residents, the furniture kinds a job or a test needs, the plot size it
+  must fit, the front, and every rule a test checks. Nothing about how it looks. A second fresh subagent designs the
+  new family from that brief alone; its prompt forbids opening the old recipe, `.nbt`, renders, `blueprint_history` or
+  showcase stills, and the lane gives it only the brief's path. It starts with three rough concepts (massing, roof,
+  plan) in its design notes and builds the strongest, not the safest.
+- **Better or back.** A third fresh subagent, the critic, sees old and new side by side (renders from four sides,
+  cutaways, eye-level furnished shots) and scores silhouette, depth, interior and detail; unless the new one is clearly
+  better on at least three, it goes back to the designer with the critic's notes (twice at most, then to the owner as
+  it stands, saying so).
+- **Families, not drawings.** A building's levels are drawn together, each growing out of the last (Level II adds a
+  wing, a floor or a yard to Level I's house, not a different house).
+- **Two versions only for the flagships** (starter_cottage, village_hall, inn, storehouse, builders_workshop): A and B
+  by two different designers from the same brief, like 36.23; every other family gets one.
+- **The owner's rules are checks.** `check.py` refuses: a fence, wall or pane run that doesn't join at a corner; a lamp
+  under 2 blocks tall standing on a floor (it goes on a table, side table or slab, or hangs); plates and crockery
+  anywhere but a kitchen or dining table; plus everything `holes.py` and STYLE.md already check.
+- **Saves stay safe.** Ids never change; `history.py` keeps every old drawing in `blueprint_history`, so standing
+  buildings and sites mid-build keep theirs until a refresh (36.21); the village and modded variants are regenerated
+  with the family. A GameTest pinned to an old coordinate is moved to the new one, keeping what it checks; none is
+  dropped.
+- **Each family's Done when:** brief, design notes, the new drawings (every level, village and modded variants),
+  check.py and holes.py clean, every furniture piece a furniture spot, the family's GameTests and the builder's
+  build-to-DONE test for each level, renders and the old-vs-new sheet, eye-level furnished shots in the real client
+  with the furniture mods (scene `rebuild_<family>`), wiki page, CHANGELOG line, then `sessions.py done <id> --review`
+  with a package the digest sends.
+
+Lane B builds Milestone 49 in order (49.1 first: Milestones 50-52 wait for it). Lanes E, C and D take Milestones 50, 51
+and 52 when their Copperline work is done (`sessions.py next` gives each its own).
+
+- [ ] **49.1** **The rebuild kit.** `tools/blueprints/REBUILD.md` (the method above, the three subagent prompts word for
+  word, the brief template, the critic's scorecard); the Daub House's JavaScript parts made a shared library
+  (`tools/blueprints/js/parts/`: frames, walls, roofs and gables, hearths, kitchens, stairs and lofts, porches,
+  railings) that every family can use and grow, each family keeping its own palette and massing; one generic furnished
+  scene for any blueprint (`rebuild_<family>`, from `HouseFurnishedScene` on `wip/house-t1-furnished`, with eye-level
+  shots per room chosen from the furniture spots, the camera never inside a wall or behind a chair); the old-vs-new
+  sheet tool; the owner's three rules in `check.py` with tests that a corner without its post, a floor lantern and
+  plates by a door are refused. Done when: all of it, and a dry run on one small family (`well`) through brief, blind
+  design, critic and sheet.
+- [ ] **49.2** **The Daub House goes into villages** (36.23, the owner's pick, with 36.23a-c's changes: joined railings,
+  the lamp on its table, the plates in the kitchen) from `wip/house-t1-furnished`: a Level I home in the village
+  plans and the Blueprint Table, its village and modded variants, its GameTests; the Hearthstead (A) stays unused on
+  `wip/house-t1`.
+- [ ] **49.3** **Starter Cottage** (4 levels; flagship: A and B).
+- [ ] **49.4** **Stone House** (4 levels).
+- [ ] **49.5** **Townhouse** (4 levels).
+- [ ] **49.6** **Terrace** (2 levels).
+- [ ] **49.7** **Manor** (4 levels).
+- [ ] **49.8** **Artisan's House** (3 levels) and **Weaver's Cottage** (2).
+- [ ] **49.9** **Farmstead** (3 levels) and **Ranch** (2).
+- [ ] **49.10** **The biome looks** (`structure/looks/`: desert, lodge, plaza, savanna, snowy, taiga) redone so every
+  rebuilt home has its biome version.
+
+## Milestone 50: Rebuild from scratch: the workshops
+
+Same method (Milestone 49, `tools/blueprints/REBUILD.md`), one item per family with all its levels. Lane E builds it
+once 49.1 has landed; the other lanes join when their own milestones are empty.
+
+- [ ] **50.1** (blocked: waits for 49.1, the rebuild kit) **Builder's Workshop** (flagship: A and B).
+- [ ] **50.2** (blocked: waits for 49.1, the rebuild kit) **Carpenter's Workshop**, **Mason's Yard** and **Sawmill**.
+- [ ] **50.3** (blocked: waits for 49.1, the rebuild kit) **Smithy**, **Brass Foundry** and **Tinker's Workshop**.
+- [ ] **50.4** (blocked: waits for 49.1, the rebuild kit) **Butcher's Shop**, **Kitchen** and **Winery**.
+- [ ] **50.5** (blocked: waits for 49.1, the rebuild kit) **Fisher's Hut**, **Ferry House** and **Watermill**.
+- [ ] **50.6** (blocked: waits for 49.1, the rebuild kit) **Fletcher's Lodge**, **Tailor's Shop** and **Print Shop**.
+- [ ] **50.7** (blocked: waits for 49.1, the rebuild kit) **Glassblower's**, **Jeweler's** and **Crafter's
+  Workshop**, and **Workshop**.
+- [ ] **50.8** (blocked: waits for 49.1, the rebuild kit) **Physician's House**, **Clinic** and **Healing Center**
+  (4 levels).
+- [ ] **50.9** (blocked: waits for 49.1, the rebuild kit) **Berry Farm**, **Berry Nursery**, **Apiary Garden**,
+  **Greenhouse** and **Compost Yard**.
+- [ ] **50.10** (blocked: waits for 49.1, the rebuild kit) **Quarry**, **Sifting Shed**, **Crushing Mill**, **Gem
+  Grotto** and **Windmill**.
+- [ ] **50.11** (blocked: waits for 49.1, the rebuild kit) **Flower Shop**, **Supply Shop** (4 levels) and **Market
+  Stall** (3).
+- [ ] **50.12** (blocked: waits for 49.1, the rebuild kit) **Pokémon Center**, **Trainer's House**, **Daycare**,
+  **Ball Workshop**, **Habitat Garden**, **Research Lab** and **Arena** (Cobblemon's; the mod absent, nothing changes).
+- [ ] **50.13** (blocked: waits for 49.1, the rebuild kit) **Train Station**, the **Village Train** (`train/`), **Pump House**, **Terminal Nook** and
+  the Create builds (Create's; the mod absent, nothing changes).
+
+## Milestone 51: Rebuild from scratch: the big buildings
+
+Same method (Milestone 49). Lane C builds it once Milestone 47 is done.
+
+- [ ] **51.1** (blocked: waits for 49.1, the rebuild kit) **Village Hall** (3 levels; flagship: A and B).
+- [ ] **51.2** (blocked: waits for 49.1, the rebuild kit) **Inn** (3 levels; flagship: A and B).
+- [ ] **51.3** (blocked: waits for 49.1, the rebuild kit) **Storehouse** (3 levels; flagship: A and B), **Storage
+  Hall** and **Warehouse**.
+- [ ] **51.4** (blocked: waits for 49.1, the rebuild kit) **Library** (4 levels), **School** and **Schoolhouse**.
+- [ ] **51.5** (blocked: waits for 49.1, the rebuild kit) **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
+  and **Map Room**.
+- [ ] **51.6** (blocked: waits for 49.1, the rebuild kit) **Chapel**, **Graveyard**, **Clock Tower** and **Post Office**.
+- [ ] **51.7** (blocked: waits for 49.1, the rebuild kit) **Market Square**, **Market Cross** and **Market Corner**.
+- [ ] **51.8** (blocked: waits for 49.1, the rebuild kit) **Barracks** (3 levels), **Guard House**, **Fire Station**,
+  **Gatehouse** and **Lookout Tower** (4 levels).
+- [ ] **51.9** (blocked: waits for 49.1, the rebuild kit) **The Royal Hall** (`realm/`, 2 levels).
+
+## Milestone 52: Rebuild from scratch: small pieces, walls, stories, wonders
+
+Same method (Milestone 49), but a small piece is only rebuilt when the critic finds it weak next to the rebuilt
+village; one that holds up is ticked with the critic's sheet and no new drawing. Lane D builds it once Milestone 48 is
+done.
+
+- [ ] **52.1** (blocked: waits for 49.1, the rebuild kit) **Wells, fountains and water**: well, well house, fountain,
+  lily pond, footbridge.
+- [ ] **52.2** (blocked: waits for 49.1, the rebuild kit) **Street pieces**: street lamp, signpost, notice board, park
+  bench, sundial, hay cart, flower planters, lantern pergola, gazebo, bandstand, topiary garden, stag statue, stone
+  archway, fire pit, camp kitchen.
+- [ ] **52.3** (blocked: waits for 49.1, the rebuild kit) **Walls**: stone wall, wall tower, palisade, palisade gate,
+  palisade tower.
+- [ ] **52.4** (blocked: waits for 49.1, the rebuild kit) **Portals and shrines**: Nether gate, waystone plaza, mega
+  shrine.
+- [ ] **52.5** (blocked: waits for 49.1, the rebuild kit) **Story and legend sites** (`story/`, `legend/`): bandit fort,
+  raiders' stockade, the bandit camp (`camp`), caravan wreck, trails, shift bell, castaway and traveller camps, hermit hut, founder statue,
+  prisoner cage.
+- [ ] **52.6** (blocked: waits for 49.1, the rebuild kit) **The eight Wonders** (`wonder/`), one item each in the
+  Notes as they start; flagship treatment (A and B) for the Great Cathedral and the Colossus.
+
 ## Notes / blocked
 - 2026-11-16 (lane-d-1116-1907, QA, nothing open for lane D): **B1291, B1309, B1323, B1326, B1320 verified** (16 new tests, all pass on the real code: QaCupReady1116dCompatTests 3, QaWaitingAndMoney1116dCompatTests 5, QaConfigIds1116dGameTests 4, QaRaidSize1116dGameTests 4; wiki villager-jobs.md, raids.md and guide raids.md fixed). **The tests are on `qa/threats-config-1116d`, not on main yet: next lane D run, `sessions.py ship` it first.** The local full build could not finish in time: the first run failed only B1321's QaMixedLogs1116b/QaCrafterLogs1116cBug tests (one of the new tests sat in the default batch and shifted the 1500-trials-a-tick crafting budget; it now has its own batch), the second was killed for memory (exit 137) at 30 min. **Filed B1346** (Shop Counter's placed message hard-codes '100 per emerald' whatever dollarsPerEmerald is) and **B1347** (treasury hint reads '1 CobbleDollars' at a rate of 1). Nightly in this area: compat-cobblemon18 still red on B1186; battle/mega_trainers scenes still B1198/B790.
 - 2026-11-16 (lane-e-1116-1613, 44.3 and 44.4): **Both built and on main** (Milestone 44 is done). 44.3: the City Plan and the Colony Charter in Copperline's shell (map and zone paint as before; tools and Undo on the rail, zones list with one copper New, Delete neutral until hovered, the list follows the chosen zone at 320x180; the Charter's THE SPOT/THE RING column and copper Done), CopperlineCityPlanGameTests (4), scenes city_plan (third still now GUI scale 3) and colony_charter filmed locally 7/7 and 5/5. 44.4: the Guide Book (chapters on the rail, Contents, pictures kept) and the Settings screen like Settings.png (158 settings in 8 rail sections, toggles, [-]/[+] or sliders, Reset this page, copper Done; saving unchanged, no field renamed), CopperlineGuideSettingsGameTests (6, every setting must have a section), scenes guide 4/4 and config 5/5. Design critiques run on the stills; open for later: at 320x180 zone names on the small map are cut short and the rail grid leaves empty space under it. Also shipped lane E's three waiting QA branches (qa/mover-crate-lastresort-1114e2, qa/questbook-claims-1116e, qa/config-new-fields-1116e; QaConfigNewFields1116eGameTests 16 is new on main). **Builds:** the full local build of the merged tree before 44.4 ran 9364 GameTests with 2 order-dependent failures not from this work (B1339 HallBoard, B1340 QaCrafterLogs1116cBug, both pass alone: 29 of 29); the second full build with 44.4 and lane D's 48.4 passed compile, checkLayers, checkWiki, checkGuide, checkSpelling and checkBatches, then its GameTest JVM was OOM-killed (lingering javac workers; kill them by pid before runGameTest), with no time left for a third; 163 targeted GameTests (Copperline, Guide, Config, City Plan, Charter, Chronicle, the merged QA classes, QaEveryMenu) pass on the pushed tree. Compat GameTests not run locally this run. Gradle tip: -Dorg.gradle.jvmargs=-Xmx1g fails at configuration; use the default heap.

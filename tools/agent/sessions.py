@@ -564,13 +564,17 @@ def cmd_review(a):
 #         others' when its own is empty or blocked.
 # The owner hands bugs straight to the bug lane's chat, so b, c and d never take a bug.
 BUG_MILESTONES = (26,)
-QUICK_MILESTONES = (36, 46)
+QUICK_MILESTONES = (36, 46, 49)
 # Owner, 2026-10-26: the new Village Hall (40) goes to lane c, Waystones (41) to lane d; lane e keeps bug-testing
 # (40's items build on each other, and two lanes on one milestone with no claims would collide).
 # Owner, 2026-11-08: one look for every screen, Milestone 42 to lane c, 43 to lane d, 44 to lane e.
 # Owner, 2026-11-16: Copperline, the new look for every screen: 47 (shared pieces and the Hall) to lane c, 48 to
 # lane d and 44 (redone in Copperline) to lane e; 48 and 44 wait for 47.1 (their "(blocked: ...)" marks).
-BIG_ORDER = {"c": (47, 45, 42, 40, 37, 38, 39), "d": (48, 43, 41, 38, 37, 39), "e": (44, 39, 37, 38)}
+# Owner, 2026-11-16: rebuild every build from scratch (Milestones 49-52, tools/blueprints/REBUILD.md): 49 (the kit
+# and the homes) to lane b; 50 (workshops) to lane e, 51 (big buildings) to lane c after 47, 52 (small pieces, walls,
+# stories, wonders) to lane d after 48; 50-52 wait for 49.1 (their "(blocked: ...)" marks).
+BIG_ORDER = {"c": (47, 51, 45, 42, 40, 37, 38, 39, 50, 52), "d": (48, 52, 43, 41, 38, 37, 39, 50, 51),
+             "e": (44, 50, 39, 37, 38, 51, 52)}
 
 
 def lane_of(who):

@@ -7,7 +7,8 @@ autonomously from `ROADMAP.md`, keep `main` green, and explain results in plain 
 The goal (owner, 2026-10-03): the public **1.0** with nine expansions up to **2.0** (all built by 2026-10-17). Next
 (owner, 2026-10-17): quick additions (Milestone 36), furnished homes and modded storage (2.1), Cobblemon depth (2.2)
 and Create integration (2.3, the owner's port is in `libs/`). Top priority now (owner, 2026-11-16): **Copperline**,
-the new look for every screen (`docs/design/copperline/`, Milestones 47, 48 and 44), and 36.23's two Tier 1 houses. Speed comes from parallel lanes and lean checks,
+the new look for every screen (`docs/design/copperline/`, Milestones 47, 48 and 44), and 36.23's two Tier 1 houses. Then (owner, 2026-11-16): **rebuild every build from scratch** (Milestones 49-52,
+`tools/blueprints/REBUILD.md`: blind brief, blind design, a critic; 49 lane B, 50 E, 51 C, 52 D). Speed comes from parallel lanes and lean checks,
 never from thinner content.
 
 ## Skills (use them; they hold the details this file leaves out)

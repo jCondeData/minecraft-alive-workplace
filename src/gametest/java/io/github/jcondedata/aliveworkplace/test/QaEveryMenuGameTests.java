@@ -83,6 +83,23 @@ public class QaEveryMenuGameTests implements FabricGameTest {
 				return new MailboxMenu(9, player.getInventory(), box);
 			},
 			(id, inv) -> new MailboxMenu(id, inv, helper.absolutePos(boxAt))));
+		// 44.1: the Drop Box and the Shop Counter, chest menus on their own types for their Copperline screens.
+		BlockPos dropAt = new BlockPos(4, 2, 2);
+		pairs.put(ModBlocks.DROP_BOX_MENU, new Pair(
+			() -> {
+				helper.setBlock(dropAt, ModBlocks.DROP_BOX);
+				io.github.jcondedata.aliveworkplace.store.DropBoxBlockEntity drop = helper.getBlockEntity(dropAt);
+				return drop.createMenu(10, player.getInventory(), player);
+			},
+			(id, inv) -> ModBlocks.DROP_BOX_MENU.create(id, inv)));
+		BlockPos counterAt = new BlockPos(6, 2, 2);
+		pairs.put(ModBlocks.SHOP_COUNTER_MENU, new Pair(
+			() -> {
+				helper.setBlock(counterAt, ModBlocks.SHOP_COUNTER);
+				io.github.jcondedata.aliveworkplace.shop.ShopCounterBlockEntity counter = helper.getBlockEntity(counterAt);
+				return counter.createMenu(11, player.getInventory(), player);
+			},
+			(id, inv) -> ModBlocks.SHOP_COUNTER_MENU.create(id, inv)));
 		return pairs;
 	}
 

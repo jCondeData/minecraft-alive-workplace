@@ -44,7 +44,7 @@ public class DropBoxBlockEntity extends BaseContainerBlockEntity implements io.g
 
 	@Override
 	protected AbstractContainerMenu createMenu(int id, Inventory inventory) {
-		return ChestMenu.threeRows(id, inventory, this);
+		return new ChestMenu(ModBlocks.DROP_BOX_MENU, id, inventory, this, 3); // 44.1: drawn in Copperline
 	}
 
 	@Override

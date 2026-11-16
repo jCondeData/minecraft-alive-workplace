@@ -386,6 +386,9 @@ SCENES = [
       [("01_shop_menu", "Shop screen"), ("02_shop_counter", "The counter")], cobblemon=True),
     S("counter", "Shopkeeper", "Setting prices at the Shop Counter", "the price list, the owner's sales log and a Price Tag's screen opened", 55,
       [("01_counter_screen", "Price list"), ("02_counter_price", "A price"), ("03_counter_sales", "Sales log"), ("04_price_tag", "Price Tag")]),
+    # Porter (44.1): the Drop Box's screen in Copperline
+    S("drop_box", "Porter", "The Drop Box", "the Drop Box opened in Copperline: its slots and your pack in wells, what waits for a porter, and where it goes", 45,
+      [("01_drop_box_screen", "Drop Box"), ("02_drop_box_pack", "Your pack")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),

@@ -3653,6 +3653,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 			setMouse(mc, at[0] * scale, at[1] * scale);
 			return;
 		}
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.CopperSlotScreen<?> copper) {
+			// The Mailbox, the Drop Box and the Shop Counter in Copperline (44.1): the slots sit inside a wider window.
+			int[] at = copper.centre(slot);
+			setMouse(mc, at[0] * scale, at[1] * scale);
+			return;
+		}
 		int left = (mc.getWindow().getGuiScaledWidth() - 176) / 2;
 		int top = (mc.getWindow().getGuiScaledHeight() - (114 + rows * 18)) / 2;
 		setMouse(mc, (left + 8 + (slot % 9) * 18 + 8) * scale, (top + 18 + (slot / 9) * 18 + 8) * scale);

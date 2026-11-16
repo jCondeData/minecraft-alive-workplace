@@ -197,6 +197,10 @@ Later additions:
   blocks from the board; the Cup page has "Watch the bout" only while a bout is fought; [Watch] picks the nearest of two
   bouts; the start is called with [Watch] at the Arena and not 70 blocks away; a player already in a battle is told to
   click [I'm ready] again, keeps their battle and gets a new two minutes, alone or as a players' bout's second player; the
-  villager trainer steps into their box). Found: B1291 (the [I'm ready] reply says the bout begins when it couldn't
-  start; test on `tests/cup-ready-reply-1115d2`).
+  villager trainer steps into their box). `QaCupReadyReply1115d2CompatTests` (B1291, fixed: when the battle can't
+  start, the [I'm ready] reply is the one "The bout couldn't start (are you already in a battle?). Click [I'm ready]
+  again." line, not "The bout begins!", and both sides must be ready again). `QaCupReady1116dCompatTests` (3, through the button's
+  `/workplace cup ready`: alone, each player reads the line once and never "begins", then "begins" once when free; in a
+  players' bout with either player in a battle when the second clicks, both read it once, nobody stays ready, and two new
+  clicks start the bout).
 - Showcase scenes: `cup_page`, `cup_bout`, `cup_day`, `cup_match`, `cup_champions`, `cup_themes`.

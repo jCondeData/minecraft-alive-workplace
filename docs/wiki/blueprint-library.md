@@ -3,10 +3,12 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c
 
 ## 1. What a player sees
 
+- **The look** (48.1): the table is drawn in Copperline like the Blueprint Book board (`docs/wiki/copperline.md`):
+  a style rail, a one-line list with a lock on locked builds, and one copper Get Blueprint button.
 - **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a
@@ -164,7 +166,8 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
 - 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
-  is on the Table or in villages until the owner picks one (36.23a).
+  is on the Table or in villages until the owner picks one (36.23a). The Daub House's hall has no shelves by the door;
+  its plates stand on the kitchen counters (36.23c).
 
 ## 8. Proof
 

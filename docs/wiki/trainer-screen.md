@@ -5,9 +5,15 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157, B473
+Roadmap items: 43.1, 48.2, B1091, B1102, B1104, B1122, B1131, B1157, B473
 
 ## What a player sees
+
+**Copperline (48.2):** the screen now has the Copperline look of the Trainer board (`docs/wiki/copperline.md`, "The
+Trainer screen"): the portrait, name, title, record and today on the left with Challenge (copper), Trade and Close
+under them, the rank on the top bar by the close X, the prize, the team as cards, the party and the rules on the right,
+a red "Can't challenge now" box with the reason when Challenge is off, and the line at the foot saying what the thing
+under the mouse is. Everything below still holds; only the look and the places changed.
 
 Right-click a Trainer (or the Trainer Leader) with an empty hand. A dark panel with a slate-blue edge opens. On the
 left: the trainer's name in gold, "Pokémon Trainer" or "Trainer Leader", their rank and village ("Expert · Oakbrook"),
@@ -165,3 +171,14 @@ its fainted Pokémon; the battle still ends).
 QA (lane D, 2026-11-14, B43): `QaTrainerRefusedEveryTurn1114dCompatTests.aTrainerRefusedOnFiveTurnsInARowStillBattlesOn`
 (Cobblemon): the trainer's choice refused on five turns in a row, more refusals than one request's limit of 3, and the
 battle still reaches turn 6 (the limit counts per request; kills the mutant that never resets the count).
+
+QA (lane D, 2026-11-16, verifying 48.2): `QaTrainerCopper1116dGameTests` (4, without Cobblemon):
+`QaTrainerCopper1116dGameTests.closeClosesAndUnknownButtonsAreRefused` (Close, opened by an empty-hand click, closes
+the screen and opens no trades; a button the screen doesn't have is refused and leaves it open; the client's copy acts
+on no button), `QaTrainerCopper1116dGameTests.tradeIsGrayedOutWithNothingToSell` (Trade grayed out, and a forged press
+opens nothing, for a trainer with nothing to sell; on with a trade, off again for a baby trainer; Challenge off with a
+reason to show), `QaTrainerCopper1116dGameTests.theLayoutHoldsOnEveryCommonScreen` (GUI scale 2 and 3 on fifteen
+screens, the compact boundary 399x219 / 400x220 among them, and screens where the window stops growing: the window,
+rail, stage and buttons inside and apart, each button and each of one to six team cards hit at its middle) and
+`QaTrainerCopper1116dGameTests.everySentenceIsInTheLangFileInAmericanEnglish` (every Trainer screen sentence: American
+English, no "(s)", every argument filled, the whispers whole sentences, the capped card's and grayed-out Trade's words).

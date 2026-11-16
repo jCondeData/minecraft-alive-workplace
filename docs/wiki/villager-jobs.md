@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296, 47.4
 
 ## What a player sees
 
@@ -175,8 +175,9 @@ rancher dies and the trainer's PC is full, the Pokémon wait on the mod's side (
 saves but never loads back or shows (B1295, B1296, B1287). An online trainer is told "Your PC is full: Charmander is
 waiting for you and will come to your PC as soon as a place in it is free."; while they're online, each one comes into
 the PC as soon as a place is free ("Charmander came to your PC from the daycare."), and at each login with Pokémon still
-waiting they're reminded how many ("…waiting for a free place in it (2)."; for one, "Your PC is full: a Pokémon from
-the daycare is waiting for a free place in it.", B1309, `QaDaycareWaiting1115c2BugCompatTests`). Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
+waiting they're reminded how many ("…waiting for a free place in it (2)."; for one, "Your PC is full: 1 Pokémon from
+the daycare is waiting for a free place in it.", B1309 and B1331, `QaDaycareWaiting1115c2BugCompatTests`; from four down to one across
+logins, and one left across a restart, `QaWaitingAndMoney1116dCompatTests`). Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
 `QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2),
 `DaycareWaitingCompatTests` (3), `QaDaycareWaiting1115d3CompatTests` (6: one per freed place, another trainer's room never used, one reminder per login with the count, a place freed while away filled at login, the Pokémon's data kept, the saved list per trainer), and `QaDaycareWaiting1115c2CompatTests` (6: one freed slot brings exactly one, no copy after a
 restart, its state kept, two trainers, an offline trainer at login), and
@@ -274,9 +275,8 @@ faster (...)", "100% faster: at the cap (...)", "37% slower (... held back by be
 pace gets no pace line. The Builder's page has the level table.
 
 **Requests.** What workers are waiting for (materials, a pickaxe, seeds) is posted on the Storehouse's board, where
-players can hand things over; the Village Hall lists it too. The board is drawn like the Blueprint Table (26.12): the
-requests as a list on the left (what, how many, for whom and how far), the store's numbers, the Steward's shopping
-list and the stock orders "at a glance" on the right, and a request under the mouse read out in full. A click hands
+players can hand things over; the Village Hall lists it too. The board was drawn like the Blueprint Table (26.12) and is
+now a Copperline table (47.4, below). A click hands
 over what you have, as before, and the request drops by that much at once, so a quick second click hands
 nothing more than is still needed (B344). What the click says reads as a sentence: "Gave 25 Cobblestone to the
 Builder's chests", "Gave a pickaxe to the Miner's chests" and "You don't have a pickaxe to give", never "Gave 1 A
@@ -287,6 +287,25 @@ name has its own sentences, so the Nurse's, Undertaker's, Physician's and Compos
 give", "Gave 16 scraps for composting to the Composter's chests" (B1108, B1109,
 `StorehouseBoardWordsGameTests.everyRequestNameAJobPostsReadsAsASentence` walks every such name). On the stock orders page, the item in your hand (the off hand's when the
 main hand is empty, B351) gets the "Order" button.
+
+**The Storehouse board in Copperline (47.4).** The board looks like `docs/design/copperline/boards/Storehouse.png`:
+the plaque "Storehouse Board", the lintel with the storehouse and how many things are needed ("5 needs"), and a table
+of the requests. Each row shows the item, a bar with how many the store holds of how many are asked for (red at none,
+yellow under a quarter, green when it holds enough), who needs it (their name and job, or their job and how far off),
+who brings it (46.1's gatherer or maker by name, or a red "Nobody" with the job missing, "no Glassblower"), and a
+button: **Give 16** (you carry some), **Stocked** (the store holds enough) or a gray **Have 0**. The rail on the left
+filters by who needs it (Everyone, Builders, Workers, Kitchen, Projects, each with its count) and has two toggles,
+**Missing** (only what the store is short of) and **I carry** (only what you can give), then the store's own entries:
+its stock and the Steward's shopping list (their lines in the tooltip) and the stock orders (a click opens that page,
+which keeps the shared table look). Under the table, **In your pack** shows what you carry that a row asks for, and the
+one copper button, **Give all 52**, hands everything over row by row (Shift-click on a row does the same); its number is what a press gives, so two
+rows asking for the same item share what you carry (B1338: 2 rows of 16 oak logs and 10 carried read Give all 10); it's gray
+when you carry nothing asked for. The whisper line says what a click on the row under the mouse does and who brings it
+("Click to give 16 of yours · Gathered by: the Lumberjack (Tomas)"); with nothing under the mouse it gives the store's
+numbers. Every line the board's old reading pane showed is in the tooltip of a row's icon. At 320x180 (GUI scale 3)
+the rail is a grid of icons, the toggles step aside, the table drops Needed by (the whisper line names the asker) and
+the lintel keeps only "4 needs". The rows carry their columns beside the lore they always had (`store/BoardRows`), so
+everything that reads the lore still works (`StorehouseBoardCopperGameTests`; scene `storehouse_board`).
 
 **Miners make their own pickaxe (36.11).** A Miner whose pickaxe wore out, or who has none, first looks in their own
 chests for one; with none there, they make one at their Blast Furnace from what they mined themselves: three

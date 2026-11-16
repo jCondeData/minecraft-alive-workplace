@@ -5,6 +5,8 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.CityPlans;
 import io.github.jcondedata.aliveworkplace.registry.ModItems;
+import io.github.jcondedata.aliveworkplace.ui.CityPlanLayout;
+import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -14,7 +16,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.core.BlockPos;
@@ -23,6 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.material.MapColor;
 import org.lwjgl.glfw.GLFW;
 
@@ -30,15 +32,13 @@ import org.lwjgl.glfw.GLFW;
  * The City Plan screen (ROADMAP 27.3): the village map with the plan's grid over it, each zone tinted in its kind's
  * colour and named, Keep Clear hatched, build sites going up as outlines; a side panel to add, rename, delete and set
  * up zones, a brush (one cell, or drag an area), an eraser, undo and a legend. Every change is a packet the server
- * checks ({@link CityPlans.Edit}); the server sends the plan back after each.
+ * checks ({@link CityPlans.Edit}); the server sends the plan back after each. Drawn in Copperline (44.3,
+ * {@link CityPlanLayout}): the tools and Undo on the rail, the map and its paint as before, New the one copper button,
+ * and the whisper line saying what the thing under the mouse does.
  */
 public class CityPlanScreen extends Screen {
 	private static final ResourceLocation MAP_TEXTURE = AliveWorkplace.id("city_plan_map");
-	private static final int PAD = 6;
-	private static final int ROW = 12;
-	private static final int BUTTON_H = 14;
-	private static final int PANEL_BG = 0xE0101418;
-	private static final int PANEL_EDGE = 0xFF3A4C66;
+	private static final int ROW = CityPlanLayout.ROW;
 	/** Vanilla's empty map colour, for land nobody has seen. */
 	private static final int PARCHMENT = 0xFFD6BE96;
 
@@ -79,10 +79,12 @@ public class CityPlanScreen extends Screen {
 	private double lastClickX, lastClickY;
 
 	private DynamicTexture texture;
-	private int mapX, mapY, mapSize, panelX, panelY, panelW, panelH, listTop, listRows;
+	private int mapX, mapY, mapSize, listTop, listRows;
+	private CityPlanLayout.Plan boxes;
 	private EditBox nameBox;
-	private Button newButton, kindButton, styleButton, renewButton, deleteButton, brushButton, areaButton, eraserButton, undoButton,
-		roadButton, wallButton, optionButton, roadStyleButton;
+	private Button newButton, kindButton, styleButton, renewButton, deleteButton, optionButton, roadStyleButton;
+	/** What the whisper line says about the thing under the mouse this frame. */
+	private Component whisper = Component.empty();
 	/** Every text drawn last frame (its box, and whether it had to fit whole), for the GUI-scale check (24.4). */
 	private final List<Drawn> drawn = new ArrayList<>();
 
@@ -133,62 +135,55 @@ public class CityPlanScreen extends Screen {
 
 	// --- layout ------------------------------------------------------------------------------------------------------
 
+	/** The rail's items, in {@link CityPlanLayout#RAIL}'s order. */
+	private static final net.minecraft.world.item.Item[] RAIL_ITEMS = {Items.BRUSH, Items.MAP, Items.SPONGE, Items.DIRT_PATH,
+		Items.STONE_BRICK_WALL, Items.CLOCK};
+	private static final Tool[] RAIL_TOOLS = {Tool.BRUSH, Tool.AREA, Tool.ERASER, Tool.ROAD, Tool.WALL};
+
+	private static Component railLabel(int i) {
+		return Component.translatable("screen.aliveworkplace.city_plan." + CityPlanLayout.RAIL[i]);
+	}
+
+	/** The boxes the screen draws in and takes its clicks with (also for the scene and its checks). */
+	public CityPlanLayout.Plan boxes() {
+		return boxes;
+	}
+
 	@Override
 	protected void init() {
-		panelW = Math.max(150, Math.min(190, width * 38 / 100));
-		panelX = width - PAD - panelW;
-		panelY = PAD;
-		panelH = height - 2 * PAD;
-		int availW = width - panelW - 3 * PAD;
-		int availH = height - 2 * PAD - 12 - 14;
-		mapSize = Math.max(CityPlan.GRID, Math.min(availW, availH) / CityPlan.GRID * CityPlan.GRID);
-		mapX = PAD + (availW - mapSize) / 2;
-		mapY = PAD + 12;
+		int railLabelW = 0;
+		for (int i = 0; i < CityPlanLayout.RAIL.length; i++) {
+			railLabelW = Math.max(railLabelW, font.width(railLabel(i)));
+		}
+		Component newLabel = Component.translatable("screen.aliveworkplace.city_plan.new");
+		boxes = CityPlanLayout.plan(width, height, font.width(title), railLabelW, Math.max(44, font.width(newLabel) + 12));
+		mapX = boxes.map()[0];
+		mapY = boxes.map()[1];
+		mapSize = boxes.map()[2];
+		listTop = boxes.list()[1];
+		listRows = boxes.listRows();
+		scroll = Math.max(0, Math.min(scroll, Math.max(0, plan.zones().size() - listRows)));
 
-		int x = panelX + 4;
-		int w = panelW - 8;
-		newButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.new"), b -> newZone())
-			.bounds(panelX + panelW - 4 - 44, panelY + 14, 44, BUTTON_H).build());
-		listTop = panelY + 14 + BUTTON_H + 2;
-
-		int legendH = 10 + 4 * 9;
-		int y = panelY + panelH - 4 - legendH - (BUTTON_H + 2) * 5 - 18;
-		listRows = Math.max(1, (y - 2 - listTop) / ROW);
-
-		nameBox = addRenderableWidget(new EditBox(font, x + 1, y, w - 2, BUTTON_H, Component.translatable("screen.aliveworkplace.city_plan.name")));
+		// The widgets take the clicks; render draws them in Copperline (addWidget: the game doesn't draw them itself).
+		newButton = addWidget(place(Button.builder(newLabel, b -> newZone()), boxes.newButton()));
+		int[] n = boxes.name();
+		nameBox = addRenderableWidget(new EditBox(font, n[0] + 4, n[1] + 3, n[2] - 8, 10, Component.translatable("screen.aliveworkplace.city_plan.name")));
+		nameBox.setBordered(false);
+		nameBox.setTextColor(CopperStyle.QUARTZ);
 		nameBox.setMaxLength(CityPlans.MAX_NAME);
-		y += BUTTON_H + 4;
-		styleButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleStyle()).bounds(x + 18, y, w - 18, BUTTON_H).build());
-		y += BUTTON_H + 2;
-		kindButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleKind()).bounds(x, y, w, BUTTON_H).build());
-		y += BUTTON_H + 2;
-		int half = (w - 2) / 2;
-		renewButton = addRenderableWidget(Button.builder(Component.empty(), b -> toggleRenew()).bounds(x, y, half, BUTTON_H)
-			.tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.renew.tip"))).build());
-		deleteButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.delete"), b -> deleteZone())
-			.bounds(x + half + 2, y, w - half - 2, BUTTON_H).build());
-		y += BUTTON_H + 2;
-		int q = (w - 6) / 4;
-		brushButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.brush"), b -> setTool(Tool.BRUSH))
-			.bounds(x, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.brush.tip"))).build());
-		areaButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.area"), b -> setTool(Tool.AREA))
-			.bounds(x + q + 2, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.area.tip"))).build());
-		eraserButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.eraser"), b -> setTool(Tool.ERASER))
-			.bounds(x + 2 * (q + 2), y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.eraser.tip"))).build());
-		undoButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.undo"), b -> undo())
-			.bounds(x + 3 * (q + 2), y, w - 3 * (q + 2), BUTTON_H).build());
-		y += BUTTON_H + 2;
-		roadButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.road"), b -> setTool(Tool.ROAD))
-			.bounds(x, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.road.tip"))).build());
-		wallButton = addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.wall"), b -> setTool(Tool.WALL))
-			.bounds(x + q + 2, y, q, BUTTON_H).tooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.wall.tip"))).build());
-		optionButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleOption())
-			.bounds(x + 2 * (q + 2), y, q, BUTTON_H).build());
-		roadStyleButton = addRenderableWidget(Button.builder(Component.empty(), b -> cycleRoadStyle())
-			.bounds(x + 3 * (q + 2), y, w - 3 * (q + 2), BUTTON_H).build());
+		styleButton = addWidget(place(Button.builder(Component.empty(), b -> cycleStyle()), boxes.style()));
+		kindButton = addWidget(place(Button.builder(Component.empty(), b -> cycleKind()), boxes.kind()));
+		renewButton = addWidget(place(Button.builder(Component.empty(), b -> toggleRenew()), boxes.renew()));
+		deleteButton = addWidget(place(Button.builder(Component.translatable("screen.aliveworkplace.city_plan.delete"), b -> deleteZone()), boxes.delete()));
+		optionButton = addWidget(place(Button.builder(Component.empty(), b -> cycleOption()), boxes.option()));
+		roadStyleButton = addWidget(place(Button.builder(Component.empty(), b -> cycleRoadStyle()), boxes.roadStyle()));
 
 		buildTexture();
 		refreshWidgets();
+	}
+
+	private static Button place(Button.Builder builder, int[] box) {
+		return builder.bounds(box[0], box[1], box[2], box[3]).build();
 	}
 
 	private void buildTexture() {
@@ -229,6 +224,15 @@ public class CityPlanScreen extends Screen {
 		if (nameBox == null) {
 			return;
 		}
+		// the list follows the chosen zone, so the settings under it never edit a row scrolled out of sight
+		if (selected >= 0 && listRows > 0) {
+			if (selected < scroll) {
+				scroll = selected;
+			} else if (selected >= scroll + listRows) {
+				scroll = selected - listRows + 1;
+			}
+		}
+		scroll = Math.max(0, Math.min(scroll, Math.max(0, plan.zones().size() - listRows)));
 		CityPlan.Zone zone = zone();
 		boolean has = zone != null && mayEdit;
 		nameBox.setEditable(has);
@@ -243,30 +247,25 @@ public class CityPlanScreen extends Screen {
 		renewButton.active = has;
 		deleteButton.active = has;
 		newButton.active = mayEdit && plan.zones().size() < CityPlan.MAX_ZONES && !kinds.isEmpty();
-		undoButton.active = mayEdit && undoSteps > 0;
-		brushButton.active = mayEdit && tool != Tool.BRUSH;
-		areaButton.active = mayEdit && tool != Tool.AREA;
-		eraserButton.active = mayEdit && tool != Tool.ERASER;
-		roadButton.active = mayEdit && tool != Tool.ROAD;
-		wallButton.active = mayEdit && tool != Tool.WALL;
 		optionButton.active = mayEdit && (tool == Tool.ROAD || tool == Tool.WALL);
 		roadStyleButton.active = mayEdit && tool == Tool.ROAD;
 		if (tool == Tool.WALL) {
 			optionButton.setMessage(Component.translatable(wallClosed ? "screen.aliveworkplace.city_plan.wall.closed" : "screen.aliveworkplace.city_plan.wall.open"));
-			optionButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.wall.closed.tip")));
 		} else {
 			optionButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.width." + roadWidth));
-			optionButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.width.tip")));
 		}
 		roadStyleButton.setMessage(Component.empty());
-		roadStyleButton.setTooltip(Tooltip.create(Component.translatable("screen.aliveworkplace.city_plan.road_style",
-			roadStyle.isEmpty() ? Component.translatable("screen.aliveworkplace.city_plan.road_style.zone") : styleTitle(roadStyle))));
 		kindButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.kind",
 			zone == null ? Component.literal("-") : kindTitle(zone.kind())));
 		styleButton.setMessage(Component.translatable("screen.aliveworkplace.city_plan.style",
 			zone == null ? Component.literal("-") : styleTitle(zone.style())));
 		renewButton.setMessage(Component.translatable(zone != null && zone.renew() ? "screen.aliveworkplace.city_plan.renew.on"
 			: "screen.aliveworkplace.city_plan.renew.off"));
+	}
+
+	/** Whether the rail's entry {@code i} can be clicked now (a tool not already chosen; Undo with steps to undo). */
+	private boolean railOn(int i) {
+		return mayEdit && (i == CityPlanLayout.UNDO ? undoSteps > 0 : RAIL_TOOLS[i] != tool);
 	}
 
 	// --- what the buttons do ---------------------------------------------------------------------------------------
@@ -459,6 +458,24 @@ public class CityPlanScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
+		if (button == 0 && CopperLayout.inside(boxes.close(), mx, my)) {
+			// The lintel's close X (Copperline, 47.1): as Esc.
+			click();
+			onClose();
+			return true;
+		}
+		int rail = button == 0 ? CopperLayout.at(boxes.railEntries(), mx, my) : -1;
+		if (rail >= 0) {
+			if (railOn(rail)) {
+				click();
+				if (rail == CityPlanLayout.UNDO) {
+					undo();
+				} else {
+					setTool(RAIL_TOOLS[rail]);
+				}
+			}
+			return true;
+		}
 		int cell = cellUnder(mx, my);
 		if (cell >= 0 && mayEdit && (tool == Tool.ROAD || tool == Tool.WALL)) {
 			if (button == 1) {
@@ -503,14 +520,16 @@ public class CityPlanScreen extends Screen {
 			stroking = true;
 			return true;
 		}
-		if (mx >= panelX && mx < panelX + panelW && my >= listTop && my < listTop + listRows * ROW) {
-			int row = (int) ((my - listTop) / ROW) + scroll;
-			if (row < plan.zones().size()) {
-				select(row);
-				return true;
-			}
+		int row = button == 0 ? CityPlanLayout.rowAt(boxes, scroll, plan.zones().size(), mx, my) : -1;
+		if (row >= 0) {
+			select(row);
+			return true;
 		}
 		return super.mouseClicked(mx, my, button);
+	}
+
+	private void click() {
+		minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
 	}
 
 	@Override
@@ -566,7 +585,7 @@ public class CityPlanScreen extends Screen {
 
 	@Override
 	public boolean mouseScrolled(double mx, double my, double sx, double sy) {
-		if (mx >= panelX && mx < panelX + panelW && my >= listTop && my < listTop + listRows * ROW) {
+		if (CopperLayout.inside(boxes.list(), mx, my)) {
 			scroll = Math.max(0, Math.min(Math.max(0, plan.zones().size() - listRows), scroll - (int) Math.signum(sy)));
 			return true;
 		}
@@ -600,18 +619,77 @@ public class CityPlanScreen extends Screen {
 	@Override
 	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.renderBackground(g, mouseX, mouseY, partialTick);
-		g.fill(mapX - 3, mapY - 3, mapX + mapSize + 3, mapY + mapSize + 3, PANEL_BG);
-		g.renderOutline(mapX - 3, mapY - 3, mapSize + 6, mapSize + 6, PANEL_EDGE);
-		g.fill(panelX, panelY, panelX + panelW, panelY + panelH, PANEL_BG);
-		g.renderOutline(panelX, panelY, panelW, panelH, PANEL_EDGE);
+		int[] win = boxes.win();
+		CopperStyle.window(g, win[0], win[1], win[2], win[3]);
+		// The name field's well, under the game's box (drawn without its border).
+		int[] n = boxes.name();
+		g.blitSprite(nameBox.isFocused() ? CopperStyle.WELL_FOCUS : nameBox.active ? CopperStyle.WELL : CopperStyle.BUTTON_OFF, n[0], n[1], n[2], n[3]);
 	}
 
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		drawn.clear();
+		whisper = Component.empty();
 		super.render(g, mouseX, mouseY, partialTick);
+		boolean overClose = CopperLayout.inside(boxes.close(), mouseX, mouseY);
+		int[] plaque = CopperStyle.plaque(g, font, title, boxes.win());
+		CopperStyle.lintel(g, font, boxes.win(), plaque, mayEdit
+			? Component.translatable("screen.aliveworkplace.city_plan.tool", railLabel(java.util.Arrays.asList(RAIL_TOOLS).indexOf(tool)))
+			: Component.translatable("screen.aliveworkplace.city_plan.view_only_short"), overClose);
+		renderRail(g, mouseX, mouseY);
 		renderMap(g, mouseX, mouseY);
 		renderPanel(g, mouseX, mouseY);
+		if (overClose) {
+			whisper = Component.translatable("screen.aliveworkplace.city_plan.whisper.close");
+		}
+		int[] w = boxes.whisper();
+		CopperStyle.whisper(g, font, whisper, w[0] + 2, w[1] + 3, w[2] - 4, boxes.compact());
+	}
+
+	/** The tools and Undo, the chosen tool copper-marked, Undo with its steps as the count. */
+	private void renderRail(GuiGraphics g, int mouseX, int mouseY) {
+		int[] rail = boxes.rail();
+		g.fill(rail[0], rail[1], rail[0] + rail[2], rail[1] + rail[3], CopperStyle.DEEP_800);
+		if (!boxes.compact()) {
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.city_plan.tools").getString().toUpperCase(Locale.ROOT),
+				rail[2] - 8), rail[0] + 4, rail[1] + 3, CopperStyle.TUFF, false);
+		}
+		int[][] entries = boxes.railEntries();
+		for (int i = 0; i < entries.length; i++) {
+			boolean undoRow = i == CityPlanLayout.UNDO;
+			boolean current = !undoRow && RAIL_TOOLS[i] == tool;
+			boolean over = CopperLayout.inside(entries[i], mouseX, mouseY);
+			if (undoRow && !boxes.compact()) { // a rule between the tools and Undo
+				g.fill(entries[i][0] + 2, entries[i][1] - 1, entries[i][0] + entries[i][2] - 2, entries[i][1], CopperStyle.DEEP_600);
+			}
+			CopperStyle.railEntry(g, font, entries[i], null, new ItemStack(RAIL_ITEMS[i]), railLabel(i), undoRow ? undoSteps : 0, current,
+				over && railOn(i), boxes.compact());
+			if (!railOn(i) && !current) { // off: dimmed
+				g.fill(entries[i][0], entries[i][1], entries[i][0] + entries[i][2], entries[i][1] + entries[i][3], 0x9016171D);
+			}
+			if (over) {
+				whisper = Component.translatable("screen.aliveworkplace.city_plan.whisper." + CityPlanLayout.RAIL[i]);
+			}
+		}
+	}
+
+	private void drawButton(GuiGraphics g, Button b, CopperStyle.Kind kind, int mouseX, int mouseY, String whisperKey, Object... args) {
+		boolean over = b.isMouseOver(mouseX, mouseY);
+		CopperStyle.button(g, font, b.getMessage(), null, b.getX(), b.getY(), b.getWidth(), b.getHeight(), kind, over && b.active, false, !b.active);
+		if (over && whisperKey != null) {
+			whisper = Component.translatable(whisperKey, args);
+		}
+	}
+
+	/** A heading over a list or a group: Tuff capitals and a rule to its right. */
+	private void heading(GuiGraphics g, Component text, int x, int y, int w) {
+		String t = CopperStyle.trim(font, text.getString().toUpperCase(Locale.ROOT), w);
+		g.drawString(font, t, x, y, CopperStyle.TUFF, false);
+		drawn.add(new Drawn(t, x, y, font.width(t), w, true));
+		int rx = x + font.width(t) + 4;
+		if (rx < x + w) {
+			g.fill(rx, y + 4, x + w, y + 5, CopperStyle.DEEP_600);
+		}
 	}
 
 	private int[] zoneOfCells() {
@@ -627,7 +705,7 @@ public class CityPlanScreen extends Screen {
 	}
 
 	private void renderMap(GuiGraphics g, int mouseX, int mouseY) {
-		text(g, title, mapX, mapY - 11, mapSize, 0xFFFFFFFF, false);
+		g.fill(mapX - 1, mapY - 1, mapX + mapSize + 1, mapY + mapSize + 1, CopperStyle.VOID);
 		g.blit(MAP_TEXTURE, mapX, mapY, mapSize, mapSize, 0f, 0f, CityPlans.MAP, CityPlans.MAP, CityPlans.MAP, CityPlans.MAP);
 		int per = mapSize / CityPlan.GRID;
 		int[] of = zoneOfCells();
@@ -709,7 +787,7 @@ public class CityPlanScreen extends Screen {
 			g.fill(x - r, y - r, x + r, y + r, 0xFF000000 | (DyeColor.byId(m.color()).getTextureDiffuseColor() & 0xFFFFFF));
 		}
 		// zone names, each at its middle, left out where it would cover another
-		List<int[]> boxes = new ArrayList<>();
+		List<int[]> labels = new ArrayList<>();
 		for (int i = 0; i < plan.zones().size(); i++) {
 			BitSet cells = plan.zones().get(i).cells();
 			if (cells.isEmpty()) {
@@ -732,14 +810,35 @@ public class CityPlanScreen extends Screen {
 			x = Math.max(mapX + 1, Math.min(mapX + mapSize - w - 1, x));
 			y = Math.max(mapY + 1, Math.min(mapY + mapSize - 9, y));
 			int[] box = {x - 1, y - 1, x + w + 1, y + 9};
-			if (boxes.stream().anyMatch(b -> b[0] < box[2] && box[0] < b[2] && b[1] < box[3] && box[1] < b[3])) {
+			if (labels.stream().anyMatch(b -> b[0] < box[2] && box[0] < b[2] && b[1] < box[3] && box[1] < b[3])) {
 				continue;
 			}
-			boxes.add(box);
+			labels.add(box);
 			g.fill(box[0], box[1], box[2], box[3], 0x90000000);
-			text(g, Component.literal(name), x, y, w, 0xFFFFFFFF, false);
+			text(g, Component.literal(name), x, y, w, CopperStyle.QUARTZ, false);
 		}
-		// under the map: what the pointer is over, or why nothing can be changed
+		// north, as on the Hall's map
+		String north = Component.translatable("screen.aliveworkplace.hall.map.north").getString();
+		g.fill(mapX + mapSize - font.width(north) - 6, mapY + 2, mapX + mapSize - 2, mapY + 13, 0xC0000000);
+		g.drawString(font, north, mapX + mapSize - font.width(north) - 4, mapY + 4, CopperStyle.QUARTZ, false);
+		// the road and wall options under the map
+		drawButton(g, optionButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY, tool == Tool.WALL ? "screen.aliveworkplace.city_plan.whisper.wall_closed"
+			: "screen.aliveworkplace.city_plan.whisper.width");
+		drawButton(g, roadStyleButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY, "screen.aliveworkplace.city_plan.road_style",
+			roadStyle.isEmpty() ? Component.translatable("screen.aliveworkplace.city_plan.road_style.zone") : styleTitle(roadStyle));
+		ItemStack roadIcon = new ItemStack(roadStyle.isEmpty() ? Items.DIRT_PATH : styleIcon(roadStyle));
+		g.pose().pushPose();
+		g.pose().translate(roadStyleButton.getX() + roadStyleButton.getWidth() / 2f - 6, roadStyleButton.getY() + 1, 0);
+		g.pose().scale(0.75f, 0.75f, 1f);
+		g.renderItem(roadIcon, 0, 0);
+		g.pose().popPose();
+		if (!roadStyleButton.active) {
+			g.fill(roadStyleButton.getX(), roadStyleButton.getY(), roadStyleButton.getRight(), roadStyleButton.getBottom(), 0x9016171D);
+		}
+		// the whisper line: what the pointer is over on the map; off the map, why nothing can be changed or what to do
+		if (!CopperLayout.inside(boxes.map(), mouseX, mouseY) && (!whisper.getString().isEmpty() || CopperLayout.inside(boxes.side(), mouseX, mouseY))) {
+			return; // the rail and the column say their own
+		}
 		Component status;
 		int cell = cellUnder(mouseX, mouseY);
 		if (!mayEdit) {
@@ -755,7 +854,7 @@ public class CityPlanScreen extends Screen {
 		} else {
 			status = Component.translatable("screen.aliveworkplace.city_plan.hint");
 		}
-		text(g, status, mapX, mapY + mapSize + 5, mapSize, 0xFFC8C8C8, false);
+		whisper = status;
 	}
 
 	private int toMapX(int dx) {
@@ -807,63 +906,76 @@ public class CityPlanScreen extends Screen {
 	}
 
 	private void renderPanel(GuiGraphics g, int mouseX, int mouseY) {
-		int x = panelX + 4;
-		int w = panelW - 8;
-		text(g, village, x, panelY + 4, w, 0xFFFFE080, false);
-		text(g, Component.translatable("screen.aliveworkplace.city_plan.zones", plan.zones().size(), CityPlan.MAX_ZONES), x, panelY + 17,
-			w - newButton.getWidth() - 4, 0xFFC8C8C8, true);
+		int[] head = boxes.zonesHead();
+		int x = head[0];
+		int w = boxes.side()[2];
+		heading(g, Component.translatable("screen.aliveworkplace.city_plan.zones", plan.zones().size(), CityPlan.MAX_ZONES), x, head[1] + 3, head[2]);
+		drawButton(g, newButton, CopperStyle.Kind.COPPER, mouseX, mouseY, "screen.aliveworkplace.city_plan.whisper.new");
 		// the zones
-		g.fill(x, listTop, x + w, listTop + listRows * ROW, 0x60000000);
+		int[] l = boxes.list();
+		CopperStyle.well(g, l[0], l[1], l[2], l[3]);
+		int rowW = l[2] - 7;
 		for (int row = 0; row < listRows && row + scroll < plan.zones().size(); row++) {
 			int i = row + scroll;
 			CityPlan.Zone zone = plan.zones().get(i);
-			int y = listTop + row * ROW;
-			if (i == selected) {
-				g.fill(x, y, x + w, y + ROW, 0x50FFFFFF);
+			int y = listTop + 1 + row * ROW;
+			boolean over = CopperLayout.inside(new int[]{x + 1, y, rowW, ROW}, mouseX, mouseY);
+			CopperStyle.rowBand(g, x + 1, y, rowW, ROW, row % 2 == 1, over, i == selected);
+			if (over) {
+				whisper = Component.translatable("screen.aliveworkplace.city_plan.whisper.list");
 			}
 			CityPlans.KindInfo kind = kind(zone.kind());
-			g.fill(x + 2, y + 2, x + 10, y + 10, 0xFF000000);
-			g.fill(x + 3, y + 3, x + 9, y + 9, 0xFF000000 | (kind == null ? 0x808080 : kind.color()));
+			g.fill(x + 5, y + 2, x + 13, y + 10, CopperStyle.VOID);
+			g.fill(x + 6, y + 3, x + 12, y + 9, 0xFF000000 | (kind == null ? 0x808080 : kind.color()));
 			String cells = String.valueOf(zone.cells().cardinality());
 			int cw = font.width(cells);
-			text(g, Component.literal(cells), x + w - 3 - cw, y + 2, cw, 0xFF909090, true);
-			text(g, Component.literal(fit(zone.name(), w - 18 - cw - 4)), x + 13, y + 2, w - 18 - cw - 4, 0xFFFFFFFF, true);
+			g.drawString(font, cells, x + rowW - 2 - cw, y + 2, CopperStyle.TUFF, false);
+			drawn.add(new Drawn(cells, x + rowW - 2 - cw, y + 2, cw, cw, true));
+			text(g, Component.literal(zone.name()), x + 16, y + 2, rowW - 16 - cw - 6, CopperStyle.QUARTZ, false);
 		}
 		if (plan.zones().isEmpty()) {
-			text(g, Component.translatable("screen.aliveworkplace.city_plan.no_zones"), x + 3, listTop + 2, w - 6, 0xFF909090, true);
+			text(g, Component.translatable("screen.aliveworkplace.city_plan.no_zones"), x + 5, listTop + 3, l[2] - 10, CopperStyle.TUFF, false);
 		}
-		if (plan.zones().size() > listRows) {
-			int barH = Math.max(6, listRows * ROW * listRows / plan.zones().size());
-			int barY = listTop + (listRows * ROW - barH) * scroll / Math.max(1, plan.zones().size() - listRows);
-			g.fill(x + w - 2, barY, x + w, barY + barH, 0xFFA0A0A0);
+		CopperStyle.scrollbar(g, l[0] + l[2] - 5, l[1] + 1, l[3] - 2, scroll, Math.max(0, plan.zones().size() - listRows), plan.zones().size() * ROW,
+			CopperLayout.inside(l, mouseX, mouseY));
+		// the chosen zone
+		if (nameBox.isMouseOver(mouseX, mouseY)) {
+			whisper = Component.translatable("screen.aliveworkplace.city_plan.whisper.name");
 		}
-		// the style's icon beside its button
 		CityPlan.Zone zone = zone();
 		ItemStack icon = new ItemStack(zone == null ? ModItems.BLUEPRINT : styleIcon(zone.style()));
 		g.renderItem(icon, x, styleButton.getY() - 1);
-		// the new road's style, as an icon on its button (the zone's own: a path block)
-		ItemStack roadIcon = new ItemStack(roadStyle.isEmpty() ? net.minecraft.world.item.Items.DIRT_PATH : styleIcon(roadStyle));
-		g.pose().pushPose();
-		g.pose().translate(roadStyleButton.getX() + roadStyleButton.getWidth() / 2f - 6, roadStyleButton.getY() + 1, 0);
-		g.pose().scale(0.75f, 0.75f, 1f);
-		g.renderItem(roadIcon, 0, 0);
-		g.pose().popPose();
+		drawButton(g, styleButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY, "screen.aliveworkplace.city_plan.whisper.style");
+		drawButton(g, kindButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY, "screen.aliveworkplace.city_plan.whisper.kind");
+		drawButton(g, renewButton, CopperStyle.Kind.NEUTRAL, mouseX, mouseY, "screen.aliveworkplace.city_plan.renew.tip");
+		// Delete: neutral with the bad glyph, Redstone only under the mouse, so it never outshouts the copper New
+		boolean overDelete = deleteButton.active && deleteButton.isMouseOver(mouseX, mouseY);
+		CopperStyle.button(g, font, deleteButton.getMessage(), deleteButton.active ? "bad" : null, deleteButton.getX(), deleteButton.getY(),
+			deleteButton.getWidth(), deleteButton.getHeight(), overDelete ? CopperStyle.Kind.DANGER : CopperStyle.Kind.NEUTRAL, overDelete, false,
+			!deleteButton.active);
+		if (deleteButton.isMouseOver(mouseX, mouseY)) {
+			whisper = Component.translatable("screen.aliveworkplace.city_plan.whisper.delete");
+		}
 		// the legend: every kind's colour
-		int ly = panelY + panelH - 4 - 4 * 9 - 10;
-		text(g, Component.translatable("screen.aliveworkplace.city_plan.legend"), x, ly, w, 0xFFC8C8C8, true);
+		int[] legend = boxes.legend();
+		if (legend[3] <= 0) {
+			return;
+		}
+		int ly = legend[1];
+		heading(g, Component.translatable("screen.aliveworkplace.city_plan.legend"), x, ly, w);
 		int colW = w / 2;
 		for (int i = 0; i < Math.min(8, kinds.size()); i++) {
 			CityPlans.KindInfo kind = kinds.get(i);
 			int kx = x + (i / 4) * colW;
-			int ky = ly + 10 + (i % 4) * 9;
-			g.fill(kx, ky, kx + 7, ky + 7, 0xFF000000);
+			int ky = ly + 12 + (i % 4) * 9;
+			g.fill(kx, ky, kx + 7, ky + 7, CopperStyle.VOID);
 			g.fill(kx + 1, ky + 1, kx + 6, ky + 6, 0xFF000000 | kind.color());
 			if (!kind.buildable()) {
 				g.fill(kx + 1, ky + 5, kx + 2, ky + 6, 0xFF000000);
 				g.fill(kx + 3, ky + 3, kx + 4, ky + 4, 0xFF000000);
 				g.fill(kx + 5, ky + 1, kx + 6, ky + 2, 0xFF000000);
 			}
-			text(g, kindTitle(kind.id()), kx + 9, ky, colW - 10, 0xFFE0E0E0, true);
+			text(g, kindTitle(kind.id()), kx + 9, ky, colW - 10, CopperStyle.TUFF, false);
 		}
 	}
 
@@ -874,16 +986,13 @@ public class CityPlanScreen extends Screen {
 			s = fit(s, room);
 		}
 		int w = font.width(s);
-		g.drawString(font, s, x, y, color, true);
+		g.drawString(font, s, x, y, color, false);
 		drawn.add(new Drawn(s, x, y, w, room, mustFit));
 	}
 
-	/** {@code s}, cut short with "..." to {@code room} pixels. */
+	/** {@code s}, cut short with an ellipsis to {@code room} pixels. */
 	private String fit(String s, int room) {
-		if (font.width(s) <= room) {
-			return s;
-		}
-		return font.plainSubstrByWidth(s, Math.max(0, room - font.width("..."))) + "...";
+		return CopperStyle.trim(font, s, room);
 	}
 
 	// --- the GUI-scale check (24.4) ------------------------------------------------------------------------------------
@@ -919,7 +1028,8 @@ public class CityPlanScreen extends Screen {
 		});
 		for (int i = 0; i < widgets.size(); i++) {
 			AbstractWidget a = widgets.get(i);
-			if (a instanceof Button && font.width(a.getMessage()) > a.getWidth() - 6) {
+			// the style and kind buttons name a style or kind and cut it with an ellipsis (Copperline); the others must fit
+			if (a instanceof Button && a != styleButton && a != kindButton && font.width(a.getMessage()) > a.getWidth() - 6) {
 				out.add("button '" + a.getMessage().getString() + "' is " + font.width(a.getMessage()) + " wide in " + a.getWidth());
 			}
 			if (a.getX() < 0 || a.getY() < 0 || a.getRight() > width || a.getBottom() > height) {

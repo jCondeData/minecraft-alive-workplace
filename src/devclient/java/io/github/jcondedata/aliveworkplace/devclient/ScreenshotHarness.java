@@ -225,6 +225,14 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<TableLibraryScene> tableLibrary = new Lazy<>(() -> new TableLibraryScene());
 	/** SCENE=copperline (ROADMAP 47.1): Copperline's shared parts in every state, at GUI scale 2 and 3. */
 	private final Lazy<CopperlineScene> copperline = new Lazy<>(() -> new CopperlineScene());
+	/** SCENE=copperline_blueprints (ROADMAP 48.1): the Blueprint Table in Copperline, like the Blueprint Book board, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineBlueprintsScene> copperlineBlueprints = new Lazy<>(() -> new CopperlineBlueprintsScene());
+	/** SCENE=copperline_trainer (ROADMAP 48.2): the Trainer screen in Copperline, like the Trainer board, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineTrainerScene> copperlineTrainer = new Lazy<>(() -> new CopperlineTrainerScene());
+	/** SCENE=copperline_status_card (ROADMAP 48.3): the status card, its tooltips and the toast in Copperline, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineStatusCardScene> copperlineStatusCard = new Lazy<>(() -> new CopperlineStatusCardScene());
+	/** SCENE=copperline_chronicle (ROADMAP 48.4): the Chronicle like its board, and a list menu's tabs on the rail, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineChronicleScene> copperlineChronicle = new Lazy<>(() -> new CopperlineChronicleScene());
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -242,6 +250,22 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("copperline".equals(System.getProperty("aliveworkplace.scene"))) {
 			copperline.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_blueprints".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineBlueprints.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_trainer".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineTrainer.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_status_card".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineStatusCard.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_chronicle".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineChronicle.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -1187,22 +1211,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen && readingSlot >= 0,
 				"the Storehouse board opened with rows (" + mc.screen + ")");
 			shot(mc, "04_board_hovered");
-			if (screen != null) {
-				intoPane(mc, screen);
-			}
-		}
-		if (tick == 275) {
-			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
-			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot,
-				"the board's hovered row stays read out with the mouse in the pane (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
-			if (screen != null) {
-				scrollToEnd(screen);
+			// 47.4: the board in Copperline has no reading pane; every line of a row is in its icon's tooltip
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board && readingSlot >= 0) {
+				int[] at = board.iconCentre(readingSlot);
+				double scale = mc.getWindow().getGuiScale();
+				setMouse(mc, at[0] * scale, at[1] * scale);
 			}
 		}
 		if (tick == 290) {
-			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
-			Showcase.check(scroll[0] == scroll[1], "the board's reading scrolled to its last line (" + scroll[0] + " of " + scroll[1] + ")");
-			shot(mc, "05_board_last_line");
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.StorehouseScreen board
+					&& board.shownRows().contains(readingSlot),
+				"the board's longest row is in its table, its icon pointed at (" + mc.screen + ")");
+			shot(mc, "05_board_tooltip");
 		}
 		if (tick == 305) {
 			mc.stop();
@@ -2058,6 +2078,18 @@ public class ScreenshotHarness implements ClientModInitializer {
 						.setValue(net.minecraft.world.level.block.BedBlock.FACING, Direction.SOUTH)
 						.setValue(net.minecraft.world.level.block.BedBlock.PART, net.minecraft.world.level.block.state.properties.BedPart.HEAD));
 				}
+				// Three finished buildings south of the camera, for the Map section (47.2)
+				io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+				java.util.Map<BlockPos, StarterBlueprints.Entry> builds = new java.util.LinkedHashMap<>();
+				builds.put(new BlockPos(-22, -60, 24), StarterBlueprints.STARTER_COTTAGE);
+				builds.put(new BlockPos(-4, -60, 30), StarterBlueprints.MARKET_STALL);
+				builds.put(new BlockPos(14, -60, 22), StarterBlueprints.LOOKOUT_TOWER);
+				builds.forEach((at, entry) -> {
+					level.getStructureManager().get(entry.id()).ifPresent(t -> t.placeInWorld(level, at, at,
+						new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2));
+					sites.recordFinished(entry.id(), new BlueprintData.Placement(level.dimension().location(), at,
+						net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), server.getPlayerList().getPlayers().get(0).getUUID());
+				});
 				hover(server.getPlayerList().getPlayers().get(0), new Vec3(0.5, -58.3, 7.5), 180, 20);
 			});
 		}
@@ -2070,33 +2102,52 @@ public class ScreenshotHarness implements ClientModInitializer {
 			server.execute(() -> io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(server.getPlayerList().getPlayers().get(0), new BlockPos(0, -60, 3)));
 		}
 		if (tick == 220) {
-			pointAt(mc, 53); // nothing under the mouse: the figures at a glance (26.12)
+			setMouse(mc, 2, 2); // nothing under the mouse: the Overview as it is (Copperline, 47.2)
 		}
 		if (tick == 230) {
 			Showcase.check(mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>, "the Village Hall screen opened");
 			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen, "the hall opened on its own drawn screen, not a chest (30.4a): " + mc.screen);
-			shot(mc, "02_hall_people");
-			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON);
+			shot(mc, "02_hall_overview");
+			pointAtBoard(mc, 0, 0); // the People card
 		}
 		if (tick == 245) {
-			shot(mc, "03_hall_builder");
-			pointAt(mc, 5);
+			shot(mc, "03_hall_card");
+			pointAtBoard(mc, 1, 0); // the first line under "Needs you"
 		}
 		if (tick == 260) {
-			shot(mc, "04_hall_wellbeing");
-			pointAt(mc, 6);
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h && h.boardCentre(2, 0) != null,
+				"someone is listed under \"At work now\"");
+			shot(mc, "04_hall_needs");
+			pointAtBoard(mc, 2, 0); // the first villager at work
 		}
 		if (tick == 275) {
-			shot(mc, "05_hall_requests");
-			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON + 1);
+			shot(mc, "05_hall_at_work");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+				h.pressBoard(2, 0); // their row, open in People
+			}
+			setMouse(mc, 2, 2);
 		}
-		if (tick == 290) {
-			shot(mc, "06_hall_worker");
+		if (tick == 295) {
+			Showcase.check(server.getPlayerList().getPlayers().get(0).containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m
+				&& io.github.jcondedata.aliveworkplace.hall.HallSections.current(m) == io.github.jcondedata.aliveworkplace.hall.HallSections.Section.PEOPLE,
+				"a click on a villager at work opened People");
+			shot(mc, "06_hall_people_from_overview");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+				h.choose(io.github.jcondedata.aliveworkplace.hall.HallSections.Section.MAP);
+			}
+		}
+		if (tick == 310 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+			h.selectBuilding(0);
+			int[] at = h.buildingCentre(1);
+			if (at != null) {
+				setMouse(mc, at[0] * mc.getWindow().getGuiScale(), at[1] * mc.getWindow().getGuiScale());
+			}
+		}
+		if (tick == 320) {
+			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h && h.buildingCentre(0) != null,
+				"the Map section drew the village map with its buildings");
+			shot(mc, "07_hall_map");
 			// ROADMAP 22.5: the page row, with the calendar (22.6) as its first tab.
-			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.Seasons.PAGE));
-		}
-		if (tick == 305) {
-			shot(mc, "07_hall_calendar_tab");
 			server.execute(() -> {
 				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
 				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
@@ -2107,46 +2158,47 @@ public class ScreenshotHarness implements ClientModInitializer {
 				}
 			});
 		}
-		if (tick == 315) {
+		if (tick == 330) {
 			pointAt(mc, io.github.jcondedata.aliveworkplace.hall.Seasons.SEASON_SLOTS[
 				io.github.jcondedata.aliveworkplace.hall.Seasons.today(server.overworld()).season().ordinal()]);
 		}
-		if (tick == 330) {
-			shot(mc, "08_hall_calendar");
-			server.execute(() -> {
-				ServerPlayer player = server.getPlayerList().getPlayers().get(0);
-				if (player.containerMenu instanceof io.github.jcondedata.aliveworkplace.work.ChoiceMenu m) {
-					m.press(0, player); // back to the main page
-				}
-			});
-			// GUI scale 4 needs a window at least 1280x960: 1920x1080 keeps the frames 16:9. The option only takes 4
-			// once the window is big enough, so it is set after the resize.
-			org.lwjgl.glfw.GLFW.glfwSetWindowSize(mc.getWindow().getWindow(), 1920, 1080);
-		}
-		if (tick == 340) {
-			mc.options.guiScale().set(4);
-			mc.resizeDisplay();
-		}
 		if (tick == 345) {
-			pointAt(mc, 53); // an empty slot: no tooltip over the rows
+			shot(mc, "08_hall_calendar");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+				h.choose(io.github.jcondedata.aliveworkplace.hall.HallSections.Section.OVERVIEW); // back to the Overview by the rail
+			}
+			// GUI scale 3 on the 960x540 window: the 320x180 screen of boards/Compact.png. Vanilla allows scale 3 only from
+			// 960x720 up, so the scale is put on the window directly, as a resize would, and the screen laid out again.
+			mc.getWindow().setGuiScale(3);
+			if (mc.screen != null) {
+				mc.screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+			}
 		}
 		if (tick == 360) {
-			Showcase.check(mc.getWindow().getGuiScale() == 4, "the hall screen at GUI scale 4 (now " + mc.getWindow().getGuiScale() + ")");
-			shot(mc, "09_hall_scale4");
-			mc.options.guiScale().set(3);
-			mc.resizeDisplay();
+			setMouse(mc, 2, 2);
 		}
-		if (tick == 370 && mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen hall) {
-			// 26.12: a click keeps a villager in the pane (and makes them glow); with the mouse away it stays there.
-			hall.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON, 0, false);
-			pointAt(mc, 53);
+		if (tick == 370) {
+			Showcase.check(mc.getWindow().getGuiScaledWidth() <= 320, "the hall at 320x180 (now " + mc.getWindow().getGuiScaledWidth() + "x"
+				+ mc.getWindow().getGuiScaledHeight() + ")");
+			shot(mc, "09_hall_compact");
+			if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+				h.choose(io.github.jcondedata.aliveworkplace.hall.HallSections.Section.MAP);
+			}
 		}
-		if (tick == 385) {
-			Showcase.check(mc.screen instanceof io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen hall
-					&& hall.pinned() == io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_PERSON,
-				"the clicked villager is kept in the pane: " + mc.screen);
-			shot(mc, "10_hall_pinned_scale3");
+		if (tick == 390) {
+			shot(mc, "10_hall_compact_map");
 			mc.stop();
+		}
+	}
+
+	/** Moves the mouse over the Village Hall Overview's card, "Needs you" line or "At work now" line {@code i} (kind 0, 1, 2). */
+	private static void pointAtBoard(Minecraft mc, int kind, int i) {
+		if (mc.screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h) {
+			int[] at = h.boardCentre(kind, i);
+			if (at != null) {
+				double scale = mc.getWindow().getGuiScale();
+				setMouse(mc, at[0] * scale, at[1] * scale);
+			}
 		}
 	}
 
@@ -2606,14 +2658,19 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private String configBefore;
 
 	/**
-	 * The settings screen Mod Menu opens (ROADMAP 26.3): every option's label fits its button, a switch turned off is
-	 * saved to config/aliveworkplace.json and put into effect when the screen closes. The file is put back afterwards
+	 * The settings screen Mod Menu opens (ROADMAP 26.3), in Copperline (44.4): every section in the rail, every setting's
+	 * label fits beside its control, a click on the Festivals row turns it off, it is saved to config/aliveworkplace.json
+	 * and put into effect when the screen closes, and the screen at GUI scale 3 (320x180). The file is put back afterwards
 	 * (the run directory's config is shared by every scene).
 	 */
 	private void configScene(Minecraft mc) {
 		tick++;
 		java.nio.file.Path file = io.github.jcondedata.aliveworkplace.platform.Platform.get().configDir()
 			.resolve(io.github.jcondedata.aliveworkplace.WorkplaceConfig.FILE);
+		if (tick == 1) {
+			mc.options.guiScale().set(2);
+			mc.resizeDisplay();
+		}
 		if (tick == 40) {
 			try {
 				configBefore = java.nio.file.Files.readString(file);
@@ -2623,54 +2680,47 @@ public class ScreenshotHarness implements ClientModInitializer {
 			configScreen = new io.github.jcondedata.aliveworkplace.client.ConfigScreen(null);
 			mc.setScreen(configScreen);
 		}
+		if (tick == 50) {
+			// The mouse over the first number's label: its tooltip and its whisper line.
+			int[] row = io.github.jcondedata.aliveworkplace.ui.SettingsLayout.row(configScreen.boxes(), 1);
+			double scale = mc.getWindow().getGuiScale();
+			setMouse(mc, (row[0] + 12) * scale, (row[1] + 6) * scale);
+		}
 		if (tick == 55) {
-			List<String> problems = new ArrayList<>();
-			for (var widget : configScreen.optionWidgets()) {
-				if (widget == null) {
-					problems.add("an option has no button");
-					continue;
-				}
-				String text = widget.getMessage().getString();
-				if (text.contains("aliveworkplace.config")) {
-					problems.add("untranslated " + text);
-				} else if (mc.font.width(widget.getMessage()) > widget.getWidth() - 8) {
-					problems.add("'" + text + "' is wider than its button");
-				}
-			}
-			// A switch reads wider turned off ("OFF" vs "ON"): every switch must fit that way too (B61).
-			int buttonWidth = configScreen.optionWidgets().isEmpty() || configScreen.optionWidgets().get(0) == null ? 150
-				: configScreen.optionWidgets().get(0).getWidth();
-			for (String name : io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames()) {
-				if (io.github.jcondedata.aliveworkplace.WorkplaceConfig.isSwitch(name)) {
-					Component off = net.minecraft.client.Options.genericValueLabel(
-						Component.translatable(io.github.jcondedata.aliveworkplace.client.ConfigScreen.labelKey(name)), net.minecraft.network.chat.CommonComponents.OPTION_OFF);
-					if (mc.font.width(off) > buttonWidth - 8) {
-						problems.add("'" + off.getString() + "' is wider than its button");
-					}
-				}
-			}
-			Showcase.check(problems.isEmpty() && configScreen.optionWidgets().size() == io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames().size(),
-				"every setting has a button whose label fits (" + configScreen.optionWidgets().size() + " settings"
-					+ (problems.isEmpty() ? "" : ": " + String.join(", ", problems)) + ")");
+			configChecks(mc, "scale 2");
 			shot(mc, "01_config_numbers");
 		}
 		if (tick == 60) {
-			configScreen.scrollToEnd();
+			configScreen.show("festivals");
+			int[] row = configScreen.editor().rowOf(configScreen.boxes(), "festivals");
+			int[] toggle = io.github.jcondedata.aliveworkplace.ui.SettingsLayout.toggle(row);
+			double scale = mc.getWindow().getGuiScale();
+			setMouse(mc, (toggle[0] + 10) * scale, (toggle[1] + 5) * scale);
 		}
 		if (tick == 70) {
 			shot(mc, "02_config_switches");
-			// Turn the festivals off with the button itself, as a player would.
-			for (var widget : configScreen.optionWidgets()) {
-				if (widget.getMessage().getString().startsWith(net.minecraft.client.resources.language.I18n.get("aliveworkplace.config.festivals"))) {
-					widget.onClick(widget.getX() + 2, widget.getY() + 2);
-				}
-			}
+			// Turn the festivals off with a click on its toggle, as a player would.
+			int[] row = configScreen.editor().rowOf(configScreen.boxes(), "festivals");
+			int[] toggle = io.github.jcondedata.aliveworkplace.ui.SettingsLayout.toggle(row);
+			configScreen.mouseClicked(toggle[0] + 10, toggle[1] + 5, 0);
+			configScreen.mouseReleased(toggle[0] + 10, toggle[1] + 5, 0);
 		}
 		if (tick == 80) {
+			Showcase.check(!configScreen.config().festivals, "a click on the Festivals toggle turns it off");
 			shot(mc, "03_config_festivals_off");
+			// GUI scale 3 on the 960x540 window: the 320x180 screen of boards/Compact.png (as the city_plan scene does).
+			mc.getWindow().setGuiScale(3);
+			mc.screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+			setMouse(mc, 0, 0);
+		}
+		if (tick == 95) {
+			Showcase.check(configScreen.boxes().compact(), "the settings screen at 320x180 (now " + mc.getWindow().getGuiScaledWidth() + "x"
+				+ mc.getWindow().getGuiScaledHeight() + ")");
+			configChecks(mc, "scale 3");
+			shot(mc, "04_config_scale3");
 			mc.setScreen(null);
 		}
-		if (tick == 90) {
+		if (tick == 105) {
 			var saved = io.github.jcondedata.aliveworkplace.WorkplaceConfig.load(file.getParent());
 			Showcase.check(!saved.festivals && !io.github.jcondedata.aliveworkplace.hall.Festivals.ENABLED,
 				"turning Festivals off and closing the screen saves it and puts it into effect");
@@ -2686,15 +2736,54 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 	}
 
+	/** Every setting is in a section and its label (in the game's font) fits beside its control at this GUI scale. */
+	private void configChecks(Minecraft mc, String at) {
+		var boxes = configScreen.boxes();
+		var editor = configScreen.editor();
+		List<String> problems = new ArrayList<>();
+		int wordW = Math.max(mc.font.width(Component.translatable("screen.aliveworkplace.settings.on")),
+			mc.font.width(Component.translatable("screen.aliveworkplace.settings.off")));
+		int[] row = io.github.jcondedata.aliveworkplace.ui.SettingsLayout.row(boxes, 0);
+		int listed = 0;
+		for (String section : editor.sections()) {
+			for (String name : editor.optionsIn(section)) {
+				listed++;
+				String key = io.github.jcondedata.aliveworkplace.client.ConfigScreen.labelKey(name);
+				if (!net.minecraft.locale.Language.getInstance().has(key)) {
+					problems.add("untranslated " + name);
+					continue;
+				}
+				// As the screen draws it (a label with a bare "%", "Wonder Standing (%)", reads as written).
+				String label = Component.translatable(key).getString();
+				boolean isSwitch = io.github.jcondedata.aliveworkplace.WorkplaceConfig.isSwitch(name);
+				var range = io.github.jcondedata.aliveworkplace.WorkplaceConfig.RANGES.get(name);
+				boolean small = range != null && io.github.jcondedata.aliveworkplace.ui.SettingsLayout.small(range);
+				if (mc.font.width(label) > io.github.jcondedata.aliveworkplace.ui.SettingsLayout.labelRoom(row, isSwitch, small, boxes.compact(), wordW)) {
+					problems.add("'" + label + "' is cut off");
+				}
+			}
+		}
+		Showcase.check(problems.isEmpty() && listed == io.github.jcondedata.aliveworkplace.WorkplaceConfig.optionNames().size(),
+			at + ": every setting is in a section (" + editor.sections().size() + " sections, " + listed + " settings) and its label fits"
+				+ (problems.isEmpty() ? "" : ": " + String.join(", ", problems)));
+	}
+
 	private io.github.jcondedata.aliveworkplace.client.guide.GuideScreen guide;
 	private final List<String> guideProblems = new ArrayList<>();
 	private volatile boolean guideGiven;
 
+	/**
+	 * The Guide Book (26.2a) in Copperline (44.4): a new player is given it; every page opens, its picture loads, its
+	 * words fit under the picture and the picture stays big enough; then a chapter opened from the rail, and the book at
+	 * GUI scale 3 (320x180).
+	 */
 	private void guideScene(Minecraft mc, MinecraftServer server) {
 		tick++;
 		if (tick == 1) {
 			mc.options.renderDistance().set(4);
 			mc.options.cloudStatus().set(CloudStatus.OFF);
+			mc.options.guiScale().set(2);
+			mc.resizeDisplay();
 		}
 		if (tick == 40) {
 			// The first-join advancement hands every player the book (aliveworkplace:guide_book).
@@ -2719,27 +2808,62 @@ public class ScreenshotHarness implements ClientModInitializer {
 				if (mc.screen != guide || guide.page() != page) {
 					guideProblems.add("page " + page + " didn't open");
 				} else if (page > 0) {
-					var p = guide.pageAt(page);
-					if (guide.textLines(page) > io.github.jcondedata.aliveworkplace.client.guide.GuideScreen.TEXT_LINES) {
-						guideProblems.add(name + "'s text takes " + guide.textLines(page) + " lines");
-					}
-					if (mc.getResourceManager().getResource(p.image()).isEmpty()) {
-						guideProblems.add(name + " has no picture");
-					}
-					if (net.minecraft.client.resources.language.I18n.get("guide.aliveworkplace.page." + name + ".text")
-						.startsWith("guide.aliveworkplace")) {
-						guideProblems.add(name + " has no words");
-					}
+					guidePageChecks(mc, page, "");
 				}
 				shot(mc, String.format("%02d_guide_%s", page, name));
 			}
 			return;
 		}
-		if (t == guide.pageCount() * 12) {
+		int end = guide.pageCount() * 12;
+		if (t == end) {
+			// A chapter from the rail, as a player clicks it: Builders opens at its first page.
+			int[] e = guide.boxes().railEntries()[2];
+			guide.mouseClicked(e[0] + e[2] / 2.0, e[1] + e[3] / 2.0, 0);
+			double scale = mc.getWindow().getGuiScale();
+			setMouse(mc, (e[0] + e[2] / 2.0) * scale, (e[1] + e[3] / 2.0) * scale);
+		}
+		if (t == end + 10) {
+			Showcase.check(guide.page() > 0 && guide.pageAt(guide.page()).chapter().equals("builders")
+				&& (guide.page() == 1 || !guide.pageAt(guide.page() - 1).chapter().equals("builders")),
+				"the rail's Builders opens the chapter at its first page (page " + guide.page() + ")");
+			shot(mc, String.format("%02d_guide_rail_builders", guide.pageCount()));
+			mc.getWindow().setGuiScale(3);
+			mc.screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
+			setMouse(mc, 0, 0);
+		}
+		if (t == end + 25) {
+			for (int p = 1; p < guide.pageCount(); p++) {
+				guidePageChecks(mc, p, "at 320x180 ");
+			}
+			Showcase.check(guide.boxes().compact(), "the book at 320x180 (now " + mc.getWindow().getGuiScaledWidth() + "x"
+				+ mc.getWindow().getGuiScaledHeight() + ")");
+			shot(mc, String.format("%02d_guide_scale3", guide.pageCount() + 1));
+			guide.show(0);
+		}
+		if (t == end + 35) {
+			shot(mc, String.format("%02d_guide_scale3_contents", guide.pageCount() + 2));
 			Showcase.check(guideGiven, "a new player is given the Guide Book");
 			Showcase.check(guideProblems.isEmpty(), "every page of the Guide Book opens with its picture and its words fit ("
 				+ (guide.pageCount() - 1) + " pages" + (guideProblems.isEmpty() ? "" : ": " + String.join(", ", guideProblems)) + ")");
 			mc.stop();
+		}
+	}
+
+	private void guidePageChecks(Minecraft mc, int page, String at) {
+		var p = guide.pageAt(page);
+		String name = p.id();
+		if (guide.textLines(page) > io.github.jcondedata.aliveworkplace.client.guide.GuideScreen.TEXT_LINES) {
+			guideProblems.add(at + name + "'s text takes " + guide.textLines(page) + " lines");
+		}
+		int[] picture = guide.pictureBox(page);
+		if (picture[3] < (guide.boxes().compact() ? 50 : 90)) {
+			guideProblems.add(at + name + "'s picture is only " + picture[3] + " tall");
+		}
+		if (mc.getResourceManager().getResource(p.image()).isEmpty()) {
+			guideProblems.add(name + " has no picture");
+		}
+		if (net.minecraft.client.resources.language.I18n.get("guide.aliveworkplace.page." + name + ".text").startsWith("guide.aliveworkplace")) {
+			guideProblems.add(name + " has no words");
 		}
 	}
 
@@ -3665,7 +3789,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	}
 
 	/** Puts the mouse at window pixel ({@code x}, {@code y}); the harness has no real mouse. */
-	private static void setMouse(Minecraft mc, double x, double y) {
+	static void setMouse(Minecraft mc, double x, double y) {
 		try {
 			var xpos = net.minecraft.client.MouseHandler.class.getDeclaredField("xpos");
 			var ypos = net.minecraft.client.MouseHandler.class.getDeclaredField("ypos");

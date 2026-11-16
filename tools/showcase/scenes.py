@@ -68,6 +68,12 @@ SCENES = [
       "the Storehouse board says the Lumberjack (Bo) gathers the logs and to hire a Cleric for the brewing stands", 30,
       [("01_logs_gathered_by_the_lumberjack", "Oak logs: gathered by the Lumberjack (Bo)"),
        ("02_hire_a_cleric_for_brewing_stands", "Brewing stands: hire a Cleric to make them")]),
+    # The Storehouse board in Copperline (ROADMAP 47.4, docs/design/copperline/boards/Storehouse.png)
+    S("storehouse_board", "Porter", "The Storehouse board in Copperline",
+      "the Storehouse board in Copperline listed five needs with who brings each, filtered to the builders, gave everything the player carried with Give all, and fit the 320x180 screen", 40,
+      [("01_board", "Who needs what, how much the store holds, who brings it, and Give or Stocked or Have 0"),
+       ("02_builders_only", "The rail's Builders filter"), ("03_gave_all", "Give all: everything carried handed over"),
+       ("04_compact", "At 320x180 (GUI scale 3): the rail as icons, no Needed by column")]),
     # Items (ROADMAP 21.1b): the owner's picked icons in a chest and in hand
     S("items", "Items", "Every item's icon", "every item's icon shows in a chest, in the hotbar and in hand", 50,
       [("01_items_chest", "All 14 in a chest"), ("03_hand_blueprint", "Blueprint in hand"),
@@ -115,9 +121,9 @@ SCENES = [
        ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
     # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
     S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
-      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; the Storehouse board did the same", 45,
+      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
       [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
-       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_last_line", "The Storehouse board, scrolled")]),
+       ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_tooltip", "The Storehouse board: a row's every line in its icon's tooltip")]),
     # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
     S("table_basement", "Builder", "Blueprint Table: basements in the preview",
       "the table's library showed Starter Cottage IV with its cellar under a faint ground plane, turning, then the Storehouse and its vault, each size line saying how deep it goes", 45,
@@ -266,8 +272,8 @@ SCENES = [
     # Porter
     S("porter", "Porter", "Carrying goods to the storehouse", "the porter stocked the storehouse and the board opened", 90,
       [("*_porter@middle", "Carrying"), ("20_storehouse_closeup", "The storehouse"),
-       ("21_request_board", "The Storehouse board in the Blueprint Table's style: requests listed, the store at a glance"),
-       ("22_request_read_out", "A request read out in the pane")]),
+       ("21_request_board", "The Storehouse board in Copperline: who needs what, how much the store holds, who brings it"),
+       ("22_request_read_out", "A request pointed at: what a click gives and who brings it, in the whisper line")]),
     # Modded storage networks in the Storehouse: part one (ROADMAP 37.9) a Sophisticated Storage controller and its linked
     # barrels and chests, part two (37.10) a Tom's Simple Storage inventory connector and its network, each one store
     S("modded_storehouse", "Porter", "The Storehouse reads a Sophisticated controller and a Tom's Simple Storage network each as one store",
@@ -389,6 +395,9 @@ SCENES = [
     # Porter (44.1): the Drop Box's screen in Copperline
     S("drop_box", "Porter", "The Drop Box", "the Drop Box opened in Copperline: its slots and your pack in wells, what waits for a porter, and where it goes", 45,
       [("01_drop_box_screen", "Drop Box"), ("02_drop_box_pack", "Your pack")]),
+    # Tailor (44.2): a mod job's trades in Copperline
+    S("crafter_trades", "Tailor", "Trading with a crafter", "a Journeyman Tailor's trades opened in Copperline: the offer list, her level bar, then an offer chosen with its price in the wells", 45,
+      [("01_crafter_trades", "Her offers"), ("02_crafter_trade_chosen", "An offer chosen")]),
     # Ferryman
     S("ferry_menu", "Ferryman", "Buying a travel ticket", "the ferryman's tickets opened as the list screen: the Far Shore's row with its fare and Buy, then gold Confirm", 45,
       [("01_ferry_screen", "Destinations"), ("02_ferry_confirm", "Confirm the fare")]),
@@ -513,15 +522,44 @@ SCENES = [
        ("02_parts", "Buttons, rail tabs, toggles, slider, number field, list rows, bars, slots, chips, text fields"),
        ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
        ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
+    # 48.1: the Blueprint Table in Copperline, like the Blueprint Book board, at GUI scale 2 and 3
+    S("copperline_blueprints", "Builder", "Copperline: the Blueprint Table and Book",
+      "the table opened in Copperline with the Starter Cottage picked: the style rail, the list with its NAME and SIZE heading, the 3D preview, size and materials (what the player doesn't carry framed in red with the word under it) and one copper button; Sandstone chosen from the rail; Store All put two blueprints on the shelf; at 320x180 the rail turned into an icon grid and a search for nothing said so", 30,
+      [("01_book", "The Blueprint Book: style rail, list, preview, size, materials, one copper button"),
+       ("03_stored", "The Stored tab, two blueprints on the shelf"),
+       ("05_book_compact", "The book at 320x180: the rail as an icon grid")]),
+    # 48.2: the Trainer screen in Copperline, like the Trainer board, at GUI scale 2 and 3
+    S("copperline_trainer", "Trainer", "Copperline: the Trainer screen",
+      "a village Trainer's screen in Copperline: the plaque and lintel with the rank, the portrait, record and today's line on the rail with Challenge (the one copper button), Trade and Close, the reward, the team as cards with the real models (half of it \"???\" until the player wins once), the party with a status each and the rules; the whisper line says what Challenge and Trade do; at 320x180 the compact layout", 20,
+      [("01_trainer", "The Trainer screen, the mouse on Challenge"),
+       ("02_trainer_trade", "The mouse on Trade: the whisper line says what it does"),
+       ("03_trainer_compact", "The Trainer screen at 320x180 (GUI scale 3)")], cobblemon=True),
+    # 48.3: the villager status card, its tooltips and the toast in Copperline, like the VillagerCard board
+    S("copperline_status_card", "Builder", "Copperline: the status card, tooltips and toasts",
+      "a builder's status card in Copperline: the copper edge, her portrait with name and job, the close X, her site and what she needs with bars; the mouse on a line shows its tooltip, on the grayed-out Hall page button its reason; In chat is the one copper button; a builder's finished toast arrives; at 320x180 the same card fits", 15,
+      [("01_card_tooltip", "The card, the mouse on a line: its tooltip"),
+       ("02_card_refused", "The mouse on the grayed-out button: why it can't be used"),
+       ("03_card_toast", "A builder's finished toast"),
+       ("04_card_compact", "The card at 320x180 (GUI scale 3)")]),
+    # 48.4: the Chronicle like its board, and the list menus' tabs on the rail
+    S("copperline_chronicle", "Village Hall", "Copperline: the Chronicle and the list menus",
+      "the Village Hall's Chronicle in Copperline: the plaque, the village and its count of entries on the lintel, the Show column with each group's count, the entries newest first under day headers, the raid's entry open to its whole text; the Defense filter clicked shows only the raid and the sighting; at 320x180 the column turns to icons; then the Research menu, a list menu, with its tab on the rail", 15,
+      [("01_chronicle", "The Chronicle, the raid's entry open"),
+       ("02_chronicle_defense", "Show: Defense, only the defense entries"),
+       ("03_chronicle_compact", "The Chronicle at 320x180 (GUI scale 3)"),
+       ("04_list_rail", "A list menu (Research) with its tab on the rail")]),
     # Village-wide
-    S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
-      [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
-       ("03_hall_builder", "A builder read out in the pane"), ("08_hall_calendar", "The calendar"),
-       ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
-    # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
-    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
+    # The Village Hall in Copperline (ROADMAP 47.2): the Overview, a villager at work opened in People, the Map, GUI scale 3
+    S("hall", "Village Hall", "The Village Hall in Copperline", "the Village Hall opened on its Overview, a villager at work opened in People, "
+      "the Map showed the village's buildings, the calendar page opened, and at GUI scale 3 the rail became an icon grid", 75,
+      [("02_hall_overview", "The Overview: the village's name and rank, four stat cards, Needs you and At work now"),
+       ("06_hall_people_from_overview", "A villager at work clicked: their row open in People"),
+       ("07_hall_map", "The Map: the village from above, its layers and the building selected"),
+       ("09_hall_compact", "GUI scale 3 (320x180): the rail as an icon grid, Needs you across the stage")]),
+    # Painting the plan (ROADMAP 27.3, in Copperline since 44.3): the City Plan screen over a real village, at GUI scales 2 and 3
+    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen in Copperline (the tools on the rail, the map, the zones with one copper New) opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
-       ("03_city_plan_scale4", "The finished plan, GUI scale 4")]),
+       ("03_city_plan_scale3", "The finished plan at 320x180, GUI scale 3")]),
     # The plan on the ground and on the hall's map (ROADMAP 27.4)
     S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
@@ -536,7 +574,7 @@ SCENES = [
     S("hall_people", "Village Hall", "The People table",
       "the hall's People section as a table of everyone (a builder, a guard, workers, a jobless villager, a nitwit and a "
       "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
-      [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
+      [("01_people_table", "The People table in Copperline: Name, Job, Level and Mood (a glyph, a word and a color), the counts as chips"),
        ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons"),
        ("03_people_story", "Story on the open row: their life story, as shift-click opened it from the old list (B547)")]),
     # Job ▾ in the People table (ROADMAP 40.3): every job, the free ones with how many, the price, two clicks to pay
@@ -554,8 +592,10 @@ SCENES = [
       [("01_bed_list", "Bed ▾ opened: the free beds with where they are, Jem's bed to swap, the note on wagon beds and cradles"),
        ("02_bed_given", "The nearest free bed clicked: hers from tonight"),
        ("03_bed_after", "Opened again: her bed on top as \"their bed now\", the other free bed, Jem's to swap")]),
-    S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
-      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+    S("hall_pages", "Village Hall", "The chronicle, trade routes and the other sections",
+      "the chronicle and trade-route pages opened, then the Homes & Food and Defense sections in Copperline's shell", 45,
+      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab"),
+       ("03_hall_homes", "Homes & Food in Copperline's shell"), ("04_hall_defense", "Defense in Copperline's shell")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one
     S("hall_jobs", "Village Hall", "Free job blocks: filling an empty Storehouse from the hall",
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,
@@ -598,19 +638,20 @@ SCENES = [
       [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
        ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
     S("move_plan", "Village Hall", "Moving a building on the hall's Move page, step by step",
-      "1: the Move page listed the Starter Cottage with where it stands from the Hall; 2: its picker showed the village map "
-      "(the cottage now in yellow, the Hall, the roads) and said to click where it should go; 3: a click to the west put the "
-      "new spot there (it fits, green, the ghost glowing), Rotate turned its front east and Confirm was ready; 4: Confirm "
-      "planned the move for the Mover", 60,
-      [("01_pick_a_building", "Step 1: pick the building (the cottage, and where it stands)"),
-       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now, \"click where it should go\""),
-       ("03_confirm", "Step 3: the new spot fits (green), front turned east, Confirm ready"),
-       ("04_move_planned", "Planned: the list marks the move for the Mover")]),
-    S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
-      "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
-      "was refused, no picker opened, and the action bar said why in red", 60,
-      [("01_move_page", "The Move page: the cottage, with its Move button"),
-       ("02_refused", "Refused: \"builders are still working on it; move it once they're done\"")]),
+      "Copperline (47.3): the rail shows the three steps and Your move. 1: the list of buildings says which can move; "
+      "2: the village map with the cottage in a dashed frame; a click to the west put the new spot there, green with "
+      "Fits here, and Rotate turned its front east; 3: Next asked \"Move the Starter Cottage?\" with From, To, Takes, "
+      "What happens, the small map and the checklist; Move building planned it for the Mover", 70,
+      [("01_pick_a_building", "Step 1: the buildings, and whether each can move"),
+       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now in a dashed frame"),
+       ("04_confirm", "Step 3: Move the Starter Cottage? From, To, the checklist, Move building"),
+       ("05_move_planned", "Planned: the list marks the move for the Mover")]),
+    S("move_refused", "Village Hall", "A move refused, and a spot refused",
+      "the hall's Move page listed the Starter Cottage with a lock (Wait: builders are still working on it) "
+      "and the market stall as free to move; the cottage's Move was refused, and on the stall's map a spot on the cottage showed red and "
+      "hatched, saying it would overlap it", 60,
+      [("01_move_page", "Step 1: the cottage locked (Wait) and why; the stall can move"),
+       ("02_refused", "Step 2: a spot on the cottage, red and hatched, with why")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "
@@ -639,7 +680,7 @@ SCENES = [
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
         "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 170),
-    # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
+    # The Colony Charter (ROADMAP 33.8, in Copperline since 44.3): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
     S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
       "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "
       "the charter's map showed the loaded land like a vanilla map on parchment, a banner for Thornholm, Ashford and Farholt, the ring "
@@ -1197,10 +1238,11 @@ SCENES = [
        ("04_ledger_opens", "Opened from afar")]),
     S("outfits", "Everyone at work", "Every outfit, and as a zombie", "every profession shows its outfit, as a villager and a zombie", 60,
       [("[0-9][0-9]_*@spread", "")]),
-    S("guide", "Everyone at work", "The Guide Book", "a new player is given the Guide Book; every page opens with its picture", 60,
+    S("guide", "Everyone at work", "The Guide Book", "the Guide Book in Copperline (the chapters on the rail, the page's picture and words, Back and a copper Next): a new player is given it, every page opens with its picture and its words fit, a chapter opens from the rail, and the book at 320x180", 60,
       [("[0-9][0-9]_guide_*@spread", "")]),
-    S("config", "Everyone at work", "The settings screen (Mod Menu)", "every setting fits its button; a switch turned off is saved", 30,
-      [("01_config_numbers", "Distances and numbers"), ("02_config_switches", "Switches"), ("03_config_festivals_off", "Festivals off")]),
+    S("config", "Everyone at work", "The settings screen (Mod Menu)", "the settings in Copperline (the sections on the rail, a toggle, [-] [+] or a slider for each): every setting is in a section and its label fits, a switch turned off is saved, and the screen at 320x180", 30,
+      [("01_config_numbers", "Work: distances and numbers"), ("02_config_switches", "Village's switches"), ("03_config_festivals_off", "Festivals off"),
+       ("04_config_scale3", "At 320x180, GUI scale 3")]),
     S("words", "Everyone at work", "Every new or reworded message, in chat", "every message reads without a raw key or placeholder", 30,
       [("[0-9][0-9]_words@spread", "")]),
     S("staff", "Everyone at work", "Every workstation with its villager", "every workstation stands with its worker", 45,

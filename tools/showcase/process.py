@@ -77,7 +77,9 @@ def magenta_pixels(im):
     solid[:, 0] = solid[:, -1] = False
     # The checkerboard's black is black. A tooltip's background (#100010) is a dark purple: dark purple text on it (a
     # reform's line, solid at GUI scale 4) has no black squares beside it, so only patches near true black count.
-    dark = (np.maximum(np.maximum(r, g), b) < 30) & (np.minimum(r, b) - g < 8)
+    # Copperline's panels (Deepslate 900, #16171D) are near black too, so the black must be the texture's own #000000
+    # (it stays 0 however lit): the edicts scene's dark purple reform line at GUI scale 4 read as missing on 2026-11-16.
+    dark = np.maximum(np.maximum(r, g), b) < 12
     solid &= grow(dark, 6)
     count = int(np.count_nonzero(solid))
     if count == 0:

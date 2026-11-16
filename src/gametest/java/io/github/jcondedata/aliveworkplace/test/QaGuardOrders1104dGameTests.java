@@ -489,14 +489,14 @@ public class QaGuardOrders1104dGameTests implements FabricGameTest {
 	public void aLoweredBannerSendsTheGuardBackToTheirPost(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		helper.setDayTime(2000);
-		BlockPos post = new BlockPos(3, 2, 3);
+		BlockPos post = new BlockPos(2, 2, 2);
 		Villager guard = guard(helper, post);
 		List<Component> seen = new ArrayList<>();
 		ServerPlayer player = QaStageFourGameTests.player(helper, seen, GameType.SURVIVAL);
 		sneakClick(player, guard, new ItemStack(ModItems.RALLY_BANNER), seen);
 		QaStageFourGameTests.pressAir(helper, player);
 		helper.assertTrue(RallyBannerItem.rally(player.getMainHandItem()).raised(), "setup: not raised, saw " + QaStageFourGameTests.keys(seen));
-		BlockPos away = helper.absolutePos(new BlockPos(26, 2, 26));
+		BlockPos away = helper.absolutePos(new BlockPos(28, 2, 28));
 		player.teleportTo(away.getX() + 0.5, away.getY(), away.getZ() + 0.5);
 		long[] lowered = {-1};
 		helper.onEachTick(() -> {
@@ -509,11 +509,18 @@ public class QaGuardOrders1104dGameTests implements FabricGameTest {
 				lowered[0] = helper.getTick();
 			}
 		});
+		// "Round their post" is the guard's patrol area: random points up to GuardPatrol.DAY_RADIUS blocks off on each axis
+		// (a square, so a corner is about 20 blocks away), reached within the walker's 2 blocks (B1332: a guard back on
+		// patrol was 17.7 blocks off). Lowered within 5 blocks of the player, 26 blocks off on each axis, they walk at least
+		// 4.5 blocks back.
+		double round = GuardPatrol.DAY_RADIUS + 2.5;
 		helper.succeedWhen(() -> {
 			helper.assertTrue(lowered[0] >= 0, "the guard never caught up with the player: " + guard.distanceTo(player) + " blocks off");
 			helper.assertFalse(Escorts.isEscorting(guard), "still following a lowered banner");
-			helper.assertTrue(horizontal(guard.position(), center(helper, post)) < 15, "the guard is " + horizontal(guard.position(), center(helper, post))
-				+ " blocks from the post");
+			Vec3 home = center(helper, post);
+			helper.assertTrue(Math.abs(guard.getX() - home.x) <= round && Math.abs(guard.getZ() - home.z) <= round, "the guard is "
+				+ horizontal(guard.position(), home) + " blocks from the post (" + (guard.getX() - home.x) + ", " + (guard.getZ() - home.z)
+				+ "), " + (helper.getTick() - lowered[0]) + " ticks after the banner was lowered");
 		});
 	}
 }

@@ -83,6 +83,8 @@ the place. When a helper comes within 64 blocks of it, the heirloom is put there
 (in trail ruins, which have none, in a suspicious gravel block to brush; in a mineshaft perhaps a chest minecart), or
 in a new barrel on the ground if the chests are gone. Right-click the villager with it and it's done; its story goes
 in the chronicle ("Grandmother's Compass is home with Dara's family again, found at the ruin by Jesse...").
+Where the heirloom's name opens a sentence, the Lucky Crystal gets its capital ("The Lucky Crystal! I never thought
+I'd hold it again...", "The Lucky Crystal is back with Dara..."); mid-sentence it stays "the Lucky Crystal" (B1314).
 
 ## How it works
 
@@ -279,6 +281,11 @@ the letter or the map; `revive`, `pet_near_home` (at dawn), `schooled` and `buil
 - 31.10: `PersonalErrandGameTests.aLetterThereAndBackBetweenTwoHalls`, `PersonalErrandGameTests.bringBackMyLoveWithAGrave`,
   `PersonalErrandGameTests.aCatByTheDoorAtDawn`, `PersonalErrandGameTests.offToSchoolWithASchooledChild`,
   `PersonalErrandGameTests.aChapelWeddingAndItsFeast` and `PersonalErrandGameTests.theLostHeirloomPlacedOnceWithTheMap`.
+- QA's `QaRequestFixes1116cGameTests` (B1314, B1315, B1316): the Lucky Crystal capital only at a sentence's start,
+  word for word and after a reload, the other heirlooms unchanged; a player with 0 or 2 hearts keeps the heirloom, the
+  letter or the reply and is told "You need 3 hearts with Dara to help with this.", one point more (3 hearts) hands it
+  in and both helpers are paid; married at the bell, the request is missed once with its line and a later Chapel pays
+  nothing; a Chapel finished on the fifth day wins over the bell.
 - With Cobblemon: `PersonalRequestCompatTests.helpMeTrainTakesWinsOnThreeDays` and
   `PersonalRequestCompatTests.aPokemonFriendIsJudgedAtDawn`.
 - Showcase scenes: `personal_request`, `letter`

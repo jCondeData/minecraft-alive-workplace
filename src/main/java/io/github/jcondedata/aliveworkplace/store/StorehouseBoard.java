@@ -16,12 +16,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
@@ -42,6 +44,8 @@ public final class StorehouseBoard {
 	/** Back to the requests, on the orders page. */
 	public static final int BACK_SLOT = 0;
 	public static final int FIRST_REQUEST = 9;
+	/** Give everything you carry that the requests ask for (47.4: the board's one copper button; shown only when you carry some). */
+	public static final int GIVE_ALL_SLOT = 2;
 	/** How far from the storehouse the blocks whose requests it lists may be (35.7: a Wonder may stand 96 from its hall). */
 	public static final int BLOCK_RANGE = 160;
 
@@ -100,11 +104,19 @@ public final class StorehouseBoard {
 			menu.broadcastChanges();
 		});
 		int slot = FIRST_REQUEST;
+		int canGive = 0;
+		// Give all hands the carried items to the rows in turn, so two rows asking for the same item share what's
+		// carried: count it the same way, from what is left after the rows above (each row's own button still says
+		// what it alone would get).
+		int[] carried = carriedCounts(viewer);
 		for (Requests.Request request : requests) {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
-			menu.button(slot++, icon(level, storehouse, request, store, viewer), p -> {
+			ItemStack row = icon(level, storehouse, request, store, viewer);
+			int rowGives = BoardRows.give(BoardRows.row(row));
+			canGive += request.forBlock() || carried == null ? rowGives : takeFrom(carried, viewer, request, rowGives);
+			menu.button(slot++, row, p -> {
 				int given = give(p, request);
 				if (given > 0) {
 					Chat.actionBar(p, gaveMessage(request, given).withStyle(ChatFormatting.GREEN));
@@ -116,6 +128,69 @@ public final class StorehouseBoard {
 				menu.broadcastChanges();
 			});
 		}
+		if (canGive > 0) {
+			List<Requests.Request> listed = List.copyOf(requests.subList(0, Math.min(requests.size(), ChoiceMenu.SIZE - FIRST_REQUEST)));
+			ItemStack all = new ItemStack(Items.CHEST, Math.min(99, canGive));
+			all.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.give_all", canGive), ChatFormatting.GOLD));
+			all.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.give_all_hint"), ChatFormatting.GRAY))));
+			CompoundTag allTag = new CompoundTag();
+			allTag.putInt(GIVE_ALL_COUNT, canGive);
+			all.set(DataComponents.CUSTOM_DATA, CustomData.of(allTag));
+			menu.button(GIVE_ALL_SLOT, all, p -> {
+				int given = giveAll(p, listed);
+				if (given > 0) {
+					Chat.actionBar(p, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.storehouse.gave_all", given, given)
+						.withStyle(ChatFormatting.GREEN));
+					level.playSound(null, p.blockPosition(), SoundEvents.BUNDLE_INSERT, SoundSource.PLAYERS, 0.8f, 1f);
+				} else {
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.storehouse.gave_none").withStyle(ChatFormatting.YELLOW));
+				}
+				render(menu, level, storehouse, p);
+				menu.broadcastChanges();
+			});
+		}
+	}
+
+	/** The Give all button's custom data: how many a press hands over (the item count stops at 99). */
+	public static final String GIVE_ALL_COUNT = "aw_give_all";
+
+	/** What {@code viewer} carries, slot by slot (null: nobody is looking). */
+	@Nullable
+	private static int[] carriedCounts(@Nullable ServerPlayer viewer) {
+		if (viewer == null) {
+			return null;
+		}
+		Inventory inventory = viewer.getInventory();
+		int[] counts = new int[inventory.getContainerSize()];
+		for (int i = 0; i < counts.length; i++) {
+			counts[i] = inventory.getItem(i).getCount();
+		}
+		return counts;
+	}
+
+	/** Takes up to {@code most} items {@code request} accepts out of {@code carried}, as {@link #give} would; returns how many. */
+	private static int takeFrom(int[] carried, ServerPlayer viewer, Requests.Request request, int most) {
+		Inventory inventory = viewer.getInventory();
+		int left = most;
+		for (int i = 0; i < carried.length && left > 0; i++) {
+			ItemStack stack = inventory.getItem(i);
+			if (carried[i] <= 0 || stack.isEmpty() || !request.accepts().test(stack)) {
+				continue;
+			}
+			int take = Math.min(left, carried[i]);
+			carried[i] -= take;
+			left -= take;
+		}
+		return most - left;
+	}
+
+	/** 47.4: hands over what {@code player} carries for each of {@code requests} in turn (the board's order); returns how many. */
+	static int giveAll(ServerPlayer player, List<Requests.Request> requests) {
+		int given = 0;
+		for (Requests.Request request : requests) {
+			given += give(player, request);
+		}
+		return given;
 	}
 
 	/**
@@ -217,18 +292,22 @@ public final class StorehouseBoard {
 		List<Component> lore = new ArrayList<>();
 		int away = (int) Math.round(Math.sqrt(request.station().distSqr(viewer.blockPosition())));
 		lore.add(plain(io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.storehouse.for", away, job(request), away), ChatFormatting.GRAY));
+		int byLine = -1;
 		if (request.forBlock()) {
+			byLine = lore.size();
 			lore.add(plain(Component.translatable(request.block().found() ? "screen.aliveworkplace.storehouse.found" : "screen.aliveworkplace.storehouse.made_by",
 				request.block().job()), ChatFormatting.GRAY));
 		}
+		long inStore = -1;
 		if (request.item() != null) {
-			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.in_store", SupplyContainers.count(level, store, request.item())),
-				ChatFormatting.GRAY));
+			inStore = SupplyContainers.count(level, store, request.item());
+			lore.add(plain(Component.translatable("screen.aliveworkplace.storehouse.in_store", inStore), ChatFormatting.GRAY));
 		}
 		int have = count(viewer.getInventory(), request);
 		lore.add(have > 0 ? plain(Component.translatable("screen.aliveworkplace.storehouse.give", Math.min(have, request.count())), ChatFormatting.GREEN)
 			: plain(Component.translatable("screen.aliveworkplace.storehouse.you_have_none"), ChatFormatting.DARK_GRAY));
 		if (request.item() != null && !request.forBlock()) {
+			byLine = lore.size();
 			// 46.1 (owner, 2026-11-09): who gathers or makes it here, else the job to hire
 			for (Component line : io.github.jcondedata.aliveworkplace.craft.CraftJobs.storeLines(level, storehouse,
 					io.github.jcondedata.aliveworkplace.work.Village.RADIUS, request.item())) {
@@ -236,6 +315,10 @@ public final class StorehouseBoard {
 			}
 		}
 		icon.set(DataComponents.LORE, new ItemLore(lore));
+		// 47.4: the Copperline table's columns, beside the lore (unchanged)
+		String who = request.worker() != null && request.worker().hasCustomName() && request.worker().getCustomName() != null
+			? request.worker().getCustomName().getString() : "";
+		BoardRows.tag(icon, request.count(), inStore, have, byLine, BoardRows.group(request), away, who);
 		return icon;
 	}
 

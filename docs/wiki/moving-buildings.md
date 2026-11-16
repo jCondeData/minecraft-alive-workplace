@@ -5,9 +5,22 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, 47.3
 
 ## What a player sees
+
+**In Copperline (47.3).** The Move page now looks like the rest of the new screens (boards `Move1-3.png`). The rail
+on the left shows the three steps, **Pick**, **Place** and **Confirm** (done ones ticked, the current one copper), and
+**Your move**: the building, its size, where it's going and the way it faces. **Step 1** is a table of the village's
+buildings with **Can it move?**: a green **Yes**, a **Wait** with a lock while builders are on it or a called-off move is
+put back, **Planned**, or **No** with a lock (the Hall's own building, a Wonder, someone else's claim), each locked one
+saying why; a click picks one and **What happens** says what the Mover will do; **Next: choose the spot** (or Enter)
+opens step 2. **Step 2** is the village map: the building now in a dashed frame ("Now here"), the new spot green with a
+tick where it **Fits here**, red and hatched where it can't go (the box says why), its front in yellow, a 16-block scale
+bar; **Rotate** (or R) and the preview key at the right. **Next: confirm** asks **Move the Starter Cottage?** with From,
+To, Takes and Faces, What happens, a small map with From and To and a checklist (the spot is free, a Mover works here,
+it isn't being moved already); the one copper button, **Move building**, plans it. Back and the rail's ticked steps go
+back a step.
 
 **The Hall's Move page (45.2).** A **Move** tab (a piston) in the Village Hall, under Buildings, lists the village's
 finished buildings, each with where it stands from the Hall ("Now: 17 blocks north-west of the Hall") and, once
@@ -491,6 +504,12 @@ in the open and in a storage room, a depot keeps its 16, and an empty Smart Chut
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.
+`QaMoverCrateLastResort1114e2GameTests` (4, the QA lane): with the crate in a storage room (the last resort), an unlit
+campfire with 2 beef, a shulker box with 5 diamonds (counted in its item and loose: exactly 5), a chiseled bookshelf with 3
+books and ice (one ice, no water) are each dropped as themselves with exactly what they held.
+`QaCreateMoverCrateToolbox1114e2CompatTests` (3, compat suite): a Toolbox's 8 iron ingots and a Vault's 48 emeralds with room
+round the crate, and a Depot's 16 copper ingots in a storage room, each exactly once. A beehive's bees in the last resort
+(B1262) and Create's ghost filters there (B1261) are fixed.
 `QaMovePutBack1114bGameTests` (4, the QA lane, B1204): a move called off while the building is still coming down is
 refused a new spot ("The Mover is still putting it back...") until it stands, then taken; with one block left to put back
 still refused, with none left taken; another building's move planned and carried out while one is put back; and a move

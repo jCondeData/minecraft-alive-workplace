@@ -27,6 +27,7 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.MAILBOX_MENU, MailboxScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.DROP_BOX_MENU, DropBoxScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.SHOP_COUNTER_MENU, ShopCounterScreen::new);
+		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.TRADES_MENU, CopperTradeScreen::new); // 44.2
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL_MENU, VillageHallMenuScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.STOREHOUSE_MENU, StorehouseScreen::new);
 		net.minecraft.client.gui.screens.MenuScreens.register(io.github.jcondedata.aliveworkplace.registry.ModBlocks.POKEMON_TRADER_MENU, PokemonTradeScreen::new);
@@ -67,6 +68,9 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				mc.setScreen(new BlueprintTableScreen(payload));
 			}
 		});
+		// Copperline's toast (48.3): a finished build.
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.card.CardToasts.Show.TYPE,
+			(payload, context) -> context.client().getToasts().addToast(new CopperToast(payload.icon(), payload.title(), payload.line())));
 		// The City Plan screen (27.3).
 		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.city.CityPlans.Open.TYPE,
 			(payload, context) -> context.client().setScreen(new CityPlanScreen(payload)));

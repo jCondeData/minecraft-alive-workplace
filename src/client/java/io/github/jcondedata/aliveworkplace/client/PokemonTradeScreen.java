@@ -56,6 +56,18 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 		int left = leftPos;
 		int top = topPos;
 		TableStyle.panel(g, left, top, WIDTH, HEIGHT);
+		// The shell (Copperline, 48.4): the trader's name on the plaque, today's offers on the lintel left of the trader's
+		// book, the close X at its end; the whisper line at the foot (renderLabels).
+		int[] win = window();
+		int[] plaque = CopperStyle.plaque(g, font, title, win);
+		CopperStyle.lintel(g, font, win, plaque, Component.empty(), overClose(mouseX, mouseY));
+		int[] lintel = io.github.jcondedata.aliveworkplace.ui.CopperLayout.lintel(win, plaque);
+		Component count = offersLine();
+		int room = left + PokemonTradeView.INFO_X - 6 - lintel[0];
+		if (room > 8) {
+			String text = CopperStyle.trim(font, count.getString(), room);
+			g.drawString(font, text, left + PokemonTradeView.INFO_X - 6 - font.width(text), lintel[1] + 4, CopperStyle.TUFF, false);
+		}
 		TableStyle.listBackground(g, left + PokemonTradeView.LIST_X, top + PokemonTradeView.LIST_Y, PokemonTradeView.LIST_W,
 			PokemonTradeView.LIST_H);
 		int over = rowAt(mouseX, mouseY);
@@ -90,7 +102,6 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 
 	@Override
 	protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
-		g.drawString(font, TableStyle.trim(font, title.getString(), WIDTH - 16 - 26), titleLabelX, titleLabelY, TableStyle.TITLE, false);
 		g.drawString(font, Component.translatable("screen.aliveworkplace.pokemon_trader.party"), PokemonTradeView.PARTY_X + 2,
 			PokemonTradeView.PARTY_Y + 2, TableStyle.TITLE, false);
 		boolean any = false;
@@ -154,7 +165,8 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 				y += 10;
 			}
 		}
-		TableStyle.footerHint(g, font, Component.translatable("screen.aliveworkplace.pokemon_trader.hint"), 8, HEIGHT - 12, WIDTH - 16);
+		int[] whisper = io.github.jcondedata.aliveworkplace.ui.CopperLayout.whisper(new int[]{0, 0, WIDTH, HEIGHT});
+		TableStyle.footerHint(g, font, whisperText(mouseX, mouseY), whisper[0] + 4, whisper[1] + 3, whisper[2] - 8);
 	}
 
 	@Override
@@ -172,8 +184,53 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 		renderTooltip(g, mouseX, mouseY);
 	}
 
+	/** The window's box on the screen (Copperline's shell is drawn round it). */
+	private int[] window() {
+		return new int[]{leftPos, topPos, WIDTH, HEIGHT};
+	}
+
+	private boolean overClose(double mouseX, double mouseY) {
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.inside(io.github.jcondedata.aliveworkplace.ui.CopperLayout.close(window()), mouseX, mouseY);
+	}
+
+	/** The lintel's words: how many offers the trader has today ("No offers today" with none). */
+	private Component offersLine() {
+		int n = 0;
+		for (int i = 0; i < PokemonTradeView.MAX_OFFERS; i++) {
+			n += ChoiceView.shown(icon(PokemonTradeView.OFFERS + i)) ? 1 : 0;
+		}
+		return n == 0 ? Component.translatable("screen.aliveworkplace.pokemon_trader.offers_none")
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("screen.aliveworkplace.pokemon_trader.offers", n, n);
+	}
+
+	/**
+	 * The whisper line (48.4): what the thing under the mouse is (an offer's name and its price, a party Pokémon's name,
+	 * the trader's book), or the screen's hint. The tooltip still gives the details.
+	 */
+	private Component whisperText(int mouseX, int mouseY) {
+		mouseX += leftPos; // renderLabels draws from the panel's corner; the mouse is the screen's
+		mouseY += topPos;
+		if (overClose(mouseX, mouseY)) {
+			return Component.translatable("screen.aliveworkplace.pokemon_trader.close_whisper");
+		}
+		int row = rowAt(mouseX, mouseY);
+		if (row >= 0) {
+			ItemStack cost = icon(PokemonTradeView.COSTS + row);
+			String name = icon(PokemonTradeView.OFFERS + row).getHoverName().getString();
+			return cost.isEmpty() ? Component.literal(name) : Component.translatable("screen.aliveworkplace.pokemon_trader.offer_whisper", name, cost.getHoverName());
+		}
+		if (hoveredSlot != null && hoveredSlot.isActive() && hoveredSlot.index < io.github.jcondedata.aliveworkplace.work.ChoiceMenu.SIZE && ChoiceView.shown(hoveredSlot.getItem())) {
+			return hoveredSlot.getItem().getHoverName();
+		}
+		return Component.translatable("screen.aliveworkplace.pokemon_trader.hint");
+	}
+
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		if (button == 0 && overClose(mouseX, mouseY)) {
+			onClose(); // the close X closes as Esc does
+			return true;
+		}
 		if (hoveredSlot == null || !hoveredSlot.isActive()) {
 			int row = rowAt(mouseX, mouseY);
 			if (row >= 0) {

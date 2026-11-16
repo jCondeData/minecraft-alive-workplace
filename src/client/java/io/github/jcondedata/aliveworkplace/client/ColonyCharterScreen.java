@@ -6,11 +6,12 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.colony.Colonies;
 import io.github.jcondedata.aliveworkplace.colony.ColonyMap;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.ui.CityPlanLayout;
+import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -27,15 +28,14 @@ import net.minecraft.world.level.material.MapColor;
  * blocks out), a small dashed circle round every other hall (128 blocks) and a red cross on the spot chosen. Pointing
  * at the map says how far and which way the place is and whether a colony can go there; a click asks the server to
  * choose it ({@link Colonies.Choose}), which answers with the spot and a line of text. The sums are {@link ColonyMap}'s.
+ * Drawn in Copperline (44.3, {@link CityPlanLayout#charter}): the map at the stage's left, the spot and the ring in the
+ * column at its right, Done the one copper button, and the whisper line.
  */
 public class ColonyCharterScreen extends Screen {
 	private static final ResourceLocation MAP_TEXTURE = AliveWorkplace.id("colony_charter_map");
 	public static final ResourceLocation MARKS = AliveWorkplace.id("textures/gui/colony_map_marks.png");
 	public static final ResourceLocation PARCHMENT = AliveWorkplace.id("textures/gui/colony_map_parchment.png");
 	public static final ResourceLocation RING = AliveWorkplace.id("textures/gui/colony_map_ring.png");
-	private static final int PAD = 6;
-	private static final int FRAME_BG = 0xE0101418;
-	private static final int FRAME_EDGE = 0xFF3A4C66;
 
 	private final boolean mainHand;
 	private final BlockPos hall;
@@ -46,6 +46,8 @@ public class ColonyCharterScreen extends Screen {
 	private Component message;
 	private boolean messageGood = true;
 	private DynamicTexture texture;
+	private CityPlanLayout.Charter boxes;
+	private Button doneButton;
 	private int mapX;
 	private int mapY;
 	private int mapSize;
@@ -80,14 +82,21 @@ public class ColonyCharterScreen extends Screen {
 		return new int[] {mapX, mapY, mapSize};
 	}
 
+	/** The boxes the screen draws in and takes its clicks with. */
+	public CityPlanLayout.Charter boxes() {
+		return boxes;
+	}
+
 	@Override
 	protected void init() {
-		int room = Math.min(width - 2 * PAD, height - 2 * PAD - 14 - 26 - 22);
-		mapSize = Math.max(96, Math.min(2 * ColonyMap.PIXELS, room));
-		mapX = (width - mapSize) / 2;
-		mapY = PAD + 14;
-		addRenderableWidget(Button.builder(Component.translatable("screen.aliveworkplace.colony_map.done"), b -> onClose())
-			.bounds(width / 2 - 40, mapY + mapSize + 28, 80, 18).build());
+		Component done = Component.translatable("screen.aliveworkplace.colony_map.done");
+		boxes = CityPlanLayout.charter(width, height, font.width(title), Math.max(60, font.width(done) + 16));
+		mapX = boxes.map()[0];
+		mapY = boxes.map()[1];
+		mapSize = boxes.map()[2];
+		int[] d = boxes.done();
+		// The widget takes the click; render draws it in Copperline (addWidget: the game doesn't draw it itself).
+		doneButton = addWidget(Button.builder(done, b -> onClose()).bounds(d[0], d[1], d[2], d[3]).build());
 		if (texture == null) {
 			NativeImage image = new NativeImage(ColonyMap.PIXELS, ColonyMap.PIXELS, true);
 			for (int z = 0; z < ColonyMap.PIXELS; z++) {
@@ -130,6 +139,12 @@ public class ColonyCharterScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
+		if (button == 0 && CopperLayout.inside(boxes.close(), mx, my)) {
+			// The lintel's close X (Copperline, 47.1): as Esc.
+			minecraft.getSoundManager().play(net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+			onClose();
+			return true;
+		}
 		if (button == 0 && overMap(mx, my)) {
 			int x = ColonyMap.toWorld(hall.getX(), mx, mapX, mapSize);
 			int z = ColonyMap.toWorld(hall.getZ(), my, mapY, mapSize);
@@ -144,14 +159,22 @@ public class ColonyCharterScreen extends Screen {
 	@Override
 	public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.renderBackground(g, mouseX, mouseY, partialTick);
-		g.fill(mapX - 3, mapY - 3, mapX + mapSize + 3, mapY + mapSize + 3, FRAME_BG);
-		g.renderOutline(mapX - 3, mapY - 3, mapSize + 6, mapSize + 6, FRAME_EDGE);
+		int[] win = boxes.win();
+		CopperStyle.window(g, win[0], win[1], win[2], win[3]);
+		g.fill(mapX - 1, mapY - 1, mapX + mapSize + 1, mapY + mapSize + 1, CopperStyle.VOID);
 	}
 
 	@Override
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		super.render(g, mouseX, mouseY, partialTick);
-		line(g, title, mapY - 12, 0xFFFFFFFF);
+		Component whisper = Component.translatable("screen.aliveworkplace.colony_map.hint");
+		boolean overClose = CopperLayout.inside(boxes.close(), mouseX, mouseY);
+		int[] plaque = CopperStyle.plaque(g, font, title, boxes.win());
+		CopperStyle.lintel(g, font, boxes.win(), plaque, Component.translatable("screen.aliveworkplace.colony_map.lintel", ColonyMap.MIN, ColonyMap.MAX), overClose);
+		if (overClose) {
+			whisper = Component.translatable("screen.aliveworkplace.colony_map.whisper.close");
+		}
+
 		RenderSystem.enableBlend();
 		g.blit(PARCHMENT, mapX, mapY, 0f, 0f, mapSize, mapSize, 16, 16); // tiled under the whole map
 		g.blit(MAP_TEXTURE, mapX, mapY, mapSize, mapSize, 0f, 0f, ColonyMap.PIXELS, ColonyMap.PIXELS, ColonyMap.PIXELS, ColonyMap.PIXELS);
@@ -168,16 +191,82 @@ public class ColonyCharterScreen extends Screen {
 		spot.ifPresent(p -> g.blit(MARKS, screenX(p.getX()) - 3, screenY(p.getZ()) - 3, 8, 8, 16f, 0f, 8, 8, 64, 32));
 		g.disableScissor();
 		RenderSystem.disableBlend();
+		// north, as on the Hall's map
+		String north = Component.translatable("screen.aliveworkplace.hall.map.north").getString();
+		g.fill(mapX + mapSize - font.width(north) - 6, mapY + 2, mapX + mapSize - 2, mapY + 13, 0xC0000000);
+		g.drawString(font, north, mapX + mapSize - font.width(north) - 4, mapY + 4, CopperStyle.QUARTZ, false);
 
+		// the column: where the colony goes (a glyph, the sentence in its color), the ring, Done
+		int[] sh = boxes.spotHead();
+		heading(g, Component.translatable("screen.aliveworkplace.colony_map.spot_head"), sh);
 		Component status = message != null ? message
 			: spot.isPresent() ? Component.translatable("screen.aliveworkplace.colony_map.spot", VillageHallScreen.where(hall, spot.get()), village)
-			: Component.translatable("screen.aliveworkplace.colony_map.hint");
-		int statusColor = message != null ? (messageGood ? 0xFF7CFC7C : 0xFFFF7070) : spot.isPresent() ? 0xFFFF7070 : 0xFFFFFFFF;
-		line(g, status, mapY + mapSize + 6, statusColor);
-		line(g, Component.translatable("screen.aliveworkplace.colony_map.legend", ColonyMap.MIN, ColonyMap.MAX, ColonyMap.CLEAR), mapY + mapSize + 17, 0xFFA0A0A0);
+			: Component.translatable("screen.aliveworkplace.colony_map.pick");
+		CopperStyle.Status kind = message != null ? (messageGood ? CopperStyle.Status.GOOD : CopperStyle.Status.BAD)
+			: spot.isPresent() ? CopperStyle.Status.GOOD : CopperStyle.Status.INFO;
+		int[] sp = boxes.spot();
+		CopperStyle.panel(g, sp[0], sp[1], sp[2], sp[3]);
+		g.blitSprite(kind.glyph, sp[0] + 4, sp[1] + 5, 8, 8);
+		paragraph(g, status, sp[0] + 15, sp[1] + 5, sp[2] - 19, sp[1] + sp[3] - 2, kind.color);
+		int[] rh = boxes.ringHead();
+		heading(g, Component.translatable("screen.aliveworkplace.colony_map.ring_head"), rh);
+		int[] r = boxes.ring();
+		paragraph(g, Component.translatable("screen.aliveworkplace.colony_map.legend", ColonyMap.MIN, ColonyMap.MAX, ColonyMap.CLEAR), r[0], r[1], r[2],
+			r[1] + r[3], CopperStyle.TUFF);
+		boolean overDone = doneButton.isMouseOver(mouseX, mouseY);
+		CopperStyle.button(g, font, doneButton.getMessage(), null, doneButton.getX(), doneButton.getY(), doneButton.getWidth(), doneButton.getHeight(),
+			CopperStyle.Kind.COPPER, overDone, false, false);
+		if (overDone) {
+			whisper = Component.translatable("screen.aliveworkplace.colony_map.whisper.done");
+		}
 
-		if (overMap(mouseX, mouseY)) {
-			g.renderComponentTooltip(font, hover(mouseX, mouseY), mouseX, mouseY);
+		List<Component> hover = overMap(mouseX, mouseY) ? hover(mouseX, mouseY) : List.of();
+		if (!hover.isEmpty()) {
+			whisper = Component.translatable("screen.aliveworkplace.colony_map.whisper.map");
+		}
+		int[] w = boxes.whisper();
+		CopperStyle.whisper(g, font, whisper, w[0] + 2, w[1] + 3, w[2] - 4, boxes.compact());
+		if (hover.size() == 1) {
+			CopperStyle.tooltip(g, font, hover.get(0), List.of(), null, null, mouseX + 8, mouseY - 14);
+		} else if (hover.size() == 2) {
+			ColonyMap.Verdict verdict = verdictAt(mouseX, mouseY);
+			CopperStyle.tooltip(g, font, hover.get(0), List.of(), verdict == ColonyMap.Verdict.OK ? CopperStyle.Status.GOOD : CopperStyle.Status.BAD,
+				hover.get(1), mouseX + 8, mouseY - 14);
+		}
+	}
+
+	private ColonyMap.Verdict verdictAt(int mouseX, int mouseY) {
+		int x = ColonyMap.toWorld(hall.getX(), mouseX, mapX, mapSize);
+		int z = ColonyMap.toWorld(hall.getZ(), mouseY, mapY, mapSize);
+		return ColonyMap.verdict(hall, x, z, marks.stream().map(Colonies.Mark::hall).toList());
+	}
+
+	/** A heading: Tuff capitals and a rule to its right. */
+	private void heading(GuiGraphics g, Component text, int[] box) {
+		String t = CopperStyle.trim(font, text.getString().toUpperCase(java.util.Locale.ROOT), box[2]);
+		g.drawString(font, t, box[0], box[1] + 1, CopperStyle.TUFF, false);
+		int rx = box[0] + font.width(t) + 4;
+		if (rx < box[0] + box[2]) {
+			g.fill(rx, box[1] + 5, box[0] + box[2], box[1] + 6, CopperStyle.DEEP_600);
+		}
+	}
+
+	/** {@code text} wrapped to {@code w}, from {@code y} down to {@code bottom}; the last line that fits ends with an ellipsis if more is left. */
+	private void paragraph(GuiGraphics g, Component text, int x, int y, int w, int bottom, int color) {
+		List<net.minecraft.util.FormattedCharSequence> lines = font.split(text, w);
+		for (int i = 0; i < lines.size() && y + 9 <= bottom; i++) {
+			boolean last = i + 1 < lines.size() && y + 19 > bottom;
+			if (last) {
+				StringBuilder sb = new StringBuilder();
+				lines.get(i).accept((index, style, cp) -> {
+					sb.appendCodePoint(cp);
+					return true;
+				});
+				g.drawString(font, CopperStyle.trim(font, sb + " ...", w), x, y, color, false);
+				return;
+			}
+			g.drawString(font, lines.get(i), x, y, color, false);
+			y += 10;
 		}
 	}
 
@@ -199,27 +288,12 @@ public class ColonyCharterScreen extends Screen {
 		out.add(VillageHallScreen.where(hall, new BlockPos(x, hall.getY(), z)));
 		ColonyMap.Verdict verdict = ColonyMap.verdict(hall, x, z, marks.stream().map(Colonies.Mark::hall).toList());
 		out.add(switch (verdict) {
-			case OK -> Component.translatable("screen.aliveworkplace.colony_map.ok").withStyle(ChatFormatting.GREEN);
-			case TOO_NEAR -> Component.translatable("screen.aliveworkplace.colony_map.too_near", village).withStyle(ChatFormatting.RED);
-			case TOO_FAR -> Component.translatable("screen.aliveworkplace.colony_map.too_far", village).withStyle(ChatFormatting.RED);
-			case NEAR_HALL -> Component.translatable("screen.aliveworkplace.colony_map.near_hall").withStyle(ChatFormatting.RED);
+			case OK -> Component.translatable("screen.aliveworkplace.colony_map.ok");
+			case TOO_NEAR -> Component.translatable("screen.aliveworkplace.colony_map.too_near", village);
+			case TOO_FAR -> Component.translatable("screen.aliveworkplace.colony_map.too_far", village);
+			case NEAR_HALL -> Component.translatable("screen.aliveworkplace.colony_map.near_hall");
 		});
 		return out;
 	}
 
-	/** A line of text centred on the screen at {@code y}, shrunk to fit its width if it must be. */
-	private void line(GuiGraphics g, Component text, int y, int color) {
-		int w = font.width(text);
-		int room = width - 8;
-		if (w <= room) {
-			g.drawCenteredString(font, text, width / 2, y, color);
-			return;
-		}
-		float scale = room / (float) w;
-		g.pose().pushPose();
-		g.pose().translate(width / 2f, y, 0);
-		g.pose().scale(scale, scale, 1f);
-		g.drawCenteredString(font, text, 0, 0, color);
-		g.pose().popPose();
-	}
 }

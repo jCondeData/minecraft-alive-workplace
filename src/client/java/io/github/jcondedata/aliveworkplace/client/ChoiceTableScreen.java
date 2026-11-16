@@ -198,7 +198,8 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		renderSidebar(g, mouseX, mouseY);
 		if (customBody()) {
 			// A body drawn by the screen itself (the hall's People table, 40.2) in place of the list and the pane.
-			renderBody(g, left + 8 + side, top + 22, panelW - 16 - side, panelH - 16 - 22, mouseX, mouseY);
+			int[] body = io.github.jcondedata.aliveworkplace.ui.CopperLayout.body(new int[]{left, top, panelW, panelH}, side);
+			renderBody(g, body[0], body[1], body[2], body[3], mouseX, mouseY);
 			TableStyle.footerHint(g, font, whisperText(mouseX, mouseY, -1), left + 8, top + panelH - 12, panelW - 16);
 			return;
 		}
@@ -794,6 +795,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 	private int lmX, lmY, lmW, lmH, lmHead, lmScroll, lmButtonW;
 	/** The money line's box (pointing at it shows the menu's own tooltip). */
 	private int lmMoneyX, lmMoneyW;
+	/** The tabs' rail (48.4; w 0 with no tabs) and how wide the whisper line's words may run before the page arrows. */
+	private int[] lmRail = new int[4];
+	private int lmWhisperW;
 
 	private void listLayout() {
 		lmTabs.clear();
@@ -832,35 +836,36 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark m = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
 			return m == null ? 0 : m.order();
 		}));
-		int y = top + 22;
-		int right = left + panelW - 8;
-		// The tabs in rows that wrap at the panel's right (CopperLayout.flow, the GameTests' path too).
-		int[] tabW = new int[lmTabs.size()];
-		for (int i = 0; i < tabW.length; i++) {
-			tabW[i] = TableStyle.tabWidth(font, icon(lmTabs.get(i)).getHoverName(), true, Math.max(40, (panelW - 16) / Math.max(1, Math.min(lmTabs.size(), 6)) - 4));
+		// The shell (48.4, ListMenuLayout): the tabs down a rail of icon cells at the left, the list on the stage
+		// right of it, the page arrows at the whisper line's right, the previous one first.
+		int labelW = 0;
+		for (int slot : lmTabs) {
+			labelW = Math.max(labelW, font.width(icon(slot).getHoverName()));
 		}
-		int[][] tabBoxes = io.github.jcondedata.aliveworkplace.ui.CopperLayout.flow(tabW, left + 8, y, right, 4, TableStyle.TAB_H, TableStyle.TAB_H + 3);
-		for (int i = 0; i < tabBoxes.length; i++) {
-			lmBoxes.add(new int[]{lmTabs.get(i), tabBoxes[i][0], tabBoxes[i][1], tabBoxes[i][2], tabBoxes[i][3]});
-			y = tabBoxes[i][1];
-		}
-		lmX = left + 8;
-		lmY = lmTabs.isEmpty() ? top + 22 : y + TableStyle.TAB_H + 5;
-		lmW = panelW - 16;
-		lmH = top + panelH - 18 - lmY;
-		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
-		lmHead = info != null && !info.columns().isEmpty() ? 13 : 0;
-		// The page arrows at the footer's right, the next one last.
 		List<Integer> pages = new ArrayList<>(lmPages);
 		pages.sort(java.util.Comparator.comparing(this::pageNext)); // the previous one first
 		int[] pageW = new int[pages.size()];
 		for (int i = 0; i < pageW.length; i++) {
 			pageW[i] = TableStyle.buttonWidth(font, icon(pages.get(i)).getHoverName());
 		}
-		int[][] pageBoxes = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rightRow(pageW, right, top + panelH - 16, 4, 13);
-		for (int i = pageBoxes.length - 1; i >= 0; i--) {
-			lmBoxes.add(new int[]{pages.get(i), pageBoxes[i][0], pageBoxes[i][1], pageBoxes[i][2], pageBoxes[i][3]});
+		io.github.jcondedata.aliveworkplace.ui.ListMenuLayout.Boxes boxes = io.github.jcondedata.aliveworkplace.ui.ListMenuLayout.layout(
+			panelBox(), lmTabs.size(), labelW, pageW, TableStyle.compact());
+		lmRail = boxes.rail();
+		for (int i = 0; i < boxes.tabs().length; i++) {
+			int[] t = boxes.tabs()[i];
+			lmBoxes.add(new int[]{lmTabs.get(i), t[0], t[1], t[2], t[3]});
 		}
+		lmX = boxes.list()[0];
+		lmY = boxes.list()[1];
+		lmW = boxes.list()[2];
+		lmH = boxes.list()[3];
+		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
+		lmHead = info != null && !info.columns().isEmpty() ? 13 : 0;
+		for (int i = boxes.pages().length - 1; i >= 0; i--) {
+			int[] b = boxes.pages()[i];
+			lmBoxes.add(new int[]{pages.get(i), b[0], b[1], b[2], b[3]});
+		}
+		lmWhisperW = io.github.jcondedata.aliveworkplace.ui.ListMenuLayout.whisperWidth(panelBox(), boxes.pages());
 		lmScroll = Math.max(0, Math.min(lmScroll, lmMaxScroll()));
 	}
 
@@ -919,14 +924,18 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		lmMoneyX = TableStyle.lintelRight(left, top, panelW) - lmMoneyW;
 		// The money on the lintel, left of the close X (47.1).
 		TableStyle.header(g, font, headerTitle(), money, left, top, panelW, TableStyle.overClose(left, top, panelW, mouseX, mouseY));
+		if (lmRail[2] > 0) {
+			g.fill(lmRail[0], lmRail[1], lmRail[0] + lmRail[2], lmRail[1] + lmRail[3], CopperStyle.VOID);
+		}
 		int hovered = listSlotAt(mouseX, mouseY);
 		for (int[] box : lmBoxes) {
 			int slot = box[0];
 			ItemStack stack = icon(slot);
 			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark mark = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(stack);
 			if (lmTabs.contains(slot)) {
-				TableStyle.tab(g, font, stack.getHoverName(), box[1], box[2], box[3], true, mark != null && mark.on(), slot == hovered);
-				g.renderItem(stack, box[1] + 3, box[2] + 1);
+				// a rail entry (48.4): the tab's icon in a cell, the open one copper-marked; its word in the whisper line
+				CopperStyle.railEntry(g, font, new int[]{box[1], box[2], box[3], box[4]}, null, stack, stack.getHoverName(), 0,
+					mark != null && mark.on(), slot == hovered, true);
 			} else {
 				TableStyle.button(g, font, stack.getHoverName(), box[1], box[2], box[3], box[4], false, slot == hovered, false);
 			}
@@ -965,19 +974,20 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		g.disableScissor();
 		TableStyle.scrollbar(g, lmX + lmW - 6, lmY, lmH, lmScroll, lmMaxScroll(), lmHead + lmRows.size() * TableStyle.LIST_ROW + 4);
 		Component hint = info != null && info.hint() != null ? info.hint() : Component.translatable("screen.aliveworkplace.list.hint");
-		if (hovered >= 0 && !firstLine(icon(hovered)).isEmpty()) {
+		if (hovered >= 0 && lmTabs.contains(hovered)) {
+			// a rail tab names itself first (only its icon shows, 48.4), then what it is
+			String first = firstLine(icon(hovered));
+			hint = first.isEmpty() ? icon(hovered).getHoverName()
+				: Component.translatable("screen.aliveworkplace.list.tab_whisper", icon(hovered).getHoverName(), first);
+		} else if (hovered >= 0 && !firstLine(icon(hovered)).isEmpty()) {
 			hint = Component.literal(firstLine(icon(hovered))); // the whisper line says what's under the mouse (47.1)
 		}
-		int pagesW = 0;
-		for (int[] box : lmBoxes) {
-			if (lmPages.contains(box[0])) {
-				pagesW = Math.max(pagesW, left + panelW - 8 - box[1] + 6);
-			}
-		}
-		TableStyle.footerHint(g, font, hint, left + 8, top + panelH - 13, panelW - 16 - pagesW);
-		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a tab, a page arrow, or the menu's
+		int[] whisper = io.github.jcondedata.aliveworkplace.ui.CopperLayout.whisper(panelBox());
+		TableStyle.footerHint(g, font, hint, whisper[0] + 4, whisper[1] + 3, lmWhisperW);
+		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a page arrow, or the menu's
 		// own (the money line).
-		if (hovered >= 0) {
+		if (hovered >= 0 && !lmTabs.contains(hovered)) {
+			// a rail tab has no floating tooltip (48.4): the whisper line names it, and a tooltip would cover the list
 			g.renderTooltip(font, icon(hovered), mouseX, mouseY);
 		} else if (lmInfo >= 0 && lmMoneyW > 0 && mouseX >= lmMoneyX && mouseX < lmMoneyX + lmMoneyW && mouseY >= top + 6 && mouseY < top + 18) {
 			g.renderTooltip(font, icon(lmInfo), mouseX, mouseY);

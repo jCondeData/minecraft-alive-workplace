@@ -110,7 +110,7 @@ public class DaycareWaitingCompatTests implements FabricGameTest {
 		helper.assertValueEqual(WaitingPokemon.load(new CompoundTag(), access).size(), 0, "Pokémon waiting in a world from before");
 		seen.clear();
 		loaded.handOver(player);
-		helper.assertTrue(seen.contains("Your PC is full: a Pokémon from the daycare is waiting for a free place in it."), "not told at login: " + seen);
+		helper.assertTrue(seen.contains("Your PC is full: 1 Pokémon from the daycare is waiting for a free place in it."), "not told at login: " + seen);
 		helper.assertTrue(!inPc(pc, kid.getUuid()) && loaded.size() == 1, "handed over to a full PC");
 		pc.remove(pc.iterator().next());
 		loaded.handOver(player);

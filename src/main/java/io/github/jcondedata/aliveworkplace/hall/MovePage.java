@@ -212,8 +212,10 @@ public final class MovePage {
 				lore.add(VillageHallScreen.line("message.aliveworkplace.move.putting_back", ChatFormatting.YELLOW)); // B1204
 			}
 			lore.add(VillageHallScreen.line("screen.aliveworkplace.move.click", ChatFormatting.DARK_GRAY));
-			menu.button(slot++, marked(VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
-				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), LIST_MARK, 1), p -> {
+			ItemStack row = marked(VillageHallScreen.icon(pending.forBuilding(from).isPresent() ? Items.STICKY_PISTON : Items.BRICKS,
+				Blueprints.displayName(f.structure()).copy(), ChatFormatting.WHITE, lore.toArray(Component[]::new)), LIST_MARK, 1);
+			row(level, hall, f, from, viewer, row);
+			menu.button(slot++, row, p -> {
 				start(menu, level, hall, from, p);
 				menu.broadcastChanges();
 			});
@@ -223,6 +225,51 @@ public final class MovePage {
 				ChatFormatting.GRAY), null);
 		}
 	}
+
+	/** A step 1 row's {@link #ROW_MARK} states: it can move, it must wait (builders, a put-back), its move is planned, it can't. */
+	public static final int ROW_YES = 0;
+	public static final int ROW_WAIT = 1;
+	public static final int ROW_PLANNED = 2;
+	public static final int ROW_NO = 3;
+
+	/**
+	 * What the Copperline list (47.3) shows of a step 1 row, in {@link #ROW_MARK}: the building's size across ({@code w}) and
+	 * deep ({@code d}), whether it can move ({@code state}, a ROW_ number) and, when it can't, why ({@code why}, the
+	 * refusal as JSON): the same check its click makes ({@link MoveRules#refusal}).
+	 */
+	static void row(ServerLevel level, BlockPos hall, BuildSiteManager.Finished f, BlockPos from, ServerPlayer viewer, ItemStack row) {
+		CompoundTag tag = new CompoundTag();
+		BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size())).ifPresent(box -> {
+			tag.putInt("w", box.getXSpan());
+			tag.putInt("d", box.getZSpan());
+		});
+		Component refused = MoveRules.refusal(level, hall, from, viewer);
+		boolean planned = PendingMoves.get(level).forBuilding(from).isPresent();
+		boolean builders = refused != null && refused.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t
+			&& t.getKey().equals("message.aliveworkplace.move.refused.building");
+		int state;
+		if (puttingBack(level, from).isPresent()) {
+			state = ROW_WAIT;
+			refused = Component.translatable("message.aliveworkplace.move.putting_back");
+		} else if (planned && (refused == null || builders)) {
+			state = ROW_PLANNED;
+			refused = null;
+		} else if (refused == null) {
+			state = ROW_YES;
+		} else {
+			state = builders ? ROW_WAIT : ROW_NO;
+		}
+		tag.putInt("state", state);
+		if (refused != null) {
+			tag.putString("why", Component.Serializer.toJson(refused, level.registryAccess()));
+		}
+		CompoundTag data = row.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		data.put(ROW_MARK, tag);
+		row.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+	}
+
+	/** The custom data key of a step 1 row's size and whether it can move ({@link #row}). */
+	public static final String ROW_MARK = "aliveworkplace:move_row";
 
 	/** The Move button of the building at {@code from}: its plan is taken and the picker opens on it. */
 	static void start(ChoiceMenu menu, ServerLevel level, BlockPos hall, BlockPos from, ServerPlayer player) {

@@ -99,6 +99,14 @@ public final class CopperLayout {
 	}
 
 	/**
+	 * The box a screen draws its own body in (the Hall's People, Overview and Map, the Move page): right of the rail
+	 * ({@code railW}, 0 for none), under the lintel, over the whisper line.
+	 */
+	public static int[] body(int[] win, int railW) {
+		return new int[]{win[0] + 8 + railW, win[1] + 22, win[2] - 16 - railW, win[3] - 16 - 22};
+	}
+
+	/**
 	 * The rail's {@code count} entries: one column of rows (an icon, a label and a count) as tall as fit, from
 	 * {@link #RAIL_ROW} down to 10; on a compact screen a two-column grid of {@link #RAIL_CELL} icon cells.
 	 */

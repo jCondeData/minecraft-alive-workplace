@@ -57,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
 public class QaCupWatchBoard1115d2CompatTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 	private static final String WATCH_COMMAND = "/workplace cup watch";
+	private static final String READY_COMMAND = "/workplace cup ready";
 
 	private static ServerPlayer player(GameTestHelper helper, String... party) {
 		ServerPlayer p = helper.makeMockServerPlayerInLevel();
@@ -476,9 +477,11 @@ public class QaCupWatchBoard1115d2CompatTests implements FabricGameTest {
 			long now = level.getGameTime();
 			cup.call.calledAt = now - 100; // the call came five seconds ago
 			seen.clear();
-			CupMatches.ready(p);
+			// B1336: the player clicks [I'm ready], which runs the command; since B1291 the "couldn't start" line is its reply
+			level.getServer().getCommands().performPrefixedCommand(p.createCommandSourceStack(), READY_COMMAND);
 			List<String> lines = strings(seen);
-			helper.assertTrue(lines.contains("The bout couldn't start (are you already in a battle?). Click [I'm ready] again."), "a player in a battle wasn't told to click again: " + lines);
+			String again = "The bout couldn't start (are you already in a battle?). Click [I'm ready] again.";
+			helper.assertTrue(lines.stream().filter(again::equals).count() == 1, "a player in a battle wasn't told once to click again: " + lines);
 			PokemonBattle current = BattleRegistry.getBattleByParticipatingPlayer(p);
 			helper.assertTrue(current != null && current.getBattleId().equals(ownId), "the player was taken out of their own battle: " + current);
 			helper.assertTrue(cup.call != null && !cup.call.fighting && cup.call.battle == null, "the bout counts as fought");
@@ -486,7 +489,7 @@ public class QaCupWatchBoard1115d2CompatTests implements FabricGameTest {
 			helper.assertTrue(cup.call.calledAt == now, "no new two minutes: called at " + cup.call.calledAt + ", now " + now);
 			helper.assertTrue(cup.results.isEmpty(), "the bout was decided: " + cup.results);
 			current.end();
-			CupMatches.ready(p);
+			level.getServer().getCommands().performPrefixedCommand(p.createCommandSourceStack(), READY_COMMAND);
 			PokemonBattle bout = BattleRegistry.getBattleByParticipatingPlayer(p);
 			helper.assertTrue(bout != null && !bout.getBattleId().equals(ownId) && actorOf(bout, mira.getUUID()) != null && cup.call.fighting,
 				"once free, [I'm ready] didn't start the bout against Mira");

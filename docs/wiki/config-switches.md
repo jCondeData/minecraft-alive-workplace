@@ -3,14 +3,14 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324, 44.4
 
 ## What a player sees
 
 **The config file.** `config/aliveworkplace.json` is written with the defaults the first time the game starts. Edit
 it and restart. A value out of range is clamped to the nearest allowed one, however large (3000000000 gives the most allowed, B477), a missing value takes its default, and
 the file is written back complete, so every option is always listed. A number or a switch written in quotes ("1",
-"false") is read as meant, and so is a switch written as a word: yes or on is true, no or off is false, in any case and with spaces round it ("ON", " No "; B1324, `ConfigHandWrittenGameTests`); any other word takes that switch's default with a warning in the log naming it, never off, and the file is written back with plain true or false. and an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
+"false") is read as meant, and so is a switch written as a word: yes or on is true, no or off is false, in any case and with spaces round it ("ON", " No "; B1324, `ConfigHandWrittenGameTests`); any other word takes that switch's default with a warning in the log naming it, never off, and the file is written back with plain true or false; an empty value (null) takes its default (`QaConfigFileGameTests`). The same holds for
 the two keys the mod keeps for itself: an empty or odd file format number ("configVersion": null, words, a list) is
 read as a file without one, and entries of "expansionsOpen" that aren't names (null, a list) are skipped, so the rest
 of the file is still read (B457). A value of the wrong kind (a switch written 0, a number written "high") takes its
@@ -22,10 +22,17 @@ empty entry takes its default (a Wonder cap, a disaster or raider culture switch
 clamped (`QaConfigOddFilesGameTests`). A bad list or map costs only that option; comments and a byte-order mark are read as meant, while a
 trailing comma makes the file unreadable (the defaults, the file kept aside); a second start reads exactly what the first wrote (`QaConfigHandEditsGameTests`).
 
-**The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
-on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value
-(`ConfigGameTests.everySettingsLabelFitsItsButton` measures them with vanilla's font widths, B161). Closing the screen saves the file and puts the settings into effect in your own
-worlds. A dedicated server keeps its own file.
+**The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings in Copperline
+(44.4, the [new look](copperline.md)): the sections down the left (Work, Jobs, Builders, Village, Villagers, Defense,
+Realms, Pokémon, each with how many settings it holds), and the open section's settings in a list, the distances and
+numbers first, then the switches. A switch is a toggle with its On or Off word (click anywhere on its row); a number of
+20 steps or fewer has [-] and [+]; a bigger one a slider with its value beside it (Left and Right step it by one,
+Shift by ten, with the mouse on the row). Pointing at a setting's name shows what it does in a tooltip, and the line at
+the foot says how to change it. "Reset this page" puts the open section back to its defaults; Done, Esc or the close X
+saves the file and puts the settings into effect in your own worlds. A dedicated server keeps its own file, which the
+foot line says. Every setting's name fits beside its control at GUI scale 2 and 3
+(`CopperlineGuideSettingsGameTests.settingsFitAtGuiScaleTwoAndThree`) and, as before, its old 150-pixel button
+(`ConfigGameTests.everySettingsLabelFitsItsButton`, B161).
 
 **Game rules.** Per-world tuning of builders uses vanilla's `/gamerule`, so it can differ from world to world and be
 changed without a restart.
@@ -291,7 +298,7 @@ missing `gamerule.workplaceVillageFarms`).
 ## Proof
 
 GameTests: `ConfigGameTests` (4: the file is read, clamped and applied; every radius and village number; every
-setting has its words and range; saved settings are read back), `ConfigHandWrittenGameTests` (5: every switch written as yes, on, no or off reads as meant and any other word takes its default; a normal file reads as before; a hand-written file is written back plain and reads the same again; ids with spaces or capitals in `disabledArcs` and `disabledWonders` are off; B1323, B1324), `ExpansionGateGameTests` (4: an old config with the
+setting has its words and range; saved settings are read back), `ConfigHandWrittenGameTests` (5: every switch written as yes, on, no or off reads as meant and any other word takes its default; a normal file reads as before; a hand-written file is written back plain and reads the same again; ids with spaces or capitals in `disabledArcs` and `disabledWonders` are off; B1323, B1324), `QaConfigIds1116dGameTests` (4: tabs and line breaks round names and mixed-case namespaced ids in both lists are off, written back plain; three spellings of one Wonder are one entry and the village is refused it; an entry that is no id is skipped and named in the log while the good ones beside it apply; `/workplace story start` says a story written " Bandit_King " is switched off, and no longer once the list is emptied), `ExpansionGateGameTests` (4: an old config with the
 switches on leaves them off; unfinished switches default off and are hidden; tests can open the gates; a file from before
 the release takes the new defaults, a later choice holds),
 `ExpansionBuildsGameTests` (3: the Table holds no 1.2 build while 1.2 is off and holds them when on; the other

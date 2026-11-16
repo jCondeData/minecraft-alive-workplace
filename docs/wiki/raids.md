@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146, B1320
 
 ## What a player sees
 
@@ -86,8 +86,8 @@ A village that keeps watch hears of an attack **the evening before**, when the c
     Village rank or more; the chief is a vindicator in an iron helmet and chestplate with 36 extra health.
 - **Who comes.** While a lair stands by the village, its culture raids (the bandit camp: bandits). Otherwise a culture
   is picked by `weight` among those switched on, without a lair, whose `where` fits the village.
-- **How many.** As before: 3, one more for every 4 villagers, plus up to 4 in iron (helmet and chestplate) for a village
-  with guards, 16 at most; from a lair, no more than the band it has at home (32.3, [Lairs](lairs.md)). Each raider is picked from the roster by its share and gets its role's gear, which never
+- **How many.** As before: 3, one more for every 4 villagers, plus one for every 2 guards, up to 4, in iron (helmet and
+  chestplate), 16 at most (as the questbook's "Guards: the Barracks" says, B1320); from a lair, no more than the band it has at home (32.3, [Lairs](lairs.md)). Each raider is picked from the roster by its share and gets its role's gear, which never
   drops.
 - **Where they appear.** Round the gathering point, a few blocks each way, each on ground a mob can stand and walk
   from: never on a fence, a wall or a roof (a tent in their own war camp), and no higher than a step above the point
@@ -299,3 +299,6 @@ None.
   converted band member leaves with the band). `QaSiegeConverts1109dGameTests`: a climber that drowns finishes its
   ladder; killing it ends the siege and takes the ladder away. A raider that converts after getting through the gate is
   walked back toward it (B1085, open).
+- B1320 (QA, lane D): `QaRaidSize1116dGameTests` (real raids at 12 villagers with 0, 1, 2, 3, 7, 8, 9 and 10 guards:
+  6, 6, 7, 7, 9, 10, 10, 10, the guards' share in iron; never more than 16 from both sides, at 47, 51 and 52 villagers;
+  the Barracks quest gives the size once).

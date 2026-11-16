@@ -46,8 +46,10 @@ final class CopperlineScene {
 		if (tick == 110 && screen != null) {
 			ScreenshotHarness.shot(mc, "03_boxes");
 			screen.show(CopperlinePartsScreen.Page.SHELL);
-			mc.options.guiScale().set(3);
-			mc.resizeDisplay();
+			// GUI scale 3 on the 960x540 window: the 320x180 screen. Vanilla caps the scale by window size (scale 3 needs
+			// 960x720), so the option alone left it at 2 (B1329): put the scale on the window directly, as a resize would.
+			mc.getWindow().setGuiScale(3);
+			screen.resize(mc, mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
 		}
 		if (tick == 130 && screen != null) {
 			int[][] entries = screen.railEntries();

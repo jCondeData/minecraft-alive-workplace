@@ -36,6 +36,9 @@ public class PokemonTradeView extends AbstractContainerMenu {
 	public static final int WIDTH = 300;
 	public static final int HEIGHT = 174;
 	/** The offers list's box on the panel. */
+	/** The trader's book: on the Copperline lintel, left of the close X (48.4). */
+	public static final int INFO_X = WIDTH - 36;
+	public static final int INFO_Y = 2;
 	public static final int LIST_X = 6;
 	public static final int LIST_Y = 22;
 	public static final int LIST_W = 180;
@@ -90,8 +93,8 @@ public class PokemonTradeView extends AbstractContainerMenu {
 				x = PARTY_X + 5 + (i - PARTY) % 3 * 24;
 				y = PARTY_Y + 17 + (i - PARTY) / 3 * 22;
 			} else if (i == INFO) {
-				x = WIDTH - 24;
-				y = 4;
+				x = INFO_X; // on the lintel, left of the close X (Copperline, 48.4)
+				y = INFO_Y;
 			} else {
 				shown = false;
 			}

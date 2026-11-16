@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A builder's shortage line names 24 more things in the plural after a count: "short of 12 Snowballs to make 3 Snow
+  Blocks", Torchflowers, the slabs, the weathered copper doors and trapdoors, Totems of Undying and more (B1307).
 - Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not
   to the server-wide set every new village takes in; the Bandstand quest says it's a rare ??? found in chests, not a
   gray name; and the Barracks quest's raid size counts the guards' share (B1318, B1319, B1320).

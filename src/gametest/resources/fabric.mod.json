@@ -1230,6 +1230,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRequestKinds1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRequestKinds1116cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRequestFixes1116cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRequestFixes1116cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCaravanBlankRoutes1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTreasuryHint1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPersonalAsks1108cGameTests",

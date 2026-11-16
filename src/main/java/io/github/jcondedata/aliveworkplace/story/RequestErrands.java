@@ -1068,7 +1068,7 @@ public final class RequestErrands {
 			} else if (o instanceof Build build && build.wedding() && giver != null) {
 				Villager other = courting(level, hall, giver);
 				if (other != null) {
-					Couples.wed(level, hall, giver, other); // at the Chapel, now that it's finished (Couples.venue)
+					Couples.wed(level, hall, giver, other, false); // at the Chapel, now that it's finished (Couples.venue); its own line below, not the bell's (B1348)
 					Festivals.feast(level, hall);
 					Chronicle.atHall(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.chapel_wedding",
 						giver.getDisplayName(), other.getDisplayName()));

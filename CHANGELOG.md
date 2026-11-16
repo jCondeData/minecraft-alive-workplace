@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Chapel wedding request: a couple married in the new Chapel get one entry in the Village Hall's Chronicle, "married in
+  the new Chapel, and the whole village sat down to a feast", no longer also "married at the bell" (B1348).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

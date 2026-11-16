@@ -658,7 +658,9 @@ name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back
 hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
 paths, the round saves the made-up name, and a real name, spaces and all, still wins).
 QA's `QaCaravanRoutesBlankName1115eBugTests` (B1298: far neighbors saved with blank names, the list saved and read
-back, are listed on the Routes page by their made-up names, next to a named one).
+back, are listed on the Routes page by their made-up names, next to a named one) and `QaCaravanBlankRoutes1116cGameTests`
+(a name of a tab, a line break and a space is blank too, " Riverend " keeps its own name, and the started, stopped and
+sister-village lines a click shows use the made-up name, before and after the list is read back).
 `CaravanSavedNameB1233GameTests` and QA's `QaCaravanNames1114dGameTests` (B1233: a caravan-list entry saved with no
 name, an unreadable one, `null`, a name of the wrong kind such as a number, or JSON that isn't text keeps its routes,
 wants, banner color, stations and tracks and gets the village's made-up name, the same through further saves and loads;

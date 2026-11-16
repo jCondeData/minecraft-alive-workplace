@@ -27,7 +27,8 @@ Colonies. Everyone who may open the hall may read it.
     ("Day 12: +0.30 Levy from Ashford", "Day 12: +3.00 Given by Alex", "Day 13: -1.25 Realm research"; in green, out in
     red). **Anyone** may give: click it with emeralds to give one, shift-click to give the stack; with CobbleDollars in
     the pack, a click with an empty hand gives 100 CobbleDollars (shift-click: 6,400) from your balance (the hint marks the thousands, B1326;
-    `MoneyGroupedCompatTests`). Only the
+    `MoneyGroupedCompatTests`, `QaTreasuryHint1116cCompatTests` at rates from 1 to the largest; without CobbleDollars
+    the emerald hint, `QaTreasuryHint1116cGameTests`). Only the
     capital's owner, their friends and operators **take**: right-click for an emerald, shift-right-click for a stack
     (paid in CobbleDollars with the pack). A stranger's right-click: "Only Rowan and their friends can take from the
     treasury of the Barony of Thornholm."

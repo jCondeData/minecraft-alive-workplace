@@ -107,11 +107,14 @@ public final class RecipeStandIns {
 		Set<Item> out = new LinkedHashSet<>();
 		for (String entry : entries) {
 			if (entry.startsWith("#")) {
-				TagKey<Item> tag = TagKey.create(Registries.ITEM, ResourceLocation.parse(entry.substring(1)));
-				Lookup.tag(BuiltInRegistries.ITEM, tag).ifPresent(set -> set.forEach(h -> out.add(h.value())));
+				ResourceLocation tagId = ResourceLocation.tryParse(entry.substring(1));
+				if (tagId != null) {
+					TagKey<Item> tag = TagKey.create(Registries.ITEM, tagId);
+					Lookup.tag(BuiltInRegistries.ITEM, tag).ifPresent(set -> set.forEach(h -> out.add(h.value())));
+				}
 			} else {
-				ResourceLocation id = ResourceLocation.parse(entry);
-				if (BuiltInRegistries.ITEM.containsKey(id)) {
+				ResourceLocation id = ResourceLocation.tryParse(entry);
+				if (id != null && BuiltInRegistries.ITEM.containsKey(id)) {
 					out.add(Lookup.value(BuiltInRegistries.ITEM, id));
 				}
 			}
@@ -121,12 +124,23 @@ public final class RecipeStandIns {
 
 	static StandIn read(ResourceLocation id, JsonElement json) {
 		JsonObject object = json.getAsJsonObject();
-		List<String> from = strings(object, "from");
+		List<String> from = entries(object, "from");
 		if (from.isEmpty()) {
 			throw new IllegalArgumentException("nothing to make it from");
 		}
-		return new StandIn(id, ResourceLocation.parse(object.get("serializer").getAsString()), from, strings(object, "except"),
+		return new StandIn(id, ResourceLocation.parse(object.get("serializer").getAsString()), from, entries(object, "except"),
 			ResourceLocation.parse(object.get("result").getAsString()));
+	}
+
+	/** {@code key}'s item ids and {@code #tag}s, each checked (B1312: a typo in one threw later, at server start). */
+	private static List<String> entries(JsonObject object, String key) {
+		List<String> out = strings(object, key);
+		for (String entry : out) {
+			if (ResourceLocation.tryParse(entry.startsWith("#") ? entry.substring(1) : entry) == null) {
+				throw new IllegalArgumentException("'" + entry + "' in " + key + " is not a valid item or tag id");
+			}
+		}
+		return out;
 	}
 
 	private static List<String> strings(JsonObject object, String key) {

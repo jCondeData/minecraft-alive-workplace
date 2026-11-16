@@ -149,7 +149,9 @@ planner skips it. A file in `data/<namespace>/recipe_stand_ins/` stands in for o
 makes the result) to every kind that uses the crafting table's recipes (`RecipeStandIns`, joined in `Crafting.byResult`).
 It counts only while a recipe of that serializer id is loaded (the mod installed and its config switch on), and of
 `from` only what a crafting recipe makes is kept when anything is (Carved Wood's Pale Oak Chest without pale oak in the
-game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more.
+game was what a chest from nothing named). By id only, never the other mod's classes; a datapack can add more. A file
+with a typo in an id (a capital letter or a space, as in `"#c:Chests/Wooden"`) is skipped with a "Skipping recipe
+stand-in" warning naming it, and the server starts as usual (B1312).
 
 ## 3. Switches
 

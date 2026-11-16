@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Showcase page: the Book of Edicts at GUI scale 4 no longer shows as broken. Nothing was missing in the game. The
+  page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

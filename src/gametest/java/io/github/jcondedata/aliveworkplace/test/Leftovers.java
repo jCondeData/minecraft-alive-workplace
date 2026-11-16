@@ -385,6 +385,10 @@ final class Leftovers {
 			if (!box.contains(net.minecraft.world.phys.Vec3.atCenterOf(grave))) {
 				level.removeBlockEntity(grave);
 				level.setBlock(grave, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), net.minecraft.world.level.block.Block.UPDATE_ALL);
+				// a point with no grave under it isn't taken away with the block, and Graves.near would still count it (as halls, B427)
+				if (level.getPoiManager().getType(grave).filter(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.GRAVE_POI)).isPresent()) {
+					level.getPoiManager().remove(grave);
+				}
 			}
 		}
 	}

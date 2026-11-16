@@ -109,6 +109,10 @@ public class QaVillagerLifeJobsGameTests implements FabricGameTest {
 	private static Mine mine(GameTestHelper helper, ItemStack... chest) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		// B478: the Miner's own chests are every store within SupplyContainers.RADIUS of the bench, and the bench stands
+		// two blocks from the area's corner: a chest an earlier batch's test left in the gap outside is the Miner's too,
+		// and a pickaxe (or one cobblestone) in it had the quarry dug out before the test looked
+		Leftovers.stores(helper, helper.absolutePos(M_BENCH));
 		ServerLevel level = helper.getLevel();
 		helper.setDayTime(2000);
 		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
@@ -132,10 +136,40 @@ public class QaVillagerLifeJobsGameTests implements FabricGameTest {
 		return QuarrySiteManager.get(m.level()).get(m.site().id());
 	}
 
+	/**
+	 * What the quarry and its Miner are at, for a failure to explain itself (B478): a quarry that is gone says how it
+	 * went (dug out, stopped, or the Miner died), and every store the Miner counts as their own is listed, the ones
+	 * outside the test area marked.
+	 */
 	private static String state(GameTestHelper helper, Mine m) {
 		QuarrySite site = live(m);
-		return site == null ? "finished" : site.status() + ", " + site.mined() + " dug, holding " + m.miner().getMainHandItem()
-			+ ", at " + helper.relativePos(m.miner().blockPosition());
+		Villager miner = m.miner();
+		BlockPos origin = helper.absolutePos(BlockPos.ZERO);
+		String quarry;
+		if (site != null) {
+			quarry = site.status() + ", " + site.mined() + " dug";
+		} else {
+			String why = !miner.isAlive() ? "the miner is gone (" + (miner.getRemovalReason() != null ? miner.getRemovalReason() : "dead")
+				+ (miner.getLastDamageSource() != null ? ", last hurt by " + miner.getLastDamageSource().getMsgId() : "") + ")"
+				: m.site().isDone() ? "finished (every block dug or passed)" : "canceled or removed before it was done";
+			quarry = "the quarry is gone: " + why + "; it was " + m.site().status() + ", " + m.site().mined() + " dug, " + m.site().skipped() + " passed";
+		}
+		StringBuilder stores = new StringBuilder();
+		BlockPos bench = helper.absolutePos(M_BENCH);
+		for (BlockPos p : SupplyContainers.find(m.level(), bench, null)) {
+			stores.append(stores.isEmpty() ? "" : ", ").append(p.subtract(origin).toShortString());
+			if (!helper.getBounds().contains(net.minecraft.world.phys.Vec3.atCenterOf(p))) {
+				stores.append(" (outside the area)");
+			}
+			if (m.level().getBlockEntity(p) instanceof Container c) {
+				stores.append(" with ").append(c.countItem(Items.COBBLESTONE)).append(" cobblestone, ").append(c.countItem(Items.STICK)).append(" sticks, ")
+					.append(c.hasAnyMatching(s -> s.is(net.minecraft.tags.ItemTags.PICKAXES)) ? "a pickaxe" : "no pickaxe");
+			}
+		}
+		return quarry + "; the miner holds " + miner.getMainHandItem() + ", at " + miner.blockPosition().subtract(origin).toShortString()
+			+ " (the area's own coordinates), health " + miner.getHealth() + ", job " + miner.getVillagerData().getProfession()
+			+ "; stores in reach of the bench: [" + stores + "]; village radius " + io.github.jcondedata.aliveworkplace.work.Village.RADIUS
+			+ ", supply radius " + SupplyContainers.RADIUS + "; test tick " + helper.getTick() + ", game time " + m.level().getGameTime();
 	}
 
 	private static int asks(Mine m, Item item) {
@@ -198,6 +232,25 @@ public class QaVillagerLifeJobsGameTests implements FabricGameTest {
 			helper.assertTrue(chest.countItem(Items.STICK) == 0 && chest.countItem(Items.COBBLESTONE) == 4,
 				"materials: " + chest.countItem(Items.STICK) + " sticks, " + chest.countItem(Items.COBBLESTONE) + " cobblestone");
 		}));
+	}
+
+	/**
+	 * B478: a chest an earlier batch's test left outside the area, within the Miner's reach of the bench, isn't this
+	 * test's. With one cobblestone in it the Miner had their three: before {@link #mine} cleared such stores they made the
+	 * pickaxe and dug the quarry out, and the test above found it "finished" at tick 120 (the nightly repeats of
+	 * 2026-10-25, 1 of 10: the stray cobblestone was used up, so the copies after it passed).
+	 */
+	//$ gametest_ticks_batch BUILD '2400' '"qaMinerStrayChest"'
+	@GameTest(template = BUILD, timeoutTicks = 2400, batch = "qaMinerStrayChest")
+	public void qaAStrayChestOutsideTheAreaIsNotTheMiners(GameTestHelper helper) {
+		BlockPos stray = new BlockPos(2, 2, -4);
+		helper.setBlock(stray, Blocks.CHEST);
+		Container left = helper.getBlockEntity(stray);
+		left.setItem(0, new ItemStack(Items.COBBLESTONE));
+		helper.assertTrue(SupplyContainers.find(helper.getLevel(), helper.absolutePos(M_BENCH), null).contains(helper.absolutePos(stray)),
+			"setup: the stray chest should be within the Miner's reach of the bench");
+		qaOneCobblestoneShortIsAWaitForOne(helper);
+		helper.assertTrue(!helper.getBlockState(stray).is(Blocks.CHEST), "the stray chest is still there");
 	}
 
 	/**

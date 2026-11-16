@@ -147,6 +147,75 @@ public class WonderCathedralGameTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * What a failed count needs to explain itself (B485): the time, the village's hall and whether the Cathedral's power
+	 * reaches it, every grave an Undertaker here could reach (where, in this test's area or left outside it, whose, when
+	 * they died) and every Undertaker in the village.
+	 */
+	private static String state(GameTestHelper helper, @Nullable Villager undertaker) {
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		long time = level.getDayTime() % DAY;
+		StringBuilder out = new StringBuilder(" [day " + Chronicle.day(level) + " at " + time + ", game time " + level.getGameTime() + ", dawn "
+			+ (level.getGameTime() - time) + "; hall " + hall + (level.getBlockState(hall).is(ModBlocks.VILLAGE_HALL) ? "" : " (no block)") + ", Cathedral's power "
+			+ (Wonders.power(level, hall, UndertakersPower.TYPE).isPresent() ? "on" : "off") + ", area " + helper.getBounds() + "; graves:");
+		for (BlockPos grave : Graves.near(level, hall, 2 * VillageHalls.RADIUS + 16)) {
+			out.append(' ').append(grave.toShortString()).append(helper.getBounds().contains(grave.getCenter()) ? " in the area" : " OUTSIDE the area")
+				.append(VillageHalls.area(hall).contains(grave.getCenter()) ? "" : ", past the village");
+			if (level.getBlockEntity(grave) instanceof GraveBlockEntity g) {
+				out.append(", ").append(g.name().getString()).append(" died ").append(g.died()).append(';');
+			} else {
+				out.append(", no grave block (").append(level.getBlockState(grave).getBlock()).append(");");
+			}
+		}
+		out.append(" undertakers:");
+		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall).inflate(16), UndertakerWork::isUndertaker)) {
+			BlockPos table = io.github.jcondedata.aliveworkplace.build.Builders.benchPos(v).orElse(null);
+			out.append(' ').append(v.getName().getString()).append(v == undertaker ? " (the test's)" : " (NOT the test's)").append(" at ")
+				.append(v.blockPosition().toShortString()).append(v.isAlive() ? "" : " dead").append(helper.getBounds().contains(v.position()) ? "" : " outside the area")
+				.append(", table ").append(table == null ? "none" : table.toShortString()).append(", needs nothing ").append(UndertakerWork.needsNothing(level, v))
+				.append(", looks ").append(UndertakerWork.radius(v)).append(", revived ").append(ModAttachments.VILLAGERS_REVIVED.getOrElse(v, 0));
+			if (table != null) {
+				out.append(", nearest hall ").append(VillageHalls.nearest(level, table).map(BlockPos::toShortString).orElse("none")).append(", tends ")
+					.append(UndertakersPower.graves(level, table, UndertakerWork.radius(v)).stream().map(BlockPos::toShortString).toList());
+			}
+			out.append(';');
+		}
+		return out.append(']').toString();
+	}
+
+	/** Where {@link #strays} leaves its graves: outside the area, 11 blocks from the Undertaker's table and inside the village. */
+	private static final List<BlockPos> STRAYS = List.of(new BlockPos(-6, 2, 10), new BlockPos(10, 2, -6));
+
+	/**
+	 * Two graves from before this morning just outside the area, as an earlier batch's test leaves them (B485, B482: a
+	 * grave is a block, and only what stands inside a test's area is cleared between batches). The ground put under them
+	 * is taken away when the test ends.
+	 */
+	private static List<BlockPos> strays(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		List<BlockPos> out = new ArrayList<>();
+		for (BlockPos pos : STRAYS) {
+			BlockPos ground = helper.absolutePos(pos.below());
+			BlockState was = level.getBlockState(ground);
+			level.setBlockAndUpdate(ground, Blocks.STONE.defaultBlockState());
+			level.setBlockAndUpdate(ground.above(), Blocks.AIR.defaultBlockState());
+			BlockPos grave = grave(helper, pos, "Stray", new ArrayList<>());
+			GraveBlockEntity g = (GraveBlockEntity) level.getBlockEntity(grave);
+			g.fill(g.villager(), g.name(), g.profession(), g.villagerLevel(), g.died() - DAY);
+			helper.assertTrue(!helper.getBounds().contains(grave.getCenter()), "the stray grave is in the area: " + grave);
+			out.add(grave);
+			Leftovers.after(helper, () -> {
+				if (level.getBlockState(grave).is(ModBlocks.GRAVE)) {
+					level.removeBlockEntity(grave);
+					level.setBlockAndUpdate(grave, Blocks.AIR.defaultBlockState());
+				}
+				level.setBlockAndUpdate(ground, was);
+			});
+		}
+		return out;
+	}
+
 	private static void setUp(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
@@ -181,12 +250,13 @@ public class WonderCathedralGameTests implements FabricGameTest {
 		AtomicBoolean built = new AtomicBoolean();
 		helper.runAfterDelay(800, () -> {
 			helper.assertTrue(level.getBlockState(grave).is(ModBlocks.GRAVE) && ModAttachments.VILLAGERS_REVIVED.getOrElse(uma, 0) == 0,
-				"Mira came back without the Cathedral");
+				"Mira came back without the Cathedral" + state(helper, uma));
 			helper.assertTrue(!UndertakerWork.needsNothing(level, uma) && UndertakersPower.graves(level, table, UndertakerWork.radius(uma)).isEmpty(),
-				"without the Cathedral the grave 40 blocks away was tended");
+				"without the Cathedral the grave 40 blocks away was tended: needs nothing " + UndertakerWork.needsNothing(level, uma) + ", tends "
+					+ UndertakersPower.graves(level, table, UndertakerWork.radius(uma)) + state(helper, uma));
 			cathedral(helper, helper.absolutePos(HALL), null);
 			helper.assertTrue(UndertakerWork.needsNothing(level, uma) && UndertakersPower.graves(level, table, UndertakerWork.radius(uma)).equals(List.of(grave)),
-				"with the Cathedral: " + UndertakersPower.graves(level, table, UndertakerWork.radius(uma)));
+				"with the Cathedral: " + UndertakersPower.graves(level, table, UndertakerWork.radius(uma)) + state(helper, uma));
 			built.set(true);
 		});
 		helper.succeedWhen(() -> {
@@ -220,14 +290,14 @@ public class WonderCathedralGameTests implements FabricGameTest {
 			BlockPos today = grave(helper, new BlockPos(10, 2, 40), "Bo", ids);
 			GraveBlockEntity g = (GraveBlockEntity) level.getBlockEntity(night);
 			g.fill(g.villager(), g.name(), g.profession(), g.villagerLevel(), g.died() - DAY); // died in the night
-			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(night).is(ModBlocks.GRAVE), "brought back at 3000, past the morning");
+			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(night).is(ModBlocks.GRAVE), "brought back at 3000, past the morning" + state(helper, uma));
 			at(level, 42, 1000);
 			int back = UndertakersPower.morning(level, hall);
 			// (back under a new id: Mira's body is still falling over, 20 ticks)
 			helper.assertTrue(back == 1 && !level.getBlockState(night).is(ModBlocks.GRAVE) && !level.getEntitiesOfClass(Villager.class, helper.getBounds(),
-				v -> v.isAlive() && v.getCustomName() != null && v.getCustomName().getString().equals("Mira")).isEmpty(), "the night's grave by morning: " + back);
-			helper.assertTrue(level.getBlockState(today).is(ModBlocks.GRAVE), "a grave from after dawn emptied");
-			helper.assertTrue(ModAttachments.VILLAGERS_REVIVED.getOrElse(uma, 0) == 1, "Uma isn't credited");
+				v -> v.isAlive() && v.getCustomName() != null && v.getCustomName().getString().equals("Mira")).isEmpty(), "the night's grave by morning: " + back + state(helper, uma));
+			helper.assertTrue(level.getBlockState(today).is(ModBlocks.GRAVE), "a grave from after dawn emptied" + state(helper, uma));
+			helper.assertTrue(ModAttachments.VILLAGERS_REVIVED.getOrElse(uma, 0) == 1, "Uma isn't credited" + state(helper, uma));
 			String told = "Uma brought Mira back in the night: by the Great Cathedral's grace, nobody lies in the graveyard past morning";
 			helper.assertTrue(strings(heard).contains(told), "the player heard: " + strings(heard));
 			translated(helper, strings(heard));
@@ -235,7 +305,55 @@ public class WonderCathedralGameTests implements FabricGameTest {
 			GraveBlockEntity bo = (GraveBlockEntity) level.getBlockEntity(today);
 			bo.fill(bo.villager(), bo.name(), bo.profession(), bo.villagerLevel(), bo.died() - DAY);
 			uma.discard();
-			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(today).is(ModBlocks.GRAVE), "brought back with no Undertaker");
+			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(today).is(ModBlocks.GRAVE), "brought back with no Undertaker" + state(helper, null));
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B485: graves an earlier batch left just outside this area (old ones, 11 blocks from the Undertaker's table and inside
+	 * the village) and a grave's point of interest left with no block are what these tests once counted ("the grave 40
+	 * blocks away was tended", "the night's grave by morning: 3"). Planted, they are really there for an Undertaker and for
+	 * the morning; after the tests' own set-up they are gone, and the morning brings back the one grave of the test.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"cathedralStrayGraves"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "cathedralStrayGraves")
+	public void gravesLeftOutsideTheAreaAreNotTheVillages(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		BlockPos table = helper.absolutePos(new BlockPos(2, 2, 2));
+		at(level, 41, 3000);
+		List<BlockPos> strays = strays(helper);
+		BlockPos noBlock = helper.absolutePos(new BlockPos(-4, 2, 20));
+		level.getPoiManager().add(noBlock, net.minecraft.core.registries.BuiltInRegistries.POINT_OF_INTEREST_TYPE.getHolderOrThrow(ModVillagers.GRAVE_POI));
+		Leftovers.after(helper, () -> {
+			if (level.getPoiManager().getType(noBlock).isPresent() && !level.getBlockState(noBlock).is(ModBlocks.GRAVE)) {
+				level.getPoiManager().remove(noBlock);
+			}
+		});
+		// planted for real: an Undertaker at the table would tend them, and they lie in the village for the morning
+		List<BlockPos> planted = new ArrayList<>(strays);
+		planted.add(noBlock);
+		helper.assertTrue(Graves.near(level, table, UndertakerWork.RADIUS).containsAll(planted), "the planted graves aren't within an Undertaker's reach" + state(helper, null));
+		helper.assertTrue(planted.stream().allMatch(p -> VillageHalls.area(hall).contains(p.getCenter()) && !helper.getBounds().contains(p.getCenter())),
+			"the planted graves aren't in the village, outside the area" + state(helper, null));
+
+		setUp(helper);
+		helper.runAfterDelay(2, () -> {
+			helper.assertTrue(Graves.near(level, hall, 2 * VillageHalls.RADIUS).isEmpty(), "graves left after the set-up" + state(helper, null));
+			Villager uma = undertaker(helper, new BlockPos(2, 2, 2), "Uma");
+			helper.assertTrue(!UndertakerWork.needsNothing(level, uma) && UndertakersPower.graves(level, table, UndertakerWork.radius(uma)).isEmpty(),
+				"an Undertaker with nothing to tend" + state(helper, uma));
+			cathedral(helper, hall, null);
+			List<UUID> ids = new ArrayList<>();
+			BlockPos night = grave(helper, new BlockPos(40, 2, 40), "Mira", ids);
+			GraveBlockEntity g = (GraveBlockEntity) level.getBlockEntity(night);
+			g.fill(g.villager(), g.name(), g.profession(), g.villagerLevel(), g.died() - DAY);
+			helper.assertTrue(UndertakersPower.graves(level, table, UndertakerWork.radius(uma)).equals(List.of(night)), "with the Cathedral" + state(helper, uma));
+			at(level, 42, 1000);
+			int back = UndertakersPower.morning(level, hall);
+			helper.assertTrue(back == 1 && ModAttachments.VILLAGERS_REVIVED.getOrElse(uma, 0) == 1, "brought back by morning: " + back + state(helper, uma));
 			helper.succeed();
 		});
 	}
@@ -363,8 +481,8 @@ public class WonderCathedralGameTests implements FabricGameTest {
 			standing(level, id, false);
 			helper.assertTrue(Wonders.power(level, hall, UndertakersPower.TYPE).isEmpty() && Wonders.power(level, hall, WeddingsPower.TYPE).isEmpty(), "powers while damaged");
 			helper.assertTrue(!UndertakerWork.needsNothing(level, uma) && UndertakersPower.graves(level, table, UndertakerWork.radius(uma)).isEmpty(),
-				"a damaged Cathedral's Undertaker");
-			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(night).is(ModBlocks.GRAVE), "brought back by morning while damaged");
+				"a damaged Cathedral's Undertaker" + state(helper, uma));
+			helper.assertTrue(UndertakersPower.morning(level, hall) == 0 && level.getBlockState(night).is(ModBlocks.GRAVE), "brought back by morning while damaged" + state(helper, uma));
 			helper.assertTrue(!Couples.venue(level, hall).equals(altar) && Decorations.beauty(level, hall) == beautyBefore, "the altar and beauty while damaged");
 			Villager a = villager(helper, new BlockPos(20, 2, 20), "Dara");
 			Villager b = villager(helper, new BlockPos(21, 2, 20), "Tom");
@@ -375,7 +493,7 @@ public class WonderCathedralGameTests implements FabricGameTest {
 			standing(level, id, true);
 			helper.assertTrue(UndertakerWork.needsNothing(level, uma) && Couples.venue(level, hall).equals(altar) && Decorations.beauty(level, hall) == beautyBefore + 8,
 				"the powers didn't come back");
-			helper.assertTrue(UndertakersPower.morning(level, hall) == 1, "nobody brought back once repaired");
+			helper.assertTrue(UndertakersPower.morning(level, hall) == 1, "nobody brought back once repaired" + state(helper, uma));
 			helper.succeed();
 		});
 	}

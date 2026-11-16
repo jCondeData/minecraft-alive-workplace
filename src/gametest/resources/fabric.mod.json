@@ -1790,7 +1790,9 @@
 			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MixedLogsSlotGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPocketPlants1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests"
 		]
 	},
 	"depends": {

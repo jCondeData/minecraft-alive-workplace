@@ -308,6 +308,11 @@ game was what a chest from nothing named). By id only, never the other mod's cla
   up loose planks of other woods and no plank beyond the 8 is used; an oak and a spruce log are never 2 chests; a barrel
   and a wooden pickaxe from mixed logs; a Carpenter makes a row of 3 chests from planks and two woods' logs across a save
   and load, and short of logs loses no wood and names logs.
+- `QaMixedLogs1116bGameTests` (7, B1301, QA): a chest from a crimson and a warped stem, from oak wood and a stripped
+  spruce log, from an oak log and 2 bamboo blocks (2 planks each; one block is short); two chests from one log of each
+  of four woods (a third is short); an oak log and 3 spruce planks lack exactly one log or plank, with 4 they are a chest;
+  a barrel (planks and slabs) from three woods' logs; the Carpenter's job from four woods' logs saved and loaded mid-way
+  builds the row of 3 chests, one log left, no plank.
 - `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks, piston or chest from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
   Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a
@@ -322,6 +327,10 @@ game was what a chest from nothing named). By id only, never the other mod's cla
   chest, from 2 oak logs, from 1 oak and 2 spruce logs (the spruce used, the oak left), or from a carved spruce chest
   (the 8 planks kept); trapped chests (Minecraft's and Carved Wood's) are never used and the line names 2 logs, never Pale
   Oak; planks taken away mid-job and given back make the chest losing nothing; a Carpenter saved and loaded mid-job.
+- `QaCarvedChest1116bCompatTests` (4, B1302, QA, with Carved Wood): a plain chest from 2 oak logs and a Carpenter is
+  built (planks, Oak Chest, chest; 1 log: none); 16 oak planks are two chests, 15 one; a carved oak chest and 8 spruce
+  planks are two; a carved trapped oak chest is never used and the line reads "short of 2 Oak Logs to make 1 Chest"; a
+  blueprint asking for the carved Oak Chest is never built with a plain chest.
 - `QaShortageGathers1115fBugCompatTests` (2, B1288): a smoker from nothing or from a furnace names 4 of Minecraft's logs,
   and a builder short of a smoker reads Minecraft's logs, never Apricorn Logs.
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes

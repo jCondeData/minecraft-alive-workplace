@@ -18,6 +18,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPlunder1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPirateShips1115dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverSnowMix1115hGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverSnowMix1115hBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTagMix1115hGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMoverVerify1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMoverVerify1115bBugTests",

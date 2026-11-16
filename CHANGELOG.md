@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
+  2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
+
 ## 0.155.3 — 2026-11-15
 
 ### Fixed

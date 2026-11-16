@@ -1802,7 +1802,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRecipeStandInFiles1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPocketPlants1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cBugGameTests"
 		]
 	},
 	"depends": {

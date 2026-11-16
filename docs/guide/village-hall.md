@@ -42,7 +42,7 @@ the sidebar is a grid of pictures; point at one and the bottom line names it:
 
 | Button | What's in it |
 |---|---|
-| **Overview** | the village at a glance (name and rank, villagers, beds, food, guards, wellbeing, what workers wait for, buildings going up, quests) and "What next?" |
+| **Overview** | the village's name and rank, four cards (People, Mood, Food, Defense), "Needs you" and "At work now" |
 | **People** | everyone who lives there, their wellbeing and what they wait for, the bell that calls everyone home, Legends, classes and free job blocks |
 | **Homes & Food** | beds and food in store |
 | **Buildings** | buildings going up and their looks, repairs, upgrades, Wonders and the Steward's desk |
@@ -51,18 +51,32 @@ the sidebar is a grid of pictures; point at one and the bottom line names it:
 | **Trade** | caravans and trade routes (prices, pacts and colonies when they're on), the bank |
 | **Calendar** | the calendar, festivals, the Festival Cup and the chronicle |
 | **Laws & Realm** | the treasury and protection (the name icon), the Book of Edicts and your realm |
-| **Map** | draw a map of the village |
+| **Map** | the village from above, with its buildings, and Draw a map |
 
-Click a button and its things fill the right side as a list, each with its picture, its name and a line about it. A
+**The Overview** shows the village's name in big letters with its rank, and four cards: **People** (how many live
+there out of how many it can grow to, and who has no bed or no job), **Mood** (the village's wellbeing), **Food** (meals
+in store and how many kinds) and **Defense** (guards on watch). Click a card to open its section; point at it for the
+full figures. Under them, **Needs you** lists what wants your attention, most pressing first: villagers without a bed or
+a job, no guards, no food, then the hall's own suggestions. Click a line to go where you can sort it out. **At work
+now** shows who is working and what they're doing; click someone to open their row in People. The village's other
+buttons (collecting the treasury, requests, beds, builds, quests, What next?) sit as pictures beside its name. On a
+small screen "At work now" makes room for "Needs you".
+
+**The Map** draws the village from above: the land, its roads, the village's edge, the Hall's bell and every finished
+building with its name. Switch any of those on or off under **Layers**. Click a building to see its name, its size and
+how far it is from the Hall; scroll on the map to zoom in on the Hall and back out. **Draw a map** turns an empty map you
+carry into a map of the village, as before.
+
+Click any other button and its things fill the right side as a list, each with its picture, its name and a line about it. A
 section with nothing in it says so in plain words ("No guards yet."), and its buttons stay there for you to use. The
 hall remembers the section you opened last until you leave the game. With nothing under the mouse, the pane on the
 right shows what the village needs next on the Overview, and what a section is for on the others. Walk more than 8
 blocks away from the hall (or break it) and the screen closes. Friends can have the hall open at the same time: each
 of you gets your own screen and keeps your own section.
 
-**People is a table** of everyone who lives in the village: their name, job, level and mood, with the count on top
-("8 · 6 working · 2 jobless"). Scroll it with the mouse wheel in a big village. The mood is one word: Happy, Content,
-Unhappy, or **No bed** in red when having no bed is what's wrong. Children and builders are in the list too ("Child"
+**People is a table** of everyone who lives in the village: their name, job, level and mood, with the counts on top
+as small tags ("All 8", "Working 6", "No job 2"). Scroll it with the mouse wheel in a big village. The mood is a face and a word: Happy in green, Content,
+Unhappy in yellow, or **No bed** in red when having no bed is what's wrong. Children and builders are in the list too ("Child"
 in the Job column, builders in gold). Click a villager's row to open their details right under it: their traits,
 what they're doing now, what they need, their mood and why, and their class and how to rise. Under that are the
 buttons: **Job ▾** changes their job (or gives a jobless villager one), **Bed ▾** shows the village's beds,

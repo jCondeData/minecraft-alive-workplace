@@ -238,6 +238,14 @@ public final class VillageHallScreen {
 		VillageNeeds.Needs needs = VillageNeeds.count(level, hall);
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		VillageGrowth.Blocker growth = VillageGrowth.blocker(level, hall, needs, entity == null ? 0 : entity.lastBirth());
+		// The Overview's stat cards (Copperline, 47.2): the figures the buttons below spell out, as numbers.
+		menu.setState(HallSections.WELLBEING, Math.round(needs.wellbeing() * 100));
+		menu.setState(HallSections.CAP, VillageRanks.growthCap(VillageRanks.of(level, hall)));
+		menu.setState(HallSections.NO_BED, Math.max(0, needs.villagers() - needs.housed()));
+		menu.setState(HallSections.MEALS, (int) Math.min(32000, census.food()));
+		menu.setState(HallSections.MEAL_KINDS, VillageHalls.mealKinds(level, hall));
+		menu.setState(HallSections.GUARDS, census.guards());
+		menu.setState(HallSections.RANK, VillageRanks.of(level, hall).ordinal());
 		menu.button(PEOPLE, icon(Items.EMERALD, Component.translatable("screen.aliveworkplace.hall.villagers", census.villagers()), ChatFormatting.WHITE,
 			line(Component.translatable("screen.aliveworkplace.hall.workers", census.workers().size() + HallPeople.atTheirJob(census)), ChatFormatting.GRAY), // as the People table counts (B1173)
 			line(Component.translatable("screen.aliveworkplace.hall.jobless", census.jobless().size() - HallPeople.atTheirJob(census)), ChatFormatting.GRAY),
@@ -343,8 +351,12 @@ public final class VillageHallScreen {
 			mapLore.add(line(Component.translatable("screen.aliveworkplace.hall.map_sky_chart"), ChatFormatting.AQUA));
 		}
 		mapLore.addAll(VillageWaystones.mapLines(level, hall, menu.viewer())); // the waystone network (41.2)
-		menu.button(MAP, icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
-			mapLore.toArray(Component[]::new)), p -> {
+		ItemStack mapIcon = icon(Items.FILLED_MAP, Component.translatable("screen.aliveworkplace.hall.map"), ChatFormatting.WHITE,
+			mapLore.toArray(Component[]::new));
+		if (HallSections.current(menu) == HallSections.Section.MAP) {
+			HallMap.attach(mapIcon, level, hall); // the Map section's village map (Copperline, 47.2), only while it's open
+		}
+		menu.button(MAP, mapIcon, p -> {
 			Chat.chat(p, VillageMaps.draw(level, hall, p));
 			io.github.jcondedata.aliveworkplace.wonder.ObservatoryPowers.draw(level, hall, p).ifPresent(m -> Chat.chat(p, m));
 		});
@@ -611,6 +623,8 @@ public final class VillageHallScreen {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
+			// B1298: a blank name saved on the list (an old save's) reads as the village's made-up name, as B1229 did elsewhere
+			Component otherName = VillageHalls.savedName(other.name(), other.hall());
 			boolean sending = data.routesFrom(hall).contains(other.hall());
 			boolean receiving = data.routesFrom(other.hall()).contains(hall);
 			List<Component> lore = new ArrayList<>();
@@ -655,15 +669,15 @@ public final class VillageHallScreen {
 				sending ? ChatFormatting.GREEN : ChatFormatting.GRAY));
 			// Each village by its banner, when it has colours (30.13); else by a cart, loaded if this one sends it goods.
 			VillageBanners.Colours colours = VillageBanners.of(level, other.hall());
-			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), other.name().copy(),
+			ItemStack icon = icon(colours != null ? colours.banner() : new ItemStack(sending ? Items.CHEST_MINECART : Items.MINECART), otherName.copy(),
 				sending ? ChatFormatting.GREEN : ChatFormatting.WHITE, lore.toArray(Component[]::new));
 			menu.button(slot++, icon, p -> {
 				if (sister) {
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", other.name()).withStyle(ChatFormatting.LIGHT_PURPLE));
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.hall.route_sister", otherName).withStyle(ChatFormatting.LIGHT_PURPLE));
 					return;
 				}
 				if (!sending && !io.github.jcondedata.aliveworkplace.realm.Pacts.mayRoute(level, hall, other.hall())) { // 33.18: another owner's village needs a pact
-					Chat.actionBar(p, Component.translatable("message.aliveworkplace.pact.route_needs_pact", other.name()).withStyle(ChatFormatting.YELLOW));
+					Chat.actionBar(p, Component.translatable("message.aliveworkplace.pact.route_needs_pact", otherName).withStyle(ChatFormatting.YELLOW));
 					return;
 				}
 				int max = VillageRanks.caravanRoutes(VillageRanks.of(level, hall))
@@ -671,7 +685,7 @@ public final class VillageHallScreen {
 				boolean on = data.toggleRoute(hall, other.hall(), max);
 				boolean wasOn = sending;
 				Chat.actionBar(p, Component.translatable(on ? "message.aliveworkplace.hall.route_started"
-					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", other.name(), max)
+					: wasOn ? "message.aliveworkplace.hall.route_stopped" : "message.aliveworkplace.hall.route_full", otherName, max)
 					.withStyle(on ? ChatFormatting.GREEN : ChatFormatting.YELLOW));
 				again.run();
 			});
@@ -866,7 +880,9 @@ public final class VillageHallScreen {
 		if (guildMaster != null) {
 			lore.add(line(guildMaster, ChatFormatting.GOLD));
 		}
-		for (Component doing : doing(level, villager)) {
+		int doingAt = lore.size(); // the first of what they're doing, for the Overview's "At work now" (47.2)
+		List<Component> doingLines = doing(level, villager);
+		for (Component doing : doingLines) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
 		// A Habitat Keeper's last five sightings (28.10).
@@ -965,6 +981,9 @@ public final class VillageHallScreen {
 			lore.add(line("screen.aliveworkplace.hall.life_story_hint", ChatFormatting.DARK_GRAY)); // shift-click: their life story (31.7)
 		}
 		icon.set(DataComponents.LORE, new ItemLore(lore));
+		if (working && !doingLines.isEmpty()) {
+			HallBoard.markDoing(icon, doingAt);
+		}
 		return icon;
 	}
 

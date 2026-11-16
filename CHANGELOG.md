@@ -17,12 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
+  start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
+- Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up
+  name instead of as a button with no name (B1298).
 - Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
   "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: None", where they read a bare 0 (B1325).
 - With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
   "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
-- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a
-  Pokémon from the daycare is waiting for a free place in it." (B1309).
+- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: 1
+  Pokémon from the daycare is waiting for a free place in it." (B1309, B1331).
 - Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
   case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
   the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so
@@ -42,6 +46,18 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The Storehouse board in Copperline (47.4): a table of what's needed with a bar of how much the store holds, who
+  needs it and who brings it ("Nobody: no Glassblower" in red), Give / Stocked / Have 0 on each row, a rail that filters
+  by Builders, Workers, Kitchen and Projects with Missing and I carry toggles, "In your pack" and one copper Give all
+  (also Shift-click), and a small-screen layout at 320x180.
+- Moving a building in Copperline: the Village Hall's Move page shows its three steps on the rail with "Your move", a
+  table of buildings saying which can move and why not, the village map with the new spot green where it fits and red
+  hatched where it can't go, and "Move the Starter Cottage?" with From, To, a checklist and one copper Move building (47.3).
+- The Village Hall in Copperline (47.2): the Overview has the village's name and rank, four cards (People, Mood, Food,
+  Defense), "Needs you" (each line takes you where to sort it out) and "At work now"; People is a Copperline table with
+  mood faces and count tags; the Map section draws the village from above with its buildings, layers to switch and the
+  building you click; on a small screen (GUI scale 3) the Overview and the Map fit the 320x180 shell. Every button the
+  hall had still works.
 - Copperline, the new look (47.1): every screen drawn in the Village Hall's look (the Village Hall, the Storehouse
   board, the list menus such as the Move Tutor and the shops, the Blueprint Table, the Trainer screen, the status cards
   and the Pokémon Trader) now has deep slate-gray windows, a copper plaque naming the screen, a bar with where you are,
@@ -53,6 +69,12 @@ asks for the steps, `latest.log` and any crash report).
   counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
   for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
   counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
+- The trades of the mod's own jobs in Copperline (44.2): the crafters, the Shopkeeper and the Ferryman without
+  CobbleDollars, the retired jobs and every mod job's sneak-click trades open in the new look. The offers are a list on
+  the left (sold-out ones crossed and dimmed, cheaper ones marked with a down arrow), the villager's level and its bar
+  sit over the two price wells and the goods, and the line at the foot says what each part does ("8 of 10 XP to the
+  next level"). Clicking an offer still moves its price from your pack; every trade, the shop's stock and leveling up
+  work as before. Vanilla's professions keep vanilla's trading screen.
 - A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
   2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
 - A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what

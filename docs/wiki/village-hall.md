@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2
 
 ## What a player sees
 
@@ -216,6 +216,27 @@ the charter, it works from the off hand when the main hand is empty, B360); othe
 name such as Thornholm. A blank name (empty, or only spaces, tabs and line breaks, styled or not; only possible by
 commands) counts as none, on the hall and on the caravan list that names an unloaded village in `/workplace quests` and
 letters: the made-up name again, never an empty one, and the hall's round saves that made-up name on the list (B1229).
+A blank name an old save still has on the list is read the same way on another hall's Routes page: the neighbor's
+button, and the lines its click shows, use its made-up name (B1298).
+
+**The Hall in Copperline (47.2).** The Overview, People and the Map are laid out like their boards
+(`docs/design/copperline/boards/Main.png`, `HallPeople.png`, `HallMap.png`, `Compact.png`). The **Overview** shows the
+village's name at twice the size with its rank, four stat cards (People "24 of 30" with "2 no bed" or "1 no job", Mood
+as the wellbeing in percent, Food as meals in store with how many kinds, Defense as guards on watch; each a glyph, a word
+and a color), **Needs you** (villagers without a bed or a job, no guards, no food, then the hall's advice tips) and
+**At work now** (each villager with something they're doing, their workstation as their picture). A card or a line
+opens its section; an advice line opens "What next?"; a villager at work opens their row in People. The Overview's
+other buttons (the village's name for the treasury and protection, requests, beds, builds, quests, What next?, pages
+placed nowhere) sit as icon cells beside the name. On a small screen (320x180) "At work now" gives way and "Needs you"
+takes the stage's width. **People** keeps its table, now Copperline rows (striped, a Lantern edge under the mouse, the
+open row with the copper mark), the counts as chips ("All 8", "Working 6", "No job 2"; the full sentence in the whisper
+line), the column heads in Tuff capitals, the Mood column as a face glyph and a word (Verdigris, Lantern, Redstone) and
+"No job" with the warning glyph; in an open row the one copper button is Bed ▾ for a villager without a bed, else Job ▾
+for one without a job. The **Map** draws the village from above: the land with roads and the village's edge (the Move
+page's map), the Hall's bell, every finished building as a box with its name; a legend of four layers (Buildings,
+Names, Roads, Village edge) to switch, the building clicked (its name, size and distance from the Hall), the wheel to
+zoom in on the Hall, and **Draw a map** (the Map button's own click) as the screen's copper button. The other sections
+(Homes & Food, Buildings, Defense, Quests, Trade, Calendar, Laws & Realm) keep 47.1's rows in the same shell.
 
 ## How it works
 
@@ -385,6 +406,16 @@ on, only a Builder the clicking player may command (one they hired, a friend's, 
 when choosing a house's outside look (B880): if the only Builders near belong to someone else, nothing is ordered and the
 bar says whose they are and that they can add the player with `/workplace friend add`.
 
+- **The Hall's boards (47.2).** `hall/HallBoard` (core, pure) reads the Overview from the main page as the server lays
+  it out (`ChoiceMenu.state` numbers and the buttons) for both the server's menu and the client's screen: the
+  cards, the needs, who is at work and where each part sits. Seven more menu numbers came with it
+  (`HallSections.WELLBEING`, `CAP`, `NO_BED`, `MEALS` (at most 32000), `MEAL_KINDS`, `GUARDS`, `RANK`; `ChoiceMenu.STATE`
+  is 17). A person's button marks its first "what they're doing" lore line (`HallBoard.DOING`). `hall/HallMap` puts the
+  village map on the Map button (custom data `aliveworkplace:hall_map`: the Move page's `MapView` land, read again at
+  most every 100 ticks per hall, the Hall's spot, the radius, each finished building's box and name as component JSON)
+  only while the Map section is open, so the other sections send nothing more; `HallMap.layout` places the map, the
+  legend and Draw a map. `CopperLayout.body` is the box a screen draws its own body in.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -511,6 +542,11 @@ point of interest, saved by Minecraft).
 
 ## Known limits
 
+- The Copperline boards show things the hall doesn't track, so their nearest real figures stand in (47.2): the Food card
+  counts meals in store, not days of food; the Defense card counts guards, not a defense percent; "At work now" has no
+  progress bars (the hall knows what a villager is doing, not how far along); People has a Level column, not a Home
+  column, and its count chips aren't filters (the table is loaded in windows from the server); the Map has no villager,
+  threat or claim-border layers and no Move button (47.3).
 - Halls are meant to stand apart. Where two halls' circles overlap, the City Plan and the Steward keep to the nearer
   hall's side; how the head count splits shared villagers was not checked for this page.
 - The hall's numbers are up to 600 ticks (30 seconds) old.
@@ -530,6 +566,11 @@ point of interest, saved by Minecraft).
   whole). Long and non-Latin names come back exactly (`CaravanSavedNameB1233GameTests`, `QaCaravanNames1114c3GameTests`).
 
 ## Proof
+
+`HallBoardGameTests` (47.2: the Overview's cards and "Needs you" read from a hall opened by hand, each going where it
+says; an empty village; the Map section's village map only while it is open, with Draw a map still working; a map click
+finds the building; "At work now"; the Overview and the Map fit at GUI scale 2 and 3). Scenes `hall`, `hall_people`,
+`hall_pages`.
 
 GameTests: `QaLaneC1102eGameTests` (QA, B833: the plurals beside the new singulars through the hall's buttons, "2
 mercenaries are here until dawn" and "3 kinds of meal in the store"), `VillageHallGameTests` (23 tests: the census, the name tag, eating from the store, pace, growth),
@@ -616,6 +657,8 @@ name) and `QaFarVillageName1114eBugTests` (B1229: an empty saved name falls back
 `QaFarVillageBlankName1114e2GameTests` (B1229: whitespace and styled empty names, saved or from a Name Tag on a loaded
 hall, give the made-up name in `/workplace quests` and a letter, the same before and after a save and load and on both
 paths, the round saves the made-up name, and a real name, spaces and all, still wins).
+QA's `QaCaravanRoutesBlankName1115eBugTests` (B1298: far neighbors saved with blank names, the list saved and read
+back, are listed on the Routes page by their made-up names, next to a named one).
 `CaravanSavedNameB1233GameTests` and QA's `QaCaravanNames1114dGameTests` (B1233: a caravan-list entry saved with no
 name, an unreadable one, `null`, a name of the wrong kind such as a number, or JSON that isn't text keeps its routes,
 wants, banner color, stations and tracks and gets the village's made-up name, the same through further saves and loads;

@@ -36,6 +36,21 @@ abstract class VillagerMixin {
 	}
 
 	/**
+	 * The trades of the mod's own jobs open on the Copperline menu type (44.2): the same menu, offers and level packet as
+	 * vanilla's; vanilla's professions keep vanilla's screen.
+	 */
+	@com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation(method = "startTrading", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/world/entity/npc/Villager;openTradingScreen(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/network/chat/Component;I)V"))
+	private void aliveworkplace$copperTrades(Villager self, net.minecraft.world.entity.player.Player player, net.minecraft.network.chat.Component name,
+			int level, com.llamalad7.mixinextras.injector.wrapoperation.Operation<Void> original) {
+		if (io.github.jcondedata.aliveworkplace.ui.CopperTrades.ownJob(self)) {
+			io.github.jcondedata.aliveworkplace.ui.CopperTrades.open(self, player, name, level);
+		} else {
+			original.call(self, player, name, level);
+		}
+	}
+
+	/**
 	 * A player's shop asks its owner's price from everyone (B706, B710): no special prices at all on a shopkeeper's
 	 * offers, so neither vanilla's reputation and Hero of the Village discounts nor the mod's own (Silver Tongue, trade
 	 * fair, friendship) or the Tithe's rise, which run at this method's tail, change what the owner set.

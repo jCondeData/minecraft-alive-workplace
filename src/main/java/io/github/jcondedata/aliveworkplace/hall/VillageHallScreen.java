@@ -459,6 +459,9 @@ public final class VillageHallScreen {
 		boolean laws = entity != null && !entity.edicts().isEmpty() || realm != null;
 		HallSections.apply(menu, level, HallPages.shown(), new HallSections.Counts(census.everyone(), census.beds(), census.food(),
 			census.builds().size(), census.guards(), quests.size(), !Caravans.neighbours(level, hall).isEmpty(), laws));
+		if (menu.viewer() != null && HallSections.current(menu) == HallSections.Section.MAP) {
+			MovePage.hallMap(menu.icon(MAP), level, hall); // the Map section's village map (47.2), only while it's open
+		}
 	}
 
 	/** The page row: a tab for each registered page, light glass after them. */

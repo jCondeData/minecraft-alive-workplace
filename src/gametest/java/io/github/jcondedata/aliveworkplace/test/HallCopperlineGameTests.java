@@ -227,6 +227,47 @@ public class HallCopperlineGameTests {
 		});
 	}
 
+	/**
+	 * The Map section's village map: sent on the Map button only while Map is open (the land as 128 x 128 map colors, the
+	 * Hall where it stands, the village's radius), and gone again on the Overview, so other sections cost nothing.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"hallCopperlineMap"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "hallCopperlineMap")
+	public void mapSectionSendsTheMap(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		HallSections.forget();
+		int was = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = was);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(3, () -> {
+			ChoiceMenu menu = open(helper, player);
+			helper.assertTrue(map(menu) == null, "the map is sent on the Overview");
+			helper.assertTrue(menu.clickMenuButton(player, Section.MAP.ordinal()), "the rail didn't take Map");
+			net.minecraft.nbt.CompoundTag map = map(menu);
+			helper.assertTrue(map != null, "no map with the Map section open");
+			int n = io.github.jcondedata.aliveworkplace.hall.MovePage.MAP;
+			BlockPos hall = helper.absolutePos(HALL);
+			helper.assertTrue(map.getByteArray("colors").length == n * n && map.getByteArray("kinds").length == n * n, "the map's size");
+			helper.assertTrue(map.getInt("hallX") == hall.getX() && map.getInt("hallZ") == hall.getZ() && map.getInt("radius") == 16, "the map's Hall: " + map);
+			helper.assertTrue(map.getIntArray("others").length % 4 == 0, "the buildings' boxes");
+			helper.assertTrue(menu.clickMenuButton(player, Section.OVERVIEW.ordinal()), "the rail didn't take Overview");
+			helper.assertTrue(map(menu) == null, "the map stays after Map is closed");
+			for (String key : new String[]{"legend.hall", "legend.buildings", "legend.roads", "legend.outside", "count"}) {
+				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall.map." + key), "no text for " + key);
+			}
+			player.closeContainer();
+			helper.succeed();
+		});
+	}
+
+	private static net.minecraft.nbt.CompoundTag map(ChoiceMenu menu) {
+		net.minecraft.world.item.component.CustomData data = menu.icon(VillageHallScreen.MAP).get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+		return data == null || !data.contains(io.github.jcondedata.aliveworkplace.hall.MovePage.HALL_MAP_MARK) ? null
+			: data.copyTag().getCompound(io.github.jcondedata.aliveworkplace.hall.MovePage.HALL_MAP_MARK);
+	}
+
 	private static int rows(ChoiceMenu menu) {
 		int rows = 0;
 		for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {

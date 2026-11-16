@@ -288,6 +288,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			} else {
 				renderAtWork(g, x, bottom + 4, w);
 			}
+		} else if (s == Section.MAP && hallMapView() != null) {
+			renderHallMap(g, x, y, w, h);
 		} else {
 			TableStyle.heading(g, font, s.title(), x, y);
 			g.drawWordWrap(font, s.about(), x, y + 13, w - 4, TableStyle.BODY);
@@ -398,6 +400,78 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				g.drawString(font, a.progress() + "%", x + 16 + bw, ly + 10, CopperStyle.TUFF, false);
 			}
 			ly += 22;
+		}
+	}
+
+	/** The village map the server put on the Map button while the Map section is open (47.2); null for none. */
+	private CompoundTag hallMapView() {
+		net.minecraft.world.item.component.CustomData data = menu.slots.get(VillageHallScreen.MAP).getItem().get(DataComponents.CUSTOM_DATA);
+		return data == null || !data.contains(MovePage.HALL_MAP_MARK) ? null : data.copyTag().getCompound(MovePage.HALL_MAP_MARK);
+	}
+
+	/**
+	 * The Map section (47.2, HallMap.png): the whole village map (the Move page's land, roads and dimmed outside), every
+	 * building's box with its name, the Hall's bell, and a legend beside it (under it when narrow).
+	 */
+	private void renderHallMap(GuiGraphics g, int x, int y, int w, int h) {
+		CompoundTag view = hallMapView();
+		TableStyle.heading(g, font, Section.MAP.title(), x, y);
+		int top = y + 13;
+		boolean side = w >= 220;
+		int s = side ? Math.min(h - 15, w - 100) : Math.min(h - 15 - 44, w - 4);
+		s = Math.max(48, s);
+		moveTexture(view);
+		moveZoom = MovePage.MAP; // the whole map
+		moveWindow = MovePage.MAP;
+		moveOriginX = 0;
+		moveOriginZ = 0;
+		moveMapX = x;
+		moveMapY = top;
+		moveMapS = s;
+		g.fill(x - 1, top - 1, x + s + 1, top + s + 1, CopperStyle.VOID);
+		g.blit(MOVE_MAP, x, top, s, s, 0, 0, MovePage.MAP, MovePage.MAP, MovePage.MAP, MovePage.MAP);
+		g.enableScissor(x, top, x + s, top + s);
+		int[] others = view.getIntArray("others");
+		net.minecraft.nbt.ListTag names = view.getList("names", net.minecraft.nbt.Tag.TAG_STRING);
+		List<int[]> taken = new ArrayList<>();
+		int[] hall = moveRect(view, view.getInt("hallX"), view.getInt("hallZ"), view.getInt("hallX"), view.getInt("hallZ"));
+		int bx = (hall[0] + hall[2]) / 2 - 6;
+		int by = (hall[1] + hall[3]) / 2 - 6;
+		taken.add(new int[]{bx, by, bx + 12, by + 12});
+		List<int[]> boxes = new ArrayList<>();
+		for (int i = 0; i + 3 < others.length; i += 4) {
+			int[] r = moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]);
+			outlined(g, r, 0xC0000000 | (MOVE_BUILDING & 0xFFFFFF), 0xFF2A140A);
+			boxes.add(r);
+		}
+		taken.addAll(boxes);
+		g.pose().pushPose();
+		g.pose().translate(bx, by, 0);
+		g.pose().scale(0.75f, 0.75f, 1f);
+		g.renderItem(new ItemStack(net.minecraft.world.item.Items.BELL), 0, 0);
+		g.pose().popPose();
+		for (int i = 0; i < boxes.size() && i < names.size(); i++) {
+			int[] r = boxes.get(i);
+			mapLabel(g, names.getString(i), r, r[2] - r[0] > 30, CopperStyle.QUARTZ, taken);
+		}
+		g.disableScissor();
+		// The legend: a swatch and a word for each thing the map shows.
+		int lx = side ? x + s + 8 : x;
+		int ly = side ? top : top + s + 6;
+		int lw = side ? w - s - 12 : w - 4;
+		int[] colors = {CopperStyle.COPPER_LIGHT, MOVE_BUILDING, MOVE_ROAD, 0xFF5A4A35};
+		String[] words = {"hall", "buildings", "roads", "outside"};
+		for (int i = 0; i < words.length; i++) {
+			int cx = side ? lx : lx + (i % 2) * (lw / 2);
+			int cy = side ? ly + i * 11 : ly + (i / 2) * 11;
+			g.fill(cx, cy + 1, cx + 7, cy + 8, CopperStyle.VOID);
+			g.fill(cx + 1, cy + 2, cx + 6, cy + 7, colors[i]);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.map.legend." + words[i]).getString(),
+				(side ? lw : lw / 2) - 12), cx + 10, cy, CopperStyle.TUFF, false);
+		}
+		if (side) {
+			String count = Component.translatable("screen.aliveworkplace.hall.map.count", boxes.size()).getString();
+			g.drawWordWrap(font, Component.literal(count), lx, ly + words.length * 11 + 6, lw, CopperStyle.TUFF);
 		}
 	}
 

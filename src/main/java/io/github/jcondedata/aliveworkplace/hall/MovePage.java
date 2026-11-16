@@ -416,6 +416,45 @@ public final class MovePage {
 		return icon;
 	}
 
+	/** The mark on the hall's Map button with the village map, while the Map section is open (Copperline, 47.2). */
+	public static final String HALL_MAP_MARK = "aliveworkplace:hall_map";
+
+	/**
+	 * Puts the village map on the hall's Map button (47.2, HallMap.png): the land and its roads as the Move page takes them,
+	 * the Hall, the village's edge and every building's box with its name. Only while the Map section is open (about 32 KB).
+	 */
+	static void hallMap(ItemStack icon, ServerLevel level, BlockPos hall) {
+		if (icon.isEmpty()) {
+			return;
+		}
+		MapView map = MapView.of(level, hall);
+		List<io.github.jcondedata.aliveworkplace.move.MoveFit.Other> others = io.github.jcondedata.aliveworkplace.move.MoveFit.others(level, hall, null);
+		int[] boxes = new int[others.size() * 4];
+		net.minecraft.nbt.ListTag names = new net.minecraft.nbt.ListTag();
+		for (int i = 0; i < others.size(); i++) {
+			BoundingBox b = others.get(i).box();
+			boxes[i * 4] = b.minX();
+			boxes[i * 4 + 1] = b.minZ();
+			boxes[i * 4 + 2] = b.maxX();
+			boxes[i * 4 + 3] = b.maxZ();
+			names.add(net.minecraft.nbt.StringTag.valueOf(others.get(i).name().getString()));
+		}
+		CompoundTag tag = new CompoundTag();
+		tag.putInt("ox", map.ox());
+		tag.putInt("oz", map.oz());
+		tag.putInt("step", map.step());
+		tag.putByteArray("colors", map.colors());
+		tag.putByteArray("kinds", map.kinds());
+		tag.putInt("hallX", hall.getX());
+		tag.putInt("hallZ", hall.getZ());
+		tag.putInt("radius", VillageHalls.RADIUS);
+		tag.putIntArray("others", boxes);
+		tag.put("names", names);
+		CompoundTag data = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		data.put(HALL_MAP_MARK, tag);
+		icon.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+	}
+
 	private static ItemStack marked(ItemStack icon, String key, int value) {
 		CompoundTag tag = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
 		tag.putInt(key, value);

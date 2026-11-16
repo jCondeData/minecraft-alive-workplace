@@ -28,7 +28,8 @@ asks for the steps, `latest.log` and any crash report).
   are open and a red "!" when an attack is coming; the People table has striped rows, mood faces and slate buttons.
 - The Village Hall's Overview now opens with the village's flag, its name in large letters, a rank chip ("Rank 2
   Village") and a bar toward the next rank, and shows "At work now": who is on a job, what they're doing and how far
-  along. The People table has tabs (All, No job, No bed) and an open row shows the villager's mood as a bar (47.2).
+  along. The People table has a Find field and tabs (All, No job, No bed), an open row shows the villager's mood as a
+  bar, and the Map section shows the village map with every building named and a legend (47.2).
 
 ## 0.155.3 — 2026-11-15
 

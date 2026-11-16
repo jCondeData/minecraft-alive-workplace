@@ -3,7 +3,7 @@
 Every setting of the mod in one place: the server's config file, the ten game rules, and how unfinished expansions
 stay off. Each feature's own page repeats the switches that matter to it.
 
-Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324
+Roadmap items: 25.5, B76, B119, B131, B161, 36.15, 36.20, B1323, B1324, 44.4
 
 ## What a player sees
 
@@ -22,10 +22,17 @@ empty entry takes its default (a Wonder cap, a disaster or raider culture switch
 clamped (`QaConfigOddFilesGameTests`). A bad list or map costs only that option; comments and a byte-order mark are read as meant, while a
 trailing comma makes the file unreadable (the defaults, the file kept aside); a second start reads exactly what the first wrote (`QaConfigHandEditsGameTests`).
 
-**The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings as sliders and
-on/off buttons, each with a tooltip. Every setting's name fits its 150-pixel button at its widest value
-(`ConfigGameTests.everySettingsLabelFitsItsButton` measures them with vanilla's font widths, B161). Closing the screen saves the file and puts the settings into effect in your own
-worlds. A dedicated server keeps its own file.
+**The settings screen.** With Mod Menu installed, the mod's Configure button opens the same settings in Copperline
+(44.4, the [new look](copperline.md)): the sections down the left (Work, Jobs, Builders, Village, Villagers, Defense,
+Realms, Pokémon, each with how many settings it holds), and the open section's settings in a list, the distances and
+numbers first, then the switches. A switch is a toggle with its On or Off word (click anywhere on its row); a number of
+20 steps or fewer has [-] and [+]; a bigger one a slider with its value beside it (Left and Right step it by one,
+Shift by ten, with the mouse on the row). Pointing at a setting's name shows what it does in a tooltip, and the line at
+the foot says how to change it. "Reset this page" puts the open section back to its defaults; Done, Esc or the close X
+saves the file and puts the settings into effect in your own worlds. A dedicated server keeps its own file, which the
+foot line says. Every setting's name fits beside its control at GUI scale 2 and 3
+(`CopperlineGuideSettingsGameTests.settingsFitAtGuiScaleTwoAndThree`) and, as before, its old 150-pixel button
+(`ConfigGameTests.everySettingsLabelFitsItsButton`, B161).
 
 **Game rules.** Per-world tuning of builders uses vanilla's `/gamerule`, so it can differ from world to world and be
 changed without a restart.

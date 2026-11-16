@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three
+  builds in his own village (his Blueprint Table's) and tells its players, instead of putting them in the server-wide
+  set every later village starts with (B1345).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
+  case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
+  the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so
+  " Bandit_King " or "LIGHTHOUSE" now switches that story or Wonder off (B1323).
 - A builder's shortage line names 24 more things in the plural after a count: "short of 12 Snowballs to make 3 Snow
   Blocks", Torchflowers, the slabs, the weathered copper doors and trapdoors, Totems of Undying and more (B1307).
 - Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not

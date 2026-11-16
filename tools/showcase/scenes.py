@@ -513,6 +513,21 @@ SCENES = [
        ("02_parts", "Buttons, rail tabs, toggles, slider, number field, list rows, bars, slots, chips, text fields"),
        ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
        ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
+    # 48.1: the Blueprint Table in Copperline, like the Blueprint Book board, at GUI scale 2 and 3
+    S("copperline_blueprints", "Builder", "Copperline: the Blueprint Table and Book",
+      "the table opened in Copperline with the Starter Cottage picked: the style rail, the list with its NAME and SIZE heading, the 3D preview, size and materials (what the player doesn't carry framed in red with the word under it) and one copper button; Sandstone chosen from the rail; Store All put two blueprints on the shelf; at 320x180 the rail turned into an icon grid and a search for nothing said so", 30,
+      [("01_book", "The Blueprint Book: style rail, list, preview, size, materials, one copper button"),
+       ("02_book_style", "Sandstone chosen from the style rail"),
+       ("03_stored", "The Stored tab, two blueprints on the shelf"),
+       ("04_stored_compact", "The Stored tab at 320x180 (GUI scale 3)"),
+       ("05_book_compact", "The book at 320x180: the rail as an icon grid"),
+       ("06_no_match_compact", "A search for nothing, said in the list")]),
+    # 48.2: the Trainer screen in Copperline, like the Trainer board, at GUI scale 2 and 3
+    S("copperline_trainer", "Trainer", "Copperline: the Trainer screen",
+      "a village Trainer's screen in Copperline: the plaque and lintel with the rank, the portrait, record and today's line on the rail with Challenge (the one copper button), Trade and Close, the reward, the team as cards with the real models (half of it \"???\" until the player wins once), the party with a status each and the rules; the whisper line says what Challenge and Trade do; at 320x180 the compact layout", 20,
+      [("01_trainer", "The Trainer screen, the mouse on Challenge"),
+       ("02_trainer_trade", "The mouse on Trade: the whisper line says what it does"),
+       ("03_trainer_compact", "The Trainer screen at 320x180 (GUI scale 3)")], cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

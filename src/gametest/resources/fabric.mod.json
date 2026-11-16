@@ -1832,7 +1832,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShortageLine1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderUpgrade1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStorehouseSupply1116bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseSupply1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUnlockFor1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUpgradeEntry1116bGameTests"
 		]
 	},
 	"depends": {

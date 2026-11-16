@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Chipped and Carved Wood (as in the owner's pack), a Carpenter makes a crafting table from four of Chipped's
+  planks in the builder's chest, as a player can with Carved Wood's mixed crafting table recipe, instead of asking for an
+  Oak Log nobody has (B1290).
 - With Create, a builder short of andesite beside a Mason no longer reads "Nobody here makes: Andesite": a stone a
   player mines that the Mason can't cut from what's there (polished andesite is never cut back into andesite, by a
   player either) is left to the gathered line above; from Create's cut andesite in the chest he cuts it (B1334).

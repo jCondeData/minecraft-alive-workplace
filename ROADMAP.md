@@ -6826,7 +6826,7 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
 - [x] **48.1** (review: pending 2026-11-16) **The Blueprint Table and the Blueprint Book in
   Copperline**, like `Blueprints.png` (list, preview, size, materials, style filter, one copper Place). Done when: the
   table's tests pass; scenes of the table and the book.
-- [ ] **48.2** **The Trainer screen in Copperline**, like
+- [x] **48.2** (review: pending 2026-11-16) **The Trainer screen in Copperline**, like
   `Trainer.png` (the real Cobblemon models stay). Done when: the trainer screen's tests pass; its scenes.
 - [ ] **48.3** **The villager status card, toasts and tooltips in
   Copperline**, like `VillagerCard.png`. Done when: `StatusCardButtonsGameTests` and the card's tests pass; its scenes.

@@ -65,6 +65,12 @@ asks for the steps, `latest.log` and any crash report).
   material slots (anything you don't carry framed in red, with "Not carried: Glass" under them), and one
   copper button: Get Blueprint (Take One Out in the Stored tab, Upload in the upload view). The line at the foot says
   what each button does. Every button, tab and search works as before; at GUI scale 3 the rail is a grid of icons.
+- The Trainer screen in Copperline (48.2), laid out like the Trainer board: the trainer's portrait, name and title on
+  the left with your record and today's line (a mark, a word and a color), and Challenge (the one copper button), Trade
+  and Close under them; the prize, the team as cards with the real Pokémon models ("???" until you win once), your
+  party with a mark per Pokémon and the rules on the right, scrolling when they don't fit. The rank sits in the top bar
+  by the close X, and the line at the foot says what Challenge, Trade, a team card or a party line means. When the
+  trainer can't battle, a red box at the top says why. Every button works as before; it fits at GUI scale 3 too.
 
 ## 0.155.3 — 2026-11-15
 

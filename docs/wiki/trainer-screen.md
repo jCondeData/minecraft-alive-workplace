@@ -5,9 +5,15 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, B1091, B1102, B1104, B1122, B1131, B1157, B473
+Roadmap items: 43.1, 48.2, B1091, B1102, B1104, B1122, B1131, B1157, B473
 
 ## What a player sees
+
+**Copperline (48.2):** the screen now has the Copperline look of the Trainer board (`docs/wiki/copperline.md`, "The
+Trainer screen"): the portrait, name, title, record and today on the left with Challenge (copper), Trade and Close
+under them, the rank on the top bar by the close X, the prize, the team as cards, the party and the rules on the right,
+a red "Can't challenge now" box with the reason when Challenge is off, and the line at the foot saying what the thing
+under the mouse is. Everything below still holds; only the look and the places changed.
 
 Right-click a Trainer (or the Trainer Leader) with an empty hand. A dark panel with a slate-blue edge opens. On the
 left: the trainer's name in gold, "Pokémon Trainer" or "Trainer Leader", their rank and village ("Expert · Oakbrook"),

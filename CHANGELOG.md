@@ -40,6 +40,11 @@ asks for the steps, `latest.log` and any crash report).
   GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
 - A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
   2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
+- A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what
+  to gather: "short of 27 Wheat to make 3 Hay Bales". Before, his line said nothing at all.
+- With Create, a builder short of andesite (diorite, granite, tuff, calcite, deepslate, dripstone) no longer reads
+  "short of 3 Andesite to make 3 Andesite": a Mason never makes a stone out of itself, so it reads as a stone a player
+  mines.
 
 ## 0.155.3 — 2026-11-15
 

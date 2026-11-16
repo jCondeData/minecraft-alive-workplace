@@ -533,6 +533,9 @@ public final class Crafting {
 			if (takesBack(level, recipe, target, pool)) {
 				continue; // B1303, B1306: never made from what it's being made for
 			}
+			if (ofItself(level, recipe, target, pool)) {
+				continue; // B1308: never made of itself
+			}
 			if (lenient && best != null && loops(level, holder)) {
 				break; // B1255: what's short is said by a way from scratch, not by one that loops back (they come last)
 			}
@@ -781,6 +784,7 @@ public final class Crafting {
 	 */
 	private static boolean unpacks(ServerLevel level, Kind kind, Recipe<?> recipe, Item target) {
 		Item from = null;
+		int in = 0;
 		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
 			if (ingredient.isEmpty()) {
 				continue;
@@ -790,8 +794,15 @@ public final class Crafting {
 				return false;
 			}
 			from = options.get(0);
+			in++;
 		}
 		if (from == null || from == target) {
+			return false;
+		}
+		// B1305: of a pair each made only from the other (9 wheat into a hay bale, the bale back into 9 wheat; slimeballs
+		// and their block, dried kelp and its block), the way that packs several into fewer is the making, not an
+		// unpacking: else both counted as unpacking, the bale counted as raw and its line named nothing
+		if (in > Recipes.result(recipe, level.registryAccess()).getCount() && madeOnlyOf(level, kind, target, from)) {
 			return false;
 		}
 		List<RecipeHolder<?>> packs = recipesFor(level, kind, from);
@@ -815,6 +826,56 @@ public final class Crafting {
 			}
 		}
 		return true;
+	}
+
+	/** Whether every recipe of {@code kind} for {@code target} takes {@code from} alone, and there is one (B1305). */
+	private static boolean madeOnlyOf(ServerLevel level, Kind kind, Item target, Item from) {
+		List<RecipeHolder<?>> ways = recipesFor(level, kind, target);
+		if (ways.isEmpty()) {
+			return false;
+		}
+		for (RecipeHolder<?> holder : ways) {
+			for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+				if (ingredient.isEmpty()) {
+					continue;
+				}
+				List<Item> options = options(level, ingredient);
+				if (options.size() != 1 || options.get(0) != from) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * B1308: whether {@code recipe} makes {@code target} out of {@code target} itself and nothing else at hand would do: one of
+	 * its ingredients accepts the target (Create cuts any andesite form, andesite too, into andesite by its stone_types tag;
+	 * a filter cleared into a filter) and the pool holds none of its other options. Making a thing of itself is no way to
+	 * make it, nor to say what's short of it: a stone a player mines reads as gathered, not "short of 3 Andesite to make 3
+	 * Andesite". With another form to hand (polished andesite in the chest) it is still cut from that.
+	 */
+	private static boolean ofItself(ServerLevel level, Recipe<?> recipe, Item target, Pool pool) {
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			List<Item> options = options(level, ingredient);
+			if (!options.contains(target)) {
+				continue;
+			}
+			boolean other = false;
+			for (Item option : options) {
+				if (option != target && pool.have(option) > 0) {
+					other = true;
+					break;
+				}
+			}
+			if (!other) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

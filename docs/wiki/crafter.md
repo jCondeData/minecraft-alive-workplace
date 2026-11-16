@@ -69,7 +69,10 @@ The line names what the chest is short of, not some other way to make it: a Libr
 bookshelf's books need three says "short of 1 Leather to make 1 Bookshelf", not "4 Rabbit Hide". It goes further down
 only when that uses something that's there (planks still to be sawn from the logs at hand read "short of 1 Oak Log")
 (B409). Logs of every wood at hand count: an oak and a spruce log for 2 chests read "short of 2 Oak Logs", and
-with a birch log too "short of 1 Oak Log" (B1311). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
+with a birch log too "short of 1 Oak Log" (B1311). A block packed from 9 of one thing names that thing: "short of 27 Wheat to make 3 Hay
+Bales", and with 20 wheat the third bale "short of 7 Wheat" (B1305). Nothing is ever made of itself: with Create, a
+stone a player mines (andesite, diorite, granite, tuff) is never "short of 3 Andesite to make 3 Andesite"; it is cut
+from another form of it only when one is in the chest (B1308). The same holds between two recipes for one thing: a Tinkerer with five raw iron and a coal for iron bars says
 "short of 1 Raw Iron", and with coal and no ore at all "short of 6 Raw Iron", never iron ore a player only gets with
 Silk Touch; gold and copper read the same (B489). With Create (or Cobblemon) loaded it still names the raw metal a player
 mines: never Create's Crushed Raw Iron, which only a crushing wheel makes, nor Cobblemon's plaques melted into nuggets
@@ -315,6 +318,11 @@ stand-in" warning naming it, and the server starts as usual (B1312).
   up loose planks of other woods and no plank beyond the 8 is used; an oak and a spruce log are never 2 chests; a barrel
   and a wooden pickaxe from mixed logs; a Carpenter makes a row of 3 chests from planks and two woods' logs across a save
   and load, and short of logs loses no wood and names logs.
+- `QaStorageBlockLine1115bBugTests` (3, B1305, QA): hay bales, a slime block and a dried kelp block from nothing lack
+  the 27 wheat, 9 slimeballs and 9 dried kelp; a builder with 20 wheat and a Carpenter gets 2 bales and reads "short of
+  7 Wheat to make 1 Hay Bale"; from an empty chest "short of 27 Wheat to make 3 Hay Bales".
+- `QaMinedStoneSelf1115bBugCompatTests` (2, B1308, QA, with Create): no mined stone's line names the stone itself; a
+  builder short of andesite with a Mason never reads "Andesite to make".
 - `QaCrafterLogs1116cBugGameTests` (1, B1311, QA): truly short, an oak and a spruce log for 2 chests lack 2 logs and
   read "short of 2 … Logs to make 2 Chests"; with a birch log too, 1 log.
 - `QaMixedLogs1116bGameTests` (7, B1301, QA): a chest from a crimson and a warped stem, from oak wood and a stripped

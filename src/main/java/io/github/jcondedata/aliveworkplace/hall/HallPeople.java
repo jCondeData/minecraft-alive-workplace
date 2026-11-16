@@ -54,6 +54,54 @@ public final class HallPeople {
 		}
 	}
 
+	/** The People table's filter tabs (Copperline, 47.2): everyone, the villagers without a job, the grown-ups without a bed. */
+	public enum Filter {
+		ALL, NO_JOB, NO_BED;
+
+		/** A menu-button click of CLICK + n opens filter n. */
+		public static final int CLICK = 900;
+
+		public static boolean handles(int id) {
+			return id >= CLICK && id < CLICK + values().length;
+		}
+
+		public static Filter of(int index) {
+			return index >= 0 && index < values().length ? values()[index] : ALL;
+		}
+
+		public String id() {
+			return name().toLowerCase();
+		}
+
+		/** The tab's words with its count: "All 24", "No job 1", "No bed 2". */
+		public Component tab(int count) {
+			return Component.translatable("screen.aliveworkplace.hall.people.filter." + id(), count);
+		}
+
+		/** Whether {@code villager}'s row stays under this filter. */
+		public boolean passes(ServerLevel level, Villager villager) {
+			return switch (this) {
+				case ALL -> true;
+				case NO_JOB -> !villager.isBaby() && kind(villager) == Kind.JOBLESS;
+				case NO_BED -> !villager.isBaby() && VillageNeeds.bed(level, villager) == null;
+			};
+		}
+	}
+
+	/**
+	 * Counts the tabs over everyone {@code people} lists, then leaves only the open filter's rows in it (47.2); the
+	 * header's counts stay the village's.
+	 */
+	static void filter(ChoiceMenu menu, ServerLevel level, List<Villager> people) {
+		menu.setState(HallSections.PEOPLE_NO_JOB, (int) Math.min(Short.MAX_VALUE, people.stream().filter(v -> Filter.NO_JOB.passes(level, v)).count()));
+		menu.setState(HallSections.PEOPLE_NO_BED, (int) Math.min(Short.MAX_VALUE, people.stream().filter(v -> Filter.NO_BED.passes(level, v)).count()));
+		Filter filter = Filter.of(menu.state(HallSections.PEOPLE_FILTER));
+		if (filter != Filter.ALL) {
+			people.removeIf(v -> !filter.passes(level, v));
+		}
+		menu.setState(HallSections.PEOPLE_SHOWN, Math.min(Short.MAX_VALUE, people.size()));
+	}
+
 	/** The village's children, nearest the hall first (the census only counts them). */
 	static List<Villager> children(ServerLevel level, BlockPos hall) {
 		return VillageHalls.villagers(level, hall).stream().filter(v -> v.isBaby() && !CaravanSights.isParty(v))

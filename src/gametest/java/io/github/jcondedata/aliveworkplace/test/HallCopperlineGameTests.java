@@ -167,6 +167,61 @@ public class HallCopperlineGameTests {
 	}
 
 	/**
+	 * The People table's filter tabs, through the screen's own clicks: two villagers without a job and a farmer without a
+	 * workstation, nobody with a bed. The tabs count All 3, No job 2, No bed 3; "No job" leaves the two rows (the header
+	 * still says 3), "All" brings the farmer back, and opening another section on the rail goes back to All.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"hallCopperlineFilter"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "hallCopperlineFilter")
+	public void peopleFilterTabs(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		HallSections.forget();
+		int was = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = was);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		for (int x : new int[]{10, 14, 18}) {
+			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(x, 2, 20));
+			v.setNoAi(true);
+			if (x == 18) {
+				v.setVillagerData(v.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(2));
+			}
+		}
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(3, () -> {
+			ChoiceMenu menu = open(helper, player);
+			helper.assertTrue(menu.clickMenuButton(player, Section.PEOPLE.ordinal()), "the rail didn't take People");
+			helper.assertTrue(menu.state(HallSections.PEOPLE_TOTAL) == 3 && menu.state(HallSections.PEOPLE_NO_JOB) == 2
+				&& menu.state(HallSections.PEOPLE_NO_BED) == 3, "the tabs count " + menu.state(HallSections.PEOPLE_TOTAL) + "/"
+				+ menu.state(HallSections.PEOPLE_NO_JOB) + "/" + menu.state(HallSections.PEOPLE_NO_BED));
+			helper.assertTrue(rows(menu) == 3, "All shows " + rows(menu));
+			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK + 1), "No job wasn't taken");
+			helper.assertTrue(rows(menu) == 2 && menu.state(HallSections.PEOPLE_SHOWN) == 2 && menu.state(HallSections.PEOPLE_TOTAL) == 3,
+				"No job shows " + rows(menu) + " rows, " + menu.state(HallSections.PEOPLE_SHOWN) + " of " + menu.state(HallSections.PEOPLE_TOTAL));
+			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK + 2), "No bed wasn't taken");
+			helper.assertTrue(rows(menu) == 3, "No bed shows " + rows(menu));
+			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK + 1), "No job again");
+			helper.assertTrue(menu.clickMenuButton(player, Section.OVERVIEW.ordinal()), "the rail didn't take Overview");
+			helper.assertTrue(menu.state(HallSections.PEOPLE_FILTER) == 0 && rows(menu) == 3, "Overview kept the filter: " + rows(menu));
+			for (String key : new String[]{"all", "no_job", "no_bed"}) {
+				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall.people.filter." + key), "no text for " + key);
+			}
+			player.closeContainer();
+			helper.succeed();
+		});
+	}
+
+	private static int rows(ChoiceMenu menu) {
+		int rows = 0;
+		for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {
+			if (io.github.jcondedata.aliveworkplace.hall.HallPeople.row(menu.icon(slot)) != null) {
+				rows++;
+			}
+		}
+		return rows;
+	}
+
+	/**
 	 * The rank bar's number: 0 at a rank's own needs, 100 at the next's, the three needs averaged and each capped (more
 	 * villagers can't make up for missing buildings), 100 at the top rank.
 	 */

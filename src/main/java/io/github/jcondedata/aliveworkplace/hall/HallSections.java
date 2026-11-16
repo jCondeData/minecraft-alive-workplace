@@ -52,6 +52,14 @@ public final class HallSections {
 	 */
 	public static final int RANK = 13;
 	public static final int RANK_PROGRESS = 14;
+	/**
+	 * The People table's filter tabs (47.2, HallPeople.png): how many rows the filter leaves, the open filter
+	 * ({@link HallPeople.Filter}'s number) and the tabs' counts, no job and no bed. Not saved; a new screen shows All.
+	 */
+	public static final int PEOPLE_SHOWN = 15;
+	public static final int PEOPLE_FILTER = 16;
+	public static final int PEOPLE_NO_JOB = 17;
+	public static final int PEOPLE_NO_BED = 18;
 	/** The mark on a main-page button: a bit for each section it sits in. */
 	public static final String MARK = "aliveworkplace:hall_sections";
 
@@ -420,6 +428,12 @@ public final class HallSections {
 			if (HallBeds.handles(id)) {
 				return HallBeds.click(menu, level, hall, p, id); // Bed ▾'s list (40.4)
 			}
+			if (HallPeople.Filter.handles(id)) {
+				menu.setState(PEOPLE_FILTER, id - HallPeople.Filter.CLICK); // a filter tab (47.2): the table from its top
+				VillageHallScreen.renderFrom(menu, level, hall, 0);
+				menu.broadcastChanges();
+				return true;
+			}
 			if (id >= HallPeople.SCROLL) {
 				HallPeople.scrollTo(menu, level, hall, id - HallPeople.SCROLL); // the People table scrolled (40.2)
 				return true;
@@ -436,6 +450,9 @@ public final class HallSections {
 	public static void choose(ChoiceMenu menu, ServerLevel level, BlockPos hall, ServerPlayer player, Section section) {
 		LAST.put(player.getUUID(), section);
 		menu.setState(SECTION, section.ordinal());
+		if (section != Section.PEOPLE) {
+			menu.setState(PEOPLE_FILTER, 0); // the Overview's "At work now" reads the whole table
+		}
 		VillageHallScreen.showList(menu, level, hall, 0);
 	}
 

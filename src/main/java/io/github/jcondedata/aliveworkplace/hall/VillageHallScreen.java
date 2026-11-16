@@ -164,13 +164,15 @@ public final class VillageHallScreen {
 		// Legends come first (29.4); the sort is stable, so everyone else keeps their order.
 		people.sort(java.util.Comparator.comparing(v -> io.github.jcondedata.aliveworkplace.legend.Legends.of(v).isEmpty()));
 		people.addAll(HallPeople.children(level, hall)); // the People table lists the children too, last (40.2)
+		int listed = people.size();
+		HallPeople.filter(menu, level, people); // the filter tabs (47.2)
 		int pages = Math.max(1, (people.size() + PER_PAGE - 1) / PER_PAGE);
 		int first = Math.max(0, Math.min(from, Math.max(0, people.size() - PER_PAGE)));
 		if (from % PER_PAGE == 0 && from < people.size()) {
 			first = from; // a whole page, as the arrows turn them (the last one may be short)
 		}
 		int shown = Math.min(first / PER_PAGE, pages - 1);
-		HallPeople.counts(menu, census, people.size(), first);
+		HallPeople.counts(menu, census, listed, first);
 
 		VillageRanks.Score score = VillageRanks.score(level, hall, census.villagers());
 		VillageRanks.Rank rank = VillageRanks.rank(score);

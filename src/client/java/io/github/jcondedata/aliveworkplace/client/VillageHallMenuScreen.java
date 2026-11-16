@@ -935,7 +935,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int total() {
-		return Math.max(menu.state(HallSections.PEOPLE_TOTAL), personSlots().size());
+		int listed = menu.state(HallSections.PEOPLE_FILTER) == 0 ? menu.state(HallSections.PEOPLE_TOTAL) : menu.state(HallSections.PEOPLE_SHOWN);
+		return Math.max(listed, personSlots().size());
 	}
 
 	/**
@@ -1255,6 +1256,24 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		g.drawString(font, TableStyle.trim(font, HallPeople.header(menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_WORKING),
 			menu.state(HallSections.PEOPLE_JOBLESS), menu.state(HallSections.PEOPLE_CHILDREN)), w), x, ly, TableStyle.TITLE, false);
 		ly += 11;
+		// The filter tabs (47.2, HallPeople.png): "All 24", "No job 1", "No bed 2"; the open one in Quartz on copper.
+		int fx = x;
+		int filterOn = menu.state(HallSections.PEOPLE_FILTER);
+		int[] counts = {menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_NO_JOB), menu.state(HallSections.PEOPLE_NO_BED)};
+		for (HallPeople.Filter f : HallPeople.Filter.values()) {
+			String label = f.tab(counts[f.ordinal()]).getString();
+			int tw = font.width(label) + 8;
+			if (fx + tw > x + w - 6) {
+				break;
+			}
+			boolean on = f.ordinal() == filterOn;
+			boolean over = mouseX >= fx && mouseX < fx + tw && mouseY >= ly && mouseY < ly + 12;
+			g.fill(fx, ly, fx + tw, ly + 12, on ? CopperStyle.COPPER_DARK : over ? CopperStyle.DEEP_600 : CopperStyle.DEEP_700);
+			g.drawString(font, label, fx + 4, ly + 2, on ? CopperStyle.QUARTZ : CopperStyle.TUFF, false);
+			hits.add(new int[]{9, f.ordinal(), fx, ly, tw, 12});
+			fx += tw + 4;
+		}
+		ly += 15;
 		g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.hint"), w), x, ly, TableStyle.FAINT, false);
 		ly += 12;
 		int[] cols = {x + 4, x + 4 + w * 36 / 100, x + 4 + w * 64 / 100, x + 4 + w * 82 / 100};
@@ -1433,7 +1452,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 					continue;
 				}
 				// the table's rows, buttons and list lines take clicks only inside it: a part scrolled out of view is hidden (B546)
-				if ((hit[0] == 0 || hit[0] >= 2) && (my < tableTop || my >= tableTop + tableH)) {
+				if ((hit[0] == 0 || hit[0] >= 2 && hit[0] != 9) && (my < tableTop || my >= tableTop + tableH)) {
 					continue;
 				}
 				click(hit[0], hit[1], button);
@@ -1469,6 +1488,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			case 6 -> menuButton(HallBeds.PICK + slot); // a bed on Bed ▾'s list (slot: the line's number)
 			case 7 -> open(Section.BUILDINGS); // "Short of beds? Plan a house ›"
 			case 8 -> press(slot, 0, true); // Story: the shift-click that opens their life story (B547)
+			case 9 -> { // a filter tab (47.2): the table from its top
+				openUuid = null;
+				tableScroll = 0;
+				menuButton(HallPeople.Filter.CLICK + slot);
+			}
 			default -> {
 			}
 		}

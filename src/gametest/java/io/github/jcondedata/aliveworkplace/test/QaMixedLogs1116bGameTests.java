@@ -44,51 +44,71 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	}
 
 	/** One crimson stem and one warped stem (nether woods: their planks are #planks) make a chest. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsAChestFromACrimsonAndAWarpedStem"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromACrimsonAndAWarpedStem")
 	public void aChestFromACrimsonAndAWarpedStem(GameTestHelper helper) {
-		oneChest(helper, Map.of(Items.CRIMSON_STEM, 1L, Items.WARPED_STEM, 1L), Map.of(Items.CRIMSON_STEM, 1, Items.WARPED_STEM, 1), "two stems");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			oneChest(helper, Map.of(Items.CRIMSON_STEM, 1L, Items.WARPED_STEM, 1L), Map.of(Items.CRIMSON_STEM, 1, Items.WARPED_STEM, 1), "two stems");
+			helper.succeed();
+		});
 	}
 
 	/** An oak wood (bark on all sides) and a stripped spruce log make a chest: each is its wood's log for planks. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsAChestFromOakWoodAndAStrippedSpruceLog"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromOakWoodAndAStrippedSpruceLog")
 	public void aChestFromOakWoodAndAStrippedSpruceLog(GameTestHelper helper) {
-		oneChest(helper, Map.of(Items.OAK_WOOD, 1L, Items.STRIPPED_SPRUCE_LOG, 1L), Map.of(Items.OAK_WOOD, 1, Items.STRIPPED_SPRUCE_LOG, 1),
-			"oak wood and a stripped spruce log");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			oneChest(helper, Map.of(Items.OAK_WOOD, 1L, Items.STRIPPED_SPRUCE_LOG, 1L), Map.of(Items.OAK_WOOD, 1, Items.STRIPPED_SPRUCE_LOG, 1),
+				"oak wood and a stripped spruce log");
+			helper.succeed();
+		});
 	}
 
 	/**
 	 * Bamboo blocks make 2 planks each, not 4: one oak log and two blocks of bamboo are a chest (4 + 2 + 2), taking all
 	 * three; one oak log and one bamboo block (6 planks) are not, and lack something.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsAChestFromAnOakLogAndBambooBlocksCountsTwoPlanksABlock"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromAnOakLogAndBambooBlocksCountsTwoPlanksABlock")
 	public void aChestFromAnOakLogAndBambooBlocksCountsTwoPlanksABlock(GameTestHelper helper) {
-		oneChest(helper, Map.of(Items.OAK_LOG, 1L, Items.BAMBOO_BLOCK, 2L), Map.of(Items.OAK_LOG, 1, Items.BAMBOO_BLOCK, 2), "an oak log and 2 bamboo blocks");
-		Map<Item, Long> six = Map.of(Items.OAK_LOG, 1L, Items.BAMBOO_BLOCK, 1L);
-		helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, six) == null, "a chest planned from 6 planks' worth");
-		helper.assertTrue(!Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, six).isEmpty(),
-			"6 planks' worth (an oak log and a bamboo block) lack nothing for a chest");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			oneChest(helper, Map.of(Items.OAK_LOG, 1L, Items.BAMBOO_BLOCK, 2L), Map.of(Items.OAK_LOG, 1, Items.BAMBOO_BLOCK, 2), "an oak log and 2 bamboo blocks");
+			Map<Item, Long> six = Map.of(Items.OAK_LOG, 1L, Items.BAMBOO_BLOCK, 1L);
+			helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, six) == null, "a chest planned from 6 planks' worth");
+			helper.assertTrue(!Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, six).isEmpty(),
+				"6 planks' worth (an oak log and a bamboo block) lack nothing for a chest");
+			helper.succeed();
+		});
 	}
 
 	/** Two chests from one log of each of four woods (16 planks): all four logs taken, two chests, nothing short. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsTwoChestsFromFourWoodsOneLogEach"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsTwoChestsFromFourWoodsOneLogEach")
 	public void twoChestsFromFourWoodsOneLogEach(GameTestHelper helper) {
-		Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L, Items.JUNGLE_LOG, 1L);
-		Crafting.Plan plan = Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 2, chest);
-		helper.assertTrue(plan != null, "no plan for 2 chests from four woods' logs");
-		helper.assertTrue(plan.takes().equals(Map.of(Items.OAK_LOG, 1, Items.SPRUCE_LOG, 1, Items.BIRCH_LOG, 1, Items.JUNGLE_LOG, 1)),
-			"2 chests from four logs take " + plan.takes());
-		helper.assertTrue(MixedTagSlotGameTests.play(helper, plan).getOrDefault(Items.CHEST, 0L) == 2, "the steps don't make 2 chests: " + plan.steps());
-		helper.assertTrue(Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 2, chest).isEmpty(), "2 chests from 16 planks' worth lack something");
-		// a third chest is short
-		helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 3, chest) == null, "3 chests planned from 16 planks' worth");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L, Items.JUNGLE_LOG, 1L);
+			Crafting.Plan plan = Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 2, chest);
+			helper.assertTrue(plan != null, "no plan for 2 chests from four woods' logs");
+			helper.assertTrue(plan.takes().equals(Map.of(Items.OAK_LOG, 1, Items.SPRUCE_LOG, 1, Items.BIRCH_LOG, 1, Items.JUNGLE_LOG, 1)),
+				"2 chests from four logs take " + plan.takes());
+			helper.assertTrue(MixedTagSlotGameTests.play(helper, plan).getOrDefault(Items.CHEST, 0L) == 2, "the steps don't make 2 chests: " + plan.steps());
+			helper.assertTrue(Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 2, chest).isEmpty(), "2 chests from 16 planks' worth lack something");
+			// a third chest is short
+			helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 3, chest) == null, "3 chests planned from 16 planks' worth");
+			helper.succeed();
+		});
 	}
 
 	/**
@@ -96,33 +116,43 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	 * exactly one thing that makes planks (a log or a plank), never nothing. One more spruce plank (8) is a chest that takes
 	 * the log and the 4 planks.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsSevenPlanksWorthOfLogAndPlanksIsShortAndEightIsAChest"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsSevenPlanksWorthOfLogAndPlanksIsShortAndEightIsAChest")
 	public void sevenPlanksWorthOfLogAndPlanksIsShortAndEightIsAChest(GameTestHelper helper) {
-		Map<Item, Long> seven = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 3L);
-		helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven) == null, "a chest planned from 7 planks' worth");
-		helper.assertTrue(Crafting.chain(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven) == null, "a chest chained from 7 planks' worth");
-		Map<Item, Integer> lack = Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven);
-		helper.assertTrue(sum(lack) == 1 && lack.keySet().stream().allMatch(i -> i.builtInRegistryHolder().is(ItemTags.LOGS)
-			|| i.builtInRegistryHolder().is(ItemTags.PLANKS)), "7 planks' worth should lack one log or plank: " + lack);
-		oneChest(helper, Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 4L), Map.of(Items.OAK_LOG, 1, Items.SPRUCE_PLANKS, 4), "an oak log and 4 spruce planks");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			Map<Item, Long> seven = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 3L);
+			helper.assertTrue(Crafting.plan(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven) == null, "a chest planned from 7 planks' worth");
+			helper.assertTrue(Crafting.chain(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven) == null, "a chest chained from 7 planks' worth");
+			Map<Item, Integer> lack = Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.CHEST, 1, seven);
+			helper.assertTrue(sum(lack) == 1 && lack.keySet().stream().allMatch(i -> i.builtInRegistryHolder().is(ItemTags.LOGS)
+				|| i.builtInRegistryHolder().is(ItemTags.PLANKS)), "7 planks' worth should lack one log or plank: " + lack);
+			oneChest(helper, Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 4L), Map.of(Items.OAK_LOG, 1, Items.SPRUCE_PLANKS, 4), "an oak log and 4 spruce planks");
+			helper.succeed();
+		});
 	}
 
 	/**
 	 * A barrel (6 planks and 2 wooden slabs, both any wood) from one oak, one spruce and one birch log (12 planks): no
 	 * single wood makes it, the mix does (3 planks of one wood for the slabs, 6 of the rest), taking all three logs.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qa1116bMixedLogsABarrelFromThreeWoodsLogs"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsABarrelFromThreeWoodsLogs")
 	public void aBarrelFromThreeWoodsLogs(GameTestHelper helper) {
-		Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L);
-		Crafting.Plan chain = Crafting.chain(helper.getLevel(), Crafting.Kind.CRAFTING, Items.BARREL, 1, chest);
-		Map<Item, Integer> lack = Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.BARREL, 1, chest);
-		helper.assertTrue(chain != null && lack.isEmpty(), "a barrel from three woods' logs: chain " + (chain == null ? "none" : chain.takes()) + ", lacks " + lack);
-		helper.assertTrue(chain.takes().equals(Map.of(Items.OAK_LOG, 1, Items.SPRUCE_LOG, 1, Items.BIRCH_LOG, 1)), "the barrel takes " + chain.takes());
-		helper.assertTrue(MixedTagSlotGameTests.play(helper, chain).getOrDefault(Items.BARREL, 0L) == 1, "the steps make no barrel: " + chain.steps());
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L);
+			Crafting.Plan chain = Crafting.chain(helper.getLevel(), Crafting.Kind.CRAFTING, Items.BARREL, 1, chest);
+			Map<Item, Integer> lack = Crafting.lacking(helper.getLevel(), Crafting.Kind.CRAFTING, Items.BARREL, 1, chest);
+			helper.assertTrue(chain != null && lack.isEmpty(), "a barrel from three woods' logs: chain " + (chain == null ? "none" : chain.takes()) + ", lacks " + lack);
+			helper.assertTrue(chain.takes().equals(Map.of(Items.OAK_LOG, 1, Items.SPRUCE_LOG, 1, Items.BIRCH_LOG, 1)), "the barrel takes " + chain.takes());
+			helper.assertTrue(MixedTagSlotGameTests.play(helper, chain).getOrDefault(Items.BARREL, 0L) == 1, "the steps make no barrel: " + chain.steps());
+			helper.succeed();
+		});
 	}
 
 	/**

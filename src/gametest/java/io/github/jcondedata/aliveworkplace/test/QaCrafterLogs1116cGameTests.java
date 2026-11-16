@@ -106,19 +106,24 @@ public class QaCrafterLogs1116cGameTests implements FabricGameTest {
 	 * short is QaCrafterLogs1116cBugGameTests). 1 oak log and 3 spruce planks (7) for a chest: short of exactly 1, a plank
 	 * or a log.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '100' '"qaCrafterLogs1116cMixedLogsTrulyShortPlanNothing"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qaCrafterLogs1116cMixedLogsTrulyShortPlanNothing")
 	public void mixedLogsTrulyShortPlanNothing(GameTestHelper helper) {
-		ServerLevel level = helper.getLevel();
-		Map<Item, Long> two = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L);
-		helper.assertTrue(plan(helper, Items.CHEST, 2, two) == null, "2 chests planned from 2 logs: " + plan(helper, Items.CHEST, 2, two));
-		helper.assertTrue(Crafting.chain(level, Crafting.Kind.CRAFTING, Items.CHEST, 2, two) == null, "2 chests chained from 2 logs");
-		Map<Item, Long> seven = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 3L);
-		helper.assertTrue(plan(helper, Items.CHEST, 1, seven) == null, "a chest planned from 7 planks' worth");
-		Map<Item, Integer> one = Crafting.lacking(level, Crafting.Kind.CRAFTING, Items.CHEST, 1, seven);
-		helper.assertTrue(sum(one) == 1 && one.keySet().stream().allMatch(i -> i.builtInRegistryHolder().is(ItemTags.PLANKS) || i.builtInRegistryHolder().is(ItemTags.LOGS)),
-			"an oak log and 3 spruce planks: a chest lacks " + ids(one) + ", expected 1 plank or log");
-		helper.succeed();
+		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
+		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		Leftovers.clear(helper);
+		helper.runAfterDelay(1, () -> {
+			ServerLevel level = helper.getLevel();
+			Map<Item, Long> two = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L);
+			helper.assertTrue(plan(helper, Items.CHEST, 2, two) == null, "2 chests planned from 2 logs: " + plan(helper, Items.CHEST, 2, two));
+			helper.assertTrue(Crafting.chain(level, Crafting.Kind.CRAFTING, Items.CHEST, 2, two) == null, "2 chests chained from 2 logs");
+			Map<Item, Long> seven = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 3L);
+			helper.assertTrue(plan(helper, Items.CHEST, 1, seven) == null, "a chest planned from 7 planks' worth");
+			Map<Item, Integer> one = Crafting.lacking(level, Crafting.Kind.CRAFTING, Items.CHEST, 1, seven);
+			helper.assertTrue(sum(one) == 1 && one.keySet().stream().allMatch(i -> i.builtInRegistryHolder().is(ItemTags.PLANKS) || i.builtInRegistryHolder().is(ItemTags.LOGS)),
+				"an oak log and 3 spruce planks: a chest lacks " + ids(one) + ", expected 1 plank or log");
+			helper.succeed();
+		});
 	}
 
 	/**

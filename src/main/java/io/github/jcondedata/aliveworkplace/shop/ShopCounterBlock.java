@@ -4,6 +4,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
+import io.github.jcondedata.aliveworkplace.work.Money;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -85,8 +86,13 @@ public class ShopCounterBlock extends BaseEntityBlock {
 		super.setPlacedBy(level, pos, state, placer, stack);
 		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter) {
 			counter.setOwner(player.getUUID(), player.getGameProfile().getName());
-			Chat.chat(player, Component.translatable("message.aliveworkplace.shop.placed"));
+			Chat.chat(player, placedMessage());
 		}
+	}
+
+	/** The welcome line when a counter is placed, naming the server's real CobbleDollar rate ("100 per emerald", B1346). */
+	public static Component placedMessage() {
+		return Component.translatable("message.aliveworkplace.shop.placed", Money.grouped(Money.DOLLARS_PER_EMERALD));
 	}
 
 	@Override

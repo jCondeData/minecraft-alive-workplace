@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -43,7 +44,7 @@ import net.minecraft.world.phys.AABB;
  * </ul>
  * Strawberry Sweet (red dye, a honey bottle, sugar) is the dish for the job tests: no making of another pot recipe.
  */
-public class QaCampfirePotRecipesCompatTests implements FabricGameTest {
+public class QaCampfirePotRecipesCompatTests implements FreshPlanning {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final BlockPos STATION = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

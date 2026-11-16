@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,7 +32,7 @@ import net.minecraft.world.level.block.Blocks;
  * way to make it"; the plain suite reads "short of 6 Raw Iron to make 3 Iron Bars"
  * (QaTinkererShortBugGameTests#coalButNoOreNamesTheRawIron). Moves to main with the fix.
  */
-public class QaCreateForge1115eBugCompatTests implements FabricGameTest {
+public class QaCreateForge1115eBugCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** What the forge names short, read straight off its recipes: the raw metal, never a crushed ore. */

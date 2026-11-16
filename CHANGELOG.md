@@ -17,8 +17,31 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Create, a builder short of andesite beside a Mason no longer reads "Nobody here makes: Andesite": a stone a
+  player mines that the Mason can't cut from what's there (polished andesite is never cut back into andesite, by a
+  player either) is left to the gathered line above; from Create's cut andesite in the chest he cuts it (B1334).
+- Chapel wedding request: a couple married in the new Chapel get one entry in the Village Hall's Chronicle, "married in
+  the new Chapel, and the whole village sat down to a feast", no longer also "married at the bell" (B1348).
+- Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three
+  builds in his own village (his Blueprint Table's) and tells its players, instead of putting them in the server-wide
+  set every later village starts with (B1345).
+- With CobbleDollars: placing a Shop Counter names your server's real CobbleDollar rate ("1,000 per emerald"), not
+  always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
+- Showcase page: the Book of Edicts at GUI scale 4 no longer shows as broken. Nothing was missing in the game. The
+  page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
+- Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned
+  in the same moment (2 chests from two logs read "short of 16 Oak Planks", not the 2 logs that were short). It now
+  waits a moment and says the right thing (B1321).
+- Crafters: with planks of one wood and logs of another in the chest, the "short of" line now counts them all: 4 spruce
+  planks with an oak and a birch log for 2 chests reads "short of 1 Oak Log", not 3 (B1333).
+- Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk
+  nobody had loaded now comes down as soon as that chunk loads, into the chests by the bench, instead of staying up
+  for good (B1322).
+- A crafter's shortage line no longer names the wrong thing on a busy server: when the village's other jobs had used most
+  of that moment's planning, a crafter could say "short of 16 Oak Planks" for chests while holding logs of three woods.
+  He now works it out a moment later and names the logs (B1349).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
   start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
 - Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up

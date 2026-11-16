@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.craft.CraftJobs;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -30,7 +31,7 @@ import net.minecraft.world.level.block.Blocks;
  * the crushed one wins. The spec (crafter.md, B408/B489/B1267): the line names the raw metal a player mines. Moves to main
  * with the fix.
  */
-public class QaCreateZinc1115e2BugCompatTests implements FabricGameTest {
+public class QaCreateZinc1115e2BugCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** Read off the forge's recipes: zinc from nothing lacks Raw Zinc, never Crushed Raw Zinc. */

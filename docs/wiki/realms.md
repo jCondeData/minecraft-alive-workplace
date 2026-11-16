@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; switched on in 1.0 with eve
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22, 33.22a
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22, 33.22a, B1346, B1347
 
 ## What a player sees
 

@@ -544,6 +544,13 @@ SCENES = [
        ("02_card_refused", "The mouse on the grayed-out button: why it can't be used"),
        ("03_card_toast", "A builder's finished toast"),
        ("04_card_compact", "The card at 320x180 (GUI scale 3)")]),
+    # 48.4: the Chronicle like its board, and the list menus' tabs on the rail
+    S("copperline_chronicle", "Village Hall", "Copperline: the Chronicle and the list menus",
+      "the Village Hall's Chronicle in Copperline: the plaque, the village and its count of entries on the lintel, the Show column with each group's count, the entries newest first under day headers, the raid's entry open to its whole text; the Defense filter clicked shows only the raid and the sighting; at 320x180 the column turns to icons; then the Research menu, a list menu, with its tab on the rail", 15,
+      [("01_chronicle", "The Chronicle, the raid's entry open"),
+       ("02_chronicle_defense", "Show: Defense, only the defense entries"),
+       ("03_chronicle_compact", "The Chronicle at 320x180 (GUI scale 3)"),
+       ("04_list_rail", "A list menu (Research) with its tab on the rail")]),
     # Village-wide
     # The Village Hall in Copperline (ROADMAP 47.2): the Overview, a villager at work opened in People, the Map, GUI scale 3
     S("hall", "Village Hall", "The Village Hall in Copperline", "the Village Hall opened on its Overview, a villager at work opened in People, "
@@ -555,10 +562,10 @@ SCENES = [
        ("08_hall_calendar", "The calendar"),
        ("09_hall_compact", "GUI scale 3 (320x180): the rail as an icon grid, Needs you across the stage"),
        ("10_hall_compact_map", "The Map at GUI scale 3")]),
-    # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
-    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen opened with Homes, Workshops and Gardens zones in three styles", 60,
+    # Painting the plan (ROADMAP 27.3, in Copperline since 44.3): the City Plan screen over a real village, at GUI scales 2 and 3
+    S("city_plan", "Village Hall", "Painting the City Plan", "the City Plan screen in Copperline (the tools on the rail, the map, the zones with one copper New) opened with Homes, Workshops and Gardens zones in three styles", 60,
       [("01_city_plan_start", "The first zone"), ("02_city_plan_scale2", "Three zones in three styles, GUI scale 2"),
-       ("03_city_plan_scale4", "The finished plan, GUI scale 4")]),
+       ("03_city_plan_scale3", "The finished plan at 320x180, GUI scale 3")]),
     # The plan on the ground and on the hall's map (ROADMAP 27.4)
     S("city_plan_ground", "Village Hall", "The plan on the ground", "zone edges, a street and the wall line show on the ground while the player holds the City Plan, and the hall's map of the plan hangs framed by the hall", 60,
       [("01_city_plan_ground", "Zone edges and the street on the ground"), ("02_city_plan_wall", "The wall line at the village's corner"),
@@ -680,7 +687,7 @@ SCENES = [
     job("caravan", "Realm", "Caravans you can see: one leaves, one arrives",
         "Thornholm's carter led two llamas with chests and red carpets from the Storehouse toward Ashford and was gone at the village's edge; "
         "then Ashford's caravan came in from that edge, its llamas stood by the Storehouse while the logs were unloaded, and it walked back out", 170),
-    # The Colony Charter (ROADMAP 33.8): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
+    # The Colony Charter (ROADMAP 33.8, in Copperline since 44.3): bought on the Colonies tab, its map with the ring and the chosen spot, its tooltip
     S("colony_charter", "Realm", "The Colony Charter: choosing where a colony goes",
       "Thornholm, a City, sold its owner a Colony Charter on the hall's Colonies tab (the treasury paid 20 emeralds, the player 12); "
       "the charter's map showed the loaded land like a vanilla map on parchment, a banner for Thornholm, Ashford and Farholt, the ring "
@@ -1238,10 +1245,11 @@ SCENES = [
        ("04_ledger_opens", "Opened from afar")]),
     S("outfits", "Everyone at work", "Every outfit, and as a zombie", "every profession shows its outfit, as a villager and a zombie", 60,
       [("[0-9][0-9]_*@spread", "")]),
-    S("guide", "Everyone at work", "The Guide Book", "a new player is given the Guide Book; every page opens with its picture", 60,
+    S("guide", "Everyone at work", "The Guide Book", "the Guide Book in Copperline (the chapters on the rail, the page's picture and words, Back and a copper Next): a new player is given it, every page opens with its picture and its words fit, a chapter opens from the rail, and the book at 320x180", 60,
       [("[0-9][0-9]_guide_*@spread", "")]),
-    S("config", "Everyone at work", "The settings screen (Mod Menu)", "every setting fits its button; a switch turned off is saved", 30,
-      [("01_config_numbers", "Distances and numbers"), ("02_config_switches", "Switches"), ("03_config_festivals_off", "Festivals off")]),
+    S("config", "Everyone at work", "The settings screen (Mod Menu)", "the settings in Copperline (the sections on the rail, a toggle, [-] [+] or a slider for each): every setting is in a section and its label fits, a switch turned off is saved, and the screen at 320x180", 30,
+      [("01_config_numbers", "Work: distances and numbers"), ("02_config_switches", "Village's switches"), ("03_config_festivals_off", "Festivals off"),
+       ("04_config_scale3", "At 320x180, GUI scale 3")]),
     S("words", "Everyone at work", "Every new or reworded message, in chat", "every message reads without a raw key or placeholder", 30,
       [("[0-9][0-9]_words@spread", "")]),
     S("staff", "Everyone at work", "Every workstation with its villager", "every workstation stands with its worker", 45,

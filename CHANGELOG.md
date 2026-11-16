@@ -46,6 +46,22 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The Guide Book and the Settings screen in Copperline, the new look: the Guide keeps its pictures and pages, with its
+  chapters on the rail (and their page counts) and Back and Next under the page; the Settings screen sorts its 158
+  settings into sections on the rail (Work, Jobs, Builders, Village, Villagers, Defense, Realms, Pokémon), with
+  toggles, [-] [+] and sliders, "Reset this page" and Done. Settings save on closing as before (44.4).
+- The City Plan and the Colony Charter in Copperline (44.3): the plan's tools (Brush, Area, Erase, Road, Wall) and Undo
+  with its steps on the rail, the map with its zone paint as before, the zones in a sunken list with one copper New, and
+  the foot line saying what each tool, button and cell does; the charter's map beside "The spot" (a green, red or blue
+  word) and "The ring", with a copper Done. Both fit at 320x180 (GUI scale 3).
+- The Chronicle, the list menus and the Pokémon Trader in Copperline (48.4): the Village Hall's Chronicle has a Show
+  column (All, People, Building, Trade, Festivals, Defense, Stories, each with its count; a click lists only that
+  kind), the entries newest first under day headers ("DAY 47 · AUTUMN 5"), and a click opens an entry to its whole text;
+  the lintel reads "Oakhaven · 128 entries since day 1". Every list menu (the Move Tutor, the daycares, the Professor,
+  the Innkeeper, Research, the Smith's orders, the builder's pickers, the shops and the Ferry) has its tabs down a rail
+  of icons on the left (the line at the foot names the one under the mouse) and the list beside them. The Pokémon Trader has the trader's name on the plaque,
+  today's offers and the book on the lintel, a close X, and a whisper line that names the offer under the mouse and
+  its price.
 - The Storehouse board in Copperline (47.4): a table of what's needed with a bar of how much the store holds, who
   needs it and who brings it ("Nobody: no Glassblower" in red), Give / Stocked / Have 0 on each row, a rail that filters
   by Builders, Workers, Kitchen and Projects with Missing and I carry toggles, "In your pack" and one copper Give all

@@ -118,7 +118,8 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
 - The map shows only what the server has loaded when you open it: far from players that is parchment. It isn't
   redrawn while it is open.
 - A village's banner on the map is red or white, not its Village Banner's colors.
-- The map has no zoom, and its text isn't checked for clipping at every GUI scale the way the City Plan's is.
+- The map has no zoom. Its parts are checked for room at GUI scales 2 and 3 ([Copperline](copperline.md), 44.3), but its
+  showcase scene films it only at GUI scale 2.
 - A charter whose hall was removed still works where the hall's place isn't loaded; it is refused when the settlers
   are sent (33.9).
 - With CobbleDollars, the split payment (treasury in emeralds' worth, buyer in dollars) has no compat test yet.

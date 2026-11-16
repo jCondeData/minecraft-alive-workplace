@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 48.1, 48.2, 48.3
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4
 
 ## What a player sees
 
@@ -157,8 +157,89 @@ with the bad glyph and "Not yet".
 finishing (or taking down) a build sends one to the player it's for, "Stone House / Mira finished it.", through
 `CardToasts` (a client without the mod gets only the chat line, which still goes).
 
+## The City Plan and the Colony Charter (44.3)
+
+**The City Plan.** The plaque says "City Plan of Thornholm"; the lintel says which tool is in hand ("Tool: Brush") or
+"View only" for a player who may only look. The rail, under "TOOLS", holds Brush, Area, Erase, Road and Wall (each with
+its item: a brush, a map, a sponge, a dirt path, a stone brick wall), the chosen one copper-marked, and Undo below a rule
+with the steps left as its count; at 320x180 (GUI scale 3) the rail is the two-column icon grid. The map keeps its look:
+the land, the grid, each zone tinted and edged in its kind's color, Keep Clear hatched, roads, the wall line, the
+banners and the zone names, now in a Void frame with "N ^" in its corner. Under the map, the road width (Lane, Street,
+Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **New**, the
+one copper button; the zones in a sunken list (the kind's swatch, the name, the cells; the chosen one copper-marked);
+the chosen zone's name in a well, its style (with the style's icon), kind, Renew and a red Delete; and "LEGEND" when
+there's room (not at 320x180, where the zone swatches and the foot line do its work). The foot line says what the tool,
+button or row under the mouse does ("Drag a rectangle to fill it with the chosen zone."), on the map the zone under the
+mouse ("Homes: Homes, As drawn") or what to do next; the old hover tooltips moved there.
+
+**The Colony Charter.** The plaque says "Colony Charter of Thornholm", the lintel "Ring: 256 to 1024 blocks out". The
+map (unchanged: the land on parchment, banners, the ring, the circles round other halls, the red cross) fills the stage's
+left; on the right "THE SPOT" says where the colony goes with a glyph and its color (blue "No spot chosen yet.", green
+the spot, red the server's refusal), "THE RING" explains the ring, and **Done** is the copper button. Pointing at the
+map shows a Copperline tooltip (how far and which way, with a green "A colony can go here" or a red reason).
+
+How: `ui/CityPlanLayout` (core, pure numbers) places both screens' parts from `CopperLayout`'s shell, and
+`CopperlineCityPlanGameTests` checks them at 427x240, 480x270 and 320x180 with the English labels and three times as
+long. The screens keep their widgets for the clicks (drawn in Copperline), so every button, tool, key (Enter, Esc,
+Ctrl+Z), drag and double-click works as before. The City Plan's scene now takes its third still at GUI scale 3.
+
+## The Guide Book and the Settings screen (44.4)
+
+**The Guide Book.** The plaque says "Guide Book"; the lintel the chapter and the page ("Builders · Page 5 of 36"), or
+"35 pages in 7 chapters" on the contents. The rail, under "CHAPTERS", holds Contents (the book) above a rule, then
+the chapters by short name with their icons and page counts (Start, Builders, Village, Gathering, Making, Safety,
+Pokémon), the open one copper-marked. The stage keeps the pictures and pages: the page's title, its screenshot in a
+Void frame (16:9, as big as the words under it leave room for) and its words; Back and Next (the copper button) along
+the foot with "5 / 36" between them. The contents page has the intro and the chapters, each with the page it starts on.
+At 320x180 the rail is the icon grid and the arrows ("<" ">") sit beside the title. The foot line says what the
+chapter, arrow or close X does.
+
+**The Settings screen** (Mod Menu, like `boards/Settings.png`). The plaque says "Alive Workplace Settings", the lintel
+the open section and its size ("Village · 29 settings"). The rail, under "SETTINGS FOR", holds the sections (Work,
+Jobs, Builders, Village, Villagers, Defense, Realms, Pokémon) with their counts. The stage lists the open section's
+settings: "DISTANCES AND NUMBERS" then "SWITCHES", each row its name and its control on the right: a toggle with On
+(Verdigris) or Off, [-] value [+] for a number of 20 steps or fewer, a slider and its value well for a bigger one; at
+the foot "Reset this page" and **Done**, the copper button. Pointing at a name shows its tooltip in a Copperline
+tooltip; the foot line says how to change it, and by default that a server keeps its own file.
+
+How: `ui/GuideLayout` and `ui/SettingsLayout` (core, pure numbers) place both screens' parts from `CopperLayout`'s
+shell; `guide/GuideBook.Reader` and `ui/SettingsEditor` (core) do what a click does, so
+`CopperlineGuideSettingsGameTests` opens every page and changes settings the way a player's clicks do, and checks the
+layouts at 427x240, 480x270 and 320x180. Every setting has its section (`SettingsLayout`'s list; the test fails for a
+new one left out). Saving is as before: closing the screen writes the file and applies it.
+
+## The Chronicle, the list menus and the Pokémon Trader (48.4)
+
+**The Chronicle** (the Village Hall's Calendar, Chronicle) is the board's **Chronicle** (`boards/Chronicle.png`), laid
+out by `ui/ChronicleLayout` (pure arithmetic, checked by the GameTests) beside the Hall's section rail: the plaque reads
+"Chronicle" and the lintel "Oakhaven · 128 entries since day 1" (on a small screen "128 entries"). On the left a **Show**
+column: All, People, Building, Trade, Festivals, Defense and Stories, each with its Copperline icon and how many entries it
+holds, the open one copper-marked; a click lists only that kind (every entry kind is in exactly one group:
+`Chronicle.Group`), and Back is at the column's foot. At 320x180 the column is icons with their counts and the whisper line
+names them. On the right the entries, newest first, under **day headers** ("DAY 47 · AUTUMN 5" over a rule, the season
+and its day worked out with the server's season length); each entry is a chevron, its icon and its text on one line, and
+a click **opens** it to its whole text (a copper-edged box) and closes it again. The mouse wheel scrolls the list. The
+whisper line says when an entry was written and that a click reads all of it, what a filter shows, or the page's hint.
+
+**The list menus** (ROADMAP 42, `ChoiceTableScreen` in list mode: the Move Tutor, the daycares and their keeper, the
+Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
+and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
+research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
+scholars' research: Worked by the village's scholars at their desks"), and its tooltip shows as before. The list sits on
+the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
+line's right. Every row, button, price, tooltip and click is as before.
+
+**The Pokémon Trader** has the shell round its offers and party: the trader's name on the plaque, "3 offers today" on the
+lintel beside the trader's book (moved there from the corner, so the close X has room), the close X, and a whisper line
+that names the offer under the mouse and its price ("Pikachu · For: any Electric, Lv. 20+. Click to pick it.") or the
+Pokémon or book under it.
+
 ## Decisions
 
+- **The Settings screen saves on closing, as before (44.4).** The board's Save button and its red "fix this field"
+  state are left out: no setting is typed in (they're toggles, [-] [+] and sliders, all kept in range), so there's never a
+  value to refuse, and Done saves. Sections are the mod's own grouping of its 158 settings; the board's "Screen"
+  section has no settings to hold.
 - **Slots keep their places (44.1).** The Drop Box and the counter keep a vanilla chest's slot positions and their
   menus stay `ChestMenu`, so automation, inventory mods and every test that opens them see what they saw before; only
   the mailbox's slots moved (its menu is the mod's own), to put the inbox and pack where a chest has them and the parcel
@@ -168,6 +249,9 @@ finishing (or taking down) a build sends one to the player it's for, "Stone Hous
 - **The team's Pokémon sit in wells (48.2).** Each team card puts its Pokémon's model in a sunken well as tall as the
   card (24 pixels), the same well a "???" card has, so the creature (the board's subject) reads first; the name and level
   get a few pixels less and trim with "..." on narrow cards (the whisper line gives them in full).
+- **The list menus' rail is icons (48.4).** A worded rail took a quarter of the window and cut the list's columns
+  ("Level 0 ..." for "Level 0 of 3" on Research); the icon grid takes 50 pixels, so every column reads as it did under
+  the old row of tabs, and the whisper line and tooltip give the tab's name.
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
 - **The village's name and date moved from the rail to the lintel** ("where you are"), so the rail is the sections only
@@ -181,14 +265,15 @@ finishing (or taking down) a build sends one to the player it's for, "Stone Hous
 ## Known limits
 
 - The screens are not yet laid out like their own boards: the Hall's Overview tiles, the Trainer screen, the status card
-  and the rest come in Milestones 44, 47 and 48. The Blueprint Table (48.1) and the Trainer screen (48.2) are (below).
+  and the rest come in Milestones 44, 47 and 48. The Blueprint Table (48.1), the Trainer screen (48.2), the status card (48.3) and the Chronicle, list menus and Pokémon Trader (48.4) are (above).
 - The Blueprint Table's material slots compare with what the player carries, not with the village's chests (the screen
   knows only the player's inventory). The board's coins, Walk through and favorite key are not in the table (it has none).
 - The rail shows no counts yet (the parts can draw them; the Hall sends none).
 - The Trainer screen's cards show no types or moves (the board's), and its rail no stars or last battle: the server
   doesn't send them. Challenge has no crossed-swords glyph (no such glyph yet).
-- The status cards and the Pokémon Trader have the new window, colors, buttons and whisper line but
-  no plaque yet (they draw their own titles).
+- The Chronicle (48.4) has no search box or sort menu (the board's): the page shows a hall's newest entries (up to 36 at
+  a time, of the 100 a hall keeps) and the filters already narrow it; nor the time of day or the people and places chips
+  of an entry, which the chronicle doesn't keep. A click on a name doesn't jump to that villager.
 
 ## Proof
 
@@ -232,6 +317,16 @@ new sentences in the lang file), with `TrainerScreenGameTests`, `TrainerScreenBu
 `QaTrainerScreen1111dGameTests` still passing. Scene: `copperline_trainer` (with Cobblemon: the mouse on Challenge and
 on Trade, then at 320x180).
 
+48.4: `CopperlineChronicleGameTests` (3: the Chronicle's column, filters, Back and list at 427x240, 480x270, 640x360 and
+320x180 with group words one and three times as long, the rows apart and an open entry taller, scrolling only when
+needed; a real hall's Chronicle page: newest first with dates, every kind in exactly one group, the filters' counts, a
+filter's click showing only its group, an empty group's line, All bringing every entry back, Back still first; the list
+menus' rail with no, 1, 6 and 12 tabs, the list beside it and the page arrows in the whisper line; the Trader's book on
+the lintel clear of the plaque and the close X; the new sentences), with `CopperlineShellGameTests`,
+`PokemonTradeLayoutGameTests`, `QaTradeRows1109dGameTests`, the hall page tests and the list menu tests still passing.
+Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
+list menu with its tab on the rail).
+
 48.3: `CopperlineStatusCardGameTests` (3: a builder's card, an empty card and a thirty-line card at 427x240, 480x270,
 640x360 and 320x180 with labels one, three and five times as long: the card inside the screen, portrait, name and close
 X apart, buttons inside the card, in order, apart, under the reason box and the divider and above the hint; a builder's
@@ -239,3 +334,11 @@ card whole at 240 tall; one copper button, never Close or a grayed-out one; the 
 `StatusCardButtonsGameTests`, `QaStatusCardRows1111cGameTests`, `JobCardGameTests`, `NurseCardGameTests` and
 `CopperlineShellGameTests` still passing (23 of 23). Scene: `copperline_status_card` (a line's tooltip, a grayed-out
 button's reason, the toast, then at 320x180).
+
+44.4: `CopperlineGuideSettingsGameTests` (6: the Guide Book at 427x240, 480x270 and 320x180 with labels one and three
+times as long, every page's picture and words on the stage; every page opened with Next, Back, the rail and the
+contents' rows, with and without Cobblemon and the City Plan; every setting in a section; the Settings screen at the
+three sizes with every setting's name fitting beside its control; a switch, a small number and a slider changed by
+clicks, a page reset, and the file read back; the new sentences), with `GuideGameTests` and `ConfigGameTests` still
+passing. Scenes: `guide` (every page, a chapter from the rail, then at 320x180) and `config` (Work's numbers, Village's
+switches, Festivals turned off and saved, then at 320x180).

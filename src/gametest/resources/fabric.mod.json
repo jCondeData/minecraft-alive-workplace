@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaConfigNewFields1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestbookClaims1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestbookClaims1116eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestRewardVillageGameTests",
@@ -528,8 +529,11 @@
 			"io.github.jcondedata.aliveworkplace.test.HallBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTradesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineBlueprintsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CopperlineCityPlanGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CopperlineGuideSettingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTrainerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineStatusCardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.CopperlineChronicleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",

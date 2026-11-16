@@ -279,6 +279,20 @@ def judging_tests(tmp):
     r, _ = judge(tmp, "sifter", still_edit=purple_text)
     check("judge: purple text on a dark toast is not a missing texture", r["pass"], r["reasons"])
 
+    def copperline_reform(stem, im):
+        # Copperline's Deepslate 900 panel (#16171D) with a dark purple (#A800A8) reform line at GUI scale 4: solid
+        # 4-pixel strokes, the edicts scene's false missing texture of 2026-11-16.
+        if stem != "03_done":
+            return im
+        d = ImageDraw.Draw(im)
+        d.rectangle((300, 300, 950, 420), fill=(22, 23, 29))
+        for x in range(310, 940, 12):
+            d.rectangle((x, 320, x + 3, 380), fill=(168, 0, 168))
+            d.rectangle((x, 390, x + 8, 393), fill=(168, 0, 168))
+        return im
+    r, _ = judge(tmp, "sifter", still_edit=copperline_reform)
+    check("judge: dark purple text on a Copperline panel is not a missing texture", r["pass"], r["reasons"])
+
     def portal(stem, im):
         # A lit Nether portal: purple, not the missing texture's magenta.
         ImageDraw.Draw(im).rectangle((400, 200, 520, 400), fill=(90, 13, 176))

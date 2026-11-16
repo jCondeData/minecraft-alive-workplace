@@ -297,7 +297,8 @@ filters by who needs it (Everyone, Builders, Workers, Kitchen, Projects, each wi
 **Missing** (only what the store is short of) and **I carry** (only what you can give), then the store's own entries:
 its stock and the Steward's shopping list (their lines in the tooltip) and the stock orders (a click opens that page,
 which keeps the shared table look). Under the table, **In your pack** shows what you carry that a row asks for, and the
-one copper button, **Give all 52**, hands everything over row by row (Shift-click on a row does the same); it's gray
+one copper button, **Give all 52**, hands everything over row by row (Shift-click on a row does the same); its number is what a press gives, so two
+rows asking for the same item share what you carry (B1338: 2 rows of 16 oak logs and 10 carried read Give all 10); it's gray
 when you carry nothing asked for. The whisper line says what a click on the row under the mouse does and who brings it
 ("Click to give 16 of yours · Gathered by: the Lumberjack (Tomas)"); with nothing under the mouse it gives the store's
 numbers. Every line the board's old reading pane showed is in the tooltip of a row's icon. At 320x180 (GUI scale 3)

@@ -74,10 +74,14 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return false;
 	}
 
-	// --- the sidebar's layout ----------------------------------------------------------------------------------------
+	// --- the rail (Copperline, 47.1; the sidebar since 40.1) ----------------------------------------------------------
+	// The ten sections down the window's left under the lintel, each its icon, its word and the copper mark on the open
+	// one; on a small screen (320x180, GUI scale 3) a two-column grid of icons, the word in the whisper line under the
+	// mouse. The village's name and today's date are on the lintel ("where you are"). The places: CopperLayout.
 
-	private int iconRoom() {
-		return panelBox()[3] >= 230 ? 16 : 10;
+	/** Whether the screen is a small one (the 320x180 rule). */
+	private boolean compactRail() {
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.compact(width, height);
 	}
 
 	@Override
@@ -89,7 +93,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		for (Section s : Section.values()) {
 			text = Math.max(text, font.width(s.title()));
 		}
-		return Math.min(8 + iconRoom() + 4 + text + 8, panelBox()[2] / 3);
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railWidth(panelBox(), text, compactRail());
 	}
 
 	private Component villageName() {
@@ -104,33 +108,27 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return HallSections.date(menu.state(HallSections.SEASON), menu.state(HallSections.DAY), menu.state(HallSections.YEAR));
 	}
 
-	/** The date's lines in the sidebar (it wraps when the sidebar is narrow), at most two. */
-	private List<FormattedCharSequence> dateLines(int side) {
-		List<FormattedCharSequence> lines = font.split(date(), side - 12);
-		return lines.size() > 2 ? lines.subList(0, 2) : lines;
+	/** Where you are, on the lintel: the village and today's date (just the date on a small screen). */
+	@Override
+	protected Component subtitle() {
+		if (!hasSidebar()) {
+			return Component.empty();
+		}
+		return compactRail() ? date() : Component.translatable("screen.aliveworkplace.copperline.where", villageName(), date());
 	}
 
-	/** The sidebar buttons' top, and each one's height. */
-	private int[] buttons(int side) {
-		int[] box = panelBox();
-		int first = box[1] + 7 + 10 + dateLines(side).size() * 10 + 4;
-		int bottom = box[1] + box[3] - 16;
-		int rowH = Math.max(10, Math.min(20, (bottom - first) / SECTIONS));
-		return new int[]{first, rowH};
+	/** The rail's entries' boxes, in Section order. */
+	private int[][] railEntries() {
+		int side = sidebarWidth();
+		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), side);
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railEntries(rail, SECTIONS, compactRail());
 	}
 
 	private int sectionAt(double mx, double my) {
-		int side = sidebarWidth();
-		if (side == 0) {
+		if (sidebarWidth() == 0) {
 			return -1;
 		}
-		int[] box = panelBox();
-		int[] b = buttons(side);
-		if (mx < box[0] + 4 || mx >= box[0] + side - 2 || my < b[0]) {
-			return -1;
-		}
-		int i = (int) ((my - b[0]) / b[1]);
-		return i < SECTIONS ? i : -1;
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.at(railEntries(), mx, my);
 	}
 
 	@Override
@@ -139,40 +137,27 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (side == 0) {
 			return;
 		}
-		int[] box = panelBox();
-		int x = box[0];
-		int y = box[1];
-		g.fill(x + 4, y + 4, x + side - 2, y + box[3] - 16, TableStyle.LIST_BG);
-		g.drawString(font, TableStyle.trim(font, villageName(), side - 12), x + 8, y + 7, TableStyle.TITLE, false);
-		int dy = y + 17;
-		for (FormattedCharSequence line : dateLines(side)) {
-			g.drawString(font, line, x + 8, dy, TableStyle.SUBTITLE, false);
-			dy += 10;
-		}
-		int[] b = buttons(side);
-		int rowH = b[1];
-		int icon = Math.min(16, rowH - 2);
+		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), side);
+		g.fill(rail[0] + rail[2], rail[1], rail[0] + rail[2] + 1, rail[1] + rail[3], CopperStyle.DEEP_600);
+		int[][] entries = railEntries();
 		int hovered = sectionAt(mouseX, mouseY);
 		Section open = section();
+		boolean compact = compactRail();
 		for (Section s : Section.values()) {
-			int top = b[0] + s.ordinal() * rowH;
-			boolean on = s == open;
-			if (on) {
-				g.fill(x + 4, top, x + side - 2, top + rowH - 1, TableStyle.CELL_ON_BG);
-				g.fill(x + 4, top, x + 6, top + rowH - 1, TableStyle.TITLE);
-			} else if (s.ordinal() == hovered) {
-				g.fill(x + 4, top, x + side - 2, top + rowH - 1, 0x30FFFFFF);
-			}
-			int ix = x + 8;
-			int iy = top + (rowH - 1 - icon) / 2;
-			g.pose().pushPose();
-			g.pose().translate(ix, iy, 0);
-			g.pose().scale(icon / 16f, icon / 16f, 1f);
-			g.renderItem(new ItemStack(s.icon), 0, 0);
-			g.pose().popPose();
-			int tx = ix + icon + 4;
-			g.drawString(font, TableStyle.trim(font, s.title(), x + side - 4 - tx), tx, top + (rowH - 8) / 2, on ? TableStyle.TITLE : TableStyle.NAME, false);
+			CopperStyle.railEntry(g, font, entries[s.ordinal()], CopperStyle.SECTION_ICONS.get(s.ordinal()), null, s.title(), 0,
+				s == open, s.ordinal() == hovered, compact);
 		}
+	}
+
+	/** Under the mouse on the rail: the section's word and what it's for (on a small screen the icon alone names nothing). */
+	@Override
+	protected Component whisperText(int mouseX, int mouseY, int hovered) {
+		int i = sectionAt(mouseX, mouseY);
+		if (i >= 0) {
+			Section s = Section.of(i);
+			return Component.translatable("screen.aliveworkplace.copperline.rail_whisper", s.title(), s.about());
+		}
+		return super.whisperText(mouseX, mouseY, hovered);
 	}
 
 	@Override
@@ -186,6 +171,12 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
 		}
 		return true;
+	}
+
+	/** Where rail entry {@code section}'s middle is (the screenshot harness and the parts scene point at it). */
+	public int[] railCentre(Section section) {
+		int[] box = railEntries()[section.ordinal()];
+		return new int[]{box[0] + box[2] / 2, box[1] + box[3] / 2};
 	}
 
 	/** Clicks sidebar button {@code section} as a player would (the screenshot harness). */

@@ -1850,7 +1850,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaUnlockFor1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUpgradeEntry1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseReach1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperline1116c3GameTests"
 		]
 	},
 	"depends": {

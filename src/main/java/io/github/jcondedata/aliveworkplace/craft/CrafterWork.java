@@ -1115,6 +1115,9 @@ public class CrafterWork extends Behavior<Villager> {
 				CraftJobs.Job job = CraftJobs.tagged(i);
 				return job != null && job != maker;
 			}));
+		if (Crafting.planningSpent(level)) {
+			return null; // B1349: worked out only part way this tick
+		}
 		for (Map.Entry<Item, Integer> making : lack.entrySet()) {
 			if (!wants(level, making.getKey())) {
 				continue;

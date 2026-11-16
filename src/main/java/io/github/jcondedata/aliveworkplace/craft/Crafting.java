@@ -146,7 +146,10 @@ public final class Crafting {
 		return plan == null ? null : new Plan(plan.target(), plan.count(), merged(plan.steps()), plan.takes(), plan.makes());
 	}
 
-	/** What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}. */
+	/**
+	 * What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}.
+	 * Empty, and {@link #planningSpent} true, when the tick's planning ran out before it was all worked out (B1349).
+	 */
 	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
 		return lacks(shortfall(level, kind, target, count, usable));
 	}
@@ -296,7 +299,8 @@ public final class Crafting {
 
 	/**
 	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
-	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
+	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11). A
+	 * shortfall cut short by it is null too (B1349), so what's short asked for in a tick that ends spent is not yet known.
 	 */
 	public static boolean planningSpent(ServerLevel level) {
 		return planningLeft(level) <= 0;
@@ -318,6 +322,14 @@ public final class Crafting {
 	public static void freshPlanning(ServerLevel level) {
 		synchronized (TICK_USE) {
 			TICK_USE.remove(level);
+		}
+	}
+
+	/** How many recipes this tick's plans may still try on {@code level} ({@link #TICK_TRIALS} less what they've tried). */
+	public static int planningLeft(ServerLevel level) {
+		synchronized (TICK_USE) {
+			long[] tick = TICK_USE.get(level);
+			return tick == null || tick[0] != level.getGameTime() ? TICK_TRIALS : (int) Math.max(0, TICK_TRIALS - tick[1]);
 		}
 	}
 

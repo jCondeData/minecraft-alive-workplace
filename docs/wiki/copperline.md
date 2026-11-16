@@ -72,7 +72,7 @@ Roadmap items: 47.1, 44.1, 44.2
   the frame; `MailboxScreen`, `DropBoxScreen` and `ShopCounterScreen` add their panels and words. No new art: the
   wells, panel, buttons and glyphs are 47.1's.
 - **Trades (44.2):** the mod's own jobs open vanilla's merchant menu on its own type, `aliveworkplace:trades`
-  (`CopperTradeMenu`, core): `VillagerMixin` wraps the `openTradingScreen` call in vanilla's `startTrading`, and
+  (`CopperTradeMenu`, core): `VillagerMixin` wraps the call that opens vanilla's trading screen, and
   `CopperTrades.open` does what vanilla's does (the same menu, offers and level packet) for any villager whose job is in
   the mod's namespace. The offers packet, the trade choice, the shop's stock refresh and the level-up are vanilla's and
   the mod's code as before. `CopperSlotScreen` learned a `shift` (the slot frame starts 100 pixels into vanilla's

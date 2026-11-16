@@ -81,7 +81,7 @@ export function draw() {
   const st = OPENINGS.stairs
   for (const [x, y, z] of st.well) c.clear(x, y, z)
   flight(c, st.flight, st.rises, P.wood, P.floor)
-  railing(c, [[5, 5, 6], [5, 5, 7], [5, 5, 8], [6, 5, 5]], P.wood)
+  railing(c, [[5, 5, 5], [5, 5, 6], [5, 5, 7], [5, 5, 8], [6, 5, 5]], P.wood)
 
   // --- Pass 3: depth and detail ---------------------------------------------------------------------------------
   hood(c, fd.at[0], H.beamY, z0 - 1, P.roof)

@@ -41,11 +41,13 @@ final class HouseFurnishedScene {
 		new View("01_outside_front", new Vec3(-3, 3.5, -8), new Vec3(5, 4.5, 5), 70),
 		new View("02_outside_back", new Vec3(15, 4.5, 19), new Vec3(5, 5, 7), 70),
 		new View("03_hall_hearth", new Vec3(4.5, 2.6, 3.5), new Vec3(4.5, 1.6, 10), 80),
-		new View("04_hall_table", new Vec3(5.5, 2.6, 8.5), new Vec3(2.5, 1.6, 4), 80),
-		new View("05_kitchen_stove", new Vec3(8.3, 2.7, 4.4), new Vec3(10.2, 1.5, 8.4), 80),
-		new View("06_kitchen_counters", new Vec3(8.3, 2.7, 7.6), new Vec3(10.6, 1.9, 4.2), 80),
-		new View("07_loft_children", new Vec3(5.5, 6.6, 9.5), new Vec3(4.5, 5.4, 2.5), 80),
-		new View("08_loft_parents", new Vec3(4.5, 6.6, 2.6), new Vec3(4, 5.4, 10.5), 80));
+		new View("04_hall_table", new Vec3(5.6, 3.2, 4.6), new Vec3(3.0, 1.4, 7.0), 80),
+		new View("05_kitchen_stove", new Vec3(8.6, 2.8, 5.5), new Vec3(9.6, 1.5, 8.4), 80),
+		new View("06_kitchen_counters", new Vec3(8.6, 2.8, 7.6), new Vec3(10.2, 1.8, 4.5), 80),
+		new View("07_loft_children", new Vec3(4.6, 6.5, 7.0), new Vec3(4.2, 5.4, 2.5), 80),
+		new View("08_loft_parents", new Vec3(3.5, 6.5, 5.2), new Vec3(3.5, 5.3, 10.4), 80),
+		new View("09_loft_railing", new Vec3(3.0, 6.8, 8.2), new Vec3(5.5, 5.4, 5.5), 80),
+		new View("10_hall_lamp", new Vec3(6.5, 2.9, 5.7), new Vec3(6.5, 2.0, 3.5), 70));
 
 	private int tick;
 	private final List<String> wrong = java.util.Collections.synchronizedList(new ArrayList<>());

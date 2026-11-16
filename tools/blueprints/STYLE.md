@@ -107,6 +107,9 @@ the owner kept the original Inn). Use them on every new or redrawn build.
   surfaces, not floors; no rows of chests along walls; a carpet rug marks each seating or sleeping zone; lanterns on
   chains and fire for warm light, hidden light for evenness, no torch grids, daylight from windows. Record every piece
   as a furniture spot (`furniture.py`, `Build.furniture(...)`) so the furniture mods swap in well.
+  A short (1-block) lamp always sits on a table or side table (record both as spots); only a lamp 2 or more blocks tall
+  may stand on the floor, otherwise hang it or fix it to a wall. Every fence or railing run gets a post at each corner
+  and end, and the saved `.nbt` must hold the north/south/east/west connections (check the blockstates, not the type).
 - **Look at it like a player:** besides the four outside views, render cutaways of each floor and take eye-level shots
   inside each room in the real client, from a doorway or corner looking across the room. Zoom into walls, gables and
   roofs for any see-through gap before calling it done.

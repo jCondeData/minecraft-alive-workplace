@@ -285,12 +285,13 @@ export const furnitureParts = {
     c.set(x, y, z, 'lantern', { hanging: 'true', waterlogged: 'false' })
     c.spot('lamp', f.pos, f.facing, Array.from({ length: n + 1 }, (_, i) => [0, i, 0]), f.wood) // lantern and chain
   },
-  floorLamp(c, f) { // a lantern on a fence post
+  tableLamp(c, f) { // a short lantern never stands on the floor: a little side table (a top slab) under it
     const [x, y, z] = f.pos
     c.free([x, y, z], [x, y + 1, z])
-    c.set(x, y, z, `${f.wood}_fence`)
+    c.set(x, y, z, `${f.wood}_slab`, { type: 'top', waterlogged: 'false' })
     c.set(x, y + 1, z, 'lantern', { hanging: 'false', waterlogged: 'false' })
-    c.spot('lamp', f.pos, f.facing, [[0, 0, 0], [0, 1, 0]], f.wood)
+    c.spot('side_table', f.pos, f.facing, [[0, 0, 0]], f.wood, 'white')
+    c.spot('lamp', [x, y + 1, z], f.facing, [[0, 0, 0]], f.wood)
   },
   clock(c, f) { // a tall case: a stripped log under a trapdoor hood
     const [x, y, z] = f.pos

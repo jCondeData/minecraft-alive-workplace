@@ -97,7 +97,7 @@ export const FURNITURE = [
   { room: 'Hall', kind: 'chair', part: 'armchair', pos: [5, 1, 9], facing: 'west', wood: 'dark_oak', colour: 'red' },
   { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [3, 3, 7], facing: 'north', wood: 'spruce' },
   { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [5, 3, 5], facing: 'north', wood: 'spruce' },
-  { room: 'Hall', kind: 'lamp', part: 'floorLamp', pos: [6, 1, 3], facing: 'west', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
+  { room: 'Hall', kind: 'lamp', part: 'tableLamp', pos: [6, 1, 3], facing: 'west', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
   { room: 'Hall', kind: 'clock', part: 'clock', pos: [2, 1, 3], facing: 'east', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
   { room: 'Hall', kind: 'shelf', part: 'shelf', pos: [3, 2, 3], facing: 'south', wood: 'spruce', crockery: 'flower_pot' },
   { room: 'Hall', kind: 'shelf', part: 'shelf', pos: [5, 2, 3], facing: 'south', wood: 'spruce', crockery: 'potted_red_tulip' },

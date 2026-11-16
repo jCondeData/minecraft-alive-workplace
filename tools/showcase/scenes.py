@@ -1345,6 +1345,8 @@ SCENES = [
       110, [("03_hall_hearth", "The hall from the door, looking at the hearth"),
            ("05_kitchen_stove", "The kitchen"),
            ("07_loft_children", "The loft from the top of the stairs"),
+           ("09_loft_railing", "The loft's stair railing, joined at the corner"),
+           ("10_hall_lamp", "The lamp on its side table by the door"),
            ("01_outside_front", "The Daub House from the lane")],
       cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'

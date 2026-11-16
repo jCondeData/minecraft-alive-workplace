@@ -83,6 +83,14 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	// mouse. The village's name and today's date are on the lintel ("where you are"). The places: CopperLayout.
 
 	/** Whether the screen is a small one (the 320x180 rule). */
+	/**
+	 * Whether the section rail shows only its icons: on a small screen, and on the Chronicle (48.4), whose Show column
+	 * stands beside it, so the entries get the room (the design critique's first point: two worded rails squeezed them).
+	 */
+	private boolean iconRail() {
+		return compactRail() || chronicle();
+	}
+
 	private boolean compactRail() {
 		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.compact(width, height);
 	}
@@ -96,7 +104,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		for (Section s : Section.values()) {
 			text = Math.max(text, font.width(s.title()));
 		}
-		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railWidth(panelBox(), text, compactRail());
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railWidth(panelBox(), text, iconRail());
 	}
 
 	private Component villageName() {
@@ -120,6 +128,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (moveMode()) { // the Move page: the village and the step (47.3)
 			return Component.translatable("screen.aliveworkplace.move.where", villageName(), moveShownStep());
 		}
+		if (chronicle()) { // the chronicle: the village and how many entries since which day (48.4)
+			return ChronicleView.where(menu, villageName(), compactRail());
+		}
 		return compactRail() ? date() : Component.translatable("screen.aliveworkplace.copperline.where", villageName(), date());
 	}
 
@@ -127,7 +138,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	private int[][] railEntries() {
 		int side = sidebarWidth();
 		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), side);
-		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railEntries(rail, SECTIONS, compactRail());
+		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.railEntries(rail, SECTIONS, iconRail());
 	}
 
 	private int sectionAt(double mx, double my) {
@@ -152,7 +163,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		int[][] entries = railEntries();
 		int hovered = sectionAt(mouseX, mouseY);
 		Section open = section();
-		boolean compact = compactRail();
+		boolean compact = iconRail();
 		for (Section s : Section.values()) {
 			CopperStyle.railEntry(g, font, entries[s.ordinal()], CopperStyle.SECTION_ICONS.get(s.ordinal()), null, s.title(), 0,
 				s == open, s.ordinal() == hovered, compact);
@@ -206,6 +217,12 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	 */
 	@Override
 	public int[] centre(int slot) {
+		if (chronicle()) {
+			int[] at = chronicleView.centre(slot);
+			if (at != null) {
+				return at;
+			}
+		}
 		if (moveList()) {
 			for (int[] row : moveRows) {
 				if (row[0] == slot) {
@@ -244,6 +261,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	protected Component headerTitle() {
 		if (moveMap() || moveList()) {
 			return Component.translatable("screen.aliveworkplace.move"); // the Move page, wherever it was opened from (B1163)
+		}
+		if (chronicle()) {
+			return Component.translatable("screen.aliveworkplace.hall.chronicle");
 		}
 		return hasSidebar() ? section().title() : title;
 	}
@@ -824,7 +844,27 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean customBody() {
-		return moveMode() || board() != null;
+		return moveMode() || board() != null || chronicle();
+	}
+
+	// --- the Chronicle page (Copperline, 48.4): the Show column and the entries by day, drawn by ChronicleView ------------
+	private final ChronicleView chronicleView = new ChronicleView(this);
+
+	/** Whether the chronicle page is showing (its title carries the chronicle's mark). */
+	private boolean chronicle() {
+		return hasSidebar() && ChronicleView.showing(menu);
+	}
+
+	/** Plays the button click (the chronicle's entries open and close here, without the server). */
+	void clickSound() {
+		if (minecraft != null) {
+			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+		}
+	}
+
+	/** Opens the chronicle entry in {@code slot} as a click would (the screenshot harness). */
+	public void openChronicleEntry(int slot) {
+		chronicleView.open(slot);
 	}
 
 	/** The section the screen draws itself on the main page (People, Overview, and the Map once its view came), or null. */
@@ -2179,6 +2219,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	@Override
 	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
 		boardWhisper = null;
+		if (chronicle()) {
+			chronicleView.render(g, font, menu, new int[]{x, y, w, h}, mouseX, mouseY, compactRail());
+			boardWhisper = chronicleView.whisper();
+			return;
+		}
 		if (!moveMap()) {
 			moveConfirming = false;
 		}
@@ -2413,6 +2458,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyClicked(double mx, double my, int button) {
+		if (chronicle()) {
+			return chronicleView.clicked(mx, my, button);
+		}
 		if (moveMode()) {
 			return moveMapClicked(mx, my, button);
 		}
@@ -2471,6 +2519,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyScrolled(double mx, double my, double scrollY) {
+		if (chronicle()) {
+			chronicleView.scrolled(scrollY);
+			return true;
+		}
 		if (board() == Section.MAP) {
 			if (mx >= hallMapBox[0] && mx < hallMapBox[0] + hallMapBox[2] && my >= hallMapBox[1] && my < hallMapBox[1] + hallMapBox[3]) {
 				hallZoomed = scrollY > 0; // the wheel zooms in on the Hall, and back out to the whole village

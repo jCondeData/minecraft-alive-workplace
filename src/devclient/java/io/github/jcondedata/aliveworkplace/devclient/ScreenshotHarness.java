@@ -231,6 +231,8 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<CopperlineTrainerScene> copperlineTrainer = new Lazy<>(() -> new CopperlineTrainerScene());
 	/** SCENE=copperline_status_card (ROADMAP 48.3): the status card, its tooltips and the toast in Copperline, at GUI scale 2 and 3. */
 	private final Lazy<CopperlineStatusCardScene> copperlineStatusCard = new Lazy<>(() -> new CopperlineStatusCardScene());
+	/** SCENE=copperline_chronicle (ROADMAP 48.4): the Chronicle like its board, and a list menu's tabs on the rail, at GUI scale 2 and 3. */
+	private final Lazy<CopperlineChronicleScene> copperlineChronicle = new Lazy<>(() -> new CopperlineChronicleScene());
 
 	private void onTick(Minecraft mc) {
 		skipBackupQuestion(mc);
@@ -260,6 +262,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("copperline_status_card".equals(System.getProperty("aliveworkplace.scene"))) {
 			copperlineStatusCard.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("copperline_chronicle".equals(System.getProperty("aliveworkplace.scene"))) {
+			copperlineChronicle.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("table_library".equals(System.getProperty("aliveworkplace.scene"))) {

@@ -19,6 +19,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -696,24 +697,96 @@ public final class VillageHallScreen {
 		}
 	}
 
+	/** The chronicle entries' mark (ROADMAP 48.4): day, season, day of the season, year and group, for the Copperline page. */
+	public static final String CHRONICLE_ENTRY = "aw_chronicle";
+	/** The chronicle's Show filters' mark: the group, its count and whether it's the one open. */
+	public static final String CHRONICLE_FILTER = "aw_chronicle_filter";
+	/** The chronicle title's mark: every entry kept, and the first one's day. */
+	public static final String CHRONICLE_HEAD = "aw_chronicle_head";
+	/** Where the chronicle's Show filters are: the row under the title, one slot each in {@link Chronicle.Group}'s order. */
+	public static final int CHRONICLE_FILTERS = 9;
+
 	/** The chronicle page: what happened in the village, newest first. */
 	public static void renderChronicle(ChoiceMenu menu, ServerLevel level, BlockPos hall) {
+		renderChronicle(menu, level, hall, Chronicle.Group.ALL);
+	}
+
+	/**
+	 * The chronicle page showing {@code show}'s entries, newest first (as many as the page has rows), with the Show
+	 * filters in the row under the title (48.4, boards/Chronicle.png): each its group's word and how many entries it
+	 * holds; a click shows only that group. Each entry carries its date for the Copperline page's day headers.
+	 */
+	public static void renderChronicle(ChoiceMenu menu, ServerLevel level, BlockPos hall, Chronicle.Group show) {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
 		List<Chronicle.Entry> entries = entity == null ? List.of() : entity.chronicle();
-		menu.button(4, icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
-			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY)), null);
-		menu.divider(1);
+		ItemStack head = icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
+			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY));
+		CompoundTag headTag = new CompoundTag();
+		headTag.putInt("total", entries.size());
+		headTag.putLong("first", entries.isEmpty() ? Chronicle.day(level) : entries.get(0).day());
+		chronicleMark(head, CHRONICLE_HEAD, headTag);
+		menu.button(4, head, null);
+		int[] counts = new int[Chronicle.Group.values().length];
+		for (Chronicle.Entry entry : entries) {
+			counts[0]++;
+			counts[Chronicle.Group.of(entry.kind()).ordinal()]++;
+		}
+		for (Chronicle.Group group : Chronicle.Group.values()) {
+			ItemStack filter = icon(group == Chronicle.Group.ALL ? Items.WRITTEN_BOOK : chronicleIcon(group), group.title(),
+				group == show ? ChatFormatting.GOLD : ChatFormatting.WHITE,
+				line(Words.counted("screen.aliveworkplace.hall.chronicle.filter_count", counts[group.ordinal()], counts[group.ordinal()]), ChatFormatting.GRAY));
+			CompoundTag tag = new CompoundTag();
+			tag.putInt("group", group.ordinal());
+			tag.putInt("count", counts[group.ordinal()]);
+			tag.putBoolean("open", group == show);
+			chronicleMark(filter, CHRONICLE_FILTER, tag);
+			menu.button(CHRONICLE_FILTERS + group.ordinal(), filter, p -> renderChronicle(menu, level, hall, group));
+		}
 		int slot = FIRST_ROW;
+		int length = Seasons.DAYS;
 		for (int i = entries.size() - 1; i >= 0 && slot < ChoiceMenu.SIZE; i--) {
 			Chronicle.Entry entry = entries.get(i);
-			menu.button(slot++, icon(entry.kind().icon, entry.text().copy(), ChatFormatting.WHITE,
-				line(Component.translatable("screen.aliveworkplace.hall.chronicle_day", entry.day()), ChatFormatting.GRAY)), null);
+			if (!show.has(entry.kind())) {
+				continue;
+			}
+			ItemStack row = icon(entry.kind().icon, entry.text().copy(), ChatFormatting.WHITE,
+				line(Component.translatable("screen.aliveworkplace.hall.chronicle_day", entry.day()), ChatFormatting.GRAY));
+			Seasons.Date date = Seasons.date(entry.day(), length);
+			CompoundTag tag = new CompoundTag();
+			tag.putLong("day", entry.day());
+			tag.putInt("season", date.season().ordinal());
+			tag.putInt("of", date.dayOfSeason());
+			tag.putLong("year", date.year());
+			tag.putInt("group", Chronicle.Group.of(entry.kind()).ordinal());
+			chronicleMark(row, CHRONICLE_ENTRY, tag);
+			menu.button(slot++, row, null);
 		}
-		if (entries.isEmpty()) {
-			menu.button(FIRST_ROW + 4, icon(Items.PAPER, Component.translatable("screen.aliveworkplace.hall.chronicle_empty"), ChatFormatting.GRAY), null);
+		if (slot == FIRST_ROW) {
+			Component empty = entries.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.chronicle_empty")
+				: Component.translatable("screen.aliveworkplace.hall.chronicle.none_shown", show.title());
+			menu.button(FIRST_ROW + 4, icon(Items.PAPER, empty, ChatFormatting.GRAY), null);
 		}
+	}
+
+	/** The item a Show filter shows where the hall's Copperline icons aren't drawn (a chest screen, the old look). */
+	private static Item chronicleIcon(Chronicle.Group group) {
+		return switch (group) {
+			case ALL -> Items.WRITTEN_BOOK;
+			case PEOPLE -> Items.NAME_TAG;
+			case BUILDING -> Items.BRICKS;
+			case TRADE -> Items.EMERALD;
+			case FESTIVALS -> Items.CAKE;
+			case DEFENSE -> Items.SHIELD;
+			case STORIES -> Items.MAP;
+		};
+	}
+
+	private static void chronicleMark(ItemStack icon, String key, CompoundTag value) {
+		CompoundTag tag = icon.getOrDefault(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.EMPTY).copyTag();
+		tag.put(key, value);
+		icon.set(DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(tag));
 	}
 
 	/** The quests page: each open quest with what it takes and pays; a click hands in what a quest asks for. */

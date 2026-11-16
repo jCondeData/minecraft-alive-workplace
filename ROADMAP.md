@@ -6821,7 +6821,7 @@ through the player's own clicks (the screens' existing button and menu tests mus
 and `tools/showcase/scenes.py` with stills that match its board, a design critique of the screenshots before
 `done --review`, text in American English, wiki and guide. Lane C builds it, in order (47.1 first). Top priority.
 
-- [x] **47.1** (review: pending 2026-11-16) **The shared pieces.** Copperline's palette, the nine-slices (window, plaque, panel, well, tooltip, toast,
+- [x] **47.1** (review: pending 2026-11-16) (verified 2026-11-16: lane-c-1116-2153 QA from the spec: QaCopperline1116c3GameTests [6: all 16 nine-slices real, stretchable, on the palette and distinct per state; 10 section icons 16x16 and 15 glyphs 8x8 on the palette; shell geometry at ~1,900 sizes from 320x180 incl. compact edges 399/400, 219/220, 426/427, plaque titles 0-5000 px, rail 1-12 entries as column and grid; click hit edges; tabs and footer edges; 71 copperline lang keys in American English]; mutants 2/2 killed; client drawing [hover/pressed/off sprites, confirm dialog, number field, scroll bar] covered only by the copperline scene, which passes in the latest showcase; full build green 9427 + 1867) **The shared pieces.** Copperline's palette, the nine-slices (window, plaque, panel, well, tooltip, toast,
   button and copper button in every state, danger), the 8 px status glyphs and the ten Hall section icons as real
   textures; the shell (plaque, lintel with coins and close, rail, stage, whisper line with key hints) and the parts on
   `Components.png` (rows, tabs, chips, bars, toggles, slider, number field, text field, scroll bar, item slot, confirm

@@ -4,7 +4,7 @@ origin and front, every block above the ground kept) with a furnished, lit room 
 inside under a hatch in the floor. Drawn like the Level 4s of 26.15 (basements.py): the basement under y = 0, its floor
 at y = -4, the ground floor's own floor its ceiling; StarterBlueprints.Entry's basement moves it back under the ground.
 
-  Inn III                 an ale and wine cellar under the inn        (walls x 1-11, z 2-11)
+  Inn III                 an ale and wine cellar under the inn        (walls x 1-15, z 2-13)
   Winery III              a barrel vault under the barrel cellar      (walls x 2-10, z 3-9)
   Farmstead III           a root cellar under the farmhouse           (walls x 1-7,  z 2-8)
   Guildhall III           a strongroom under the hall's west end      (walls x 1-8,  z 4-12)
@@ -22,19 +22,19 @@ from basements import (BASEMENT, CELLAR_STONE, LOW, MID, TOP, FLOOR, armoury, ca
 
 
 def inn_3():
-    """Upgrade of the Inn II: an ale and wine cellar under the inn, down a ladder in the taproom's north-east corner:
-    racks of wine casks along both side walls, a row of oak ale casks and sacks of malt (hay) along the front wall,
-    bottles in chests and pots at the back, a tasting table. 19 x 16 x 13, 4 below."""
+    """Upgrade of the Inn II: an ale and wine cellar under the inn, down a ladder from the kitchen behind the bar (under
+    a hatch in its floor): racks of wine casks along both side walls, a row of oak ale casks and sacks of malt (hay)
+    along the front wall, bottles in chests and pots at the back, a tasting table. 23 x 18 x 15, 4 below."""
     from starter import inn_2
-    b = inn_2().grow(19, 16, 13, basement=BASEMENT)
-    wine_cellar(b, 1, 2, 11, 11, ladder=(10, 3, "west"))
+    b = inn_2().grow(23, 18, 15, basement=BASEMENT)
+    wine_cellar(b, 1, 2, 15, 13, ladder=(14, 11, "west"))
     # The ale: oak casks end-on along the front wall, two high, malt beside them
-    for x in range(4, 8):
+    for x in range(4, 12):
         for y in (LOW, MID):
             log(b, x, y, 3, "oak_log", axis="z")
     b.set(3, LOW, 3, "hay_block", axis="y")
-    b.set(8, LOW, 3, "hay_block", axis="x")
-    b.set(8, MID, 3, "hay_block", axis="z")
+    b.set(12, LOW, 3, "hay_block", axis="x")
+    b.set(12, MID, 3, "hay_block", axis="z")
     b.fill_air()
     return b
 

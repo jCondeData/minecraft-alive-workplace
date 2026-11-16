@@ -58,7 +58,8 @@ import net.minecraft.world.level.block.state.BlockState;
 public class QaRefreshFurnishedGameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
 	/** The house's origin: the middle of the area, so it fits however it's turned. */
-	private static final BlockPos HOUSE = new BlockPos(15, 2, 15);
+	// (z 17: the Inn, 17 wide since its 2026-11-15 redraw, turned a quarter reaches 16 blocks back from here)
+	private static final BlockPos HOUSE = new BlockPos(15, 2, 17);
 
 	private record Stage(ServerLevel level, ServerPlayer owner, ResourceLocation structure, BlueprintData.Placement placement, Blueprint asBuilt,
 						 BlockPos hall, List<BlockPos> stores, Villager builder) {

@@ -109,8 +109,8 @@ public class FurnishedHomesGameTests implements FabricGameTest {
 	}
 
 	/** The furnished Inn built in vanilla from chests of exactly its materials: every block right, nothing skipped. */
-	//$ gametest_ticks_batch HUGE_AREA '40000' '"furnished_inn_vanilla"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "furnished_inn_vanilla")
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"furnished_inn_vanilla"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "furnished_inn_vanilla")
 	public void aBuilderBuildsTheFurnishedInnInVanilla(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		BuildSite site = start(helper, INN, null);

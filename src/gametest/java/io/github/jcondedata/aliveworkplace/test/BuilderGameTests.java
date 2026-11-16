@@ -1178,10 +1178,11 @@ public class BuilderGameTests implements FabricGameTest {
 		buildStarter(helper, StarterBlueprints.TOWN_HALL);
 	}
 
-	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_2"'
-	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_builds_2")
+	/** The Inn (17 x 15 since its 2026-11-15 redraw) from bare ground, in the huge area like the Manor. */
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_inn"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_inn")
 	public void buildsInn(GameTestHelper helper) {
-		buildStarter(helper, StarterBlueprints.INN);
+		buildStarter(helper, StarterBlueprints.INN, new BlockPos(1, 2, 5));
 	}
 
 	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_builds_4"'

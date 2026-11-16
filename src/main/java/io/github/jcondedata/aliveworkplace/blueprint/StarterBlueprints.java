@@ -222,12 +222,12 @@ public final class StarterBlueprints {
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
 	/** A third home on the east end: six beds. */
 	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
-	/** A tavern below, three guest rooms with six beds above. */
-	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
-	/** A stable on the side with a Feed Trough: a rancher moves in. */
-	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(19, 16, 13));
+	/** A tavern below with a kitchen and a gallery, three guest rooms with six beds above (17 x 15 since 2026-11-15). */
+	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(17, 18, 15));
+	/** A stable on the side with a smoker: a rancher moves in. */
+	public static final Entry INN_2 = new Entry(AliveWorkplace.id("inn_2"), new Vec3i(23, 18, 15));
 	/** An ale and wine cellar dug under the inn (36.7). */
-	public static final Entry INN_3 = new Entry(AliveWorkplace.id("inn_3"), new Vec3i(19, 16, 13), 4);
+	public static final Entry INN_3 = new Entry(AliveWorkplace.id("inn_3"), new Vec3i(23, 18, 15), 4);
 
 	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
 	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 14, 12));

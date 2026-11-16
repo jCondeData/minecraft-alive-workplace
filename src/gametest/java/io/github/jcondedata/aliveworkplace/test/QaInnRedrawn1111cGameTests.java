@@ -237,9 +237,9 @@ public class QaInnRedrawn1111cGameTests implements FabricGameTest {
 				problems.add(name + ": " + banners.size() + " standing banners, not the one on the corner post");
 			}
 			// Inn II's old chimney stood at x 12 through the stable roof: every fire (the hearth, the stack's top) is in the
-			// inn's own 13 columns now
+			// inn's own columns now (east wall at x 15 since the 2026-11-15 redraw)
 			for (Map.Entry<BlockPos, BlockState> e : at.entrySet()) {
-				if (e.getValue().getBlock() instanceof CampfireBlock && e.getKey().getX() > 11) {
+				if (e.getValue().getBlock() instanceof CampfireBlock && e.getKey().getX() > 15) {
 					problems.add(name + ": a chimney's fire at " + e.getKey().toShortString() + ", past the inn's east wall");
 				}
 			}
@@ -368,7 +368,7 @@ public class QaInnRedrawn1111cGameTests implements FabricGameTest {
 			helper.assertTrue(Innkeepers.counters(level, counter, 16).equals(List.of(counter)),
 				"the inn lookups find " + Innkeepers.counters(level, counter, 16) + ", not the Inn's Shop Counter " + counter);
 			// on foot from just inside the front door (the door is in the middle of the front, on the street side)
-			BlockPos inside = new BlockPos(box.minX() + 6, counter.getY(), box.minZ() + 3);
+			BlockPos inside = new BlockPos(box.minX() + 8, counter.getY(), box.minZ() + 3);
 			helper.assertTrue(level.getBlockState(inside.north()).getBlock() instanceof net.minecraft.world.level.block.DoorBlock,
 				"setup: the front door isn't at " + inside.north() + ": " + level.getBlockState(inside.north()));
 			Villager walker = helper.spawn(EntityType.VILLAGER, rel(helper, inside));
@@ -420,7 +420,7 @@ public class QaInnRedrawn1111cGameTests implements FabricGameTest {
 			Innkeepers.MAX_GUESTS = 2;
 			Set<BlockPos> taken = new HashSet<>();
 			List<String> log = new ArrayList<>();
-			int guestFloor = counter.getY() + 5;
+			int guestFloor = counter.getY() + 6; // the guest floor's beds stand 6 over the bar's floor since the 2026-11-15 redraw (a 5-tall taproom)
 			try {
 				for (int day = 1; day <= 7; day++) {
 					level.setDayTime(day * 24000L + 1000);
@@ -550,7 +550,7 @@ public class QaInnRedrawn1111cGameTests implements FabricGameTest {
 				List<Villager> guests = Innkeepers.guests(level, counter);
 				helper.assertTrue("hosting".equals(state) && guests.size() == 1, "the Inn III's morning: " + state + ", " + guests.size() + " guests");
 				Optional<BlockPos> bed = guests.get(0).getBrain().getMemory(MemoryModuleType.HOME).map(GlobalPos::pos);
-				helper.assertTrue(bed.isPresent() && box.isInside(bed.get()) && bed.get().getY() == counter.getY() + 5,
+				helper.assertTrue(bed.isPresent() && box.isInside(bed.get()) && bed.get().getY() == counter.getY() + 6,
 					"the Inn III's traveller sleeps at " + bed + ", not in its guest rooms");
 			} finally {
 				Legends.ENABLED = legends;

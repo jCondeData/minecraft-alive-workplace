@@ -87,14 +87,14 @@ public class FurnishedHomesCompatTests implements FabricGameTest {
 		build(helper, COTTAGE, List.of("cobblefurnies", "handcrafted", "beautify"), cobbleFurniesFirst());
 	}
 
-	//$ gametest_ticks_batch HUGE_AREA '40000' '"furnished_inn_handcrafted"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "furnished_inn_handcrafted")
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"furnished_inn_handcrafted"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "furnished_inn_handcrafted")
 	public void aBuilderBuildsTheInnWithHandcrafted(GameTestHelper helper) {
 		build(helper, INN, List.of("handcrafted", "beautify"), handcraftedFirst());
 	}
 
-	//$ gametest_ticks_batch HUGE_AREA '40000' '"furnished_inn_cobblefurnies"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "furnished_inn_cobblefurnies")
+	//$ gametest_ticks_batch HUGE_AREA '60000' '"furnished_inn_cobblefurnies"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "furnished_inn_cobblefurnies")
 	public void aBuilderBuildsTheInnWithCobbleFurnies(GameTestHelper helper) {
 		build(helper, INN, List.of("cobblefurnies", "handcrafted", "beautify"), cobbleFurniesFirst());
 	}

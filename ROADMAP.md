@@ -6014,6 +6014,22 @@ Depends on: nothing open.
   (told, nothing past 64), save and reload deep in a quarry, the deep pit's stair reaching the bottom; text in
   `en_us.json`; wiki (the miner's page) and the guide (miner.md); scene `deep_quarry`.
 
+- [ ] **36.23** (owner, 2026-11-16: a new Tier 1 house, two versions; Opus builds it) **A new Level I house, built two
+  different ways so the owner can pick.** A new home for a village's first families (Level I, like the Starter
+  Cottage; original, not a copy of an existing blueprint), drawn twice by two different methods, both furnished:
+  **Version A** with the minecraft-architect skill and our Python kit, following `tools/blueprints/STYLE.md` including
+  "From online research" (design notes and named parts first, the pass order, the massing, wall, roof and furniture
+  rules); **Version B** by a different method: the minecraft-builder skill (a JavaScript recipe to `.nbt`, Lodestone
+  previews) with a planner-first, modular approach (lay out rooms and furniture footprints first, then assemble named
+  parts from a small parts library), its own palette choice. Each version gets its own fresh subagent (no model
+  override) so neither copies the other. Both: original; check.py and holes.py clean (no `open`, roof or stray holes);
+  every furniture piece recorded as a furniture spot; one job block at most, as village houses. Both stay on branch
+  `wip/house-t1` (not in villages) until the owner picks. Done when: per version, renders from four sides, cutaways of
+  each floor, a zoomed check of every wall, gable and roof for see-through gaps, and eye-level interior shots in the real
+  client (`tools/screenshots/run.sh`, from a doorway or corner looking across each room) plus the outside in game; one
+  labeled side-by-side sheet (A vs B) and the best 3 shots of each, sent as a review package (`sessions.py review 36.23
+  ...`) so the next digest shows both; then `sessions.py done 36.23 --review`. The owner's pick lands as 36.23a.
+
 ## Milestone 37: Furnished homes and modded storage (2.1)
 
 Builds use the pack's furniture mods when they're installed: Handcrafted chairs round a Handcrafted table, Lucky's
@@ -6624,20 +6640,24 @@ own battle screen stays Cobblemon's. Depends on: nothing open.
 
 ## Milestone 44: One look for every screen (the rest)
 
+The owner, 2026-11-16: these four are now built in **Copperline** (`docs/design/copperline/`, Milestone 47), not the
+old Hall look: wait for 47.1's shared pieces, then lay each screen out in Copperline's shell (plaque, lintel, rail,
+stage, whisper line) the way its nearest board shows. 47.1 removes the `(blocked: ...)` marks below when it lands.
+
 Same decision as Milestone 42 (owner, 2026-11-08). Lane E builds it, in order, with `TableStyle` and 42.1's pieces as
 in 43. Other mods' screens (Waystones, FTB Quests, Create, Cobblemon) stay theirs. Depends on: nothing open.
 
-- [ ] **44.1** **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
+- [ ] **44.1** (blocked: waits for 47.1, Copperline's shared pieces) **The Mailbox, the Drop Box and the Shop Counter** in the Hall's look around their real item slots
   (the player's inventory included, framed like the Hall's cells). Done when: GameTests that slots, shift-clicks
   and the counter's sales still work; scenes `mail`, `counter` and a new `drop_box`.
-- [ ] **44.2** **The trading screen of the mod's own jobs** (Shopkeeper and Ferryman without CobbleDollars, the
+- [ ] **44.2** (blocked: waits for 47.1, Copperline's shared pieces) **The trading screen of the mod's own jobs** (Shopkeeper and Ferryman without CobbleDollars, the
   crafters, the retirees, the sneak-click trades of every mod job) in the Hall's look; vanilla's own professions keep
   vanilla's screen. Done when: GameTests that every trade, the offer refresh (`VillagerMixin`) and the level bar
   still work; scene `shop` (sneak) and a new `crafter_trades`.
-- [ ] **44.3** **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
+- [ ] **44.3** (blocked: waits for 47.1, Copperline's shared pieces) **The City Plan and the Colony Charter** in the Hall's colors (the map and its zone paint stay; the
   frame, title, buttons and lists change). Done when: `CityPlanScreenGameTests` and the charter's tests pass; scenes
   `city_plan` and `colony_charter`.
-- [ ] **44.4** **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
+- [ ] **44.4** (blocked: waits for 47.1, Copperline's shared pieces) **The Guide and the Settings screen** in the Hall's look (the Guide keeps its pictures and pages,
   with the Hall's sidebar for its chapters). Done when: GameTests for opening each page and changing a setting;
   scenes `guide` and `config`.
 
@@ -6752,7 +6772,61 @@ in order. Depends on: B1111 and B1112 (the stalled crafting the owner saw) fixed
   sand, stained glass, no fuel named on the shortage line, the job absent ("Hire a Glassblower"); scene `glassblower`;
   guide and wiki pages.
 
+## Milestone 47: Copperline, the new look (shared pieces and the Village Hall)
+
+The owner, 2026-11-16 (from the Fable mockups, "I love the new UI ... push the new UI to be built"): every screen the
+mod opens gets the **Copperline** look in `docs/design/copperline/` (README: the shell, the rules, the palette; `boards/`
+the mockups; `sprites/` a starting set of nine-slices and icons). It replaces `TableStyle`'s look (Milestones 42-44)
+everywhere; nothing a screen does today may be lost (every button, price, tooltip, sound, refusal and keyboard key),
+only how it looks and reads. Text is the game's own font. Art with the pixel-art skill, locked to the Copperline
+palette with pixel-art-studio; button and panel states with pxl-pixel-art (CLAUDE.md, Skills). Each item: GameTests
+through the player's own clicks (the screens' existing button and menu tests must still pass), its scene in the harness
+and `tools/showcase/scenes.py` with stills that match its board, a design critique of the screenshots before
+`done --review`, text in American English, wiki and guide. Lane C builds it, in order (47.1 first). Top priority.
+
+- [ ] **47.1** **The shared pieces.** Copperline's palette, the nine-slices (window, plaque, panel, well, tooltip, toast,
+  button and copper button in every state, danger), the 8 px status glyphs and the ten Hall section icons as real
+  textures; the shell (plaque, lintel with coins and close, rail, stage, whisper line with key hints) and the parts on
+  `Components.png` (rows, tabs, chips, bars, toggles, slider, number field, text field, scroll bar, item slot, confirm
+  dialog, "What happens" and refusal boxes, empty state), all in `TableStyle`/`ChoiceTableScreen` (or a new
+  `CopperStyle` they use), so every screen already on `TableStyle` switches to Copperline at once; the 320x180 rule
+  (GUI scale 3: the rail as an icon grid). Then remove the `(blocked: waits for 47.1 ...)` marks from 44.x and 48.x.
+  Done when: GameTests that every screen on `TableStyle` still opens and its buttons still work at GUI scale 2 and 3;
+  a `copperline` scene showing the parts in every state like `Components.png`.
+- [ ] **47.2** **The Village Hall in Copperline**, like `Main.png`, `HallPeople.png`, `HallMap.png` and `Compact.png`:
+  Overview with its four stat cards, "Needs you" and "At work now"; People; the Map with its legend; the other sections
+  in the same shell. Done when: GameTests for each section's actions; scenes `hall`, `hall_people`, `hall_pages` show it.
+- [ ] **47.3** **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with
+  From and To, the green "Fits" and red hatched refusal, "What happens", the checklist, one copper "Move building").
+  Done when: the 45.x Move tests pass; scenes `move_plan` and `move_refused`.
+- [ ] **47.4** **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes
+  `job_lists` and the board's scenes.
+
+## Milestone 48: Copperline, the rest of the screens
+
+Same decision as Milestone 47 (owner, 2026-11-16). Lane D builds these once 47.1 has landed, in order, with 47.1's
+pieces; lane E redoes Milestone 44 in Copperline at the same time.
+
+- [ ] **48.1** (blocked: waits for 47.1, Copperline's shared pieces) **The Blueprint Table and the Blueprint Book in
+  Copperline**, like `Blueprints.png` (list, preview, size, materials, style filter, one copper Place). Done when: the
+  table's tests pass; scenes of the table and the book.
+- [ ] **48.2** (blocked: waits for 47.1, Copperline's shared pieces) **The Trainer screen in Copperline**, like
+  `Trainer.png` (the real Cobblemon models stay). Done when: the trainer screen's tests pass; its scenes.
+- [ ] **48.3** (blocked: waits for 47.1, Copperline's shared pieces) **The villager status card, toasts and tooltips in
+  Copperline**, like `VillagerCard.png`. Done when: `StatusCardButtonsGameTests` and the card's tests pass; its scenes.
+- [ ] **48.4** (blocked: waits for 47.1, Copperline's shared pieces) **The Chronicle and the Pokemon and menu screens of
+  Milestones 42 and 43 in Copperline**, like `Chronicle.png` (each laid out in the shell). Done when: their tests pass;
+  their scenes.
+
 ## Notes / blocked
+- 2026-11-16 (owner's chat, digest-1114-1353 session): **Decisions.** (1) The Inn stays as it is: the redraw on
+  `wip/inn-redo` (bigger coaching inn, round 3) is not merged (roof holes still showed, no modded-furniture shots); it
+  stays as a reference, and its `holes.py` `open` check (open wall panels) and STYLE.md note came to main. holes.py now
+  lists 255 `open` findings in other blueprints, most on purpose (sheds, stalls, camps); a few look like real gaps
+  (chapel wall top (2,6,7), library_2 (14,9,4)): not filed yet. (2) Copperline is the new look for every screen
+  (Milestones 47, 48, 44 redone; `docs/design/copperline/`), top priority, lane C first. (3) 36.23: a new Tier 1 house
+  built two ways, both shown in the next digest. (4) New skills (CLAUDE.md, Skills): pixel-art-studio and pxl-pixel-art
+  in `.claude/skills/`, the Design and UI Design Review plugins, and the building research in STYLE.md.
 - 2026-11-15 (lane-b-1115-0637, QA, nothing open for lane B; builders' materials with Create, MaterialRules): **No new bugs filed.** Added QaCreateRivals1115bCompatTests (5, B1267/B1268 from the spec: bread, book, item frame, chains and gold nuggets name the vanilla raw thing with Create loaded; Create's Andesite Alloy still names what's short; strict Tinkerer plans still make bars, a lantern and chains through the new reachable() exit, from raw iron, crushed ore and zinc; a builder's bars get made from Crushed Raw Iron in his chest and his chains from raw iron) and QaMaterialRulesMutants1115bGameTests (5, each proven to kill a planted MaterialRules mutant at :661 stems, :682 matches, :260 poured liquids, :308 data costs, :200 hanging blocks; none was killed by an existing test in the first place). Left open: (1) the :386 modPart mutant (`top || bottom`) still has no killing test, because vanilla has no block with a top/bottom `part` and a stand-in needs the frozen block registry opened by reflection, which I kept out of the suite; a compat test with a real modded two-tall block (Cobblemon's PC) would do it. (2) Latent, not filed (no job makes zinc things yet): 2 zinc ingots at the forge from nothing lack {create:crushed_raw_zinc=2}, not raw zinc, since every zinc recipe is Create's and the own-mod tie-break can't choose; failing test QaCreateRivals1115bCompatTests#withCreateZincIngotsNameRawZincNotCrushed on tests/create-zinc-crushed-1115b; file it if a job ever makes zinc things. Rabbit hide for leather (seen too) is lane C's B1278. Local mutate.py on the plain suite no longer fits: one runGameTest is over 10 minutes now, so its real-code run times out; run mutants against a trimmed entrypoint list instead.
 - 2026-11-15 (lane-a-1115-0622, B1271 decision): BuildSiteManager.finishedInVillage keeps B620's corner rule, but the corner counts only when the building's middle doesn't lie nearer another hall (CityPlan.nearerAnotherHall, by the middle's cell, across the ground): such a building is the nearer village's only. The middle itself still counts by Reach.claims (radius, or a painted cell not nearer another hall), so a building whose middle is inside A's own radius stays A's even when another hall is nearer: the coordinator's stricter "middle nearer another hall never counts for A" would drop overlapping-radius buildings and broke QaMoveRefusals1110cBugTests (B1161: a hall placed inside A's hut, the hut still on A's Move page and refused with "the Village Hall stays"). Wiki (village-hall.md) says so.
 - 2026-11-15 (lane-e-1115-0412, QA, the Mover's crate fixes B1258, B1260-B1262, the pack's Create blocks): **No bugs found; verified B1258, B1260, B1261, B1262.** qa/mover-crate-lastresort-1114e2 was already on main (its two classes identical), so nothing left to ship from it. On main: QaMoverCrateFixes1115eGameTests (7: 2 and 4 turtle eggs, the 4 in a storage room, and 3 sea pickles drop as exactly that many; a warped door's upper half and a lime bed's foot on the crate drop one item, no half left standing; a full beehive in a storage room reloaded every 3 steps keeps 3 bees and honey 5; an empty sherd pot drops as itself, no loose sherds) and QaCreateMoverCrateFixes1115eCompatTests (2: an empty Deployer set to emeralds drops no emerald; a Basin with 8 iron, 5 gold and a diamond filter drops exactly those). Each 3 of 3; 5 hand mutants of the two fixes (eachOfMany removed or counting loot twice, otherHalfGone removed, back to loadStatic, filter() always false), 5 killed. Not tested: a Create Toolbox with two different stacks (filling one through Fabric storage counted 13 iron for 8 before any move: Create's or the harness's, not ours, unproven). Note: Gradle with -Xmx1g ran out of heap on a cold cache; the default 2 GB worked for the full build. Nightly issue: nothing new in my area since 11-14 (the 5 showcase failures are threats/partners scenes). Wiki moving-buildings: the tests. **Pack boot with Create** (tools/packtest, LOADER=0.19.3, Java 21, 282 mods, jar of main 88bd66db1 which has lane A's Crafting change; 'create 6.0.10.0 integration on'): clean, the log audit's 9 errors are all other mods' (empty registries, a Cobblemon dex), nothing of ours. langcheck, wikicheck clean. Full build green (8935 + 1655, 57 min) on 208d80b0a; the pull before the push brought lane A's Crafting code, left to CI.

@@ -8,6 +8,8 @@ import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
+import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
+import net.minecraft.network.chat.Component;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -108,6 +110,46 @@ public class HallCopperlineGameTests {
 			helper.assertTrue(HallSections.railBadge(s, 3, 1, 5, false).isEmpty(), s + " has a badge");
 		}
 		helper.succeed();
+	}
+
+	/**
+	 * "At work now": a villager with a job's status (half done) is listed with their task and 50%; one standing idle isn't;
+	 * a busy status without a bar lists them with no percent (-1).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"hallCopperlineWork"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "hallCopperlineWork")
+	public void atWorkNow(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		HallSections.forget();
+		int was = VillageHalls.RADIUS;
+		VillageHalls.RADIUS = 16;
+		Leftovers.after(helper, () -> VillageHalls.RADIUS = was);
+		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		Villager busy = helper.spawn(EntityType.VILLAGER, new BlockPos(10, 2, 20));
+		Villager idle = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 20));
+		Villager carrying = helper.spawn(EntityType.VILLAGER, new BlockPos(18, 2, 20));
+		for (Villager v : new Villager[]{busy, idle, carrying}) {
+			v.setNoAi(true);
+		}
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		helper.runAfterDelay(3, () -> {
+			WorkerStatus.set(busy, Component.literal("Sweeping the square"), 0.5f, Component.literal("half done"));
+			WorkerStatus.set(carrying, Component.literal("Carrying letters"), -1f, Component.literal("on the way"));
+			ChoiceMenu menu = open(helper, player);
+			java.util.List<HallSections.AtWork> work = HallSections.atWork(menu, 3);
+			helper.assertTrue(work.size() == 2, "At work now lists " + work.size() + ", expected 2: " + work);
+			HallSections.AtWork half = work.stream().filter(a -> a.task().getString().equals("Sweeping the square")).findFirst().orElse(null);
+			helper.assertTrue(half != null && half.progress() == 50, "the sweeper: " + half);
+			HallSections.AtWork letters = work.stream().filter(a -> a.task().getString().equals("Carrying letters")).findFirst().orElse(null);
+			helper.assertTrue(letters != null && letters.progress() == -1, "the carrier: " + letters);
+			helper.assertTrue(HallSections.atWork(menu, 1).size() == 1, "the list doesn't stop at its limit");
+			for (String key : new String[]{"at_work", "at_work.none", "at_work.line"}) {
+				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall." + key), "no text for " + key);
+			}
+			helper.assertTrue(HallSections.percent(1.4f) == 100 && HallSections.percent(-1f) == -1 && HallSections.percent(0.333f) == 33, "percent");
+			player.closeContainer();
+			helper.succeed();
+		});
 	}
 
 	/**

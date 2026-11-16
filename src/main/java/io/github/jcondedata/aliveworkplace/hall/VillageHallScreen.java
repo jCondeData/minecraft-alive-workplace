@@ -875,9 +875,11 @@ public final class VillageHallScreen {
 		if (guildMaster != null) {
 			lore.add(line(guildMaster, ChatFormatting.GOLD));
 		}
+		int doingLine = lore.size();
 		for (Component doing : doing(level, villager)) {
 			lore.add(plain(doing, ChatFormatting.WHITE));
 		}
+		HallSections.markWork(icon, doingLine, workProgress(level, villager)); // the Overview's "At work now" (47.2)
 		// A Habitat Keeper's last five sightings (28.10).
 		for (Component sighting : io.github.jcondedata.aliveworkplace.habitat.HabitatKeepers.sightingLines(villager)) {
 			lore.add(line(sighting, ChatFormatting.AQUA));
@@ -1026,6 +1028,28 @@ public final class VillageHallScreen {
 		String key = activity == Activity.WORK ? "at_work" : activity == Activity.REST ? "resting" : activity == Activity.MEET ? "meeting"
 			: activity == Activity.PANIC ? "panicking" : activity == Activity.PLAY ? "playing" : "idle";
 		return List.of(line("screen.aliveworkplace.hall." + key, activity == Activity.PANIC ? ChatFormatting.RED : ChatFormatting.GRAY));
+	}
+
+	/**
+	 * How far {@code villager}'s job is, 0 to 100, from the same status {@link #doing} reads (a build or a job with a
+	 * progress); -1 for busy without a bar, {@link HallSections#NOT_AT_WORK} when they're on no job (asleep, idle).
+	 */
+	static int workProgress(ServerLevel level, Villager villager) {
+		if (villager.isSleeping()) {
+			return HallSections.NOT_AT_WORK;
+		}
+		BuildSite site = Builders.activeSite(level, villager);
+		if (site != null) {
+			BuilderStatusSync.Status status = BuilderStatusSync.status(level, site, villager);
+			if (status != null) {
+				return HallSections.percent(status.progress());
+			}
+		}
+		if (Miners.activeSite(level, villager) != null) {
+			return -1;
+		}
+		WorkerStatus.Entry entry = WorkerStatus.get(villager, level.getGameTime());
+		return entry != null ? HallSections.percent(entry.progress()) : HallSections.NOT_AT_WORK;
 	}
 
 	/** "12 Oak Planks, a pickaxe" (the first three). */

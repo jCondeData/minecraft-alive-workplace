@@ -266,29 +266,14 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (s == Section.OVERVIEW) {
 			// Copperline (47.2, Main.png): the village's name with its flag, rank chip and bar, the four stat cards, then "Needs you".
 			int top = renderCards(g, x, renderHeader(g, x, y, w), w);
-			// "What next?": every tip and how, from the advice button's lines (its first line is the count).
-			TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.needs_you"), x, top);
-			int ly = top + 13;
-			ItemStack advice = menu.slots.get(VillageHallScreen.ADVICE).getItem();
-			ItemLore lore = advice.get(DataComponents.LORE);
-			List<Component> lines = lore == null ? List.of() : lore.lines();
-			if (lines.size() <= 1) {
-				Component none = lines.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none") : lines.get(0);
-				g.drawWordWrap(font, Component.literal(none.getString()), x, ly, w - 4, TableStyle.BODY);
+			// "Needs you" and "At work now" side by side when there's room (Main.png), else one under the other.
+			boolean two = w >= 260;
+			int nw = two ? (w - 4) / 2 - 4 : w;
+			int bottom = renderNeedsYou(g, x, top, nw);
+			if (two) {
+				renderAtWork(g, x + nw + 8, top, w - nw - 8);
 			} else {
-				for (int i = 1; i < lines.size(); i++) {
-					boolean tipTitle = i % 2 == 1;
-					if (tipTitle) {
-						CopperStyle.glyph(g, "warning", x, ly);
-					}
-					for (FormattedCharSequence part : font.split(Component.literal(lines.get(i).getString()), w - 14)) {
-						g.drawString(font, part, x + 10, ly, tipTitle ? TableStyle.NAME : TableStyle.SUBLINE, false);
-						ly += 10;
-					}
-					if (!tipTitle) {
-						ly += 4;
-					}
-				}
+				renderAtWork(g, x, bottom + 4, w);
 			}
 		} else {
 			TableStyle.heading(g, font, s.title(), x, y);
@@ -347,6 +332,60 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			}
 		}
 		return y + 34;
+	}
+
+	/** "What next?": every tip and how, from the advice button's lines (its first line is the count). Returns the y under it. */
+	private int renderNeedsYou(GuiGraphics g, int x, int top, int w) {
+		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.needs_you"), x, top);
+		int ly = top + 13;
+		ItemStack advice = menu.slots.get(VillageHallScreen.ADVICE).getItem();
+		ItemLore lore = advice.get(DataComponents.LORE);
+		List<Component> lines = lore == null ? List.of() : lore.lines();
+		if (lines.size() <= 1) {
+			Component none = lines.isEmpty() ? Component.translatable("screen.aliveworkplace.hall.advice_none") : lines.get(0);
+			g.drawWordWrap(font, Component.literal(none.getString()), x, ly, w - 4, TableStyle.BODY);
+			return ly + font.split(Component.literal(none.getString()), w - 4).size() * 9;
+		}
+		for (int i = 1; i < lines.size(); i++) {
+			boolean tipTitle = i % 2 == 1;
+			if (tipTitle) {
+				CopperStyle.glyph(g, "warning", x, ly);
+			}
+			for (FormattedCharSequence part : font.split(Component.literal(lines.get(i).getString()), w - 14)) {
+				g.drawString(font, part, x + 10, ly, tipTitle ? TableStyle.NAME : TableStyle.SUBLINE, false);
+				ly += 10;
+			}
+			if (!tipTitle) {
+				ly += 4;
+			}
+		}
+		return ly;
+	}
+
+	/**
+	 * "At work now" (47.2, Main.png): the first three people on the People table who are on a job, each with their face,
+	 * name, what they're doing and a copper bar with the percent (none for a job without one).
+	 */
+	private void renderAtWork(GuiGraphics g, int x, int top, int w) {
+		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.at_work"), x, top);
+		int ly = top + 13;
+		List<HallSections.AtWork> work = HallSections.atWork(i -> menu.slots.get(i).getItem(), 3);
+		if (work.isEmpty()) {
+			g.drawWordWrap(font, Component.translatable("screen.aliveworkplace.hall.at_work.none"), x, ly, w - 4, TableStyle.BODY);
+			return;
+		}
+		for (HallSections.AtWork a : work) {
+			CopperStyle.glyph(g, "person", x, ly + 4);
+			String line = Component.translatable("screen.aliveworkplace.hall.at_work.line", a.who().getString(), a.task().getString()).getString();
+			g.drawString(font, CopperStyle.trim(font, line, w - 16), x + 12, ly, TableStyle.NAME, false);
+			if (a.progress() >= 0) {
+				int bw = 30;
+				g.fill(x + 12, ly + 11, x + 12 + bw, ly + 16, CopperStyle.VOID);
+				g.fill(x + 13, ly + 12, x + 13 + (bw - 2) * Math.min(100, a.progress()) / 100, ly + 15, CopperStyle.COPPER);
+				g.drawString(font, a.progress() + "%", x + 16 + bw, ly + 10, CopperStyle.TUFF, false);
+			}
+			ly += 22;
+		}
 	}
 
 	/** The stat cards' words, in HallSections.CARD_SLOTS's order. */

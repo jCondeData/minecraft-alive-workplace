@@ -262,6 +262,55 @@ public final class HallSections {
 		return Math.max(0, Math.min(1, (have - from) / (double) (to - from)));
 	}
 
+	/** The mark on a People-table button whose villager is on a job (47.2, "At work now"): its progress and its task's lore line. */
+	public static final String WORK = "aliveworkplace:work";
+	public static final String WORK_LINE = "aliveworkplace:work_line";
+	/** {@link #markWork}'s progress for a villager on no job (no mark). */
+	public static final int NOT_AT_WORK = Integer.MIN_VALUE;
+
+	/** A status's progress (0 to 1, below 0 for none) as 0 to 100, or -1 for none. */
+	public static int percent(float progress) {
+		return progress < 0 || Float.isNaN(progress) ? -1 : Math.round(Math.min(1f, progress) * 100);
+	}
+
+	/** Marks a person button as at work: {@code progress} 0 to 100 (-1: busy, no bar), the task on lore line {@code line}. */
+	public static void markWork(ItemStack icon, int line, int progress) {
+		if (icon.isEmpty() || progress == NOT_AT_WORK) {
+			return;
+		}
+		CompoundTag tag = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+		tag.putInt(WORK, progress);
+		tag.putInt(WORK_LINE, line);
+		icon.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+	}
+
+	/** One "At work now" line: who, what they're doing and how far (-1: no bar). */
+	public record AtWork(Component who, Component task, int progress) {
+	}
+
+	/** The first {@code max} people on the main page who are at work, in the table's order (47.2). */
+	public static List<AtWork> atWork(ChoiceMenu menu, int max) {
+		return atWork(menu::icon, max);
+	}
+
+	/** The same from the main page's buttons by slot (the client's copy of the menu). */
+	public static List<AtWork> atWork(java.util.function.IntFunction<ItemStack> icons, int max) {
+		List<AtWork> out = new ArrayList<>();
+		for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE && out.size() < max; slot++) {
+			ItemStack icon = icons.apply(slot);
+			CustomData data = icon.get(DataComponents.CUSTOM_DATA);
+			if (data == null || !data.contains(WORK)) {
+				continue;
+			}
+			CompoundTag tag = data.copyTag();
+			net.minecraft.world.item.component.ItemLore lore = icon.get(DataComponents.LORE);
+			int line = tag.getInt(WORK_LINE);
+			Component task = lore != null && line >= 0 && line < lore.lines().size() ? lore.lines().get(line) : Component.empty();
+			out.add(new AtWork(icon.getHoverName(), task, tag.getInt(WORK)));
+		}
+		return out;
+	}
+
 	/** The Overview's stat cards' buttons (47.2), in order: People, Mood, Food, Defense. */
 	public static final int[] CARD_SLOTS = {VillageHallScreen.PEOPLE, VillageHallScreen.WELLBEING, VillageHallScreen.FOOD, VillageHallScreen.GUARDS};
 

@@ -971,7 +971,26 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int detailHeight(ItemStack icon, int w) {
-		return 2 + detailLines(icon, w).size() * 10 + 3 + BH + 4 + jobListHeight(icon, w) + bedListHeight(icon, w);
+		return 2 + moodBarHeight(icon) + detailLines(icon, w).size() * 10 + 3 + BH + 4 + jobListHeight(icon, w) + bedListHeight(icon, w);
+	}
+
+	/** The open row's mood bar's height (47.2, HallPeople.png): a line with the percent and word over a bar; 0 without a mood. */
+	private static int moodBarHeight(ItemStack icon) {
+		CompoundTag row = HallPeople.row(icon);
+		return row != null && row.contains("mood_score") && row.getInt("mood_score") >= 0 ? 18 : 0;
+	}
+
+	/** Draws the open row's mood bar: "34% Unhappy" in the mood's color, then a bar filled as far as the mood. */
+	private void renderMoodBar(GuiGraphics g, CompoundTag row, int x, int y, int w) {
+		int score = Math.max(0, Math.min(100, row.getInt("mood_score")));
+		int tone = HallPeople.moodTone(score);
+		int color = tone == 1 ? MOOD_HAPPY : tone == 3 ? MOOD_NO_BED : MOOD_UNHAPPY;
+		HallPeople.MoodWord word = moodOf(row);
+		String text = Component.translatable("screen.aliveworkplace.hall.people.mood_bar", score, word.word()).getString();
+		g.drawString(font, CopperStyle.trim(font, text, w), x, y, color, false);
+		int bw = Math.min(w, 100);
+		g.fill(x, y + 10, x + bw, y + 15, CopperStyle.VOID);
+		g.fill(x + 1, y + 11, x + 1 + (bw - 2) * score / 100, y + 14, color);
 	}
 
 	// --- Bed ▾'s list (40.4) ------------------------------------------------------------------------------------------
@@ -1322,6 +1341,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3] - (mx - cols[3])), mx, top + 2, moodColour, false);
 			if (open) {
 				int dy = top + RH + 2;
+				if (moodBarHeight(icon) > 0) {
+					renderMoodBar(g, row, x + 12, dy, detailW);
+					dy += moodBarHeight(icon);
+				}
 				for (FormattedCharSequence line : detailLines(icon, detailW)) {
 					g.drawString(font, line, x + 12, dy, TableStyle.BODY, false);
 					dy += 10;

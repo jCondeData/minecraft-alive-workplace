@@ -146,6 +146,20 @@ public class HallCopperlineGameTests {
 			for (String key : new String[]{"at_work", "at_work.none", "at_work.line"}) {
 				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall." + key), "no text for " + key);
 			}
+			// The People rows carry the mood's score for the open row's mood bar (-1: no mood yet).
+			int rows = 0;
+			for (int slot = VillageHallScreen.FIRST_PERSON; slot < ChoiceMenu.SIZE; slot++) {
+				net.minecraft.nbt.CompoundTag row = io.github.jcondedata.aliveworkplace.hall.HallPeople.row(menu.icon(slot));
+				if (row != null) {
+					rows++;
+					int score = row.getInt("mood_score");
+					helper.assertTrue(row.contains("mood_score") && score >= -1 && score <= 100, "a row's mood score: " + row);
+				}
+			}
+			helper.assertTrue(rows == 3, "the People rows: " + rows);
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.moodTone(90) == 1 && io.github.jcondedata.aliveworkplace.hall.HallPeople.moodTone(50) == 2
+				&& io.github.jcondedata.aliveworkplace.hall.HallPeople.moodTone(10) == 3, "the mood bar's tones");
+			helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall.people.mood_bar"), "no text for the mood bar");
 			helper.assertTrue(HallSections.percent(1.4f) == 100 && HallSections.percent(-1f) == -1 && HallSections.percent(0.333f) == 33, "percent");
 			player.closeContainer();
 			helper.succeed();

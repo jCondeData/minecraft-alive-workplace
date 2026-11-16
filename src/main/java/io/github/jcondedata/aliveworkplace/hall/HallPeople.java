@@ -165,6 +165,8 @@ public final class HallPeople {
 		row.putBoolean("no_site", noWorkstation(villager)); // B1173: "Undertaker (no workstation)"
 		row.putInt("level", kind == Kind.CHILD || kind == Kind.JOBLESS || kind == Kind.NITWIT ? 0 : BuilderLevels.level(villager));
 		row.putString("mood", mood(level, villager).id());
+		Moods.Mood score = Moods.of(villager);
+		row.putInt("mood_score", score == null ? -1 : score.score()); // the open row's mood bar (Copperline, 47.2)
 		row.putString("job_action", jobAction(level, villager, kind));
 		row.putBoolean("named", villager.hasCustomName());
 		CompoundTag tag = icon.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
@@ -180,6 +182,11 @@ public final class HallPeople {
 			return null;
 		}
 		return data.copyTag().getCompound(MARK);
+	}
+
+	/** The open row's mood bar's fill color tone, from {@code score} 0 to 100: 1 happy, 2 content, 3 unhappy (Moods' bounds). */
+	public static int moodTone(int score) {
+		return score >= Moods.HAPPY ? 1 : score < Moods.UNHAPPY ? 3 : 2;
 	}
 
 	/** The line over the table: "8 · 6 working · 2 jobless" (and the children when there are some). */

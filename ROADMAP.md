@@ -6051,6 +6051,7 @@ Depends on: nothing open.
   labeled side-by-side sheet (A vs B) and the best 3 shots of each, sent as a review package (`sessions.py review 36.23
   ...`) so the next digest shows both; then `sessions.py done 36.23 --review`. The owner's pick lands as 36.23a.
   - [ ] **36.23a** Change from the owner (2026-11-16): prefers the Daub House (B); wants to see it furnished with furniture-mod pieces (CobbleFurnies etc.) before the final pick
+  - [ ] **36.23b** Change from the owner (2026-11-16): Daub House: in the furnished shot 08 the loft fences/railings around the corner don't connect, make railings connect at corners; in shot 04 a lamp stands on the floor, a short lamp should sit on a table or side table, only a lamp 2+ blocks tall may stand on the ground
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

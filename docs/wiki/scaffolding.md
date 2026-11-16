@@ -54,7 +54,9 @@ the build is finished. Scaffolding someone else broke is simply struck off the l
 
 **When the build ends any other way.** A site removed with scaffolds still recorded (canceled, its builder died, a
 Wonder's part called off) has them all taken down at once, into the supply chests by its bench (else dropped there);
-its builder, if on a column, is first put down at the foot.
+its builder, if on a column, is first put down at the foot. A column standing in a chunk nobody has loaded at that
+moment is remembered (saved with the world) and taken down, from the top, as soon as that chunk loads again: into the
+same chests when the bench's chunk is loaded too, else dropped by the column (B1322).
 
 **Asking for it.** When the column needs more scaffolding than the builder's bag, its chests and the village's spare
 hold, the shortfall is added to the site's missing list (the Storehouse's requests board and the Village Hall show it

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk
+  nobody had loaded now comes down as soon as that chunk loads, into the chests by the bench, instead of staying up
+  for good (B1322).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
   start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
 - Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up

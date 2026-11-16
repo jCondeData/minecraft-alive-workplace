@@ -386,23 +386,38 @@ stand-in" warning naming it, and the server starts as usual (B1312).
 - `QaStoneLine1115bGameTests` (2, QA): polished andesite, diorite and granite, an andesite slab, polished andesite stairs
   and a diorite wall from nothing, by the stonecutter's plan, name the mined stone and never Nether Quartz; a builder
   short of 3 Polished Andesite with a Mason reads a line naming Andesite (never Quartz or Cobblestone), and nothing is made.
-- Open bug B1304 (its 2 failing tests, QaBambooLine1115bBugTests, are on the tests/bamboo-line-1115b branch): a builder
-  short of 3 Bamboo Planks reads "short of 2 Block of Stripped Bamboo", not the bamboo a player gathers.
+- `QaDyedWoolLine1115bBugTests` (2, B1303, QA): every dyed wool from nothing names no dyed wool, and 2 blue wool with
+  2 blue dye there lack only the wool's makings; a builder short of 2 Blue Wool with 2 Blue Dye and a Shepherd reads a line
+  naming White Wool or String, never Blue Wool, Black Dye or Lapis, and the dye isn't taken.
+- `QaBambooLine1115bBugTests` (2, B1304, QA): bamboo planks, slabs, stairs, mosaic and fences from nothing name the Bamboo
+  (or a Block of Bamboo), never the Stripped Block of Bamboo; 9 bamboo or a block of bamboo make 2 planks; a builder short
+  of 3 Bamboo Planks reads a line naming Bamboo and nothing is made.
+- `QaHoneyBlockLine1115bBugTests` (2, B1306, QA): 3 honey blocks from nothing lack exactly 12 Honey Bottles, from 12
+  bottles nothing; a builder short of 3 honey blocks reads exactly "short of 12 Honey Bottles to make 3 Honey Blocks".
+- `QaShortPlurals1115bBugTests` (3, B1307, QA): the 24 countable things (snowballs, torchflowers, the chiseled blocks'
+  slabs, weathered copper doors and trapdoors, disc fragments, goat horns...) read their plural after 4; "short of 12
+  Snowballs to make 3 Snow Blocks", "short of 3 Vines to make 3 Mossy Cobblestone", also through a builder's line.
+- `QaShortageLineVerify1116bGameTests` (10, QA past B1303/B1304/B1306/B1307): each of the 16 colors' wool and carpet from
+  nothing names String or White Wool and no dyed wool or carpet; each dyed wool with its own dye there lacks only String or
+  White Wool, and with white wool (or 8 string) and its dye nothing; each carpet from its own wool nothing; every wood's
+  planks from nothing name exactly its log or stem (1 for 4, 2 for 8), never the stripped one, and its stripped log, wood
+  or log there makes them; 3 bamboo planks lack exactly 18 Bamboo, and a Stripped Block of Bamboo or a Block of Bamboo there
+  makes 2; a honey block from nothing lacks 4 Honey Bottles, 2 from 5 bottles 3, and 4 bottles from a honey block and
+  glass bottles nothing; an iron block from nothing never names the block or nuggets, and 9 ingots and a block turn into
+  each other; B1307's things read singular at 1 and plural above ("short of 1 Snowball to make 1 Snow Block", "short of 2
+  Torchflowers to make 2 Orange Dye"); everything a dyed wool, carpet or dye line names more than one of reads its plural
+  (bar String, Lapis Lazuli, Bone Meal, Bamboo, Cocoa Beans, dye and wool); a builder short of 3 Blue Carpets with a
+  Shepherd reads a line naming String or White Wool and no other color, one short of 3 Mangrove Planks with a Carpenter
+  reads exactly "short of 1 Mangrove Log to make 3 Mangrove Planks", and a builder with 2 Stripped Blocks of Bamboo gets
+  his 3 bamboo planks from the Carpenter.
 - Open bug B1305 (its 3 failing tests, QaStorageBlockLine1115bBugTests, are on the tests/storage-block-line-1115b
   branch): a builder 7 wheat short of his last hay bale, or with no wheat at all, gets no shortage line; a hay bale, a
   slime block and a dried kelp block from nothing lack nothing.
-- Open bug B1306 (its 2 failing tests, QaHoneyBlockLine1115bBugTests, are on the tests/honey-block-line-1115b branch):
-  3 honey blocks from nothing read "short of 6 Honey Blocks, 12 Glass Bottles, 24 Glass", not 12 Honey Bottles.
-- Open bug B1307 (its 3 failing tests, QaShortPlurals1115bBugTests, are on the tests/short-plurals-1115b branch): 24
-  countable things a line names have no plural, so a builder reads "short of 12 Snowball to make 3 Snow Blocks".
 - Open bug B1308 (its 2 failing compat tests, QaMinedStoneSelf1115bBugCompatTests, are on the
   tests/mined-stone-self-1115b branch): with Create a builder short of 3 Andesite and a Mason reads "short of 3 Andesite
   to make 3 Andesite" (Create's stonecutting recipes make the mined stones from a tag that holds them).
 - Open bug B1311 (its failing test, QaCrafterLogs1116cBugGameTests, is on the tests/crafter-logs-1116c branch): with
   one oak and one spruce log for 2 chests the line reads "short of 3 Oak Logs", counting only the first wood (2 is right).
-- Open bug B1303 (its 2 failing tests, QaDyedWoolLine1115bBugTests, are on the tests/dyed-wool-line-1115b branch): a
-  builder short of 2 Blue Wool with 2 Blue Dye there reads "short of 4 Black Dye, 2 Blue Dye, 4 Blue Wool to make 2 Blue
-  Wool"; every dyed wool from nothing names another color's wool and dye, not white wool or string; carpets the same.
 - `QaJobChainBugGameTests.aLibrarianOneLeatherShortOfTheLastShelfTakesNothingAndNamesIt`: two leather for the last
   bookshelf's three books names "1 Leather", not rabbit hide, and takes nothing (B409).
 - `QaJobChainFixesBugTests.aMasonWithOneCoalAndOneCharcoalMakesTheStairs`: one coal and one charcoal make the

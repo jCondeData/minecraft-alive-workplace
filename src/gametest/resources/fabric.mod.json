@@ -527,6 +527,8 @@
 			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineShellGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineSlotScreensGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperSlotSaves1116eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSettingsExtremes1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTradesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineBlueprintsGameTests",

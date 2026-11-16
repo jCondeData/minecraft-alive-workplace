@@ -16,6 +16,29 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A builder's shortage line names 24 more things in the plural after a count: "short of 12 Snowballs to make 3 Snow
+  Blocks", Torchflowers, the slabs, the weathered copper doors and trapdoors, Totems of Undying and more (B1307).
+- Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not
+  to the server-wide set every new village takes in; the Bandstand quest says it's a rare ??? found in chests, not a
+  gray name; and the Barracks quest's raid size counts the guards' share (B1318, B1319, B1320).
+- Personal requests: the Lucky Crystal's thanks and chronicle story start with a capital ("The Lucky Crystal! ...");
+  a player without 3 hearts with the villager can't hand in their heirloom, letter or reply and be paid for it; and a
+  couple who married at the bell no longer get the Chapel wedding paid and thanked when a Chapel is finished later
+  (B1314, B1315, B1316).
+- A data pack with a typo in a recipe stand-in or a class no longer crashes the server or breaks villagers' classes; the
+  bad entry is skipped with a warning (B1312, B1313).
+- A builder short of dyed wool, bamboo planks or honey blocks now reads what a player gathers: the wool's own dye and
+  String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
+  (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
+### Changed
+- Copperline, the new look (47.1): every screen drawn in the Village Hall's look (the Village Hall, the Storehouse
+  board, the list menus such as the Move Tutor and the shops, the Blueprint Table, the Trainer screen, the status cards
+  and the Pokémon Trader) now has deep slate-gray windows, a copper plaque naming the screen, a bar with where you are,
+  your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
+  says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
+  GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
+
 ## 0.155.3 — 2026-11-15
 
 ### Fixed

@@ -148,7 +148,9 @@ Storehouse 3,000 ticks after the build ended, which skipped its top without wait
 the skipped top on the Storehouse-made scaffolding, nothing skipped, all of it back). QA's `QaScaffoldClimb1107GameTests` (3, B1004: the lead
 is never put on a column's top in one jump, at every tick of the pillar; put down at the column's foot at night, he climbs
 back up it in the morning and finishes with nothing skipped; a crew's helper never stands in or on scaffolding yet
-still lays his share of the pillar).
+still lays his share of the pillar). QA's `QaScaffoldsFullChest1116bGameTests` (3: canceled with two columns up and the
+only chest full of dirt, before and after a restart: none standing, all 7 on the ground within 4 blocks of the bench;
+the workbench broken with them up and the build canceled 100 ticks later: none standing, all 7 accounted for).
 
 Showcase scenes: `scaffolding` (a builder scaffolding up the pillar and taking it down, filmed from about 7 blocks
 away at the builder's height, with stills of it up the scaffolding and taking it down).

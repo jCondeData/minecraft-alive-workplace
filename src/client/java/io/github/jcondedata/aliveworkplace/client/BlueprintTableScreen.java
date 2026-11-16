@@ -246,9 +246,10 @@ public class BlueprintTableScreen extends Screen {
 		storedList.setX(left + 8);
 		fillStored();
 		addRenderableWidget(storedList);
-		// The tabs sit in the header, after the title.
+		// The tabs sit on the lintel, after the title's plaque (Copperline, 47.1).
 		Component libTitle = Component.translatable("screen.aliveworkplace.table.tab_library");
-		int tx = left + 8 + font.width(title) + 10;
+		int[] plaque = io.github.jcondedata.aliveworkplace.ui.CopperLayout.plaque(new int[]{left, top, panelW, panelH}, font.width(title));
+		int tx = plaque[0] + plaque[2] + 4;
 		libraryTab = addRenderableWidget(Button.builder(libTitle, b -> showLibrary()).bounds(tx, top + 4, font.width(libTitle) + 12, TAB_H).build());
 		Component storedTitle = Component.translatable("screen.aliveworkplace.table.tab_stored", 999);
 		storedTab = addRenderableWidget(Button.builder(storedTabLabel(), b -> showStored())
@@ -602,7 +603,7 @@ public class BlueprintTableScreen extends Screen {
 			: unlocked < entries.size() ? Component.translatable("screen.aliveworkplace.table.unlocked_count", unlocked, entries.size())
 				: Component.translatable("screen.aliveworkplace.table.library_count", entries.size())
 			: Component.translatable("screen.aliveworkplace.table.files_title");
-		TableStyle.header(g, font, title, sub, left, top, panelW);
+		TableStyle.header(g, font, title, sub, left, top, panelW, TableStyle.overClose(left, top, panelW, mouseX, mouseY));
 		if (mode == Mode.LIBRARY && shown.isEmpty() && !query.isBlank()) {
 			// Nothing matches (36.10): said in the empty list, with what was typed.
 			Component none = Component.translatable("screen.aliveworkplace.table.no_match", query.trim());
@@ -963,6 +964,13 @@ public class BlueprintTableScreen extends Screen {
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
+		if (button == 0 && TableStyle.overClose(left, top, panelW, mx, my)) {
+			// The lintel's close X (Copperline, 47.1): as Esc.
+			net.minecraft.client.Minecraft.getInstance().getSoundManager().play(
+				net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+			onClose();
+			return true;
+		}
 		if (allMaterials && allBackButton.mouseClicked(mx, my, button)) {
 			return true;
 		}

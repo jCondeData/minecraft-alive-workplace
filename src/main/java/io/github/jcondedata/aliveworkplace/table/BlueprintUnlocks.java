@@ -249,6 +249,18 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		return unlock(level, village(level, pos), id, player == null ? List.of() : List.of(player));
 	}
 
+	/**
+	 * {@link #unlock} in {@code player}'s own village ({@link io.github.jcondedata.aliveworkplace.hall.HomeVillages#of}),
+	 * wherever they stand, telling them: a questbook reward (B1318: one claimed away from the village went into the
+	 * server-wide set, which every later village takes in). The server-wide set only with no village at all.
+	 */
+	public static boolean unlockFor(ServerPlayer player, ResourceLocation id) {
+		ServerLevel here = io.github.jcondedata.aliveworkplace.mc.Players.level(player);
+		Optional<net.minecraft.core.GlobalPos> home = io.github.jcondedata.aliveworkplace.hall.HomeVillages.of(player);
+		ServerLevel level = home.map(h -> here.getServer().getLevel(h.dimension())).orElse(here);
+		return unlock(level == null ? here : level, level == null ? null : home.map(net.minecraft.core.GlobalPos::pos).orElse(null), id, List.of(player));
+	}
+
 	// --- ways to unlock ----------------------------------------------------------------------
 
 	/** A villager's or trader's sale (any merchant: builders, market-day traders): a Blueprint bought unlocks its build. */

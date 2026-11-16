@@ -447,7 +447,11 @@ public final class WorkplaceCommand {
 		return messages.size();
 	}
 
-	/** {@code /workplace unlock <player> <blueprint>}: unlocks it in the village the player is in (or the server-wide set). */
+	/**
+	 * {@code /workplace unlock <player> <blueprint>}: unlocks it in the player's own village ({@link
+	 * io.github.jcondedata.aliveworkplace.hall.HomeVillages#of}), wherever they stand when a questbook reward runs it
+	 * (B1318); the server-wide set only when no village is theirs and none is where they stand.
+	 */
 	private static int unlockBlueprint(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
 		ServerPlayer player = net.minecraft.commands.arguments.EntityArgument.getPlayer(ctx, "player");
 		ResourceLocation id = ResourceLocationArgument.getId(ctx, "blueprint");
@@ -455,7 +459,7 @@ public final class WorkplaceCommand {
 			ctx.getSource().sendFailure(Component.translatable("message.aliveworkplace.blueprint.unknown", id.toString()));
 			return 0;
 		}
-		boolean unlocked = io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.unlockAt(Players.level(player), player.blockPosition(), id, player);
+		boolean unlocked = io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks.unlockFor(player, id);
 		ctx.getSource().sendSuccess(() -> Component.translatable(unlocked ? "command.aliveworkplace.unlock.done" : "command.aliveworkplace.unlock.already",
 			Blueprints.displayName(id), player.getDisplayName()), false);
 		return unlocked ? 1 : 0;

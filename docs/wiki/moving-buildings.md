@@ -504,6 +504,12 @@ in the open and in a storage room, a depot keeps its 16, and an empty Smart Chut
 `QaMoverCrateDrop1114eGameTests` (5, the QA lane, B1184): a jukebox, a decorated pot, what stands above the crate left
 as it stands, a chest with no room above, and a lectern over two reloads. `QaCreateMoverCrateDrop1114eCompatTests` (2)
 and `...BugCompatTests` (1, compat suite): Create's depot and fluid tank, and an Item Vault's 48 emeralds with no room above.
+`QaMoverCrateLastResort1114e2GameTests` (4, the QA lane): with the crate in a storage room (the last resort), an unlit
+campfire with 2 beef, a shulker box with 5 diamonds (counted in its item and loose: exactly 5), a chiseled bookshelf with 3
+books and ice (one ice, no water) are each dropped as themselves with exactly what they held.
+`QaCreateMoverCrateToolbox1114e2CompatTests` (3, compat suite): a Toolbox's 8 iron ingots and a Vault's 48 emeralds with room
+round the crate, and a Depot's 16 copper ingots in a storage room, each exactly once. Open: a beehive's bees in the last
+resort (B1262) and Create's ghost filters dropped as items there (B1261).
 `QaMovePutBack1114bGameTests` (4, the QA lane, B1204): a move called off while the building is still coming down is
 refused a new spot ("The Mover is still putting it back...") until it stands, then taken; with one block left to put back
 still refused, with none left taken; another building's move planned and carried out while one is put back; and a move

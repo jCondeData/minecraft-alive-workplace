@@ -529,6 +529,8 @@
 			"io.github.jcondedata.aliveworkplace.test.StatusCardButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineShellGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineSlotScreensGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperSlotSaves1116eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSettingsExtremes1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.HallBoardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTradesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineBlueprintsGameTests",
@@ -1847,11 +1849,14 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseGiveAll1116c3GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChapelWedding1116c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnlockFor1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUpgradeEntry1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseReach1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperline1116c3GameTests"
 		]
 	},
 	"depends": {

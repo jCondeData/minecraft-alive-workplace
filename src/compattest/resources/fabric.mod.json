@@ -15,6 +15,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaWaitingAndMoney1116dCompatTests",
 			"io.github.jcondedata.aliveworkplace.test.RepeatNewTests",
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCopperMenusCreate1116eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaQuestbookClaims1116eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MoverFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGlassblower1110eCompatTests",

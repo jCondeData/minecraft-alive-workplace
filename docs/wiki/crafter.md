@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293, B1301
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1293, B1301, B1311
 
 ## 1. What a player sees
 
@@ -303,6 +303,16 @@ game was what a chest from nothing named). By id only, never the other mod's cla
 - `MixedLogsSlotGameTests` (3, B1301): 2 chests from 2 oak, 1 spruce and 1 birch log take all four logs; a chest from
   three woods' logs takes two, and 3 oak planks are topped up from two logs; one log alone is still short; a Carpenter
   makes the builder's row of 3 chests from 3 oak, 3 spruce and 1 birch log, leaving one log and no plank.
+- `QaCrafterLogs1116cGameTests` (6, QA past B1301): one log each of oak, spruce, birch and jungle are exactly 2 chests;
+  a crimson stem with a stripped birch log, or a bamboo block with an oak log and 2 spruce planks, make a chest; logs top
+  up loose planks of other woods and no plank beyond the 8 is used; an oak and a spruce log are never 2 chests; a barrel
+  and a wooden pickaxe from mixed logs; a Carpenter makes a row of 3 chests from planks and two woods' logs across a save
+  and load, and short of logs loses no wood and names logs.
+- `QaMixedLogs1116bGameTests` (7, B1301, QA): a chest from a crimson and a warped stem, from oak wood and a stripped
+  spruce log, from an oak log and 2 bamboo blocks (2 planks each; one block is short); two chests from one log of each
+  of four woods (a third is short); an oak log and 3 spruce planks lack exactly one log or plank, with 4 they are a chest;
+  a barrel (planks and slabs) from three woods' logs; the Carpenter's job from four woods' logs saved and loaded mid-way
+  builds the row of 3 chests, one log left, no plank.
 - `ChippedShortLineCompatTests` (3, B1273 with Chipped): a lantern, torch, sticks, piston or chest from nothing names no
   Chipped item; a builder short of a lantern reads the Raw Iron and no Chipped planks, and nothing is taken; with Carved
   Wood a bookshelf from 6 mosaic planks and 3 books lacks 2 Oak Logs, from oak planks nothing, and a smoker from a
@@ -319,6 +329,14 @@ game was what a chest from nothing named). By id only, never the other mod's cla
 - `QaCarvedChest1115eCompatTests` (1) and `QaCarvedChest1115eBugCompatTests` (2, B1302): a one-block blueprint with a
   Carpenter hired gets its plain barrel from 3 spruce logs, and its plain chest from 8 oak planks or from a carved oak
   chest in the builder's chest.
+- `QaCarvedChest1116cCompatTests` (7, QA past B1302 and B1286 with Carved Wood): the block built is exactly Minecraft's
+  chest, from 2 oak logs, from 1 oak and 2 spruce logs (the spruce used, the oak left), or from a carved spruce chest
+  (the 8 planks kept); trapped chests (Minecraft's and Carved Wood's) are never used and the line names 2 logs, never Pale
+  Oak; planks taken away mid-job and given back make the chest losing nothing; a Carpenter saved and loaded mid-job.
+- `QaCarvedChest1116bCompatTests` (4, B1302, QA, with Carved Wood): a plain chest from 2 oak logs and a Carpenter is
+  built (planks, Oak Chest, chest; 1 log: none); 16 oak planks are two chests, 15 one; a carved oak chest and 8 spruce
+  planks are two; a carved trapped oak chest is never used and the line reads "short of 2 Oak Logs to make 1 Chest"; a
+  blueprint asking for the carved Oak Chest is never built with a plain chest.
 - `QaShortageGathers1115fBugCompatTests` (2, B1288): a smoker from nothing or from a furnace names 4 of Minecraft's logs,
   and a builder short of a smoker reads Minecraft's logs, never Apricorn Logs.
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
@@ -363,6 +381,8 @@ game was what a chest from nothing named). By id only, never the other mod's cla
 - Open bug B1308 (its 2 failing compat tests, QaMinedStoneSelf1115bBugCompatTests, are on the
   tests/mined-stone-self-1115b branch): with Create a builder short of 3 Andesite and a Mason reads "short of 3 Andesite
   to make 3 Andesite" (Create's stonecutting recipes make the mined stones from a tag that holds them).
+- Open bug B1311 (its failing test, QaCrafterLogs1116cBugGameTests, is on the tests/crafter-logs-1116c branch): with
+  one oak and one spruce log for 2 chests the line reads "short of 3 Oak Logs", counting only the first wood (2 is right).
 - Open bug B1303 (its 2 failing tests, QaDyedWoolLine1115bBugTests, are on the tests/dyed-wool-line-1115b branch): a
   builder short of 2 Blue Wool with 2 Blue Dye there reads "short of 4 Black Dye, 2 Blue Dye, 4 Blue Wool to make 2 Blue
   Wool"; every dyed wool from nothing names another color's wool and dye, not white wool or string; carpets the same.

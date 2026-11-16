@@ -25,8 +25,10 @@ A crafting table never takes a villager by itself. Stand a villager by one and s
 
 They watch the builders nearby. When one is waiting for something made mostly of wood (planks, stairs, slabs, doors,
 fences, signs, chests, barrels, ladders, torches, campfires and so on), the carpenter works out how to make it from what the village has, fetches the
-ingredients, crafts it at their table and carries it to the builder's chests. They can go up to two steps down: fences
-from sticks and planks, the planks from logs. They only use what the rest of that build doesn't need (planks for
+ingredients, crafts it at their table and carries it to the builder's chests. They can go up to three steps down: fences
+from sticks and planks, the planks from logs (with Carved Wood, a plain chest from that wood's carved chest, the carved
+chest from planks, the planks from logs). Logs of different woods are fine where any planks do: one oak and one spruce
+log make a chest. They only use what the rest of that build doesn't need (planks for
 stairs, but never the planks the walls still want), and never what another build going up nearby still needs, in a
 chest the builders share or in the Storehouse. Because they use the game's own recipes, other mods' recipes count
 too: a wooden block from another mod is theirs when its recipe is made of logs or planks.

@@ -860,3 +860,5 @@ the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every mat
 and a lava pocket shut in the bed (no fire), a drawn floor hole and a drawn waterlogged slab over a water pocket, the
 pocket case saved and loaded mid-CLEAR, turned a quarter and mirrored and turned: each ends dry but its pool; water under
 the pool running past the footprint to an open lake is never drained or dammed there.
+`QaPocketPlants1116bGameTests` (3, B1280): the pool basin over a pocket shut in the bed and filled with kelp, with
+waterlogged stairs, or with a bubble column over magma: each ends dry but its pool, every material adding up.

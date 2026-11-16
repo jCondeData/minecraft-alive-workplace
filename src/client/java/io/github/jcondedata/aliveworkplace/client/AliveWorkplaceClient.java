@@ -67,6 +67,9 @@ public class AliveWorkplaceClient implements ClientModInitializer {
 				mc.setScreen(new BlueprintTableScreen(payload));
 			}
 		});
+		// Copperline's toast (48.3): a finished build.
+		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.card.CardToasts.Show.TYPE,
+			(payload, context) -> context.client().getToasts().addToast(new CopperToast(payload.icon(), payload.title(), payload.line())));
 		// The City Plan screen (27.3).
 		ClientPlayNetworking.registerGlobalReceiver(io.github.jcondedata.aliveworkplace.city.CityPlans.Open.TYPE,
 			(payload, context) -> context.client().setScreen(new CityPlanScreen(payload)));

@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 48.1, 48.2
+Roadmap items: 47.1, 44.1, 48.1, 48.2, 48.3
 
 ## What a player sees
 
@@ -120,6 +120,26 @@ pixels or more and evens them out over its rows (a team of six: three and three 
 party line, the rules, each button; a grayed Challenge gives its reason); with nothing under the mouse it keeps the
 screen's hint.
 
+## The status card, tooltips and toasts (48.3)
+
+Every status card (the job cards, the Nurse's, the Fossil Scientist's) is the board's **pinned card**
+(`boards/VillagerCard.png`), laid out by `ui/StatusCardLayout` (pure arithmetic, checked by the GameTests): a copper edge
+along the top; the villager's face (the real model, framed on the head) in a well, the name beside it with the job and
+level under it, and the **close X** at the right (Close is the X now, not a button); the status line(s); the heading over
+the labeled lines, their values and bars in Copperline's colors (green Verdigris, red Redstone, orange Copper, gold
+Lantern); a divider; the reason the first grayed-out button can't be used, in a Redstone-edged box; the buttons (the
+first usable one is the card's one copper button, the rest neutral, a grayed-out one flat); and the hint at the foot.
+The foot is laid out from the bottom up, so on a short screen the lines give up their room (whole rows only) and the
+buttons never leave the card.
+
+**Tooltips.** An item line under the mouse shows a Copperline tooltip **beside the card** at that row (the item, the
+line, the value with its status glyph), so it never covers the row it describes; a grayed-out button shows its reason
+with the bad glyph and "Not yet".
+
+**Toasts.** `CopperToast` draws the board's toast (the Lantern edge, a section icon, a title and a line). A builder
+finishing (or taking down) a build sends one to the player it's for, "Stone House / Mira finished it.", through
+`CardToasts` (a client without the mod gets only the chat line, which still goes).
+
 ## Decisions
 
 - **Slots keep their places (44.1).** The Drop Box and the counter keep a vanilla chest's slot positions and their
@@ -185,3 +205,11 @@ they need; teams of one to eight cards inside the stage and apart in even rows; 
 new sentences in the lang file), with `TrainerScreenGameTests`, `TrainerScreenButtonsGameTests`,
 `QaTrainerScreen1111dGameTests` still passing. Scene: `copperline_trainer` (with Cobblemon: the mouse on Challenge and
 on Trade, then at 320x180).
+
+48.3: `CopperlineStatusCardGameTests` (3: a builder's card, an empty card and a thirty-line card at 427x240, 480x270,
+640x360 and 320x180 with labels one, three and five times as long: the card inside the screen, portrait, name and close
+X apart, buttons inside the card, in order, apart, under the reason box and the divider and above the hint; a builder's
+card whole at 240 tall; one copper button, never Close or a grayed-out one; the toast's words and packet), with
+`StatusCardButtonsGameTests`, `QaStatusCardRows1111cGameTests`, `JobCardGameTests`, `NurseCardGameTests` and
+`CopperlineShellGameTests` still passing (23 of 23). Scene: `copperline_status_card` (a line's tooltip, a grayed-out
+button's reason, the toast, then at 320x180).

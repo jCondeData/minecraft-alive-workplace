@@ -6830,7 +6830,7 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
   table's tests pass; scenes of the table and the book.
 - [x] **48.2** (review: pending 2026-11-16) **The Trainer screen in Copperline**, like
   `Trainer.png` (the real Cobblemon models stay). Done when: the trainer screen's tests pass; its scenes.
-- [ ] **48.3** **The villager status card, toasts and tooltips in
+- [x] **48.3** (review: pending 2026-11-16) **The villager status card, toasts and tooltips in
   Copperline**, like `VillagerCard.png`. Done when: `StatusCardButtonsGameTests` and the card's tests pass; its scenes.
 - [ ] **48.4** **The Chronicle and the Pokemon and menu screens of
   Milestones 42 and 43 in Copperline**, like `Chronicle.png` (each laid out in the shell). Done when: their tests pass;

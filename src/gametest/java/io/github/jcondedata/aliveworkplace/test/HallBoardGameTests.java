@@ -159,6 +159,7 @@ public class HallBoardGameTests implements FabricGameTest {
 		HallSections.forget();
 		HallMap.forget();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		emptyTheVillage(helper);
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		helper.runAfterDelay(2, () -> {
 			ChoiceMenu menu = openByHand(helper, player);
@@ -177,6 +178,24 @@ public class HallBoardGameTests implements FabricGameTest {
 			player.closeContainer();
 			helper.succeed();
 		});
+	}
+
+	/**
+	 * Setup for "an empty village": earlier tests in the full suite leave finished buildings and build sites saved in the
+	 * level (the village reaches far past this test's area), and they'd show on this Hall's map. Forget the ones in reach.
+	 */
+	private static void emptyTheVillage(GameTestHelper helper) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		BlockPos hall = helper.absolutePos(HALL);
+		io.github.jcondedata.aliveworkplace.build.BuildSiteManager sites = io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level);
+		for (var f : List.copyOf(sites.finishedInVillage(level, hall))) {
+			sites.forgetFinished(f.placement());
+		}
+		for (var s : List.copyOf(sites.all())) {
+			if (io.github.jcondedata.aliveworkplace.hall.VillageHalls.contains(hall, s.placement().origin())) {
+				sites.remove(s.id());
+			}
+		}
 	}
 
 	/** A click on the map selects the building under it, the smallest where two overlap, none on open ground. */

@@ -23,7 +23,8 @@ Named parts (for review and the owner's notes):
   Kitchen       the wing: counters with a stone top along the east wall under the window, a furnace, shelves of cups,
                 a pantry chest, herbs hanging; a doorway from the hearth room.
   Sleeping loft the hall's roof space (floor y 5): two beds under the street gable window with a nightstand between,
-                a lamp, a rug, a bench by the stair head, a lantern down from the ridge.
+                a lamp, a rug, a bench by the stair head, a boarded ceiling on collar
+                beams with a lantern hanging from it.
   Front gable   the street face: the door in the middle with a stone step and a lantern on the tie beam, a flower box
                 window each side, the loft window on the tie beam, a king post and collar beam up the gable.
   Dormer        the west slope's window: framed cheeks, its own little gable roof one block out over the eave.
@@ -203,7 +204,7 @@ def hearth_room(b):
     # The dining table for four by the east wall
     for z in (4, 5):
         fence(b, 5, 1, z, f"{WOOD}_fence")
-        b.set(5, 2, z, "white_carpet")
+        b.set(5, 2, z, f"{WOOD}_pressure_plate", powered=False)  # a wooden top (white cloth read as a stone slab in game)
     chair(b, 6, 1, 4, WOOD_FAM, "west")
     chair(b, 6, 1, 5, WOOD_FAM, "west")
     chair(b, 5, 1, 3, WOOD_FAM, "south")
@@ -256,9 +257,13 @@ def loft(b):
     couch(b, 5, 6, 9, "north", WOOD, "blue", length=2, arms=False)
     b.set(2, 6, 3, "chest", facing="east", type="single", waterlogged=False)
     picture(b, 4, 7, 9, "north", "blue", WOOD)
-    for y in (9, 10, 11):
-        b.set(4, y, 6, "chain", axis="y", waterlogged=False)
-    lantern(b, 4, 8, 6, hanging=True)
+    # A boarded ceiling over the middle of the loft on two collar beams, so the bedroom isn't a tunnel of bare brick
+    # (the roof's inner faces show only low down on the sides)
+    box(b, 3, 9, 3, 5, 9, 9, f"{WOOD}_planks")
+    for z in (4, 7):
+        for x in (3, 4, 5):
+            log(b, x, 8, z, FRAME, axis="x")
+    lantern(b, 4, 8, 6, hanging=True)  # from the ceiling boards
 
 
 def woodyard(b):

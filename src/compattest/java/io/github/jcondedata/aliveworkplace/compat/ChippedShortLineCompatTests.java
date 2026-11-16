@@ -36,7 +36,7 @@ public class ChippedShortLineCompatTests implements FabricGameTest {
 		}
 		helper.assertTrue(chippedPlanks, "setup: no Chipped planks in the planks tag");
 		List<String> wrong = new java.util.ArrayList<>();
-		for (Item item : List.of(Items.LANTERN, Items.TORCH, Items.STICK, Items.PISTON)) {
+		for (Item item : List.of(Items.LANTERN, Items.TORCH, Items.STICK, Items.PISTON, Items.CHEST)) {
 			for (Crafting.Kind kind : List.of(Crafting.Kind.WORKSHOP, Crafting.Kind.CRAFTING)) {
 				Map<Item, Integer> lack = Crafting.lacking(level, kind, item, 1, Map.of());
 				if (lack.isEmpty() || lack.keySet().stream().anyMatch(i -> BuiltInRegistries.ITEM.getKey(i).getNamespace().equals("chipped"))) {

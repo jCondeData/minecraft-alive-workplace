@@ -177,8 +177,8 @@ waiting for you and will come to your PC as soon as a place in it is free."; whi
 the PC as soon as a place is free ("Charmander came to your PC from the daycare."), and at each login with Pokémon still
 waiting they're reminded how many. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
 `QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2),
-`DaycareWaitingCompatTests` (3) and `QaDaycareWaiting1115c2CompatTests` (6: one freed slot brings exactly one, no copy
-after a restart, its state kept, two trainers, an offline trainer at login).
+`DaycareWaitingCompatTests` (3), `QaDaycareWaiting1115d3CompatTests` (6: one per freed place, another trainer's room never used, one reminder per login with the count, a place freed while away filled at login, the Pokémon's data kept, the saved list per trainer), and `QaDaycareWaiting1115c2CompatTests` (6: one freed slot brings exactly one, no copy after a
+restart, its state kept, two trainers, an offline trainer at login).
 
 **Habitat Keeper sightings (28.10).** Within 48 blocks of her pasture she tells the village of each shiny, rare or
 Alpha wild Pokémon once ("Ada spotted a shiny Eevee east of her pasture"), writes it in the chronicle and keeps her last

@@ -75,6 +75,19 @@ public final class Recipes {
 		return recipe.assemble(input, registries);
 	}
 
+	/** The id of {@code recipe}'s serializer (a recipe file's {@code type}), or null if it isn't registered. */
+	@org.jetbrains.annotations.Nullable
+	public static ResourceLocation serializerId(Recipe<?> recipe) {
+		return net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer());
+	}
+
+	/** A shapeless crafting recipe, in memory only, making {@code result} from any one of {@code options} (B1302's stand-ins). */
+	public static RecipeHolder<?> shapeless(ResourceLocation id, ItemStack result, List<net.minecraft.world.item.Item> options) {
+		Ingredient ingredient = Ingredient.of(options.stream().map(ItemStack::new));
+		return new RecipeHolder<>(id, new net.minecraft.world.item.crafting.ShapelessRecipe("",
+			net.minecraft.world.item.crafting.CraftingBookCategory.MISC, result, net.minecraft.core.NonNullList.of(Ingredient.EMPTY, ingredient)));
+	}
+
 	private Recipes() {
 	}
 }

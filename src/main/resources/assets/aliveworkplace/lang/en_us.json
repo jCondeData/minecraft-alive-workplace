@@ -3562,7 +3562,7 @@
   "message.aliveworkplace.daycare.waiting_for_pc": "Your PC is full: %s is waiting for you and will come to your PC as soon as a place in it is free.",
   "message.aliveworkplace.daycare.came_to_pc": "%s came to your PC from the daycare.",
   "message.aliveworkplace.daycare.still_waiting": "Your PC is full: Pokémon from the daycare are waiting for a free place in it (%s).",
-  "message.aliveworkplace.daycare.still_waiting.one": "Your PC is full: a Pokémon from the daycare is waiting for a free place in it.",
+  "message.aliveworkplace.daycare.still_waiting.one": "Your PC is full: %s Pokémon from the daycare is waiting for a free place in it.",
   "message.aliveworkplace.daycare.lost": "That Pokémon could not be read",
   "item.aliveworkplace.village_ledger": "Village Ledger",
   "item.aliveworkplace.work_horn": "Work Horn",

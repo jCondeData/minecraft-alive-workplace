@@ -49,7 +49,7 @@ public class QaDaycareWaiting1115c2BugCompatTests implements FabricGameTest {
 				helper.assertValueEqual(lines.size(), 1, "reminders at the login: " + back);
 				helper.assertTrue(!lines.get(0).contains("are waiting"),
 					"the reminder for one Pokémon is in the plural: \"" + lines.get(0) + "\"");
-				helper.assertValueEqual(lines.get(0), "Your PC is full: a Pokémon from the daycare is waiting for a free place in it.", "the reminder for one");
+				helper.assertValueEqual(lines.get(0), "Your PC is full: 1 Pokémon from the daycare is waiting for a free place in it.", "the reminder for one");
 				helper.succeed();
 			});
 		});

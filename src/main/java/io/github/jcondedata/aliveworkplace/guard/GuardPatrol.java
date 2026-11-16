@@ -44,6 +44,10 @@ public class GuardPatrol extends Behavior<Villager> {
 	private static final int HIT_EVERY = 20;
 	/** Ticks between two sessions at the dummy. */
 	private static final int TRAIN_EVERY = 2400;
+	/** By day a guard walks to random points up to this many blocks from the post on each axis (a square round it). */
+	public static final int DAY_RADIUS = 14;
+	/** At night they keep within this many. */
+	static final int NIGHT_RADIUS = 6;
 	private static final int DUMMY_SEARCH_EVERY = 400;
 
 	private final Walker walker = new Walker(SPEED);
@@ -187,7 +191,7 @@ public class GuardPatrol extends Behavior<Villager> {
 				walker.reset();
 				return;
 			}
-			int r = night ? 6 : 14;
+			int r = night ? NIGHT_RADIUS : DAY_RADIUS;
 			int x = post.getX() + level.random.nextInt(r * 2 + 1) - r;
 			int z = post.getZ() + level.random.nextInt(r * 2 + 1) - r;
 			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);

@@ -7,6 +7,8 @@ Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037
 
 ## 1. What a player sees
 
+- **The look** (48.1): the table is drawn in Copperline like the Blueprint Book board (`docs/wiki/copperline.md`):
+  a style rail, a one-line list with a lock on locked builds, and one copper Get Blueprint button.
 - **Unlocked builds** show in color, first in the list, and Get Blueprint works as before (for a Blank Blueprint).
 - **Locked builds** show grayed out with a line saying how to get one ("Sold by a Journeyman Builder", "A market-day
   trader", "A questbook reward", "Found in chests", "Sold by a builder once the tier below stands", "Sold by a

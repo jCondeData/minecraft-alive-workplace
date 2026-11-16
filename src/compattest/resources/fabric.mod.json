@@ -434,6 +434,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaShortageGathers1115fCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaShortageGathers1115fBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMinedStoneSelf1115bBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaShortageLine1116bCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaUnpackedLogs1115bCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaShortLineGathered1115c4CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eBugCompatTests",

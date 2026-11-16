@@ -606,19 +606,21 @@ SCENES = [
       [START, ("02_half_way", "Half way: half the cottage packed in his crates"),
        ("03_at_home", "After: Tomas at his barrel in the moved cottage, Dara's bed is there too"), DONE]),
     S("move_plan", "Village Hall", "Moving a building on the hall's Move page, step by step",
-      "1: the Move page listed the Starter Cottage with where it stands from the Hall; 2: its picker showed the village map "
-      "(the cottage now in yellow, the Hall, the roads) and said to click where it should go; 3: a click to the west put the "
-      "new spot there (it fits, green, the ghost glowing), Rotate turned its front east and Confirm was ready; 4: Confirm "
-      "planned the move for the Mover", 60,
-      [("01_pick_a_building", "Step 1: pick the building (the cottage, and where it stands)"),
-       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now, \"click where it should go\""),
-       ("03_confirm", "Step 3: the new spot fits (green), front turned east, Confirm ready"),
-       ("04_move_planned", "Planned: the list marks the move for the Mover")]),
-    S("move_refused", "Village Hall", "A move refused: builders are still working on the building",
-      "the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
-      "was refused, no picker opened, and the action bar said why in red", 60,
-      [("01_move_page", "The Move page: the cottage, with its Move button"),
-       ("02_refused", "Refused: \"builders are still working on it; move it once they're done\"")]),
+      "Copperline (47.3): the rail shows the three steps and Your move. 1: the list of buildings says which can move; "
+      "2: the village map with the cottage in a dashed frame; a click to the west put the new spot there, green with "
+      "Fits here, and Rotate turned its front east; 3: Next asked \"Move the Starter Cottage?\" with From, To, Takes, "
+      "What happens, the small map and the checklist; Move building planned it for the Mover", 70,
+      [("01_pick_a_building", "Step 1: the buildings, and whether each can move"),
+       ("02_pick_a_new_spot", "Step 2: the village map, the cottage now in a dashed frame"),
+       ("03_fits", "Step 2: the new spot fits (green), front turned east"),
+       ("04_confirm", "Step 3: Move the Starter Cottage? From, To, the checklist, Move building"),
+       ("05_move_planned", "Planned: the list marks the move for the Mover")]),
+    S("move_refused", "Village Hall", "A move refused, and a spot refused",
+      "the hall's Move page listed the Starter Cottage with a lock (Wait: builders are still working on it) "
+      "and the market stall as free to move; the cottage's Move was refused, and on the stall's map a spot on the cottage showed red and "
+      "hatched, saying it would overlap it", 60,
+      [("01_move_page", "Step 1: the cottage locked (Wait) and why; the stall can move"),
+       ("02_refused", "Step 2: a spot on the cottage, red and hatched, with why")]),
     # The price board (ROADMAP 33.4): the hall's Trade page on Prices, a good's tooltip, and the name icon's Known for line
     S("price_board", "Realm", "The price board: what a village is known for and short of",
       "the hall's Trade page showed Thornholm's prices: Timber and Wool starred, Bread marked short, arrows on what moved, "

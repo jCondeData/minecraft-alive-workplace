@@ -9,6 +9,19 @@ Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B
 
 ## What a player sees
 
+**In Copperline (47.3).** The Move page now looks like the rest of the new screens (boards `Move1-3.png`). The rail
+on the left shows the three steps, **Pick**, **Place** and **Confirm** (done ones ticked, the current one copper), and
+**Your move**: the building, its size, where it's going and the way it faces. **Step 1** is a table of the village's
+buildings with **Can it move?**: a green **Yes**, a **Wait** with a lock while builders are on it or a called-off move is
+put back, **Planned**, or **No** with a lock (the Hall's own building, a Wonder, someone else's claim), each locked one
+saying why; a click picks one and **What happens** says what the Mover will do; **Next: choose the spot** (or Enter)
+opens step 2. **Step 2** is the village map: the building now in a dashed frame ("Now here"), the new spot green with a
+tick where it **Fits here**, red and hatched where it can't go (the box says why), its front in yellow, a 16-block scale
+bar; **Rotate** (or R) and the preview key at the right. **Next: confirm** asks **Move the Starter Cottage?** with From,
+To, Takes and Faces, What happens, a small map with From and To and a checklist (the spot is free, a Mover works here,
+it isn't being moved already); the one copper button, **Move building**, plans it. Back and the rail's ticked steps go
+back a step.
+
 **The Hall's Move page (45.2).** A **Move** tab (a piston) in the Village Hall, under Buildings, lists the village's
 finished buildings, each with where it stands from the Hall ("Now: 17 blocks north-west of the Hall") and, once
 planned, where it's going. Since B1163/45.2a the page is a three-step flow a first-time player can follow without this

@@ -6812,7 +6812,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
 - [ ] **47.2** (wip: `wip/lane-c-1116-0952`, see Notes 2026-11-16) **The Village Hall in Copperline**, like `Main.png`, `HallPeople.png`, `HallMap.png` and `Compact.png`:
   Overview with its four stat cards, "Needs you" and "At work now"; People; the Map with its legend; the other sections
   in the same shell. Done when: GameTests for each section's actions; scenes `hall`, `hall_people`, `hall_pages` show it.
-- [ ] **47.3** **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with
+- [x] **47.3** (review: pending 2026-11-16) **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with
   From and To, the green "Fits" and red hatched refusal, "What happens", the checklist, one copper "Move building").
   Done when: the 45.x Move tests pass; scenes `move_plan` and `move_refused`.
 - [ ] **47.4** **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes

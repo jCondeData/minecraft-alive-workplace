@@ -267,6 +267,27 @@ final class JobScenes {
 		});
 	}
 
+	/** The Move page's row of the building made from {@code structure} (-1: none), the move_refused scene's. */
+	private static int moveRowOf(ChoiceMenu m, net.minecraft.resources.ResourceLocation structure) {
+		String name = io.github.jcondedata.aliveworkplace.blueprint.Blueprints.displayName(structure).getString();
+		for (int slot = io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+			if (m.icon(slot).getHoverName().getString().equals(name)) {
+				return slot;
+			}
+		}
+		return -1;
+	}
+
+	/** A Move page row's state (MovePage.ROW_...), or -1. */
+	private static int moveRowState(ChoiceMenu m, int slot) {
+		if (slot < 0) {
+			return -1;
+		}
+		net.minecraft.world.item.component.CustomData data = m.icon(slot).get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+		return data == null || !data.contains(io.github.jcondedata.aliveworkplace.hall.MovePage.ROW_MARK) ? -1
+			: data.copyTag().getCompound(io.github.jcondedata.aliveworkplace.hall.MovePage.ROW_MARK).getInt("state");
+	}
+
 	/** The wonder_crew scene's ten builders (35.5). */
 	private static final List<Villager> crewBuilders = new java.util.ArrayList<>();
 
@@ -5997,14 +6018,14 @@ final class JobScenes {
 							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
 					}
 				}, 40),
-				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE, 6, (level, player) -> {
+				new Step("02_pick_a_new_spot", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
 						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString().startsWith("Step 2 of 3"),
 							"the picker says step 2: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.GUIDE).getHoverName().getString());
 					}
 				}, 60),
-				new Step("03_confirm", io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, 6, (level, player) -> {
+				new Step("03_fits", io.github.jcondedata.aliveworkplace.hall.MovePage.ROTATE, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						io.github.jcondedata.aliveworkplace.hall.MovePage.Picking p = io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).orElseThrow();
 						io.github.jcondedata.aliveworkplace.hall.MovePage.click(m, level, player,
@@ -6016,7 +6037,10 @@ final class JobScenes {
 						Showcase.check(io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.moveGhost(player) != null, "the ghost outline glows");
 					}
 				}, 60),
-				new Step("04_move_planned", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
+				// Copperline (47.3): Next shows step 3, "Move the Starter Cottage?" with From, To, the checklist and Move building
+				new Step("04_confirm", io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, 6, (level, player) ->
+					onHallScreen(s -> s.moveNext() && s.moveStepShown() == 3, 60), 60),
+				new Step("05_move_planned", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.MovePage.CONFIRM, player);
 						Showcase.check(io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent(),
@@ -6024,10 +6048,13 @@ final class JobScenes {
 					}
 				}, 40)),
 			(level, player) -> io.github.jcondedata.aliveworkplace.move.PendingMoves.get(level).forBuilding(STATION.offset(-8, 0, -15)).isPresent()));
-		// A refused move (ROADMAP 45.6): the same cottage with builders still working on it (an upgrade's site open on it). Its
-		// Move button is refused: no picker opens, and the reason shows in red on the action bar (the hall closed so it shows).
-		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage, but builders are still working on it: its Move button "
-			+ "was refused, no picker opened, and the action bar said why in red",
+		// A refused move (ROADMAP 45.6, in Copperline since 47.3): the cottage with builders still working on it (an upgrade's
+		// site open on it) and a market stall that is free to move. 1, the list: the cottage says "Wait" with a lock and why,
+		// the stall "Yes"; 2, its Move is refused (no picker opens); the stall's picker opens and a click on the cottage puts
+		// the new spot there: refused, red and hatched, saying it would overlap the cottage.
+		SCREENS.put("move_refused", new Screen("the hall's Move page listed the Starter Cottage with a lock (Wait: builders are still working on it) "
+			+ "and the market stall as free to move; the cottage's Move was refused, and on the stall's map a spot on the cottage showed red and "
+			+ "hatched, saying it would overlap it",
 			new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
@@ -6039,26 +6066,40 @@ final class JobScenes {
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE.id(), placement, player.getUUID());
 				BuildSiteManager.get(level).create(player.getUUID(), player.getGameProfile().getName(), StarterBlueprints.STARTER_COTTAGE.id(), placement);
+				BlockPos stall = STATION.offset(6, 0, -14);
+				level.getStructureManager().get(StarterBlueprints.MARKET_STALL.id()).orElseThrow().placeInWorld(level, stall, stall,
+					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
+				BuildSiteManager.get(level).recordFinished(StarterBlueprints.MARKET_STALL.id(), new BlueprintData.Placement(level.dimension().location(), stall,
+					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE), player.getUUID());
 			},
 			List.of(new Step("01_move_page", io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, 6, (level, player) -> {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.HallPages.slot(io.github.jcondedata.aliveworkplace.hall.MovePage.PAGE), player);
-						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW).is(Items.BRICKS),
-							"the cottage listed on the Move page: " + m.icon(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW));
+						int cottageRow = moveRowOf(m, StarterBlueprints.STARTER_COTTAGE.id());
+						Showcase.check(cottageRow == io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, "the cottage is the list's first row: " + cottageRow);
+						Showcase.check(moveRowState(m, cottageRow) == io.github.jcondedata.aliveworkplace.hall.MovePage.ROW_WAIT, "the cottage says Wait");
+						Showcase.check(moveRowState(m, moveRowOf(m, StarterBlueprints.MARKET_STALL.id())) == io.github.jcondedata.aliveworkplace.hall.MovePage.ROW_YES,
+							"the stall can move");
+						onHallScreen(s -> s.moveSelect(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW), 40); // the cottage picked: why it can't
 					}
 				}, 40),
-				new Step("02_refused", 0, 6, (level, player) -> {
+				new Step("02_refused", io.github.jcondedata.aliveworkplace.hall.MovePage.CENTRE, 6, (level, player) -> {
 					if (player.containerMenu instanceof ChoiceMenu m) {
-						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.FIRST_ROW, player);
+						m.press(moveRowOf(m, StarterBlueprints.STARTER_COTTAGE.id()), player);
 						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty(), "no picker opened on the cottage");
 						Component why = io.github.jcondedata.aliveworkplace.move.MoveRules.refusal(level, STATION, STATION.offset(-8, 0, -15), player);
 						Showcase.check(why != null && why.getString().equals(Component.translatable("message.aliveworkplace.move.refused.building").getString()),
 							"refused because builders are working on it: " + (why == null ? null : why.getString()));
-						player.closeContainer(); // the action bar's red line shows over the world
+						m.press(moveRowOf(m, StarterBlueprints.MARKET_STALL.id()), player);
+						Showcase.check(io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isPresent(), "the stall's picker opened");
+						io.github.jcondedata.aliveworkplace.hall.MovePage.click(m, level, player,
+							io.github.jcondedata.aliveworkplace.hall.MovePage.mapClick(player, STATION.getX() - 5, STATION.getZ() - 12));
+						Showcase.check(m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).is(Items.RED_DYE),
+							"the spot on the cottage is refused: " + m.icon(io.github.jcondedata.aliveworkplace.hall.MovePage.VERDICT).getHoverName().getString());
 					}
-				}, 10)),
-			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.picking(player).isEmpty()));
+				}, 60)),
+			(level, player) -> io.github.jcondedata.aliveworkplace.hall.MovePage.fit(player).map(f -> !f.fits()).orElse(false)));
 		// The price board (ROADMAP 33.4): Thornholm's Trade page on Prices (stars on Timber and Wool, a red mark on Bread,
 		// arrows on what moved), Timber's tooltip naming the dearer and the cheaper village on its routes, and the hall's
 		// name icon with "Known for: Timber, Wool. Short of: Bread".

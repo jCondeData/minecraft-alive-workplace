@@ -117,6 +117,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (!hasSidebar()) {
 			return Component.empty();
 		}
+		if (moveMode()) { // the Move page: the village and the step (47.3)
+			return Component.translatable("screen.aliveworkplace.move.where", villageName(), moveShownStep());
+		}
 		return compactRail() ? date() : Component.translatable("screen.aliveworkplace.copperline.where", villageName(), date());
 	}
 
@@ -128,7 +131,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int sectionAt(double mx, double my) {
-		if (sidebarWidth() == 0) {
+		if (sidebarWidth() == 0 || moveMode()) {
 			return -1;
 		}
 		return io.github.jcondedata.aliveworkplace.ui.CopperLayout.at(railEntries(), mx, my);
@@ -138,6 +141,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	protected void renderSidebar(GuiGraphics g, int mouseX, int mouseY) {
 		int side = sidebarWidth();
 		if (side == 0) {
+			return;
+		}
+		if (moveMode()) {
+			renderMoveRail(g, mouseX, mouseY); // the Move page's three steps in place of the sections (47.3)
 			return;
 		}
 		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), side);
@@ -168,6 +175,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean sidebarClicked(double mx, double my, int button) {
+		if (moveMode()) {
+			return button == 0 && moveRailClicked(mx, my);
+		}
 		int i = sectionAt(mx, my);
 		if (i < 0 || button != 0) {
 			return false;
@@ -196,6 +206,13 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	 */
 	@Override
 	public int[] centre(int slot) {
+		if (moveList()) {
+			for (int[] row : moveRows) {
+				if (row[0] == slot) {
+					return new int[]{row[1] + row[3] / 2, row[2] + row[4] / 2};
+				}
+			}
+		}
 		if (moveMap()) {
 			if (slot == MovePage.GUIDE) { // the step's instruction: nothing there shows a tooltip
 				return new int[]{moveMapX + 4, moveMapY - 6};
@@ -807,7 +824,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean customBody() {
-		return moveMap() || board() != null;
+		return moveMode() || board() != null;
 	}
 
 	/** The section the screen draws itself on the main page (People, Overview, and the Map once its view came), or null. */
@@ -936,166 +953,725 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		super.removed();
 	}
 
+	// --- the Move page in Copperline (47.3; boards/Move1-3.png) --------------------------------------------------------
+	// The rail shows the three steps (Pick, Place, Confirm: done ones ticked, the current one copper-marked) and "Your
+	// move" (the building, its size, the spot and the way it faces). Step 1 is a table of the village's buildings with
+	// "Can it move?" (Yes, Wait or No with a lock, and why), the one picked and "What happens"; Next opens the picker.
+	// Step 2 is the village map (the building now in a dashed frame, the new spot green where it fits and red hatched
+	// where it's refused, its front in Lantern), the fit, Rotate and the preview key. Step 3 asks "Move the Bakery?" with
+	// From, To, Takes and Faces, "What happens", a small map with From and To, the checklist and one copper "Move building".
+	// Steps 2 and 3 are one server page (the picker); the screen shows step 3 once the spot fits and Next is pressed.
+
+	/** Pseudo-slots of the Move page's own buttons in {@link #moveHits}: the map, Next to step 3, Back to step 2, Next from the list, Cancel on the list. */
+	private static final int HIT_MAP = -1;
+	private static final int HIT_TO_CONFIRM = -2;
+	private static final int HIT_TO_PLACE = -3;
+	private static final int HIT_LIST_NEXT = -4;
+	private static final int HIT_LIST_CANCEL = -5;
+	private static final int HIT_ROW = -100;
+	/** Step 1's row picked (its slot, -1: none yet), the list's scroll, and whether step 3 is showing. */
+	private int moveSelected = -1;
+	private int moveListScroll;
+	private boolean moveConfirming;
+	/** Step 1's rows as last drawn: [slot, x, y, w, h]. */
+	private final List<int[]> moveRows = new ArrayList<>();
+
+	private boolean moveMode() {
+		return moveMap() || moveList();
+	}
+
+	private static CompoundTag moveRow(ItemStack icon) {
+		net.minecraft.world.item.component.CustomData data = icon.get(DataComponents.CUSTOM_DATA);
+		return data == null || !data.contains(MovePage.ROW_MARK) ? null : data.copyTag().getCompound(MovePage.ROW_MARK);
+	}
+
+	/** Step 1's buildings: the slots of the list's rows, in order. */
+	private List<Integer> moveRowSlots() {
+		List<Integer> out = new ArrayList<>();
+		for (int slot = VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+			if (moveRow(menu.slots.get(slot).getItem()) != null) {
+				out.add(slot);
+			}
+		}
+		return out;
+	}
+
+	/** The row picked on step 1: the one clicked, else the first that can move, else the first. */
+	private int moveSelectedSlot() {
+		List<Integer> rows = moveRowSlots();
+		if (rows.contains(moveSelected)) {
+			return moveSelected;
+		}
+		for (int slot : rows) {
+			int state = moveRow(menu.slots.get(slot).getItem()).getInt("state");
+			if (state == MovePage.ROW_YES || state == MovePage.ROW_PLANNED) {
+				return slot;
+			}
+		}
+		return rows.isEmpty() ? -1 : rows.get(0);
+	}
+
+	private static boolean movable(CompoundTag row) {
+		return row != null && (row.getInt("state") == MovePage.ROW_YES || row.getInt("state") == MovePage.ROW_PLANNED);
+	}
+
+	/** The step showing: 1 the list, 2 the map, 3 the confirm. */
+	private int moveShownStep() {
+		if (!moveMap()) {
+			return 1;
+		}
+		CompoundTag view = moveView();
+		if (moveConfirming && view != null && view.getInt("fit") == 0) {
+			return 3;
+		}
+		moveConfirming = false;
+		return 2;
+	}
+
+	private Component moveWhy(CompoundTag row) {
+		String json = row == null ? "" : row.getString("why");
+		if (json.isEmpty() || minecraft == null || minecraft.level == null) {
+			return Component.translatable("screen.aliveworkplace.move.state.no");
+		}
+		try {
+			Component c = Component.Serializer.fromJson(json, minecraft.level.registryAccess());
+			return c == null ? Component.literal(json) : c;
+		} catch (RuntimeException e) {
+			return Component.literal(json);
+		}
+	}
+
+	/** The first argument of a translated line ("Now: %s" gives the %s), else the whole line. */
+	private static Component arg0(Component line) {
+		if (line.getContents() instanceof TranslatableContents t && t.getArgs().length > 0) {
+			Object a = t.getArgs()[0];
+			return a instanceof Component c ? c : Component.literal(String.valueOf(a));
+		}
+		return line;
+	}
+
+	private static boolean hasKey(List<Component> lines, String key) {
+		for (Component l : lines) {
+			if (l.getContents() instanceof TranslatableContents t && t.getKey().equals(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The building's name: the picker's, else the row picked. */
+	private Component moveName() {
+		if (moveMap()) {
+			return menu.slots.get(MovePage.HEADER).getItem().getHoverName();
+		}
+		int slot = moveSelectedSlot();
+		return slot < 0 ? Component.empty() : menu.slots.get(slot).getItem().getHoverName();
+	}
+
+	private String moveFacing(CompoundTag view) {
+		return view == null ? "north" : net.minecraft.core.Direction.from2DDataValue(view.getInt("front")).getName();
+	}
+
+	/** The rail's step boxes (three rows from the rail's top, under the STEPS heading). */
+	private int[][] moveStepBoxes() {
+		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), sidebarWidth());
+		int top = rail[1] + (compactRail() ? 2 : 14);
+		int rowH = compactRail() ? 18 : 20;
+		int[][] out = new int[3][];
+		for (int i = 0; i < 3; i++) {
+			out[i] = new int[]{rail[0], top + i * (rowH + 1), rail[2], rowH};
+		}
+		return out;
+	}
+
+	private void renderMoveRail(GuiGraphics g, int mouseX, int mouseY) {
+		int[] rail = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rail(panelBox(), sidebarWidth());
+		g.fill(rail[0] + rail[2], rail[1], rail[0] + rail[2] + 1, rail[1] + rail[3], CopperStyle.DEEP_600);
+		boolean compact = compactRail();
+		if (!compact) {
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.move.steps").getString().toUpperCase(java.util.Locale.ROOT), rail[2] - 8),
+				rail[0] + 5, rail[1] + 3, CopperStyle.TUFF, false);
+		}
+		int now = moveShownStep();
+		int[][] boxes = moveStepBoxes();
+		String[] keys = {"pick", "place", "confirm"};
+		for (int i = 0; i < 3; i++) {
+			int[] b = boxes[i];
+			boolean current = i + 1 == now;
+			boolean done = i + 1 < now;
+			boolean over = over(b, mouseX, mouseY) && done;
+			if (current) {
+				g.fill(b[0], b[1], b[0] + b[2], b[1] + b[3], CopperStyle.DEEP_700);
+				g.fill(b[0], b[1], b[0] + 2, b[1] + b[3], CopperStyle.COPPER);
+			} else if (over) {
+				g.fill(b[0], b[1], b[0] + b[2], b[1] + b[3], CopperStyle.DEEP_800);
+				g.fill(b[0], b[1], b[0] + 2, b[1] + b[3], CopperStyle.LANTERN);
+			}
+			// the step's number in a square: copper when current, verdigris with a tick when done, slate ahead
+			int sq = 12;
+			int sx = compact ? b[0] + (b[2] - sq) / 2 : b[0] + 5;
+			int sy = b[1] + (b[3] - sq) / 2;
+			g.fill(sx, sy, sx + sq, sy + sq, current ? CopperStyle.COPPER : done ? 0xFF2B6E5C : CopperStyle.DEEP_600);
+			if (done) {
+				CopperStyle.glyph(g, "good", sx + 2, sy + 2);
+			} else {
+				String n = String.valueOf(i + 1);
+				g.drawString(font, n, sx + (sq - font.width(n)) / 2 + 1, sy + 2, current ? CopperStyle.VOID : CopperStyle.TUFF, false);
+			}
+			if (!compact) {
+				String label = Component.translatable("screen.aliveworkplace.move.step." + keys[i]).getString();
+				g.drawString(font, CopperStyle.trim(font, label, b[2] - sq - 12), sx + sq + 5, b[1] + (b[3] - 8) / 2,
+					current ? CopperStyle.QUARTZ : done ? CopperStyle.QUARTZ : CopperStyle.TUFF, current);
+			}
+		}
+		if (compact) {
+			return;
+		}
+		// Your move: the building, its size, where it goes and the way it faces
+		int y = boxes[2][1] + boxes[2][3] + 12;
+		int x = rail[0] + 5;
+		int w = rail[2] - 8;
+		if (y + 40 > rail[1] + rail[3]) {
+			return;
+		}
+		g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.move.your_move").getString().toUpperCase(java.util.Locale.ROOT), w),
+			x, y, CopperStyle.TUFF, false);
+		y += 13;
+		Component name = moveName();
+		if (name.getString().isEmpty()) {
+			return;
+		}
+		CopperStyle.icon(g, "buildings", x, y - 4, 16);
+		g.drawString(font, CopperStyle.trim(font, name.getString(), w - 20), x + 20, y, CopperStyle.QUARTZ, true);
+		y += 14;
+		List<Component> lines = new ArrayList<>();
+		CompoundTag view = moveView();
+		if (moveMap()) {
+			List<Component> header = loreOf(menu.slots.get(MovePage.HEADER).getItem());
+			if (header.size() > 1) {
+				lines.add(header.get(1));
+			}
+			List<Component> guide = loreOf(menu.slots.get(MovePage.GUIDE).getItem());
+			int fit = view == null ? 1 : view.getInt("fit");
+			lines.add(fit == 1 || guide.size() < 2 ? Component.translatable("screen.aliveworkplace.move.summary.none")
+				: Component.translatable("screen.aliveworkplace.move.summary.to", arg0(guide.get(1))));
+			lines.add(Component.translatable("screen.aliveworkplace.move.summary.faces",
+				Component.translatable("screen.aliveworkplace.move.direction." + moveFacing(view))));
+		} else {
+			CompoundTag row = moveRow(menu.slots.get(moveSelectedSlot()).getItem());
+			if (row != null && row.contains("w")) {
+				lines.add(Component.translatable("screen.aliveworkplace.move.row.size", row.getInt("w"), row.getInt("d")));
+			}
+			lines.add(Component.translatable("screen.aliveworkplace.move.summary.none"));
+		}
+		for (Component line : lines) {
+			for (FormattedCharSequence part : font.split(line, w)) {
+				if (y + 9 > rail[1] + rail[3]) {
+					return;
+				}
+				g.drawString(font, part, x, y, CopperStyle.TUFF, false);
+				y += 10;
+			}
+		}
+	}
+
+	private boolean moveRailClicked(double mx, double my) {
+		int[][] boxes = moveStepBoxes();
+		int now = moveShownStep();
+		for (int i = 0; i < 3; i++) {
+			if (i + 1 < now && io.github.jcondedata.aliveworkplace.ui.CopperLayout.inside(boxes[i], mx, my)) {
+				click();
+				if (i == 0) {
+					press(MovePage.CANCEL, 0, false); // back to the list: the pick is forgotten
+				} else {
+					moveConfirming = false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void click() {
+		if (minecraft != null) {
+			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+		}
+	}
+
+	/** A Copperline button recorded for clicks; returns its box. */
+	private int[] moveButton(GuiGraphics g, int hit, Component label, String glyph, CopperStyle.Kind kind, boolean off, int x, int y, int w, int mouseX, int mouseY) {
+		int h = 14;
+		boolean over = !off && mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h;
+		CopperStyle.button(g, font, label, glyph, x, y, w, h, kind, over, false, off);
+		if (!off) {
+			moveHits.add(new int[]{hit, x, y, w, h});
+		}
+		return new int[]{x, y, w, h};
+	}
+
+	private int buttonW(Component label, String glyph) {
+		return font.width(label) + 14 + (glyph == null ? 0 : 10);
+	}
+
+	// Step 1: the buildings and whether each can move.
+
+	private void renderMoveList(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		moveHits.clear();
+		moveRows.clear();
+		boardWhisper = Component.translatable("screen.aliveworkplace.move.whisper.list");
+		boolean small = compactRail();
+		int footY = y + h - 15;
+		int sideW = small ? 0 : Math.max(110, w * 38 / 100);
+		int lw = w - (sideW > 0 ? sideW + 8 : 0);
+		List<Integer> rows = moveRowSlots();
+		int selected = moveSelectedSlot();
+		// the column heads
+		g.drawString(font, Component.translatable("screen.aliveworkplace.move.col.building").getString().toUpperCase(java.util.Locale.ROOT), x + 3, y + 1, CopperStyle.TUFF, false);
+		String can = Component.translatable("screen.aliveworkplace.move.col.can").getString().toUpperCase(java.util.Locale.ROOT);
+		g.drawString(font, can, x + lw - font.width(can) - 3, y + 1, CopperStyle.TUFF, false);
+		CopperStyle.headerRow(g, x, y, lw);
+		int top = y + 14;
+		int listH = footY - 4 - top;
+		int rowH = 22;
+		if (rows.isEmpty()) {
+			// the empty state: the server's one note (no buildings yet)
+			ItemStack note = ItemStack.EMPTY;
+			for (int slot = VillageHallScreen.FIRST_ROW; slot < ChoiceMenu.SIZE; slot++) {
+				if (!menu.slots.get(slot).getItem().isEmpty()) {
+					note = menu.slots.get(slot).getItem();
+					break;
+				}
+			}
+			List<Component> lore = loreOf(note);
+			CopperStyle.empty(g, font, "buildings", note.isEmpty() ? Component.translatable("screen.aliveworkplace.move.none") : note.getHoverName(),
+				lore.isEmpty() ? Component.empty() : lore.get(0), null, x, top, lw, Math.min(listH, 80), false);
+		}
+		int content = rows.size() * rowH;
+		moveListScroll = Math.max(0, Math.min(moveListScroll, Math.max(0, content - listH)));
+		g.enableScissor(x, top, x + lw, top + listH);
+		int ry = top - moveListScroll;
+		for (int i = 0; i < rows.size(); i++, ry += rowH) {
+			int slot = rows.get(i);
+			if (ry + rowH <= top || ry >= top + listH) {
+				continue;
+			}
+			ItemStack icon = menu.slots.get(slot).getItem();
+			CompoundTag row = moveRow(icon);
+			int state = row.getInt("state");
+			boolean locked = state == MovePage.ROW_NO || state == MovePage.ROW_WAIT;
+			boolean over = mouseX >= x && mouseX < x + lw && mouseY >= Math.max(ry, top) && mouseY < Math.min(ry + rowH, top + listH);
+			CopperStyle.rowBand(g, x, ry, lw, rowH - 1, i % 2 == 1, over && slot != selected, slot == selected);
+			CopperStyle.icon(g, "buildings", x + 5, ry + 3, 16);
+			int nameColor = locked ? CopperStyle.TUFF : CopperStyle.QUARTZ;
+			// the status at the right: a glyph and a word in its color
+			String glyph = switch (state) {
+				case MovePage.ROW_YES -> "good";
+				case MovePage.ROW_PLANNED -> "clock";
+				default -> "lock";
+			};
+			int color = switch (state) {
+				case MovePage.ROW_YES -> CopperStyle.VERDIGRIS;
+				case MovePage.ROW_PLANNED -> CopperStyle.LAPIS;
+				case MovePage.ROW_WAIT -> CopperStyle.LANTERN;
+				default -> CopperStyle.TUFF;
+			};
+			String word = Component.translatable("screen.aliveworkplace.move.state." + switch (state) {
+				case MovePage.ROW_YES -> "yes";
+				case MovePage.ROW_PLANNED -> "planned";
+				case MovePage.ROW_WAIT -> "wait";
+				default -> "no";
+			}).getString();
+			int ww = font.width(word);
+			int wx = x + lw - 4 - ww;
+			g.drawString(font, word, wx, ry + 7, color, false);
+			CopperStyle.glyph(g, glyph, wx - 11, ry + 7);
+			int textW = wx - 14 - (x + 25);
+			g.drawString(font, CopperStyle.trim(font, icon.getHoverName().getString(), textW), x + 25, ry + 2, nameColor, !locked);
+			// the line under it: why it can't move, else its size and where it stands
+			String sub;
+			if (locked) {
+				sub = moveWhy(row).getString();
+			} else {
+				List<Component> lore = loreOf(icon);
+				String size = row.contains("w") ? Component.translatable("screen.aliveworkplace.move.row.size", row.getInt("w"), row.getInt("d")).getString() : "";
+				String where = lore.isEmpty() ? "" : arg0(lore.get(0)).getString();
+				sub = size.isEmpty() ? where : where.isEmpty() ? size : size + " · " + where;
+			}
+			g.drawString(font, CopperStyle.trim(font, sub, textW), x + 25, ry + 12, locked ? CopperStyle.OFF_TEXT : CopperStyle.TUFF, false);
+			moveRows.add(new int[]{slot, x, Math.max(ry, top), lw, Math.min(ry + rowH, top + listH) - Math.max(ry, top)});
+			if (over) {
+				boardWhisper = locked ? Component.translatable("screen.aliveworkplace.move.whisper.locked", icon.getHoverName(), moveWhy(row))
+					: Component.translatable("screen.aliveworkplace.move.whisper.row", icon.getHoverName());
+			}
+		}
+		g.disableScissor();
+		CopperStyle.scrollbar(g, x + lw - 4, top, listH, moveListScroll, Math.max(0, content - listH), content, false);
+		// What happens (or why it can't move) for the row picked
+		CompoundTag picked = selected < 0 ? null : moveRow(menu.slots.get(selected).getItem());
+		if (sideW > 0) {
+			int sx = x + lw + 8;
+			if (picked == null) {
+				CopperStyle.whatHappens(g, font, Component.translatable("screen.aliveworkplace.move.what.none"), sx, y, sideW);
+			} else if (!movable(picked)) {
+				CopperStyle.refusal(g, font, Component.translatable("screen.aliveworkplace.move.why_heading", menu.slots.get(selected).getItem().getHoverName()),
+					moveWhy(picked), sx, y, sideW);
+			} else {
+				Component name = menu.slots.get(selected).getItem().getHoverName();
+				int bh = CopperStyle.whatHappens(g, font, Component.translatable("screen.aliveworkplace.move.what.list", name), sx, y, sideW);
+				List<Component> lore = loreOf(menu.slots.get(selected).getItem());
+				int ly = y + bh + 6;
+				for (Component line : lore) {
+					if (hasKey(List.of(line), "screen.aliveworkplace.move.click")) {
+						continue;
+					}
+					for (FormattedCharSequence part : font.split(line, sideW - 4)) {
+						if (ly + 9 > footY - 4) {
+							break;
+						}
+						g.drawString(font, part, sx + 2, ly, CopperStyle.TUFF, false);
+						ly += 10;
+					}
+				}
+			}
+		}
+		// Cancel, and the one copper button: Next
+		Component cancel = Component.translatable("screen.aliveworkplace.move.cancel");
+		moveButton(g, HIT_LIST_CANCEL, cancel, null, CopperStyle.Kind.NEUTRAL, false, x, footY, buttonW(cancel, null), mouseX, mouseY);
+		Component next = Component.translatable("screen.aliveworkplace.move.next.place");
+		int nw = Math.min(w / 2, buttonW(next, "more"));
+		moveButton(g, HIT_LIST_NEXT, next, "more", CopperStyle.Kind.COPPER, !movable(picked), x + w - nw, footY, nw, mouseX, mouseY);
+	}
+
+	// Steps 2 and 3: the picker.
+
 	private void renderMoveMap(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
 		moveHits.clear();
 		CompoundTag view = moveView();
-		int stepNow = moveStep();
-		// the steps
-		int gap = 10;
-		int tw = (w - 2 * gap) / 3;
-		for (int i = 0; i < 3; i++) {
-			int tx = x + i * (tw + gap);
-			Component label = Component.translatable("screen.aliveworkplace.move.tab" + (i + 1));
-			TableStyle.button(g, font, label, tx, y, tw, TableStyle.BUTTON_H, i + 1 == stepNow, false, i + 1 > stepNow);
-			if (i < 2) {
-				g.drawString(font, ">", tx + tw + (gap - font.width(">")) / 2, y + 3, TableStyle.SUBTITLE, false);
-			}
+		if (moveShownStep() == 3) {
+			renderMoveConfirm(g, x, y, w, h, mouseX, mouseY, view);
+			return;
 		}
-		int ly = y + TableStyle.BUTTON_H + 4;
-		ItemStack guide = menu.slots.get(MovePage.GUIDE).getItem();
-		for (FormattedCharSequence part : font.split(Component.literal(guide.getHoverName().getString()), w)) {
-			g.drawString(font, part, x, ly, stepNow == 3 ? MOVE_FITS : TableStyle.TITLE, false);
-			ly += 10;
-		}
-		ly += 3;
-		// the map
-		int s = Math.min(h - (ly - y) - 34, w - 170);
-		s = s >= 192 ? 192 : s >= 128 ? 128 : Math.max(64, s);
-		moveMapX = x;
-		moveMapY = ly;
-		moveMapS = s;
+		boardWhisper = Component.translatable("screen.aliveworkplace.move.whisper.place");
+		int footY = y + h - 15;
+		boolean small = compactRail();
+		int sideW = small ? Math.max(80, w * 40 / 100) : Math.max(118, w * 33 / 100);
+		int s = Math.max(48, Math.min(footY - 4 - y, w - sideW - 8));
 		List<Component> tip = null;
 		if (view != null && !view.isEmpty()) {
-			moveTexture(view);
-			moveFit(view);
-			g.fill(x - 1, ly - 1, x + s + 1, ly + s + 1, TableStyle.PANEL_EDGE);
-			g.blit(MOVE_MAP, x, ly, s, s, moveOriginX, moveOriginZ, moveWindow, moveWindow, MovePage.MAP, MovePage.MAP);
-			g.enableScissor(x, ly, x + s, ly + s);
-			int[] others = view.getIntArray("others");
-			List<Component> names = loreOf(menu.slots.get(MovePage.VIEW).getItem());
-			for (int i = 0; i + 3 < others.length; i += 4) {
-				int[] r = moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]);
-				outlined(g, r, 0xC0000000 | (MOVE_BUILDING & 0xFFFFFF), 0xFF2A140A);
-			}
-			int[] old = view.getIntArray("old");
-			int[] spot = view.getIntArray("spot");
-			int fit = view.getInt("fit");
-			int[] oldR = old.length == 4 ? moveRect(view, old[0], old[1], old[2], old[3]) : null;
-			if (oldR != null) {
-				outlined(g, oldR, 0x80FFD66B, MOVE_NOW);
-			}
-			int[] spotR = spot.length == 4 && fit != 1 ? moveRect(view, spot[0], spot[1], spot[2], spot[3]) : null;
-			if (spotR != null) {
-				int c = fit == 0 ? MOVE_FITS : MOVE_REFUSED;
-				outlined(g, spotR, 0x90000000 | (c & 0xFFFFFF), c);
-				// its front edge, in gold
-				switch (net.minecraft.core.Direction.from2DDataValue(view.getInt("front"))) {
-					case NORTH -> g.fill(spotR[0], spotR[1], spotR[2], spotR[1] + 2, MOVE_FRONT);
-					case SOUTH -> g.fill(spotR[0], spotR[3] - 2, spotR[2], spotR[3], MOVE_FRONT);
-					case WEST -> g.fill(spotR[0], spotR[1], spotR[0] + 2, spotR[3], MOVE_FRONT);
-					default -> g.fill(spotR[2] - 2, spotR[1], spotR[2], spotR[3], MOVE_FRONT);
+			tip = drawMoveMap(g, view, x, y, s, mouseX, mouseY, true);
+		}
+		int fit = view == null ? 1 : view.getInt("fit");
+		// the fit: green "Fits here", red "Refused here" with why, or "Pick a spot"
+		int sx = x + s + 8;
+		int sw = x + w - sx;
+		int sy = y;
+		ItemStack verdict = menu.slots.get(MovePage.VERDICT).getItem();
+		Component line = verdict.isEmpty() ? Component.empty() : verdict.getHoverName();
+		if (fit == 0) {
+			sy += CopperStyle.noteBox(g, font, Component.translatable("screen.aliveworkplace.move.fits_here"), line, "good", CopperStyle.VERDIGRIS,
+				CopperStyle.VERDIGRIS, sx, sy, sw);
+		} else if (fit == 2) {
+			sy += CopperStyle.refusal(g, font, Component.translatable("screen.aliveworkplace.move.refused_here"), line, sx, sy, sw);
+		} else {
+			ItemStack guide = menu.slots.get(MovePage.GUIDE).getItem();
+			sy += CopperStyle.whatHappens(g, font, Component.literal(guide.getHoverName().getString()), sx, sy, sw);
+		}
+		sy += 5;
+		// Rotate, its key, and Call off when a move is planned
+		Component rotate = Component.translatable("screen.aliveworkplace.move.rotate");
+		int rw = Math.min(sw - 18, buttonW(rotate, "refresh"));
+		moveButton(g, MovePage.ROTATE, rotate, "refresh", CopperStyle.Kind.NEUTRAL, false, sx, sy, rw, mouseX, mouseY);
+		CopperStyle.chip(g, font, "R", sx + rw + 4, sy + 1, CopperStyle.QUARTZ);
+		sy += 18;
+		if (!menu.slots.get(MovePage.CALL_OFF).getItem().isEmpty()) {
+			Component off = Component.translatable("screen.aliveworkplace.move.call_off");
+			moveButton(g, MovePage.CALL_OFF, off, "bad", CopperStyle.Kind.DANGER, false, sx, sy, Math.min(sw, buttonW(off, "bad")), mouseX, mouseY);
+			sy += 18;
+		}
+		// the preview key
+		if (sy + 46 < footY) {
+			sy += 2;
+			listHeading(g, Component.translatable("screen.aliveworkplace.move.key"), new int[]{sx, sy, sw, 10});
+			sy += 13;
+			String[] keys = {"fits", "refused", "now"};
+			for (String key : keys) {
+				int[] r = {sx, sy, sx + 10, sy + 10};
+				switch (key) {
+					case "fits" -> outlined(g, r, 0xA02B6E5C, CopperStyle.VERDIGRIS);
+					case "refused" -> hatched(g, r, CopperStyle.REDSTONE);
+					default -> dashed(g, r, CopperStyle.QUARTZ);
+				}
+				int ly = sy + 1;
+				for (FormattedCharSequence part : font.split(Component.translatable("screen.aliveworkplace.move.key." + key), sw - 14)) {
+					g.drawString(font, part, sx + 14, ly, CopperStyle.QUARTZ, false);
+					ly += 10;
+				}
+				sy = Math.max(sy + 13, ly + 3);
+				if (sy + 10 > footY) {
+					break;
 				}
 			}
-			// the Hall's bell, at three quarters' size
-			int[] hall = moveRect(view, view.getInt("hallX"), view.getInt("hallZ"), view.getInt("hallX"), view.getInt("hallZ"));
-			int bx = (hall[0] + hall[2]) / 2 - 6;
-			int by = (hall[1] + hall[3]) / 2 - 6;
-			g.pose().pushPose();
-			g.pose().translate(bx, by, 0);
-			g.pose().scale(0.75f, 0.75f, 1f);
-			g.renderItem(new ItemStack(net.minecraft.world.item.Items.BELL), 0, 0);
-			g.pose().popPose();
-			// the names, each where it covers no other name, box or the bell: inside its box if it fits, else above, else below
-			List<int[]> taken = new ArrayList<>();
-			int[] bell = {bx, by, bx + 12, by + 12};
-			taken.add(bell);
-			List<int[]> boxes = new ArrayList<>();
-			for (int i = 0; i + 3 < others.length; i += 4) {
-				boxes.add(moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]));
-			}
-			if (oldR != null) {
-				boxes.add(oldR);
-			}
-			if (spotR != null) {
-				boxes.add(spotR);
-			}
-			taken.addAll(boxes);
-			mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.hall").getString(), bell, false, 0xFFFFFFFF, taken);
-			if (spotR != null) {
-				mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.new").getString(), spotR, true, fit == 0 ? MOVE_FITS : MOVE_REFUSED, taken);
-			}
-			if (oldR != null) {
-				mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.now").getString(), oldR, true, MOVE_NOW, taken);
-			}
-			for (int i = 0; i + 3 < others.length && i / 4 < names.size(); i += 4) {
-				mapLabel(g, names.get(i / 4).getString(), boxes.get(i / 4), true, 0xFFFFFFFF, taken);
-			}
-			g.disableScissor();
-			moveHits.add(new int[]{-1, x, ly, s, s});
-			if (mouseX >= x && mouseX < x + s && mouseY >= ly && mouseY < ly + s) {
-				tip = mapTip(view, names, mouseX, mouseY);
-			}
 		}
-		// the legend and the hint under the map
-		int gy = ly + s + 4;
-		int gx = x;
-		String[] keys = {"now", "new", "building", "road", "front"};
-		int[] colors = {MOVE_NOW, MOVE_FITS, MOVE_BUILDING, MOVE_ROAD, MOVE_FRONT};
-		for (int i = 0; i < keys.length; i++) {
-			Component label = Component.translatable("screen.aliveworkplace.move.legend." + keys[i]);
-			int lw = 9 + font.width(label) + 6;
-			if (gx + lw > x + s + 4 && gx > x) {
-				gx = x;
-				gy += 10;
-			}
-			g.fill(gx, gy + 1, gx + 6, gy + 7, colors[i]);
-			g.drawString(font, label, gx + 9, gy, TableStyle.BODY, false);
-			gx += lw;
-		}
-		gy += 11;
-		for (FormattedCharSequence part : font.split(Component.translatable("screen.aliveworkplace.move.map.hint"), s + 4)) {
-			g.drawString(font, part, x, gy, TableStyle.FAINT, false);
-			gy += 9;
-		}
-		// the right side: what moves, where, why, the buttons and what happens
-		int rx = x + s + 10;
-		int rw = x + w - rx;
-		int ry = ly;
-		ItemStack header = menu.slots.get(MovePage.HEADER).getItem();
-		ry = wrapped(g, Component.translatable("screen.aliveworkplace.move.moving", header.getHoverName().getString()), rx, ry, rw, TableStyle.TITLE);
-		List<Component> lines = loreOf(guide);
-		int fit = view == null ? 1 : view.getInt("fit");
-		if (lines.size() > 1) {
-			ry = swatched(g, lines.get(0), MOVE_NOW, rx, ry, rw, TableStyle.BODY);
-			ry = swatched(g, lines.get(1), fit == 0 ? MOVE_FITS : fit == 2 ? MOVE_REFUSED : TableStyle.FAINT, rx, ry, rw, TableStyle.BODY);
-		}
-		ItemStack verdict = menu.slots.get(MovePage.VERDICT).getItem();
-		if (fit == 2 && !verdict.isEmpty()) {
-			ry = wrapped(g, verdict.getHoverName(), rx, ry, rw, MOVE_REFUSED);
-		}
-		ry += 3;
-		int bh = TableStyle.BUTTON_H + 1;
-		String front = view == null ? "north" : net.minecraft.core.Direction.from2DDataValue(view.getInt("front")).getName();
-		ry = moveButton(g, MovePage.ROTATE, Component.translatable("screen.aliveworkplace.move.rotate_button",
-			Component.translatable("screen.aliveworkplace.move.direction." + front)), false, false, rx, ry, rw, bh, mouseX, mouseY);
-		boolean ready = menu.slots.get(MovePage.CONFIRM).getItem().is(net.minecraft.world.item.Items.PISTON);
-		ry = moveButton(g, MovePage.CONFIRM, Component.translatable("screen.aliveworkplace.move.confirm"), ready, !ready, rx, ry, rw, bh, mouseX, mouseY);
-		ry = moveButton(g, MovePage.CANCEL, Component.translatable("screen.aliveworkplace.move.cancel"), false, false, rx, ry, rw, bh, mouseX, mouseY);
-		if (!menu.slots.get(MovePage.CALL_OFF).getItem().isEmpty()) {
-			ry = moveButton(g, MovePage.CALL_OFF, Component.translatable("screen.aliveworkplace.move.call_off"), false, false, rx, ry, rw, bh, mouseX, mouseY);
-		}
-		ry += 4;
-		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.move.what"), rx, ry);
-		ry += 11;
-		if (lines.size() > 4) {
-			ry = wrapped(g, lines.get(2), rx, ry, rw, TableStyle.BODY);
-			ry = wrapped(g, lines.get(3), rx, ry, rw, TableStyle.SUBTITLE);
-			ry = wrapped(g, lines.get(4), rx, ry, rw, lines.get(4).getString().equals(Component.translatable("screen.aliveworkplace.move.mover_here").getString())
-				? MOVE_FITS : 0xFFFFFF55);
-		}
-		if (tip != null) { // the buttons say what they do on their faces: only the map has a tooltip
+		// Back to the list, and the one copper button: Next to confirm
+		Component back = Component.translatable("screen.aliveworkplace.move.back_short");
+		moveButton(g, MovePage.CANCEL, back, null, CopperStyle.Kind.NEUTRAL, false, x, footY, buttonW(back, null), mouseX, mouseY);
+		Component next = Component.translatable("screen.aliveworkplace.move.next.confirm");
+		int nw = Math.min(sw, buttonW(next, "more"));
+		moveButton(g, HIT_TO_CONFIRM, next, "more", CopperStyle.Kind.COPPER, fit != 0, x + w - nw, footY, nw, mouseX, mouseY);
+		if (tip != null) {
 			g.renderComponentTooltip(font, tip, mouseX, mouseY);
 		}
+	}
+
+	private void renderMoveConfirm(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY, CompoundTag view) {
+		boardWhisper = Component.translatable("screen.aliveworkplace.move.whisper.confirm");
+		boolean small = compactRail();
+		int footY = y + h - 15;
+		int sideW = small ? 0 : Math.max(96, w * 34 / 100);
+		int lw = w - (sideW > 0 ? sideW + 8 : 0);
+		Component name = moveName();
+		// the question, at twice the size when it fits
+		String q = Component.translatable("screen.aliveworkplace.move.question", name).getString();
+		int ty = y;
+		if (font.width(q) * 2 <= lw) {
+			big(g, q, x, ty, CopperStyle.QUARTZ);
+			ty += 20;
+		} else {
+			g.drawString(font, CopperStyle.trim(font, q, lw), x, ty + 2, CopperStyle.QUARTZ, true);
+			ty += 14;
+		}
+		// From, To, Takes and Faces
+		List<Component> guide = loreOf(menu.slots.get(MovePage.GUIDE).getItem());
+		List<Component[]> facts = new ArrayList<>();
+		if (guide.size() > 3) {
+			facts.add(new Component[]{Component.translatable("screen.aliveworkplace.move.from"), arg0(guide.get(0))});
+			facts.add(new Component[]{Component.translatable("screen.aliveworkplace.move.to"), arg0(guide.get(1))});
+			facts.add(new Component[]{Component.translatable("screen.aliveworkplace.move.takes"), Component.translatable("screen.aliveworkplace.move.takes_value", arg0(guide.get(3)))});
+		}
+		facts.add(new Component[]{Component.translatable("screen.aliveworkplace.move.faces_label"),
+			Component.translatable("screen.aliveworkplace.move.direction." + moveFacing(view))});
+		int labelW = 0;
+		for (Component[] f : facts) {
+			labelW = Math.max(labelW, font.width(f[0]));
+		}
+		// each value wraps under itself (at most two lines) rather than being cut
+		int valueW = lw - labelW - 18;
+		int factsH = 6;
+		for (Component[] f : facts) {
+			factsH += Math.min(2, font.split(f[1], valueW).size()) * 10 + 1;
+		}
+		CopperStyle.well(g, x, ty, lw, factsH);
+		int fy = ty + 4;
+		for (int i = 0; i < facts.size(); i++) {
+			Component[] f = facts.get(i);
+			g.drawString(font, f[0], x + 5, fy, CopperStyle.TUFF, false);
+			List<FormattedCharSequence> parts = font.split(f[1], valueW);
+			for (int p = 0; p < Math.min(2, parts.size()); p++) {
+				g.drawString(font, parts.get(p), x + labelW + 12, fy, CopperStyle.QUARTZ, i == 1);
+				fy += 10;
+			}
+			fy += 1;
+		}
+		ty += factsH + 5;
+		// What happens
+		if (ty + 30 < footY) {
+			Component plan = Component.translatable("screen.aliveworkplace.move.plan");
+			g.enableScissor(x, ty, x + lw, footY - 3);
+			CopperStyle.whatHappens(g, font, plan, x, ty, lw);
+			g.disableScissor();
+		}
+		// a small map with From and To, and the checklist
+		List<Component> tip = null;
+		List<Component> confirmLore = loreOf(menu.slots.get(MovePage.CONFIRM).getItem());
+		boolean ready = menu.slots.get(MovePage.CONFIRM).getItem().is(net.minecraft.world.item.Items.PISTON);
+		if (sideW > 0) {
+			int sx = x + lw + 8;
+			int ms = Math.max(48, Math.min(sideW, (footY - y) - 44));
+			if (view != null && !view.isEmpty()) {
+				tip = drawMoveMap(g, view, sx, y, ms, mouseX, mouseY, false);
+			}
+			int cy = y + ms + 5;
+			boolean mover = !hasKey(confirmLore, "screen.aliveworkplace.move.needs_mover");
+			boolean idle = !hasKey(confirmLore, "message.aliveworkplace.move.under_way") && !hasKey(confirmLore, "message.aliveworkplace.move.putting_back");
+			boolean[] ok = {view != null && view.getInt("fit") == 0, mover, idle};
+			String[] keys = {"spot", "mover", "idle"};
+			for (int i = 0; i < 3; i++) {
+				if (cy + 9 > footY - 3) {
+					break;
+				}
+				CopperStyle.glyph(g, ok[i] ? "good" : "bad", sx, cy);
+				for (FormattedCharSequence part : font.split(Component.translatable("screen.aliveworkplace.move.check." + keys[i] + (ok[i] ? "" : "_no")), sideW - 12)) {
+					if (cy + 9 > footY - 3) {
+						break;
+					}
+					g.drawString(font, part, sx + 11, cy, ok[i] ? CopperStyle.VERDIGRIS : CopperStyle.REDSTONE, false);
+					cy += 10;
+				}
+				cy += 2;
+			}
+		}
+		// Back, Cancel, and the one copper button: Move building
+		Component back = Component.translatable("screen.aliveworkplace.move.back_short");
+		moveButton(g, HIT_TO_PLACE, back, null, CopperStyle.Kind.NEUTRAL, false, x, footY, buttonW(back, null), mouseX, mouseY);
+		Component go = Component.translatable("screen.aliveworkplace.move.do");
+		int gw = Math.min(w / 2, buttonW(go, "good"));
+		moveButton(g, MovePage.CONFIRM, go, "good", CopperStyle.Kind.COPPER, !ready, x + w - gw, footY, gw, mouseX, mouseY);
+		Component cancel = Component.translatable("screen.aliveworkplace.move.cancel");
+		int cw = buttonW(cancel, null);
+		moveButton(g, MovePage.CANCEL, cancel, null, CopperStyle.Kind.NEUTRAL, false, x + w - gw - 4 - cw, footY, cw, mouseX, mouseY);
+		if (tip != null) {
+			g.renderComponentTooltip(font, tip, mouseX, mouseY);
+		}
+	}
+
+	/**
+	 * The village map at ({@code x}, {@code y}), {@code s} a side: the land, every other building, the building now in a
+	 * dashed frame, the new spot (green where it fits, red hatched where it's refused, its front in Lantern) and the Hall's
+	 * bell; with {@code clicks} a click puts the spot there. The labels: Now here / Fits / Refused (From / To without
+	 * clicks, the confirm's small map). Returns the tooltip under the mouse, or null.
+	 */
+	private List<Component> drawMoveMap(GuiGraphics g, CompoundTag view, int x, int y, int s, int mouseX, int mouseY, boolean clicks) {
+		moveMapX = x;
+		moveMapY = y;
+		moveMapS = s;
+		moveTexture(view);
+		moveFit(view);
+		g.fill(x - 1, y - 1, x + s + 1, y + s + 1, CopperStyle.VOID);
+		g.blit(MOVE_MAP, x, y, s, s, moveOriginX, moveOriginZ, moveWindow, moveWindow, MovePage.MAP, MovePage.MAP);
+		g.enableScissor(x, y, x + s, y + s);
+		int[] others = view.getIntArray("others");
+		List<Component> names = loreOf(menu.slots.get(MovePage.VIEW).getItem());
+		List<int[]> boxes = new ArrayList<>();
+		for (int i = 0; i + 3 < others.length; i += 4) {
+			int[] r = moveRect(view, others[i], others[i + 1], others[i + 2], others[i + 3]);
+			boxes.add(r);
+			outlined(g, r, 0xE0000000 | (MOVE_BUILDING & 0xFFFFFF), 0xFF2A140A);
+		}
+		int[] old = view.getIntArray("old");
+		int[] spot = view.getIntArray("spot");
+		int fit = view.getInt("fit");
+		int[] oldR = old.length == 4 ? moveRect(view, old[0], old[1], old[2], old[3]) : null;
+		if (oldR != null) {
+			outlined(g, oldR, 0xC0000000 | (MOVE_BUILDING & 0xFFFFFF), 0xFF2A140A);
+			dashed(g, new int[]{oldR[0] - 1, oldR[1] - 1, oldR[2] + 1, oldR[3] + 1}, CopperStyle.QUARTZ);
+		}
+		int[] spotR = spot.length == 4 && fit != 1 ? moveRect(view, spot[0], spot[1], spot[2], spot[3]) : null;
+		if (spotR != null) {
+			if (fit == 0) {
+				outlined(g, spotR, 0xA02B6E5C, CopperStyle.VERDIGRIS);
+				if (spotR[2] - spotR[0] >= 12 && spotR[3] - spotR[1] >= 12) {
+					CopperStyle.glyph(g, "good", (spotR[0] + spotR[2]) / 2 - 4, (spotR[1] + spotR[3]) / 2 - 4);
+				}
+			} else {
+				hatched(g, spotR, CopperStyle.REDSTONE);
+			}
+			// its front edge, in Lantern
+			switch (net.minecraft.core.Direction.from2DDataValue(view.getInt("front"))) {
+				case NORTH -> g.fill(spotR[0], spotR[1], spotR[2], spotR[1] + 2, CopperStyle.LANTERN);
+				case SOUTH -> g.fill(spotR[0], spotR[3] - 2, spotR[2], spotR[3], CopperStyle.LANTERN);
+				case WEST -> g.fill(spotR[0], spotR[1], spotR[0] + 2, spotR[3], CopperStyle.LANTERN);
+				default -> g.fill(spotR[2] - 2, spotR[1], spotR[2], spotR[3], CopperStyle.LANTERN);
+			}
+		}
+		// the Hall's bell, at three quarters' size
+		int[] hall = moveRect(view, view.getInt("hallX"), view.getInt("hallZ"), view.getInt("hallX"), view.getInt("hallZ"));
+		int bx = (hall[0] + hall[2]) / 2 - 6;
+		int by = (hall[1] + hall[3]) / 2 - 6;
+		g.pose().pushPose();
+		g.pose().translate(bx, by, 0);
+		g.pose().scale(0.75f, 0.75f, 1f);
+		g.renderItem(new ItemStack(net.minecraft.world.item.Items.BELL), 0, 0);
+		g.pose().popPose();
+		List<int[]> taken = new ArrayList<>();
+		int[] bell = {bx, by, bx + 12, by + 12};
+		taken.add(bell);
+		taken.addAll(boxes);
+		if (oldR != null) {
+			taken.add(oldR);
+		}
+		if (spotR != null) {
+			taken.add(spotR);
+		}
+		if (spotR != null) {
+			mapLabel(g, Component.translatable(clicks ? (fit == 0 ? "screen.aliveworkplace.move.label.fits" : "screen.aliveworkplace.move.label.refused")
+				: "screen.aliveworkplace.move.to").getString(), spotR, false, fit == 0 ? CopperStyle.VERDIGRIS : CopperStyle.REDSTONE, taken);
+		}
+		if (oldR != null) {
+			mapLabel(g, Component.translatable(clicks ? "screen.aliveworkplace.move.label.now" : "screen.aliveworkplace.move.from").getString(), oldR, false,
+				CopperStyle.QUARTZ, taken);
+		}
+		if (clicks) {
+			mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.hall").getString(), bell, false, CopperStyle.QUARTZ, taken, true);
+			for (int i = 0; i < boxes.size() && i < names.size(); i++) {
+				mapLabel(g, names.get(i).getString(), boxes.get(i), true, CopperStyle.TUFF, taken, true);
+			}
+		}
+		g.disableScissor();
+		if (clicks) {
+			// the scale: a bar 16 blocks long
+			int step = Math.max(1, view.getInt("step"));
+			int bar = (int) Math.round(16.0 * s / (moveWindow * step));
+			String scale = Component.translatable("screen.aliveworkplace.hall.map.scale", 16).getString();
+			if (bar >= 4 && bar + font.width(scale) + 10 < s) {
+				g.fill(x + 2, y + s - 13, x + bar + font.width(scale) + 10, y + s - 2, 0xC0000000);
+				g.fill(x + 4, y + s - 8, x + 4 + bar, y + s - 6, CopperStyle.QUARTZ);
+				g.drawString(font, scale, x + bar + 7, y + s - 11, CopperStyle.QUARTZ, false);
+			}
+			moveHits.add(new int[]{HIT_MAP, x, y, s, s});
+			if (mouseX >= x && mouseX < x + s && mouseY >= y && mouseY < y + s) {
+				return mapTip(view, names, mouseX, mouseY);
+			}
+		}
+		return null;
+	}
+
+	/** A refused spot: a Redstone frame over red, hatched with diagonal lines every 4 pixels. */
+	private static void hatched(GuiGraphics g, int[] r, int color) {
+		g.fill(r[0], r[1], r[2], r[3], 0x50000000 | (color & 0xFFFFFF));
+		for (int py = r[1] + 1; py < r[3] - 1; py++) {
+			for (int px = r[0] + 1; px < r[2] - 1; px++) {
+				if (((px - r[0]) + (py - r[1])) % 4 == 0) {
+					g.fill(px, py, px + 1, py + 1, 0xC0000000 | (color & 0xFFFFFF));
+				}
+			}
+		}
+		g.renderOutline(r[0], r[1], r[2] - r[0], r[3] - r[1], color);
+	}
+
+	/** Where the building stands now: a dashed frame (2 on, 2 off). */
+	private static void dashed(GuiGraphics g, int[] r, int color) {
+		for (int i = r[0]; i < r[2]; i += 4) {
+			g.fill(i, r[1], Math.min(i + 2, r[2]), r[1] + 1, color);
+			g.fill(i, r[3] - 1, Math.min(i + 2, r[2]), r[3], color);
+		}
+		for (int j = r[1]; j < r[3]; j += 4) {
+			g.fill(r[0], j, r[0] + 1, Math.min(j + 2, r[3]), color);
+			g.fill(r[2] - 1, j, r[2], Math.min(j + 2, r[3]), color);
+		}
+	}
+
+	/** Picks step 1's row {@code slot} as a click on it does (the screenshot harness); false until the list shows it. */
+	public boolean moveSelect(int slot) {
+		if (!moveList() || !moveRowSlots().contains(slot)) {
+			return false;
+		}
+		moveSelected = slot;
+		return true;
+	}
+
+	/** Next on step 2: step 3 shows once the spot fits (the screenshot harness too); true when it did. */
+	public boolean moveNext() {
+		CompoundTag view = moveView();
+		if (moveMap() && view != null && view.getInt("fit") == 0) {
+			moveConfirming = true;
+			return true;
+		}
+		return false;
+	}
+
+	/** Which step the Move page shows (1 to 3), or 0 when it isn't open (the screenshot harness). */
+	public int moveStepShown() {
+		return moveMode() ? moveShownStep() : 0;
 	}
 
 	/**
@@ -1209,27 +1785,6 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		taken.add(new int[]{at[0], at[1], at[0] + w, at[1] + h});
 	}
 
-	private int wrapped(GuiGraphics g, Component text, int x, int y, int w, int color) {
-		for (FormattedCharSequence part : font.split(Component.literal(text.getString()), w)) {
-			g.drawString(font, part, x, y, color, false);
-			y += 10;
-		}
-		return y;
-	}
-
-	/** A line after a small square in {@code swatch} (the map's colour for it). */
-	private int swatched(GuiGraphics g, Component text, int swatch, int x, int y, int w, int color) {
-		g.fill(x, y + 1, x + 6, y + 7, swatch);
-		return wrapped(g, text, x + 9, y, w - 9, color);
-	}
-
-	private int moveButton(GuiGraphics g, int slot, Component label, boolean on, boolean off, int x, int y, int w, int h, int mouseX, int mouseY) {
-		boolean over = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + h - 1;
-		TableStyle.button(g, font, label, x, y, w, h - 1, on, over, off);
-		moveHits.add(new int[]{slot, x, y, w, h - 1});
-		return y + h + 1;
-	}
-
 	/** What is under the mouse on the map: the new spot, where it stands now, a building, the Hall, a road, water or ground. */
 	private List<Component> mapTip(CompoundTag view, List<Component> names, int mouseX, int mouseY) {
 		int[] at = moveBlockAt(view, mouseX, mouseY);
@@ -1281,19 +1836,38 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	private boolean moveMapClicked(double mx, double my, int button) {
 		for (int[] hit : moveHits) {
 			if (mx >= hit[1] && mx < hit[1] + hit[3] && my >= hit[2] && my < hit[2] + hit[4]) {
-				if (minecraft != null) {
-					minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
-				}
-				if (hit[0] < 0) {
-					int[] at = moveBlockAt(moveView(), mx, my);
-					menuButton(MovePage.MAP_CLICK + at[3] * MovePage.MAP + at[2]);
-				} else {
-					press(hit[0], button, false);
-				}
+				click();
+				moveHit(hit[0], mx, my, button);
+				return true;
+			}
+		}
+		for (int[] row : moveRows) {
+			if (mx >= row[1] && mx < row[1] + row[3] && my >= row[2] && my < row[2] + row[4]) {
+				click();
+				moveSelected = row[0]; // picked; Next (or Enter) opens it
 				return true;
 			}
 		}
 		return false;
+	}
+
+	private void moveHit(int hit, double mx, double my, int button) {
+		switch (hit) {
+			case HIT_MAP -> {
+				int[] at = moveBlockAt(moveView(), mx, my);
+				menuButton(MovePage.MAP_CLICK + at[3] * MovePage.MAP + at[2]);
+			}
+			case HIT_TO_CONFIRM -> moveNext();
+			case HIT_TO_PLACE -> moveConfirming = false;
+			case HIT_LIST_NEXT -> {
+				int slot = moveSelectedSlot();
+				if (slot >= 0) {
+					press(slot, 0, false);
+				}
+			}
+			case HIT_LIST_CANCEL -> open(Section.BUILDINGS);
+			default -> press(hit, button, false);
+		}
 	}
 
 	/** Where on the screen the map shows block ({@code x}, {@code z}) (the screenshot harness points there), or null off the map. */
@@ -1605,10 +2179,18 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	@Override
 	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
 		boardWhisper = null;
+		if (!moveMap()) {
+			moveConfirming = false;
+		}
 		if (moveMap()) {
 			renderMoveMap(g, x, y, w, h, mouseX, mouseY);
 			return;
 		}
+		if (moveList()) {
+			renderMoveList(g, x, y, w, h, mouseX, mouseY);
+			return;
+		}
+		moveSelected = -1;
 		Section board = board();
 		if (board == Section.OVERVIEW) {
 			renderOverviewBoard(g, x, y, w, h, mouseX, mouseY);
@@ -1831,7 +2413,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyClicked(double mx, double my, int button) {
-		if (moveMap()) {
+		if (moveMode()) {
 			return moveMapClicked(mx, my, button);
 		}
 		Section board = board();
@@ -1898,6 +2480,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (board() == Section.OVERVIEW) {
 			return true;
 		}
+		if (moveList()) {
+			moveListScroll = Math.max(0, moveListScroll - (int) Math.round(scrollY * 22));
+			return true;
+		}
 		if (moveMap()) {
 			if (mx >= moveMapX && mx < moveMapX + moveMapS && my >= moveMapY && my < moveMapY + moveMapS) {
 				moveZoom = scrollY > 0 ? 0 : MovePage.MAP; // the wheel zooms out to the whole map, and back in to the village
@@ -1910,6 +2496,22 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
+		if (moveMode() && (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER)) {
+			int step = moveShownStep(); // Enter: Next, or Move building (47.3)
+			int picked = moveSelectedSlot();
+			if (step == 1 && picked >= 0 && movable(moveRow(menu.slots.get(picked).getItem()))) {
+				press(picked, 0, false);
+			} else if (step == 2) {
+				moveNext();
+			} else if (step == 3 && menu.slots.get(MovePage.CONFIRM).getItem().is(net.minecraft.world.item.Items.PISTON)) {
+				press(MovePage.CONFIRM, 0, false);
+			}
+			return true;
+		}
+		if (moveMap() && moveShownStep() == 2 && key == org.lwjgl.glfw.GLFW.GLFW_KEY_R) {
+			press(MovePage.ROTATE, 0, false); // R: a quarter turn
+			return true;
+		}
 		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && customBody() && openUuid != null) {
 			if (jobListOpenElsewhere(null)) {
 				menuButton(HallJobs.CLOSE);

@@ -42,6 +42,9 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- Moving a building in Copperline: the Village Hall's Move page shows its three steps on the rail with "Your move", a
+  table of buildings saying which can move and why not, the village map with the new spot green where it fits and red
+  hatched where it can't go, and "Move the Starter Cottage?" with From, To, a checklist and one copper Move building (47.3).
 - The Village Hall in Copperline (47.2): the Overview has the village's name and rank, four cards (People, Mood, Food,
   Defense), "Needs you" (each line takes you where to sort it out) and "At work now"; People is a Copperline table with
   mood faces and count tags; the Map section draws the village from above with its buildings, layers to switch and the

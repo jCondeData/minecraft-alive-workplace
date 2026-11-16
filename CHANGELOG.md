@@ -46,6 +46,14 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The Chronicle, the list menus and the Pokémon Trader in Copperline (48.4): the Village Hall's Chronicle has a Show
+  column (All, People, Building, Trade, Festivals, Defense, Stories, each with its count; a click lists only that
+  kind), the entries newest first under day headers ("DAY 47 · AUTUMN 5"), and a click opens an entry to its whole text;
+  the lintel reads "Oakhaven · 128 entries since day 1". Every list menu (the Move Tutor, the daycares, the Professor,
+  the Innkeeper, Research, the Smith's orders, the builder's pickers, the shops and the Ferry) has its tabs down a rail
+  of icons on the left (the line at the foot names the one under the mouse) and the list beside them. The Pokémon Trader has the trader's name on the plaque,
+  today's offers and the book on the lintel, a close X, and a whisper line that names the offer under the mouse and
+  its price.
 - The Storehouse board in Copperline (47.4): a table of what's needed with a bar of how much the store holds, who
   needs it and who brings it ("Nobody: no Glassblower" in red), Give / Stocked / Have 0 on each row, a rail that filters
   by Builders, Workers, Kitchen and Projects with Missing and I carry toggles, "In your pack" and one copper Give all

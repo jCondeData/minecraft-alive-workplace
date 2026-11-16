@@ -544,6 +544,13 @@ SCENES = [
        ("02_card_refused", "The mouse on the grayed-out button: why it can't be used"),
        ("03_card_toast", "A builder's finished toast"),
        ("04_card_compact", "The card at 320x180 (GUI scale 3)")]),
+    # 48.4: the Chronicle like its board, and the list menus' tabs on the rail
+    S("copperline_chronicle", "Village Hall", "Copperline: the Chronicle and the list menus",
+      "the Village Hall's Chronicle in Copperline: the plaque, the village and its count of entries on the lintel, the Show column with each group's count, the entries newest first under day headers, the raid's entry open to its whole text; the Defense filter clicked shows only the raid and the sighting; at 320x180 the column turns to icons; then the Research menu, a list menu, with its tab on the rail", 15,
+      [("01_chronicle", "The Chronicle, the raid's entry open"),
+       ("02_chronicle_defense", "Show: Defense, only the defense entries"),
+       ("03_chronicle_compact", "The Chronicle at 320x180 (GUI scale 3)"),
+       ("04_list_rail", "A list menu (Research) with its tab on the rail")]),
     # Village-wide
     # The Village Hall in Copperline (ROADMAP 47.2): the Overview, a villager at work opened in People, the Map, GUI scale 3
     S("hall", "Village Hall", "The Village Hall in Copperline", "the Village Hall opened on its Overview, a villager at work opened in People, "

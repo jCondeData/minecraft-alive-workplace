@@ -1,9 +1,10 @@
 package io.github.jcondedata.aliveworkplace.client;
 
-import io.github.jcondedata.aliveworkplace.card.StatusCard;
 import io.github.jcondedata.aliveworkplace.trainer.TrainerMenu;
 import io.github.jcondedata.aliveworkplace.trainer.TrainerScreens;
 import io.github.jcondedata.aliveworkplace.trainer.TrainerView;
+import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
+import io.github.jcondedata.aliveworkplace.ui.TrainerLayout;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -14,31 +15,32 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 
 /**
- * The Trainer screen (ROADMAP 43.1, {@code docs/design/M42/trainer_a.png}), in the Village Hall's look ({@link TableStyle}):
- * on the left the trainer's name, title and rank, their portrait, the player's record against them, today's line and the
- * rules; on the right the reward, the team (the real Pokémon models; the ones not seen yet as "???"), the player's party
- * with a line each, and Challenge, Trade and Close. Challenge is grayed out with the reason under it when the trainer
- * can't battle now. Everything shown comes from the server ({@link TrainerView}); the buttons are menu-button clicks.
+ * The Trainer screen (ROADMAP 43.1) in Copperline (48.2, {@code docs/design/copperline/boards/Trainer.png}): the plaque
+ * with the trainer's title, the lintel with their rank and the close X; on the rail their portrait (the real model) with
+ * their name and title, the player's record against them and today's line (a glyph, a word and a color), and Challenge
+ * (the one copper button), Trade and Close at its foot; on the stage the reward, the team as cards (the real Pokémon
+ * models; the ones not seen yet as "???"), the player's party with a status each and the rules, scrolled when they don't
+ * fit; the whisper line says what the thing under the mouse is or does. Challenge is grayed out with the reason in a
+ * refusal box at the stage's top when the trainer can't battle now. Everything shown comes from the server
+ * ({@link TrainerView}); the buttons are menu-button clicks. The boxes come from {@link TrainerLayout}.
  */
 public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
-	private static final int SIDE_W = 112;
-	private static final int CELL_H = 34;
-	private static final int PARTY_ROW = 11;
-	private static final int BUTTON_H = 16;
-	private static final int MAX_H = 262;
+	private static final int[] IDS = {TrainerMenu.CHALLENGE, TrainerMenu.TRADE, TrainerMenu.CLOSE};
+	private static final int PARTY_ROW = 12;
 
-	private int panelW;
-	private int panelH;
-	/** Each button's box this frame: id, x, y, w. */
-	private final List<int[]> buttons = new ArrayList<>();
-	/** Each team cell's box this frame: index, x, y, w. */
-	private final List<int[]> cells = new ArrayList<>();
+	private TrainerLayout.Boxes boxes;
+	private Component[] labels;
+	/** Each team card's box this frame (in screen pixels, after scrolling), by the team's order. */
+	private final List<int[]> cards = new ArrayList<>();
+	private int scroll;
+	private int contentH;
+	private Component whisper = Component.empty();
 
 	public TrainerScreen(TrainerMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -50,11 +52,21 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 
 	@Override
 	protected void init() {
-		panelW = TableStyle.panelWidth(width);
-		panelH = Math.min(height - 16, MAX_H);
-		imageWidth = panelW;
-		imageHeight = panelH;
+		labels = new Component[TrainerScreens.BUTTON_KEYS.length];
+		int[] need = new int[labels.length];
+		for (int i = 0; i < labels.length; i++) {
+			labels[i] = Component.translatable(TrainerScreens.BUTTON_KEYS[i]);
+			need[i] = TableStyle.buttonWidth(font, labels[i]);
+		}
+		boxes = TrainerLayout.of(width, height, font.width(title), need);
+		imageWidth = boxes.win()[2];
+		imageHeight = boxes.win()[3];
 		super.init();
+	}
+
+	/** The boxes the screen draws in and takes its clicks with (the screenshot scene checks them). */
+	public TrainerLayout.Boxes boxes() {
+		return boxes;
 	}
 
 	@Override
@@ -69,201 +81,304 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		renderBlurredBackground(partialTick);
 		renderMenuBackground(g);
-		int left = leftPos;
-		int top = topPos;
-		TableStyle.panel(g, left, top, panelW, panelH);
-		renderSide(g, left + 6, top + 6, SIDE_W, panelH - 12 - 12, mouseX, mouseY);
-		Component tooltip = renderMain(g, left + 6 + SIDE_W + 10, top + 8, panelW - SIDE_W - 6 - 10 - 8, mouseX, mouseY);
-		TableStyle.footerHint(g, font, Component.translatable("screen.aliveworkplace.trainer.hint"), left + 8, top + panelH - 12, panelW - 16);
-		if (tooltip != null) {
-			g.renderTooltip(font, font.split(tooltip, 200), mouseX, mouseY);
-		} else {
-			int cell = cellAt(mouseX, mouseY);
-			if (cell >= 0) {
-				TrainerView.TeamSlot slot = view().team().get(cell);
-				List<Component> lines = new ArrayList<>();
-				if (slot.hidden()) {
-					lines.add(Component.translatable("screen.aliveworkplace.trainer.team.unseen"));
-				} else {
-					lines.add(slot.icon().getHoverName());
-					lines.add(Component.translatable("screen.aliveworkplace.trainer.level", slot.level()).withColor(TableStyle.SUBLINE));
-					if (slot.scaled()) {
-						lines.add(Component.translatable("screen.aliveworkplace.trainer.team.scaled").withColor(TrainerView.ORANGE));
-					}
-				}
-				g.renderComponentTooltip(font, lines, mouseX, mouseY);
-			}
+		whisper = Component.empty();
+		int[] win = boxes.win();
+		CopperStyle.window(g, win[0], win[1], win[2], win[3]);
+		boolean overClose = CopperLayout.inside(boxes.close(), mouseX, mouseY);
+		int[] plaque = CopperStyle.plaque(g, font, title, win);
+		CopperStyle.lintel(g, font, win, plaque, view().rank(), overClose);
+		if (overClose) {
+			whisper = Component.translatable("screen.aliveworkplace.trainer.whisper.close");
+		} else if (CopperLayout.inside(boxes.lintelText(), mouseX, mouseY)) {
+			whisper = view().rank();
 		}
+		renderRail(g, mouseX, mouseY);
+		renderStage(g, mouseX, mouseY);
+		renderButtons(g, mouseX, mouseY);
+		int[] w = boxes.whisper();
+		Component text = whisper.getString().isEmpty() ? Component.translatable("screen.aliveworkplace.trainer.hint") : whisper;
+		CopperStyle.whisper(g, font, text, w[0] + 2, w[1] + 3, w[2] - 4, boxes.compact());
 	}
 
-	/** The left column: who the trainer is, the portrait, the record, today and the rules. */
-	private void renderSide(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
-		TableStyle.listBackground(g, x, y, w, h);
-		int tx = x + 6;
-		int tw = w - 12;
-		int ty = y + 6;
-		g.drawString(font, TableStyle.trim(font, view().name(), tw), tx, ty, TableStyle.TITLE, false);
-		ty += 11;
-		g.drawString(font, TableStyle.trim(font, view().title(), tw), tx, ty, TableStyle.NAME, false);
-		ty += 11;
-		g.drawString(font, TableStyle.trim(font, view().rank().getString(), tw), tx, ty, TableStyle.SUBTITLE, false);
-		ty += 14;
-		int pw = 50;
-		int ph = Math.max(40, Math.min(66, h - 140));
-		int px = x + (w - pw) / 2;
-		g.fill(px - 1, ty - 1, px + pw + 1, ty + ph + 1, TableStyle.PANEL_EDGE);
-		g.fill(px, ty, px + pw, ty + ph, TableStyle.CELL_BG);
+	/** The rail: the portrait with the name and title beside it, the record and today under them. */
+	private void renderRail(GuiGraphics g, int mouseX, int mouseY) {
+		int[] r = boxes.rail();
+		CopperStyle.panel(g, r[0], r[1], r[2], r[3]);
+		int[] p = boxes.portrait();
+		CopperStyle.well(g, p[0], p[1], p[2], p[3]);
 		Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(view().entityId());
 		if (entity instanceof LivingEntity living) {
-			InventoryScreen.renderEntityInInventoryFollowsMouse(g, px, ty, px + pw, ty + ph, ph * 4 / 9, 0.0625f, mouseX, mouseY, living);
+			InventoryScreen.renderEntityInInventoryFollowsMouse(g, p[0] + 1, p[1] + 1, p[0] + p[2] - 1, p[1] + p[3] - 1, p[3] * 4 / 9,
+				0.0625f, mouseX, mouseY, living);
 		}
-		ty += ph + 8;
-		ty = field(g, Component.translatable("screen.aliveworkplace.trainer.record"), view().record(), TableStyle.NAME, tx, ty, tw);
-		ty = field(g, Component.translatable("screen.aliveworkplace.trainer.today"), view().today(), view().todayColor(), tx, ty, tw);
-		field(g, Component.translatable("screen.aliveworkplace.trainer.rules_heading"), view().rules(), TableStyle.NAME, tx, ty, tw);
+		int[] n = boxes.nameBox();
+		CopperStyle.label(g, font, view().name().getString(), n[0], n[1] + 2, n[2], CopperStyle.QUARTZ);
+		g.drawString(font, CopperStyle.trim(font, view().title().getString(), n[2]), n[0], n[1] + 13, CopperStyle.TUFF, false);
+		if (CopperLayout.inside(p, mouseX, mouseY) || CopperLayout.inside(n, mouseX, mouseY)) {
+			whisper = Component.translatable("screen.aliveworkplace.trainer.whisper.trainer", view().name(), view().title());
+		}
+
+		int[] t = boxes.railText();
+		if (t[3] <= 0) {
+			return;
+		}
+		g.enableScissor(t[0], t[1], t[0] + t[2], t[1] + t[3]);
+		int y = t[1];
+		int lines = boxes.compact() ? 1 : 2;
+		int top = y;
+		y = field(g, Component.translatable("screen.aliveworkplace.trainer.record"), view().record(), CopperStyle.QUARTZ, null, t[0], y, t[2], lines);
+		if (mouseY >= top && mouseY < y && CopperLayout.inside(t, mouseX, mouseY)) {
+			whisper = Component.translatable("screen.aliveworkplace.trainer.whisper.record", view().name(), view().record());
+		}
+		top = y;
+		CopperStyle.Status today = status(view().todayColor());
+		y = field(g, Component.translatable("screen.aliveworkplace.trainer.today"), view().today(), today.color, today, t[0], y, t[2], lines);
+		if (mouseY >= top && mouseY < y && CopperLayout.inside(t, mouseX, mouseY)) {
+			whisper = view().today();
+		}
+		g.disableScissor();
 	}
 
-	/** A heading in grey-blue and its value (wrapped) under it; returns where the next one goes. */
-	private int field(GuiGraphics g, Component heading, Component value, int color, int x, int y, int w) {
-		g.drawString(font, heading, x, y, TableStyle.SUBTITLE, false);
+	/** A Tuff heading and its value under it (a status's glyph before it), at most {@code lines} lines, cut with "..."; returns where the next goes. */
+	private int field(GuiGraphics g, Component heading, Component value, int color, CopperStyle.Status status, int x, int y, int w,
+		int lines) {
+		g.drawString(font, CopperStyle.trim(font, heading.getString(), w), x, y, CopperStyle.TUFF, false);
 		y += 10;
-		for (FormattedCharSequence line : font.split(value, w)) {
-			g.drawString(font, line, x, y, color, false);
-			y += 10;
+		int vx = x;
+		if (status != null) {
+			g.blitSprite(status.glyph, x, y, 8, 8);
+			vx += 10;
 		}
-		return y + 5;
+		y = wrapped(g, value, color, vx, y, x + w - vx, lines);
+		return y + 4;
 	}
 
-	/** The right side: the reward, the team, the party and the buttons; returns the tooltip of what's under the mouse, if any. */
-	private Component renderMain(GuiGraphics g, int x, int y, int w, int mouseX, int mouseY) {
-		TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.trainer.challenge_heading", view().name()), x, y);
-		y += 11;
-		for (FormattedCharSequence line : font.split(view().reward(), w)) {
-			g.drawString(font, line, x, y, TableStyle.BODY, false);
+	/** {@code text} wrapped to {@code w}, at most {@code lines} lines, the last cut with "..." if more was left; returns where the next goes. */
+	private int wrapped(GuiGraphics g, Component text, int color, int x, int y, int w, int lines) {
+		List<FormattedCharSequence> split = font.split(text, w);
+		if (split.size() <= lines) {
+			for (FormattedCharSequence line : split) {
+				g.drawString(font, line, x, y, color, false);
+				y += 10;
+			}
+			return y;
+		}
+		// Cut: the lines that fit whole, then the rest of the text on the last line ending with "...".
+		String all = text.getString();
+		int used = 0;
+		for (int i = 0; i < lines - 1; i++) {
+			String line = font.plainSubstrByWidth(all.substring(used), w);
+			int cut = line.lastIndexOf(' ');
+			line = cut > 0 && used + line.length() < all.length() ? line.substring(0, cut + 1) : line;
+			g.drawString(font, line.stripTrailing(), x, y, color, false);
+			used += line.length();
 			y += 10;
 		}
-		y += 6;
-		cells.clear();
-		if (!view().team().isEmpty()) {
-			TableStyle.heading(g, font, view().teamHeading(), x, y);
-			y += 12;
-			int n = view().team().size();
-			int gap = 4;
-			int cw = Math.min(48, (w - gap * (Math.max(6, n) - 1)) / Math.max(6, n));
-			int hovered = cellAt(mouseX, mouseY);
-			for (int i = 0; i < n; i++) {
-				int cx = x + i * (cw + gap);
-				cells.add(new int[]{i, cx, y, cw});
-				teamCell(g, view().team().get(i), cx, y, cw, i == hovered);
+		g.drawString(font, CopperStyle.trim(font, all.substring(Math.min(used, all.length())), w), x, y, color, false);
+		return y + 10;
+	}
+
+	/** The stage: the refusal (when Challenge is off), the reward, the team, the party and the rules, scrolled to {@link #scroll}. */
+	private void renderStage(GuiGraphics g, int mouseX, int mouseY) {
+		int[] s = boxes.stage();
+		int[] c = boxes.content();
+		g.enableScissor(s[0], s[1], s[0] + s[2], s[1] + s[3]);
+		int x = c[0];
+		int w = c[2] - 2;
+		int y0 = c[1] - scroll;
+		int y = y0;
+		boolean inStage = CopperLayout.inside(c, mouseX, mouseY);
+		if (!view().canChallenge()) {
+			int top = y;
+			y += CopperStyle.refusal(g, font, Component.translatable("screen.aliveworkplace.trainer.cant_challenge"), view().refusal(), x, y, w) + 6;
+			if (inStage && mouseY >= top && mouseY < y) {
+				whisper = view().refusal();
 			}
-			y += CELL_H + 4;
+		}
+		CopperStyle.label(g, font, Component.translatable("screen.aliveworkplace.trainer.challenge_heading", view().name()).getString(), x, y,
+			w, CopperStyle.QUARTZ);
+		y += 11;
+		int top = y;
+		g.blitSprite(CopperStyle.glyph("coin"), x, y, 8, 8);
+		y = wrapped(g, view().reward(), CopperStyle.QUARTZ, x + 10, y, w - 10, 3) + 6;
+		if (inStage && mouseY >= top - 11 && mouseY < y) {
+			whisper = view().reward();
+		}
+
+		cards.clear();
+		List<TrainerView.TeamSlot> team = view().team();
+		if (!team.isEmpty()) {
+			g.drawString(font, CopperStyle.trim(font, view().teamHeading().getString().toUpperCase(java.util.Locale.ROOT), w), x, y, CopperStyle.TUFF, false);
+			CopperStyle.headerRow(g, x, y - 1, w);
+			y += 13;
+			int[][] boxesOf = TrainerLayout.teamCards(x, y, w, team.size());
+			int hovered = -1;
+			for (int i = 0; i < team.size(); i++) {
+				cards.add(boxesOf[i]);
+				if (inStage && CopperLayout.inside(boxesOf[i], mouseX, mouseY)) {
+					hovered = i;
+				}
+			}
+			for (int i = 0; i < team.size(); i++) {
+				card(g, team.get(i), boxesOf[i], i == hovered);
+			}
+			if (hovered >= 0) {
+				TrainerView.TeamSlot slot = team.get(hovered);
+				whisper = slot.hidden() ? Component.translatable("screen.aliveworkplace.trainer.whisper.unseen", view().name())
+					: Component.translatable(slot.scaled() ? "screen.aliveworkplace.trainer.whisper.card_scaled" : "screen.aliveworkplace.trainer.whisper.card",
+						slot.icon().getHoverName(), slot.level());
+			}
+			y += TrainerLayout.teamHeight(w, team.size()) + 4;
 			if (!view().teamHint().getString().isEmpty()) {
-				g.drawString(font, TableStyle.trim(font, view().teamHint().getString(), w), x, y, TableStyle.SUBLINE, false);
-				y += 10;
+				CopperStyle.Status info = CopperStyle.Status.INFO;
+				g.blitSprite(info.glyph, x, y, 8, 8);
+				y = wrapped(g, view().teamHint(), CopperStyle.TUFF, x + 10, y, w - 10, 2);
 			}
 			y += 6;
 		}
+
 		if (!view().party().isEmpty() || !view().partyNote().getString().isEmpty()) {
-			TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.trainer.party"), x, y);
-			y += 11;
-			int rows = Math.max(1, view().party().size());
-			TableStyle.listBackground(g, x, y, w, rows * PARTY_ROW + 4);
-			int levelX = x + 6 + w * 40 / 100;
-			int stateX = x + 6 + w * 56 / 100;
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.trainer.party").getString().toUpperCase(java.util.Locale.ROOT), w),
+				x, y, CopperStyle.TUFF, false);
+			CopperStyle.headerRow(g, x, y - 1, w);
+			y += 13;
 			if (view().party().isEmpty()) {
-				g.drawString(font, TableStyle.trim(font, view().partyNote().getString(), w - 12), x + 6, y + 3, TableStyle.LOADING, false);
+				g.blitSprite(CopperStyle.Status.INFO.glyph, x, y, 8, 8);
+				y = wrapped(g, view().partyNote(), CopperStyle.TUFF, x + 10, y, w - 10, 2) + 2;
 			}
+			int levelX = x + 4 + w * 42 / 100;
+			int stateX = x + 4 + w * 58 / 100;
 			for (int i = 0; i < view().party().size(); i++) {
 				TrainerView.PartyLine line = view().party().get(i);
-				int ry = y + 3 + i * PARTY_ROW;
-				g.drawString(font, TableStyle.trim(font, line.name(), levelX - x - 12), x + 6, ry, TableStyle.NAME, false);
-				g.drawString(font, Component.translatable("screen.aliveworkplace.trainer.level", line.level()), levelX, ry, TableStyle.BODY, false);
-				g.drawString(font, TableStyle.trim(font, line.state().getString(), x + w - stateX - 4), stateX, ry, line.color(), false);
+				boolean over = inStage && mouseY >= y && mouseY < y + PARTY_ROW && mouseX >= x && mouseX < x + w;
+				CopperStyle.rowBand(g, x, y, w, PARTY_ROW, i % 2 == 1, over, false);
+				int ty = y + 2;
+				g.drawString(font, CopperStyle.trim(font, line.name().getString(), levelX - x - 10), x + 5, ty, CopperStyle.QUARTZ, false);
+				g.drawString(font, Component.translatable("screen.aliveworkplace.trainer.level", line.level()), levelX, ty, CopperStyle.TUFF, false);
+				CopperStyle.Status st = status(line.color());
+				g.blitSprite(st.glyph, stateX, ty, 8, 8);
+				g.drawString(font, CopperStyle.trim(font, line.state().getString(), x + w - stateX - 12), stateX + 10, ty, st.color, false);
+				if (over) {
+					whisper = Component.translatable("screen.aliveworkplace.trainer.whisper.party", line.name(), line.level(), line.state());
+				}
+				y += PARTY_ROW;
 			}
-			y += rows * PARTY_ROW + 4 + 10;
+			y += 6;
 		}
-		buttons.clear();
-		Component tooltip = null;
-		boolean refused = !view().canChallenge();
-		int[] ids = {TrainerMenu.CHALLENGE, TrainerMenu.TRADE, TrainerMenu.CLOSE};
-		boolean[] offs = {refused, !view().canTrade(), false};
-		Component[] labels = new Component[TrainerScreens.BUTTON_KEYS.length];
-		int[] need = new int[labels.length];
-		for (int i = 0; i < labels.length; i++) {
-			labels[i] = Component.translatable(TrainerScreens.BUTTON_KEYS[i]);
-			need[i] = TableStyle.buttonWidth(font, labels[i]);
+
+		top = y;
+		g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.trainer.rules_heading").getString(), w), x, y,
+			CopperStyle.TUFF, false);
+		y += 10;
+		y = wrapped(g, view().rules(), CopperStyle.QUARTZ, x, y, w, 2);
+		if (inStage && mouseY >= top && mouseY < y) {
+			whisper = Component.translatable("screen.aliveworkplace.trainer.whisper.rules", view().rules());
 		}
-		// fitted inside the right side's w pixels, wrapped onto more rows if they must be (B1131, as the status card's, B1103)
-		int[][] boxes = StatusCard.buttonRow(need, w);
-		for (int i = 0; i < boxes.length; i++) {
-			int id = ids[i];
-			boolean off = offs[i];
-			int bx = x + boxes[i][0];
-			int by = y + boxes[i][1] * (BUTTON_H + StatusCard.BUTTON_ROW_GAP);
-			int bw = boxes[i][2];
-			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + BUTTON_H;
-			TableStyle.button(g, font, labels[i], bx, by, bw, BUTTON_H, id == TrainerMenu.CHALLENGE && !off, over, off);
-			buttons.add(new int[]{id, bx, by, bw, off ? 1 : 0});
-			if (over && off && id == TrainerMenu.CHALLENGE) {
-				tooltip = view().refusal();
-			}
+		g.disableScissor();
+		contentH = y - y0;
+		int max = Math.max(0, contentH - c[3]);
+		if (scroll > max) {
+			scroll = max;
 		}
-		int rows = StatusCard.buttonRows(boxes);
-		y += rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 6;
-		if (refused) {
-			for (FormattedCharSequence line : font.split(view().refusal(), w)) {
-				g.drawString(font, line, x, y, TableStyle.BODY, false);
-				y += 10;
-			}
-		}
-		return tooltip;
+		CopperStyle.scrollbar(g, s[0] + s[2] - 4, s[1], s[3], scroll, max, contentH, inStage && max > 0);
 	}
 
-	/** One of the trainer's Pokémon: a framed cell with its model over its level, or "???" for one not seen yet. */
-	private void teamCell(GuiGraphics g, TrainerView.TeamSlot slot, int x, int y, int w, boolean over) {
-		g.fill(x, y, x + w, y + CELL_H, over ? TableStyle.CELL_HOVER : TableStyle.PANEL_EDGE);
-		g.fill(x + 1, y + 1, x + w - 1, y + CELL_H - 1, TableStyle.CELL_BG);
-		String label;
-		int color;
+	/** One of the trainer's Pokémon: a card with its model, its name and level, or "???" for one not seen yet. */
+	private void card(GuiGraphics g, TrainerView.TeamSlot slot, int[] b, boolean over) {
+		CopperStyle.panel(g, b[0], b[1], b[2], b[3]);
+		if (over) {
+			g.renderOutline(b[0], b[1], b[2], b[3], CopperStyle.LANTERN);
+		}
+		int ix = b[0] + 3;
+		int iy = b[1] + (b[3] - 20) / 2;
+		int tx = ix + 23;
+		int tw = b[0] + b[2] - 3 - tx;
 		if (slot.hidden()) {
-			int cx = x + w / 2;
-			int cy = y + 12;
-			g.fill(cx - 7, cy - 7, cx + 7, cy + 7, TableStyle.PANEL_EDGE);
-			g.fill(cx - 6, cy - 6, cx + 6, cy + 6, 0xFF0C1016);
-			label = "???";
-			color = TableStyle.FAINT;
-		} else {
-			g.pose().pushPose();
-			g.pose().translate(x + w / 2f - 10, y + 2, 0);
-			g.pose().scale(1.25f, 1.25f, 1f);
-			g.renderItem(slot.icon(), 0, 0);
-			g.pose().popPose();
-			label = Component.translatable("screen.aliveworkplace.trainer.level", slot.level()).getString();
-			color = slot.scaled() ? TrainerView.ORANGE : TableStyle.NAME;
+			CopperStyle.well(g, ix, iy, 20, 20);
+			g.drawString(font, "?", ix + (20 - font.width("?")) / 2, iy + 6, CopperStyle.SLATE, false);
+			g.drawString(font, CopperStyle.trim(font, "???", tw), tx, b[1] + 6, CopperStyle.OFF_TEXT, false);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.trainer.team.unseen").getString(), tw), tx,
+				b[1] + 17, CopperStyle.OFF_TEXT, false);
+			return;
 		}
-		g.drawString(font, label, x + (w - font.width(label)) / 2, y + CELL_H - 10, color, false);
+		g.pose().pushPose();
+		g.pose().translate(ix, iy, 0);
+		g.pose().scale(1.25f, 1.25f, 1f);
+		g.renderItem(slot.icon(), 0, 0);
+		g.pose().popPose();
+		CopperStyle.label(g, font, slot.icon().getHoverName().getString(), tx, b[1] + 6, tw, CopperStyle.QUARTZ);
+		String level = Component.translatable("screen.aliveworkplace.trainer.level", slot.level()).getString();
+		if (slot.scaled()) {
+			g.blitSprite(CopperStyle.Status.WARNING.glyph, tx, b[1] + 17, 8, 8);
+			g.drawString(font, CopperStyle.trim(font, level, tw - 10), tx + 10, b[1] + 17, CopperStyle.LANTERN, false);
+		} else {
+			g.drawString(font, CopperStyle.trim(font, level, tw), tx, b[1] + 17, CopperStyle.TUFF, false);
+		}
 	}
 
-	private int cellAt(double mx, double my) {
-		for (int[] c : cells) {
-			if (mx >= c[1] && mx < c[1] + c[3] && my >= c[2] && my < c[2] + CELL_H) {
-				return c[0];
+	/** Challenge (copper, or off with its reason), Trade and Close along the rail's foot. */
+	private void renderButtons(GuiGraphics g, int mouseX, int mouseY) {
+		int[][] b = boxes.buttons();
+		for (int i = 0; i < b.length; i++) {
+			boolean off = off(i);
+			boolean over = CopperLayout.inside(b[i], mouseX, mouseY);
+			CopperStyle.Kind kind = TrainerLayout.copper(i) ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL;
+			CopperStyle.button(g, font, labels[i], null, b[i][0], b[i][1], b[i][2], b[i][3], kind, over, false, off);
+			if (over) {
+				whisper = switch (IDS[i]) {
+					case TrainerMenu.CHALLENGE -> off ? view().refusal() : Component.translatable("screen.aliveworkplace.trainer.whisper.challenge", view().name());
+					case TrainerMenu.TRADE -> Component.translatable(off ? "screen.aliveworkplace.trainer.whisper.trade_off"
+						: "screen.aliveworkplace.trainer.whisper.trade", view().name());
+					default -> Component.translatable("screen.aliveworkplace.trainer.whisper.close");
+				};
 			}
 		}
-		return -1;
+	}
+
+	private boolean off(int i) {
+		return switch (IDS[i]) {
+			case TrainerMenu.CHALLENGE -> !view().canChallenge();
+			case TrainerMenu.TRADE -> !view().canTrade();
+			default -> false;
+		};
+	}
+
+	/** A server color as a Copperline status (its glyph and color): green good, red bad, orange or gold a warning, else info. */
+	static CopperStyle.Status status(int color) {
+		if (color == TrainerView.GREEN) {
+			return CopperStyle.Status.GOOD;
+		}
+		if (color == TrainerView.RED) {
+			return CopperStyle.Status.BAD;
+		}
+		if (color == TrainerView.ORANGE) {
+			return CopperStyle.Status.WARNING;
+		}
+		return CopperStyle.Status.INFO;
+	}
+
+	@Override
+	public boolean mouseScrolled(double mx, double my, double scrollX, double scrollY) {
+		if (CopperLayout.inside(boxes.stage(), mx, my)) {
+			scroll = Mth.clamp(scroll - (int) (scrollY * 12), 0, Math.max(0, contentH - boxes.content()[3]));
+			return true;
+		}
+		return super.mouseScrolled(mx, my, scrollX, scrollY);
 	}
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
 		if (button == 0) {
-			for (int[] b : buttons) {
-				if (mx >= b[1] && mx < b[1] + b[3] && my >= b[2] && my < b[2] + BUTTON_H) {
-					if (b[4] != 0) {
-						return true; // grayed out: the reason is under it
-					}
-					press(b[0]);
-					return true;
+			if (CopperLayout.inside(boxes.close(), mx, my)) {
+				press(TrainerMenu.CLOSE);
+				return true;
+			}
+			int i = CopperLayout.at(boxes.buttons(), mx, my);
+			if (i >= 0) {
+				if (!off(i)) {
+					press(IDS[i]);
 				}
+				return true; // grayed out: the reason is in the refusal box and the whisper line
 			}
 		}
 		return super.mouseClicked(mx, my, button);
@@ -280,12 +395,19 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 
 	/** Where button {@code id}'s middle is on the screen, in GUI pixels (the screenshot harness points at it). */
 	public int[] centre(int id) {
-		for (int[] b : buttons) {
-			if (b[0] == id) {
-				return new int[]{b[1] + b[3] / 2, b[2] + BUTTON_H / 2};
+		int[][] b = boxes.buttons();
+		for (int i = 0; i < IDS.length && i < b.length; i++) {
+			if (IDS[i] == id) {
+				return new int[]{b[i][0] + b[i][2] / 2, b[i][1] + b[i][3] / 2};
 			}
 		}
-		return new int[]{leftPos + panelW / 2, topPos + panelH / 2};
+		int[] win = boxes.win();
+		return new int[]{win[0] + win[2] / 2, win[1] + win[3] / 2};
+	}
+
+	/** How many team cards were drawn last frame (the scene checks the team arrived). */
+	public int cardCount() {
+		return cards.size();
 	}
 
 	@Override

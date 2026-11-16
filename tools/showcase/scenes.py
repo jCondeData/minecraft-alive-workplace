@@ -519,6 +519,12 @@ SCENES = [
        ("04_stored_compact", "The Stored tab at 320x180 (GUI scale 3)"),
        ("05_book_compact", "The book at 320x180: the rail as an icon grid"),
        ("06_no_match_compact", "A search for nothing, said in the list")]),
+    # 48.2: the Trainer screen in Copperline, like the Trainer board, at GUI scale 2 and 3
+    S("copperline_trainer", "Trainer", "Copperline: the Trainer screen",
+      "a village Trainer's screen in Copperline: the plaque and lintel with the rank, the portrait, record and today's line on the rail with Challenge (the one copper button), Trade and Close, the reward, the team as cards with the real models (half of it \"???\" until the player wins once), the party with a status each and the rules; the whisper line says what Challenge and Trade do; at 320x180 the compact layout", 20,
+      [("01_trainer", "The Trainer screen, the mouse on Challenge"),
+       ("02_trainer_trade", "The mouse on Trade: the whisper line says what it does"),
+       ("03_trainer_compact", "The Trainer screen at 320x180 (GUI scale 3)")], cobblemon=True),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

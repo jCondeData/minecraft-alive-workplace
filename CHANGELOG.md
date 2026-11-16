@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With CobbleDollars: placing a Shop Counter names your server's real CobbleDollar rate ("1,000 per emerald"), not
+  always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

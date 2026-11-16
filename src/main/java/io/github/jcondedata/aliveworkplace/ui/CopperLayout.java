@@ -31,6 +31,24 @@ public final class CopperLayout {
 	public static final int RAIL_CELL = 20;
 	public static final int RAIL_GAP = 2;
 
+	/** A stat card's height (the Hall's Overview, 47.2: its word, its number and the status line). */
+	public static final int CARD_H = 32;
+	public static final int CARD_GAP = 3;
+
+	/**
+	 * The Hall Overview's four stat cards (47.2, Main.png) in a stage column at {@code x, y}, {@code w} wide: four across
+	 * when each gets at least 60 pixels, else two by two.
+	 */
+	public static int[][] statCards(int x, int y, int w) {
+		int across = (w - 3 * CARD_GAP) / 4 >= 60 ? 4 : 2;
+		int cw = (w - (across - 1) * CARD_GAP) / across;
+		int[][] out = new int[4][];
+		for (int i = 0; i < 4; i++) {
+			out[i] = new int[]{x + (i % across) * (cw + CARD_GAP), y + (i / across) * (CARD_H + CARD_GAP), cw, CARD_H};
+		}
+		return out;
+	}
+
 	/** Whether a screen this size (GUI pixels) is a small one (GUI scale 3 on a 960x540 window: 320x180). */
 	public static boolean compact(int screenW, int screenH) {
 		return screenW < 400 || screenH < 220;

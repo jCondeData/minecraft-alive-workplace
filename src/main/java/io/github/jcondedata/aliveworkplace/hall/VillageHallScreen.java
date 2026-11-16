@@ -42,11 +42,11 @@ import net.minecraft.world.phys.Vec3;
  */
 public final class VillageHallScreen {
 	public static final int NAME = 0;
-	static final int PEOPLE = 1;
+	public static final int PEOPLE = 1;
 	public static final int BEDS = 2;
 	public static final int FOOD = 3;
 	public static final int GUARDS = 4;
-	static final int WELLBEING = 5;
+	public static final int WELLBEING = 5;
 	static final int REQUESTS = 6;
 	/** The village's builds; a click opens House looks (23.10a). */
 	public static final int BUILDS = 7;
@@ -268,9 +268,15 @@ public final class VillageHallScreen {
 		guardLore.add(defence ? DefencePage.hallLine(level, hall) : io.github.jcondedata.aliveworkplace.guard.BanditCamps.near(level, hall)
 			.map(camp -> line(Component.translatable("screen.aliveworkplace.hall.bandits", where(hall, camp.pos())), ChatFormatting.RED))
 			.orElse(line("screen.aliveworkplace.hall.no_bandits", ChatFormatting.DARK_GRAY)));
+		boolean attack = false;
 		if (defence) {
-			DefencePage.attackLine(level, hall).ifPresent(guardLore::add); // a day's warning (32.14)
+			java.util.Optional<Component> warning = DefencePage.attackLine(level, hall);
+			warning.ifPresent(guardLore::add); // a day's warning (32.14)
+			attack = warning.isPresent();
 		}
+		// The rail's counts (Copperline, 47.2): who waits for a job, an attack coming, the open quests (below).
+		menu.setState(HallSections.RAIL_WAITING, Math.max(0, Math.min(Short.MAX_VALUE, census.jobless().size() - HallPeople.atTheirJob(census))));
+		menu.setState(HallSections.RAIL_DANGER, attack ? 1 : 0);
 		guardLore.addAll(AtPeace.hallLines(level, hall)); // at peace, and the camp leaving at dawn (32.21)
 		// The Golem Smith's golems (29.15), a line each.
 		for (Component golem : io.github.jcondedata.aliveworkplace.legend.GolemSmith.hallLines(level, hall)) {
@@ -299,6 +305,7 @@ public final class VillageHallScreen {
 		if (entity != null) {
 			quests.addAll(Reforms.shown(entity));
 		}
+		menu.setState(HallSections.RAIL_QUESTS, Math.min(Short.MAX_VALUE, quests.size()));
 		menu.button(QUESTS, icon(Items.MAP, Component.translatable("screen.aliveworkplace.hall.quests", quests.size()), ChatFormatting.WHITE,
 			line(quests.isEmpty() ? "screen.aliveworkplace.hall.no_quests" : "screen.aliveworkplace.hall.quests_hint",
 				quests.isEmpty() ? ChatFormatting.GRAY : ChatFormatting.GREEN)), p -> {

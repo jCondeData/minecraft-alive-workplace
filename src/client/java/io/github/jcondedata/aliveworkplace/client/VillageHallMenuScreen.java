@@ -144,9 +144,15 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		Section open = section();
 		boolean compact = compactRail();
 		for (Section s : Section.values()) {
-			CopperStyle.railEntry(g, font, entries[s.ordinal()], CopperStyle.SECTION_ICONS.get(s.ordinal()), null, s.title(), 0,
-				s == open, s.ordinal() == hovered, compact);
+			CopperStyle.railEntry(g, font, entries[s.ordinal()], CopperStyle.SECTION_ICONS.get(s.ordinal()), null, s.title(), railBadge(s),
+				s == Section.DEFENSE ? CopperStyle.REDSTONE : CopperStyle.LANTERN, s == open, s.ordinal() == hovered, compact);
 		}
+	}
+
+	/** The badge on {@code s}'s rail entry (47.2): the people waiting, an attack coming, the open quests. */
+	public String railBadge(Section s) {
+		return HallSections.railBadge(s, menu.state(HallSections.RAIL_WAITING), menu.state(HallSections.RAIL_DANGER),
+			menu.state(HallSections.RAIL_QUESTS), compactRail());
 	}
 
 	/** Under the mouse on the rail: the section's word and what it's for (on a small screen the icon alone names nothing). */
@@ -258,9 +264,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		Section s = section();
 		g.enableScissor(x, y, x + w, y + h);
 		if (s == Section.OVERVIEW) {
+			// Copperline (47.2, Main.png): the four stat cards, then "Needs you".
+			int top = renderCards(g, x, y, w);
 			// "What next?": every tip and how, from the advice button's lines (its first line is the count).
-			TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.advice"), x, y);
-			int ly = y + 13;
+			TableStyle.heading(g, font, Component.translatable("screen.aliveworkplace.hall.needs_you"), x, top);
+			int ly = top + 13;
 			ItemStack advice = menu.slots.get(VillageHallScreen.ADVICE).getItem();
 			ItemLore lore = advice.get(DataComponents.LORE);
 			List<Component> lines = lore == null ? List.of() : lore.lines();
@@ -270,8 +278,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			} else {
 				for (int i = 1; i < lines.size(); i++) {
 					boolean tipTitle = i % 2 == 1;
-					for (FormattedCharSequence part : font.split(Component.literal(lines.get(i).getString()), w - 4)) {
-						g.drawString(font, part, x, ly, tipTitle ? TableStyle.NAME : TableStyle.SUBLINE, false);
+					if (tipTitle) {
+						CopperStyle.glyph(g, "warning", x, ly);
+					}
+					for (FormattedCharSequence part : font.split(Component.literal(lines.get(i).getString()), w - 14)) {
+						g.drawString(font, part, x + 10, ly, tipTitle ? TableStyle.NAME : TableStyle.SUBLINE, false);
 						ly += 10;
 					}
 					if (!tipTitle) {
@@ -289,14 +300,48 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return true;
 	}
 
+	/** The stat cards' words, in HallSections.CARD_SLOTS's order. */
+	private static final String[] CARD_WORDS = {"people", "mood", "food", "defense"};
+	private static final String[] CARD_GLYPHS = {"person", "heart", "bread", "shield"};
+
+	/**
+	 * The Overview's four stat cards (47.2, Main.png): each a panel with its word, its number large and its status line (a
+	 * glyph, the words and their color); the buttons themselves stay in the Overview's list with their tooltips. Returns
+	 * the y under them.
+	 */
+	private int renderCards(GuiGraphics g, int x, int y, int w) {
+		int[][] boxes = io.github.jcondedata.aliveworkplace.ui.CopperLayout.statCards(x, y, w - 4);
+		for (int i = 0; i < 4; i++) {
+			int[] b = boxes[i];
+			HallSections.Card card = HallSections.card(i, menu.slots.get(HallSections.CARD_SLOTS[i]).getItem());
+			CopperStyle.panel(g, b[0], b[1], b[2], b[3]);
+			CopperStyle.glyph(g, CARD_GLYPHS[i], b[0] + 4, b[1] + 3);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.card." + CARD_WORDS[i]).getString(), b[2] - 18),
+				b[0] + 14, b[1] + 3, CopperStyle.TUFF, false);
+			CopperStyle.label(g, font, card.value(), b[0] + 4, b[1] + 13, b[2] - 8, CopperStyle.QUARTZ);
+			CopperStyle.Status status = switch (card.tone()) {
+				case 1 -> CopperStyle.Status.GOOD;
+				case 2 -> CopperStyle.Status.WARNING;
+				case 3 -> CopperStyle.Status.BAD;
+				default -> CopperStyle.Status.INFO;
+			};
+			g.blitSprite(status.glyph, b[0] + 4, b[1] + 23, 8, 8);
+			g.drawString(font, CopperStyle.trim(font, card.line().getString(), b[2] - 18), b[0] + 14, b[1] + 23,
+				card.tone() == 0 ? CopperStyle.TUFF : status.color, false);
+		}
+		int[] last = boxes[3];
+		return last[1] + last[3] + 6;
+	}
+
 	// --- the People table (40.2) ------------------------------------------------------------------------------------
 
 	/** A table row's height, and a details button's. */
 	private static final int RH = 12;
 	private static final int BH = 14;
-	private static final int MOOD_HAPPY = 0xFF55FF55;
-	private static final int MOOD_UNHAPPY = 0xFFFFAA00;
-	private static final int MOOD_NO_BED = 0xFFFF5555;
+	/** The mood words' colors (Copperline, 47.2: every status a glyph, a word and a color). */
+	private static final int MOOD_HAPPY = CopperStyle.VERDIGRIS;
+	private static final int MOOD_UNHAPPY = CopperStyle.LANTERN;
+	private static final int MOOD_NO_BED = CopperStyle.REDSTONE;
 
 	/** The open row's villager (null: none), kept by who they are so it stays open as the list moves. */
 	private String openUuid;
@@ -1112,8 +1157,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.col." + heads[c]), colW[c]), cols[c], ly,
 				TableStyle.SUBTITLE, false);
 		}
+		CopperStyle.headerRow(g, x, ly - 2, w - 6);
 		ly += 11;
-		TableStyle.rule(g, x, ly - 2, w);
 		tableX = x;
 		tableW = w;
 		tableTop = ly;
@@ -1154,18 +1199,20 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			CompoundTag row = HallPeople.row(icon);
 			boolean open = i == openAt;
 			boolean over = mouseX >= x && mouseX < x + w - 6 && mouseY >= Math.max(top, tableTop) && mouseY < top + RH && mouseY < tableTop + tableH;
-			if (open) {
-				g.fill(x + 1, top, x + w - 7, top + RH + openH - 1, 0x40FFD66B);
-			} else if (over) {
-				g.fill(x + 1, top, x + w - 7, top + RH, 0x30FFFFFF);
-			}
+			// Copperline rows (47.2, HallPeople.png): striped, the open one copper-marked, a Lantern edge under the mouse.
+			CopperStyle.rowBand(g, x + 1, top, w - 8, RH + (open ? openH - 1 : 0), i % 2 == 1, over, open);
 			hits.add(new int[]{0, slot, x, top, w - 6, RH});
 			String kind = row.getString("kind");
 			g.drawString(font, TableStyle.trim(font, icon.getHoverName(), colW[0]), cols[0], top + 2, TableStyle.NAME, false);
 			Component job = HallPeople.job(row); // "Undertaker (no workstation)" for a worker without one (B1173)
 			int jobColour = kind.equals("builder") ? TableStyle.TITLE : kind.equals("child") || kind.equals("jobless") || kind.equals("nitwit") || row.getBoolean("no_site")
 				? TableStyle.SUBLINE : TableStyle.BODY;
-			g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 2, jobColour, false);
+			if (kind.equals("jobless")) { // "⚠ No job" in Lantern, as the board shows
+				CopperStyle.glyph(g, "warning", cols[1], top + 2);
+				g.drawString(font, TableStyle.trim(font, job, colW[1] - 10), cols[1] + 10, top + 2, CopperStyle.LANTERN, false);
+			} else {
+				g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 2, jobColour, false);
+			}
 			g.drawString(font, TableStyle.trim(font, HallPeople.level(row.getInt("level")), colW[2]), cols[2], top + 2, TableStyle.BODY, false);
 			HallPeople.MoodWord mood = moodOf(row);
 			int moodColour = switch (mood) {
@@ -1174,7 +1221,17 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				case NO_BED -> MOOD_NO_BED;
 				default -> TableStyle.BODY;
 			};
-			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3]), cols[3], top + 2, moodColour, false);
+			String moodGlyph = switch (mood) {
+				case HAPPY -> "happy";
+				case UNHAPPY -> "unhappy";
+				case NO_BED -> "bed";
+				default -> null;
+			};
+			if (moodGlyph != null) {
+				CopperStyle.glyph(g, moodGlyph, cols[3], top + 2);
+			}
+			int mx = cols[3] + (moodGlyph != null ? 10 : 0);
+			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3] - (mx - cols[3])), mx, top + 2, moodColour, false);
 			if (open) {
 				int dy = top + RH + 2;
 				for (FormattedCharSequence line : detailLines(icon, detailW)) {
@@ -1245,9 +1302,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	private int button(GuiGraphics g, Component text, int x, int y, boolean on, int kind, int slot, int mouseX, int mouseY) {
 		int bw = font.width(text) + 10;
 		boolean over = on && mouseX >= x && mouseX < x + bw && mouseY >= y && mouseY < y + BH;
-		g.fill(x, y, x + bw, y + BH, over ? TableStyle.CELL_HOVER : TableStyle.CELL_BG);
-		g.fill(x, y, x + bw, y + 1, 0x40FFFFFF);
-		g.drawString(font, text, x + 5, y + 3, on ? TableStyle.NAME : TableStyle.FAINT, false);
+		CopperStyle.button(g, font, text, null, x, y, bw, BH, CopperStyle.Kind.NEUTRAL, over, false, !on); // Copperline (47.2)
 		if (on) {
 			hits.add(new int[]{kind, slot, x, y, bw, BH});
 		}

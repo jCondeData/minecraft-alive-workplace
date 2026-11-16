@@ -511,8 +511,9 @@ SCENES = [
        ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
        ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
     # Village-wide
+    # Copperline (ROADMAP 47.2): the Overview's stat cards and "Needs you", the rail's counts, like boards/Main.png
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
-      [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),
+      [("02_hall_people", "The hall in Copperline: the rail with its counts, the Overview's four stat cards (People, Mood, Food, Defense) and Needs you"),
        ("03_hall_builder", "A builder read out in the pane"), ("08_hall_calendar", "The calendar"),
        ("10_hall_pinned_scale3", "A clicked villager kept in the pane, GUI scale 3")]),
     # Painting the plan (ROADMAP 27.3): the City Plan screen over a real village, at GUI scales 2 and 4
@@ -533,7 +534,7 @@ SCENES = [
     S("hall_people", "Village Hall", "The People table",
       "the hall's People section as a table of everyone (a builder, a guard, workers, a jobless villager, a nitwit and a "
       "child), then the first row opened to that villager's details with Job and Bed buttons", 45,
-      [("01_people_table", "The People table: Name, Job, Level and Mood, with the village's counts on top"),
+      [("01_people_table", "The People table in Copperline (47.2): striped rows, mood glyphs, \"No job\" in yellow, the waiting count on the rail"),
        ("02_people_row_open", "A row opened: traits, what they're doing, needs, mood and why, class, and the Job and Bed buttons"),
        ("03_people_story", "Story on the open row: their life story, as shift-click opened it from the old list (B547)")]),
     # Job ▾ in the People table (ROADMAP 40.3): every job, the free ones with how many, the price, two clicks to pay
@@ -552,7 +553,7 @@ SCENES = [
        ("02_bed_given", "The nearest free bed clicked: hers from tonight"),
        ("03_bed_after", "Opened again: her bed on top as \"their bed now\", the other free bed, Jem's to swap")]),
     S("hall_pages", "Village Hall", "The chronicle and trade routes", "the chronicle and trade-route pages opened", 45,
-      [("01_hall_chronicle", "Chronicle"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab")]),
+      [("01_hall_chronicle", "Chronicle, in the Copperline shell"), ("02_hall_routes", "Trade routes: the Trade page's Routes tab, in the Copperline shell")]),
     # Free job blocks (ROADMAP 36.9): the hall lists the job blocks nobody works at; picking a jobless villager gives one
     S("hall_jobs", "Village Hall", "Free job blocks: filling an empty Storehouse from the hall",
       "the empty Storehouse was listed with its building and distance, and Dara, picked for it, became the Porter", 50,

@@ -42,7 +42,7 @@ the sidebar is a grid of pictures; point at one and the bottom line names it:
 
 | Button | What's in it |
 |---|---|
-| **Overview** | the village at a glance (name and rank, villagers, beds, food, guards, wellbeing, what workers wait for, buildings going up, quests) and "What next?" |
+| **Overview** | the village at a glance (name and rank, villagers, beds, food, guards, wellbeing, what workers wait for, buildings going up, quests) and "Needs you" |
 | **People** | everyone who lives there, their wellbeing and what they wait for, the bell that calls everyone home, Legends, classes and free job blocks |
 | **Homes & Food** | beds and food in store |
 | **Buildings** | buildings going up and their looks, repairs, upgrades, Wonders and the Steward's desk |
@@ -56,7 +56,10 @@ the sidebar is a grid of pictures; point at one and the bottom line names it:
 Click a button and its things fill the right side as a list, each with its picture, its name and a line about it. A
 section with nothing in it says so in plain words ("No guards yet."), and its buttons stay there for you to use. The
 hall remembers the section you opened last until you leave the game. With nothing under the mouse, the pane on the
-right shows what the village needs next on the Overview, and what a section is for on the others. Walk more than 8
+right shows the village at a glance on the Overview: four cards (People, Mood, Food and Defense, each with its number
+and a line in green, yellow or red saying how it stands) over **Needs you**, what the village needs next; on the other
+sections it says what the section is for. The sidebar shows numbers where something waits for you: People shows how many
+villagers have no job, Quests how many quests are open, and Defense a red **!** when an attack is coming. Walk more than 8
 blocks away from the hall (or break it) and the screen closes. Friends can have the hall open at the same time: each
 of you gets your own screen and keeps your own section.
 

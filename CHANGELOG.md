@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
   says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
   GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
+- The Village Hall in Copperline (47.2): the Overview opens on four cards (People, Mood, Food and Defense) with a
+  green, yellow or red line each, over "Needs you"; the sidebar shows how many villagers wait for a job, how many quests
+  are open and a red "!" when an attack is coming; the People table has striped rows, mood faces and slate buttons.
 
 ## 0.155.3 — 2026-11-15
 

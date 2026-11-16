@@ -8,9 +8,17 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1
+Roadmap items: 47.1, 47.2
 
 ## What a player sees
+
+- **The Village Hall (47.2).** The Overview opens on four **stat cards**, People, Mood, Food and Defense, each with its
+  number large and a status line under it (a glyph, the words and their color: green good, yellow a warning, red bad),
+  read from the same buttons whose tooltips say more; under them **Needs you**, the village's next steps, each with a
+  warning glyph. The rail shows **counts**: People the villagers waiting for a job, Quests the open quests, Defense a red
+  **!** when an attack is coming (the hall sends these three numbers with its page; nothing is saved). The People table
+  has Copperline rows (striped, the open one copper-marked, a yellow edge under the mouse), a happy, unhappy or bed glyph
+  before each mood word, "No job" in yellow with a warning glyph, and slate buttons on the open row.
 
 - **The window.** A dark window with a thin copper line along its top. A copper **plaque** rises over the top edge with
   the screen's name (on the Village Hall, the open section's name).

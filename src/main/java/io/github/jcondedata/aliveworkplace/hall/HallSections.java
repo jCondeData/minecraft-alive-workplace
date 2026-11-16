@@ -39,6 +39,13 @@ public final class HallSections {
 	public static final int PEOPLE_JOBLESS = 7;
 	public static final int PEOPLE_CHILDREN = 8;
 	public static final int PEOPLE_FIRST = 9;
+	/**
+	 * The rail's counts (Copperline, 47.2), set as the main page is laid out: the people waiting for a job, whether an
+	 * attack is coming (1) and the open quests. Not saved; 0 shows nothing.
+	 */
+	public static final int RAIL_WAITING = 10;
+	public static final int RAIL_DANGER = 11;
+	public static final int RAIL_QUESTS = 12;
 	/** The mark on a main-page button: a bit for each section it sits in. */
 	public static final String MARK = "aliveworkplace:hall_sections";
 
@@ -207,6 +214,82 @@ public final class HallSections {
 			empty |= Section.LAWS.bit();
 		}
 		menu.setState(EMPTY, empty);
+	}
+
+	/**
+	 * The badge on {@code section}'s rail entry (Copperline, 47.2) from the menu's numbers: People the people waiting for a
+	 * job, Defense "!" when an attack is coming, Quests the open quests; "" for none. A compact rail shows "9+" past nine.
+	 */
+	public static String railBadge(Section section, int waiting, int danger, int quests, boolean compact) {
+		int n = switch (section) {
+			case PEOPLE -> waiting;
+			case QUESTS -> quests;
+			default -> 0;
+		};
+		if (section == Section.DEFENSE) {
+			return danger > 0 ? "!" : "";
+		}
+		if (n <= 0) {
+			return "";
+		}
+		return compact && n > 9 ? "9+" : String.valueOf(n);
+	}
+
+	/** The Overview's stat cards' buttons (47.2), in order: People, Mood, Food, Defense. */
+	public static final int[] CARD_SLOTS = {VillageHallScreen.PEOPLE, VillageHallScreen.WELLBEING, VillageHallScreen.FOOD, VillageHallScreen.GUARDS};
+
+	/** A stat card: its number, its status line and the line's tone (0 info, 1 good, 2 warning, 3 bad). */
+	public record Card(String value, Component line, int tone) {
+	}
+
+	/**
+	 * Stat card {@code i}'s contents from its main-page button (the number in the button's name, the first line that isn't
+	 * gray as the status line, else the first line), so the card says what the button's tooltip says.
+	 */
+	public static Card card(int i, ItemStack icon) {
+		Component name = icon.getHoverName();
+		String value = name.getString();
+		if (name.getContents() instanceof net.minecraft.network.chat.contents.TranslatableContents t && t.getArgs().length > 0) {
+			Object arg = t.getArgs()[0];
+			value = (arg instanceof Component c ? c.getString() : String.valueOf(arg)) + (i == 1 ? "%" : "");
+		}
+		net.minecraft.world.item.component.ItemLore lore = icon.get(DataComponents.LORE);
+		java.util.List<Component> lines = lore == null ? java.util.List.of() : lore.lines();
+		Component line = Component.empty();
+		int tone = 0;
+		for (Component l : lines) {
+			int t = toneOf(l);
+			if (t != 0) {
+				line = l;
+				tone = t;
+				break;
+			}
+		}
+		if (tone == 0 && !lines.isEmpty()) {
+			line = lines.get(i == 0 && lines.size() > 1 ? 1 : 0); // People: who's without a job
+		}
+		return new Card(value, Component.literal(line.getString()), tone);
+	}
+
+	private static int toneOf(Component line) {
+		net.minecraft.network.chat.TextColor c = line.getStyle().getColor();
+		if (c == null && !line.getSiblings().isEmpty()) {
+			c = line.getSiblings().get(0).getStyle().getColor();
+		}
+		if (c == null) {
+			return 0;
+		}
+		int rgb = c.getValue();
+		if (rgb == net.minecraft.ChatFormatting.GREEN.getColor()) {
+			return 1;
+		}
+		if (rgb == net.minecraft.ChatFormatting.YELLOW.getColor() || rgb == net.minecraft.ChatFormatting.GOLD.getColor()) {
+			return 2;
+		}
+		if (rgb == net.minecraft.ChatFormatting.RED.getColor()) {
+			return 3;
+		}
+		return 0;
 	}
 
 	/** The section open on {@code menu}. */

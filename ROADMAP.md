@@ -6824,6 +6824,19 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
   their scenes.
 
 ## Notes / blocked
+- 2026-11-16 (lane-c-1116-0652, 47.2 the Village Hall in Copperline, partial, on `wip/lane-c-1116`): done: the rail's
+  counts (three new menu numbers, not saved: `HallSections.RAIL_WAITING/RAIL_DANGER/RAIL_QUESTS`, `ChoiceMenu.STATE` 10 to
+  13; People the villagers waiting for a job, Defense a red "!" when `DefencePage.attackLine` warns, Quests the open
+  quests; "9+" on the compact rail), the Overview's four stat cards (People, Mood, Food, Defense; read from the main
+  page's own buttons by `HallSections.card`, the first non-gray tooltip line as the status line with its tone; places in
+  `CopperLayout.statCards`, four across or two by two) over "Needs you" with warning glyphs, and the People table's
+  Copperline rows, mood glyphs, "No job" in Lantern and slate buttons; `HallCopperlineGameTests` (3 tests). Left: the
+  Map section's map with its legend (`HallMap.png`) needs the village map sent with the Map section (MovePage's
+  `MapView` could be reused, 32 KB per send, so only while Map is open); People's Find field, filter tabs ("All 24",
+  "No job 1", "No bed 2") and the right-hand detail card with the mood bar (`HallPeople.png`); "At work now" on the
+  Overview (needs each worker's task and progress sent); the big name with flag, rank chip and XP bar (`Main.png`); a
+  design critique of the stills and the hall scenes' refilm. Decision: the cards show the buttons' numbers so the card
+  and the tooltip never disagree.
 - 2026-11-16 (owner's chat, digest-1114-1353 session): **Decisions.** (1) The Inn stays as it is: the redraw on
   `wip/inn-redo` (bigger coaching inn, round 3) is not merged (roof holes still showed, no modded-furniture shots); it
   stays as a reference, and its `holes.py` `open` check (open wall panels) and STYLE.md note came to main. holes.py now

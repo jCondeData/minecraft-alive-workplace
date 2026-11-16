@@ -186,6 +186,12 @@ public final class CopperStyle {
 	 */
 	public static void railEntry(GuiGraphics g, Font font, int[] box, String icon, ItemStack item, Component label, int count,
 		boolean current, boolean over, boolean compact) {
+		railEntry(g, font, box, icon, item, label, count > 0 ? (compact && count > 9 ? "9+" : String.valueOf(count)) : "", LANTERN, current, over, compact);
+	}
+
+	/** A rail entry with a badge in its color ("3" in Lantern for a count, "!" in Redstone for danger; empty: none). */
+	public static void railEntry(GuiGraphics g, Font font, int[] box, String icon, ItemStack item, Component label, String badge, int badgeColor,
+		boolean current, boolean over, boolean compact) {
 		int x = box[0];
 		int y = box[1];
 		int w = box[2];
@@ -209,19 +215,18 @@ public final class CopperStyle {
 			g.renderItem(item, 0, 0);
 			g.pose().popPose();
 		}
+		String n = badge == null ? "" : badge;
 		if (compact) {
-			if (count > 0) {
-				String n = count > 9 ? "9+" : String.valueOf(count);
-				g.drawString(font, n, x + w - font.width(n), y, LANTERN, true);
+			if (!n.isEmpty()) {
+				g.drawString(font, n, x + w - font.width(n), y, badgeColor, true);
 			}
 			return;
 		}
 		int tx = ix + size + 4;
-		String n = count > 0 ? String.valueOf(count) : "";
 		int nw = n.isEmpty() ? 0 : font.width(n) + 4;
 		g.drawString(font, trim(font, label.getString(), x + w - 3 - nw - tx), tx, y + (h - 8) / 2, current ? QUARTZ : over ? QUARTZ : TUFF, current);
 		if (!n.isEmpty()) {
-			g.drawString(font, n, x + w - 3 - font.width(n), y + (h - 8) / 2, LANTERN, true);
+			g.drawString(font, n, x + w - 3 - font.width(n), y + (h - 8) / 2, badgeColor, true);
 		}
 	}
 

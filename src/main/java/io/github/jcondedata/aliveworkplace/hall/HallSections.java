@@ -428,6 +428,11 @@ public final class HallSections {
 			if (HallBeds.handles(id)) {
 				return HallBeds.click(menu, level, hall, p, id); // Bed ▾'s list (40.4)
 			}
+			if (id == HallPeople.FIND) {
+				VillageHallScreen.renderFrom(menu, level, hall, 0); // the Find field changed (47.2)
+				menu.broadcastChanges();
+				return true;
+			}
 			if (HallPeople.Filter.handles(id)) {
 				menu.setState(PEOPLE_FILTER, id - HallPeople.Filter.CLICK); // a filter tab (47.2): the table from its top
 				VillageHallScreen.renderFrom(menu, level, hall, 0);
@@ -452,6 +457,7 @@ public final class HallSections {
 		menu.setState(SECTION, section.ordinal());
 		if (section != Section.PEOPLE) {
 			menu.setState(PEOPLE_FILTER, 0); // the Overview's "At work now" reads the whole table
+			HallPeople.clearFind(menu);
 		}
 		VillageHallScreen.showList(menu, level, hall, 0);
 	}

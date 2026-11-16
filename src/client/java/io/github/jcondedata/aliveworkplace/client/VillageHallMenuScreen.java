@@ -56,8 +56,21 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return Section.of(server);
 	}
 
+	/** The People table's Find field (47.2): its text and whether it takes the keys. The server clears it with the section. */
+	private String findText = "";
+	private boolean findFocus;
+
+	/** Sends the Find field's text; the server lays the table out again with only the rows that match. */
+	private void sendFind() {
+		openUuid = null;
+		tableScroll = 0;
+		net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new HallPeople.Find(findText));
+	}
+
 	/** Opens {@code section}: shown here at once, and the sidebar's click sent to the server. */
 	private void open(Section section) {
+		findText = "";
+		findFocus = false;
 		pending = section.ordinal();
 		if (minecraft != null && minecraft.gameMode != null) {
 			minecraft.gameMode.handleInventoryButtonClick(menu.containerId, section.ordinal());
@@ -935,7 +948,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	}
 
 	private int total() {
-		int listed = menu.state(HallSections.PEOPLE_FILTER) == 0 ? menu.state(HallSections.PEOPLE_TOTAL) : menu.state(HallSections.PEOPLE_SHOWN);
+		int listed = menu.state(HallSections.PEOPLE_FILTER) == 0 && findText.isEmpty() ? menu.state(HallSections.PEOPLE_TOTAL) : menu.state(HallSections.PEOPLE_SHOWN);
 		return Math.max(listed, personSlots().size());
 	}
 
@@ -1258,6 +1271,16 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		ly += 11;
 		// The filter tabs (47.2, HallPeople.png): "All 24", "No job 1", "No bed 2"; the open one in Quartz on copper.
 		int fx = x;
+		// The Find field: the well with a magnifier, "Find" in gray until something's typed, a caret while it has the keys.
+		int findW = Math.min(64, Math.max(40, w / 5));
+		g.blitSprite(findFocus ? CopperStyle.WELL_FOCUS : CopperStyle.WELL, fx, ly, findW, 12);
+		CopperStyle.glyph(g, "search", fx + 2, ly + 2);
+		boolean caret = findFocus && (net.minecraft.Util.getMillis() / 500) % 2 == 0;
+		String shown = findText.isEmpty() && !findFocus ? Component.translatable("screen.aliveworkplace.hall.people.find").getString() : findText;
+		String fit = font.width(shown) > findW - 16 ? font.plainSubstrByWidth(shown, findW - 16, true) : shown;
+		g.drawString(font, fit + (caret ? "_" : ""), fx + 12, ly + 2, findText.isEmpty() && !findFocus ? CopperStyle.OFF_TEXT : CopperStyle.QUARTZ, false);
+		hits.add(new int[]{10, 0, fx, ly, findW, 12});
+		fx += findW + 4;
 		int filterOn = menu.state(HallSections.PEOPLE_FILTER);
 		int[] counts = {menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_NO_JOB), menu.state(HallSections.PEOPLE_NO_BED)};
 		for (HallPeople.Filter f : HallPeople.Filter.values()) {
@@ -1452,7 +1475,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 					continue;
 				}
 				// the table's rows, buttons and list lines take clicks only inside it: a part scrolled out of view is hidden (B546)
-				if ((hit[0] == 0 || hit[0] >= 2 && hit[0] != 9) && (my < tableTop || my >= tableTop + tableH)) {
+				if ((hit[0] == 0 || hit[0] >= 2 && hit[0] < 9) && (my < tableTop || my >= tableTop + tableH)) {
 					continue;
 				}
 				click(hit[0], hit[1], button);
@@ -1466,6 +1489,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (minecraft != null) {
 			minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
 		}
+		findFocus = kind == 10; // a click anywhere else lets go of the keys
 		ItemStack icon = kind >= 5 ? ItemStack.EMPTY : menu.slots.get(slot).getItem();
 		CompoundTag row = HallPeople.row(icon);
 		switch (kind) {
@@ -1488,6 +1512,8 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			case 6 -> menuButton(HallBeds.PICK + slot); // a bed on Bed ▾'s list (slot: the line's number)
 			case 7 -> open(Section.BUILDINGS); // "Short of beds? Plan a house ›"
 			case 8 -> press(slot, 0, true); // Story: the shift-click that opens their life story (B547)
+			case 10 -> {
+			} // the Find field takes the keys
 			case 9 -> { // a filter tab (47.2): the table from its top
 				openUuid = null;
 				tableScroll = 0;
@@ -1512,6 +1538,15 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	public boolean keyPressed(int key, int scanCode, int modifiers) {
+		if (findFocus) { // the Find field (47.2): every key is the field's, so "E" types instead of closing
+			if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE || key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER) {
+				findFocus = false;
+			} else if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE && !findText.isEmpty()) {
+				findText = hasControlDown() ? "" : findText.substring(0, findText.length() - 1);
+				sendFind();
+			}
+			return true;
+		}
 		if (key == org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE && customBody() && openUuid != null) {
 			if (jobListOpenElsewhere(null)) {
 				menuButton(HallJobs.CLOSE);
@@ -1523,6 +1558,18 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			return true;
 		}
 		return super.keyPressed(key, scanCode, modifiers);
+	}
+
+	@Override
+	public boolean charTyped(char c, int modifiers) {
+		if (findFocus) {
+			if (net.minecraft.util.StringUtil.isAllowedChatCharacter(c) && findText.length() < HallPeople.FIND_MAX) {
+				findText += c;
+				sendFind();
+			}
+			return true;
+		}
+		return super.charTyped(c, modifiers);
 	}
 
 	/** Opens the table's row {@code index} of those loaded (the screenshot harness), scrolled into view; false if there's none. */

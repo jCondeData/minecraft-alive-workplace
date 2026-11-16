@@ -88,6 +88,61 @@ public final class HallPeople {
 		}
 	}
 
+	/** The longest Find text the server takes. */
+	public static final int FIND_MAX = 32;
+	/** A menu-button click of FIND lays the table out again for the menu's new Find text (sent by {@link Find}). */
+	public static final int FIND = Filter.CLICK + 50;
+	/** Each open hall screen's Find text (47.2; not saved, gone with the screen). */
+	private static final java.util.Map<ChoiceMenu, String> FINDS = java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
+	/** C2S: the People table's Find field changed (47.2): the open hall shows only the rows whose name or job has it. */
+	public record Find(String text) implements net.minecraft.network.protocol.common.custom.CustomPacketPayload {
+		public static final Type<Find> TYPE = new Type<>(io.github.jcondedata.aliveworkplace.AliveWorkplace.id("hall_find"));
+		public static final net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf, Find> CODEC =
+			net.minecraft.network.codec.StreamCodec.composite(net.minecraft.network.codec.ByteBufCodecs.stringUtf8(FIND_MAX * 4), Find::text, Find::new);
+
+		@Override
+		public Type<? extends net.minecraft.network.protocol.common.custom.CustomPacketPayload> type() {
+			return TYPE;
+		}
+	}
+
+	public static void init() {
+		io.github.jcondedata.aliveworkplace.platform.Platform.get().serverbound(Find.TYPE, Find.CODEC, (payload, player) -> find(player, payload.text()));
+	}
+
+	/** Sets the Find text of {@code player}'s open hall screen and lays its table out again (nothing on any other screen). */
+	public static boolean find(net.minecraft.server.level.ServerPlayer player, String text) {
+		if (!(player.containerMenu instanceof ChoiceMenu menu)) {
+			return false;
+		}
+		String clean = text == null ? "" : text.strip();
+		if (clean.length() > FIND_MAX) {
+			clean = clean.substring(0, FIND_MAX);
+		}
+		FINDS.put(menu, clean);
+		return menu.clickMenuButton(player, FIND);
+	}
+
+	/** Clears {@code menu}'s Find text (another section opened). */
+	static void clearFind(ChoiceMenu menu) {
+		FINDS.remove(menu);
+	}
+
+	/** {@code menu}'s Find text ("" for none). */
+	public static String findText(ChoiceMenu menu) {
+		return FINDS.getOrDefault(menu, "");
+	}
+
+	/** Whether {@code villager}'s name or job has {@code text} in it, ignoring case. */
+	static boolean found(Villager villager, String text) {
+		String t = text.toLowerCase(java.util.Locale.ROOT);
+		String name = villager.getName().getString().toLowerCase(java.util.Locale.ROOT);
+		String job = Component.translatable("entity.minecraft.villager." + villager.getVillagerData().getProfession().name()).getString()
+			.toLowerCase(java.util.Locale.ROOT);
+		return name.contains(t) || job.contains(t);
+	}
+
 	/**
 	 * Counts the tabs over everyone {@code people} lists, then leaves only the open filter's rows in it (47.2); the
 	 * header's counts stay the village's.
@@ -98,6 +153,10 @@ public final class HallPeople {
 		Filter filter = Filter.of(menu.state(HallSections.PEOPLE_FILTER));
 		if (filter != Filter.ALL) {
 			people.removeIf(v -> !filter.passes(level, v));
+		}
+		String text = findText(menu);
+		if (!text.isEmpty()) {
+			people.removeIf(v -> !found(v, text)); // the Find field (47.2)
 		}
 		menu.setState(HallSections.PEOPLE_SHOWN, Math.min(Short.MAX_VALUE, people.size()));
 	}

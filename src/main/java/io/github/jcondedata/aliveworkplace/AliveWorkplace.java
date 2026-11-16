@@ -79,6 +79,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.hall.Curfew.init();
 		io.github.jcondedata.aliveworkplace.hall.Conscription.init();
 		io.github.jcondedata.aliveworkplace.hall.Seasons.init();
+		io.github.jcondedata.aliveworkplace.hall.HallPeople.init(); // the People table's Find field (47.2)
 		io.github.jcondedata.aliveworkplace.cup.CupThemes.init(); // 28.17: the Festival Cup's themes and its hall page
 		io.github.jcondedata.aliveworkplace.cup.CupPage.init();
 		io.github.jcondedata.aliveworkplace.cup.TypeChart.init(); // 28.18: the bouts' type chart, and the bouts at the ring

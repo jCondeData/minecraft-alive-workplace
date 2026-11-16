@@ -183,6 +183,9 @@ public class HallCopperlineGameTests {
 		for (int x : new int[]{10, 14, 18}) {
 			Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(x, 2, 20));
 			v.setNoAi(true);
+			if (x == 10) {
+				v.setCustomName(Component.literal("Wren"));
+			}
 			if (x == 18) {
 				v.setVillagerData(v.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.FARMER).setLevel(2));
 			}
@@ -200,9 +203,22 @@ public class HallCopperlineGameTests {
 				"No job shows " + rows(menu) + " rows, " + menu.state(HallSections.PEOPLE_SHOWN) + " of " + menu.state(HallSections.PEOPLE_TOTAL));
 			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK + 2), "No bed wasn't taken");
 			helper.assertTrue(rows(menu) == 3, "No bed shows " + rows(menu));
+			// The Find field (its packet's handler): by job, by name, ignoring case; cleared, everyone again.
+			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK), "All wasn't taken");
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.find(player, "FARM"), "Find wasn't taken");
+			helper.assertTrue(rows(menu) == 1 && menu.state(HallSections.PEOPLE_SHOWN) == 1, "Find 'FARM' shows " + rows(menu));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.find(player, "wre"), "Find wasn't taken");
+			helper.assertTrue(rows(menu) == 1, "Find 'wre' shows " + rows(menu));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.find(player, "nobody here"), "Find wasn't taken");
+			helper.assertTrue(rows(menu) == 0, "Find 'nobody here' shows " + rows(menu));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.find(player, ""), "Find wasn't taken");
+			helper.assertTrue(rows(menu) == 3, "an empty Find shows " + rows(menu));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.find(player, "farm"), "Find wasn't taken");
 			helper.assertTrue(menu.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallPeople.Filter.CLICK + 1), "No job again");
 			helper.assertTrue(menu.clickMenuButton(player, Section.OVERVIEW.ordinal()), "the rail didn't take Overview");
-			helper.assertTrue(menu.state(HallSections.PEOPLE_FILTER) == 0 && rows(menu) == 3, "Overview kept the filter: " + rows(menu));
+			helper.assertTrue(menu.state(HallSections.PEOPLE_FILTER) == 0 && rows(menu) == 3, "Overview kept the filter or Find: " + rows(menu));
+			helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.HallPeople.findText(menu).isEmpty(), "Overview kept the Find text");
+			helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall.people.find"), "no text for Find");
 			for (String key : new String[]{"all", "no_job", "no_bed"}) {
 				helper.assertTrue(Language.getInstance().has("screen.aliveworkplace.hall.people.filter." + key), "no text for " + key);
 			}

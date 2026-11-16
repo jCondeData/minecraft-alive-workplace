@@ -406,6 +406,7 @@
   "screen.aliveworkplace.hall.rank_top": "Top rank",
   "screen.aliveworkplace.hall.people.mood_bar": "%s%% %s",
   "screen.aliveworkplace.hall.people.filter.all": "All %s",
+  "screen.aliveworkplace.hall.people.find": "Find",
   "screen.aliveworkplace.hall.people.filter.no_job": "No job %s",
   "screen.aliveworkplace.hall.people.filter.no_bed": "No bed %s",
   "screen.aliveworkplace.hall.at_work": "At work now",

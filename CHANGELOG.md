@@ -17,6 +17,16 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
+  "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: None", where they read a bare 0 (B1325).
+- With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
+  "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
+- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a
+  Pokémon from the daycare is waiting for a free place in it." (B1309).
+- Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
+  case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
+  the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so
+  " Bandit_King " or "LIGHTHOUSE" now switches that story or Wonder off (B1323).
 - A builder's shortage line names 24 more things in the plural after a count: "short of 12 Snowballs to make 3 Snow
   Blocks", Torchflowers, the slabs, the weathered copper doors and trapdoors, Totems of Undying and more (B1307).
 - Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not
@@ -43,6 +53,13 @@ asks for the steps, `latest.log` and any crash report).
   counts what waits (mail, stacks for the porter, columns for sale) and the line at the foot says what each slot is
   for. The mailbox's address, letter and parcel (now 3x3, on the right) sit beside the inbox with one copper Send; the
   counter names its rows "Sells" and "Price". Shift-clicks and sales work as before.
+- A crafter truly short of logs counts every wood's logs at hand: an oak and a spruce log for 2 chests read "short of
+  2 Oak Logs to make 2 Chests", not 3, as if the spruce log weren't there.
+- A builder short of hay bales (or slime blocks, dried kelp blocks or any block packed from 9 of one thing) is told what
+  to gather: "short of 27 Wheat to make 3 Hay Bales". Before, his line said nothing at all.
+- With Create, a builder short of andesite (diorite, granite, tuff, calcite, deepslate, dripstone) no longer reads
+  "short of 3 Andesite to make 3 Andesite": a Mason never makes a stone out of itself, so it reads as a stone a player
+  mines.
 
 ## 0.155.3 — 2026-11-15
 

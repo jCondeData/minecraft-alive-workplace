@@ -533,6 +533,9 @@ public final class Crafting {
 			if (takesBack(level, recipe, target, pool)) {
 				continue; // B1303, B1306: never made from what it's being made for
 			}
+			if (ofItself(level, recipe, target, pool)) {
+				continue; // B1308: never made of itself
+			}
 			if (lenient && best != null && loops(level, holder)) {
 				break; // B1255: what's short is said by a way from scratch, not by one that loops back (they come last)
 			}
@@ -781,6 +784,7 @@ public final class Crafting {
 	 */
 	private static boolean unpacks(ServerLevel level, Kind kind, Recipe<?> recipe, Item target) {
 		Item from = null;
+		int in = 0;
 		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
 			if (ingredient.isEmpty()) {
 				continue;
@@ -790,8 +794,15 @@ public final class Crafting {
 				return false;
 			}
 			from = options.get(0);
+			in++;
 		}
 		if (from == null || from == target) {
+			return false;
+		}
+		// B1305: of a pair each made only from the other (9 wheat into a hay bale, the bale back into 9 wheat; slimeballs
+		// and their block, dried kelp and its block), the way that packs several into fewer is the making, not an
+		// unpacking: else both counted as unpacking, the bale counted as raw and its line named nothing
+		if (in > Recipes.result(recipe, level.registryAccess()).getCount() && madeOnlyOf(level, kind, target, from)) {
 			return false;
 		}
 		List<RecipeHolder<?>> packs = recipesFor(level, kind, from);
@@ -815,6 +826,56 @@ public final class Crafting {
 			}
 		}
 		return true;
+	}
+
+	/** Whether every recipe of {@code kind} for {@code target} takes {@code from} alone, and there is one (B1305). */
+	private static boolean madeOnlyOf(ServerLevel level, Kind kind, Item target, Item from) {
+		List<RecipeHolder<?>> ways = recipesFor(level, kind, target);
+		if (ways.isEmpty()) {
+			return false;
+		}
+		for (RecipeHolder<?> holder : ways) {
+			for (Ingredient ingredient : Recipes.ingredients(holder.value())) {
+				if (ingredient.isEmpty()) {
+					continue;
+				}
+				List<Item> options = options(level, ingredient);
+				if (options.size() != 1 || options.get(0) != from) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * B1308: whether {@code recipe} makes {@code target} out of {@code target} itself and nothing else at hand would do: one of
+	 * its ingredients accepts the target (Create cuts any andesite form, andesite too, into andesite by its stone_types tag;
+	 * a filter cleared into a filter) and the pool holds none of its other options. Making a thing of itself is no way to
+	 * make it, nor to say what's short of it: a stone a player mines reads as gathered, not "short of 3 Andesite to make 3
+	 * Andesite". With another form to hand (polished andesite in the chest) it is still cut from that.
+	 */
+	private static boolean ofItself(ServerLevel level, Recipe<?> recipe, Item target, Pool pool) {
+		for (Ingredient ingredient : Recipes.ingredients(recipe)) {
+			if (ingredient.isEmpty()) {
+				continue;
+			}
+			List<Item> options = options(level, ingredient);
+			if (!options.contains(target)) {
+				continue;
+			}
+			boolean other = false;
+			for (Item option : options) {
+				if (option != target && pool.have(option) > 0) {
+					other = true;
+					break;
+				}
+			}
+			if (!other) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1044,6 +1105,8 @@ public final class Crafting {
 				}
 			}
 			boolean triedAll = false;
+			long want = need; // what's left to pick after pre (B1311)
+			List<Map.Entry<Item, Long>> pre = new ArrayList<>();
 			if (pick == null && makeable && slot.options().size() > 1) {
 				// B1301: no one option can be made in full (one oak and one spruce log: 4 planks of each, not 8 of one);
 				// first one option as before, else each option made as far as it goes and the slot takes the mix
@@ -1063,16 +1126,42 @@ public final class Crafting {
 							taken.add(mixed);
 							continue;
 						}
-						triedAll = !lenient; // planning for real, nothing more to try down there
+						if (lenient) {
+							// B1311: truly short, what each option can be made from goes in first (an oak and a spruce log:
+							// 4 planks of each), and only the rest is what's short (2 logs for 2 chests, not 3 of the first wood)
+							Pool mixTrial = pool.copy();
+							List<Step> mixSteps = new ArrayList<>();
+							List<Map.Entry<Item, Long>> mixPre = new ArrayList<>();
+							long mixMade = madeMix(level, kind, slot, need, mixTrial, mixSteps, depth, allowed, mixPre);
+							boolean keep = mixMade > 0;
+							if (keep && mixMade < need) {
+								// the rest is still said further down when the whole would be: 5 oak logs for 3 barrels, the
+								// last log goes into planks and the rest is short of logs, not of planks (the logs at hand are
+								// what makes going down worth saying, B409, and the mix just used them up)
+								pool.budget.lenient = true;
+								if (makeOne(level, kind, slot, need - mixMade, mixTrial.copy(), new ArrayList<>(), depth, allowed) == null) {
+									keep = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed) == null;
+								}
+								pool.budget.lenient = false;
+							}
+							if (keep) {
+								pool.set(mixTrial);
+								steps.addAll(mixSteps);
+								pre.addAll(mixPre);
+								want = need - mixMade;
+							}
+						} else {
+							triedAll = true; // planning for real, nothing more to try down there
+						}
 					}
 				} finally {
 					pool.budget.lenient = lenient;
 				}
 			}
 			if (pick == null && makeable && !triedAll) {
-				pick = makeOne(level, kind, slot, need, pool, steps, depth, allowed);
+				pick = makeOne(level, kind, slot, want, pool, steps, depth, allowed);
 			}
-			if (pick == null || pool.have(pick) < need) {
+			if (pick == null || pool.have(pick) < want) {
 				if (!pool.budget.lenient) {
 					return null;
 				}
@@ -1086,8 +1175,10 @@ public final class Crafting {
 					pick = slot.options().stream().filter(o -> pool.chest(o) > 0).findFirst()
 						.orElseGet(() -> ordered.stream().filter(o -> raw(level, kind, o)).findFirst().orElse(ordered.get(0)));
 					// B1293: what's there of the other options counts too (one oak and one spruce log: 2 short of 4, not 3)
-					List<Map.Entry<Item, Long>> used = new ArrayList<>(useMix(slot.options(), need, pool));
-					long rest = need - used.stream().mapToLong(Map.Entry::getValue).sum();
+					List<Map.Entry<Item, Long>> mixed = useMix(slot.options(), want, pool);
+					List<Map.Entry<Item, Long>> used = new ArrayList<>(pre);
+					used.addAll(mixed);
+					long rest = want - mixed.stream().mapToLong(Map.Entry::getValue).sum();
 					long had = Math.max(0, pool.have(pick));
 					pool.lacks.merge(pick, rest - had, Long::sum);
 					pool.use(pick, rest);
@@ -1095,10 +1186,16 @@ public final class Crafting {
 					taken.add(used);
 					continue;
 				}
-				pool.lacks.merge(pick, need - Math.max(0, pool.have(pick)), Long::sum);
+				pool.lacks.merge(pick, want - Math.max(0, pool.have(pick)), Long::sum);
 			}
-			pool.use(pick, need);
-			taken.add(List.of(Map.entry(pick, need)));
+			pool.use(pick, want);
+			if (pre.isEmpty()) {
+				taken.add(List.of(Map.entry(pick, want)));
+			} else {
+				List<Map.Entry<Item, Long>> used = new ArrayList<>(pre);
+				used.add(Map.entry(pick, want));
+				taken.add(used);
+			}
 		}
 		return crafts(taken, counts, times);
 	}
@@ -1137,6 +1234,37 @@ public final class Crafting {
 		pool.set(trial);
 		steps.addAll(trialSteps);
 		return used;
+	}
+
+	/**
+	 * B1311, planning what's short (called with lenient off, so nothing is noted short down there): makes each option, in
+	 * the slot's order, as far as the pool can for real (only newly made ones: what's there already is left to the line's
+	 * own count), up to {@code need} in all, and uses them; how many, each added to {@code used}.
+	 */
+	private static long madeMix(ServerLevel level, Kind kind, Slot slot, long need, Pool pool, List<Step> steps, int depth,
+			Predicate<LuxuryRecipes.Recipe> allowed, List<Map.Entry<Item, Long>> used) {
+		long rest = need;
+		for (Item option : slot.options()) {
+			if (rest <= 0) {
+				break;
+			}
+			long had = Math.max(0, pool.have(option));
+			long n = mostMade(level, kind, option, rest + had, pool, depth, allowed) - had;
+			if (n <= 0) {
+				continue;
+			}
+			Pool trial = pool.copy();
+			List<Step> trialSteps = new ArrayList<>();
+			if (!make(level, kind, option, (int) (n + had - trial.have(option)), trial, trialSteps, depth - 1, allowed) || trial.have(option) < n + had) {
+				continue; // it just could (mostMade): not expected
+			}
+			trial.use(option, n);
+			pool.set(trial);
+			steps.addAll(trialSteps);
+			used.add(Map.entry(option, n));
+			rest -= n;
+		}
+		return need - rest;
 	}
 
 	/** B1301: the most of {@code option}, up to {@code up}, the pool has or can make (each count tried on a trial pool). */

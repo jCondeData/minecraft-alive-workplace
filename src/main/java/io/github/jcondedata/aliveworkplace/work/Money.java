@@ -22,8 +22,13 @@ public final class Money {
 	/** "600 CobbleDollars" (thousands marked: "150,000 CobbleDollars", B466) or "6 emeralds". */
 	public static Component describe(long dollars, int emeralds) {
 		return cobbleDollars()
-			? Component.translatable("message.aliveworkplace.money.dollars", String.format(java.util.Locale.ROOT, "%,d", dollars))
+			? Component.translatable("message.aliveworkplace.money.dollars", grouped(dollars))
 			: Words.counted("message.aliveworkplace.money.emeralds", emeralds, emeralds);
+	}
+
+	/** A sum of money as every money line writes it, thousands marked: "6,400" (B466, B1326). */
+	public static String grouped(long amount) {
+		return String.format(java.util.Locale.ROOT, "%,d", amount);
 	}
 
 	/** What the player has: "1,250 CobbleDollars" or "12 emeralds". */

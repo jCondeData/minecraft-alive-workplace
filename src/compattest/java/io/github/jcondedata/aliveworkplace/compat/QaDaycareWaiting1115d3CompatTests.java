@@ -42,7 +42,8 @@ public class QaDaycareWaiting1115d3CompatTests implements FabricGameTest {
 	static final String CAME_CHARMANDER = DaycareWaitingCompatTests.CAME_CHARMANDER;
 
 	static String reminder(int n) {
-		return "Your PC is full: Pokémon from the daycare are waiting for a free place in it (" + n + ").";
+		return n == 1 ? "Your PC is full: a Pokémon from the daycare is waiting for a free place in it." // B1309: one reads in the singular
+			: "Your PC is full: Pokémon from the daycare are waiting for a free place in it (" + n + ").";
 	}
 
 	/** A player logging in with {@code uuid} (a fresh login: Fabric's join event fires), whose chat lands in {@code seen}. */
@@ -134,7 +135,7 @@ public class QaDaycareWaiting1115d3CompatTests implements FabricGameTest {
 				UUID other = inPc(pc, pair[0]) ? pair[1] : pair[0];
 				helper.assertValueEqual(WaitingPokemon.count(server, player.getUUID(), other), 1, "the other's entries waiting");
 				helper.assertValueEqual(lines(seen, CAME_EEVEE), 1L, "lines saying an Eevee came: " + seen);
-				helper.assertTrue(seen.stream().noneMatch(s -> s.startsWith("Your PC is full: Pokémon from the daycare")), "reminded mid-session: " + seen);
+				helper.assertTrue(seen.stream().noneMatch(s -> s.startsWith("Your PC is full: ") && s.contains("from the daycare")), "reminded mid-session: " + seen);
 				QaDaycareRoom1115d2CompatTests.freePc(pc, 2);
 				helper.runAfterDelay(5, () -> {
 					for (UUID id : pair) {

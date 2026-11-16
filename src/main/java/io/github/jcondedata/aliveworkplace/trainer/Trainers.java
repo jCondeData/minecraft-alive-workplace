@@ -241,9 +241,15 @@ public final class Trainers {
 		int dollars = prize[0];
 		int emeralds = prize[1];
 		io.github.jcondedata.aliveworkplace.work.Money.pay(player, dollars, emeralds);
-		player.sendSystemMessage(io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
-			? Component.translatable("message.aliveworkplace.trainer.won_dollars", trainer.getDisplayName(), dollars).withStyle(ChatFormatting.GREEN)
-			: io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.trainer.won_emeralds", emeralds, trainer.getDisplayName(), emeralds).withStyle(ChatFormatting.GREEN));
+		player.sendSystemMessage(prizeLine(trainer.getDisplayName(), dollars, emeralds));
+	}
+
+	/** "You beat Ash! +2,500 CobbleDollars" (thousands marked, B1326) or "+3 emeralds", in green. */
+	public static Component prizeLine(Component trainerName, int dollars, int emeralds) {
+		return io.github.jcondedata.aliveworkplace.work.Money.cobbleDollars()
+			? Component.translatable("message.aliveworkplace.trainer.won_dollars", trainerName, io.github.jcondedata.aliveworkplace.work.Money.grouped(dollars))
+				.withStyle(ChatFormatting.GREEN)
+			: io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.trainer.won_emeralds", emeralds, trainerName, emeralds).withStyle(ChatFormatting.GREEN);
 	}
 
 	private static Villager find(MinecraftServer server, UUID id) {

@@ -252,12 +252,17 @@ public final class RealmTreasury {
 				lore.add(movementLine(ledger.get(i)));
 			}
 		}
-		lore.add(VillageHallScreen.line(Money.cobbleDollars() ? Component.translatable("screen.aliveworkplace.realm.treasury.give_dollars", Money.DOLLARS_PER_EMERALD,
-			64 * Money.DOLLARS_PER_EMERALD) : Component.translatable("screen.aliveworkplace.realm.treasury.give_emeralds"), ChatFormatting.DARK_GRAY));
+		lore.add(VillageHallScreen.line(giveHint(), ChatFormatting.DARK_GRAY));
 		lore.add(VillageHallScreen.line(viewer != null && mayTake(server, realm, viewer) ? "screen.aliveworkplace.realm.treasury.take_how"
 			: "screen.aliveworkplace.realm.treasury.take_who", ChatFormatting.DARK_GRAY));
 		return VillageHallScreen.icon(Items.EMERALD_BLOCK, Component.translatable("screen.aliveworkplace.realm.treasury.name"), ChatFormatting.GREEN,
 			lore.toArray(Component[]::new));
+	}
+
+	/** How to give to the treasury: in CobbleDollars, one emerald's worth or a stack's, thousands marked ("6,400", B1326). */
+	public static Component giveHint() {
+		return Money.cobbleDollars() ? Component.translatable("screen.aliveworkplace.realm.treasury.give_dollars", Money.grouped(Money.DOLLARS_PER_EMERALD),
+			Money.grouped(64L * Money.DOLLARS_PER_EMERALD)) : Component.translatable("screen.aliveworkplace.realm.treasury.give_emeralds");
 	}
 
 	/** "Day 12: +0.30 Levy from Thornholm", green in, red out. */

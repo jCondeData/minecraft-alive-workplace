@@ -500,8 +500,65 @@ public final class WorkplaceConfig {
 	@SuppressWarnings("unused")
 	private java.util.List<String> expansionsOpen = Expansions.open();
 
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	/** Every on/off switch (and the switches in raiderCultures and disasters) is read by {@link OnOff} (B1324). */
+	private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
+		.registerTypeAdapter(boolean.class, new OnOff())
+		.registerTypeAdapter(Boolean.class, new OnOff())
+		.create();
 	public static final String FILE = "aliveworkplace.json";
+
+	/**
+	 * What a switch written as a word means ({@code "yes"}, {@code " ON "}, {@code "False"}): true for true, yes and on,
+	 * false for false, no and off, in any case and with spaces round it; null for any other word (B1324).
+	 */
+	static Boolean onOff(String word) {
+		if (word == null) {
+			return null;
+		}
+		return switch (word.trim().toLowerCase(java.util.Locale.ROOT)) {
+			case "true", "yes", "on" -> Boolean.TRUE;
+			case "false", "no", "off" -> Boolean.FALSE;
+			default -> null;
+		};
+	}
+
+	/**
+	 * Reads a switch (B1324). Gson's own reader takes any word but "true" as false, so {@code "moddedLibrary": "yes"}
+	 * switched the feature off. Here true and false read as before, a word reads as {@link #onOff} says, and anything
+	 * else (another word, a number, a list) is refused: {@link #parse} then gives that switch its default and names it in
+	 * the log. Written back as plain true or false.
+	 */
+	private static final class OnOff extends com.google.gson.TypeAdapter<Boolean> {
+		@Override
+		public void write(com.google.gson.stream.JsonWriter out, Boolean value) throws IOException {
+			if (value == null) {
+				out.nullValue();
+			} else {
+				out.value(value.booleanValue());
+			}
+		}
+
+		@Override
+		public Boolean read(com.google.gson.stream.JsonReader in) throws IOException {
+			com.google.gson.stream.JsonToken token = in.peek();
+			switch (token) {
+				case BOOLEAN:
+					return in.nextBoolean();
+				case NULL:
+					in.nextNull();
+					return null;
+				case STRING:
+					String word = in.nextString();
+					Boolean on = onOff(word);
+					if (on == null) {
+						throw new com.google.gson.JsonSyntaxException("\"" + word + "\" is not true/false, yes/no or on/off");
+					}
+					return on;
+				default:
+					throw new com.google.gson.JsonSyntaxException("expected true or false, found " + token);
+			}
+		}
+	}
 
 	/** Reads the config (or the defaults), clamps it, writes it back complete and applies it. */
 	public static WorkplaceConfig loadAndApply(Path configDir) {
@@ -782,15 +839,11 @@ public final class WorkplaceConfig {
 			prices.add(v == null ? io.github.jcondedata.aliveworkplace.work.Retraining.DEFAULT_PRICES.get(i) : clamp(v, 0, 1000));
 		}
 		retrainPrices = prices;
-		if (disabledWonders == null) {
-			disabledWonders = new ArrayList<>();
-		}
+		disabledWonders = cleanIds(disabledWonders);
 		furnitureMods = io.github.jcondedata.aliveworkplace.furnish.Furnishings.cleanMods(furnitureMods);
 		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
 		leaderboardDay = leaderboardDay(leaderboardDay).name().toLowerCase(java.util.Locale.ROOT);
-		if (disabledArcs == null) {
-			disabledArcs = new ArrayList<>();
-		}
+		disabledArcs = cleanIds(disabledArcs);
 		Map<String, Boolean> cultures = defaultCultures();
 		if (raiderCultures != null) {
 			raiderCultures.forEach((id, on) -> {
@@ -805,6 +858,22 @@ public final class WorkplaceConfig {
 		}
 		disasters.replaceAll((id, on) -> on == null || on);
 		disasters.keySet().removeIf(java.util.Objects::isNull);
+	}
+
+	/**
+	 * A list of ids as hand-written ({@code " bandit_king "}, {@code "Great_Cathedral"}) the way ids are: trimmed and
+	 * lower-cased, empty entries and repeats dropped (B1323; ids are always lower-case, so nothing is renamed).
+	 */
+	static List<String> cleanIds(List<String> names) {
+		java.util.LinkedHashSet<String> out = new java.util.LinkedHashSet<>();
+		if (names != null) {
+			for (String name : names) {
+				if (name != null && !name.isBlank()) {
+					out.add(name.trim().toLowerCase(java.util.Locale.ROOT));
+				}
+			}
+		}
+		return new ArrayList<>(out);
 	}
 
 	/** The rank {@code name} means for {@code colonyRank} ("town", "City"...); a City for anything else. */
@@ -900,14 +969,13 @@ public final class WorkplaceConfig {
 	/** {@code disabledWonders}' entries as ids: a bare name is ours ({@code great_cathedral}: {@code aliveworkplace:great_cathedral}). */
 	static java.util.Set<net.minecraft.resources.ResourceLocation> wonderIds(List<String> names) {
 		java.util.Set<net.minecraft.resources.ResourceLocation> out = new java.util.LinkedHashSet<>();
-		for (String name : names) {
-			if (name == null || name.isBlank()) {
-				continue;
-			}
-			String full = name.trim().contains(":") ? name.trim() : AliveWorkplace.MOD_ID + ":" + name.trim();
+		for (String name : cleanIds(names)) {
+			String full = name.contains(":") ? name : AliveWorkplace.MOD_ID + ":" + name;
 			net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(full);
 			if (id != null) {
 				out.add(id);
+			} else {
+				AliveWorkplace.LOG.warn("Skipping \"{}\" in disabledWonders in {}: not a Wonder id", name, FILE);
 			}
 		}
 		return java.util.Collections.unmodifiableSet(out);
@@ -1148,7 +1216,7 @@ public final class WorkplaceConfig {
 		io.github.jcondedata.aliveworkplace.story.Arcs.COOLDOWN_DAYS = arcCooldownDays;
 		io.github.jcondedata.aliveworkplace.story.Arcs.AT_ONCE = arcsAtOnce;
 		io.github.jcondedata.aliveworkplace.story.LostCaravanStory.CHANCE = lostCaravanChance;
-		io.github.jcondedata.aliveworkplace.story.Arcs.DISABLED = disabledArcs.stream().filter(java.util.Objects::nonNull).collect(java.util.stream.Collectors.toUnmodifiableSet());
+		io.github.jcondedata.aliveworkplace.story.Arcs.DISABLED = java.util.Set.copyOf(cleanIds(disabledArcs));
 		io.github.jcondedata.aliveworkplace.legend.Legends.ENABLED = legends && Expansions.on(Expansions.M29);
 		io.github.jcondedata.aliveworkplace.legend.LegendSites.ENABLED = legendSites && Expansions.on(Expansions.M29);
 		// Off in gametests (a round could seize a test's Master); the strange mood tests turn it on.

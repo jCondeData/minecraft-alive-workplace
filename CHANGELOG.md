@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Crafters: with planks of one wood and logs of another in the chest, the "short of" line now counts them all: 4 spruce
+  planks with an oak and a birch log for 2 chests reads "short of 1 Oak Log", not 3 (B1333).
 - Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk
   nobody had loaded now comes down as soon as that chunk loads, into the chests by the bench, instead of staying up
   for good (B1322).

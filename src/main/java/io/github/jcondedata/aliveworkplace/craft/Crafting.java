@@ -1107,6 +1107,7 @@ public final class Crafting {
 			boolean triedAll = false;
 			long want = need; // what's left to pick after pre (B1311)
 			List<Map.Entry<Item, Long>> pre = new ArrayList<>();
+			Item downTo = null; // B1333: the option the rest is made from further down, after what's there
 			if (pick == null && makeable && slot.options().size() > 1) {
 				// B1301: no one option can be made in full (one oak and one spruce log: 4 planks of each, not 8 of one);
 				// first one option as before, else each option made as far as it goes and the slot takes the mix
@@ -1134,13 +1135,16 @@ public final class Crafting {
 							List<Map.Entry<Item, Long>> mixPre = new ArrayList<>();
 							long mixMade = madeMix(level, kind, slot, need, mixTrial, mixSteps, depth, allowed, mixPre);
 							boolean keep = mixMade > 0;
+							Item down = null;
 							if (keep && mixMade < need) {
 								// the rest is still said further down when the whole would be: 5 oak logs for 3 barrels, the
 								// last log goes into planks and the rest is short of logs, not of planks (the logs at hand are
-								// what makes going down worth saying, B409, and the mix just used them up)
+								// what makes going down worth saying, B409, and the mix just used them up). B1333: the mix is
+								// kept and only the rest goes down that way, after what's there of every option (4 spruce
+								// planks and an oak and a birch log for 2 chests: 1 log short, not 3 of the first wood)
 								pool.budget.lenient = true;
 								if (makeOne(level, kind, slot, need - mixMade, mixTrial.copy(), new ArrayList<>(), depth, allowed) == null) {
-									keep = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed) == null;
+									down = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed);
 								}
 								pool.budget.lenient = false;
 							}
@@ -1149,6 +1153,7 @@ public final class Crafting {
 								steps.addAll(mixSteps);
 								pre.addAll(mixPre);
 								want = need - mixMade;
+								downTo = down;
 							}
 						} else {
 							triedAll = true; // planning for real, nothing more to try down there
@@ -1156,6 +1161,27 @@ public final class Crafting {
 					}
 				} finally {
 					pool.budget.lenient = lenient;
+				}
+			}
+			if (pick == null && downTo != null) {
+				// B1333: what's there of every option first (planks of another wood), then only the rest made of downTo
+				// from further down, what's short noted there (logs)
+				Pool trial = pool.copy();
+				List<Step> trialSteps = new ArrayList<>();
+				List<Map.Entry<Item, Long>> used = new ArrayList<>(pre);
+				List<Map.Entry<Item, Long>> there = useMix(slot.options(), want, trial);
+				used.addAll(there);
+				long rest = want - there.stream().mapToLong(Map.Entry::getValue).sum();
+				if (rest <= 0 || make(level, kind, downTo, (int) (rest - trial.have(downTo)), trial, trialSteps, depth - 1, allowed)
+						&& trial.have(downTo) >= rest) {
+					if (rest > 0) {
+						trial.use(downTo, rest);
+						used.add(Map.entry(downTo, rest));
+					}
+					pool.set(trial);
+					steps.addAll(trialSteps);
+					taken.add(used);
+					continue;
 				}
 			}
 			if (pick == null && makeable && !triedAll) {

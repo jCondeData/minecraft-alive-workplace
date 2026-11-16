@@ -107,7 +107,7 @@ range is in brackets.
 | `legendNeeds` | on | 1.3 | A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. |
 | `legendSites` | on | 1.3 | Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). |
 | `strangeMoods` | on | 1.3 | Once a day a Master in a happy village may be taken by a strange mood, asking for three rare materials to make a Masterwork and become a Legend. |
-| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). |
+| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). At 0 the slider reads "Nobody" (B1325). |
 | `mythicLegendCap` | 0, 0, 1, 2 |  | Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City (each 0 to 10). In the file only: a list isn't on the settings screen. |
 | `builderRepairs` | on |  | Idle builders repair the buildings they finished when blocks go missing. |
 | `repairAsk` | on |  | A builder who finds blocks missing from a finished build asks first (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page) and repairs only what was agreed (36.15). Off: they repair by themselves, as before. What raiders and village fires took is always repaired without asking. |
@@ -143,7 +143,7 @@ range is in brackets.
 | `rogueBounties` | on | 1.5 | With Cobblemon, half the bounties are on a rogue Pokémon: huge, level 35 to 65 by rank, roaming 150 to 250 blocks out; beaten or caught it pays 16 emeralds times the rank factor. Off: no rogue is posted. Never without Cobblemon. See [The bounty board](bounties.md). |
 | `arcCooldownDays` | 8 (0 to 60) | 1.5 | Days between two story arcs in one village (also before a village's first). |
 | `arcsAtOnce` | 3 (0 to 20) | 1.5 | Story arcs running at once on the whole server (side arcs not counted); 0: none. |
-| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none. |
+| `lostCaravanChance` | 20 (0 to 1000) | 1.5 | One caravan in this many on a road over 300 blocks goes missing and starts the Lost Caravan; 0: none (the slider reads "Never", B1325). |
 | `disabledArcs` | empty |  | Story arc ids that never start (read trimmed and in lower case, so " Bandit_King " is `bandit_king`, B1323), not even by `/workplace story start` (it says the arc is switched off); a running one ends at its next round. In the file only. |
 | `villageProtection` | on |  | A Village Hall's owner may protect the village from other players (a setting on the hall, off until they turn it on). |
 | `partnerShows` | on | 1.2 | Pokémon pastured by a workstation are seen helping at work (with Cobblemon): they carry, water, spark... |
@@ -194,7 +194,7 @@ range is in brackets.
 | `wonderCaps` | 0, 0, 1, 2 (each 0 to 8) | 2.0 | Wonders a village may hold by rank: Hamlet, Village, Town, City. In the file only; a short list is filled from the defaults. |
 | `wonderLegends` | on | 2.0 | A Wonder needs its Legends in the village. Off: each Legend's stand-in is asked for instead. |
 | `builderScaffolding` | on | 2.0 | Builders put up scaffolding to reach what has nowhere to stand near it, and take it down after. Off: those blocks are skipped. |
-| `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit. |
+| `wonderServerLimit` | 0 (0 to 64) | 2.0 | How many villages on the server may each build the same kind of Wonder; 0 is no limit (the slider reads "No Limit", B1325; `ConfigZeroLabelGameTests`). |
 | `disabledWonders` | empty | 2.0 | Wonder ids that can't be started (`great_cathedral` or `pack:id`, read trimmed and in lower case, so "LIGHTHOUSE" is `lighthouse`, B1323); one already finished keeps its blocks and powers. In the file only. |
 | `wonderCrew` | 12 (1 to 32) | 2.0 | The most builders on one Wonder's crew, its lead included; a Wonder's own file may allow fewer. See [Wonders](wonders.md). |
 | `wonderStanding` | 90 (50 to 100) | 2.0 | The share (%) of a finished Wonder that must still stand for its powers; under it the Wonder is damaged, its powers stop and the village's builders repair it. See [Wonders](wonders.md). |

@@ -175,7 +175,8 @@ rancher dies and the trainer's PC is full, the Pokémon wait on the mod's side (
 saves but never loads back or shows (B1295, B1296, B1287). An online trainer is told "Your PC is full: Charmander is
 waiting for you and will come to your PC as soon as a place in it is free."; while they're online, each one comes into
 the PC as soon as a place is free ("Charmander came to your PC from the daycare."), and at each login with Pokémon still
-waiting they're reminded how many. Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
+waiting they're reminded how many ("…waiting for a free place in it (2)."; for one, "Your PC is full: a Pokémon from
+the daycare is waiting for a free place in it.", B1309, `QaDaycareWaiting1115c2BugCompatTests`). Tested in `QaDaycareFallbacks1115dBugCompatTests` (5),
 `QaDaycareFallbacks1115dCompatTests` (12), `QaDaycareRoom1115cBugCompatTests` (2), `QaDaycareRoom1115d2BugCompatTests` (2),
 `DaycareWaitingCompatTests` (3), `QaDaycareWaiting1115d3CompatTests` (6: one per freed place, another trainer's room never used, one reminder per login with the count, a place freed while away filled at login, the Pokémon's data kept, the saved list per trainer), and `QaDaycareWaiting1115c2CompatTests` (6: one freed slot brings exactly one, no copy after a
 restart, its state kept, two trainers, an offline trainer at login), and

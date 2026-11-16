@@ -7,6 +7,7 @@ import com.cobblemon.mod.common.pokemon.Pokemon;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -141,7 +142,7 @@ public final class WaitingPokemon extends SavedData {
 			TOLD.remove(player.getUUID());
 			setDirty();
 		} else if (TOLD.add(player.getUUID())) {
-			Chat.chat(player, Component.translatable("message.aliveworkplace.daycare.still_waiting", trainer.pokemon().size())
+			Chat.chat(player, Words.counted("message.aliveworkplace.daycare.still_waiting", trainer.pokemon().size(), trainer.pokemon().size())
 				.withStyle(ChatFormatting.GOLD));
 		}
 	}

@@ -53,7 +53,8 @@ public class QaDaycareWaiting1115c2CompatTests implements FabricGameTest {
 	}
 
 	static String reminder(int n) {
-		return "Your PC is full: Pokémon from the daycare are waiting for a free place in it (" + n + ").";
+		return n == 1 ? "Your PC is full: a Pokémon from the daycare is waiting for a free place in it." // B1309: one reads in the singular
+			: "Your PC is full: Pokémon from the daycare are waiting for a free place in it (" + n + ").";
 	}
 
 	// ---- shared ----
@@ -144,7 +145,7 @@ public class QaDaycareWaiting1115c2CompatTests implements FabricGameTest {
 	}
 
 	static long reminders(List<String> seen) {
-		return seen.stream().filter(s -> s.startsWith("Your PC is full: Pokémon from the daycare")).count();
+		return seen.stream().filter(s -> s.startsWith("Your PC is full: ") && s.contains("from the daycare") && s.contains("waiting for a free place")).count(); // either form (B1309)
 	}
 
 	/** A rancher with a daycare beside the keeper's pasture (rancher(helper) clears the area, so not both from there). */

@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
+  "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: Nobody", where they read a bare 0 (B1325).
+- With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
+  "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
+- Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a
+  Pokémon from the daycare is waiting for a free place in it." (B1309).
 - Config file: a switch written as a word reads as meant ("yes" and "on" are on, "no" and "off" are off, in any
   case); any other word keeps that switch's default and the log names it, where before every word but "true" switched
   the feature off (B1324). Ids in `disabledArcs` and `disabledWonders` are read trimmed and in lower case, so

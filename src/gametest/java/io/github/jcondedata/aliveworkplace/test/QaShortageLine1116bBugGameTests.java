@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
  * an oak log read 3 (2 short); 4 oak and 4 spruce planks and a birch log read 3 Birch Logs (12 of 16 planks: 1 short). Planks and logs of
  * the same wood count right (4 oak planks and 2 oak logs: 1 log).
  */
-public class QaShortageLine1116bBugGameTests {
+public class QaShortageLine1116bBugGameTests implements FreshPlanning {
 	/** Each case on a tick of its own, so the tick's planning budget (Crafting.TICK_TRIALS) never decides the answer. */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '200' '"qaShortLine1116bPlanksBug"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 200, batch = "qaShortLine1116bPlanksBug")

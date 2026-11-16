@@ -14,7 +14,7 @@ import net.minecraft.world.item.Items;
  * birch log for 2 chests read "short of 3 Oak Logs"; 1 is short). The mix of what the logs at hand make is kept and only
  * the rest goes down to logs, after the planks already there. Each check on a tick of its own (Crafting.TICK_TRIALS).
  */
-public class B1333GameTests {
+public class B1333GameTests implements FreshPlanning {
 	/** Truly short: the exact line, naming the logs of the wood the chests still hold logs of, and only what's short. */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '200' '"b1333Lines"'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 200, batch = "b1333Lines")

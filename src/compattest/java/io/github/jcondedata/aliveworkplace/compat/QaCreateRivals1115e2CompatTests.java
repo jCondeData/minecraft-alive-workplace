@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -20,7 +21,7 @@ import net.minecraft.world.item.Items;
  * Minecraft's own recipes)". The other side: preferring a way must never stop a job using a Create way the chests already
  * hold, and an item that is Create's own still names the ore a player mines.
  */
-public class QaCreateRivals1115e2CompatTests implements FabricGameTest {
+public class QaCreateRivals1115e2CompatTests implements FreshPlanning {
 
 	/** Bread at the kitchen, a book and an item frame at the table, chains at the forge and the table: no Create item named. */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'

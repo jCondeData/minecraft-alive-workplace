@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
  * two chests, a barrel (planks and slabs of a wood, both tag slots), the shortage boundary (7 planks' worth) and the
  * Carpenter's job saved and loaded mid-way. Nothing here is random.
  */
-public class QaMixedLogs1116bGameTests implements FabricGameTest {
+public class QaMixedLogs1116bGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 	private static final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger("aliveworkplace_test");
 

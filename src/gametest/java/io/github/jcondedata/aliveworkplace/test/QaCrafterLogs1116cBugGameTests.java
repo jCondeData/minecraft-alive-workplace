@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
  * logs of several woods truly short, the count ignores every wood but the first: an oak and a spruce log (8 planks) for 2
  * chests (16) read "short of 3 Oak Logs to make 2 Chests", as if the spruce log weren't there; 2 logs are short.
  */
-public class QaCrafterLogs1116cBugGameTests implements FabricGameTest {
+public class QaCrafterLogs1116cBugGameTests implements FreshPlanning {
 	private static String ids(Map<Item, Integer> lack) {
 		return lack.entrySet().stream().map(e -> e.getValue() + " " + BuiltInRegistries.ITEM.getKey(e.getKey()).getPath()).toList().toString();
 	}

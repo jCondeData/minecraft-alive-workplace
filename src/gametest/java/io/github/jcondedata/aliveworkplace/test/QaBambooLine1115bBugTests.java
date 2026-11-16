@@ -30,7 +30,7 @@ import net.minecraft.world.level.block.Blocks;
  * only from 9 bamboo (the stripped one with an axe on the block). From nothing the line should name the bamboo (or the
  * block), never the stripped block, the way oak planks name Oak Logs and never Stripped Oak Logs.
  */
-public class QaBambooLine1115bBugTests {
+public class QaBambooLine1115bBugTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 

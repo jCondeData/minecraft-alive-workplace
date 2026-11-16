@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned
+  in the same moment (2 chests from two logs read "short of 16 Oak Planks", not the 2 logs that were short). It now
+  waits a moment and says the right thing (B1321).
 - Crafters: with planks of one wood and logs of another in the chest, the "short of" line now counts them all: 4 spruce
   planks with an oak and a birch log for 2 chests reads "short of 1 Oak Log", not 3 (B1333).
 - Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk

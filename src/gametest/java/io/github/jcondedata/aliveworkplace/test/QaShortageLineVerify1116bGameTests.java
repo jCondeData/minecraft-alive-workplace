@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.Blocks;
  * real chain still plans (a stripped log or block that is there still makes planks, a block of iron or honey still
  * unpacks when asked for ingots or bottles), so the fixes didn't cut a way a player has.
  */
-public class QaShortageLineVerify1116bGameTests {
+public class QaShortageLineVerify1116bGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 	private static final Crafting.Kind[] KINDS = {Crafting.Kind.CRAFTING, Crafting.Kind.WORKSHOP};

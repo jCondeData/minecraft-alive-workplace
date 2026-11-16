@@ -104,7 +104,8 @@ public final class Crafting {
 	public static final int PLAN_TRIALS = 500;
 	/**
 	 * The most recipes all of a level's crafters together try in one tick (about 10 ms); once it's used up, plans wait
-	 * for the next tick.
+	 * for the next tick. A plan of what's short that it runs out under says nothing ({@link #planningSpent} then says
+	 * why): half a plan names the wrong thing (B1321: "short of 16 Oak Planks" for the 2 logs that were short).
 	 */
 	public static final int TICK_TRIALS = 1500;
 
@@ -269,6 +270,11 @@ public final class Crafting {
 		if (!made) {
 			return null;
 		}
+		if (lenient && pool.budget.refused && left < PLAN_TRIALS) {
+			// B1321: the tick's planning ran out part-way (it now reads as used up). What was worked out so far names
+			// whatever the search stopped at, so nothing is said: the crafter asks again later
+			return null;
+		}
 		if (lenient) {
 			// what's short, as negative takes (only {@link #lacking} reads a lenient plan)
 			Map<Item, Integer> lacks = new LinkedHashMap<>();
@@ -293,9 +299,25 @@ public final class Crafting {
 	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
 	 */
 	public static boolean planningSpent(ServerLevel level) {
+		return planningLeft(level) <= 0;
+	}
+
+	/** How many recipes this tick's planning may still try in {@code level} ({@link #TICK_TRIALS} less what plans tried). */
+	public static int planningLeft(ServerLevel level) {
 		synchronized (TICK_USE) {
 			long[] tick = TICK_USE.get(level);
-			return tick != null && tick[0] == level.getGameTime() && tick[1] >= TICK_TRIALS;
+			return tick == null || tick[0] != level.getGameTime() ? TICK_TRIALS : (int) Math.max(0, TICK_TRIALS - tick[1]);
+		}
+	}
+
+	/**
+	 * For the tests: this tick's planning in {@code level} as if nothing had planned in it yet. Tests of one batch start
+	 * within a few ticks of each other in one level, so one that asks for a plan as it starts shares the tick's planning
+	 * with its neighbours, and read "no plan" as the answer when they had used it up (B1321). The game never calls this.
+	 */
+	public static void freshPlanning(ServerLevel level) {
+		synchronized (TICK_USE) {
+			TICK_USE.remove(level);
 		}
 	}
 
@@ -308,6 +330,8 @@ public final class Crafting {
 	private static final class Budget {
 		final int max;
 		int tried;
+		/** Whether a recipe went untried because the plan had tried its most: the plan was cut short. */
+		boolean refused;
 		/** The recipe types this plan may use (a Crafter's bench recipes only while the bench stands: 37.14). */
 		Predicate<RecipeType<?>> types = t -> true;
 		/** Planning what's short ({@link #lacking}): a raw material that's short is noted, and planning goes on. */
@@ -330,6 +354,7 @@ public final class Crafting {
 		/** Counts one more recipe tried; false once the plan has tried its most. */
 		boolean tryOne() {
 			if (tried >= max) {
+				refused = true;
 				return false;
 			}
 			tried++;

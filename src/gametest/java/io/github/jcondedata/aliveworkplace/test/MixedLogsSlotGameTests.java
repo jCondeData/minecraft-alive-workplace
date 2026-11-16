@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Blocks;
  * wood making what it can, as a player at a crafting table does; the plan takes only the logs it needs, and a Carpenter
  * makes the builder's chests that way through his normal job. Nothing here is random.
  */
-public class MixedLogsSlotGameTests implements FabricGameTest {
+public class MixedLogsSlotGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 
 	private static long sum(Map<Item, Integer> takes) {

@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintNames;
 import io.github.jcondedata.aliveworkplace.blueprint.PreviewNetworking;
 import io.github.jcondedata.aliveworkplace.build.BuilderStatusSync;
+import io.github.jcondedata.aliveworkplace.card.CardToasts;
 import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.CityPlans;
 import io.github.jcondedata.aliveworkplace.city.CityZones;
@@ -352,6 +353,7 @@ public class QaSyncPayloadsGameTests {
 		out.add(new TablePayloads.Store(far, true));
 		out.add(new TablePayloads.TakeStored(far, named));
 		out.add(new TablePayloads.UploadChunk(far, "Jesse's Café ✓.nbt", 50_000, 4096, new byte[] {1, -2, 3, 127, -128, 0}));
+		out.add(new CardToasts.Show(CardToasts.BUILT_ICON, styled, Component.translatable("toast.aliveworkplace.built", Component.literal("Mira «Ö» 村"))));
 		out.add(Tonics.sync());
 		out.add(new ClassLook.Look(9, Optional.of(AliveWorkplace.id("noble")), Optional.of(AliveWorkplace.id("textures/entity/villager/class/noble.png")), 2));
 		return out;

@@ -96,6 +96,11 @@ asks for the steps, `latest.log` and any crash report).
   party with a mark per Pokémon and the rules on the right, scrolling when they don't fit. The rank sits in the top bar
   by the close X, and the line at the foot says what Challenge, Trade, a team card or a party line means. When the
   trainer can't battle, a red box at the top says why. Every button works as before; it fits at GUI scale 3 too.
+- The villager status card in Copperline (48.3), like the VillagerCard board: a copper top edge, the villager's face
+  in a frame with their name and job beside it, a close X, their status, what they need with bars, the reason a grayed-out
+  button can't be used in a red-edged box, and one copper button. Hover an item line for a tooltip beside the card, or a
+  grayed-out button for its reason. When a builder finishes or takes down a build for you, a toast says so in the
+  top-right corner ("Stone House / Mira finished it."); the chat line still comes too.
 
 ## 0.155.3 — 2026-11-15
 

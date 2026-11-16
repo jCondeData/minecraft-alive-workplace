@@ -537,6 +537,13 @@ SCENES = [
       [("01_trainer", "The Trainer screen, the mouse on Challenge"),
        ("02_trainer_trade", "The mouse on Trade: the whisper line says what it does"),
        ("03_trainer_compact", "The Trainer screen at 320x180 (GUI scale 3)")], cobblemon=True),
+    # 48.3: the villager status card, its tooltips and the toast in Copperline, like the VillagerCard board
+    S("copperline_status_card", "Builder", "Copperline: the status card, tooltips and toasts",
+      "a builder's status card in Copperline: the copper edge, her portrait with name and job, the close X, her site and what she needs with bars; the mouse on a line shows its tooltip, on the grayed-out Hall page button its reason; In chat is the one copper button; a builder's finished toast arrives; at 320x180 the same card fits", 15,
+      [("01_card_tooltip", "The card, the mouse on a line: its tooltip"),
+       ("02_card_refused", "The mouse on the grayed-out button: why it can't be used"),
+       ("03_card_toast", "A builder's finished toast"),
+       ("04_card_compact", "The card at 320x180 (GUI scale 3)")]),
     # Village-wide
     # The Village Hall in Copperline (ROADMAP 47.2): the Overview, a villager at work opened in People, the Map, GUI scale 3
     S("hall", "Village Hall", "The Village Hall in Copperline", "the Village Hall opened on its Overview, a villager at work opened in People, "

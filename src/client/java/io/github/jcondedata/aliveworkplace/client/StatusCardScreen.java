@@ -2,31 +2,40 @@ package io.github.jcondedata.aliveworkplace.client;
 
 import io.github.jcondedata.aliveworkplace.card.StatusCard;
 import io.github.jcondedata.aliveworkplace.card.StatusCardMenu;
+import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
+import io.github.jcondedata.aliveworkplace.ui.StatusCardLayout;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.Style;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 
 /**
- * A small status card in the Village Hall's look (ROADMAP 43.3: the Nurse's and the Fossil Scientist's; 42.5's job cards
- * reuse it), sized as {@code docs/design/M42/trainer_c.png}: the villager's name in gold with their job on the right, a
- * grey-blue line, a gold heading over labeled lines (icon, label, value, bar), the buttons, the reason a grayed-out one
- * can't be used, and a footer hint. Everything comes from the server ({@link StatusCard}); the buttons are menu-button
- * clicks. The card is as tall as what it shows.
+ * The villager status card in Copperline (ROADMAP 48.3, docs/design/copperline/boards/VillagerCard.png, "On click,
+ * pinned"; first 43.3, the Nurse's and the Fossil Scientist's, and 42.5's job cards): a card with a copper top edge, the
+ * villager's portrait (the real model) in a well with the name beside it and the job and level under it, the close X, the
+ * status line(s), a heading over labeled lines (icon, label, value in its status color, bar), a divider, the reason a
+ * grayed-out button can't be used in a Redstone-edged box, the buttons (the first usable one is the card's one copper
+ * button; Close is the X) and the hint at the foot. A line with an item shows a Copperline tooltip under the mouse (the
+ * item, the line, its value with a status glyph), and so does a grayed-out button (its reason). Everything comes from the
+ * server ({@link StatusCard}); where it goes is {@link StatusCardLayout}'s.
  */
 public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
-	private static final int BUTTON_H = 16;
-
-	private int cardW;
-	private int cardH;
-	/** Each button's box this frame: id, x, y, w, grayed. */
-	private final List<int[]> buttons = new ArrayList<>();
+	private StatusCardLayout.Boxes boxes;
+	/** The buttons in the row (all but Close, which is the X), in the card's order. */
+	private final List<StatusCard.Button> row = new ArrayList<>();
+	/** What the tooltip under the mouse shows this frame (null: none). */
+	private Runnable tooltip;
 
 	public StatusCardScreen(StatusCardMenu menu, Inventory inventory, Component title) {
 		super(menu, inventory, title);
@@ -38,45 +47,75 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 
 	@Override
 	protected void init() {
-		cardW = Math.min(TableStyle.CARD_W, width - 16);
-		cardH = Math.min(height - 16, layoutHeight());
-		imageWidth = cardW;
-		imageHeight = cardH;
-		super.init();
-	}
-
-	/** The card's height for what it shows: the same steps {@link #render} takes. */
-	private int layoutHeight() {
-		int inner = cardW - TableStyle.CARD_PAD * 2;
-		int h = TableStyle.CARD_PAD + 11;
-		h += font.split(card().subtitle(), inner).size() * 10 + 6;
-		if (!card().heading().getString().isEmpty()) {
-			h += 12;
+		row.clear();
+		for (StatusCard.Button b : card().buttons()) {
+			if (b.id() != StatusCardMenu.CLOSE) {
+				row.add(b);
+			}
 		}
-		h += card().lines().isEmpty() ? font.split(card().empty(), inner).size() * 10 + 4 : card().lines().size() * TableStyle.CARD_LINE + 2;
-		int rows = StatusCard.buttonRows(buttonBoxes(inner));
-		h += 6 + rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 4;
-		StatusCard.Button off = firstOff();
-		if (off != null) {
-			h += font.split(off.refusal(), inner).size() * 10 + 2;
-		}
-		h += card().hint().getString().isEmpty() ? 4 : 14;
-		return h;
-	}
-
-	/** The buttons' boxes inside {@code inner} pixels ({@link StatusCard#buttonRow}): x, row, width. */
-	private int[][] buttonBoxes(int inner) {
-		List<StatusCard.Button> list = card().buttons();
-		int[] need = new int[list.size()];
+		int inner = StatusCardLayout.inner(width);
+		int[] need = new int[row.size()];
 		for (int i = 0; i < need.length; i++) {
-			need[i] = TableStyle.buttonWidth(font, list.get(i).label());
+			need[i] = TableStyle.buttonWidth(font, row.get(i).label());
 		}
-		return StatusCard.buttonRow(need, inner);
+		StatusCard.Button off = firstOff();
+		int refusalLines = off == null ? 0 : font.split(off.refusal(), StatusCardLayout.refusalTextWidth(width)).size();
+		boxes = StatusCardLayout.of(width, height, font.split(card().subtitle(), inner).size(), bodyHeight(inner), refusalLines,
+			!card().hint().getString().isEmpty(), need);
+		imageWidth = boxes.card()[2];
+		imageHeight = boxes.card()[3];
+		super.init();
+		leftPos = boxes.card()[0];
+		topPos = boxes.card()[1];
 	}
 
-	/** The first grayed-out button (its reason shows under the row), or null. */
+	/** The body's height: the heading and the lines, or the line for when there are none. */
+	private int bodyHeight(int inner) {
+		int h = card().heading().getString().isEmpty() ? 0 : 12;
+		return h + (card().lines().isEmpty() ? font.split(card().empty(), inner).size() * 10 : card().lines().size() * TableStyle.CARD_LINE);
+	}
+
+	/** The first grayed-out button in the row (its reason shows above the row), or null. */
 	private StatusCard.Button firstOff() {
-		return card().buttons().stream().filter(b -> !b.usable()).findFirst().orElse(null);
+		return row.stream().filter(b -> !b.usable()).findFirst().orElse(null);
+	}
+
+	/** The layout this frame (the GameTests' and the screenshot scene's view of it). */
+	public StatusCardLayout.Boxes boxes() {
+		return boxes;
+	}
+
+	/** The index in the row of the copper button, or -1. */
+	public int copperIndex() {
+		boolean[] usable = new boolean[row.size()];
+		boolean[] close = new boolean[row.size()];
+		for (int i = 0; i < usable.length; i++) {
+			usable[i] = row.get(i).usable();
+		}
+		return StatusCardLayout.copper(usable, close);
+	}
+
+	/** A server color as Copperline's: gold Lantern, green Verdigris, red Redstone, orange Copper, gray Tuff, white Quartz. */
+	public static int copperline(int color) {
+		return switch (color) {
+			case StatusCard.GOLD -> CopperStyle.LANTERN;
+			case StatusCard.GREEN -> CopperStyle.VERDIGRIS;
+			case StatusCard.RED -> CopperStyle.REDSTONE;
+			case StatusCard.ORANGE -> CopperStyle.COPPER;
+			case StatusCard.GRAY -> CopperStyle.TUFF;
+			case StatusCard.WHITE -> CopperStyle.QUARTZ;
+			default -> color;
+		};
+	}
+
+	/** The status a line's color says (glyph and word), or null for a plain value. */
+	static CopperStyle.Status status(int color) {
+		return switch (color) {
+			case StatusCard.GREEN -> CopperStyle.Status.GOOD;
+			case StatusCard.RED -> CopperStyle.Status.BAD;
+			case StatusCard.GOLD, StatusCard.ORANGE -> CopperStyle.Status.WARNING;
+			default -> null;
+		};
 	}
 
 	@Override
@@ -91,82 +130,155 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 	public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
 		renderBlurredBackground(partialTick);
 		renderMenuBackground(g);
-		int pad = TableStyle.CARD_PAD;
-		int x = leftPos + pad;
-		int w = cardW - pad * 2;
-		int y = topPos + pad;
-		TableStyle.panel(g, leftPos, topPos, cardW, cardH);
-		TableStyle.cardHeader(g, font, card().title(), card().tag(), x, y, w);
-		y += 11;
-		for (FormattedCharSequence line : font.split(card().subtitle(), w)) {
-			g.drawString(font, line, x, y, TableStyle.SUBLINE, false);
+		tooltip = null;
+		int[] c = boxes.card();
+		CopperStyle.panel(g, c[0], c[1], c[2], c[3]);
+		g.renderOutline(c[0] - 1, c[1] - 1, c[2] + 2, c[3] + 2, CopperStyle.VOID);
+		g.fill(c[0], c[1], c[0] + c[2], c[1] + StatusCardLayout.EDGE, CopperStyle.COPPER);
+
+		int[] p = boxes.portrait();
+		CopperStyle.well(g, p[0], p[1], p[2], p[3]);
+		Entity entity = Minecraft.getInstance().level == null ? null : Minecraft.getInstance().level.getEntity(card().entityId());
+		if (entity instanceof LivingEntity living) {
+			// The head and shoulders: the model drawn large and cut to the well.
+			InventoryScreen.renderEntityInInventoryFollowsMouse(g, p[0] + 1, p[1] + 1, p[0] + p[2] - 1, p[1] + p[3] - 1, 38, 0.55f,
+				mouseX, mouseY, living);
+		}
+		int[] n = boxes.name();
+		CopperStyle.label(g, font, card().title().getString(), n[0], n[1], n[2], CopperStyle.QUARTZ);
+		int[] t = boxes.tag();
+		g.drawString(font, CopperStyle.trim(font, card().tag().getString(), t[2]), t[0], t[1], CopperStyle.TUFF, false);
+		int[] x = boxes.close();
+		CopperStyle.close(g, x, CopperLayout.inside(x, mouseX, mouseY));
+
+		int[] s = boxes.subtitle();
+		int y = s[1];
+		for (FormattedCharSequence line : font.split(card().subtitle(), s[2])) {
+			g.drawString(font, line, s[0], y, CopperStyle.QUARTZ, false);
 			y += 10;
 		}
-		y += 6;
+
+		renderBody(g, mouseX, mouseY);
+
+		int[] d = boxes.divider();
+		g.fill(d[0], d[1], d[0] + d[2], d[1] + 1, CopperStyle.DEEP_600);
+		StatusCard.Button off = firstOff();
+		int[] r = boxes.refusal();
+		if (off != null && r[3] > 0) {
+			g.fill(r[0], r[1], r[0] + r[2], r[1] + r[3], CopperStyle.DEEP_900);
+			g.fill(r[0], r[1], r[0] + 2, r[1] + r[3], CopperStyle.REDSTONE);
+			int ry = r[1] + 3;
+			for (FormattedCharSequence line : font.split(off.refusal(), StatusCardLayout.refusalTextWidth(width))) {
+				g.drawString(font, line, r[0] + 7, ry, CopperStyle.QUARTZ, false);
+				ry += 10;
+			}
+		}
+
+		int copper = copperIndex();
+		int[][] b = boxes.buttons();
+		for (int i = 0; i < b.length; i++) {
+			StatusCard.Button button = row.get(i);
+			boolean over = CopperLayout.inside(b[i], mouseX, mouseY);
+			CopperStyle.button(g, font, button.label(), null, b[i][0], b[i][1], b[i][2], b[i][3],
+				i == copper ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL, over && button.usable(), false, !button.usable());
+			if (over && !button.usable()) {
+				tooltip = () -> CopperStyle.tooltip(g, font, button.label(), wrap(button.refusal(), 180), CopperStyle.Status.BAD,
+					Component.translatable("screen.aliveworkplace.card.off"), mouseX + 8, mouseY - 12);
+			}
+		}
+		int[] h = boxes.hint();
+		if (h[3] > 0) {
+			TableStyle.footerHint(g, font, card().hint(), h[0], h[1], h[2]);
+		}
+		if (tooltip != null) {
+			tooltip.run();
+		}
+	}
+
+	/** The heading and the lines (or the line for none), cut to the body's room. */
+	private void renderBody(GuiGraphics g, int mouseX, int mouseY) {
+		int[] body = boxes.body();
+		if (body[3] <= 0) {
+			return;
+		}
+		g.enableScissor(body[0], body[1], body[0] + body[2], body[1] + body[3]);
+		int y = body[1];
 		if (!card().heading().getString().isEmpty()) {
-			TableStyle.heading(g, font, card().heading(), x, y);
+			TableStyle.heading(g, font, card().heading(), body[0], y);
 			y += 12;
 		}
 		if (card().lines().isEmpty()) {
-			for (FormattedCharSequence line : font.split(card().empty(), w)) {
-				g.drawString(font, line, x, y, TableStyle.BODY, false);
+			for (FormattedCharSequence line : font.split(card().empty(), body[2])) {
+				g.drawString(font, line, body[0], y, CopperStyle.TUFF, false);
 				y += 10;
 			}
-			y += 4;
 		} else {
 			for (StatusCard.Line line : card().lines()) {
-				TableStyle.cardLine(g, font, line.icon(), line.label(), line.value(), line.color(), line.bar(), x, y, w);
+				if (y + TableStyle.CARD_LINE > body[1] + body[3] + 2) {
+					break; // a short screen: whole rows only, never half of one
+				}
+				int color = copperline(line.color());
+				TableStyle.cardLine(g, font, line.icon(), line.label(), line.value(), color, line.bar(), body[0], y, body[2]);
+				int[] at = {body[0], y, body[2], TableStyle.CARD_LINE};
+				if (!line.icon().isEmpty() && y + TableStyle.CARD_LINE <= body[1] + body[3] && CopperLayout.inside(at, mouseX, mouseY)) {
+					int rowY = y;
+					tooltip = () -> lineTooltip(g, line, rowY);
+				}
 				y += TableStyle.CARD_LINE;
 			}
-			y += 2;
 		}
-		y += 6;
-		buttons.clear();
-		int[][] boxes = buttonBoxes(w);
-		boolean gold = true;
-		Component tooltip = null;
-		for (int i = 0; i < boxes.length; i++) {
-			StatusCard.Button button = card().buttons().get(i);
-			boolean off = !button.usable();
-			int bx = x + boxes[i][0];
-			int by = y + boxes[i][1] * (BUTTON_H + StatusCard.BUTTON_ROW_GAP);
-			int bw = boxes[i][2];
-			boolean over = mouseX >= bx && mouseX < bx + bw && mouseY >= by && mouseY < by + BUTTON_H;
-			boolean on = gold && !off && button.id() != StatusCardMenu.CLOSE;
-			TableStyle.button(g, font, button.label(), bx, by, bw, BUTTON_H, on, over, off);
-			gold &= !on;
-			buttons.add(new int[]{button.id(), bx, by, bw, off ? 1 : 0});
-			if (over && off) {
-				tooltip = button.refusal();
-			}
+		g.disableScissor();
+	}
+
+	/**
+	 * A line's tooltip, as the board's: the item, the line's label when it says more, the value with its status glyph. It
+	 * sits beside the card at the row's height (right of it, or left when the screen has no room), so it never covers the
+	 * row it describes or the rows under it (the design critique's first point).
+	 */
+	private void lineTooltip(GuiGraphics g, StatusCard.Line line, int rowY) {
+		Component item = line.icon().getHoverName();
+		List<Component> lines = new ArrayList<>();
+		if (!line.label().getString().equals(item.getString())) {
+			lines.add(line.label());
 		}
-		int rows = StatusCard.buttonRows(boxes);
-		y += rows * BUTTON_H + (rows - 1) * StatusCard.BUTTON_ROW_GAP + 4;
-		StatusCard.Button off = firstOff();
-		if (off != null) {
-			for (FormattedCharSequence line : font.split(off.refusal(), w)) {
-				g.drawString(font, line, x, y, TableStyle.BODY, false);
-				y += 10;
-			}
-			y += 2;
+		CopperStyle.Status status = status(line.color());
+		if (status == null && !line.value().getString().isEmpty()) {
+			lines.add(line.value());
 		}
-		if (!card().hint().getString().isEmpty()) {
-			TableStyle.footerHint(g, font, card().hint(), x, topPos + cardH - 12, w);
+		int w = font.width(item);
+		for (Component l : lines) {
+			w = Math.max(w, font.width(l));
 		}
-		if (tooltip != null) {
-			g.renderTooltip(font, font.split(tooltip, 200), mouseX, mouseY);
+		w = Math.max(w, status == null ? 0 : font.width(line.value()) + 10) + 10;
+		int[] c = boxes.card();
+		int x = c[0] + c[2] + 4 + w <= width ? c[0] + c[2] + 4 : Math.max(0, c[0] - 4 - w);
+		CopperStyle.tooltip(g, font, item, lines, status, line.value(), x, rowY);
+	}
+
+	/** {@code text} wrapped at {@code w} pixels, one Component per line. */
+	private List<Component> wrap(Component text, int w) {
+		List<Component> out = new ArrayList<>();
+		for (FormattedText part : font.getSplitter().splitLines(text, w, Style.EMPTY)) {
+			out.add(Component.literal(part.getString()));
 		}
+		return out;
 	}
 
 	@Override
 	public boolean mouseClicked(double mx, double my, int button) {
 		if (button == 0) {
-			for (int[] b : buttons) {
-				if (mx >= b[1] && mx < b[1] + b[3] && my >= b[2] && my < b[2] + BUTTON_H) {
-					if (b[4] == 0) {
-						press(b[0]);
+			if (CopperLayout.inside(boxes.close(), (int) mx, (int) my)) {
+				Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+				onClose();
+				return true;
+			}
+			int[][] b = boxes.buttons();
+			for (int i = 0; i < b.length; i++) {
+				if (CopperLayout.inside(b[i], (int) mx, (int) my)) {
+					if (row.get(i).usable()) {
+						press(row.get(i).id());
 					}
-					return true; // a grayed-out one: its reason is under the row
+					return true; // a grayed-out one: its reason is above the row
 				}
 			}
 		}
@@ -182,14 +294,27 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 		}
 	}
 
-	/** Where button {@code id}'s middle is on the screen, in GUI pixels (the screenshot harness points at it). */
+	/** Where button {@code id}'s middle is on the screen, in GUI pixels (the screenshot harness points at it); Close is the X. */
 	public int[] centre(int id) {
-		for (int[] b : buttons) {
-			if (b[0] == id) {
-				return new int[]{b[1] + b[3] / 2, b[2] + BUTTON_H / 2};
+		int[][] b = boxes.buttons();
+		for (int i = 0; i < b.length; i++) {
+			if (row.get(i).id() == id) {
+				return new int[]{b[i][0] + b[i][2] / 2, b[i][1] + b[i][3] / 2};
 			}
 		}
-		return new int[]{leftPos + cardW / 2, topPos + cardH / 2};
+		int[] x = boxes.close();
+		if (id == StatusCardMenu.CLOSE) {
+			return new int[]{x[0] + x[2] / 2, x[1] + x[3] / 2};
+		}
+		int[] c = boxes.card();
+		return new int[]{c[0] + c[2] / 2, c[1] + c[3] / 2};
+	}
+
+	/** Where line {@code i}'s middle is (the scene points at it for the tooltip). */
+	public int[] lineCentre(int i) {
+		int[] body = boxes.body();
+		int y = body[1] + (card().heading().getString().isEmpty() ? 0 : 12) + i * TableStyle.CARD_LINE;
+		return new int[]{body[0] + 8, y + TableStyle.CARD_LINE / 2};
 	}
 
 	@Override

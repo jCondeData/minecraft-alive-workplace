@@ -1062,6 +1062,10 @@ public final class Builders {
 				tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct"
 						: site.isCellarOnly() ? "message.aliveworkplace.cellar_dug" : "message.aliveworkplace.finished",
 					villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.GREEN);
+				if (!site.isCellarOnly()) { // 48.3: and the Copperline toast, "Stone House / Mira finished it."
+					io.github.jcondedata.aliveworkplace.card.CardToasts.send(owner, io.github.jcondedata.aliveworkplace.card.CardToasts.built(
+						villager.getDisplayName(), Blueprints.displayName(site.structure()), site.isDeconstruction()));
+				}
 			}
 			if (entitiesLeft > 0) {
 				tell(owner, io.github.jcondedata.aliveworkplace.work.Words.counted("message.aliveworkplace.entities_left", entitiesLeft, entitiesLeft), ChatFormatting.YELLOW);

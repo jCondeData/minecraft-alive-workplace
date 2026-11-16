@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23
 
 ## 1. What a player sees
 
@@ -156,6 +156,8 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
+- 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
+  is on the Table or in villages until the owner picks one (36.23a).
 
 ## 8. Proof
 

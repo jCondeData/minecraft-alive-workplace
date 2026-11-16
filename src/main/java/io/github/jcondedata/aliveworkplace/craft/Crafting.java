@@ -147,7 +147,7 @@ public final class Crafting {
 
 	/**
 	 * What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}.
-	 * Empty, and {@link #planningSpent} true, when the tick's planning ran out before it was all worked out (B1348).
+	 * Empty, and {@link #planningSpent} true, when the tick's planning ran out before it was all worked out (B1349).
 	 */
 	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
 		return lacks(shortfall(level, kind, target, count, usable));
@@ -273,7 +273,7 @@ public final class Crafting {
 			return null;
 		}
 		if (lenient && pool.budget.cut && left < PLAN_TRIALS) {
-			// B1348: what's short, cut short by the tick's planning (another job used most of it), is only as far as it got
+			// B1349: what's short, cut short by the tick's planning (another job used most of it), is only as far as it got
 			// (planks for chests from three woods' logs): not planned yet, asked again on a later tick with the whole plan's
 			return null;
 		}
@@ -299,7 +299,7 @@ public final class Crafting {
 	/**
 	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
 	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11). A
-	 * shortfall cut short by it is null too (B1348), so what's short asked for in a tick that ends spent is not yet known.
+	 * shortfall cut short by it is null too (B1349), so what's short asked for in a tick that ends spent is not yet known.
 	 */
 	public static boolean planningSpent(ServerLevel level) {
 		synchronized (TICK_USE) {

@@ -15,11 +15,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 
 /**
- * B1348: a tick's planning (Crafting.TICK_TRIALS) is shared by the whole level. With most of it spent by other jobs, what
+ * B1349: a tick's planning (Crafting.TICK_TRIALS) is shared by the whole level. With most of it spent by other jobs, what
  * a crafter lacks for two chests from an oak, a spruce and a birch log was cut short part way and read "short of 16 Oak
  * Planks". A shortfall cut short is not planned yet: nothing is said that tick, and the next tick's whole plan names a log.
  */
-public class CraftingCutShortB1348GameTests implements FabricGameTest {
+public class CraftingCutShortB1349GameTests implements FabricGameTest {
 	private static final Map<Item, Long> LOGS = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L);
 
 	private static String ids(Map<Item, Integer> lack) {

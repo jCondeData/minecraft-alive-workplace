@@ -110,7 +110,7 @@ public class QaCrafterLogs1116cGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qaCrafterLogs1116cMixedLogsTrulyShortPlanNothing")
 	public void mixedLogsTrulyShortPlanNothing(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			ServerLevel level = helper.getLevel();

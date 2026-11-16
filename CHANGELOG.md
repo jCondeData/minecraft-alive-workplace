@@ -19,7 +19,7 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - A crafter's shortage line no longer names the wrong thing on a busy server: when the village's other jobs had used most
   of that moment's planning, a crafter could say "short of 16 Oak Planks" for chests while holding logs of three woods.
-  He now works it out a moment later and names the logs (B1348).
+  He now works it out a moment later and names the logs (B1349).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
   start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
 - Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up

@@ -48,7 +48,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromACrimsonAndAWarpedStem")
 	public void aChestFromACrimsonAndAWarpedStem(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			oneChest(helper, Map.of(Items.CRIMSON_STEM, 1L, Items.WARPED_STEM, 1L), Map.of(Items.CRIMSON_STEM, 1, Items.WARPED_STEM, 1), "two stems");
@@ -61,7 +61,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromOakWoodAndAStrippedSpruceLog")
 	public void aChestFromOakWoodAndAStrippedSpruceLog(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			oneChest(helper, Map.of(Items.OAK_WOOD, 1L, Items.STRIPPED_SPRUCE_LOG, 1L), Map.of(Items.OAK_WOOD, 1, Items.STRIPPED_SPRUCE_LOG, 1),
@@ -78,7 +78,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsAChestFromAnOakLogAndBambooBlocksCountsTwoPlanksABlock")
 	public void aChestFromAnOakLogAndBambooBlocksCountsTwoPlanksABlock(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			oneChest(helper, Map.of(Items.OAK_LOG, 1L, Items.BAMBOO_BLOCK, 2L), Map.of(Items.OAK_LOG, 1, Items.BAMBOO_BLOCK, 2), "an oak log and 2 bamboo blocks");
@@ -95,7 +95,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsTwoChestsFromFourWoodsOneLogEach")
 	public void twoChestsFromFourWoodsOneLogEach(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L, Items.JUNGLE_LOG, 1L);
@@ -120,7 +120,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsSevenPlanksWorthOfLogAndPlanksIsShortAndEightIsAChest")
 	public void sevenPlanksWorthOfLogAndPlanksIsShortAndEightIsAChest(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			Map<Item, Long> seven = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_PLANKS, 3L);
@@ -142,7 +142,7 @@ public class QaMixedLogs1116bGameTests implements FabricGameTest {
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 100, batch = "qa1116bMixedLogsABarrelFromThreeWoodsLogs")
 	public void aBarrelFromThreeWoodsLogs(GameTestHelper helper) {
 		// alone in its batch, a tick after the batch starts: the level's per-tick planning (Crafting.TICK_TRIALS) is
-		// shared, and a plan cut short by it is 'not planned yet' (B1348), so it must not be spent by other tests
+		// shared, and a plan cut short by it is 'not planned yet' (B1349), so it must not be spent by other tests
 		Leftovers.clear(helper);
 		helper.runAfterDelay(1, () -> {
 			Map<Item, Long> chest = Map.of(Items.OAK_LOG, 1L, Items.SPRUCE_LOG, 1L, Items.BIRCH_LOG, 1L);

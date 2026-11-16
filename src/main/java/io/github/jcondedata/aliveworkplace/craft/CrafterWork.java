@@ -1056,7 +1056,7 @@ public class CrafterWork extends Behavior<Villager> {
 				if (!fits(made)) {
 					if (chains() && !Crafting.planningSpent(level)) {
 						Map<Item, Integer> lack = JobShortages.positive(lackFor(level, want.getKey(), want.getValue(), usable));
-						// B1348: the tick's planning ran out while it was worked out: only part known, said on a later tick
+						// B1349: the tick's planning ran out while it was worked out: only part known, said on a later tick
 						if (!lack.isEmpty() && !Crafting.planningSpent(level)) {
 							JobShortages.lacks(site.id(), want.getKey(), JobShortages.lackLine(lack, want.getValue(), want.getKey()), now);
 						}
@@ -1117,7 +1117,7 @@ public class CrafterWork extends Behavior<Villager> {
 				return job != null && job != maker;
 			}));
 		if (Crafting.planningSpent(level)) {
-			return null; // B1348: worked out only part way this tick
+			return null; // B1349: worked out only part way this tick
 		}
 		for (Map.Entry<Item, Integer> making : lack.entrySet()) {
 			if (!wants(level, making.getKey())) {

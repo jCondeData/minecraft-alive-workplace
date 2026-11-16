@@ -336,6 +336,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHelperBags1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMutants1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderInvariants1031GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClearLandscape1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1026GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderFixes1027GameTests",

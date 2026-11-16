@@ -4,7 +4,7 @@ Builders put up vanilla scaffolding to reach blocks with nowhere to stand near t
 dome's crown) and take it down again afterwards. Part of Wonders (2.0), behind its expansion gate (`Expansions.M35`), which
 1.0 opens with every other expansion.
 
-Roadmap items: 35.6, 35.6a, B929
+Roadmap items: 35.6, 35.6a, B929, B1322
 
 ## 1. What a player sees
 

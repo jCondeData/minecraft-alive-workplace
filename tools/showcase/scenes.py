@@ -513,6 +513,15 @@ SCENES = [
        ("02_parts", "Buttons, rail tabs, toggles, slider, number field, list rows, bars, slots, chips, text fields"),
        ("03_boxes", "Tooltip, toast, confirm dialog, What happens, refusal, empty state"),
        ("04_compact", "At 320x180 (GUI scale 3): the rail as an icon grid")]),
+    # 48.1: the Blueprint Table in Copperline, like the Blueprint Book board, at GUI scale 2 and 3
+    S("copperline_blueprints", "Builder", "Copperline: the Blueprint Table and Book",
+      "the table opened in Copperline with the Starter Cottage picked: the style rail, the list with its NAME and SIZE heading, the 3D preview, size and materials (what the player doesn't carry framed in red with the word under it) and one copper button; Sandstone chosen from the rail; Store All put two blueprints on the shelf; at 320x180 the rail turned into an icon grid and a search for nothing said so", 30,
+      [("01_book", "The Blueprint Book: style rail, list, preview, size, materials, one copper button"),
+       ("02_book_style", "Sandstone chosen from the style rail"),
+       ("03_stored", "The Stored tab, two blueprints on the shelf"),
+       ("04_stored_compact", "The Stored tab at 320x180 (GUI scale 3)"),
+       ("05_book_compact", "The book at 320x180: the rail as an icon grid"),
+       ("06_no_match_compact", "A search for nothing, said in the list")]),
     # Village-wide
     S("hall", "Village Hall", "The Village Hall, its screen and calendar", "the Village Hall screen and its calendar page opened", 75,
       [("02_hall_people", "The hall's screen in the Blueprint Table's style: figures and toolbar, pages and people, the village at a glance"),

@@ -60,6 +60,11 @@ asks for the steps, `latest.log` and any crash report).
 - With Create, a builder short of andesite (diorite, granite, tuff, calcite, deepslate, dripstone) no longer reads
   "short of 3 Andesite to make 3 Andesite": a Mason never makes a stone out of itself, so it reads as a stone a player
   mines.
+- The Blueprint Table in Copperline (48.1), laid out like the Blueprint Book: a style rail on the left (as drawn and
+  each style the build takes), the search box and a one-line list with name and size, the build's 3D preview, size and
+  material slots (anything you don't carry framed in red, with "Not carried: Glass" under them), and one
+  copper button: Get Blueprint (Take One Out in the Stored tab, Upload in the upload view). The line at the foot says
+  what each button does. Every button, tab and search works as before; at GUI scale 3 the rail is a grid of icons.
 
 ## 0.155.3 — 2026-11-15
 

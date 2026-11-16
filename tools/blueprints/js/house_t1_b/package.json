@@ -1,0 +1,11 @@
+{
+  "name": "house-t1-b",
+  "private": true,
+  "type": "module",
+  "description": "House T1, Version B: a JavaScript recipe (minecraft-builder skill) that writes house_t1_b.nbt. MC_BUILDER = the skill's folder.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && cp out/house-t1-b.nbt ../../../../src/main/resources/data/aliveworkplace/structure/house_t1_b.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/house-t1-b.nbt"
+  }
+}

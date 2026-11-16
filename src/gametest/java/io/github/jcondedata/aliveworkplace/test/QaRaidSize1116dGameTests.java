@@ -166,9 +166,13 @@ public class QaRaidSize1116dGameTests implements FabricGameTest {
 		});
 	}
 
-	/** The quest gives the size once, in the sentence the raids above were checked against. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	/**
+	 * The quest gives the size once, in the sentence the raids above were checked against. In its own batch: a test
+	 * added to the default batch shifts which of its pure recipe tests share a tick, and Crafting's per-tick trial budget
+	 * (TICK_TRIALS) then left QaMixedLogs1116b's plans empty in a full run.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaRaidSize1116dQuest"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaRaidSize1116dQuest")
 	public void qaTheBarracksQuestNamesEveryPartOfTheSize(GameTestHelper helper) {
 		String quest = QaQuestbookClaims1116eBugTests.quest("Guards: the Barracks");
 		String sentence = "Bigger villages draw bigger raids: 3 raiders, plus one for every 4 villagers and one for every 2 guards (up to 4 more, in iron), never more than 16.";

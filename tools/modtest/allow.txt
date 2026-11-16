@@ -107,3 +107,5 @@ FabricLoader/Mixin\) Error loading class:
 @Mixin target .* was not found .* from mod (?!aliveworkplace)
 FabricLoader/Resolution\) Warnings were found!
 ConventionLogWarnings
+# QaConfigIds1116dGameTests (B1323) writes "great library" (a space inside, not an id) in disabledWonders to prove the good entries beside it still apply and the log names it.
+Skipping "great library" in disabledWonders in aliveworkplace\.json: not a Wonder id

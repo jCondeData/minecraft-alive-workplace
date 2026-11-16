@@ -11,6 +11,8 @@
 			"io.github.jcondedata.aliveworkplace.test.MockPlayerSweep"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.compat.QaCupReady1116dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaitingAndMoney1116dCompatTests",
 			"io.github.jcondedata.aliveworkplace.test.RepeatNewTests",
 			"io.github.jcondedata.aliveworkplace.compat.CompatGameTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaQuestbookClaims1116eCompatTests",

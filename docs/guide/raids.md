@@ -8,7 +8,7 @@ Who comes: zombies, skeletons and spiders (or bandits from a nearby camp)
 Needs: a Village Hall and at least 8 villagers
 Chance a night: 15%, plus 1% for every villager over 8, at most 35%
 Rest: at least 3 days between two raids on one village
-Raiders: 3, plus 1 for every 4 villagers, at most 16
+Raiders: 3, plus 1 for every 4 villagers and 1 for every 2 guards (up to 4), at most 16
 Ends: when the raiders are dead, or at dawn
 Setting: Monster Raids (on)
 categories: Defense
@@ -32,8 +32,8 @@ dawn, when the survivors flee. The village's chronicle remembers every raid.
 ## How big, how often
 
 - **The chance.** 15% a night for a village of 8, one percent more for every villager over that, up to 35%.
-- **The size.** 3 raiders, plus one for every 4 villagers. A village with guards also draws up to 4 more raiders in
-  iron. Never more than 16.
+- **The size.** 3 raiders, plus one for every 4 villagers. A village with guards also draws one more raider for every
+  2 guards, up to 4 more, in iron. Never more than 16.
 - **Rest.** At least three days pass between two raids on the same village.
 
 ## A day's warning

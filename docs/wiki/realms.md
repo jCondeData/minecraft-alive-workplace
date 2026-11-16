@@ -26,8 +26,8 @@ Colonies. Everyone who may open the hall may read it.
     emeralds"), the levy, what it pays for, then **the last 20 movements**, newest first, each with its day and reason
     ("Day 12: +0.30 Levy from Ashford", "Day 12: +3.00 Given by Alex", "Day 13: -1.25 Realm research"; in green, out in
     red). **Anyone** may give: click it with emeralds to give one, shift-click to give the stack; with CobbleDollars in
-    the pack, a click with an empty hand gives 100 CobbleDollars (shift-click: 6,400) from your balance (the hint marks the thousands, B1326;
-    `MoneyGroupedCompatTests`). Only the
+    the pack, a click with an empty hand gives 100 CobbleDollars (shift-click: 6,400) from your balance (the hint marks the thousands at every rate from 1 to 10,000 an
+    emerald, as the other money lines do, B1326; `MoneyGroupedCompatTests`, `QaWaitingAndMoney1116dCompatTests`). Only the
     capital's owner, their friends and operators **take**: right-click for an emerald, shift-right-click for a stack
     (paid in CobbleDollars with the pack). A stranger's right-click: "Only Rowan and their friends can take from the
     treasury of the Barony of Thornholm."

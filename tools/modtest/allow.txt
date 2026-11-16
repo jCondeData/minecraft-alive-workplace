@@ -52,6 +52,10 @@ Skipping Steward rule aliveworkplace_test:steward_rules/bad_
 Skipping Cup theme aliveworkplace_test:cups/bad_
 # ClassGameTests feeds the class loader a broken pack file and a need of an unknown type to prove each is logged and skipped.
 Skipping class somepack:broken
+# QaClassEffectTypos1116eBugTests gives the peasant class an effect with a typo in its type or a jobs entry to prove that effect is skipped with a line naming it (B1313).
+Class aliveworkplace:peasant: skipping effect .*(type is not an id|jobs: not an id)
+# QaRecipeStandInFiles1116eGameTests and QaRecipeStandInTypos1116eBugTests feed the stand-in loader broken qa_pack files (bad JSON, missing fields, id typos) to prove each is skipped with its path and reason (B1302, B1312).
+Skipping recipe stand-in qa_pack:recipe_stand_ins/
 Unknown class need type no_such_need
 # HomeGradeGameTests feeds the home grade loader a file with grade 5 to prove it is skipped with a line naming it (34.15).
 Skipping home grade aliveworkplace:homes/broken.json

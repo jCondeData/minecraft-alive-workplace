@@ -1258,6 +1258,9 @@
 			"io.github.jcondedata.aliveworkplace.test.ShortLineGatheredGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShortageGathers1115fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoneLine1115bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaDyedWoolLine1115bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBambooLine1115bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHoneyBlockLine1115bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShortLineGathered1115c4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobChainBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTestResetOrderGameTests",
@@ -1800,9 +1803,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MixedLogsSlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRecipeStandInFiles1116eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaClassEffectTypos1116eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCrafterLogs1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPocketPlants1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaMixedLogs1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRecipeStandInTypos1116eBugTests"
 		]
 	},
 	"depends": {

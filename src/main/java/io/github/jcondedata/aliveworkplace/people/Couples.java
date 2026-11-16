@@ -140,7 +140,9 @@ public final class Couples {
 				&& level.getEntity(p.id()) instanceof Villager other && other.isAlive() && village.contains(other)
 				// A chapel-wedding request open (31.10): the wedding waits for the Chapel, up to its own days.
 				&& (today - p.since() >= io.github.jcondedata.aliveworkplace.story.RequestErrands.CHAPEL_WAIT_DAYS
-					|| !io.github.jcondedata.aliveworkplace.story.RequestErrands.awaitsChapel(villager, other))) {
+					|| !io.github.jcondedata.aliveworkplace.story.RequestErrands.awaitsChapel(villager, other))
+				// B1316: with the Chapel finished, the request marries them there (with the feast) on its next look, not the bell.
+				&& !io.github.jcondedata.aliveworkplace.story.RequestErrands.chapelReady(level, hall, villager, other)) {
 				wed(level, hall, villager, other);
 			}
 		}

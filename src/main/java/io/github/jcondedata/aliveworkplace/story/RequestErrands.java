@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -90,6 +91,9 @@ public final class RequestErrands {
 	static final String LETTER = "aliveworkplace_letter";
 	static final String REPLY = "aliveworkplace_reply";
 	static final String HEIRLOOM = "aliveworkplace_heirloom";
+
+	/** The heirlooms whose name starts in lower case ("the Lucky Crystal"), each with a {@code .start} form for a sentence's start. */
+	static final Set<String> LOWER_CASE_NAMES = Set.of("crystal");
 
 	/** The heirlooms a family may have lost, by key. */
 	public static final Map<String, Item> HEIRLOOMS = new LinkedHashMap<>();
@@ -528,6 +532,12 @@ public final class RequestErrands {
 			return Component.translatable("request.aliveworkplace.heirloom." + (heirloom.isEmpty() ? "compass" : heirloom));
 		}
 
+		/** {@link #what} at the start of a sentence (B1314): "The Lucky Crystal! ...", where mid-sentence it is "the Lucky Crystal". */
+		@Override
+		public Component whatStart() {
+			return LOWER_CASE_NAMES.contains(heirloom) ? Component.translatable("request.aliveworkplace.heirloom." + heirloom + ".start") : what();
+		}
+
 		@Override
 		public JsonObject json() {
 			JsonObject o = new JsonObject();
@@ -735,6 +745,11 @@ public final class RequestErrands {
 				return false;
 			}
 			Quest quest = found.getValue();
+			boolean due = !isReply(held) ? quest.progress[i] == 0 && deliver.relative().isPresent() && deliver.relative().get().equals(villager.getUUID())
+				: quest.progress[i] == 1 && villager.getUUID().equals(quest.villager);
+			if (due && refused(level, quest, player)) {
+				return true;
+			}
 			if (!isReply(held) && quest.progress[i] == 0 && deliver.relative().isPresent() && deliver.relative().get().equals(villager.getUUID())) {
 				held.shrink(1);
 				delivered(level, found.getKey(), quest, deliver, i, villager, player);
@@ -754,6 +769,9 @@ public final class RequestErrands {
 			int i = found == null ? -1 : found.getValue().current();
 			if (i < 0 || !(found.getValue().objectives.get(i) instanceof Fetch) || !villager.getUUID().equals(found.getValue().villager)) {
 				return false;
+			}
+			if (refused(level, found.getValue(), player)) {
+				return true;
 			}
 			held.shrink(1);
 			progress(level, found.getKey(), found.getValue(), i, player);
@@ -780,6 +798,18 @@ public final class RequestErrands {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Whether {@code player} may not move {@code quest} on, being neither a helper nor {@link PersonalRequests#MIN_HEARTS}
+	 * hearts with who asked (B1315, as a bring hand-in): they're told so, and keep what they carry.
+	 */
+	private static boolean refused(ServerLevel level, Quest quest, ServerPlayer player) {
+		if (PersonalRequests.mayHelp(level, quest, player)) {
+			return false;
+		}
+		Chat.chat(player, Component.translatable("message.aliveworkplace.request.need_hearts", PersonalRequests.MIN_HEARTS, quest.poster).withStyle(ChatFormatting.YELLOW));
+		return true;
 	}
 
 	/** The relative has the letter: friendship with them, a line in their village's chronicle, and the reply for the giver. */
@@ -994,6 +1024,26 @@ public final class RequestErrands {
 			back.getDisplayName(), giver.getDisplayName()));
 	}
 
+	/**
+	 * Whether {@code a} or {@code b} has a chapel-wedding request open whose Chapel is finished: the request's next look
+	 * marries them there with the feast, so the bell doesn't marry them first (B1316).
+	 */
+	public static boolean chapelReady(ServerLevel level, BlockPos hall, Villager a, Villager b) {
+		for (Villager v : List.of(a, b)) {
+			Quest quest = PersonalRequests.of(v);
+			if (quest != null && quest.objectives.stream().anyMatch(o -> o instanceof Build build && build.wedding() && finished(level, hall, build.blueprint()))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Whether {@code villager} is married already (at the bell, B1316): their chapel-wedding request has nothing left to wait for. */
+	static boolean wedAlready(Villager villager) {
+		Couples.Partner p = Couples.partner(villager);
+		return p != null && p.married();
+	}
+
 	/** Whether {@code a} or {@code b} has a chapel-wedding request open: their wedding waits for the Chapel. */
 	public static boolean awaitsChapel(Villager a, Villager b) {
 		for (Villager v : List.of(a, b)) {
@@ -1025,7 +1075,7 @@ public final class RequestErrands {
 				}
 			} else if (o instanceof Fetch fetch) {
 				Chronicle.atHall(level, hall, Chronicle.Kind.STORY, Component.translatable("chronicle.aliveworkplace.heirloom." + fetch.heirloom(),
-					quest.poster, fetch.what(), Places.name(fetch.place()), who));
+					quest.poster, fetch.whatStart(), Places.name(fetch.place()), who));
 			}
 		}
 	}

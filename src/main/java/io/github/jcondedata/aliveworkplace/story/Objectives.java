@@ -52,6 +52,11 @@ public final class Objectives {
 		default Component what() {
 			return line();
 		}
+
+		/** {@link #what} at the start of a sentence (a personal request's thanks that open with it, B1314). */
+		default Component whatStart() {
+			return what();
+		}
 	}
 
 	/**

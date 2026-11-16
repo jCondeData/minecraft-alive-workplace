@@ -20,6 +20,10 @@ asks for the steps, `latest.log` and any crash report).
 - Questbook: a reward that unlocks a build now goes to your own village's Blueprint Table wherever you claim it, not
   to the server-wide set every new village takes in; the Bandstand quest says it's a rare ??? found in chests, not a
   gray name; and the Barracks quest's raid size counts the guards' share (B1318, B1319, B1320).
+- Personal requests: the Lucky Crystal's thanks and chronicle story start with a capital ("The Lucky Crystal! ...");
+  a player without 3 hearts with the villager can't hand in their heirloom, letter or reply and be paid for it; and a
+  couple who married at the bell no longer get the Chapel wedding paid and thanked when a Chapel is finished later
+  (B1314, B1315, B1316).
 - A data pack with a typo in a recipe stand-in or a class no longer crashes the server or breaks villagers' classes; the
   bad entry is skipped with a warning (B1312, B1313).
 - A builder short of dyed wool, bamboo planks or honey blocks now reads what a player gathers: the wool's own dye and

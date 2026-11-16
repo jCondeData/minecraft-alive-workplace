@@ -1847,6 +1847,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderUpgrade1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseSupply1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallCopper1116cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallDefenseCopper1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseGiveAll1116c3GameTests",

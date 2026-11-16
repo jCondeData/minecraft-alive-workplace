@@ -310,6 +310,12 @@ export const furnitureParts = {
       c.spot('crockery', [x, y + 1, z], f.facing, [[0, 0, 0]], f.wood, 'white')
     }
   },
+  plates(c, f) { // crockery standing on a counter top
+    const [x, y, z] = f.pos
+    c.free(f.pos)
+    c.set(x, y, z, f.block)
+    c.spot('crockery', f.pos, f.facing, [[0, 0, 0]], f.wood, 'white')
+  },
   cupboard(c, f) { // a two-high cupboard: shelves of books under a closed top
     const [x, y, z] = f.pos
     c.free([x, y, z], [x, y + 1, z])
@@ -329,7 +335,7 @@ export const furnitureParts = {
     const [x, y, z] = f.pos
     c.free([x, y, z], [x, y + 1, z])
     c.set(x, y, z, `${f.wood}_planks`)
-    slab(c, x, y + 1, z, 'smooth_stone_slab', 'bottom')
+    slab(c, x, y + 1, z, 'smooth_stone_slab', f.topSlab ? 'top' : 'bottom') // topSlab: flush with the plates on it
     c.spot('counter', f.pos, f.facing, [[0, 0, 0], [0, 1, 0]], f.wood)
   },
   stove(c, f) { const [x, y, z] = f.pos; c.free(f.pos); c.set(x, y, z, 'furnace', { facing: f.facing, lit: 'false' }) },

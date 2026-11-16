@@ -103,7 +103,9 @@ public class QaUpgradeEntry1116bGameTests {
 		boolean unlocks = BlueprintUnlocks.ENABLED;
 		boolean protection = io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED;
 		io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = false;
+		java.util.Set<ResourceLocation> wildBefore = java.util.Set.copyOf(BlueprintUnlocks.unlocked(level, null));
 		Leftovers.after(helper, () -> {
+			restoreWild(level, wildBefore);
 			VillageHalls.RADIUS = radius;
 			BlueprintUnlocks.ENABLED = unlocks;
 			io.github.jcondedata.aliveworkplace.hall.VillageProtection.ENABLED = protection;
@@ -113,6 +115,30 @@ public class QaUpgradeEntry1116bGameTests {
 			VillageHalls.forgetNearest();
 		});
 		return level;
+	}
+
+	/**
+	 * The server-wide unlocks (Tables far from any hall) put back as they were before the test. With the village radius
+	 * cut to 16 the builder can level up from his trade a step outside it (16.2 blocks from the hall), and his level-up's
+	 * three builds then went into the server-wide set, which every later village takes in: QaBlueprintLibraryVerify1108b's
+	 * starting-set test and five other Table tests failed after this class in a full build.
+	 */
+	@SuppressWarnings("unchecked")
+	private static void restoreWild(ServerLevel level, java.util.Set<ResourceLocation> before) {
+		try {
+			Class<?> wild = Class.forName("io.github.jcondedata.aliveworkplace.table.BlueprintUnlocks$Wild");
+			java.lang.reflect.Method get = wild.getDeclaredMethod("get", net.minecraft.server.MinecraftServer.class);
+			get.setAccessible(true);
+			Object set = get.invoke(null, level.getServer());
+			java.lang.reflect.Field ids = wild.getDeclaredField("ids");
+			ids.setAccessible(true);
+			java.util.Set<ResourceLocation> now = (java.util.Set<ResourceLocation>) ids.get(set);
+			if (now.retainAll(before)) {
+				((net.minecraft.world.level.saveddata.SavedData) set).setDirty();
+			}
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException("couldn't put the server-wide unlocks back: " + e);
+		}
 	}
 
 	/** A finished Market Stall at {@link #STALL_REL}, recorded as built; {@code breaks} of its blocks taken out by a player. */

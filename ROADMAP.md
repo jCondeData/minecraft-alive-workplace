@@ -6824,7 +6824,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
 - [x] **47.3** (review: pending 2026-11-16) (verified 2026-11-16: lane-c-1116-1553 QA from the spec: QaHallCopper1116cGameTests [5: every section through the rail at GUI 2/3 incl. refused ids and reopen on the last section, singular words, stat-card edges, Needs you vs advice dedupe, rail fit at 427x240/480x270/320x180] and QaMoveCopper1116cGameTests [3: step 1's Can it move column vs its click, step 3's From/To/Takes and checklist with and without a Mover and an outside spot refused, all 43 Move keys]; 11 planted mutants in HallBoard/MovePage/BoardRows killed; full build green) **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with
   From and To, the green "Fits" and red hatched refusal, "What happens", the checklist, one copper "Move building").
   Done when: the 45.x Move tests pass; scenes `move_plan` and `move_refused`.
-- [x] **47.4** (review: pending 2026-11-16) **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes
+- [x] **47.4** (review: pending 2026-11-16) (verified 2026-11-16: lane-c-1116-1553: QaStorehouseCopper1116cGameTests [3: Give all never gives more than asked and Back from stock orders, stocked row and full chest, a row's button and tone edges] plus B1338's regression test [Give all's count shared between rows of the same item], with B1338's fix; full build green) **The Storehouse board in Copperline**, like `Storehouse.png`. Done when: the board's tests pass; scenes
   `job_lists` and the board's scenes.
 
 ## Milestone 48: Copperline, the rest of the screens

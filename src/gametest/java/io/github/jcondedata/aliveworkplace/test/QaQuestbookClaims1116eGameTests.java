@@ -269,8 +269,8 @@ public class QaQuestbookClaims1116eGameTests implements FabricGameTest {
 	 * "A Blueprint Table": "blue dye in the top middle, a cartography table in the center with planks on its left and
 	 * right, and planks in the two bottom corners" makes a Blueprint Table, with oak planks and with mixed planks.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaQb1116eRecipes"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaQb1116eRecipes")
 	public void qaBlueprintTableCraftsAsTheQuestSays(GameTestHelper helper) {
 		assertMakes(helper, craft(helper, 3, 3,
 			"", "minecraft:blue_dye", "",
@@ -284,8 +284,8 @@ public class QaQuestbookClaims1116eGameTests implements FabricGameTest {
 	}
 
 	/** "craft paper and blue dye to get two": two Blank Blueprints, anywhere in the grid. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaQb1116eRecipes"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaQb1116eRecipes")
 	public void qaPaperAndBlueDyeMakeTwoBlankBlueprints(GameTestHelper helper) {
 		assertMakes(helper, craftIn(helper, new int[] {0, 8}, "minecraft:paper", "minecraft:blue_dye"), "aliveworkplace:blank_blueprint", 2, "paper + blue dye");
 		assertMakes(helper, craftIn(helper, new int[] {4, 3}, "minecraft:blue_dye", "minecraft:paper"), "aliveworkplace:blank_blueprint", 2, "blue dye + paper");
@@ -296,8 +296,8 @@ public class QaQuestbookClaims1116eGameTests implements FabricGameTest {
 	 * "No village nearby?": "three white wool on top; a hay bale, a block of emerald and a hay bale in the middle; planks,
 	 * a chest and planks at the bottom" makes a Settler's Wagon.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaQb1116eRecipes"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaQb1116eRecipes")
 	public void qaSettlersWagonCraftsAsTheQuestSays(GameTestHelper helper) {
 		assertMakes(helper, craft(helper, 3, 3,
 			"minecraft:white_wool", "minecraft:white_wool", "minecraft:white_wool",
@@ -311,8 +311,8 @@ public class QaQuestbookClaims1116eGameTests implements FabricGameTest {
 	 * Scan Tool, Shape Planner, City Plan, Guild Charter, Rally Banner with any banner, Patrol Map) crafts anywhere in the
 	 * grid, in either order.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaQb1116eRecipes"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaQb1116eRecipes")
 	public void qaEveryTogetherRecipeCraftsAnywhereInTheGrid(GameTestHelper helper) {
 		together(helper, "aliveworkplace:guide_book", "minecraft:book", "minecraft:wheat");                    // The Guide Book
 		together(helper, "aliveworkplace:village_ledger", "minecraft:book", "minecraft:emerald");              // The Village Ledger
@@ -334,8 +334,8 @@ public class QaQuestbookClaims1116eGameTests implements FabricGameTest {
 	 * "A Training Dummy": "wool in the top middle; a stick, a hay bale and a stick across the middle; a stick in the bottom
 	 * middle", with white wool and with colored wool; "A village Trainer": "a target block on top of three planks".
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaQb1116eRecipes"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaQb1116eRecipes")
 	public void qaTrainingDummyAndTrainingPostCraftAsTheQuestsSay(GameTestHelper helper) {
 		for (String wool : List.of("minecraft:white_wool", "minecraft:red_wool")) {
 			assertMakes(helper, craft(helper, 3, 3,

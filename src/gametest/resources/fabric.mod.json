@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaConfigNewFields1116eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigNewFields1116eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestbookClaims1116eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuestbookClaims1116eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QuestRewardVillageGameTests",
@@ -1843,7 +1844,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUnlockFor1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaUpgradeEntry1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStorehouseReach1116bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests"
 		]
 	},
 	"depends": {

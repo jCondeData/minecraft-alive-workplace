@@ -174,6 +174,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<PokemonBuildsScene> pokemonBuilds = new Lazy<>(() -> new PokemonBuildsScene());
 	private final Lazy<LuxuryWorkshopsScene> luxuryWorkshops = new Lazy<>(() -> new LuxuryWorkshopsScene());
 	private final Lazy<GrandHousesScene> grandHouses = new Lazy<>(() -> new GrandHousesScene());
+	private final Lazy<HouseFurnishedScene> houseFurnished = new Lazy<>(() -> new HouseFurnishedScene());
 	private final Lazy<FurnishedHomeScene> furnishedHome = new Lazy<>(() -> new FurnishedHomeScene());
 	private final Lazy<FurnitureAnyModScene> furnitureAnyMod = new Lazy<>(() -> new FurnitureAnyModScene());
 	private final Lazy<FurnishedWorkplacesScene> furnishedWorkplaces = new Lazy<>(() -> new FurnishedWorkplacesScene());
@@ -398,6 +399,10 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			grandHouses.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if ("house_t1_b_furnished".equals(System.getProperty("aliveworkplace.scene"))) {
+			houseFurnished.get().tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {

@@ -1340,6 +1340,13 @@ SCENES = [
            ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
+    S("house_t1_b_furnished", "Build families", "House T1 B, the Daub House, furnished with the furniture mods",
+      "every furniture spot of House T1 B holds the piece this server chose",
+      110, [("03_hall_hearth", "The hall from the door, looking at the hearth"),
+           ("05_kitchen_stove", "The kitchen"),
+           ("07_loft_children", "The loft from the top of the stairs"),
+           ("01_outside_front", "The Daub House from the lane")],
+      cobblemon=True, furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -430,6 +430,11 @@ public class StorehouseScreen extends ChoiceTableScreen {
 	}
 
 	private Component giveAllLabel() {
+		// The server counts what a press hands over (rows asking for the same item share what's carried).
+		net.minecraft.world.item.component.CustomData data = stack(StorehouseBoard.GIVE_ALL_SLOT).get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+		if (data != null && data.contains(StorehouseBoard.GIVE_ALL_COUNT)) {
+			return Component.translatable("screen.aliveworkplace.storehouse.give_all", data.copyTag().getInt(StorehouseBoard.GIVE_ALL_COUNT));
+		}
 		int total = 0;
 		for (int slot : requestSlots()) {
 			total += BoardRows.give(BoardRows.row(stack(slot)));

@@ -16,12 +16,14 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.Vec3;
@@ -103,12 +105,17 @@ public final class StorehouseBoard {
 		});
 		int slot = FIRST_REQUEST;
 		int canGive = 0;
+		// Give all hands the carried items to the rows in turn, so two rows asking for the same item share what's
+		// carried: count it the same way, from what is left after the rows above (each row's own button still says
+		// what it alone would get).
+		int[] carried = carriedCounts(viewer);
 		for (Requests.Request request : requests) {
 			if (slot >= ChoiceMenu.SIZE) {
 				break;
 			}
 			ItemStack row = icon(level, storehouse, request, store, viewer);
-			canGive += BoardRows.give(BoardRows.row(row));
+			int rowGives = BoardRows.give(BoardRows.row(row));
+			canGive += request.forBlock() || carried == null ? rowGives : takeFrom(carried, viewer, request, rowGives);
 			menu.button(slot++, row, p -> {
 				int given = give(p, request);
 				if (given > 0) {
@@ -126,6 +133,9 @@ public final class StorehouseBoard {
 			ItemStack all = new ItemStack(Items.CHEST, Math.min(99, canGive));
 			all.set(DataComponents.CUSTOM_NAME, plain(Component.translatable("screen.aliveworkplace.storehouse.give_all", canGive), ChatFormatting.GOLD));
 			all.set(DataComponents.LORE, new ItemLore(List.of(plain(Component.translatable("screen.aliveworkplace.storehouse.give_all_hint"), ChatFormatting.GRAY))));
+			CompoundTag allTag = new CompoundTag();
+			allTag.putInt(GIVE_ALL_COUNT, canGive);
+			all.set(DataComponents.CUSTOM_DATA, CustomData.of(allTag));
 			menu.button(GIVE_ALL_SLOT, all, p -> {
 				int given = giveAll(p, listed);
 				if (given > 0) {
@@ -139,6 +149,39 @@ public final class StorehouseBoard {
 				menu.broadcastChanges();
 			});
 		}
+	}
+
+	/** The Give all button's custom data: how many a press hands over (the item count stops at 99). */
+	public static final String GIVE_ALL_COUNT = "aw_give_all";
+
+	/** What {@code viewer} carries, slot by slot (null: nobody is looking). */
+	@Nullable
+	private static int[] carriedCounts(@Nullable ServerPlayer viewer) {
+		if (viewer == null) {
+			return null;
+		}
+		Inventory inventory = viewer.getInventory();
+		int[] counts = new int[inventory.getContainerSize()];
+		for (int i = 0; i < counts.length; i++) {
+			counts[i] = inventory.getItem(i).getCount();
+		}
+		return counts;
+	}
+
+	/** Takes up to {@code most} items {@code request} accepts out of {@code carried}, as {@link #give} would; returns how many. */
+	private static int takeFrom(int[] carried, ServerPlayer viewer, Requests.Request request, int most) {
+		Inventory inventory = viewer.getInventory();
+		int left = most;
+		for (int i = 0; i < carried.length && left > 0; i++) {
+			ItemStack stack = inventory.getItem(i);
+			if (carried[i] <= 0 || stack.isEmpty() || !request.accepts().test(stack)) {
+				continue;
+			}
+			int take = Math.min(left, carried[i]);
+			carried[i] -= take;
+			left -= take;
+		}
+		return most - left;
 	}
 
 	/** 47.4: hands over what {@code player} carries for each of {@code requests} in turn (the board's order); returns how many. */

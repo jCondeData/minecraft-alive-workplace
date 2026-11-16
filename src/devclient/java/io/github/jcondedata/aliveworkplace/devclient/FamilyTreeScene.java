@@ -171,7 +171,10 @@ final class FamilyTreeScene {
 			WrittenBookContent content = held.get(DataComponents.WRITTEN_BOOK_CONTENT);
 			Showcase.check(mc.screen instanceof BookViewScreen && content != null && content.title().raw().equals("The " + family() + " Family")
 				&& content.pages().size() > 1 && content.pages().get(1).raw().getString().startsWith("Bram " + family() + " †"),
-				"the tree opens as a book: " + (content == null ? "none" : content.title().raw()));
+				"the tree opens as a book: " + (content == null ? "none" : content.title().raw())
+					+ (mc.screen instanceof BookViewScreen ? "" : " (not open: " + (mc.screen == null ? "no screen" : mc.screen.getClass().getSimpleName()) + ")")
+					+ (content == null || content.pages().size() < 2 ? "" : content.pages().get(1).raw().getString().startsWith("Bram " + family() + " †") ? ""
+						: " (page 2 starts '" + content.pages().get(1).raw().getString().lines().findFirst().orElse("") + "')"));
 		}
 		if (tick == 250) {
 			mc.stop();

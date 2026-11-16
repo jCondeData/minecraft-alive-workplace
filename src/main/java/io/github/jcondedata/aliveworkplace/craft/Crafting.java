@@ -325,14 +325,6 @@ public final class Crafting {
 		}
 	}
 
-	/** How many recipes this tick's plans may still try on {@code level} ({@link #TICK_TRIALS} less what they've tried). */
-	public static int planningLeft(ServerLevel level) {
-		synchronized (TICK_USE) {
-			long[] tick = TICK_USE.get(level);
-			return tick == null || tick[0] != level.getGameTime() ? TICK_TRIALS : (int) Math.max(0, TICK_TRIALS - tick[1]);
-		}
-	}
-
 	/** How many recipes every plan so far has tried (tests compare it before and after). */
 	public static long trials() {
 		return trials;

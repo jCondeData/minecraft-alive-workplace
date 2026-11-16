@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- With Create, a builder short of andesite beside a Mason no longer reads "Nobody here makes: Andesite": a stone a
+  player mines that the Mason can't cut from what's there (polished andesite is never cut back into andesite, by a
+  player either) is left to the gathered line above; from Create's cut andesite in the chest he cuts it (B1334).
 - Chapel wedding request: a couple married in the new Chapel get one entry in the Village Hall's Chronicle, "married in
   the new Chapel, and the whole village sat down to a feast", no longer also "married at the bell" (B1348).
 - Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three

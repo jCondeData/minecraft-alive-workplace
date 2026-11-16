@@ -31,6 +31,13 @@ asks for the steps, `latest.log` and any crash report).
 - A builder short of dyed wool, bamboo planks or honey blocks now reads what a player gathers: the wool's own dye and
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
+### Changed
+- Copperline, the new look (47.1): every screen drawn in the Village Hall's look (the Village Hall, the Storehouse
+  board, the list menus such as the Move Tutor and the shops, the Blueprint Table, the Trainer screen, the status cards
+  and the Pokémon Trader) now has deep slate-gray windows, a copper plaque naming the screen, a bar with where you are,
+  your coins and a close X, slate buttons that take a lantern-yellow edge under the mouse, and a line at the foot that
+  says what the thing under the mouse does, with "Esc close". The Hall's sections are a rail with their own icons; at
+  GUI scale 3 the rail is a grid of icons. Every button, price, tooltip, sound and key works as before.
 
 ## 0.155.3 — 2026-11-15
 

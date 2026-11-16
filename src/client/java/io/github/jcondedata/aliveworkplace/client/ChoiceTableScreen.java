@@ -194,13 +194,12 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		renderMenuBackground(g);
 		TableStyle.panel(g, left, top, panelW, panelH);
 		int side = sidebarWidth();
-		TableStyle.header(g, font, headerTitle(), subtitle(), left + side, top, panelW - side);
+		TableStyle.header(g, font, headerTitle(), subtitle(), left, top, panelW, TableStyle.overClose(left, top, panelW, mouseX, mouseY));
 		renderSidebar(g, mouseX, mouseY);
 		if (customBody()) {
 			// A body drawn by the screen itself (the hall's People table, 40.2) in place of the list and the pane.
 			renderBody(g, left + 8 + side, top + 22, panelW - 16 - side, panelH - 16 - 22, mouseX, mouseY);
-			Component bodyHint = Component.translatable("screen.aliveworkplace.choice.hint");
-			g.drawString(font, font.plainSubstrByWidth(bodyHint.getString(), panelW - 16), left + 8, top + panelH - 12, TableStyle.FAINT, false);
+			TableStyle.footerHint(g, font, whisperText(mouseX, mouseY, -1), left + 8, top + panelH - 12, panelW - 16);
 			return;
 		}
 		int hovered = slotAt(mouseX, mouseY);
@@ -221,8 +220,20 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		} else if (!renderIdle(g, paneX, paneY, paneW, paneH)) {
 			renderOverview(g);
 		}
-		Component hint = Component.translatable("screen.aliveworkplace.choice.hint");
-		g.drawString(font, font.plainSubstrByWidth(hint.getString(), panelW - 16), left + 8, top + panelH - 12, TableStyle.FAINT, false);
+		TableStyle.footerHint(g, font, whisperText(mouseX, mouseY, hovered), left + 8, top + panelH - 12, panelW - 16);
+	}
+
+	/**
+	 * The whisper line's words (47.1): what the button under the mouse does (its first line, else its name), or the
+	 * screen's hint with nothing under it. A screen with a rail says what the rail entry under the mouse is.
+	 */
+	protected Component whisperText(int mouseX, int mouseY, int hovered) {
+		if (hovered >= 0 && hovered < ChoiceMenu.SIZE) {
+			ItemStack stack = icon(hovered);
+			String first = firstLine(stack);
+			return first.isEmpty() ? stack.getHoverName() : Component.literal(first);
+		}
+		return Component.translatable("screen.aliveworkplace.choice.hint");
 	}
 
 	/** The line at the title's right (none by default). */
@@ -334,7 +345,7 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			if (slot == pinned) {
 				TableStyle.selection(g, x0, t, x1 - x0, TableStyle.ROW - 4, true);
 			} else if (slot == hovered) {
-				g.fill(x0, t - 2, x1, t + TableStyle.ROW - 2, 0x30FFFFFF);
+				TableStyle.hoverBand(g, x0, t - 2, x1 - x0, TableStyle.ROW);
 			}
 			if (i > 0 && splitAfterRow >= 0 && rows.get(i - 1) / 9 <= splitAfterRow && slot / 9 > splitAfterRow) {
 				TableStyle.rule(g, x0, t - 3, x1 - x0); // the page tabs above, the people below
@@ -588,6 +599,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		if (sidebarClicked(mx, my, button)) {
 			return true;
 		}
+		if (closeClicked(mx, my, button)) {
+			return true;
+		}
 		if (customBody()) {
 			return bodyClicked(mx, my, button) || mx >= left && mx < left + panelW && my >= top && my < top + panelH;
 		}
@@ -606,6 +620,23 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		}
 		// Nothing else here takes a click (the chest's slots aren't where its screen would put them).
 		return mx >= left && mx < left + panelW && my >= top && my < top + panelH;
+	}
+
+	/** The lintel's close X (47.1): closes the screen as Esc does, with the button's click. */
+	private boolean closeClicked(double mx, double my, int button) {
+		if (button != 0 || !TableStyle.overClose(left, top, panelW, mx, my)) {
+			return false;
+		}
+		net.minecraft.client.Minecraft.getInstance().getSoundManager().play(
+			net.minecraft.client.resources.sounds.SimpleSoundInstance.forUI(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK, 1f));
+		onClose();
+		return true;
+	}
+
+	/** Where the close X's middle is (the screenshot harness and the parts scene point at it). */
+	public int[] closeCentre() {
+		int[] box = TableStyle.closeBox(left, top, panelW);
+		return new int[]{box[0] + box[2] / 2, box[1] + box[3] / 2};
 	}
 
 	/** Clicks button {@code slot} as the chest would have (also used by the screenshot harness), and reads it out. */
@@ -801,18 +832,17 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 			io.github.jcondedata.aliveworkplace.work.ChoiceList.Mark m = io.github.jcondedata.aliveworkplace.work.ChoiceList.mark(icon(slot));
 			return m == null ? 0 : m.order();
 		}));
-		int x = left + 8;
 		int y = top + 22;
 		int right = left + panelW - 8;
-		for (int slot : lmTabs) {
-			Component label = icon(slot).getHoverName();
-			int w = TableStyle.tabWidth(font, label, true, Math.max(40, (panelW - 16) / Math.max(1, Math.min(lmTabs.size(), 6)) - 4));
-			if (x + w > right && x > left + 8) {
-				x = left + 8;
-				y += TableStyle.TAB_H + 3;
-			}
-			lmBoxes.add(new int[]{slot, x, y, w, TableStyle.TAB_H});
-			x += w + 4;
+		// The tabs in rows that wrap at the panel's right (CopperLayout.flow, the GameTests' path too).
+		int[] tabW = new int[lmTabs.size()];
+		for (int i = 0; i < tabW.length; i++) {
+			tabW[i] = TableStyle.tabWidth(font, icon(lmTabs.get(i)).getHoverName(), true, Math.max(40, (panelW - 16) / Math.max(1, Math.min(lmTabs.size(), 6)) - 4));
+		}
+		int[][] tabBoxes = io.github.jcondedata.aliveworkplace.ui.CopperLayout.flow(tabW, left + 8, y, right, 4, TableStyle.TAB_H, TableStyle.TAB_H + 3);
+		for (int i = 0; i < tabBoxes.length; i++) {
+			lmBoxes.add(new int[]{lmTabs.get(i), tabBoxes[i][0], tabBoxes[i][1], tabBoxes[i][2], tabBoxes[i][3]});
+			y = tabBoxes[i][1];
 		}
 		lmX = left + 8;
 		lmY = lmTabs.isEmpty() ? top + 22 : y + TableStyle.TAB_H + 5;
@@ -821,15 +851,15 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
 		lmHead = info != null && !info.columns().isEmpty() ? 13 : 0;
 		// The page arrows at the footer's right, the next one last.
-		int px = right;
 		List<Integer> pages = new ArrayList<>(lmPages);
 		pages.sort(java.util.Comparator.comparing(this::pageNext)); // the previous one first
-		for (int i = pages.size() - 1; i >= 0; i--) {
-			int slot = pages.get(i);
-			int w = TableStyle.buttonWidth(font, icon(slot).getHoverName());
-			px -= w;
-			lmBoxes.add(new int[]{slot, px, top + panelH - 16, w, 13});
-			px -= 4;
+		int[] pageW = new int[pages.size()];
+		for (int i = 0; i < pageW.length; i++) {
+			pageW[i] = TableStyle.buttonWidth(font, icon(pages.get(i)).getHoverName());
+		}
+		int[][] pageBoxes = io.github.jcondedata.aliveworkplace.ui.CopperLayout.rightRow(pageW, right, top + panelH - 16, 4, 13);
+		for (int i = pageBoxes.length - 1; i >= 0; i--) {
+			lmBoxes.add(new int[]{pages.get(i), pageBoxes[i][0], pageBoxes[i][1], pageBoxes[i][2], pageBoxes[i][3]});
 		}
 		lmScroll = Math.max(0, Math.min(lmScroll, lmMaxScroll()));
 	}
@@ -886,11 +916,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		io.github.jcondedata.aliveworkplace.work.ChoiceList.Info info = lmInfo < 0 ? null : io.github.jcondedata.aliveworkplace.work.ChoiceList.info(icon(lmInfo));
 		Component money = info == null || info.money() == null ? Component.empty() : info.money();
 		lmMoneyW = money.getString().isEmpty() ? 0 : font.width(money);
-		lmMoneyX = left + panelW - 8 - lmMoneyW;
-		TableStyle.header(g, font, headerTitle(), Component.empty(), left, top, panelW - (lmMoneyW > 0 ? lmMoneyW + 8 : 0));
-		if (lmMoneyW > 0) {
-			TableStyle.money(g, font, money, left + panelW - 8, top + 8);
-		}
+		lmMoneyX = TableStyle.lintelRight(left, top, panelW) - lmMoneyW;
+		// The money on the lintel, left of the close X (47.1).
+		TableStyle.header(g, font, headerTitle(), money, left, top, panelW, TableStyle.overClose(left, top, panelW, mouseX, mouseY));
 		int hovered = listSlotAt(mouseX, mouseY);
 		for (int[] box : lmBoxes) {
 			int slot = box[0];
@@ -937,6 +965,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		g.disableScissor();
 		TableStyle.scrollbar(g, lmX + lmW - 6, lmY, lmH, lmScroll, lmMaxScroll(), lmHead + lmRows.size() * TableStyle.LIST_ROW + 4);
 		Component hint = info != null && info.hint() != null ? info.hint() : Component.translatable("screen.aliveworkplace.list.hint");
+		if (hovered >= 0 && !firstLine(icon(hovered)).isEmpty()) {
+			hint = Component.literal(firstLine(icon(hovered))); // the whisper line says what's under the mouse (47.1)
+		}
 		int pagesW = 0;
 		for (int[] box : lmBoxes) {
 			if (lmPages.contains(box[0])) {
@@ -955,6 +986,9 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 
 	private boolean listClicked(double mx, double my, int button) {
 		listLayout();
+		if (closeClicked(mx, my, button)) {
+			return true;
+		}
 		if (button == 0 && lmMaxScroll() > 0 && mx >= lmX + lmW - 6 && mx < lmX + lmW && my >= lmY && my < lmY + lmH) {
 			draggingBar = true;
 			return true;

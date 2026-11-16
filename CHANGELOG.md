@@ -18,7 +18,7 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 - Settings screen: sliders whose 0 means something of its own say so at 0: "Villages per Wonder: No Limit",
-  "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: Nobody", where they read a bare 0 (B1325).
+  "Lost Caravans: 1 in: Never" and "Gifted Villagers, 1 in: None", where they read a bare 0 (B1325).
 - With CobbleDollars, the realm treasury's hint and a trainer's prize mark their thousands like the other money lines:
   "shift-click: 6,400" and "+2,500 CobbleDollars", not "6400" and "+2500" (B1326).
 - Daycare: the login reminder for one Pokémon waiting for a place in a full PC is in the singular: "Your PC is full: a

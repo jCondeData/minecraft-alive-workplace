@@ -107,7 +107,7 @@ range is in brackets.
 | `legendNeeds` | on | 1.3 | A settled Legend needs a home of their own, their luxury and a happy village, and strikes without them. |
 | `legendSites` | on | 1.3 | Legends can be found at ruined portals, pillager outposts and shipwrecks (a camp set down for a player who qualifies). |
 | `strangeMoods` | on | 1.3 | Once a day a Master in a happy village may be taken by a strange mood, asking for three rare materials to make a Masterwork and become a Legend. |
-| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). At 0 the slider reads "Nobody" (B1325). |
+| `giftedChance` | 30 (0 to 1000) | 1.3 | One villager in this many is Gifted, with a rare trait (0: nobody is; nothing is erased). At 0 the slider reads "None" (B1325). |
 | `mythicLegendCap` | 0, 0, 1, 2 |  | Mythic Legends a village may hold, by its rank: Hamlet, Village, Town, City (each 0 to 10). In the file only: a list isn't on the settings screen. |
 | `builderRepairs` | on |  | Idle builders repair the buildings they finished when blocks go missing. |
 | `repairAsk` | on |  | A builder who finds blocks missing from a finished build asks first (Repair it? Yes / Not now, in chat and on the Village Hall's Repairs page) and repairs only what was agreed (36.15). Off: they repair by themselves, as before. What raiders and village fires took is always repaired without asking. |

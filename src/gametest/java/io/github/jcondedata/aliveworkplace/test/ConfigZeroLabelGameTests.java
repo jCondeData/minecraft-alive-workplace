@@ -27,7 +27,7 @@ public class ConfigZeroLabelGameTests implements FabricGameTest {
 	public void aSliderWhoseZeroMeansNoLimitOrNeverSaysSo(GameTestHelper helper) {
 		helper.assertValueEqual(zero("wonderServerLimit"), "No Limit", "Villages per Wonder at 0");
 		helper.assertValueEqual(zero("lostCaravanChance"), "Never", "Lost Caravans: 1 in, at 0");
-		helper.assertValueEqual(zero("giftedChance"), "Nobody", "Gifted Villagers, 1 in, at 0");
+		helper.assertValueEqual(zero("giftedChance"), "None", "Gifted Villagers, 1 in, at 0");
 		helper.assertValueEqual(zero("maxWorkersPerVillage"), "No Limit", "(control) Workers per Village at 0");
 		helper.succeed();
 	}

@@ -42,6 +42,11 @@ asks for the steps, `latest.log` and any crash report).
   String for white wool (not another color's wool and dye), Bamboo (not the Stripped Block of Bamboo) and Honey Bottles
   (not honey blocks unpacked and packed again) (B1303, B1304, B1306).
 ### Changed
+- The Village Hall in Copperline (47.2): the Overview has the village's name and rank, four cards (People, Mood, Food,
+  Defense), "Needs you" (each line takes you where to sort it out) and "At work now"; People is a Copperline table with
+  mood faces and count tags; the Map section draws the village from above with its buildings, layers to switch and the
+  building you click; on a small screen (GUI scale 3) the Overview and the Map fit the 320x180 shell. Every button the
+  hall had still works.
 - Copperline, the new look (47.1): every screen drawn in the Village Hall's look (the Village Hall, the Storehouse
   board, the list menus such as the Move Tutor and the shops, the Blueprint Table, the Trainer screen, the status cards
   and the Pokémon Trader) now has deep slate-gray windows, a copper plaque naming the screen, a bar with where you are,

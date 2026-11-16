@@ -5592,7 +5592,7 @@ final class JobScenes {
 					scrollHallLater();
 				}, 40)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU));
-		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened", new Vec3(2.5, -58.4, 4.5), TARGET,
+		SCREENS.put("hall_pages", new Screen("the Village Hall's chronicle and trade-route pages opened, then its Homes & Food and Defense sections", new Vec3(2.5, -58.4, 4.5), TARGET,
 			(level, player) -> {
 				level.setBlockAndUpdate(STATION, ModBlocks.VILLAGE_HALL.defaultBlockState()
 					.setValue(io.github.jcondedata.aliveworkplace.hall.VillageHallBlock.FACING, Direction.SOUTH));
@@ -5610,6 +5610,19 @@ final class JobScenes {
 					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
 					if (player.containerMenu instanceof ChoiceMenu m) {
 						m.press(io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.ROUTES, player);
+					}
+				}, 30),
+				// the other sections in Copperline's shell (47.2): opened by the rail's click
+				new Step("03_hall_homes", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallSections.Section.HOMES.ordinal());
+					}
+				}, 30),
+				new Step("04_hall_defense", -1, 6, (level, player) -> {
+					io.github.jcondedata.aliveworkplace.hall.VillageHallScreen.open(player, STATION);
+					if (player.containerMenu instanceof ChoiceMenu m) {
+						m.clickMenuButton(player, io.github.jcondedata.aliveworkplace.hall.HallSections.Section.DEFENSE.ordinal());
 					}
 				}, 30)),
 			(level, player) -> player.containerMenu instanceof ChoiceMenu m && m.getType() == ModBlocks.VILLAGE_HALL_MENU)); // the hall's own screen (30.4a)

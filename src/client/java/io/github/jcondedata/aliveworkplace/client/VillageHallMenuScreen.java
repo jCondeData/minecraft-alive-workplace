@@ -1,12 +1,15 @@
 package io.github.jcondedata.aliveworkplace.client;
 
 import io.github.jcondedata.aliveworkplace.hall.HallBeds;
+import io.github.jcondedata.aliveworkplace.hall.HallBoard;
+import io.github.jcondedata.aliveworkplace.hall.HallMap;
 import io.github.jcondedata.aliveworkplace.hall.HallJobs;
 import io.github.jcondedata.aliveworkplace.hall.HallPeople;
 import io.github.jcondedata.aliveworkplace.hall.HallSections;
 import io.github.jcondedata.aliveworkplace.hall.MovePage;
 import io.github.jcondedata.aliveworkplace.hall.HallSections.Section;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
+import io.github.jcondedata.aliveworkplace.hall.VillageRanks;
 import io.github.jcondedata.aliveworkplace.work.ChoiceMenu;
 import io.github.jcondedata.aliveworkplace.work.ChoiceView;
 import java.util.List;
@@ -152,6 +155,9 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	/** Under the mouse on the rail: the section's word and what it's for (on a small screen the icon alone names nothing). */
 	@Override
 	protected Component whisperText(int mouseX, int mouseY, int hovered) {
+		if (boardWhisper != null && sectionAt(mouseX, mouseY) < 0) {
+			return boardWhisper;
+		}
 		int i = sectionAt(mouseX, mouseY);
 		if (i >= 0) {
 			Section s = Section.of(i);
@@ -289,14 +295,504 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		return true;
 	}
 
+	// --- the Overview and the Map in Copperline (47.2) -----------------------------------------------------------------
+	// The Overview (boards/Main.png): the village's name with its rank, the four stat cards, "Needs you" and "At work now";
+	// on a small screen (Compact.png) "Needs you" takes the whole width. The places: HallBoard. The Map (HallMap.png): the
+	// village from above with the Hall, its buildings and their names, a legend of layers to switch, the building clicked
+	// and Draw a map. What the screen drew last, for clicks: [kind, arg, x, y, w, h] (kind 10 open a section, 11 press a
+	// button, 12 a villager's row in People, 13 a map layer, 14 the map, 15 a strip button).
+
+	private final List<int[]> boardHits = new ArrayList<>();
+	/** The Overview's cards', "Needs you" lines' and "At work now" lines' boxes last drawn (the screenshot harness points at them). */
+	private final List<int[]> cardBoxes = new ArrayList<>();
+	private final List<int[]> needBoxes = new ArrayList<>();
+	private final List<int[]> workerBoxes = new ArrayList<>();
+	/** What the whisper line says about the thing under the mouse on a board (null: the usual). */
+	private Component boardWhisper;
+
+	private static int toneColor(HallBoard.Tone tone) {
+		return switch (tone) {
+			case GOOD -> CopperStyle.VERDIGRIS;
+			case BAD -> CopperStyle.REDSTONE;
+			case INFO -> CopperStyle.LAPIS;
+			case WARNING -> CopperStyle.LANTERN;
+			default -> CopperStyle.TUFF;
+		};
+	}
+
+	private static String toneGlyph(HallBoard.Tone tone) {
+		return switch (tone) {
+			case GOOD -> "good";
+			case BAD -> "bad";
+			case INFO -> "info";
+			case WARNING -> "warning";
+			default -> "dot";
+		};
+	}
+
+	private static boolean over(int[] box, int mouseX, int mouseY) {
+		return mouseX >= box[0] && mouseX < box[0] + box[2] && mouseY >= box[1] && mouseY < box[1] + box[3];
+	}
+
+	/** Text at twice the size (titles and big numbers), with its shadow. */
+	private void big(GuiGraphics g, String text, int x, int y, int color) {
+		g.pose().pushPose();
+		g.pose().translate(x, y, 0);
+		g.pose().scale(2f, 2f, 1f);
+		g.drawString(font, text, 0, 0, color, true);
+		g.pose().popPose();
+	}
+
+	/** The Overview's other buttons (the village's name, requests, beds, builds, quests, what next, pages placed nowhere): the cards stand for the rest. */
+	private List<Integer> overviewStrip() {
+		java.util.Set<Integer> cards = java.util.Set.of(1, 5, VillageHallScreen.FOOD, VillageHallScreen.GUARDS);
+		List<Integer> out = new ArrayList<>();
+		for (int slot = 0; slot < ChoiceMenu.SIZE; slot++) {
+			ItemStack icon = menu.slots.get(slot).getItem();
+			if ((HallSections.marks(icon) & Section.OVERVIEW.bit()) != 0 && !cards.contains(slot) && HallPeople.row(icon) == null && ChoiceTableScreen.shown(icon)) {
+				out.add(slot);
+			}
+		}
+		return out;
+	}
+
+	private void renderOverviewBoard(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		boardHits.clear();
+		cardBoxes.clear();
+		needBoxes.clear();
+		workerBoxes.clear();
+		boolean small = compactRail();
+		boardWhisper = Component.translatable("screen.aliveworkplace.hall.whisper.overview");
+		int[][] boxes = HallBoard.overview(new int[]{x, y, w, h}, small);
+		ItemStack tooltip = null;
+		// the heading: the village's name at twice the size, its rank; the strip of the Overview's other buttons at the right
+		int[] head = boxes[0];
+		List<Integer> strip = overviewStrip();
+		int sx = head[0] + head[2] - strip.size() * 20 + 2;
+		for (int slot : strip) {
+			boolean on = mouseX >= sx && mouseX < sx + 18 && mouseY >= head[1] && mouseY < head[1] + 18;
+			TableStyle.cell(g, sx, head[1], false, on);
+			g.renderItem(menu.slots.get(slot).getItem(), sx + 1, head[1] + 1);
+			boardHits.add(new int[]{15, slot, sx, head[1], 18, 18});
+			if (on) {
+				tooltip = menu.slots.get(slot).getItem();
+			}
+			sx += 20;
+		}
+		int nameRight = head[0] + head[2] - strip.size() * 20 - 4;
+		CopperStyle.icon(g, "overview", head[0], head[1] + (small ? 2 : 4), 16);
+		VillageRanks.Rank rank = VillageRanks.Rank.values()[Math.max(0, Math.min(VillageRanks.Rank.values().length - 1, menu.state(HallSections.RANK)))];
+		String rankText = rank.title().getString().toUpperCase(java.util.Locale.ROOT);
+		int rankW = font.width(rankText) + 16;
+		int nameW = Math.max(20, nameRight - head[0] - 20 - rankW - 6);
+		// the name at twice the size when it fits, else at the body size (a long name, or a small screen), cut only then
+		String full = villageName().getString();
+		boolean twice = font.width(full) * 2 <= nameW;
+		String name = twice ? full : CopperStyle.trim(font, full, Math.max(20, nameRight - head[0] - 20 - (font.width(full) + rankW + 6 <= nameRight - head[0] - 20 ? rankW + 6 : 0)));
+		if (twice) {
+			big(g, name, head[0] + 20, head[1] + (small ? 2 : 4), CopperStyle.QUARTZ);
+		} else {
+			g.drawString(font, name, head[0] + 20, head[1] + (small ? 6 : 8), CopperStyle.QUARTZ, true);
+		}
+		int rx = head[0] + 20 + font.width(name) * (twice ? 2 : 1) + 6;
+		if (rx + rankW <= nameRight) {
+			g.fill(rx, head[1] + (small ? 5 : 7), rx + rankW, head[1] + (small ? 16 : 18), CopperStyle.DEEP_700);
+			CopperStyle.glyph(g, "star", rx + 3, head[1] + (small ? 7 : 9));
+			g.drawString(font, rankText, rx + 13, head[1] + (small ? 7 : 9), CopperStyle.QUARTZ, false);
+		}
+		// the four stat cards
+		List<HallBoard.Card> cards = HallBoard.cards(menu::state);
+		for (int i = 0; i < cards.size(); i++) {
+			HallBoard.Card card = cards.get(i);
+			int[] b = boxes[1 + i];
+			boolean on = over(b, mouseX, mouseY);
+			CopperStyle.panel(g, b[0], b[1], b[2], b[3]);
+			if (on) {
+				g.renderOutline(b[0], b[1], b[2], b[3], CopperStyle.LANTERN);
+				boardWhisper = Component.translatable("screen.aliveworkplace.hall.whisper.card", card.title(), card.opens().title());
+				tooltip = menu.slots.get(card.slot()).getItem();
+			}
+			CopperStyle.glyph(g, card.glyph(), b[0] + 4, b[1] + 4);
+			g.drawString(font, CopperStyle.trim(font, card.title().getString().toUpperCase(java.util.Locale.ROOT), b[2] - 18), b[0] + 14, b[1] + 4, CopperStyle.TUFF, false);
+			String bigText = CopperStyle.trim(font, card.big(), (b[2] - 8) / 2);
+			big(g, bigText, b[0] + 4, b[1] + 14, CopperStyle.QUARTZ);
+			int ux = b[0] + 4 + font.width(bigText) * 2 + 3;
+			String unit = card.unit().getString();
+			if (!unit.isEmpty() && ux + font.width(unit) <= b[0] + b[2] - 3) {
+				g.drawString(font, unit, ux, b[1] + 22, CopperStyle.TUFF, false);
+			}
+			if (b[3] >= 36) {
+				int ly = b[1] + b[3] - 11;
+				CopperStyle.glyph(g, card.lineGlyph(), b[0] + 4, ly);
+				g.drawString(font, CopperStyle.trim(font, card.line().getString(), b[2] - 18), b[0] + 14, ly, toneColor(card.tone()), false);
+			}
+			boardHits.add(new int[]{10, card.opens().ordinal(), b[0], b[1], b[2], b[3]});
+			cardBoxes.add(b);
+		}
+		// Needs you
+		int[] needsBox = boxes[5];
+		listHeading(g, Component.translatable("screen.aliveworkplace.hall.needs"), needsBox);
+		List<HallBoard.Need> needs = HallBoard.needs(i -> menu.slots.get(i).getItem(), menu::state, HallBoard.fits(needsBox[3], HallBoard.LINE_H));
+		if (needs.isEmpty()) {
+			int[] l = HallBoard.line(needsBox, 0, HallBoard.LINE_H);
+			CopperStyle.glyph(g, "good", l[0] + 4, l[1] + 3);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.needs.none").getString(), l[2] - 18), l[0] + 15, l[1] + 3,
+				CopperStyle.TUFF, false);
+		}
+		for (int i = 0; i < needs.size(); i++) {
+			HallBoard.Need need = needs.get(i);
+			int[] l = HallBoard.line(needsBox, i, HallBoard.LINE_H);
+			boolean on = over(l, mouseX, mouseY);
+			g.fill(l[0], l[1], l[0] + l[2], l[1] + l[3], on ? CopperStyle.DEEP_700 : CopperStyle.DEEP_800);
+			if (on) {
+				g.fill(l[0], l[1], l[0] + 2, l[1] + l[3], CopperStyle.LANTERN);
+				// an advice line's whole sentence (the line may be cut), else where the click goes
+				boardWhisper = need.opens() != null ? Component.translatable("screen.aliveworkplace.hall.whisper.need", need.opens().title())
+					: need.text();
+			}
+			CopperStyle.glyph(g, toneGlyph(need.tone()), l[0] + 4, l[1] + 3);
+			g.drawString(font, CopperStyle.trim(font, need.text().getString(), l[2] - 28), l[0] + 15, l[1] + 3,
+				need.tone() == HallBoard.Tone.BAD ? CopperStyle.REDSTONE : CopperStyle.QUARTZ, false);
+			CopperStyle.glyph(g, "more", l[0] + l[2] - 11, l[1] + 3);
+			boardHits.add(need.opens() != null ? new int[]{10, need.opens().ordinal(), l[0], l[1], l[2], l[3]} : new int[]{11, need.slot(), l[0], l[1], l[2], l[3]});
+			needBoxes.add(l);
+		}
+		// At work now (not on a small screen)
+		int[] workBox = boxes[6];
+		if (workBox[2] > 40) {
+			listHeading(g, Component.translatable("screen.aliveworkplace.hall.at_work_now"), workBox);
+			List<HallBoard.Worker> workers = HallBoard.atWork(i -> menu.slots.get(i).getItem(), HallBoard.fits(workBox[3], HallBoard.WORK_H));
+			if (workers.isEmpty()) {
+				int[] l = HallBoard.line(workBox, 0, HallBoard.WORK_H);
+				g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.at_work_now.none").getString(), l[2] - 4), l[0] + 2, l[1] + 3,
+					CopperStyle.TUFF, false);
+			}
+			for (int i = 0; i < workers.size(); i++) {
+				HallBoard.Worker worker = workers.get(i);
+				int[] l = HallBoard.line(workBox, i, HallBoard.WORK_H);
+				boolean on = over(l, mouseX, mouseY);
+				if (on) {
+					g.fill(l[0], l[1], l[0] + l[2], l[1] + l[3], CopperStyle.DEEP_700);
+					g.fill(l[0], l[1], l[0] + 2, l[1] + l[3], CopperStyle.LANTERN);
+					boardWhisper = Component.translatable("screen.aliveworkplace.hall.whisper.worker", worker.name().getString());
+				}
+				CopperStyle.slot(g, font, ItemStack.EMPTY, l[0] + 2, l[1], false);
+				ItemStack face = menu.slots.get(worker.slot()).getItem().copyWithCount(1);
+				g.renderItem(face, l[0] + 3, l[1] + 1);
+				g.drawString(font, CopperStyle.trim(font, worker.name().getString(), l[2] - 26), l[0] + 23, l[1] + 1, CopperStyle.QUARTZ, true);
+				g.drawString(font, CopperStyle.trim(font, worker.doing().getString(), l[2] - 26), l[0] + 23, l[1] + 10, CopperStyle.TUFF, false);
+				boardHits.add(new int[]{12, worker.slot(), l[0], l[1], l[2], l[3]});
+				workerBoxes.add(l);
+			}
+		}
+		if (tooltip != null) {
+			g.renderTooltip(font, tooltip, mouseX, mouseY);
+		}
+	}
+
+	/** A list's heading in Tuff capitals with a rule after it (NEEDS YOU ———). */
+	private void listHeading(GuiGraphics g, Component text, int[] box) {
+		String t = CopperStyle.trim(font, text.getString().toUpperCase(java.util.Locale.ROOT), box[2]);
+		g.drawString(font, t, box[0], box[1] + 1, CopperStyle.TUFF, false);
+		int rx = box[0] + font.width(t) + 4;
+		if (rx < box[0] + box[2]) {
+			g.fill(rx, box[1] + 5, box[0] + box[2], box[1] + 6, CopperStyle.DEEP_600);
+		}
+	}
+
+	private boolean boardClicked(double mx, double my, int button) {
+		for (int[] hit : boardHits) {
+			if (mx < hit[2] || mx >= hit[2] + hit[4] || my < hit[3] || my >= hit[3] + hit[5]) {
+				continue;
+			}
+			if (minecraft != null) {
+				minecraft.getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f));
+			}
+			switch (hit[0]) {
+				case 10 -> open(Section.of(hit[1]));
+				case 11 -> press(hit[1], 0, false);
+				case 12 -> { // a villager at work: their row, open in People
+					CompoundTag row = HallPeople.row(menu.slots.get(hit[1]).getItem());
+					open(Section.PEOPLE);
+					openUuid = row == null ? null : row.getString("uuid");
+					tableScroll = Math.max(0, (menu.state(HallSections.PEOPLE_FIRST) + personSlots().indexOf(hit[1]) - 1) * RH);
+				}
+				case 13 -> hallLayers ^= 1 << hit[1];
+				case 14 -> {
+					CompoundTag view = HallMap.view(menu.slots.get(VillageHallScreen.MAP).getItem());
+					if (view != null) {
+						int[] at = moveBlockAt(view, mx, my);
+						int picked = HallMap.buildingAt(view, at[0], at[1]);
+						hallSelected = picked == hallSelected ? -1 : picked;
+					}
+				}
+				case 15 -> press(hit[1], button, button == 0 && hasShiftDown());
+				default -> {
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/** The middle of the Overview's card, "Needs you" line or "At work now" line {@code i} (kind 0, 1, 2) as last drawn, or null (the screenshot harness). */
+	public int[] boardCentre(int kind, int i) {
+		List<int[]> boxes = kind == 0 ? cardBoxes : kind == 1 ? needBoxes : workerBoxes;
+		if (i < 0 || i >= boxes.size()) {
+			return null;
+		}
+		int[] b = boxes.get(i);
+		return new int[]{b[0] + b[2] / 2, b[1] + b[3] / 2};
+	}
+
+	/** Clicks the Overview's card, "Needs you" line or "At work now" line {@code i} (kind 0, 1, 2) as a player does (the screenshot harness). */
+	public boolean pressBoard(int kind, int i) {
+		int[] at = boardCentre(kind, i);
+		return at != null && boardClicked(at[0], at[1], 0);
+	}
+
+	/** The middle of the Map's building {@code i} on the map as last drawn, or null (the screenshot harness). */
+	public int[] buildingCentre(int i) {
+		CompoundTag view = HallMap.view(menu.slots.get(VillageHallScreen.MAP).getItem());
+		if (view == null || i < 0 || i >= HallMap.buildings(view) || hallMapBox[2] == 0) {
+			return null;
+		}
+		int[] b = HallMap.box(view, i);
+		int[] r = moveRect(view, b[0], b[1], b[2], b[3]);
+		return new int[]{(r[0] + r[2]) / 2, (r[1] + r[3]) / 2};
+	}
+
+	/** Clicks the Overview's stat card {@code i} as a player does (the screenshot harness): it opens its section. */
+	public void pressCard(int i) {
+		List<HallBoard.Card> cards = HallBoard.cards(menu::state);
+		if (i >= 0 && i < cards.size()) {
+			open(cards.get(i).opens());
+		}
+	}
+
+	/** Selects the Map's building {@code i} (the screenshot harness), as a click on it does. */
+	public void selectBuilding(int i) {
+		hallSelected = i;
+	}
+
+	// The Map section: the village map, its legend of layers and the building selected.
+
+	private static final net.minecraft.resources.ResourceLocation HALL_MAP = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("hall_map");
+	private net.minecraft.client.renderer.texture.DynamicTexture hallTexture;
+	private byte[] hallColors;
+	private int hallTextureLayers = -1;
+	/** The layers on (a bit per HallMap.LAYERS), the building selected (-1: none) and whether the wheel zoomed in. */
+	private int hallLayers = HallMap.allLayers();
+	private int hallSelected = -1;
+	private boolean hallZoomed;
+	private int[] hallMapBox = {0, 0, 0, 0};
+	private final java.util.Map<String, Component> hallNames = new java.util.HashMap<>();
+
+	private boolean layer(String id) {
+		return (hallLayers & 1 << HallMap.LAYERS.indexOf(id)) != 0;
+	}
+
+	private Component buildingName(CompoundTag view, int i) {
+		String json = HallMap.nameJson(view, i);
+		if (json.isEmpty() || minecraft == null || minecraft.level == null) {
+			return Component.translatable("screen.aliveworkplace.hall.map.building");
+		}
+		return hallNames.computeIfAbsent(json, j -> {
+			try {
+				Component c = Component.Serializer.fromJson(j, minecraft.level.registryAccess());
+				return c == null ? Component.literal(j) : c;
+			} catch (RuntimeException e) {
+				return Component.literal(j);
+			}
+		});
+	}
+
+	private void hallTexture(CompoundTag view) {
+		byte[] colors = view.getByteArray("colors");
+		int layers = (layer("roads") ? 1 : 0) | (layer("edge") ? 2 : 0);
+		if (minecraft == null || hallTexture != null && java.util.Arrays.equals(colors, hallColors) && layers == hallTextureLayers) {
+			return;
+		}
+		com.mojang.blaze3d.platform.NativeImage image = mapImage(view, layer("roads"), layer("edge"));
+		if (hallTexture != null) {
+			minecraft.getTextureManager().release(HALL_MAP);
+		}
+		hallTexture = new net.minecraft.client.renderer.texture.DynamicTexture(image);
+		minecraft.getTextureManager().register(HALL_MAP, hallTexture);
+		hallColors = colors;
+		hallTextureLayers = layers;
+	}
+
+	private void renderHallMap(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		boardHits.clear();
+		boardWhisper = Component.translatable("screen.aliveworkplace.hall.map.hint");
+		ItemStack mapButton = menu.slots.get(VillageHallScreen.MAP).getItem();
+		CompoundTag view = HallMap.view(mapButton);
+		if (view == null) {
+			return;
+		}
+		boolean small = compactRail();
+		int[][] places = HallMap.layout(new int[]{x, y, w, h}, small);
+		int s = places[0][2];
+		int mx = places[0][0];
+		int my = places[0][1];
+		hallMapBox = places[0];
+		hallTexture(view);
+		// the window: the whole village, or zoomed in on the Hall (the Move page's map arithmetic, on this map)
+		int step = Math.max(1, view.getInt("step"));
+		int window = hallZoomed ? MovePage.MAP / 2 : MovePage.MAP;
+		int hx = (view.getInt("hallX") - view.getInt("ox")) / step;
+		int hz = (view.getInt("hallZ") - view.getInt("oz")) / step;
+		moveMapX = mx;
+		moveMapY = my;
+		moveMapS = s;
+		moveWindow = window;
+		moveOriginX = Math.max(0, Math.min(MovePage.MAP - window, hx - window / 2));
+		moveOriginZ = Math.max(0, Math.min(MovePage.MAP - window, hz - window / 2));
+		g.fill(mx - 1, my - 1, mx + s + 1, my + s + 1, CopperStyle.VOID);
+		g.blit(HALL_MAP, mx, my, s, s, moveOriginX, moveOriginZ, window, window, MovePage.MAP, MovePage.MAP);
+		g.enableScissor(mx, my, mx + s, my + s);
+		int count = HallMap.buildings(view);
+		List<int[]> rects = new ArrayList<>();
+		for (int i = 0; i < count; i++) {
+			int[] b = HallMap.box(view, i);
+			rects.add(moveRect(view, b[0], b[1], b[2], b[3]));
+		}
+		if (layer("buildings")) {
+			for (int i = 0; i < count; i++) {
+				outlined(g, rects.get(i), 0xE0000000 | (MOVE_BUILDING & 0xFFFFFF), 0xFF2A140A);
+			}
+		}
+		if (hallSelected >= 0 && hallSelected < count) {
+			int[] r = rects.get(hallSelected);
+			g.renderOutline(r[0] - 2, r[1] - 2, r[2] - r[0] + 4, r[3] - r[1] + 4, CopperStyle.VOID);
+			g.renderOutline(r[0] - 1, r[1] - 1, r[2] - r[0] + 2, r[3] - r[1] + 2, CopperStyle.LANTERN);
+		}
+		// the Hall's bell
+		int[] hall = moveRect(view, view.getInt("hallX"), view.getInt("hallZ"), view.getInt("hallX"), view.getInt("hallZ"));
+		int bx = (hall[0] + hall[2]) / 2 - 6;
+		int by = (hall[1] + hall[3]) / 2 - 6;
+		g.pose().pushPose();
+		g.pose().translate(bx, by, 0);
+		g.pose().scale(0.75f, 0.75f, 1f);
+		g.renderItem(new ItemStack(net.minecraft.world.item.Items.BELL), 0, 0);
+		g.pose().popPose();
+		if (layer("names")) {
+			List<int[]> taken = new ArrayList<>(rects);
+			int[] bell = {bx, by, bx + 12, by + 12};
+			taken.add(bell);
+			mapLabel(g, Component.translatable("screen.aliveworkplace.move.legend.hall").getString(), bell, false, CopperStyle.QUARTZ, taken);
+			if (hallSelected >= 0 && hallSelected < count) { // the selected one first, always shown
+				mapLabel(g, buildingName(view, hallSelected).getString(), rects.get(hallSelected), true, CopperStyle.LANTERN, taken);
+			}
+			for (int i = 0; i < count; i++) {
+				if (i != hallSelected) {
+					mapLabel(g, buildingName(view, i).getString(), rects.get(i), true, CopperStyle.QUARTZ, taken, true);
+				}
+			}
+		}
+		g.disableScissor();
+		// north, and the scale: a bar 16 blocks long
+		String north = Component.translatable("screen.aliveworkplace.hall.map.north").getString();
+		g.fill(mx + s - font.width(north) - 6, my + 2, mx + s - 2, my + 13, 0xC0000000);
+		g.drawString(font, north, mx + s - font.width(north) - 4, my + 4, CopperStyle.QUARTZ, false);
+		int bar = (int) Math.round(16.0 * s / (window * step));
+		String scale = Component.translatable("screen.aliveworkplace.hall.map.scale", 16).getString();
+		if (bar >= 4 && bar + font.width(scale) + 10 < s) {
+			g.fill(mx + 2, my + s - 13, mx + bar + font.width(scale) + 10, my + s - 2, 0xC0000000);
+			g.fill(mx + 4, my + s - 8, mx + 4 + bar, my + s - 6, CopperStyle.QUARTZ);
+			g.drawString(font, scale, mx + bar + 7, my + s - 11, CopperStyle.QUARTZ, false);
+		}
+		boardHits.add(new int[]{14, 0, mx, my, s, s});
+		if (over(hallMapBox, mouseX, mouseY)) {
+			int[] at = moveBlockAt(view, mouseX, mouseY);
+			int under = HallMap.buildingAt(view, at[0], at[1]);
+			if (under >= 0) {
+				boardWhisper = Component.translatable("screen.aliveworkplace.hall.map.whisper_building", buildingName(view, under).getString());
+			}
+		}
+		// the right side: the layers, the building selected, Draw a map
+		int px = places[1][0];
+		int pw = places[1][2];
+		int py = places[1][1];
+		listHeading(g, Component.translatable("screen.aliveworkplace.hall.map.layers"), new int[]{px, py, pw, 10});
+		py += 13;
+		int rowH = small ? HallMap.LAYER_H_SMALL : HallMap.LAYER_H;
+		for (int i = 0; i < HallMap.LAYERS.size(); i++) {
+			String id = HallMap.LAYERS.get(i);
+			int[] row = {px, py, pw, rowH - 1};
+			boolean on = over(row, mouseX, mouseY);
+			CopperStyle.toggle(g, px, py + (rowH - 10) / 2, layer(id), false, on);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.map.layer." + id).getString(), pw - 44), px + 24,
+				py + (rowH - 8) / 2, layer(id) ? CopperStyle.QUARTZ : CopperStyle.TUFF, false);
+			if (id.equals("buildings")) {
+				String n = String.valueOf(count);
+				g.drawString(font, n, px + pw - font.width(n) - 2, py + (rowH - 8) / 2, CopperStyle.TUFF, false);
+			}
+			if (on) {
+				boardWhisper = Component.translatable("screen.aliveworkplace.hall.map.whisper_layer",
+					Component.translatable("screen.aliveworkplace.hall.map.layer." + id));
+			}
+			boardHits.add(new int[]{13, i, row[0], row[1], row[2], row[3]});
+			py += rowH;
+		}
+		py += 4;
+		listHeading(g, Component.translatable("screen.aliveworkplace.hall.map.selected"), new int[]{px, py, pw, 10});
+		py += 13;
+		int drawH = places[2][3];
+		int drawY = places[2][1];
+		int boxH = Math.max(14, drawY - 4 - py);
+		CopperStyle.panel(g, px, py, pw, boxH);
+		int ty = py + 4;
+		if (hallSelected >= 0 && hallSelected < count) {
+			int[] b = HallMap.box(view, hallSelected);
+			CopperStyle.icon(g, "buildings", px + 4, ty, 16);
+			g.drawString(font, CopperStyle.trim(font, buildingName(view, hallSelected).getString(), pw - 26), px + 24, ty, CopperStyle.QUARTZ, true);
+			g.drawString(font, CopperStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.map.size", b[2] - b[0] + 1, b[3] - b[1] + 1).getString(), pw - 26),
+				px + 24, ty + 10, CopperStyle.TUFF, false);
+			long dx = (b[0] + b[2]) / 2 - view.getInt("hallX");
+			long dz = (b[1] + b[3]) / 2 - view.getInt("hallZ");
+			int far = (int) Math.round(Math.sqrt(dx * dx + dz * dz));
+			int fy = ty + 21;
+			for (FormattedCharSequence part : font.split(Component.translatable("screen.aliveworkplace.hall.map.from_hall", far), pw - 8)) {
+				if (fy + 9 > py + boxH) {
+					break;
+				}
+				g.drawString(font, part, px + 4, fy, CopperStyle.TUFF, false);
+				fy += 10;
+			}
+		} else {
+			Component hint = Component.translatable(count == 0 ? "screen.aliveworkplace.hall.map.none" : "screen.aliveworkplace.hall.map.pick");
+			for (FormattedCharSequence part : font.split(hint, pw - 8)) {
+				if (ty + 9 > py + boxH) {
+					break;
+				}
+				g.drawString(font, part, px + 4, ty, CopperStyle.TUFF, false);
+				ty += 10;
+			}
+		}
+		// Draw a map: the Map button's own click (a vanilla map of the village for an empty map), the screen's one copper button
+		boolean overDraw = mouseX >= px && mouseX < px + pw && mouseY >= drawY && mouseY < drawY + drawH;
+		CopperStyle.button(g, font, Component.translatable("screen.aliveworkplace.hall.map.draw"), null, px, drawY, pw, drawH, CopperStyle.Kind.COPPER, overDraw, false, false);
+		boardHits.add(new int[]{11, VillageHallScreen.MAP, px, drawY, pw, drawH});
+		if (overDraw) {
+			boardWhisper = Component.translatable("screen.aliveworkplace.hall.map.whisper_draw");
+			List<Component> lore = loreOf(mapButton);
+			if (lore.size() > 1) {
+				g.renderComponentTooltip(font, lore, mouseX, mouseY);
+			}
+		}
+	}
+
 	// --- the People table (40.2) ------------------------------------------------------------------------------------
 
 	/** A table row's height, and a details button's. */
-	private static final int RH = 12;
+	private static final int RH = 14;
 	private static final int BH = 14;
-	private static final int MOOD_HAPPY = 0xFF55FF55;
-	private static final int MOOD_UNHAPPY = 0xFFFFAA00;
-	private static final int MOOD_NO_BED = 0xFFFF5555;
+	/** The Mood column's colors and glyphs (Copperline: a glyph, a word and a color each). */
+	private static final int MOOD_HAPPY = CopperStyle.VERDIGRIS;
+	private static final int MOOD_UNHAPPY = CopperStyle.LANTERN;
+	private static final int MOOD_NO_BED = CopperStyle.REDSTONE;
 
 	/** The open row's villager (null: none), kept by who they are so it stays open as the list moves. */
 	private String openUuid;
@@ -311,7 +807,16 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean customBody() {
-		return moveMap() || hasSidebar() && onMain() && section() == Section.PEOPLE;
+		return moveMap() || board() != null;
+	}
+
+	/** The section the screen draws itself on the main page (People, Overview, and the Map once its view came), or null. */
+	private Section board() {
+		if (!hasSidebar() || !onMain()) {
+			return null;
+		}
+		Section s = section();
+		return s == Section.PEOPLE || s == Section.OVERVIEW || s == Section.MAP && HallMap.view(menu.slots.get(VillageHallScreen.MAP).getItem()) != null ? s : null;
 	}
 
 	// --- the Move page's picker (45.2, reworked for B1163): the steps, the village map, and labeled buttons -------------
@@ -372,6 +877,21 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		if (moveTexture != null && java.util.Arrays.equals(colors, moveColors) || minecraft == null) {
 			return;
 		}
+		com.mojang.blaze3d.platform.NativeImage image = mapImage(view, true, true);
+		if (moveTexture != null) {
+			minecraft.getTextureManager().release(MOVE_MAP);
+		}
+		moveTexture = new net.minecraft.client.renderer.texture.DynamicTexture(image);
+		minecraft.getTextureManager().register(MOVE_MAP, moveTexture);
+		moveColors = colors;
+	}
+
+	/**
+	 * A village map's picture from a view's colours (the Move page's, or the Hall's Map section's): its roads light when
+	 * {@code roads}, the land outside the village half as bright when {@code edge}.
+	 */
+	private static com.mojang.blaze3d.platform.NativeImage mapImage(CompoundTag view, boolean roads, boolean edge) {
+		byte[] colors = view.getByteArray("colors");
 		byte[] kinds = view.getByteArray("kinds");
 		int n = MovePage.MAP;
 		int step = Math.max(1, view.getInt("step"));
@@ -382,23 +902,18 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				int i = x + z * n;
 				int packed = colors.length == n * n ? colors[i] & 0xFF : 0;
 				int argb = packed == 0 ? 0xFFD6BE96 : abgrToArgb(net.minecraft.world.level.material.MapColor.getColorFromPackedId(packed));
-				if (kinds.length == n * n && kinds[i] == 1) {
+				if (roads && kinds.length == n * n && kinds[i] == 1) {
 					argb = MOVE_ROAD;
 				}
 				long dx = view.getInt("ox") + (long) x * step - view.getInt("hallX");
 				long dz = view.getInt("oz") + (long) z * step - view.getInt("hallZ");
-				if (dx * dx + dz * dz > r) {
+				if (edge && dx * dx + dz * dz > r) {
 					argb = 0xFF000000 | ((argb >> 17 & 0x7F) << 16) | ((argb >> 9 & 0x7F) << 8) | (argb >> 1 & 0x7F); // outside: half as bright
 				}
 				image.setPixelRGBA(x, z, abgrToArgb(argb) | 0xFF000000);
 			}
 		}
-		if (moveTexture != null) {
-			minecraft.getTextureManager().release(MOVE_MAP);
-		}
-		moveTexture = new net.minecraft.client.renderer.texture.DynamicTexture(image);
-		minecraft.getTextureManager().register(MOVE_MAP, moveTexture);
-		moveColors = colors;
+		return image;
 	}
 
 	/** ABGR to ARGB and back (the same swap). */
@@ -408,6 +923,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	public void removed() {
+		if (hallTexture != null && minecraft != null) {
+			minecraft.getTextureManager().release(HALL_MAP);
+			hallTexture = null;
+			hallColors = null;
+		}
 		if (moveTexture != null && minecraft != null) {
 			minecraft.getTextureManager().release(MOVE_MAP);
 			moveTexture = null;
@@ -644,6 +1164,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	 * else above it, else below, else beside it, wherever it covers nothing in {@code taken}; then it is taken too.
 	 */
 	private void mapLabel(GuiGraphics g, String text, int[] box, boolean inside, int color, List<int[]> taken) {
+		mapLabel(g, text, box, inside, color, taken, false);
+	}
+
+	/** {@link #mapLabel}; with {@code skipCrowded} a name with no clear spot isn't drawn (the Hall's Map, 47.2). */
+	private void mapLabel(GuiGraphics g, String text, int[] box, boolean inside, int color, List<int[]> taken, boolean skipCrowded) {
 		int w = (int) Math.ceil(font.width(text) * 0.67f) + 2;
 		int h = 7;
 		int cx = (box[0] + box[2]) / 2 - w / 2;
@@ -656,6 +1181,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		tries.add(new int[]{box[2] + 1, (box[1] + box[3]) / 2 - h / 2, 0});
 		tries.add(new int[]{box[0] - w - 1, (box[1] + box[3]) / 2 - h / 2, 0});
 		int[] at = tries.get(0);
+		boolean found = false;
 		for (int[] t : tries) {
 			int[] r = {t[0], t[1], t[0] + w, t[1] + h};
 			boolean clear = r[0] >= moveMapX && r[1] >= moveMapY && r[2] <= moveMapX + moveMapS && r[3] <= moveMapY + moveMapS;
@@ -667,8 +1193,12 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			}
 			if (clear) {
 				at = t;
+				found = true;
 				break;
 			}
+		}
+		if (!found && skipCrowded) {
+			return;
 		}
 		g.fill(at[0], at[1], at[0] + w, at[1] + h, 0xB0000000);
 		g.pose().pushPose();
@@ -1074,8 +1604,18 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected void renderBody(GuiGraphics g, int x, int y, int w, int h, int mouseX, int mouseY) {
+		boardWhisper = null;
 		if (moveMap()) {
 			renderMoveMap(g, x, y, w, h, mouseX, mouseY);
+			return;
+		}
+		Section board = board();
+		if (board == Section.OVERVIEW) {
+			renderOverviewBoard(g, x, y, w, h, mouseX, mouseY);
+			return;
+		}
+		if (board == Section.MAP) {
+			renderHallMap(g, x, y, w, h, mouseX, mouseY);
 			return;
 		}
 		hits.clear();
@@ -1100,20 +1640,37 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			g.drawWordWrap(font, note, x, ly, w, TableStyle.BODY);
 			ly += font.split(note, w).size() * 10 + 4;
 		}
-		g.drawString(font, TableStyle.trim(font, HallPeople.header(menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_WORKING),
-			menu.state(HallSections.PEOPLE_JOBLESS), menu.state(HallSections.PEOPLE_CHILDREN)), w), x, ly, TableStyle.TITLE, false);
-		ly += 11;
+		// the counts as chips (Copperline, 47.2): everyone, working, without a job, children; the full line in the whisper
+		int cx = x;
+		int[] counts = {menu.state(HallSections.PEOPLE_TOTAL), menu.state(HallSections.PEOPLE_WORKING), menu.state(HallSections.PEOPLE_JOBLESS),
+			menu.state(HallSections.PEOPLE_CHILDREN)};
+		String[] chipKeys = {"all", "working", "jobless", "children"};
+		int[] chipColors = {CopperStyle.QUARTZ, CopperStyle.VERDIGRIS, counts[2] > 0 ? CopperStyle.LANTERN : CopperStyle.TUFF, CopperStyle.TUFF};
+		for (int c = 0; c < 4; c++) {
+			if (c == 3 && counts[3] == 0) {
+				break;
+			}
+			String chip = Component.translatable("screen.aliveworkplace.hall.people.chip." + chipKeys[c], counts[c]).getString();
+			if (cx + font.width(chip) + 6 > x + w) {
+				break;
+			}
+			cx += CopperStyle.chip(g, font, chip, cx, ly, chipColors[c]) + 3;
+		}
+		if (mouseX >= x && mouseX < cx && mouseY >= ly && mouseY < ly + 11) {
+			boardWhisper = HallPeople.header(counts[0], counts[1], counts[2], counts[3]);
+		}
+		ly += 14;
 		g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.hint"), w), x, ly, TableStyle.FAINT, false);
 		ly += 12;
-		int[] cols = {x + 4, x + 4 + w * 36 / 100, x + 4 + w * 64 / 100, x + 4 + w * 82 / 100};
+		int[] cols = {x + 4, x + 4 + w * 34 / 100, x + 4 + w * 62 / 100, x + 4 + w * 78 / 100};
 		int[] colW = {cols[1] - cols[0] - 4, cols[2] - cols[1] - 4, cols[3] - cols[2] - 4, x + w - 8 - cols[3]};
 		String[] heads = {"name", "job", "level", "mood"};
 		for (int c = 0; c < 4; c++) {
-			g.drawString(font, TableStyle.trim(font, Component.translatable("screen.aliveworkplace.hall.people.col." + heads[c]), colW[c]), cols[c], ly,
-				TableStyle.SUBTITLE, false);
+			g.drawString(font, TableStyle.trim(font, Component.literal(Component.translatable("screen.aliveworkplace.hall.people.col." + heads[c]).getString()
+				.toUpperCase(java.util.Locale.ROOT)), colW[c]), cols[c], ly, CopperStyle.TUFF, false);
 		}
-		ly += 11;
-		TableStyle.rule(g, x, ly - 2, w);
+		CopperStyle.headerRow(g, x, ly - 1, w);
+		ly += 12;
 		tableX = x;
 		tableW = w;
 		tableTop = ly;
@@ -1146,7 +1703,7 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			}
 			int k = i - first;
 			if (k < 0 || k >= people.size()) {
-				g.drawString(font, "...", cols[0], top + 2, TableStyle.LOADING, false);
+				g.drawString(font, "...", cols[0], top + 3, TableStyle.LOADING, false);
 				continue;
 			}
 			int slot = people.get(k);
@@ -1155,18 +1712,24 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 			boolean open = i == openAt;
 			boolean over = mouseX >= x && mouseX < x + w - 6 && mouseY >= Math.max(top, tableTop) && mouseY < top + RH && mouseY < tableTop + tableH;
 			if (open) {
-				g.fill(x + 1, top, x + w - 7, top + RH + openH - 1, 0x40FFD66B);
-			} else if (over) {
-				g.fill(x + 1, top, x + w - 7, top + RH, 0x30FFFFFF);
+				g.fill(x + 1, top, x + w - 7, top + RH + openH - 1, CopperStyle.DEEP_800);
+				CopperStyle.rowBand(g, x + 1, top, w - 8, RH, false, false, true);
+			} else {
+				CopperStyle.rowBand(g, x + 1, top, w - 8, RH, i % 2 == 1, over, false);
 			}
 			hits.add(new int[]{0, slot, x, top, w - 6, RH});
 			String kind = row.getString("kind");
-			g.drawString(font, TableStyle.trim(font, icon.getHoverName(), colW[0]), cols[0], top + 2, TableStyle.NAME, false);
+			g.drawString(font, TableStyle.trim(font, icon.getHoverName(), colW[0]), cols[0], top + 3, TableStyle.NAME, open);
 			Component job = HallPeople.job(row); // "Undertaker (no workstation)" for a worker without one (B1173)
 			int jobColour = kind.equals("builder") ? TableStyle.TITLE : kind.equals("child") || kind.equals("jobless") || kind.equals("nitwit") || row.getBoolean("no_site")
 				? TableStyle.SUBLINE : TableStyle.BODY;
-			g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 2, jobColour, false);
-			g.drawString(font, TableStyle.trim(font, HallPeople.level(row.getInt("level")), colW[2]), cols[2], top + 2, TableStyle.BODY, false);
+			if (kind.equals("jobless")) { // no job: the warning glyph and the word in Lantern
+				CopperStyle.glyph(g, "warning", cols[1], top + 3);
+				g.drawString(font, TableStyle.trim(font, job, colW[1] - 10), cols[1] + 10, top + 3, CopperStyle.LANTERN, false);
+			} else {
+				g.drawString(font, TableStyle.trim(font, job, colW[1]), cols[1], top + 3, jobColour, false);
+			}
+			g.drawString(font, TableStyle.trim(font, HallPeople.level(row.getInt("level")), colW[2]), cols[2], top + 3, TableStyle.BODY, false);
 			HallPeople.MoodWord mood = moodOf(row);
 			int moodColour = switch (mood) {
 				case HAPPY -> MOOD_HAPPY;
@@ -1174,7 +1737,17 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 				case NO_BED -> MOOD_NO_BED;
 				default -> TableStyle.BODY;
 			};
-			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3]), cols[3], top + 2, moodColour, false);
+			String moodGlyph = switch (mood) {
+				case HAPPY -> "happy";
+				case UNHAPPY -> "unhappy";
+				case NO_BED -> "bed";
+				case CONTENT -> "content";
+				default -> null;
+			};
+			if (moodGlyph != null) {
+				CopperStyle.glyph(g, moodGlyph, cols[3], top + 3);
+			}
+			g.drawString(font, TableStyle.trim(font, mood.word(), colW[3] - 10), cols[3] + 10, top + 3, moodColour, false);
 			if (open) {
 				int dy = top + RH + 2;
 				for (FormattedCharSequence line : detailLines(icon, detailW)) {
@@ -1245,9 +1818,11 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	private int button(GuiGraphics g, Component text, int x, int y, boolean on, int kind, int slot, int mouseX, int mouseY) {
 		int bw = font.width(text) + 10;
 		boolean over = on && mouseX >= x && mouseX < x + bw && mouseY >= y && mouseY < y + BH;
-		g.fill(x, y, x + bw, y + BH, over ? TableStyle.CELL_HOVER : TableStyle.CELL_BG);
-		g.fill(x, y, x + bw, y + 1, 0x40FFFFFF);
-		g.drawString(font, text, x + 5, y + 3, on ? TableStyle.NAME : TableStyle.FAINT, false);
+		// the row's main action is copper (Copperline's one copper button): Bed for a villager without one, else Job for one without a job
+		CompoundTag row = slot >= 0 && slot < ChoiceMenu.SIZE ? HallPeople.row(menu.slots.get(slot).getItem()) : null;
+		boolean main = row != null && on && (kind == 3 && row.getString("mood").equals("no_bed")
+			|| kind == 2 && !row.getString("mood").equals("no_bed") && row.getString("job_action").equals("assign"));
+		CopperStyle.button(g, font, text, null, x, y, bw, BH, main ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL, over, false, !on);
 		if (on) {
 			hits.add(new int[]{kind, slot, x, y, bw, BH});
 		}
@@ -1258,6 +1833,10 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 	protected boolean bodyClicked(double mx, double my, int button) {
 		if (moveMap()) {
 			return moveMapClicked(mx, my, button);
+		}
+		Section board = board();
+		if (board == Section.OVERVIEW || board == Section.MAP) {
+			return boardClicked(mx, my, button);
 		}
 		// Buttons first (they sit on an open row's area), then strip and rows.
 		for (int pass = 0; pass < 2; pass++) {
@@ -1310,6 +1889,15 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 
 	@Override
 	protected boolean bodyScrolled(double mx, double my, double scrollY) {
+		if (board() == Section.MAP) {
+			if (mx >= hallMapBox[0] && mx < hallMapBox[0] + hallMapBox[2] && my >= hallMapBox[1] && my < hallMapBox[1] + hallMapBox[3]) {
+				hallZoomed = scrollY > 0; // the wheel zooms in on the Hall, and back out to the whole village
+			}
+			return true;
+		}
+		if (board() == Section.OVERVIEW) {
+			return true;
+		}
 		if (moveMap()) {
 			if (mx >= moveMapX && mx < moveMapX + moveMapS && my >= moveMapY && my < moveMapY + moveMapS) {
 				moveZoom = scrollY > 0 ? 0 : MovePage.MAP; // the wheel zooms out to the whole map, and back in to the village

@@ -39,6 +39,17 @@ public final class HallSections {
 	public static final int PEOPLE_JOBLESS = 7;
 	public static final int PEOPLE_CHILDREN = 8;
 	public static final int PEOPLE_FIRST = 9;
+	/**
+	 * The Overview's stat cards (Copperline, 47.2): wellbeing in percent, how many the village may grow to, villagers
+	 * without a bed, meals in store (at most 32000), kinds of meal, guards and the rank (VillageRanks.Rank's number).
+	 */
+	public static final int WELLBEING = 10;
+	public static final int CAP = 11;
+	public static final int NO_BED = 12;
+	public static final int MEALS = 13;
+	public static final int MEAL_KINDS = 14;
+	public static final int GUARDS = 15;
+	public static final int RANK = 16;
 	/** The mark on a main-page button: a bit for each section it sits in. */
 	public static final String MARK = "aliveworkplace:hall_sections";
 

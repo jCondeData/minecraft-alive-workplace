@@ -198,7 +198,8 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		renderSidebar(g, mouseX, mouseY);
 		if (customBody()) {
 			// A body drawn by the screen itself (the hall's People table, 40.2) in place of the list and the pane.
-			renderBody(g, left + 8 + side, top + 22, panelW - 16 - side, panelH - 16 - 22, mouseX, mouseY);
+			int[] body = io.github.jcondedata.aliveworkplace.ui.CopperLayout.body(new int[]{left, top, panelW, panelH}, side);
+			renderBody(g, body[0], body[1], body[2], body[3], mouseX, mouseY);
 			TableStyle.footerHint(g, font, whisperText(mouseX, mouseY, -1), left + 8, top + panelH - 12, panelW - 16);
 			return;
 		}

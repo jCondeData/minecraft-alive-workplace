@@ -6805,7 +6805,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
   (GUI scale 3: the rail as an icon grid). Then remove the `(blocked: waits for 47.1 ...)` marks from 44.x and 48.x.
   Done when: GameTests that every screen on `TableStyle` still opens and its buttons still work at GUI scale 2 and 3;
   a `copperline` scene showing the parts in every state like `Components.png`.
-- [ ] **47.2** **The Village Hall in Copperline**, like `Main.png`, `HallPeople.png`, `HallMap.png` and `Compact.png`:
+- [x] **47.2** (review: pending 2026-11-16) **The Village Hall in Copperline**, like `Main.png`, `HallPeople.png`, `HallMap.png` and `Compact.png`:
   Overview with its four stat cards, "Needs you" and "At work now"; People; the Map with its legend; the other sections
   in the same shell. Done when: GameTests for each section's actions; scenes `hall`, `hall_people`, `hall_pages` show it.
 - [ ] **47.3** **Moving a building in Copperline**, like `Move1-3.png` (the three steps on the rail, the map with

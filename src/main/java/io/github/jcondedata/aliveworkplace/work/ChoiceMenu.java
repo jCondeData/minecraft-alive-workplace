@@ -53,7 +53,7 @@ public class ChoiceMenu extends ChestMenu {
 	@Nullable
 	private java.util.function.BiPredicate<ServerPlayer, Integer> menuButton;
 	/** How many numbers {@link #state} holds. */
-	public static final int STATE = 10;
+	public static final int STATE = 17;
 
 	private ChoiceMenu(MenuType<?> type, int id, net.minecraft.world.entity.player.Inventory inventory, SimpleContainer icons, Predicate<Player> valid) {
 		super(type, id, inventory, icons, ROWS);

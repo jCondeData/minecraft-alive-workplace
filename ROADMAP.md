@@ -6054,6 +6054,7 @@ Depends on: nothing open.
   ...`) so the next digest shows both; then `sessions.py done 36.23 --review`. The owner's pick lands as 36.23a.
   - [x] **36.23a** (review: pending 2026-11-16) Change from the owner (2026-11-16): prefers the Daub House (B); wants to see it furnished with furniture-mod pieces (CobbleFurnies etc.) before the final pick
   - [x] **36.23b** (review: pending 2026-11-16) Change from the owner (2026-11-16): Daub House: in the furnished shot 08 the loft fences/railings around the corner don't connect, make railings connect at corners; in shot 04 a lamp stands on the floor, a short lamp should sit on a table or side table, only a lamp 2+ blocks tall may stand on the ground
+  - [ ] **36.23c** Change from the owner (2026-11-16): Daub House: remove the shelves by the entryway (they hold plates), put the plates in the kitchen; everything else looks great
 
 ## Milestone 37: Furnished homes and modded storage (2.1)
 

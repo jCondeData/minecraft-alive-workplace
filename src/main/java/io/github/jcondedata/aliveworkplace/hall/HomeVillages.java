@@ -109,14 +109,21 @@ public final class HomeVillages extends SavedData {
 	public static HomeVillages load(CompoundTag tag, HolderLookup.Provider registries) {
 		var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 		HomeVillages data = new HomeVillages();
-		net.minecraft.nbt.Tag owned = tag.get("owned");
-		if (owned != null) {
-			MAP.parse(ops, owned).result().ifPresent(data.owned::putAll);
-		}
-		net.minecraft.nbt.Tag ranked = tag.get("ranked");
-		if (ranked != null) {
-			MAP.parse(ops, ranked).result().ifPresent(data.ranked::putAll);
-		}
+		read(ops, tag.getCompound("owned"), data.owned);
+		read(ops, tag.getCompound("ranked"), data.ranked);
 		return data;
+	}
+
+	/** Reads one map entry by entry, so a damaged key or place loses only that entry, never the good ones. */
+	private static void read(com.mojang.serialization.DynamicOps<net.minecraft.nbt.Tag> ops, CompoundTag map, Map<UUID, GlobalPos> into) {
+		for (String key : map.getAllKeys()) {
+			UUID id;
+			try {
+				id = UUID.fromString(key);
+			} catch (IllegalArgumentException e) {
+				continue;
+			}
+			GlobalPos.CODEC.parse(ops, map.get(key)).result().ifPresent(at -> into.put(id, at));
+		}
 	}
 }

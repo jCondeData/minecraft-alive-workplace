@@ -115,6 +115,15 @@ public final class Festivals {
 		return entity.festivalDay() == Chronicle.day(level) && t >= START && t < Curfew.festivalEnd(entity); // Curfew: over at dusk
 	}
 
+	/**
+	 * The next festival to tell of (the Seer, the Gazette): {@link #nextDay}, or -1 when none will come (festivals switched
+	 * off, or fewer than {@link #MIN_VILLAGERS} villagers), unless one is already planned (B1361).
+	 */
+	public static long foretold(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int villagers) {
+		long day = nextDay(level, hall, entity);
+		return entity.festivalDay() >= day || ENABLED && villagers >= MIN_VILLAGERS ? day : -1;
+	}
+
 	/** The day of the village's next festival (today if it's still to come or on). */
 	public static long nextDay(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		settle(level, entity);

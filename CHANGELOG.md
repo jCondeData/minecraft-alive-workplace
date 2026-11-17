@@ -30,6 +30,11 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.156.0 — 2026-11-16
 
 ### Fixed
+- Village Gazette: the calendar page no longer dates a market for a village with no Market Square or with market days
+  off, nor a festival with festivals off ("none until the village builds a Market Square", "none planned"), like the
+  Seer; the Observatory's Coming days leaves the market out without a square too (B1361).
+- Market days: the traders leave by dusk whenever the market begins; one that began late in the morning kept them
+  until well into the night (B1362).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

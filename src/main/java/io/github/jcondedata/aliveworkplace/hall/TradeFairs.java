@@ -216,7 +216,7 @@ public final class TradeFairs {
 		}
 		WanderingTrader trader = EntityType.WANDERING_TRADER.spawn(level, spot, MobSpawnType.EVENT);
 		if (trader != null) {
-			trader.setDespawnDelay(Curfew.marketStay(level, hall, MarketDays.STAY));
+			trader.setDespawnDelay(MarketDays.stay(level, hall)); // gone by dusk (B1362)
 			trader.setWanderTarget(square);
 		}
 		return trader;

@@ -208,9 +208,9 @@ public final class ObservatoryPowers {
 		if (Festivals.ENABLED) {
 			out.add(new Coming(Items.CAKE, Component.translatable("screen.aliveworkplace.coming.festival"), Festivals.nextDay(level, hall, entity), Optional.empty()));
 		}
-		if (MarketDays.ENABLED) {
-			out.add(new Coming(Items.EMERALD, Component.translatable("screen.aliveworkplace.coming.market"), MarketDays.nextDay(level, hall, entity.lastMarketDay()),
-				MarketDays.square(level, hall)));
+		long market = MarketDays.foretold(level, hall, entity.lastMarketDay()); // none without a Market Square (B1361)
+		if (market >= 0) {
+			out.add(new Coming(Items.EMERALD, Component.translatable("screen.aliveworkplace.coming.market"), market, MarketDays.square(level, hall)));
 		}
 		Set<UUID> seen = new HashSet<>();
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {

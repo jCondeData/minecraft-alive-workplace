@@ -711,6 +711,10 @@ public class PrinterGameTests implements FabricGameTest {
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.today"), "today");
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.tomorrow"), "tomorrow");
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.in_days", 3, 15), "in 3 days (day 15)");
+		expect(helper, Component.translatable("book.aliveworkplace.gazette.calendar", Component.translatable("book.aliveworkplace.gazette.no_festival"),
+			Component.translatable("book.aliveworkplace.gazette.no_square")),
+			"THE CALENDAR\n\nNext festival: none planned\n\nNext market day: none until the village builds a Market Square");
+		expect(helper, Component.translatable("book.aliveworkplace.gazette.no_market"), "none, this world holds no markets");
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.week"), "THIS WEEK\nBirths, weddings and households on the rise");
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.quiet_week"), "No births, no weddings and no household moved up this week.");
 		expect(helper, Component.translatable("book.aliveworkplace.gazette.no_hall", 12), "Day 12\n\nNo news today: there is no Village Hall near the press to bring any.");

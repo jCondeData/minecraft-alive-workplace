@@ -1,7 +1,7 @@
 // The rebuild kit's parts library (ROADMAP 49.1, tools/blueprints/REBUILD.md): import everything from here.
 //   canvas    Canvas, LiftedCanvas (a basement under y 0), mix, DIRS, OPP, stair/slab/trapdoor
 //   frames    plinth, steppedPlinth, floor, post, posts, beamRing, cellar
-//   walls     wallPanel, window, door, doorway
+//   walls     wallPanel, window, door, doorway, quoins, stringCourse
 //   roofs     gableRoof, flaredGableRoof, catslideRoof, pentice, gableWall, bargeTrim, dormer   (roofs and gables)
 //   hearths   chimney, hearthFire
 //   kitchens  kitchenParts (counter, stove, worktop, pantry, shelf, plates)

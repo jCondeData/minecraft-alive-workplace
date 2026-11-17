@@ -43,3 +43,16 @@ export function door(c, [x, y, z], facing, out, { wood = 'spruce', step = null, 
 
 /** doorway: an open doorway `height` high (clears what the walls drew). */
 export function doorway(c, [x, y, z], height = 2) { for (let yy = y; yy < y + height; yy++) c.clear(x, yy, z) }
+
+/** quoins: dressed corner stones up a wall's corners ([x, z] each) from y0 to y1, `id` and `alt` alternating course by
+ *  course (long and short stones), so a rubble house's corners read as cut. Grown from the Stone House (49). */
+export function quoins(c, corners, y0, y1, id, alt = id) {
+  for (const [x, z] of corners) for (let y = y0; y <= y1; y++) c.set(x, y, z, (y - y0) % 2 ? alt : id)
+}
+
+/** stringCourse: a band of dressed stone round a rectangle's wall line at y (the floor between storeys, read from
+ *  outside). `skip(x, z)` leaves an opening. */
+export function stringCourse(c, x0, z0, x1, z1, y, id, skip = () => false) {
+  for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++)
+    if ((x === x0 || x === x1 || z === z0 || z === z1) && !skip(x, z)) c.set(x, y, z, id)
+}

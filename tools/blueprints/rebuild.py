@@ -73,7 +73,7 @@ def main(argv=None):
     b.save(folder, args.id)
     if args.candidate:  # outside structure/, so save() wrote no spots file: keep them beside the candidate
         with open(os.path.join(folder, args.id + ".furniture.json"), "w") as f:
-            json.dump({"spots": getattr(b, "spots", [])}, f, indent=1, default=list)
+            json.dump({"spots": getattr(b, "spots", []) + furniture.detect(b)}, f, indent=1, default=list)  # with the beds, tables and chairs found in the drawing
     return 0
 
 

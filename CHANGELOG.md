@@ -47,6 +47,10 @@ asks for the steps, `latest.log` and any crash report).
   (B1355).
 - Trainer screen: every Pokémon's level shows whole again. Team cards no longer cut a capped "Lv 40" to "L…" (a team
   of four now sits two by two), and at GUI scale 3 a party line's "Lv 100" no longer runs into its status glyph (B1351).
+### Fixed
+- Builder: a room with a pool in its floor, built on the bed of a pond, no longer ends up flooded when a water-filled
+  hollow in the bed runs under the floor beside the pool (two blocks wide, or L-shaped out to the build's edge). The
+  room ends dry and the pool keeps its water (B1294).
 
 ## 0.156.0 — 2026-11-16
 

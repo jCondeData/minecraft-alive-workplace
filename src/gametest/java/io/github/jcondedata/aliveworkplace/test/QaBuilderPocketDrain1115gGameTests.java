@@ -50,7 +50,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * covers a one-block pocket under the pool; these go further:
  * <ul>
  * <li>a pocket four deep straight down, an air pocket and a lava pocket under the drawn pool (a pocket that also runs
- * under the solid floor beside the pool floods the room: QaBuilderPocketDrain1115gBugTests);</li>
+ * under the solid floor beside the pool flooded the room, B1294: QaBuilderPocketDrain1115gBugTests);</li>
  * <li>a water pocket under a drawn hole in the floor and under a drawn waterlogged slab;</li>
  * <li>the pocket case saved and loaded mid-CLEAR, and turned a quarter, and mirrored and turned;</li>
  * <li>the jetty side: water under the pool that runs past the footprint to an open lake is never drained or dammed

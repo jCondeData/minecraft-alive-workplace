@@ -71,7 +71,8 @@ village's festival mood) and a line, "Odo came back from the grave, and Dara mar
 **A chapel wedding.** While the request is open the couple's wedding waits: not after the usual 2 days of courting
 but until the Chapel is finished, up to 5 days from when they began courting. The Chapel finished, they marry in it at
 once and the village holds a feast (everyone eats from the store and gets a festival's mood), and the chronicle says
-"Dara and Odo were married in the new Chapel, and the whole village sat down to a feast". With no Chapel by then they
+"Dara and Odo were married in the new Chapel, and the whole village sat down to a feast", the wedding's only line there
+(B1348: not also "married at the bell"); the village still hears the wedding bells in chat. With no Chapel by then they
 marry at the bell as before, and the request is missed: a Chapel finished after that pays nothing. If the Chapel is
 finished on the very day the 5 days run out, the Chapel wins and the bell waits.
 

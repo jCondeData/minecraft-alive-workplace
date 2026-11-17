@@ -24,10 +24,10 @@ build at the [Blueprint Table](blueprint-library.md) ("A market-day trader"). Wi
 one more under the Open Gates [edict](edicts.md), and one for the Burghers. A Festival Cup's fair brings the same
 traders to the Arena with two more ([Festival Cup](festival-cup.md)).
 
-**How long.** A trader stays 10,000 ticks (about eight and a half minutes); under the Curfew edict he leaves by dusk.
-The round that starts the market runs every 30 seconds, so a market usually begins soon after 1000 (the start of the
-morning) and its traders leave about dusk. A market that begins late in the morning (the village loaded only then)
-keeps them into the night: that is B1362.
+**How long.** A trader stays 10,000 ticks (about eight and a half minutes), and always leaves by dusk (12000): a
+market that begins late in the morning (the village loaded only then, or its square finished then) sends its traders
+away at dusk, not into the night (B1362; one that begins at 5000 keeps them 7,000 ticks). A trade fair's traders
+leave by dusk the same way. The Curfew edict's cap is the same.
 
 ## How it works
 
@@ -40,8 +40,10 @@ keeps them into the night: that is B1362.
   happens, and the day isn't spent: if the square is finished later that morning, the market still comes.
 - **Told ahead.** The [Seer](legends.md) foretells the next market day, the [Observatory](wonders.md)'s Coming days
   list and the [Gazette](luxury-workshops.md)'s calendar show it: today while this morning's market is still to come,
-  else the next market day, never more than a week off. The Gazette also dates a market for a village with no square
-  or with markets switched off, which never comes: that is B1361.
+  else the next market day, never more than a week off (on market day after the morning, or once this morning's
+  market is held, next week's). Only a market that will come is told (B1361): the Gazette says "none until the
+  village builds a Market Square" without one and "none, this world holds no markets" with the switch off, and the
+  Seer and the Coming days list leave it out then.
 - **[Legends](legends.md)** that visit "on market day" come with the traders.
 
 ## Switches
@@ -67,9 +69,7 @@ chronicle, and the day isn't spent, so switching it back on that morning brings 
 
 ## Known limits
 
-- B1361: the Gazette dates a market for a village with no Market Square or with markets off (and a festival with
-  festivals off); the Observatory's Coming days list shows a market day for a village with no square.
-- B1362: a market that begins late in the morning keeps its traders into the night.
+- None known since B1361 and B1362 were fixed.
 
 ## Proof
 
@@ -78,4 +78,8 @@ chronicle, and the day isn't spent, so switching it back on that morning brings 
   all over the map, the next day told against the day it comes, no square then a square finished that morning, who
   is told, the chronicle's count, the count by rank and Commerce, the switch, a styled square, 40 markets' blueprints all real and priced 6, and the
   day held kept over a save.
-- The two bugs' tests are on the branch tests/market-days-1117c until they are fixed.
+- `QaMarketDays1117cBugTests` (4, B1361 and B1362): no market day or festival dated that won't come, the stay
+  capped at dusk at every hour.
+- `QaVillageFixes1117cGameTests` (lane-c-1117-1253): the Coming days list with no square, a square and the switch
+  off; the Gazette on market day ("today" at 500 and 5000, next week's at 7000 or once the market is held); a trade
+  fair held at 5000 or 5999 sends its traders away by dusk.

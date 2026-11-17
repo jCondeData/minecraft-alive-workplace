@@ -99,7 +99,9 @@ in two crafts (the Oak Chest of Carved Wood, then the chest), turns a carved che
 and a chest from nothing names the logs (B1302, B1286). A carved trapped chest is never used for it. Carved Wood's
 mixed crafting table recipe (on by default) makes Minecraft's crafting table from any 2x2 of planks no other recipe
 takes, so four of Chipped's mosaic planks in the chest make one for the Carpenter as for a player; four acacia planks
-make Carved Wood's Acacia Crafting Table instead, so those still name an Oak Log (B1290).
+make Carved Wood's Acacia Crafting Table instead, so those still name an Oak Log (B1290). Two kinds of Chipped's planks
+(2 and 2) make one too; Chipped's planks mixed with oak or acacia planks, or 2 oak with 2 acacia, make Minecraft's table
+for a player but the crafters don't read that yet and the line names Oak Planks (B1378, open).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -327,6 +329,15 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
 - `QaStorageBlockLine1115bBugTests` (3, B1305, QA): hay bales, a slime block and a dried kelp block from nothing lack
   the 27 wheat, 9 slimeballs and 9 dried kelp; a builder with 20 wheat and a Carpenter gets 2 bales and reads "short of
   7 Wheat to make 1 Hay Bale"; from an empty chest "short of 27 Wheat to make 3 Hay Bales".
+- `QaJobsShops1117cGameTests` (7, B1333, B1349, B1334, B1346, QA): planks and logs of several woods from nothing to 10
+  chests (only planks there: the planks are named; stripped logs and wood count); "1 Oak Log to make 1 Chest" and "5 Spruce
+  Logs to make 10 Chests"; a Carpenter with 8 spruce planks, an oak and a birch log for 3 chests loses nothing, never names
+  planks and reads 2 logs; a shortfall with just enough of the tick's planning left is said that tick, with just too
+  little nothing is said, and the next tick's answer is whole; andesite or granite reads "Hire a Mason" with no Mason and
+  nothing with one near; the Shop Counter's welcome line names the config file's rate, clamped to 1-10,000.
+- `QaJobsShops1117cCompatTests` (2, B1334, B1346, B1347, QA, with the pack): 3 polished andesite and 1 cut andesite: the
+  Mason cuts exactly 1 and the line never reads "Nobody here makes"; the config file's rate (2, 10,000, 0 and 50,000
+  clamped) on a counter placed from a player's hand and on the treasury hint ("1 CobbleDollar" at 1).
 - `QaShortageLine1116bBugCompatTests` (3, B1334, QA, with Create): 3 andesite planned from 3 cut andesite and none from
   polished andesite; a builder with 3 cut andesite and a Mason gets them cut; with 3 polished andesite his line never reads
   "Nobody here makes" or "Andesite to make".

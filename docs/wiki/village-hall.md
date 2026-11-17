@@ -273,7 +273,9 @@ always both in or both out (B361, `VillageHalls.contains`). The same circle deci
 banquet, who can be a new baby's parent, who a friend asked for by name, a guild, a war party or a cough can reach, and
 every other "the village's villagers": a villager out in the corners of the square round the hall belongs to none of it
 (B555, `VillageHalls.villagers`). The same goes for the research trees' villager count, the builders the Steward and the
-hall's build pages give orders to, the press's Scholar, and whom a raid's raiders and piglins go for (B1352). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+hall's build pages give orders to (and the other player's builder they name), the press's Scholar, and whom a raid's
+raiders and piglins go for (B1352; a villager exactly 16 blocks out in a 16-block village is in, one 16 out and 1 across
+is not; `VillageCircleB1352GameTests`, `QaVillageFixes1117cGameTests`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform
@@ -690,6 +692,7 @@ point of interest). Only a hall that really stands counts: a point of interest l
 keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
 point in a chunk that isn't loaded is trusted. The same holds for a work block's village past the radius (a painted
 zone), a raid den's nearest hall and the village a fire breaks out in, and a hall swapped away is no village for fires
-at once, not a few seconds later (B1356, `OrphanHallLookupGameTests`).
+at once, not a few seconds later; a real hall farther off than such a point is still found by all of them (B1356,
+`OrphanHallLookupGameTests`, `QaVillageFixes1117cGameTests`).
 
 See also: [House looks](house-looks.md), the page the Builds button opens.

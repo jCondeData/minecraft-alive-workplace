@@ -53,8 +53,10 @@ Ways to unlock, all for the village round the nearest hall:
 2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
    The village is his Blueprint Table's, wherever he stands (out on a job past the village's reach too), and every
    player in that village is told; where he stands counts only for a builder with no Table. Before (B1345), one
-   leveling up past the village's reach put them in the server-wide set. `QaLevelUpVillage1116bGameTests` (2),
-   `QaLevelUpVillage1116bBugGameTests` (1).
+   leveling up past the village's reach put them in the server-wide set. Standing in another village, they still go
+   to his Table's village, and nobody in the other one is told; a builder hired at a Table far from every hall puts
+   them in the server-wide set even while standing in a village. `QaLevelUpVillage1116bGameTests` (2),
+   `QaLevelUpVillage1116bBugGameTests` (1), `QaVillageFixes1117cGameTests` (3).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
    Unlike the others, a reward (`/workplace unlock {p} <id>`, `BlueprintUnlocks.unlockFor`) goes to the claiming
    player's own village wherever they stand when they claim it (B1318, `hall/HomeVillages`): the village they stand in

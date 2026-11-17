@@ -81,7 +81,7 @@ Journeyman an Illuminated Book from a book, 2 gold nuggets, a lapis lazuli and a
 luxury the Burghers need every 7 days, the Illuminated Book the one the Nobles want every 16. Both read like a written
 book (right-click): the Gazette is printed from the hall that day (the newest chronicle entries, the open quests and
 what they pay, the next festival and market day (only ones that will come: "none planned" with festivals off or too
-few villagers, "none until the village builds a Market Square" without one, B1361), the week's births, weddings and households that rose), the
+few villagers, "none until the village builds a Market Square" without one and "none, this world holds no markets" with market days off, B1361), the week's births, weddings and households that rose), the
 Illuminated Book is the whole chronicle. The hall quest **Spread the news** (a Printer and a caravan route) pays 6
 emeralds for this week's Gazette handed in at the hall of the village at the other end of the route. "This week's" is
 printed that day or in the 6 days before (7 days old is old news); one copy of a stack is taken, and another village's

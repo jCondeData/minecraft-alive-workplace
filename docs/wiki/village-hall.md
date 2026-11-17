@@ -207,7 +207,8 @@ the owner and their friends can order one. The tab says how many builds can go u
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
 village: within its radius across and 32 blocks up or down, so a death on its rim up a hill is written too, B780;
-"(1 entry)" on its button for a chronicle of one, B744), trade routes
+"(1 entry)" on its button for a chronicle of one, B744; newest day first with one header per day, even for a Cup entry
+written late when its village loads again, B1353), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A festival or a Grand Chef's banquet goes on only while someone is near the village: once everyone has left, nothing of it

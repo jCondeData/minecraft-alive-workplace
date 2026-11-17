@@ -712,7 +712,7 @@ public final class VillageHallScreen {
 	}
 
 	/**
-	 * The chronicle page showing {@code show}'s entries, newest first (as many as the page has rows), with the Show
+	 * The chronicle page showing {@code show}'s entries, newest date first (as many as the page has rows), with the Show
 	 * filters in the row under the title (48.4, boards/Chronicle.png): each its group's word and how many entries it
 	 * holds; a click shows only that group. Each entry carries its date for the Copperline page's day headers.
 	 */
@@ -720,7 +720,11 @@ public final class VillageHallScreen {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
-		List<Chronicle.Entry> entries = entity == null ? List.of() : entity.chronicle();
+		// Ordered by date (B1353): the hall keeps entries in the order written, and a Cup's entry written when its village
+		// next loads (28.19) is dated earlier than entries already there. A stable sort keeps the written order within a
+		// day, so the page (read from the end) shows each day once, newest first. What is saved is unchanged.
+		List<Chronicle.Entry> entries = new java.util.ArrayList<>(entity == null ? List.of() : entity.chronicle());
+		entries.sort(java.util.Comparator.comparingLong(Chronicle.Entry::day));
 		ItemStack head = icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY));
 		CompoundTag headTag = new CompoundTag();

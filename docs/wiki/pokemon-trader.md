@@ -41,8 +41,8 @@ as a vanilla villager does at its trade screen, so he can't walk out of reach an
 - The screen closes if you walk more than 8 blocks away, or the trader dies or falls asleep. It won't open during a
   battle.
 - The screen (28.23, 43.2) is drawn with the Village Hall's `TableStyle` (no texture of its own since 43.2:
-  `textures/gui/pokemon_trader.png` is gone). `PokemonTradeView` holds the layout (a fixed 300x174 panel, which fits
-  the smallest screen), and `PokemonTradeView.offerAt` turns a click anywhere on a row into a click on its offer's
+  `textures/gui/pokemon_trader.png` is gone). `PokemonTradeView` holds the layout (a fixed 300x164 panel, which fits
+  the smallest screen, 320x180, with Copperline's 8 pixels round it, so the plaque over its top stays on screen, B1354), and `PokemonTradeView.offerAt` turns a click anywhere on a row into a click on its offer's
   cell. The server decides every click; the screen only draws them.
 
 ## Switches

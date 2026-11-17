@@ -48,6 +48,11 @@ asks for the steps, `latest.log` and any crash report).
   page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
 - Mover: a glow lichen on several faces (the floor and two walls) that lands on a Mover's Crate comes back as one
   Glow Lichen per face (3, not 1) (B1300).
+- Village Hall Chronicle: a Festival Cup entry written late (the Cup ended while the village was unloaded) now sits
+  under its own day, so the day headers stay newest first with one header per day, instead of reading DAY 46, DAY 47,
+  DAY 46 (B1353).
+- Pokemon Trader: at GUI scale 3 (a 320x180 screen) the trader's name plaque is no longer cut off at the top; the
+  window is 10 pixels shorter and keeps an 8-pixel margin like the Village Hall's windows (B1354).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned

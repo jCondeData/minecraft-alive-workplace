@@ -275,6 +275,9 @@ Pokémon or book under it.
 - The Chronicle (48.4) has no search box or sort menu (the board's): the page shows a hall's newest entries (up to 36 at
   a time, of the 100 a hall keeps) and the filters already narrow it; nor the time of day or the people and places chips
   of an entry, which the chronicle doesn't keep. A click on a name doesn't jump to that villager.
+- The status card's tooltips (48.3) aren't kept on the screen: at 320x180 a grayed-out button's reason runs off the
+  right edge and an item line's tooltip, with no room right of the card, lands over the card's left edge and the row's
+  icon (B1357).
 
 ## Proof
 
@@ -354,6 +357,17 @@ card whole at 240 tall; one copper button, never Close or a grayed-out one; the 
 `StatusCardButtonsGameTests`, `QaStatusCardRows1111cGameTests`, `JobCardGameTests`, `NurseCardGameTests` and
 `CopperlineShellGameTests` still passing (23 of 23). Scene: `copperline_status_card` (a line's tooltip, a grayed-out
 button's reason, the toast, then at 320x180).
+
+QA (lane e, 2026-11-17): `QaCopperCard1117eGameTests` (8, from the spec: the fullest cards (a builder's eight lines, a
+Nurse's party of six with her effects, a Fossil Scientist's, labels three times as long, five buttons with one wider
+than the card) at 13 screen sizes from 320x180 and a forced scale's 683x192 to GUI scale 1 at 1920x1080: buttons inside
+the card and the screen, under the status lines and clear of the lines, the reason box and the hint; a taller screen
+never shows fewer lines, a card that fits is never cut; through a real build finishing to real connected players, the
+toast "Starter Cottage / Mira finished it." and the chat line once each to the owner, wherever they are (2,000 blocks
+off, the Nether), nothing to a bystander at the site or anybody when the owner is offline, only the chat line to a
+client without the mod; "took it down."; a player's accented build name and an accented builder name as typed) and
+`QaCopperCard1117eCompatTests` (2, with Create: a builder's card on the Watermill names Create's parts ("Needs Shaft")
+with their items for the tooltip, the same after a save and reload; the Watermill's toast and chat line once).
 
 44.4: `CopperlineGuideSettingsGameTests` (6: the Guide Book at 427x240, 480x270 and 320x180 with labels one and three
 times as long, every page's picture and words on the stage; every page opened with Next, Back, the rail and the

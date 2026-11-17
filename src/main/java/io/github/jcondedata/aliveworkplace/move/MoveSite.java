@@ -834,6 +834,17 @@ public final class MoveSite {
 		if (item == net.minecraft.world.item.Items.AIR) {
 			return;
 		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.MultifaceBlock) {
+			// B1300: a block on several faces (a glow lichen on the floor and two walls) is one of its item per face, as a
+			// player places it. A sculk vein's Silk Touch loot counts its faces already; a glow lichen's loot is shears-only,
+			// so the fallback above made 3 faces 1 glow lichen. Tops its item up to one per face, never past it
+			int faces = net.minecraft.world.level.block.MultifaceBlock.availableFaces(state).size();
+			int whole = count(drops, item);
+			if (whole > 0 && whole < faces) {
+				drops.add(new net.minecraft.world.item.ItemStack(item, faces - whole));
+			}
+			return;
+		}
 		for (net.minecraft.world.level.block.state.properties.IntegerProperty p : HOW_MANY) {
 			if (!state.hasProperty(p)) {
 				continue;

@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks;
  * one wood never filled with another, a big uneven order, and two Carpenters at work: one uses exactly the chest's mix
  * and nothing else there, one names what a one-wood recipe lacks and takes nothing. Nothing here is random.
  */
-public class QaMixedTagSlot1115cGameTests implements FabricGameTest {
+public class QaMixedTagSlot1115cGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 
 	private static Crafting.Plan plan(GameTestHelper helper, Item target, int count, Map<Item, Long> chest) {

@@ -157,7 +157,8 @@ public final class JobShortages {
 				lacks.add(lack);
 			} else if (fullFor(site, e.getKey(), now)) {
 				full.add(e.getKey());
-			} else if (!lookedAt(site, e.getKey(), now) && now - waitingSince >= FRESH_TICKS && crafted(level, e.getKey())) {
+			} else if (!lookedAt(site, e.getKey(), now) && now - waitingSince >= FRESH_TICKS && crafted(level, e.getKey())
+					&& !gatheredHere(level, e.getKey(), near)) {
 				nobody.add(e.getKey());
 			}
 		}
@@ -241,6 +242,21 @@ public final class JobShortages {
 	static boolean crafted(ServerLevel level, Item item) {
 		return CraftJobs.tagged(item) != null || !Crafting.recipesFor(level, Crafting.Kind.CRAFTING, item).isEmpty() || !Crafting.recipesFor(level, Crafting.Kind.STONECUTTING, item).isEmpty()
 			|| !Crafting.recipesFor(level, Crafting.Kind.KILN, item).isEmpty() || FurnitureRecipes.makes(level.getServer(), item);
+	}
+
+	/**
+	 * B1334: whether {@code item} is a thing a gatherer brings (a stone a player mines) whose maker works near {@code near}
+	 * and still found no way to make it from what's there: with Create the Mason cuts andesite only from Create's andesite
+	 * forms (none of them to hand; polished andesite is never cut back), so it reads as gathered, left to the line above,
+	 * like the Storehouse names its gatherer: never "Nobody here makes: Andesite" beside the Mason who makes it.
+	 */
+	private static boolean gatheredHere(ServerLevel level, Item item, @Nullable net.minecraft.core.BlockPos near) {
+		if (near == null || CraftJobs.gatherer(item) == null) {
+			return false;
+		}
+		CraftJobs.Job job = CraftJobs.maker(level, item);
+		return job != null && job.profession() != null
+			&& !CraftJobs.workersNear(level, near, io.github.jcondedata.aliveworkplace.work.Village.RADIUS, job.profession()).isEmpty();
 	}
 
 	/** "short of 2 Oak Logs, 1 Stick to make 4 Barrels": a whole chain's raw materials short, each with its count. */

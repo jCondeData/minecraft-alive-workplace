@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,7 +21,7 @@ import net.minecraft.world.item.Items;
  * glassblower.md: panes from sand, the glass fired first. The plain suite's twins are
  * QaTinkererShortBugGameTests#theForgeNamesTheRawMetalShort and the Glassblower's line tests.
  */
-public class QaCreateForgeKiln1115eCompatTests implements FabricGameTest {
+public class QaCreateForgeKiln1115eCompatTests implements FreshPlanning {
 
 	private static Item create(String path) {
 		Item item = BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("create", path));

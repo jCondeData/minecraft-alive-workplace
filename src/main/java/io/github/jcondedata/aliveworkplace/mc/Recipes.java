@@ -83,9 +83,18 @@ public final class Recipes {
 
 	/** A shapeless crafting recipe, in memory only, making {@code result} from any one of {@code options} (B1302's stand-ins). */
 	public static RecipeHolder<?> shapeless(ResourceLocation id, ItemStack result, List<net.minecraft.world.item.Item> options) {
+		return shapeless(id, result, options, 1);
+	}
+
+	/** As {@link #shapeless(ResourceLocation, ItemStack, List)}, from {@code count} of them (B1290: a crafting table from four planks). */
+	public static RecipeHolder<?> shapeless(ResourceLocation id, ItemStack result, List<net.minecraft.world.item.Item> options, int count) {
 		Ingredient ingredient = Ingredient.of(options.stream().map(ItemStack::new));
+		net.minecraft.core.NonNullList<Ingredient> slots = net.minecraft.core.NonNullList.withSize(count, Ingredient.EMPTY);
+		for (int i = 0; i < count; i++) {
+			slots.set(i, ingredient);
+		}
 		return new RecipeHolder<>(id, new net.minecraft.world.item.crafting.ShapelessRecipe("",
-			net.minecraft.world.item.crafting.CraftingBookCategory.MISC, result, net.minecraft.core.NonNullList.of(Ingredient.EMPTY, ingredient)));
+			net.minecraft.world.item.crafting.CraftingBookCategory.MISC, result, slots));
 	}
 
 	private Recipes() {

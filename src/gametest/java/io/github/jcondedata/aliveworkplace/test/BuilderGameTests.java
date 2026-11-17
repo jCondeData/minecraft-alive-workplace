@@ -53,7 +53,7 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
  * In-world tests: a real villager on a real (headless) server builds real blueprints.
  * Run with {@code ./gradlew runGameTest}. Every test must end in success; CI fails otherwise.
  */
-public class BuilderGameTests implements FabricGameTest {
+public class BuilderGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final String BIG_AREA = "aliveworkplace_test:big_area";
 	/** 30 x 20 x 30, for the biggest third tiers. */

@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.Blocks;
  * nuggets or an iron block), slimeballs (from a slime block) and wheat (from a hay bale). With none of either there, the
  * ingredient itself is named; with the other input there, the chain goes down and uses it.
  */
-public class QaGoingDown1115cGameTests implements FabricGameTest {
+public class QaGoingDown1115cGameTests implements FreshPlanning {
 	static final String AREA ="aliveworkplace_test:build_area";
 
 	/** What {@code kind} lacks for {@code count} of {@code target} from {@code usable} (pairs of item and count), the zeros left out. */

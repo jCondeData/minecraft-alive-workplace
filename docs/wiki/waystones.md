@@ -51,6 +51,15 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
   the new name; QaWaystoneRenamedBroken1110dCompatTests).
+- **Travelling to a village's stone** costs what Waystones asks for any of its waystones, nothing more or less: the stone
+  is an ordinary one (discovered by using it, not a free global waystone). With Waystones' default config a survival
+  player pays an experience point per 100 blocks from where they stand to the stone, rounded down (705 blocks: 7 points,
+  exactly level 1), and a player short of it, even by one point, isn't sent and keeps their experience; in creative the
+  trip is never refused (QA, `QaWaystones1117dCompatTests`). Server owners change the price in Waystones' own config
+  (its warp requirements).
+- **A moved plaza's stone** (45.1): broken at the plaza's new spot, the builder's upkeep puts it back there, never at the
+  old spot, named after the village as it is then, and it is the village's stone on the network again (QA,
+  `QaWaystones1117dCompatTests`).
 
 ## How it works
 
@@ -248,6 +257,12 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   there by waystone waits due with its 32 logs and steps out when it loads (control: kept loaded, it steps out on
   time); one from it saved and reloaded mid-trip steps out at home; its stone broken before it unloaded, the caravan
   walks; settlers step out at its stone, and walk the whole road when it breaks mid-trip.
+- `QaWaystones1117dCompatTests` (compat suite, QA): a survival player 705 blocks from a village's stone is asked 7
+  experience points (6 can't pay, 7 can), travels with exactly 7 and lands by the stone with none left; with 6 the trip
+  is refused and they keep their place and experience; a creative player with none travels. A plaza moved a quarter turn
+  by a Mover, its stone broken and the village renamed while it lay broken: the builder's upkeep puts the stone back at
+  the new spot (none at the old one) with the new name, the only stone of the village in Waystones' list and the
+  village's stone on the network.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

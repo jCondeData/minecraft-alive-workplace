@@ -23,6 +23,8 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Fixed
+- A desert village's Daub House now has sandstone walls between its jungle beams, not the plains house's mud brick
+  (B1367).
 - A Village Hall's leftover point of interest with no hall standing on it (left by region edits or world-editing mods)
   no longer counts as a village for work blocks in a far zone, raid dens or village fires, and a fire no longer counts
   as in a village for a few seconds after its hall is gone (B1356).

@@ -30,6 +30,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDrainTurned1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderDrainEdges1115bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderPocketDrain1115gGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBuilderPocketDrain1115gBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWadeIn1115bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverGaps1115cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115cGameTests",

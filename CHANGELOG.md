@@ -32,6 +32,9 @@ asks for the steps, `latest.log` and any crash report).
 
 - The list menus' tabs on the left rail show their whole tooltip again when you point at one: the Move Tutor's "N more
   from a more experienced tutor" and Research's "Click: show this research" can be read again (B1355).
+- Builder: a room with a pool in its floor, built on the bed of a pond, no longer ends up flooded when a water-filled
+  hollow in the bed runs under the floor beside the pool (two blocks wide, or L-shaped out to the build's edge). The
+  room ends dry and the pool keeps its water (B1294).
 
 ## 0.156.0 — 2026-11-16
 

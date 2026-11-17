@@ -8,12 +8,15 @@ import io.github.jcondedata.aliveworkplace.city.CityPlan;
 import io.github.jcondedata.aliveworkplace.city.CityPlans;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
+import io.github.jcondedata.aliveworkplace.guard.RaidDens;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.threat.Sieges;
+import io.github.jcondedata.aliveworkplace.threat.VillageFire;
 import io.github.jcondedata.aliveworkplace.work.Reach;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
+import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,6 +26,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 
@@ -35,6 +39,9 @@ import net.minecraft.world.level.block.Rotation;
  *
  * <p>Scaled down like the other zone tests: hall radius 12, so the plan's grid is ±16 blocks with cells of one block.
  * Hall A at (4,2,15); the orphan point at (26,2,15), on air: a cell 14 blocks east of A is 8 from the point.
+ *
+ * <p>B1356: the same orphan point taken for a hall by three other lookups: {@link Reach#village}'s search past the
+ * radius, {@link RaidDens#hallNear} and {@link VillageFire#hall}'s chunk cache (which also kept a hall broken since).
  */
 public class OrphanHallPointGameTests {
 	private static final String AREA = "aliveworkplace_test:huge_area";
@@ -88,6 +95,66 @@ public class OrphanHallPointGameTests {
 		helper.assertTrue(BuildSiteManager.get(level).finishedInVillage(level, hall).stream().anyMatch(f -> f.placement().equals(wall)),
 			"a Stone Wall on a cell painted near a hall point with no hall isn't among the village's buildings");
 		helper.assertTrue(Sieges.walled(level, hall), "a Stone Wall on a cell painted near a hall point with no hall doesn't make the village walled");
+		helper.succeed();
+	}
+
+	/** B1356: a work block next to the orphan point is in no village (Reach's square search); next to a real hall it is. */
+	//$ gametest_ticks_batch AREA '200' '"orphanHallPointReach"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "orphanHallPointReach")
+	public void aWorkBlockNearAHallPointWithNoHallIsInNoVillage(GameTestHelper helper) {
+		ServerLevel level = alone(helper);
+		BlockPos orphan = orphan(helper);
+		BlockPos work = orphan.offset(2, 0, 0);
+		Optional<BlockPos> found = Reach.village(level, work);
+		helper.assertTrue(found.isEmpty(), "a work block next to a hall point with no hall under it is in the village of " + found.orElse(null));
+
+		VillageHallBlockEntity a = hall(helper, A_AT);
+		BlockPos hall = a.getBlockPos();
+		helper.assertTrue(Reach.village(level, hall.offset(2, 0, 0)).filter(hall::equals).isPresent(), "a work block next to a real hall isn't in its village");
+		helper.assertTrue(Reach.village(level, work).isEmpty(), "with a real hall elsewhere, a work block by the orphan point is in a village");
+		helper.succeed();
+	}
+
+	/** B1356: a raid den next to the orphan point has no hall near; with a real hall there it has. */
+	//$ gametest_ticks_batch AREA '200' '"orphanHallPointDens"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "orphanHallPointDens")
+	public void aRaidDenNearAHallPointWithNoHallHasNoHall(GameTestHelper helper) {
+		ServerLevel level = alone(helper);
+		BlockPos orphan = orphan(helper);
+		BlockPos den = orphan.offset(3, 0, 0);
+		Optional<BlockPos> found = RaidDens.hallNear(level, den);
+		// (a hall left by another batch more than 64 blocks off may be found; the orphan point never)
+		helper.assertFalse(found.filter(orphan::equals).isPresent(), "a raid den's nearest hall is a hall point with no hall under it");
+
+		helper.setBlock(ORPHAN_AT, ModBlocks.VILLAGE_HALL);
+		helper.assertTrue(RaidDens.hallNear(level, den).filter(orphan::equals).isPresent(), "a raid den next to a real hall has no hall near");
+		helper.succeed();
+	}
+
+	/**
+	 * B1356: a fire next to the orphan point is in no village; a real hall there makes it one; that hall swapped away
+	 * (its point left behind) is no village again at once, not when the chunk's cached answer runs out.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"orphanHallPointFire"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "orphanHallPointFire")
+	public void aFireNearAHallPointWithNoHallIsInNoVillage(GameTestHelper helper) {
+		ServerLevel level = alone(helper);
+		VillageFire.forgetHalls();
+		Leftovers.after(helper, VillageFire::forgetHalls);
+		BlockPos orphan = orphan(helper);
+		BlockPos fire = orphan.offset(1, 0, 1);
+		Optional<BlockPos> found = VillageFire.hall(level, fire);
+		helper.assertTrue(found.isEmpty(), "a fire next to a hall point with no hall under it is in the village of " + found.orElse(null));
+
+		helper.setBlock(ORPHAN_AT, ModBlocks.VILLAGE_HALL);
+		VillageFire.forgetHalls();
+		helper.assertTrue(VillageFire.hall(level, fire).filter(orphan::equals).isPresent(), "a fire next to a real hall isn't in its village");
+
+		// the hall swapped for air without an update, its point left behind; the chunk's answer is still cached
+		helper.setBlock(ORPHAN_AT, Blocks.AIR);
+		orphan(helper);
+		found = VillageFire.hall(level, fire);
+		helper.assertTrue(found.isEmpty(), "a fire by a hall swapped away is still in the village of " + found.orElse(null));
 		helper.succeed();
 	}
 

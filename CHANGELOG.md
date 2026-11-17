@@ -39,6 +39,9 @@ asks for the steps, `latest.log` and any crash report).
   instead of spots of falling water that pushed a swimmer down (B1317).
 - City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
   world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
+- A Village Hall's leftover point of interest with no hall standing on it no longer counts as a village anywhere else
+  either: work blocks in a far zone, raid dens and village fires ignore it, and a fire no longer counts as in a village
+  for a few seconds after its hall is gone (B1356).
 
 ## 0.156.0 — 2026-11-16
 

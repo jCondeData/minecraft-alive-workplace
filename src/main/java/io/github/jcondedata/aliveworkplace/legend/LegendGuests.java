@@ -514,7 +514,7 @@ public final class LegendGuests {
 			}
 			if (taken == null) {
 				taken = new ArrayList<>();
-				for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+				for (Villager v : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 					BlockPos theirs = VillageNeeds.bed(level, v);
 					if (theirs != null) {
 						taken.add(theirs);

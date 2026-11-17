@@ -45,7 +45,7 @@ import net.minecraft.world.level.block.Rotation;
  * raw ore, a Mason's all-stone chain through the kiln) and a kiln chain saved and loaded mid-way. Each test has its own
  * batch: the jobs share their claims.
  */
-public class QaJobChainsGameTests {
+public class QaJobChainsGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

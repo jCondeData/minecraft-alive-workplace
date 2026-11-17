@@ -136,7 +136,7 @@ public final class MegaShrines {
 		boolean held = Data.get(level).held(hall) == today; // B501: saved, so a restart in the show's hours doesn't hold it again
 		Crowd came = CROWDS.compute(key, (k, c) -> c == null || c.day != today ? new Crowd(today, level.getGameTime()) : c);
 		boolean everyone = true; // every villager off work has come to the shrine
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+		for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping())) {
 			if (trainer.isPresent() && villager == trainer.get()) {
 				continue;
 			}
@@ -178,8 +178,7 @@ public final class MegaShrines {
 
 	/** The village's trainer for the show: one who can Mega Evolve first, then the nearest to the pedestal. */
 	static Optional<Villager> trainer(ServerLevel level, BlockPos hall, BlockPos pedestal) {
-		List<Villager> trainers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isBaby() && !v.isSleeping() && Trainers.isTrainer(v));
+		List<Villager> trainers = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && !v.isSleeping() && Trainers.isTrainer(v));
 		return trainers.stream().min(Comparator.<Villager>comparingInt(v -> MegaBracelets.canMegaEvolve(v) ? 0 : 1)
 			.thenComparingDouble(v -> v.distanceToSqr(pedestal.getX() + 0.5, pedestal.getY(), pedestal.getZ() + 0.5)));
 	}
@@ -210,6 +209,7 @@ public final class MegaShrines {
 		level.playSound(null, pedestal, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.NEUTRAL, 1.5f, 0.8f);
 		int watchers = 0;
 		AABB near = new AABB(pedestal).inflate(WATCH_RANGE);
+		// The square and the pedestal's reach on purpose (B555): whoever came to the show or watches it is counted.
 		for (Villager villager : level.getEntitiesOfClass(Villager.class, near.minmax(VillageHalls.area(hall)),
 			v -> v.isAlive() && v != trainer && (came.contains(v.getUUID()) || v.getBoundingBox().intersects(near) && watching(v)))) {
 			ModAttachments.MEGA_SHOW_DAY.set(villager, today);

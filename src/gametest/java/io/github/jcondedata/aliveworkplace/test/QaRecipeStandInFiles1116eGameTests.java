@@ -146,7 +146,7 @@ public class QaRecipeStandInFiles1116eGameTests {
 			reloadWith(helper, Map.of(
 				"bell", standIn(LOADED, "\"minecraft:gold_block\"", null, "minecraft:bell"),
 				"saddle", standIn("qa_nobody:not_loaded", "\"minecraft:leather\"", null, "minecraft:saddle")));
-			helper.assertTrue(RecipeStandIns.all().size() == 3, "the shipped file and the datapack's two didn't all load: " + RecipeStandIns.all());
+			helper.assertTrue(RecipeStandIns.all().size() == 4, "the two shipped files (chest, B1290's crafting table) and the datapack's two didn't all load: " + RecipeStandIns.all());
 			List<Item> bell = options(freshRecipesFor(helper, Items.BELL));
 			helper.assertTrue(bell.equals(List.of(Items.GOLD_BLOCK)), "a stand-in for a loaded special recipe made a bell from " + bell + ", not a gold block");
 			helper.assertTrue(freshRecipesFor(helper, Items.SADDLE).isEmpty(), "a stand-in for a serializer nobody loads made a saddle plannable");
@@ -230,7 +230,7 @@ public class QaRecipeStandInFiles1116eGameTests {
 				"bad_result", standIn(LOADED, "\"minecraft:leather\"", null, "minecraft:Not A Saddle"),
 				"not_json", "{ this is not json",
 				"an_array", "[1, 2, 3]"));
-			helper.assertTrue(RecipeStandIns.all().size() == 2, "only the shipped file and the good one should load: " + RecipeStandIns.all());
+			helper.assertTrue(RecipeStandIns.all().size() == 3, "only the two shipped files and the good one should load: " + RecipeStandIns.all());
 			helper.assertTrue(options(freshRecipesFor(helper, Items.BELL)).equals(List.of(Items.GOLD_BLOCK)), "the good file's bell isn't plannable");
 			helper.assertTrue(freshRecipesFor(helper, Items.SADDLE).isEmpty(), "a broken file made a saddle plannable");
 			helper.assertTrue(!freshRecipesFor(helper, Items.CHEST).isEmpty(), "crafting lost the chest");

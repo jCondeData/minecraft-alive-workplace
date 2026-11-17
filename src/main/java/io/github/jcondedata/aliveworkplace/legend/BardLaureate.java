@@ -122,7 +122,7 @@ public final class BardLaureate {
 		if (hall.isEmpty()) {
 			return Optional.empty();
 		}
-		List<Villager> workers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall.get()), v -> v != singer && worker(v));
+		List<Villager> workers = VillageHalls.villagers(level, hall.get(), v -> v != singer && worker(v));
 		BlockPos best = null;
 		int most = -1;
 		double r = (double) radius * radius;

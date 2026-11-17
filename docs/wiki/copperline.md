@@ -225,8 +225,9 @@ whisper line says when an entry was written and that a click reads all of it, wh
 Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
 and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
 research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
-scholars' research: Worked by the village's scholars at their desks"); a tab has no floating tooltip (it would cover the
-list), so only its name and the first line of its tooltip show, in the whisper line. The list sits on
+scholars' research: Worked by the village's scholars at their desks"), and its whole tooltip shows under the mouse as
+before (B1355: the whisper line has room for only the name and first line, so the Move Tutor's "N more from a more
+experienced tutor" and Research's click line would otherwise be lost). The list sits on
 the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
 line's right. Every row, button, price, row tooltip and click is as before.
 

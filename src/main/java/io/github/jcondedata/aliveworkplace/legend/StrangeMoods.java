@@ -209,7 +209,7 @@ public final class StrangeMoods {
 				if (!met || LegendSlots.whyNot(level, hall, legend, null).isPresent()) {
 					break;
 				}
-				List<Villager> masters = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby()
+				List<Villager> masters = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby()
 					&& v.getVillagerData().getLevel() >= VillagerData.MAX_VILLAGER_LEVEL
 					&& trades.contains(BuiltInRegistries.VILLAGER_PROFESSION.getKey(v.getVillagerData().getProfession()))
 					&& !ModAttachments.LEGEND.has(v) && !ModAttachments.STRANGE_MOOD.has(v) && Builders.benchPos(v).isPresent()
@@ -623,7 +623,7 @@ public final class StrangeMoods {
 	/** The villager in a strange mood in the village round {@code hall}, or null. */
 	@Nullable
 	public static Villager moodIn(ServerLevel level, BlockPos hall) {
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && ModAttachments.STRANGE_MOOD.has(v))) {
+		for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && ModAttachments.STRANGE_MOOD.has(v))) {
 			StrangeMood mood = ModAttachments.STRANGE_MOOD.get(v);
 			if (mood != null && mood.inMood() && (mood.hall().isEmpty() || mood.hall().get().equals(hall))) {
 				return v;

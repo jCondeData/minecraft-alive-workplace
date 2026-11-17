@@ -50,7 +50,7 @@ import net.minecraft.world.level.block.Blocks;
  * expected behavior and its item's spec, from both sides of each boundary. The Cobblemon halves (B426's Cup line, B466)
  * are in {@code QaLaneD1104CompatTests}.
  */
-public class QaLaneD1104GameTests implements FabricGameTest {
+public class QaLaneD1104GameTests implements FreshPlanning {
 	static final String BIG = "aliveworkplace_test:big_area";
 	private static final BlockPos HALL = new BlockPos(3, 2, 3);
 	private static final ResourceLocation RAIDERS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa1104_raiders");

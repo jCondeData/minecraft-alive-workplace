@@ -1,0 +1,7 @@
+{
+  "_comment": "B1290: Carved Wood's mixed_crafting_table_crafting (on by default, as in the owner's pack) makes Minecraft's crafting table from any 2x2 of planks no other recipe takes, such as four of Chipped's mosaic planks (four acacia planks make Carved Wood's acacia table instead, so planks a plain recipe takes four of are left out). Counts only while that recipe is loaded.",
+  "serializer": "carved_wood:crafting_special_crafting_table",
+  "from": ["#minecraft:planks"],
+  "count": 4,
+  "result": "minecraft:crafting_table"
+}

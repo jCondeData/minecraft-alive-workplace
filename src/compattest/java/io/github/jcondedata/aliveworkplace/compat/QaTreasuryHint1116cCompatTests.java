@@ -34,7 +34,7 @@ public class QaTreasuryHint1116cCompatTests implements FabricGameTest {
 	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 20)
 	public void theTreasuryHintMarksThousandsAtEveryRate(GameTestHelper helper) {
 		helper.assertTrue(Money.cobbleDollars(), "CobbleDollars isn't installed here; the test proves nothing");
-		helper.assertValueEqual(hint(1), expected("1", "64"), "at 1 a CobbleDollar");
+		helper.assertValueEqual(hint(1), "Click to give 1 CobbleDollar (shift-click: 64), or click with emeralds", "at 1 a CobbleDollar, in the singular (B1347)");
 		helper.assertValueEqual(hint(15), expected("15", "960"), "at 15");
 		helper.assertValueEqual(hint(16), expected("16", "1,024"), "at 16");
 		helper.assertValueEqual(hint(999), expected("999", "63,936"), "at 999");

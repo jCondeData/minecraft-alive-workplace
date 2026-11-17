@@ -229,7 +229,7 @@ public final class Founder {
 
 	/** Whether a villager of the village round {@code hall} is in the Founder's mood or sulking after it. */
 	static boolean founderMoodOn(ServerLevel level, BlockPos hall, Legend legend) {
-		return !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> {
+		return !VillageHalls.villagers(level, hall, v -> {
 			StrangeMood m = ModAttachments.STRANGE_MOOD.get(v);
 			return v.isAlive() && m != null && m.legend().equals(legend.id()) && (m.hall().isEmpty() || m.hall().get().equals(hall));
 		}).isEmpty();
@@ -240,7 +240,7 @@ public final class Founder {
 	 * not in a strange mood, living in this village; the most XP first (ties: by UUID, the same every time).
 	 */
 	public static Optional<Villager> nextMaster(ServerLevel level, BlockPos hall, List<UUID> tried) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby()
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby()
 				&& v.getVillagerData().getLevel() >= VillagerData.MAX_VILLAGER_LEVEL && !tried.contains(v.getUUID())
 				&& !ModAttachments.LEGEND.has(v) && !ModAttachments.STRANGE_MOOD.has(v)
 				&& VillageHalls.nearest(level, v.blockPosition()).equals(Optional.of(hall)))
@@ -376,7 +376,7 @@ public final class Founder {
 			return null;
 		}
 		BlockPos centre = BlueprintOutline.bounds(placement, blueprint.size()).getCenter();
-		Villager builder = level.getEntities(EntityType.VILLAGER, VillageHalls.area(hall), v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
+		Villager builder = VillageHalls.villagers(level, hall, v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
 			.stream()
 			.filter(v -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).orElseThrow(), centre, Builders.MAX_SITE_DISTANCE))
 			.filter(v -> busy(level, v) <= Builders.MAX_QUEUE)

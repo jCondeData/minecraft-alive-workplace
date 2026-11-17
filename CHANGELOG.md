@@ -26,12 +26,59 @@ asks for the steps, `latest.log` and any crash report).
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
   `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).
+### Fixed
+- Villages: a villager out in the corners of the square round a Village Hall, outside the village's circle, no longer
+  comes to its festivals and banquets, becomes a parent of its babies, or counts as one of its villagers anywhere else
+  (guilds, guards, scouts, legends, the cough, Wonders and more) (B555).
+- Villages: the same villager outside the circle no longer counts toward a research tree's villager count, gets the
+  Steward's or the hall's build orders, counts as the village's Scholar for the printing press, or draws a raid's
+  raiders or piglins (B1352).
+- Config file: one unreadable word in `raiderCultures` or `disasters` ("maybe", a typo like "flase") no longer resets the
+  whole map, so a culture or disaster you switched off beside it stays off; that one entry takes its default, on, and
+  the log names it (B1359). Their ids are now read trimmed and in any case, so "Bandits": false switches the bandits
+  off (B1360).
+- List menus: pointing at a tab on the rail shows its whole tooltip again, so the Move Tutor's "N more from a more
+  experienced tutor" and Research's "Click: show this research" can be read; the whisper line still names the tab
+  (B1355).
 
 ## 0.156.0 — 2026-11-16
 
 ### Fixed
+- With Chipped and Carved Wood (as in the owner's pack), a Carpenter makes a crafting table from four of Chipped's
+  planks in the builder's chest, as a player can with Carved Wood's mixed crafting table recipe, instead of asking for an
+  Oak Log nobody has (B1290).
+- With Create, a builder short of andesite beside a Mason no longer reads "Nobody here makes: Andesite": a stone a
+  player mines that the Mason can't cut from what's there (polished andesite is never cut back into andesite, by a
+  player either) is left to the gathered line above; from Create's cut andesite in the chest he cuts it (B1334).
+- Chapel wedding request: a couple married in the new Chapel get one entry in the Village Hall's Chronicle, "married in
+  the new Chapel, and the whole village sat down to a feast", no longer also "married at the bell" (B1348).
+- Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three
+  builds in his own village (his Blueprint Table's) and tells its players, instead of putting them in the server-wide
+  set every later village starts with (B1345).
+- With CobbleDollars: placing a Shop Counter names your server's real CobbleDollar rate ("1,000 per emerald"), not
+  always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
+- Showcase page: the Book of Edicts at GUI scale 4 no longer shows as broken. Nothing was missing in the game. The
+  page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
+- Mover: a glow lichen on several faces (the floor and two walls) that lands on a Mover's Crate comes back as one
+  Glow Lichen per face (3, not 1) (B1300).
+- Village Hall Chronicle: a Festival Cup entry written late (the Cup ended while the village was unloaded) now sits
+  under its own day, so the day headers stay newest first with one header per day, instead of reading DAY 46, DAY 47,
+  DAY 46 (B1353).
+- Pokemon Trader: at GUI scale 3 (a 320x180 screen) the trader's name plaque is no longer cut off at the top; the
+  window is 10 pixels shorter and keeps an 8-pixel margin like the Village Hall's windows (B1354).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
+- Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned
+  in the same moment (2 chests from two logs read "short of 16 Oak Planks", not the 2 logs that were short). It now
+  waits a moment and says the right thing (B1321).
+- Crafters: with planks of one wood and logs of another in the chest, the "short of" line now counts them all: 4 spruce
+  planks with an oak and a birch log for 2 chests reads "short of 1 Oak Log", not 3 (B1333).
+- Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk
+  nobody had loaded now comes down as soon as that chunk loads, into the chests by the bench, instead of staying up
+  for good (B1322).
+- A crafter's shortage line no longer names the wrong thing on a busy server: when the village's other jobs had used most
+  of that moment's planning, a crafter could say "short of 16 Oak Planks" for chests while holding logs of three woods.
+  He now works it out a moment later and names the logs (B1349).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
   start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
 - Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up

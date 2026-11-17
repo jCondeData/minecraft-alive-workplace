@@ -233,7 +233,7 @@ public final class EdictBook {
 			if (guild == null) {
 				continue;
 			}
-			int members = level.getEntitiesOfClass(net.minecraft.world.entity.npc.Villager.class, VillageHalls.area(entity.getBlockPos()), guild::gathers).size();
+			int members = VillageHalls.villagers(level, entity.getBlockPos(), guild::gathers).size();
 			boolean founded = Guilds.founded(level, entity, c.id());
 			List<Component> lore = new java.util.ArrayList<>();
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.edicts.guild_master", c.masterName()), ChatFormatting.GRAY));

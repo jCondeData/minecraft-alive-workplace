@@ -70,6 +70,7 @@ public final class AliveWorkplace {
 		io.github.jcondedata.aliveworkplace.guard.Escorts.init();
 		io.github.jcondedata.aliveworkplace.guard.WarParties.init(); // marching on the lair (32.13)
 		io.github.jcondedata.aliveworkplace.guard.RaidDens.init(); // the raid dens a village knows (38.2)
+		io.github.jcondedata.aliveworkplace.build.Scaffolds.init(); // a removed site's scaffolding left in unloaded chunks (B1322)
 		io.github.jcondedata.aliveworkplace.trainer.RaidHelpers.init(); // trainers hired to help in a den's raid (38.1a)
 		io.github.jcondedata.aliveworkplace.trainer.MegaBracelets.init(); // more Mega trainers, and their bracelets (38.5)
 		io.github.jcondedata.aliveworkplace.jeweller.MegaStones.init(); // the Jeweller's Mega Stones and Key Stones (38.6)

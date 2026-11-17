@@ -182,7 +182,7 @@ public final class Services implements ResourceManagerReloadListener {
 	private static List<Found> listOf(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, long today, @Nullable List<Villager> workers) {
 		if (entity.servicesDay() != today) {
 			entity.setServices(find(level, hall, workers != null ? workers
-				: level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)), today);
+				: VillageHalls.villagers(level, hall, Villager::isAlive)), today);
 		}
 		return entity.services();
 	}

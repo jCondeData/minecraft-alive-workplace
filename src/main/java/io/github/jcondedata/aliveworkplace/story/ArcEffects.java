@@ -921,7 +921,7 @@ public final class ArcEffects {
 			level.addFreshEntity(v);
 			return v;
 		}
-		List<Villager> everyone = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), x -> x.isAlive() && !x.isBaby()
+		List<Villager> everyone = VillageHalls.villagers(level, hall, x -> x.isAlive() && !x.isBaby()
 			&& x.getTags().stream().noneMatch(t -> t.startsWith("aliveworkplace_role_")));
 		List<Villager> all = List.of();
 		for (String alt : spec.villager().split("\\|")) { // alternatives in order (31.22: "the Toolsmith, else any smith")
@@ -934,7 +934,7 @@ public final class ArcEffects {
 				all = everyone.stream().filter(x -> Traits.of(x).contains(trait)).toList();
 			} else if (alt.equals("mother")) { // B633: "else a mother", named as the mother of a villager of the village
 				Set<UUID> mothers = new java.util.HashSet<>();
-				for (Villager child : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Entity::isAlive)) {
+				for (Villager child : VillageHalls.villagers(level, hall, Entity::isAlive)) {
 					Families.Parents parents = ModAttachments.PARENTS.get(child);
 					if (parents != null && parents.motherId() != null) {
 						mothers.add(parents.motherId());

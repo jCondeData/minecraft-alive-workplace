@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.craft.CraftJobs;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,7 +25,7 @@ import net.minecraft.world.item.Item;
  * Redstone Ore)" (B489, B1277); "never Create's Crushed Raw Iron, which only a crushing wheel makes" and "never the Crushed
  * Raw Zinc" (B1267, B1279). So no line names an ore (c:ores) or a crushed raw metal, for any mod's thing.
  */
-public class QaShortLineSweep1115e3CompatTests implements FabricGameTest {
+public class QaShortLineSweep1115e3CompatTests implements FreshPlanning {
 	static final TagKey<Item> ORES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"));
 
 	/** An item, the job that makes it and the kind of recipes that job's shortage line reads. */

@@ -194,8 +194,7 @@ public final class VillageAdvice {
 			}
 		}
 		if (HarvestIdols.ENABLED && HarvestIdols.harvestSeason(level) && !HarvestIdols.near(level, hall)
-			&& !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-				v -> v.isAlive() && v.getVillagerData().getProfession() == VillagerProfession.FARMER).isEmpty()) {
+			&& !VillageHalls.villagers(level, hall, v -> v.isAlive() && v.getVillagerData().getProfession() == VillagerProfession.FARMER).isEmpty()) {
 			tips.add(new Tip("harvest_idol", ModBlocks.HARVEST_IDOL.asItem()));
 		}
 		return tips;
@@ -226,8 +225,7 @@ public final class VillageAdvice {
 
 	/** Whether a grown-up Trainer Leader lives in the village round {@code hall}. */
 	public static boolean hasTrainerLeader(ServerLevel level, BlockPos hall) {
-		return !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && io.github.jcondedata.aliveworkplace.trainer.Trainers.isLeader(v)).isEmpty();
+		return !VillageHalls.villagers(level, hall, v -> v.isAlive() && io.github.jcondedata.aliveworkplace.trainer.Trainers.isLeader(v)).isEmpty();
 	}
 
 	// The numbers the tips go by, shared with the Steward's rules (ROADMAP 27.6) so his desk and these tips agree.
@@ -259,7 +257,7 @@ public final class VillageAdvice {
 
 	/** Villagers of the village who are ill (the "ill" tip). */
 	public static long ill(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).size();
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && io.github.jcondedata.aliveworkplace.people.Sickness.isIll(v)).size();
 	}
 
 	/**
@@ -304,7 +302,7 @@ public final class VillageAdvice {
 
 	/** The "homes" tip's count: who sleeps in first-tier homes, of the grown-ups in the village. */
 	public static HomeCount homes(ServerLevel level, BlockPos hall) {
-		List<Villager> grown = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> !v.isBaby() && v.isAlive());
+		List<Villager> grown = VillageHalls.villagers(level, hall, v -> !v.isBaby() && v.isAlive());
 		int plain = (int) grown.stream().filter(v -> Homes.of(level, v).map(h -> h.tier() < 2).orElse(true)).count();
 		return new HomeCount(plain, grown.size());
 	}

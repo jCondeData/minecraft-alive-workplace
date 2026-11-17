@@ -182,3 +182,10 @@ screens, the compact boundary 399x219 / 400x220 among them, and screens where th
 rail, stage and buttons inside and apart, each button and each of one to six team cards hit at its middle) and
 `QaTrainerCopper1116dGameTests.everySentenceIsInTheLangFileInAmericanEnglish` (every Trainer screen sentence: American
 English, no "(s)", every argument filled, the whispers whole sentences, the capped card's and grayed-out Trade's words).
+
+B1351 (2026-11-17): every level shows whole again. A team card keeps room for a capped "Lv 100" after its warning
+glyph (`TrainerLayout.LEVEL_ROOM`), so the grid drops a column before a card gets narrower than 79 pixels (a team of four
+sits two by two instead of four in a row), and a party row moves its level left when 42% of the stage would leave it
+less than 38 pixels before the status glyph (320x180), trimming the name instead. The card's well and text column and
+the party's columns are `TrainerLayout.cardWell`, `TrainerLayout.cardText` and `TrainerLayout.partyColumns`, which the screen draws with and
+`QaTrainerCopper1116dBugGameTests.aTeamCardShowsItsLevelWhole` measures (vanilla font widths, GUI scale 2 and 3).

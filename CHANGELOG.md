@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Trainer screen: every Pokémon's level shows whole again. Team cards no longer cut a capped "Lv 40" to "L…" (a team
+  of four now sits two by two), and at GUI scale 3 a party line's "Lv 100" no longer runs into its status glyph (B1351).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

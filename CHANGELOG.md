@@ -27,6 +27,9 @@ asks for the steps, `latest.log` and any crash report).
   whole map, so a culture or disaster you switched off beside it stays off; that one entry takes its default, on, and
   the log names it (B1359). Their ids are now read trimmed and in any case, so "Bandits": false switches the bandits
   off (B1360).
+- List menus: pointing at a tab on the rail shows its whole tooltip again, so the Move Tutor's "N more from a more
+  experienced tutor" and Research's "Click: show this research" can be read; the whisper line still names the tab
+  (B1355).
 
 ## 0.156.0 — 2026-11-16
 

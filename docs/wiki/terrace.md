@@ -37,8 +37,8 @@ Roadmap items: 49.6, B281, B304, B640, B641, B925
 - Drawn in JavaScript with the rebuild kit: `tools/blueprints/js/terrace/` (`plan.mjs`: three concepts, story, palette,
   masses, rooms, openings, every furniture footprint, the walking line, and the critic's round-2 notes; `recipe.mjs`: the
   passes for levels 1 and 2), on the shared parts library `tools/blueprints/js/parts/`, which it grew with
-  `evenGableRoof` (a steep roof over an even span, its ridge two stairs back to back, gutters over party walls),
-  `crowGable` (a stepped parapet gable with copings), `doorCanopy`, a cauldron `sink`, a low `bookcase` and slab sills.
+  evenGableRoof (a steep roof over an even span, its ridge two stairs back to back, gutters over party walls),
+  crowGable (a stepped parapet gable with copings), doorCanopy, a cauldron `sink`, a low `bookcase` and slab sills.
   `build.sh` builds both levels as candidates; the live drawings are saved with `tools/blueprints/rebuild.py terrace
   <id>`, which runs check.py's checks with the owner's rules, `finish()` and writes `blueprint_furniture/<id>.json`.
 - Each home is drawn in its own frame between party walls on a 5-block pitch (x 1, 6, 11, 16): the brief's kept cells

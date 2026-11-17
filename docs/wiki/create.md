@@ -774,4 +774,8 @@ village's last column empties it (B994).
   or smaller (3x1x3 of the same bricks); the same file uploaded again is harmless (all 25 bricks); replaced with no
   restart, the old pad is finished whole.
 
+- `QaTableCreate1117eCompatTests` (QA, lane E, 2026-11-17; 2): at the Copperline Blueprint Table (48.1) every
+  Create build's materials name real items with Create's among them, its preview draws Create's blocks, every style on
+  its rail has details and a preview, and Get Blueprint hands each one out (none refused).
+
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

@@ -165,7 +165,7 @@ its item: a brush, a map, a sponge, a dirt path, a stone brick wall), the chosen
 with the steps left as its count; at 320x180 (GUI scale 3) the rail is the two-column icon grid. The map keeps its look:
 the land, the grid, each zone tinted and edged in its kind's color, Keep Clear hatched, roads, the wall line, the
 banners and the zone names, now in a Void frame with "N ^" in its corner. Under the map, the road width (Lane, Street,
-Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **New**, the
+Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **+ New**, the
 one copper button; the zones in a sunken list (the kind's swatch, the name, the cells; the chosen one copper-marked);
 the chosen zone's name in a well, its style (with the style's icon), kind, Renew and a red Delete; and "LEGEND" when
 there's room (not at 320x180, where the zone swatches and the foot line do its work). The foot line says what the tool,
@@ -299,6 +299,18 @@ opening says so; every slot clear of the list, the level row, the arrow, the lin
 `QaEveryMenuGameTests` pairing the new menu type and the shop tests (`QaClicksShops1101GameTests`, `ShopStockGameTests`,
 `QaShopFerry1031GameTests` and the rest) still passing.
 
+QA (lane c, 2026-11-17): `QaCopperTrades1117cGameTests` (12, from the spec, through the packets a client sends: too
+few emeralds trade nothing and come back on closing; a sold-out offer is shown sold out and refused; a shift-click on
+the goods repeats the trade; Hero of the Village prices reach the screen and buy; a second player is refused and a
+killed villager closes the screen with the emeralds kept; a mod job with no offers and a baby open no screen, the
+wandering trader and a Librarian keep vanilla's; the Ferryman sells a ticket in Copperline without CobbleDollars; a
+shop lot emptied while the screen is open is refused, shown sold out and the buyer keeps the price; a job change
+switches the screen both ways; a Tailor saved and loaded keeps his offers and trades; a Master trades with no level
+bar; the new sentences) and `QaCopperCityPlan1117cGameTests` (4: the City Plan's and the Charter's parts inside the
+window and apart at a dozen screen sizes, from GUI scale 1 at 1920x1080 to both sides of the compact switch, the map
+never smaller on a bigger screen; the zone list's row picking with no zones, scrolled, at 16 zones and outside the
+list; the new sentences).
+
 Showcase scenes: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail), `mail`,
 `counter` and `drop_box` (44.1: the three slot screens), `crafter_trades` (44.2: a Journeyman Tailor's trades, then an
 offer chosen).
@@ -350,3 +362,13 @@ three sizes with every setting's name fitting beside its control; a switch, a sm
 clicks, a page reset, and the file read back; the new sentences), with `GuideGameTests` and `ConfigGameTests` still
 passing. Scenes: `guide` (every page, a chapter from the rail, then at 320x180) and `config` (Work's numbers, Village's
 switches, Festivals turned off and saved, then at 320x180).
+
+QA, lane E, 2026-11-17: `QaCityPlanCopper1117eGameTests` (44.3, 3: the City Plan and the Charter on both sides of the
+compact boundary, a 1920x1080 and an ultrawide screen and 320x180, the map a square of whole cells and nothing
+overlapping; a full plan's 16 zones each picked by a click on its row at some scroll, no click on an empty row, the
+strip under the last drawn row, the scroll bar or under the list picks a zone; the tool and width lines read with
+their real arguments in American English) and `QaBlueprintBook1117eGameTests` (48.1, 5: the most-styled build's style
+rail fits at every GUI scale; a style the build lacks, a deleted build and a press from 20 blocks away hand nothing out
+and keep the blank; a shelved blueprint of a deleted build is listed, survives a save and reload and comes back out;
+every listed build's materials name real items). With Create: `QaTableCreate1117eCompatTests` (every Create build's
+materials, preview and styles, and Get Blueprint for each).

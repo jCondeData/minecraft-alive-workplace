@@ -4,7 +4,7 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310
+Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310, B1188
 
 ## What a player sees
 
@@ -47,6 +47,9 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310
   waystone, even with its plaza and stone still standing, and it drops off every other hall's Map. A caravan already
   on its way there turns home with its load. Put the hall back and, after its next round, the village is on the
   network again with its stone named after it.
+- **A plaza stays its own village's** (B1188): a neighboring village doesn't take a ruined village's plaza as its own
+  or rename its stone, so its settlers and caravans keep stepping out of its own stone. Only a village with no plaza
+  of its own (a new hall set down beside the old plaza) takes it over.
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with

@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Fixed
+- Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
+  is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put
+  back finds its plaza again (B1188).
 - A desert village's Daub House now has sandstone walls between its jungle beams, not the plains house's mud brick
   (B1367).
 - A Village Hall's leftover point of interest with no hall standing on it (left by region edits or world-editing mods)

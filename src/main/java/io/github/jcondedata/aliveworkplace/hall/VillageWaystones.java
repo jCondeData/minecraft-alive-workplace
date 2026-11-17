@@ -262,15 +262,42 @@ public final class VillageWaystones {
 
 	/**
 	 * The village's own plazas: those round {@code hall}, finished or going up, loaded or not, whose nearest hall is
-	 * {@code hall} (a neighbor village's plaza within the radius is the neighbor's, B528).
+	 * {@code hall} (a neighbor village's plaza within the radius is the neighbor's, B528). Each is kept as this village's
+	 * ({@link Data#owner}), so a plaza whose own village lost its hall isn't taken for this village's because this hall
+	 * is now the nearest one (B1188): it waits for its hall to be put back, and only a village with no plaza of its own
+	 * takes it over (the nearest such plaza).
 	 */
 	private static List<Plaza> ownPlazas(ServerLevel level, BlockPos hall) {
+		Data data = Data.get(level);
 		List<Plaza> out = new ArrayList<>();
+		List<Plaza> orphans = new ArrayList<>();
+		List<BlockPos> round = new ArrayList<>();
 		for (Plaza plaza : plazas(level, hall)) {
-			if (VillageHalls.nearest(level, plaza.placement().origin()).map(hall::equals).orElse(false)) {
+			BlockPos origin = plaza.placement().origin();
+			round.add(origin);
+			if (!VillageHalls.nearest(level, origin).map(hall::equals).orElse(false)) {
+				continue;
+			}
+			BlockPos owner = data.owner(origin).orElse(null);
+			if (owner == null || owner.equals(hall) || level.isLoaded(owner) && VillageHalls.standsAt(level, owner)) {
+				// its own, a new one, or one a nearer hall was since placed by (its old village still stands: as before)
+				data.own(origin, hall);
 				out.add(plaza);
+			} else if (level.isLoaded(owner)) {
+				orphans.add(plaza); // its village's hall is gone
 			}
 		}
+		if (out.isEmpty() && !orphans.isEmpty()) {
+			orphans.sort(Comparator.comparingDouble(p -> p.placement().origin().distSqr(hall)));
+			BlockPos origin = orphans.get(0).placement().origin();
+			data.own(origin, hall);
+			for (Plaza plaza : orphans) { // (finished and going up: the same plaza twice)
+				if (plaza.placement().origin().equals(origin)) {
+					out.add(plaza);
+				}
+			}
+		}
+		data.keepOnly(hall, round);
 		return out;
 	}
 
@@ -482,6 +509,9 @@ public final class VillageWaystones {
 	public static final class Data extends SavedData {
 		private static final String NAME = "aliveworkplace_village_waystones";
 		private final Long2LongOpenHashMap stones = new Long2LongOpenHashMap();
+		// B1188: each plaza's village, plaza origin -> hall. New with B1188: older worlds start empty and fill at the next
+		// hall rounds (each plaza to its nearest hall, as it counted before).
+		private final Long2LongOpenHashMap owners = new Long2LongOpenHashMap();
 
 		public static Data get(ServerLevel level) {
 			return level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(Data::new, Data::load, null), NAME);
@@ -508,7 +538,29 @@ public final class VillageWaystones {
 			}
 		}
 
-		/** Takes the village round {@code hall} off the network (also for tests). */
+		/** The hall of the village the plaza at {@code origin} (its placement's origin) belongs to (B1188); empty when not kept yet. */
+		public Optional<BlockPos> owner(BlockPos origin) {
+			return owners.containsKey(origin.asLong()) ? Optional.of(BlockPos.of(owners.get(origin.asLong()))) : Optional.empty();
+		}
+
+		void own(BlockPos origin, BlockPos hall) {
+			if (!owners.containsKey(origin.asLong()) || owners.get(origin.asLong()) != hall.asLong()) {
+				owners.put(origin.asLong(), hall.asLong());
+				setDirty();
+			}
+		}
+
+		/** Drops the plazas kept as {@code hall}'s that aren't among {@code origins} any more (a plaza taken down). */
+		void keepOnly(BlockPos hall, List<BlockPos> origins) {
+			for (long origin : owners.keySet().toLongArray()) {
+				if (owners.get(origin) == hall.asLong() && !origins.contains(BlockPos.of(origin))) {
+					owners.remove(origin);
+					setDirty();
+				}
+			}
+		}
+
+		/** Takes the village round {@code hall} off the network (also for tests). Its plazas stay its own (B1188). */
 		public void forget(BlockPos hall) {
 			if (stones.containsKey(hall.asLong())) {
 				stones.remove(hall.asLong());
@@ -527,6 +579,15 @@ public final class VillageWaystones {
 			}
 			tag.putLongArray("halls", halls);
 			tag.putLongArray("stones", spots);
+			long[] plazas = new long[owners.size()];
+			long[] plazaHalls = new long[owners.size()];
+			i = 0;
+			for (Long2LongMap.Entry e : owners.long2LongEntrySet()) {
+				plazas[i] = e.getLongKey();
+				plazaHalls[i++] = e.getLongValue();
+			}
+			tag.putLongArray("plazas", plazas);
+			tag.putLongArray("plazaHalls", plazaHalls);
 			return tag;
 		}
 
@@ -536,6 +597,11 @@ public final class VillageWaystones {
 			long[] stones = Nbt.getLongArray(tag, "stones");
 			for (int i = 0; i < Math.min(halls.length, stones.length); i++) {
 				data.stones.put(halls[i], stones[i]);
+			}
+			long[] plazas = Nbt.getLongArray(tag, "plazas");
+			long[] plazaHalls = Nbt.getLongArray(tag, "plazaHalls");
+			for (int i = 0; i < Math.min(plazas.length, plazaHalls.length); i++) {
+				data.owners.put(plazas[i], plazaHalls[i]);
 			}
 			return data;
 		}

@@ -297,6 +297,7 @@ public class QaStatusCardCopper1117dGameTests implements FabricGameTest {
 	@GameTest(template = AREA, batch = "qaStatusCardCopper1117dBuilder")
 	public void aRealBuilderCardGraysHallPageAndKeepsItsButtonsIn(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.halls(helper); // "no hall near": a hall an earlier batch left past its own area would be near (lane-c-1117-0652)
 		helper.setDayTime(2000);
 		VillageHalls.forgetNearest();
 		ServerLevel level = helper.getLevel();

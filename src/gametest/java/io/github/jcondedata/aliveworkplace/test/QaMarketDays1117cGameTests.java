@@ -57,7 +57,13 @@ public class QaMarketDays1117cGameTests implements FabricGameTest {
 			helper.getLevel().setDayTime(dayTime);
 		});
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
-		return helper.absolutePos(HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		// the hall goes with the test: left standing outside a later batch's smaller area, it is that test's "hall near"
+		Leftovers.after(helper, () -> {
+			helper.getLevel().removeBlock(hall, false);
+			VillageHalls.forgetNearest();
+		});
+		return hall;
 	}
 
 	/** A finished Market Square (of {@code id}) in the village, forgotten after the test. */

@@ -56,10 +56,10 @@ export const MASSES = {
 }
 
 export const ROOMS = [
-  { level: 1, name: 'Hall', use: 'hearth, table for four, clock', box: [2, 1, 2, 8, 4, 5] },
+  { level: 1, name: 'Hall', use: 'hearth, table for four', box: [2, 1, 2, 8, 4, 5] },
   { level: 1, name: 'Box room', use: 'the downstairs bed behind a plank partition', box: [2, 1, 7, 4, 4, 8] },
   { level: 1, name: 'Kitchen', use: 'stove, counter, barrel, open to the hall', box: [6, 1, 6, 8, 4, 8] },
-  { level: 1, name: 'Chamber', use: 'the upstairs bedroom under the slates: one bed, a desk, a chest', box: [2, 6, 2, 8, 12, 8] },
+  { level: 1, name: 'Chamber', use: 'the upstairs bedroom under the slates: one bed, a desk, a chest, the clock', box: [2, 6, 2, 8, 12, 8] },
   { level: 2, name: 'Parlour', use: 'the east wing: a settle by the window and a bed for a grandparent', box: [10, 1, 3, 11, 6, 7] },
   { level: 3, name: 'Back room', use: 'under the catslide: two beds for the children', box: [2, 1, 10, 8, 6, 12] },
   { level: 4, name: 'Store', use: 'the cellar under the hall: casks and barrels, down a ladder by the hearth', box: [2, -3, 2, 8, -1, 8] },
@@ -97,14 +97,13 @@ export const OPENINGS = {
 const W = 'spruce'
 export const FURNITURE = [
   // Hall (front half, z 2..5): the hearth in the west wall with a settle-chair either side and a rug before it; the
-  // dining table for four by the front east window, lit from above; the clock by the front door. The door's
+  // dining table for four by the front east window, lit from above. The door's
   // way in (x 4..6, z <= 3) stays clear: door -> (5, 3) -> the table, the fire, or (7, 3) and the stair foot.
   { kind: 'fixture', part: 'hearth', pos: [1, 1, 3], facing: 'east' },
   { kind: 'chair', part: 'armchair', pos: [2, 1, 2], facing: 'south', wood: 'dark_oak', colour: 'red' },
   { kind: 'chair', part: 'armchair', pos: [2, 1, 4], facing: 'north', wood: 'dark_oak', colour: 'red' },
   { kind: 'rug', part: 'rug', cellsAbs: [[2, 1, 3], [3, 1, 2], [3, 1, 3], [3, 1, 4]], colour: 'red' },
-  { kind: 'clock', part: 'clock', pos: [4, 1, 2], facing: 'south', wood: W }, // by the front door: (3, 1, 5) is IV's way off the cellar ladder, (4, 1, 5) the box room's way in
-  { kind: 'table', part: 'table', pos: [6, 1, 4], facing: 'north', wood: W, colour: 'white' },
+    { kind: 'table', part: 'table', pos: [6, 1, 4], facing: 'north', wood: W, colour: 'white' },
   { kind: 'table', part: 'table', pos: [6, 1, 5], facing: 'north', wood: W, colour: 'white' },
   { kind: 'chair', part: 'chair', pos: [5, 1, 4], facing: 'east', wood: W },
   { kind: 'chair', part: 'chair', pos: [5, 1, 5], facing: 'east', wood: W },
@@ -136,6 +135,9 @@ export const FURNITURE = [
   { kind: 'chair', part: 'chair', pos: [5, 6, 3], facing: 'north', wood: W },
   { kind: 'cupboard', part: 'cupboard', pos: [2, 6, 2], facing: 'east', wood: W },
   { kind: 'cupboard', part: 'cupboard', pos: [2, 6, 3], facing: 'east', wood: W },
+  // the clock upstairs in the front corner: the hall has no free wall (the door's way in, x 4..6, z <= 3, stays clear;
+  // (3, 1, 5) is IV's way off the cellar ladder, (4, 1, 4..5) the box room's way in)
+  { kind: 'clock', part: 'clock', pos: [3, 6, 2], facing: 'south', wood: W },
   { kind: 'rug', part: 'rug', cellsAbs: [[4, 6, 4], [5, 6, 4], [6, 6, 4], [4, 6, 5], [5, 6, 5], [6, 6, 5]], colour: 'light_gray' },
   { kind: 'lamp', part: 'hangingLamp', pos: [5, 8, 5], facing: 'north', chain: 4, wood: W },
   // II, Parlour: a settle (the couch) under the east window, a bed for a grandparent, its nightstand, a lamp

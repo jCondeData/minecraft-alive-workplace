@@ -13,11 +13,12 @@ Roadmap items: 26.15, 49.4
   with dark oak trim under the gable ends, and a fat stack on the west gable with a stepped breast. A slate hood and a
   lantern over the front door, flower boxes under the front windows, two flower beds by the front wall.
   - Downstairs, the **hall**: the hearth in the west wall with an armchair either side and a red rug before it, a table
-    for four by the front window, a clock on the box room's plank partition, two hanging lamps. The **box room** behind
+    for four by the front window, two hanging lamps. The **box room** behind
     the partition: the downstairs bed, a lamp on its side table, a picture. The **kitchen**, open to the hall: the
     furnace, a counter with the plates, the barrel with a shelf of crockery over it.
   - A straight stair up the east wall to the **chamber** under the slates: the bed to the back wall with its nightstand
-    and the chest at its foot, a desk and chair in the front window's light, a cupboard, one lantern from the ridge.
+    and the chest at its foot, a desk and chair in the front window's light, a cupboard, the clock in the front corner, one lantern from the
+    ridge.
 - **Stone House II** (13 x 16 x 11): a lower **parlor wing** with a lean-to roof against the east gable, through the
   hall's old east window: a settle under its window, a bed for a grandparent, its nightstand and a lamp.
 - **Stone House III** (13 x 16 x 14): the back roof carried on down as a **catslide** over a back room behind the house,

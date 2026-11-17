@@ -23,8 +23,9 @@ top left and your money ("1,250 CobbleDollars" or "40 emeralds") at the top righ
 party, the open one gold. Then the chosen Pokémon's lessons, one row each: the move, its type and kind (and "Egg move"),
 its price (green when you can pay it, red when you can't) and a **Teach** button. Click Teach and the row turns gold and
 the button says **Confirm**; click again to pay and teach. Lessons the tutor isn't experienced enough for are gray rows
-with no button and the rank they need ("Expert tutors and up"). Pointing at a row, a tab or the money shows the same
-tooltip the chest showed (power, accuracy, the price and what a click does). The footer says what to do, and the page
+with no button and the rank they need ("Expert tutors and up"). Pointing at a row or the money shows the same
+tooltip the chest showed (power, accuracy, the price and what a click does); a tab (since 48.4) shows no tooltip, and
+the whisper line gives its name and its tooltip's first line instead. The footer says what to do, and the page
 arrows sit at its right when there are more lessons than one page holds.
 
 The Cobblemon menus that followed (42.2) look the same, with their own rows:

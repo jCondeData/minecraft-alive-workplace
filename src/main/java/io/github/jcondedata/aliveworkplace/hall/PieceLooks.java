@@ -23,14 +23,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -199,8 +197,8 @@ public final class PieceLooks {
 	static List<Villager> reachable(ServerLevel level, BlockPos hall, VillagePieces.Piece piece, Predicate<Villager> allowed) {
 		BlockPos centre = piece.placement().origin().offset(net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
 			new BlockPos(4, 0, 5), Mirror.NONE, piece.placement().rotation(), BlockPos.ZERO));
-		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
+		List<Villager> builders = VillageHalls.villagers(level, hall, // B1352: the village's circle
+				v -> Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 		return builders.stream().filter(v -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).orElseThrow(),
 			centre, Builders.MAX_SITE_DISTANCE)).toList();

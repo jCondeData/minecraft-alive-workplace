@@ -595,8 +595,9 @@ public final class VillageRaids {
 		boolean atPortal = portal;
 		boolean wades = wading;
 		int scatter = foretold ? scatter(VillageHalls.RADIUS * 0.6) : wading ? 1 : 3;
+		// The village's villagers (B1352: its circle, not the square's corners), but only 16 up or down: raiders go for the ones they can reach.
 		List<Villager> targets = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS),
-			Villager::isAlive);
+			v -> v.isAlive() && VillageHalls.contains(hall, v.blockPosition()));
 		List<Mob> spawned = new ArrayList<>();
 		for (int i = 0; i < raiders; i++) {
 			Culture.Member member = culture.pick(random);

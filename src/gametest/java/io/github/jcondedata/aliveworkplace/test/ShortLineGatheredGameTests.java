@@ -23,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
  * name Leather, not the Rabbit Hide nobody has; with hide there it still goes down to it. A piston from nothing names
  * Redstone Dust, never the Redstone Ore a player only gets with Silk Touch (B489's kind).
  */
-public class ShortLineGatheredGameTests implements FabricGameTest {
+public class ShortLineGatheredGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final TagKey<Item> ORES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"));
 

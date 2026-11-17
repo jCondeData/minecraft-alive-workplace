@@ -34,7 +34,7 @@ import net.minecraft.world.level.block.Blocks;
  * blocks from nothing is {} (the block counts as raw: its one recipe packs an item whose one recipe unpacks it, so
  * Crafting.unpacks says yes both ways) and the builder has no line at all.
  */
-public class QaStorageBlockLine1115bBugTests {
+public class QaStorageBlockLine1115bBugTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 

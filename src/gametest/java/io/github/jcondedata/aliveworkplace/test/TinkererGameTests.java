@@ -21,7 +21,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
 
 /** Tinkerers: redstone and iron parts from raw ore, and iron golems mended. */
-public class TinkererGameTests implements FabricGameTest {
+public class TinkererGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:big_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

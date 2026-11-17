@@ -171,7 +171,7 @@ public final class SicknessStory {
 	/** Whether a Sickness arc runs in the village {@code villager} lives in (else a Grey Cough lifts at the next round). */
 	public static boolean coughing(ServerLevel level, Villager villager) {
 		for (Running r : running(level)) {
-			if (VillageHalls.area(r.hall()).contains(villager.position())) {
+			if (VillageHalls.contains(r.hall(), villager.blockPosition())) {
 				return true;
 			}
 		}
@@ -252,12 +252,12 @@ public final class SicknessStory {
 
 	/** The village's grown villagers who could catch the cough: alive, not the arc's own (Doctor Wren). */
 	public static List<Villager> villagers(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !Arcs.isArcEntity(v));
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && !Arcs.isArcEntity(v));
 	}
 
 	/** The coughing villagers of the village round {@code hall} (those loaded). */
 	public static List<Villager> coughers(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Sickness.isGrey(v));
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && Sickness.isGrey(v));
 	}
 
 	/** How many may cough at once: half the village. */
@@ -345,7 +345,7 @@ public final class SicknessStory {
 	/** The village's healer by job: its Nurse nearest the hall, else its Physician nearest the hall (B135), or null. */
 	@Nullable
 	static Villager findHealer(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isHealerJob(v) && !Arcs.isArcEntity(v)).stream()
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && isHealerJob(v) && !Arcs.isArcEntity(v)).stream()
 			.min(Comparator.<Villager, Boolean>comparing(v -> !Nurses.isNurse(v))
 				.thenComparingDouble(v -> v.distanceToSqr(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5))).orElse(null);
 	}

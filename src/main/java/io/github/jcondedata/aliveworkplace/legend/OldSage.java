@@ -254,7 +254,7 @@ public final class OldSage {
 	/** The Iron Pact: an iron golem walks into the village, while it has fewer than one per {@link #VILLAGERS_PER_GOLEM} villagers. */
 	@Nullable
 	public static IronGolem pactGolem(ServerLevel level, BlockPos hall) {
-		int villagers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive).size();
+		int villagers = VillageHalls.villagers(level, hall, Villager::isAlive).size();
 		int golems = level.getEntitiesOfClass(IronGolem.class, VillageHalls.area(hall), IronGolem::isAlive).size();
 		if (golems >= villagers / VILLAGERS_PER_GOLEM) {
 			return null;

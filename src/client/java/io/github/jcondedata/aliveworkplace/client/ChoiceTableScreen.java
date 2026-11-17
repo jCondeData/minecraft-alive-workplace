@@ -974,20 +974,14 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		g.disableScissor();
 		TableStyle.scrollbar(g, lmX + lmW - 6, lmY, lmH, lmScroll, lmMaxScroll(), lmHead + lmRows.size() * TableStyle.LIST_ROW + 4);
 		Component hint = info != null && info.hint() != null ? info.hint() : Component.translatable("screen.aliveworkplace.list.hint");
-		if (hovered >= 0 && lmTabs.contains(hovered)) {
-			// a rail tab names itself first (only its icon shows, 48.4), then what it is
-			String first = firstLine(icon(hovered));
-			hint = first.isEmpty() ? icon(hovered).getHoverName()
-				: Component.translatable("screen.aliveworkplace.list.tab_whisper", icon(hovered).getHoverName(), first);
-		} else if (hovered >= 0 && !firstLine(icon(hovered)).isEmpty()) {
-			hint = Component.literal(firstLine(icon(hovered))); // the whisper line says what's under the mouse (47.1)
-		}
+		// the whisper line says what's under the mouse (47.1); a rail tab names itself first (only its icon shows, 48.4)
+		hint = io.github.jcondedata.aliveworkplace.ui.ListMenuHover.whisper(hovered >= 0 ? icon(hovered) : null,
+			hovered >= 0 && lmTabs.contains(hovered), hint);
 		int[] whisper = io.github.jcondedata.aliveworkplace.ui.CopperLayout.whisper(panelBox());
 		TableStyle.footerHint(g, font, hint, whisper[0] + 4, whisper[1] + 3, lmWhisperW);
-		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a page arrow, or the menu's
-		// own (the money line).
-		if (hovered >= 0 && !lmTabs.contains(hovered)) {
-			// a rail tab has no floating tooltip (48.4): the whisper line names it, and a tooltip would cover the list
+		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a rail tab (B1355: its later
+		// lines are only there), a page arrow, or the menu's own (the money line).
+		if (hovered >= 0 && io.github.jcondedata.aliveworkplace.ui.ListMenuHover.tooltip(icon(hovered))) {
 			g.renderTooltip(font, icon(hovered), mouseX, mouseY);
 		} else if (lmInfo >= 0 && lmMoneyW > 0 && mouseX >= lmMoneyX && mouseX < lmMoneyX + lmMoneyW && mouseY >= top + 6 && mouseY < top + 18) {
 			g.renderTooltip(font, icon(lmInfo), mouseX, mouseY);

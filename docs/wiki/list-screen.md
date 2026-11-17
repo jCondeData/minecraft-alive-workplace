@@ -10,11 +10,12 @@ screen).
 
 Since Copperline (48.4) the list menus are in its shell ([Copperline](copperline.md)): the menu's name on the copper
 plaque, your money on the lintel with the close X, the **tabs down a rail on the left** (a grid of icon cells, the
-open one copper-marked; the line at the foot names the one under the mouse), the list beside them, and the
+open one copper-marked; pointing at one shows its whole tooltip, as before, and the line at the foot names it with its
+first line), the list beside them, and the
 whisper line at the foot with the page arrows at its right. The descriptions below name the tabs as a row; they are
 the rail's entries now, in the same order.
 
-Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107, B1147, 48.4
+Roadmap items: 42.1, 42.2, 42.3, 42.4, B1090, B1107, B1147, 48.4, B1355
 
 ## What a player sees
 

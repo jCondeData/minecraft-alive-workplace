@@ -14,10 +14,11 @@ Roadmap items: 43.3, B1103
 every 42 seconds."; at a Healing Machine, "Puts your team in her Healing Machine…"). Under **Your health and your
 party**: a line for you with your head, "14 / 20 HP" and a health bar (green when full, orange when hurt), a red line
 for each bad effect she'd clear ("Poison: to be cleared"), and with Cobblemon a line per Pokémon with its model, name
-and level, its HP and a bar ("Fainted" in red). **Heal** (gold) treats you as the click did: health back, bad effects
-cleared, the party healed (or put in her Healing Machine), her words, the hearts and the chime. When she'd refuse, Heal
-is gray and her reason is under it: asleep, you're in a battle, "Joy just treated you. Come back in 42 seconds.", or
-her Healing Machine is busy with another team. **Close** closes. Without Cobblemon the card shows only your own lines.
+and level, its HP and a bar ("Fainted" in red). **Heal** (copper while she can) treats you as the click did: health
+back, bad effects cleared, the party healed (or put in her Healing Machine), her words, the hearts and the chime. When
+she'd refuse, Heal is gray and her reason is above it in a Redstone-edged box: asleep, you're in a battle, "Joy just
+treated you. Come back in 42 seconds.", or her Healing Machine is busy with another team. The close X at the top right
+closes. Without Cobblemon the card shows only your own lines.
 
 **The Fossil Scientist** (with Cobblemon). Right-click them with an empty hand: their name and "Fossil Scientist ·
 Novice", then "A revival costs 800 CobbleDollars. Working on 2 of 3 fossils." Under **Your fossils**: a line per fossil

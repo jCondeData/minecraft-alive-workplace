@@ -54,6 +54,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - Drowned pirates: after a pirate ship sinks, its old hold below the waterline is still sea like the water round it,
   instead of spots of falling water that pushed a swimmer down (B1317).
+### Fixed
+- City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
+  world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
 
 ## 0.156.0 — 2026-11-16
 

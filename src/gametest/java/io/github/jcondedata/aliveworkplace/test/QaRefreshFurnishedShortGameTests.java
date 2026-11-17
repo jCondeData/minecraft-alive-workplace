@@ -242,8 +242,10 @@ public class QaRefreshFurnishedShortGameTests implements FabricGameTest {
 	 * every piece of one material the new drawing needs. The Builder waits and names it, with nothing placed doubled or
 	 * foreign meanwhile; once the material is in the store, he finishes and the house is a fresh build of today's drawing.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"qa_refresh_furnished_short"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "qa_refresh_furnished_short")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"qa_refresh_furnished_short"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qa_refresh_furnished_short")
 	public void aFurnishedOldStoneHouseShortOfAMaterialWaitsThenFinishesAsAFreshBuild(GameTestHelper helper) {
 		ResourceLocation stoneHouse = AliveWorkplace.id("stone_house");
 		Stage s = stage(helper, stoneHouse, RefreshMatchesFreshBuildGameTests.BEFORE_B260, Rotation.COUNTERCLOCKWISE_90, Mirror.NONE,
@@ -311,8 +313,10 @@ public class QaRefreshFurnishedShortGameTests implements FabricGameTest {
 	 * again; a new free Builder takes it up through the button and finishes: a fresh build of today's drawing, no old
 	 * piece left beside its new one, nothing doubled, nothing floating.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"qa_refresh_furnished_killed"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "qa_refresh_furnished_killed")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"qa_refresh_furnished_killed"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qa_refresh_furnished_killed")
 	public void theBuilderKilledMidRefreshOfAFurnishedOldStoneHouseLeavesItToANewBuilder(GameTestHelper helper) {
 		ResourceLocation stoneHouse = AliveWorkplace.id("stone_house");
 		Stage s = stage(helper, stoneHouse, RefreshMatchesFreshBuildGameTests.BEFORE_B260, Rotation.COUNTERCLOCKWISE_90, Mirror.NONE,

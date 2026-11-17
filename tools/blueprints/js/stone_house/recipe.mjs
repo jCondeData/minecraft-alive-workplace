@@ -54,8 +54,8 @@ export function drawLevel(level) {
     const wing = catslideRoof(c, Wg.roof, P.roof, (x, y, z) => !c.get(x, y, z))
     for (const z of [Wg.z0, Wg.z1]) gableWall(c, 'z', z, [Wg.x0 + 1, Wg.x1], 1, wing.under, () => rubble)
   }
-  bargeTrim(c, 'x', M.roof.along[0], level >= 3 ? O.roof.across : M.roof.across, main.under, `${P.trim}_slab`)
-  bargeTrim(c, 'x', M.roof.along[1], level >= 3 ? O.roof.across : M.roof.across, main.under, `${P.trim}_slab`)
+  bargeTrim(c, 'x', M.roof.along[0], level >= 3 ? O.roof.across : M.roof.across, main.under, `${P.trim}_stairs`)
+  bargeTrim(c, 'x', M.roof.along[1], level >= 3 ? O.roof.across : M.roof.across, main.under, `${P.trim}_stairs`)
 
   // --- Pass 3: openings ------------------------------------------------------------------------------------------
   const fd = OPENINGS.frontDoor
@@ -111,6 +111,10 @@ export function drawLevel(level) {
     const C = MASSES.cellar
     dug = cellar(c, C.x0, C.z0, C.x1, C.z1, C.depth, mix(P.cellarWall, 3), P.cellarFloor)
     hatchLadder(c, C.ladder.x, C.ladder.z, -C.depth + 1, 0, C.ladder.facing, P.wood)
+    // the middle: a summer beam across the store carrying the hall's floor, on one post in the middle
+    const B = C.beam
+    for (let x = C.x0 + 1; x <= C.x1 - 1; x++) if (!c.get(x, -1, B.z)) c.set(x, -1, B.z, `${P.wood}_log`, { axis: 'x' })
+    for (let y = -C.depth + 1; y <= -2; y++) c.set(B.post, y, B.z, `${P.wood}_log`, { axis: 'y' })
   }
   for (const b of OUTSIDE.flowerBeds) flowerBed(c, b.x0, b.x1, b.z, b.plants)
   return { c, dug }

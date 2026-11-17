@@ -71,8 +71,9 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 	/** How many times the whole run is made, each time with new villagers. */
 	private static final int RUNS = 3;
 
-	//$ gametest_ticks_batch HUGE '36000' '"crewScaling"'
-	@GameTest(template = HUGE, timeoutTicks = 36000, batch = "crewScaling")
+	// 49.4: the redrawn Stone House has 759 blocks (was 457), so the nine builds take about 1.7 times as long: 36,000 -> 60,000
+	//$ gametest_ticks_batch HUGE '60000' '"crewScaling"'
+	@GameTest(template = HUGE, timeoutTicks = 60000, batch = "crewScaling")
 	public void aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper); // B181: not a village, so its needs and moods don't change a builder's pace between builds

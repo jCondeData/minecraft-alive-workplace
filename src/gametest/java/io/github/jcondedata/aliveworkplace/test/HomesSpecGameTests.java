@@ -279,7 +279,7 @@ public class HomesSpecGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		baby.setAge(-24000);
 		helper.runAfterDelay(2, () -> {
 			sites.recordFinished(StarterBlueprints.STONE_HOUSE_2.id(), placement, UUID.randomUUID());
-			// Stone House II here spans x 0-10, z 0-8 from the origin; x 20+ is outside any building
+			// Stone House II here spans x 0-12, z 0-10 from the origin (49.4); x 20+ is outside any building
 			BlockPos inside = origin.offset(2, 1, 3);
 			BlockPos outside = origin.offset(20, 1, 3);
 			sleepsAt(level, a, inside);

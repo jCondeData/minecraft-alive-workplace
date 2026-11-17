@@ -274,8 +274,10 @@ public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 	 * The Builder works the refresh of a house furnished before B260 through, turned and mirrored: the house ends as a
 	 * fresh build, and its saved furniture is today's, so the page offers no second refresh.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"b642_builder"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "b642_builder")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"b642_builder"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "b642_builder")
 	public void aBuilderRefreshesTheOldStoneHouseToAFreshBuild(GameTestHelper helper) {
 		FurnitureChoice furniture = oldFurniture();
 		Stage s = stage(helper, BEFORE_B260, Rotation.CLOCKWISE_90, Mirror.FRONT_BACK, furniture);

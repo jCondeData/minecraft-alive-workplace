@@ -50,8 +50,9 @@ export const MASSES = {
   wing: { x0: 9, z0: 2, x1: 12, z1: 8, roof: { axis: 'z', across: [10, 12], ridge: 10, along: [1, 9], ridgeY: 7 } },
   // III: the catslide outshot behind, walls x 1..9, z 9..13: the main back slope carried on down to y 5 over z 13
   outshot: { x0: 1, z0: 9, x1: 9, z1: 13, roof: { axis: 'x', across: [0, 13], ridge: 5, along: [0, 10], ridgeY: 13 } },
-  // IV: the store under the main block, 4 deep (floor at y -4)
-  cellar: { x0: 1, z0: 1, x1: 9, z1: 9, depth: 4, ladder: { x: 2, z: 5, facing: 'east' } },
+  // IV: the store under the main block, 4 deep (floor at y -4); a summer beam along x at z 3 under the hall's floor, on
+  // one post at x 5 in the middle of the store (the critic's round-2 note: something in the cellar's middle)
+  cellar: { x0: 1, z0: 1, x1: 9, z1: 9, depth: 4, ladder: { x: 2, z: 5, facing: 'east' }, beam: { z: 3, post: 5 } },
 }
 
 export const ROOMS = [
@@ -157,7 +158,7 @@ export const FURNITURE = [
   { from: 4, kind: 'lamp', part: 'tableLamp', pos: [6, -3, 8], facing: 'north', wood: W },
   { from: 4, kind: 'fixture', part: 'chest', pos: [7, -3, 8], facing: 'north', block: 'chest' },
   { from: 4, kind: 'rug', part: 'rug', cellsAbs: [[3, -3, 5], [4, -3, 5], [5, -3, 5], [5, -3, 6], [5, -3, 7]], colour: 'brown' },
-  { from: 4, kind: 'lamp', part: 'hangingLamp', pos: [5, -1, 3], facing: 'north', wood: W },
+  { from: 4, kind: 'lamp', part: 'hangingLamp', pos: [5, -1, 2], facing: 'north', wood: W },
   { from: 4, kind: 'lamp', part: 'hangingLamp', pos: [5, -1, 6], facing: 'north', wood: W },
 ]
 

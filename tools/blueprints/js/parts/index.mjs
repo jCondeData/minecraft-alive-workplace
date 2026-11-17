@@ -2,11 +2,12 @@
 //   canvas    Canvas, LiftedCanvas (a basement under y 0), mix, DIRS, OPP, stair/slab/trapdoor
 //   frames    plinth, steppedPlinth, floor, post, posts, beamRing, cellar, brackets
 //   walls     wallPanel, window, door, doorway, quoins, stringCourse
-//   roofs     gableRoof, flaredGableRoof, catslideRoof, pentice, pyramidRoof, gableWall, bargeTrim, dormer
+//   roofs     gableRoof, flaredGableRoof, catslideRoof, pentice, pyramidRoof, gableWall, bargeTrim, dormer,
+//             evenGableRoof (a narrow house's two-stair ridge, gutters over party walls), crowGable (stepped parapet)
 //   hearths   chimney, hearthFire
 //   kitchens  kitchenParts (counter, stove, worktop, pantry, shelf, plates)
 //   stairs    flight, stairwell, lining, hatchLadder                     (stairs and lofts)
-//   porches   hood, porch, flowerBed, woodpile
+//   porches   hood, porch, flowerBed, woodpile, doorCanopy
 //   railings  railing, railingRun
 //   cellars   lampPost                                         (outdoor lights)
 //   water     roundCurb, pool                                  (wells, fountains, cisterns)

@@ -30,4 +30,9 @@ export const kitchenParts = {
     c.set(x, y, z, f.block)
     c.spot('crockery', f.pos, f.facing, [[0, 0, 0]], f.wood, 'white')
   },
+  sink(c, f) { // a stone sink (a cauldron, f.block to change it) under the kitchen window: a fixture, no spot. Grown from the Terrace (49).
+    const [x, y, z] = f.pos
+    c.free(f.pos)
+    c.set(x, y, z, f.block ?? 'cauldron')
+  },
 }

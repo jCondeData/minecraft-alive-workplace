@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2, B1356
 
 ## What a player sees
 
@@ -680,6 +680,8 @@ A villager's hall is the nearest Village Hall within the hall radius (`VillageHa
 point of interest). Only a hall that really stands counts: a point of interest left behind with no hall block on it
 (a block swapped without a block update, as region edits and some world-editing mods do) is skipped, so the villager
 keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
-point in a chunk that isn't loaded is trusted.
+point in a chunk that isn't loaded is trusted. The same holds for a work block's village past the radius (a painted
+zone), a raid den's nearest hall and the village a fire breaks out in, and a hall swapped away is no village for fires
+at once, not a few seconds later (B1356, `OrphanHallLookupGameTests`).
 
 See also: [House looks](house-looks.md), the page the Builds button opens.

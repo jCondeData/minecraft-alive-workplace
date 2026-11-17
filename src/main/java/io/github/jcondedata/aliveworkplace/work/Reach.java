@@ -29,7 +29,8 @@ public final class Reach {
 	 * The hall whose village {@code workBlock} stands in ({@link #claims}), if any; the nearest across if two claim it.
 	 * B550/B557: the City Plan's grid is a square, so a zone painted in its corner lies past the hall's radius, where
 	 * {@link VillageHalls#nearest} (a search within the radius) doesn't find the hall; the halls are looked up in a square
-	 * column as wide as the grid, at any height.
+	 * column as wide as the grid, at any height. B1356: a hall point with no hall standing (a block swapped without an
+	 * update) is no village, as {@link VillageHalls#nearest} has it ({@link VillageHalls#standsAt}).
 	 */
 	public static Optional<BlockPos> village(ServerLevel level, BlockPos workBlock) {
 		Optional<BlockPos> near = VillageHalls.nearest(level, workBlock);
@@ -39,7 +40,7 @@ public final class Reach {
 		int reach = Math.max(VillageHalls.RADIUS, CityPlan.half()) + 1;
 		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), workBlock, reach, PoiManager.Occupancy.ANY)
 			.map(PoiRecord::getPos)
-			.filter(hall -> claims(level, hall, workBlock))
+			.filter(hall -> VillageHalls.standsAt(level, hall) && claims(level, hall, workBlock))
 			.min(Comparator.comparingLong(hall -> VillageHalls.across(hall, workBlock)));
 	}
 

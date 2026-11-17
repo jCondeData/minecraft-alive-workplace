@@ -1,0 +1,10 @@
+{
+  "name": "topiary-garden",
+  "private": true,
+  "type": "module",
+  "description": "Topiary Garden (49, the Green Room): a blind rebuild (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate to build/rebuild/topiary_garden/.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/topiary_garden/out --data-version 3955 && python3 ../../rebuild.py topiary_garden topiary_garden --candidate --nbt ../../../../build/rebuild/topiary_garden/out/topiary-garden.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/topiary_garden/out --data-version 3955"
+  }
+}

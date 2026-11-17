@@ -75,6 +75,9 @@ ALLOW.update({(n, p): "an open well-head under its roof, not a room" for n in ("
 # no walls, so villagers see and reach the windlass and the channel's head from every side
 ALLOW.update({(n, (2, 4, 7)): "the Well House's open pavilion round the well, not a walled room"
               for n in ("well_house", "modded/well_house")})
+# The Gazebo (49 rebuild) is an open pavilion on purpose: eight posts under a tent roof, railings and benches in three
+# bays, flower urns in four, the front bay its way in; the air under the roof is a sheltered seat, not a walled room
+ALLOW.update({(n, (2, 2, 3)): "the Gazebo's open bays under its roof, not a walled room" for n in ("gazebo", "modded/gazebo")})
 
 
 def load(path, props=False):

@@ -21,7 +21,7 @@ Roadmap items: 32.15, 32.19, 52.1
   and no other job block: the **Fire Station** (a stone ground floor with the Firewarden's grindstone, a water basin
   and buckets on racks, a ladder up to a timber watch loft with windows all round), the **Well House** (redrawn in
   52.1 with the rebuild kit, 17 x 15 x 13: an open spruce pavilion round a well on a stone cistern podium, under a
-  cross-gabled dark oak roof with a louvre at the crossing; benches face the windlass, and a stone channel runs out east
+  cross-gabled dark oak roof with a louver at the crossing; benches face the windlass, and a stone channel runs out east
   on arches to the Well Keeper's cauldron at its head; Well Houses already built keep their old look until refreshed) and
   the **Physician's House** (a white ward with the brewing stand on a counter of herbs, four beds each between white
   screens, the quarantine ward, and a herb garden out front). A builder builds them from the chests like any blueprint;

@@ -48,10 +48,15 @@ export function draw() {
   for (let u = z0 + 1; u < z1; u++) for (let y = Pa.beamY + 1; y < roof.at(x0, u); y++) {
     gableCell(x0, y, u, u - 2); gableCell(x1, y, u, u - 2) // the king post at z 7 (u - 2 = 5)
   }
-  // barge boards: a spruce slab under each rake's overhang, outlining the four gables against the dark roof
-  for (let u = R.x0 + 1; u < R.x1; u++) for (const [x, z] of [[u, R.z0], [u, R.z1], [R.x0, u + 2], [R.x1, u + 2]]) {
+  // barge boards: an upside-down spruce stair under each rake's overhang, outlining the four gables against the dark
+  // roof (a top slab here read as a table beside the lower roof stair, a "chair": QaChairFacingGameTests). Its lower
+  // quarter tucks against the higher side of the rake, so the edge still reads as a thin board from below.
+  for (let u = R.x0 + 1; u < R.x1; u++) for (const [x, z, alongX] of [[u, R.z0, true], [u, R.z1, true], [R.x0, u + 2, false], [R.x1, u + 2, false]]) {
     const y = roof.at(x, z) - 1
-    if (y > Pa.beamY && !c.get(x, y, z)) slab(c, x, y, z, `${P.wood}_slab`, 'top')
+    if (y > Pa.beamY && !c.get(x, y, z)) {
+      const up = alongX ? roof.at(x + 1, z) >= roof.at(x - 1, z) : roof.at(x, z + 1) >= roof.at(x, z - 1)
+      stair(c, x, y, z, `${P.wood}_stairs`, alongX ? (up ? 'east' : 'west') : (up ? 'south' : 'north'), 'top')
+    }
   }
   louvre(c, MASSES.louvre.x, MASSES.louvre.z, MASSES.louvre.y, { base: P.roof.full, post: P.louvrePost, roof: P.roof, finial: P.louvrePost })
 

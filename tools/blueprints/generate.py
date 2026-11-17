@@ -41,7 +41,9 @@ from waystones import waystone_plaza, save_all as save_waystone_plazas
 from storage_halls import storage_hall, terminal_nook, warehouse, save_all as save_storage_halls
 
 # The blueprints redrawn with the rebuild kit (REBUILD.md): rebuild.py saves them, generate.py leaves them alone
-REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"}
+REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge",
+           # 52.2, the street pieces
+           "park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -143,9 +145,11 @@ if __name__ == "__main__":
     # ROADMAP 52.1: the well, the fountain, the lily pond, the footbridge and the well house come from the rebuild kit
     # (tools/blueprints/js/<family>/, saved by tools/blueprints/rebuild.py), so their old Python drawings no longer
     # overwrite them
+    # (52.2: the park bench and the gazebo too)
     for name, draw in (("street_lamp", street_lamp), ("park_bench", park_bench), ("gazebo", gazebo),
                        ("market_square", market_square)):
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)

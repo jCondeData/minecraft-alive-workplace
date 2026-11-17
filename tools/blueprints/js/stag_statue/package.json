@@ -1,0 +1,10 @@
+{
+  "name": "stag-statue",
+  "private": true,
+  "type": "module",
+  "description": "The Stag Statue (stag_statue), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/stag_statue.md, REBUILD.md): the Watcher on the Crag. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/stag_statue/out --data-version 3955 && python3 ../../rebuild.py stag_statue stag_statue --candidate --nbt ../../../../build/rebuild/stag_statue/out/stag-statue.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/stag_statue/out --data-version 3955"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "flower-planters",
+  "private": true,
+  "type": "module",
+  "description": "Flower Planters (flower_planters, the Bower), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/flower_planters.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/flower_planters/out --data-version 3955 && python3 ../../rebuild.py flower_planters flower_planters --candidate --nbt ../../../../build/rebuild/flower_planters/out/flower-planters.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/flower_planters/out --data-version 3955"
+  }
+}

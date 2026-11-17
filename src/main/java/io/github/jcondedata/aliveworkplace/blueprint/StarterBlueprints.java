@@ -442,12 +442,14 @@ public final class StarterBlueprints {
 	public static final Entry WELL_2 = new Entry(AliveWorkplace.id("well_2"), new Vec3i(7, 10, 7));
 	/** A tall street lamp with two lanterns. */
 	public static final Entry STREET_LAMP = new Entry(AliveWorkplace.id("street_lamp"), new Vec3i(3, 6, 3));
-	/** A bench between bushes with a lamp behind it. */
-	public static final Entry PARK_BENCH = new Entry(AliveWorkplace.id("park_bench"), new Vec3i(5, 3, 2));
+	/** A bench on a stone plinth, its back the rim of a raised bed where a cherry grows, a lantern hung from the tree's
+	 *  forward limb over the seat (52.2). */
+	public static final Entry PARK_BENCH = new Entry(AliveWorkplace.id("park_bench"), new Vec3i(7, 9, 6));
 	/** A stone fountain: an octagonal basin on a ring of steps, a column to two brimming white bowls, planters (52.1). */
 	public static final Entry FOUNTAIN = new Entry(AliveWorkplace.id("fountain"), new Vec3i(9, 8, 9));
-	/** An open timber gazebo with benches. */
-	public static final Entry GAZEBO = new Entry(AliveWorkplace.id("gazebo"), new Vec3i(7, 8, 7));
+	/** An open octagonal gazebo on a stepped stone dais: eight white posts, railings and benches, a flared slate tent
+	 *  roof with an open cupola, flowers in the corners (52.2). */
+	public static final Entry GAZEBO = new Entry(AliveWorkplace.id("gazebo"), new Vec3i(11, 14, 11));
 	/** A stone chapel with a bell tower and a slate spire: where the village's couples marry. */
 	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(11, 16, 16));
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
@@ -458,10 +460,11 @@ public final class StarterBlueprints {
 	 */
 	/** A stepped stone plinth with a shaft, its arms hung with lanterns. */
 	public static final Entry MARKET_CROSS = new Entry(AliveWorkplace.id("market_cross"), new Vec3i(5, 8, 5));
-	/** A stone stag on a plinth. */
-	public static final Entry STAG_STATUE = new Entry(AliveWorkplace.id("stag_statue"), new Vec3i(7, 8, 5));
-	/** A two-tier brick planter of flowers between lanterns. */
-	public static final Entry FLOWER_PLANTERS = new Entry(AliveWorkplace.id("flower_planters"), new Vec3i(7, 3, 3));
+	/** A carved spruce stag standing broadside on a mossy crag, pale branching antlers, lanterns on rubble posts (52.2). */
+	public static final Entry STAG_STATUE = new Entry(AliveWorkplace.id("stag_statue"), new Vec3i(9, 8, 7));
+	/** A horseshoe of flower beds stepping up in three tiers round a little paved court and a bench, under a spruce
+	 *  pergola with lanterns (52.2). */
+	public static final Entry FLOWER_PLANTERS = new Entry(AliveWorkplace.id("flower_planters"), new Vec3i(9, 6, 8));
 	/** A crossroads signpost with four fingerboards and a lantern. */
 	public static final Entry SIGNPOST = new Entry(AliveWorkplace.id("signpost"), new Vec3i(3, 5, 3));
 	/** A mossy stone archway with ivy and a hanging lantern. */
@@ -474,12 +477,15 @@ public final class StarterBlueprints {
 	public static final Entry NOTICE_BOARD = new Entry(AliveWorkplace.id("notice_board"), new Vec3i(5, 5, 3));
 	/** A pergola walk under azalea with lanterns on chains and benches. */
 	public static final Entry LANTERN_PERGOLA = new Entry(AliveWorkplace.id("lantern_pergola"), new Vec3i(5, 6, 7));
-	/** A campfire in a ring of stones with log seats. */
-	public static final Entry FIRE_PIT = new Entry(AliveWorkplace.id("fire_pit"), new Vec3i(7, 3, 7));
-	/** A round stone plaza with a sundial and hour stones. */
-	public static final Entry SUNDIAL = new Entry(AliveWorkplace.id("sundial"), new Vec3i(7, 3, 7));
-	/** Clipped hedges round four topiary shapes and an urn. */
-	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 5, 9));
+	/** A campfire sunk in a round stone dais, standing stones round it, a lintelled trilithon at the back, benches and
+	 *  a woodpile (52.2). */
+	public static final Entry FIRE_PIT = new Entry(AliveWorkplace.id("fire_pit"), new Vec3i(9, 6, 9));
+	/** A stone half-cylinder dial with hour lines on a raised sandstone dais, its chain gnomon held by two pylons,
+	 *  flower beds in the corners (52.2). */
+	public static final Entry SUNDIAL = new Entry(AliveWorkplace.id("sundial"), new Vec3i(9, 8, 9));
+	/** A green room of clipped yew: a hedge archway in, a tiered standard on a paved ring, urns, pencil yews and a
+	 *  bench under the back hedge's exedra (52.2). */
+	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 8, 9));
 	/** Crates, sacks and produce under a striped awning. */
 	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(5, 5, 5));
 	/** A humpback stone footbridge over a bending stream, a little lantern gate at its crown (52.1). */

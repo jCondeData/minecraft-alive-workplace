@@ -4,24 +4,24 @@ Fourteen new small builds that aren't houses, to sit beside the Well, Street Lam
 village with more than lamps and benches (the owner, 2026-10-16: "there should be a wider variety of builds that arent
 houses, but decorations similar to fountain or lamp").
 
-Roadmap items: 26.14, 36.4, B186, 52.1
+Roadmap items: 26.14, 36.4, B186, 52.1, 52.2
 
 ## 1. What a player sees
 
 | Build | Size (w x h x d) | Beauty | What it is |
 |---|---|---|---|
 | Market Cross | 5 x 8 x 5 | 2 | a stepped stone plinth, a shaft of stone brick wall to a chiseled head, dark oak arms with a lantern hanging from each, one on top |
-| Stag Statue | 7 x 8 x 5 | 2 | a stag of polished andesite with spreading antlers on a stone brick plinth, a bush and a fern at its feet |
-| Flower Planters | 7 x 3 x 3 | 1 | a two-tier brick planter of flowers in their own soil between two lanterns |
+| Stag Statue | 9 x 8 x 7 | 2 | redrawn in 52.2: a carved spruce stag standing broadside on a low mossy crag, dark oak mane and legs, pale birch antlers branching, a cut-stone step at the front to stand and look, ferns and flowers, lanterns on rubble posts |
+| Flower Planters | 9 x 6 x 8 | 1 | redrawn in 52.2: a horseshoe of flower beds in their own soil stepping up in three tiers (planter boxes at the gate, stone beds down the sides, the tallest bed of lilacs, peonies and roses at the back) round a paved court and a bench, under a spruce pergola with lanterns hung from its beams |
 | Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards at two heights that name what lies each way (36.4), a lantern on top |
 | Stone Archway | 7 x 7 x 3 | 2 | mossy stone brick piers, an arch of stairs to a chiseled keystone, ivy, a hanging lantern, lilies at its feet |
-| Lily Pond | 9 x 8 x 7 | 2 | redrawn in 52.1: a pond with lily pads set in a grassy knoll, a stone kerb seat at the front, a spruce dipping stage with a lantern post, mossy boulders and an old flowering azalea leaning its crown over the water |
+| Lily Pond | 9 x 8 x 7 | 2 | redrawn in 52.1: a pond with lily pads set in a grassy knoll, a stone curb seat at the front, a spruce dipping stage with a lantern post, mossy boulders and an old flowering azalea leaning its crown over the water |
 | Hay Cart | 6 x 4 x 5 | 1 | a spruce cart on dark oak wheels loaded with bales, its shafts down, a lantern on the corner |
 | Notice Board | 5 x 5 x 3 | 1 | a spruce board between dark oak posts under a little gabled roof, notices pinned to it, lanterns either side |
 | Lantern Pergola | 5 x 6 x 7 | 2 | a pergola walk of spruce posts and slats grown over with azalea, lanterns on chains, benches either side |
-| Fire Pit | 7 x 3 x 7 | 2 | a campfire in a ring of cobble slabs, log seats on three sides, a log pile and a lamp |
-| Sundial | 7 x 3 x 7 | 2 | a round smooth-stone plaza with chiseled hour stones, a dial of slabs and its gnomon, two lamp posts |
-| Topiary Garden | 9 x 5 x 9 | 3 | a clipped hedge round gravel walks, four shapes (cones of spruce, a ball and a cube of oak) and an azalea urn |
+| Fire Pit | 9 x 6 x 9 | 2 | redrawn in 52.2: a campfire sunk on brick hearthstones in a round stone dais with steps all round, a spit over it, standing stones with lanterns at the front, benches at the sides, a lintelled trilithon at the back, a woodpile and a chopping stump |
+| Sundial | 9 x 8 x 9 | 2 | redrawn in 52.2: a stone half-cylinder dial on a raised sandstone dais, its hour lines running along the curve to a yellow noon line, a chain gnomon held between two slim pylons, a flower bed in each corner |
+| Topiary Garden | 9 x 8 x 9 | 3 | redrawn in 52.2: a green room of clipped yew entered through a hedge archway, its side hedges stepping up to the back, a tiered standard on a paved ring in the middle, flowering urns on posts, two pencil yews, flower beds and a bench with lanterns under the back hedge's tall exedra |
 | Market Corner | 5 x 5 x 5 | 1 | crates, wool sacks, hay, pumpkins and melons under a striped awning on dark oak posts |
 | Footbridge | 9 x 8 x 7 | 2 | redrawn in 52.1: a humpback stone arch over a bending stream with lily pads, sloping coping for parapets, lanterns on newel posts at both ends and a little roofed lantern gate at the crown |
 

@@ -78,7 +78,7 @@ export const HOUSE = {
 // (2|8|12, 1, 7), (4|10|14, 1, 7) and (4|8|14, 6, 2)); sink: the kitchen's cauldron, the back row's free cell next to
 // the window; level: the first level with it.
 export const HOMES = [
-  { name: 'West house', L: 1, furnace: 1, barrel: 3, chest: 3, sink: 2, beds: 'light_blue', rug: 'gray', level: 1 },
+  { name: 'West house', L: 1, furnace: 1, barrel: 3, chest: 3, sink: 2, beds: 'light_blue', rug: 'white', level: 1 },
   { name: 'Middle house', L: 6, furnace: 2, barrel: 4, chest: 2, sink: 3, beds: 'red', rug: 'brown', level: 1 },
   { name: 'East house', L: 11, furnace: 1, barrel: 3, chest: 3, sink: 2, beds: 'yellow', rug: 'green', level: 2 },
 ]
@@ -136,7 +136,9 @@ export const FURNITURE = [
   { kind: 'desk', part: 'desk', pos: [1, 6, 2], facing: 'north', wood: W },
   { kind: 'fixture', part: 'chest', pos: ['chest', 6, 2], facing: 'south', block: 'chest' },
   { kind: 'couch', part: 'couch', pos: [4, 6, 2], facing: 'south', length: 1, wood: W, colour: 'home' },
-  { kind: 'rug', part: 'rug', cells: [[1, 6, 3], [2, 6, 3], [3, 6, 3], [4, 6, 3], [1, 6, 4], [2, 6, 4], [3, 6, 4], [4, 6, 4], [1, 6, 5], [2, 6, 5], [3, 6, 5]], colour: 'home' },
+  // (z 5 stays bare boards: the open floor beside the beds where the tests stand a villager, nearer his own beds
+  // than any floor over the party wall)
+  { kind: 'rug', part: 'rug', cells: [[1, 6, 3], [2, 6, 3], [3, 6, 3], [4, 6, 3], [1, 6, 4], [2, 6, 4], [3, 6, 4], [4, 6, 4]], colour: 'home' },
   { kind: 'lamp', part: 'hangingLamp', pos: [2, 9, 4], facing: 'north', chain: 2, wood: W },
 ]
 

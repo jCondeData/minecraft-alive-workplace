@@ -1388,7 +1388,7 @@ SCENES = [
     S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, the Terrace's two lit kitchens and the Clinic's ward (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has four whole beds and nothing open under its ridges",
       110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
-           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern"),
+           ("10_terrace_east", "The Terrace's east kitchen: its own mods' table and chair, and its own lantern over the table"),
            ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
@@ -1423,6 +1423,15 @@ SCENES = [
            ("02_outside_back", "From the back: the chimney stack up the back gable, the kitchen hearth set in its foot"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room up at eye level")], furniture=True),
+    # ROADMAP 49.6: the Terrace rebuilt from scratch (the Crow-Step Row: narrow brick houses side by side, each under its
+    # own steep roof between crow-stepped gables, a chimney in each back gable), its first level built as a server with
+    # the furniture mods builds it, from four sides and at eye level in every room
+    S("rebuild_terrace", "Build families", "The Terrace, rebuilt from scratch, furnished: from four sides and every room",
+      "the Terrace's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (each home's front room and kitchen, each bedroom up its ladder) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Terrace from the front: two narrow brick houses, each under its own crow-stepped gable, a slate canopy and lantern over each door"),
+           ("02_outside_back", "From the back: the stepped back gables, a chimney in each one's apex"),
+           ("10_room_1", "The ground floor at eye level"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

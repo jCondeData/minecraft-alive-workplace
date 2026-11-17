@@ -57,8 +57,8 @@ final class FurnishedHomeScene {
 		new View("06_vanilla_dining", new Vec3(7.5, 3.1, 4.2), new Vec3(2.5, 1.6, 5), VANILLA),
 		new View("07_stone_doorway", new Vec3(6.5, 3.4, 5.5), new Vec3(5.5, 1.2, 1.5), STONE),
 		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE),
-		new View("09_terrace_west", new Vec3(2.6, 3.2, 2.3), new Vec3(4.5, 1.4, 5.5), TERRACE_AT),
-		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(7.5, 1.4, 5.5), TERRACE_AT),
+		new View("09_terrace_west", new Vec3(2.6, 3.2, 2.3), new Vec3(3.5, 1.4, 4.5), TERRACE_AT),
+		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(8.5, 1.4, 4.5), TERRACE_AT),
 		new View("11_clinic_ward", new Vec3(6.5, 3.6, 3.2), new Vec3(6.5, 1.0, 9.0), CLINIC_AT),
 		new View("12_clinic_ceiling", new Vec3(2.5, 2.2, 7.5), new Vec3(10.5, 8.0, 8.5), CLINIC_AT));
 	private static final int FIRST = 80;
@@ -132,8 +132,8 @@ final class FurnishedHomeScene {
 	}
 
 	/**
-	 * The Terrace as a builder here would build it (B281): both homes' kitchens get the mods' table and chair (the east
-	 * one's table stands against the party wall), and each kitchen has its own lantern.
+	 * The Terrace as a builder here would build it (B281): both homes' kitchens get the mods' table and chair (each table
+	 * in the middle of its kitchen, the chair on its west side), and each kitchen has its own lantern.
 	 */
 	private void placeTerrace(ServerLevel level) {
 		Blueprint base = BlueprintLibrary.get(level, TERRACE).orElse(null);

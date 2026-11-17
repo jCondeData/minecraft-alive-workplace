@@ -117,8 +117,8 @@ if __name__ == "__main__":
     berry_farm_2().save(MAIN_STRUCTURES, "berry_farm_2")
     research_lab().save(MAIN_STRUCTURES, "research_lab")
     research_lab_2().save(MAIN_STRUCTURES, "research_lab_2")
-    terrace().save(MAIN_STRUCTURES, "terrace")
-    terrace_2().save(MAIN_STRUCTURES, "terrace_2")
+    # ROADMAP 49.6: the Terrace (I-II) comes from the rebuild kit (tools/blueprints/js/terrace/build.sh, then
+    # rebuild.py terrace <id>); its old Python drawing in starter.py is no longer saved
     inn().save(MAIN_STRUCTURES, "inn")
     inn_2().save(MAIN_STRUCTURES, "inn_2")
     school_building().save(MAIN_STRUCTURES, "schoolhouse")

@@ -305,11 +305,11 @@ public class FloatingFurnishingsGameTests implements FabricGameTest {
 				helper.assertTrue(at.get(spot.pos()).is(Blocks.LIME_BED), "the bed at " + spot.pos().toShortString() + " lost its piece: " + at.get(spot.pos()));
 			}
 		}
-		helper.assertTrue(at.get(new BlockPos(4, 1, 4)).is(Blocks.SPRUCE_PLANKS), "the west table lost its piece: " + at.get(new BlockPos(4, 1, 4)));
-		helper.assertTrue(at.get(new BlockPos(7, 1, 4)).is(Blocks.SPRUCE_FENCE), "the east table wasn't furnished then: " + at.get(new BlockPos(7, 1, 4)));
+		helper.assertTrue(at.get(new BlockPos(3, 1, 4)).is(Blocks.SPRUCE_PLANKS), "the west table lost its piece: " + at.get(new BlockPos(3, 1, 4)));
+		helper.assertTrue(at.get(new BlockPos(8, 1, 4)).is(Blocks.SPRUCE_FENCE), "the east table wasn't furnished then: " + at.get(new BlockPos(8, 1, 4)));
 		Map<BlockPos, BlockState> brought = new HashMap<>();
 		old.refreshedFor(today, FurnitureChoice.choose(today, LOWER, true)).apply(base, today).blocks().forEach(b -> brought.put(b.pos(), b.state()));
-		for (BlockPos table : List.of(new BlockPos(4, 1, 4), new BlockPos(7, 1, 4))) {
+		for (BlockPos table : List.of(new BlockPos(3, 1, 4), new BlockPos(8, 1, 4))) {
 			helper.assertTrue(brought.get(table).is(Blocks.SPRUCE_PLANKS), "brought to today's spots, the table at " + table.toShortString() + " is " + brought.get(table));
 		}
 		helper.succeed();

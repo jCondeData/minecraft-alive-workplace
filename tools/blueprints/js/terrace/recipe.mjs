@@ -87,9 +87,11 @@ export function drawLevel(level) {
     const ox = x + out(x)
     for (const z of HOUSE.corbels) brackets(c, [[ox, HOUSE.eaveY - 2, z]], P.roof.stairs, out(x) < 0 ? 'east' : 'west')
     for (const z of [z0, z1]) {
+      // two courses deep, so the eave's last stair and its corbel butt flush against it (critic, round 2, note 3)
       c.set(ox, HOUSE.eaveY - 1, z, P.brick)
+      c.set(ox, HOUSE.eaveY - 2, z, P.brick)
       slab(c, ox, HOUSE.eaveY, z, P.coping, 'bottom')
-      brackets(c, [[ox, HOUSE.eaveY - 2, z]], P.brickStairs, out(x) < 0 ? 'east' : 'west')
+      brackets(c, [[ox, HOUSE.eaveY - 3, z]], P.brickStairs, out(x) < 0 ? 'east' : 'west')
     }
   }
 

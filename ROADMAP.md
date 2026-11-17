@@ -6848,7 +6848,7 @@ and `tools/showcase/scenes.py` with stills that match its board, a design critiq
 Same decision as Milestone 47 (owner, 2026-11-16). Lane D builds these once 47.1 has landed, in order, with 47.1's
 pieces; lane E redoes Milestone 44 in Copperline at the same time.
 
-- [x] **48.1** (review: pending 2026-11-16) **The Blueprint Table and the Blueprint Book in
+- [x] **48.1** (review: pending 2026-11-16) (verified 2026-11-17: lane-e-1117-0113 QA from the spec: QaBlueprintBook1117eGameTests [5: style rail of the most-styled build at every GUI scale and the compact boundary; a style the build lacks, a deleted build and a press from 20 blocks refused with the blank kept; a shelved blueprint of a deleted build listed, kept through save and reload, taken back out; every listed build's materials real items] and QaTableCreate1117eCompatTests [2: every Create build's materials, preview and styles at the Table; Get Blueprint for each]; full build green 9458 + 1880) **The Blueprint Table and the Blueprint Book in
   Copperline**, like `Blueprints.png` (list, preview, size, materials, style filter, one copper Place). Done when: the
   table's tests pass; scenes of the table and the book.
 - [x] **48.2** (review: pending 2026-11-16) **The Trainer screen in Copperline**, like

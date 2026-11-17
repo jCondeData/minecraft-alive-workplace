@@ -23,6 +23,7 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Fixed
+- A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
   takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and

@@ -42,6 +42,8 @@ asks for the steps, `latest.log` and any crash report).
 - A Village Hall's leftover point of interest with no hall standing on it no longer counts as a village anywhere else
   either: work blocks in a far zone, raid dens and village fires ignore it, and a fire no longer counts as in a village
   for a few seconds after its hall is gone (B1356).
+- Waystones: a village's plaza moved by a Mover keeps its waystone. Everyone who had discovered it still has it
+  (the hall's Map still says "discovered"), instead of having to walk there and find it again (B1310).
 
 ## 0.156.0 — 2026-11-16
 

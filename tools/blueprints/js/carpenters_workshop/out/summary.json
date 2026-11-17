@@ -1,0 +1,19 @@
+{
+  "name": "carpenters-workshop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 25
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/carpenters_workshop/out/carpenters-workshop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/carpenters_workshop/out/summary.json",
+  "size": [
+    14,
+    12,
+    11
+  ],
+  "blockCount": 632,
+  "paletteCount": 55,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/carpenters_workshop/recipe.mjs"
+}

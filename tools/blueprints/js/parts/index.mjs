@@ -40,3 +40,6 @@ export * from './sundials.mjs'
 export * from './pavilions.mjs' // octLevel, tentRoof, faceRun, sideBench (gazebos and round pavilions)
 export * from './statues.mjs' // profileFigure, legs, antlerPair (animal statues: a side profile swept, legs, antlers)
 export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafColumn (clipped leaves: hedges, arches, standards)
+export * from './carpenter.mjs'
+export * from './mason.mjs'
+export * from './mill.mjs'

@@ -82,11 +82,12 @@ export function dormer(c, z, roof, infill, glass, frame, { face = 1, eave = 0, y
   for (const x of [eave, face, face + step]) c.set(x, y0 + 4, z, roof.full)
 }
 
-/** flaredGableRoof: a steep gable roof (gableRoof, steep) whose eaves kick out one block further and one lower in a
- *  shallow `kick` stair (a bell-cast flare, the eave line in its own trim), over `across` (the kick columns are its
- *  ends) running `along`. Returns gableRoof's {ridgeY, under}, with the kick columns' undersides added. */
-export function flaredGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY }, roof, kick, keep = () => true) {
-  const body = gableRoof(c, { axis, across: [a0 + 1, a1 - 1], along: [l0, l1], eaveY: eaveY + 1, steep: true }, roof, keep)
+/** flaredGableRoof: a gable roof (gableRoof, steep unless `steep: false`) whose eaves kick out one block further and
+ *  one lower in a `kick` stair (the eave line in its own trim; under a steep body it reads bell-cast), over `across`
+ *  (the kick columns are its ends) running `along`. Returns gableRoof's {ridgeY, under}, with the kick columns'
+ *  undersides added. */
+export function flaredGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY, steep = true }, roof, kick, keep = () => true) {
+  const body = gableRoof(c, { axis, across: [a0 + 1, a1 - 1], along: [l0, l1], eaveY: eaveY + 1, steep }, roof, keep)
   for (let v = l0; v <= l1; v++)
     for (const [u, rise] of [[a0, axis === 'z' ? 'east' : 'south'], [a1, axis === 'z' ? 'west' : 'north']]) {
       const [x, z] = axis === 'z' ? [u, v] : [v, u]
@@ -192,4 +193,39 @@ export function crowGable(c, axis, line, [a0, a1], y0, tops, wall, coping, pick 
     }
     slab(c, x, tops[u] + 1, z, coping, 'bottom')
   }
+}
+
+/** crossGableRoof: two 45-degree gable roofs of one pitch crossing at right angles over a square-ish plan (x0..x1,
+ *  z0..z1 with the overhang), ridges along x at z = cz and along z at x = cx, both at eaveY + half: each column takes
+ *  the higher of the two slopes, so every side shows a gable and the corners fold into valleys (kit.finish shapes the
+ *  valley stairs). Grown from the Well House (49). Returns {ridgeY, at(x, z)}: the roof's y over each column. */
+export function crossGableRoof(c, { x0, x1, z0, z1, eaveY }, roof, keep = () => true) {
+  const cx = (x0 + x1) / 2, cz = (z0 + z1) / 2
+  const halfX = (x1 - x0) / 2, halfZ = (z1 - z0) / 2
+  const hA = x => eaveY + halfX - Math.abs(x - cx) // the ridge along z (slopes falling east and west)
+  const hB = z => eaveY + halfZ - Math.abs(z - cz) // the ridge along x (slopes falling north and south)
+  const at = (x, z) => Math.max(hA(x), hB(z))
+  for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
+    const a = hA(x), b = hB(z), y = Math.max(a, b)
+    if (!keep(x, y, z)) continue
+    if ((a >= b && x === cx) || (b > a && z === cz)) { c.set(x, y, z, roof.full); continue }
+    const facing = a >= b ? (x < cx ? 'east' : 'west') : (z < cz ? 'south' : 'north')
+    stair(c, x, y, z, roof.stairs, facing)
+  }
+  return { ridgeY: eaveY + Math.max(halfX, halfZ), at }
+}
+
+/** louvre: a little open ventilator on a ridge crossing (centre cx, cz, its sill at y): the sill's 3 x 3 made solid
+ *  (`base`), four corner posts (`post`, a fence id) one high, a cap of `roof` stairs round a full block, a `finial` on
+ *  top, and a lantern hanging inside under the cap (light seen through the open sides at night). */
+export function louvre(c, cx, cz, y, { base, post, roof, finial = null, lamp = true }) {
+  for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) c.set(cx + dx, y, cz + dz, base)
+  for (const dx of [-1, 1]) for (const dz of [-1, 1]) c.set(cx + dx, y + 1, cz + dz, post)
+  for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) {
+    if (!dx && !dz) { c.set(cx, y + 2, cz, roof.full); continue }
+    const facing = dz === -1 ? 'south' : dz === 1 ? 'north' : dx === -1 ? 'east' : 'west'
+    stair(c, cx + dx, y + 2, cz + dz, roof.stairs, facing)
+  }
+  if (lamp) c.set(cx, y + 1, cz, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  if (finial) c.set(cx, y + 3, cz, finial)
 }

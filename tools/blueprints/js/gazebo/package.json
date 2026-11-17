@@ -1,0 +1,10 @@
+{
+  "name": "gazebo",
+  "private": true,
+  "type": "module",
+  "description": "The Gazebo (49 rebuild, the Lantern Tent): tools/blueprints/REBUILD.md. MC_BUILDER = the minecraft-builder skill's folder. Until the critic passes it, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/gazebo/out --data-version 3955 && python3 ../../rebuild.py gazebo gazebo --candidate --nbt ../../../../build/rebuild/gazebo/out/gazebo.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/gazebo/out --data-version 3955"
+  }
+}

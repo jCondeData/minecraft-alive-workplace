@@ -1,0 +1,10 @@
+{
+  "name": "sundial",
+  "private": true,
+  "type": "module",
+  "description": "The Sundial (sundial), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/sundial.md, REBUILD.md): the Sun Cradle. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/sundial/out --data-version 3955 && python3 ../../rebuild.py sundial sundial --candidate --nbt ../../../../build/rebuild/sundial/out/sundial.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/sundial/out --data-version 3955"
+  }
+}

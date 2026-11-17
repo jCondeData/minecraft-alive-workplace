@@ -65,6 +65,17 @@ public final class BuildSite {
 	 */
 	@Nullable
 	private String refresh;
+	/**
+	 * B1369, B1370, B1372: the older drawing (its key in {@link Refreshes}' history) of the build standing on this spot that
+	 * a repair or take-down works by, or an upgrade clears the leftovers of; "" for today's drawing; null when not worked
+	 * out yet (older saves: a repair or take-down not begun works it out from what stands, one under way goes by today's).
+	 * B1371: for a new build, the older drawing it was begun from, set when its family's drawing is rebuilt mid-build.
+	 */
+	@Nullable
+	private String builtFrom;
+	/** Whose history {@link #builtFrom} is in: the level below for an upgrade; null for this site's own blueprint. */
+	@Nullable
+	private ResourceLocation builtFromOf;
 	/** 36.7: works only the cellar of a build finished before its blueprint had one ({@link Cellars}). */
 	private boolean cellarOnly;
 	/** The lead builder's bench: where the supply chests are, for helpers too. Null in pre-0.6 saves. */
@@ -427,12 +438,51 @@ public final class BuildSite {
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
 			}
+			boolean newBuild = !deconstruct && !repair && !cellarOnly && wonder == null && builtFromOf == null;
+			if (newBuild && builtFrom == null && drawnHash != null && drawnHash != fingerprint(drawn)) {
+				// B1371: today's drawing isn't the one this site was begun from. If that one is an older drawing the mod ships
+				// (its family rebuilt under the same id), the site keeps it (tools/blueprints/REBUILD.md: "sites mid-build keep
+				// their old drawing until a refresh"), so no half of the old house is left beside the new one; else (a
+				// schematic uploaded again, nothing shipped) it starts the new one from the top (B1049, below).
+				String from = Refreshes.drawnAs(level.getServer(), structure, drawnHash);
+				if (from != null && Refreshes.olderAsBuilt(level, structure, from, furniture).isPresent()) {
+					builtFrom = from;
+					onChange.run();
+				}
+			}
+			if (newBuild && builtFrom != null && !builtFrom.isEmpty()) {
+				Optional<Blueprint> old = Refreshes.olderAsBuilt(level, structure, builtFrom, furniture);
+				if (old.isPresent()) {
+					blueprint = old;
+					drawn = old.get(); // (its fingerprint differs from the library's once: its lists start again from the top)
+				}
+			}
+			boolean ofStanding = (deconstruct || repair && refresh == null) && !cellarOnly && wonder == null;
+			if (ofStanding && builtFrom == null) {
+				// B1369, B1372: a repair or take-down not begun (an older save's) works out the drawing what stands was built from
+				builtFrom = placed == 0 ? java.util.Objects.requireNonNullElse(Refreshes.builtFrom(level, structure, placement, furniture), "") : "";
+				onChange.run();
+			}
+			if (ofStanding && !builtFrom.isEmpty()) {
+				Optional<Blueprint> old = Refreshes.drawing(level, structure, builtFrom, furniture);
+				if (old.isPresent()) {
+					blueprint = old;
+					drawn = old.get(); // (today's drawing changing under it isn't this job's)
+				}
+			}
 			planDepth = depth;
 			planMargin = margin;
 			plan = deconstruct ? BuildPlan.deconstruct(blueprint.get(), placement)
 				: repair && refresh != null ? Refreshes.plan(level, drawn, structure, refresh, placement, furniture) // B642: furnished as built, and anew
 				: repair ? BuildPlan.repair(blueprint.get(), placement, level, BuildSiteManager.get(level).gaveUp(placement))
 				: BuildPlan.create(blueprint.get(), placement, level, depth, margin);
+			if (!deconstruct && !repair && builtFrom != null && !builtFrom.isEmpty() && builtFromOf != null) {
+				// B1370: an upgrade over a level of an older drawing also takes down what of it the new level doesn't cover
+				Optional<Blueprint> below = Refreshes.drawing(level, builtFromOf, builtFrom, BuildSiteManager.get(level).furniture(placement));
+				if (below.isPresent()) {
+					plan = plan.clearingAlso(below.get(), placement, level, (pos, state) -> Refreshes.kept(level, pos, state));
+				}
+			}
 			if (kineticOrder && !deconstruct && !repair) {
 				plan = plan.kineticOrdered(); // 39.5: supports, then shafts and gearboxes, cogwheels, belts
 			}
@@ -451,7 +501,9 @@ public final class BuildSite {
 				onChange.run();
 			}
 			dropStaleDeferred(plan);
-			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE || refresh != null) {
+			boolean upgradeOverOld = !deconstruct && !repair && builtFromOf != null && builtFrom != null && !builtFrom.isEmpty();
+			if (stage == BuildPlan.Stage.FOUNDATION || stage == BuildPlan.Stage.LANDSCAPE || refresh != null
+				|| upgradeOverOld && stage == BuildPlan.Stage.CLEAR) { // (B1370: its clearing list goes by what still stands)
 				// (36.21: a refresh's lists are worked out from what stands too)
 				// The foundation and landscaping lists depend on the terrain, which we have been changing:
 				// start over (what's already done is skipped straight away).
@@ -1010,6 +1062,23 @@ public final class BuildSite {
 		onChange.run();
 	}
 
+	/**
+	 * B1369, B1370, B1372 (call right after creating the site): the older drawing {@code from} (null: today's) of the build
+	 * standing here, in the history of {@code of} (null: this site's own blueprint; for an upgrade, the level below).
+	 */
+	public void setBuiltFrom(@Nullable ResourceLocation of, @Nullable String from) {
+		builtFrom = from == null ? "" : from;
+		builtFromOf = of;
+		plan = null;
+		onChange.run();
+	}
+
+	/** The older drawing this site works the standing build by ({@link #setBuiltFrom}); "" for today's, null not known yet. */
+	@Nullable
+	public String builtFrom() {
+		return builtFrom;
+	}
+
 	/** Whether this site digs and fits out only the cellar of the finished build on its spot (36.7). */
 	public boolean isCellarOnly() {
 		return cellarOnly;
@@ -1159,6 +1228,12 @@ public final class BuildSite {
 		if (refresh != null) {
 			tag.putString("refresh_from", refresh);
 		}
+		if (builtFrom != null) {
+			tag.putString("built_from", builtFrom);
+		}
+		if (builtFromOf != null) {
+			tag.putString("built_from_of", builtFromOf.toString());
+		}
 		if (cellarOnly) {
 			tag.putBoolean("cellar_only", true);
 		}
@@ -1255,6 +1330,9 @@ public final class BuildSite {
 		site.deconstruct = Nbt.getBoolean(tag, "deconstruct");
 		site.repair = Nbt.getBoolean(tag, "repair");
 		site.refresh = Nbt.has(tag, "refresh_from", Tag.TAG_STRING) ? Nbt.getString(tag, "refresh_from") : null; // 36.21: none in older saves
+		// B1369, B1370, B1372: none in older saves (worked out when its plan is)
+		site.builtFrom = Nbt.has(tag, "built_from", Tag.TAG_STRING) ? Nbt.getString(tag, "built_from") : null;
+		site.builtFromOf = Nbt.has(tag, "built_from_of", Tag.TAG_STRING) ? ResourceLocation.tryParse(Nbt.getString(tag, "built_from_of")) : null;
 		site.cellarOnly = Nbt.getBoolean(tag, "cellar_only"); // 36.7: none in older saves
 		site.levelGround = !Nbt.getBoolean(tag, "no_level_ground");
 		site.bench = Nbt.has(tag, "bench", Tag.TAG_LONG) ? BlockPos.of(Nbt.getLong(tag, "bench")) : null;

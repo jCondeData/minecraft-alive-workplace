@@ -25,7 +25,8 @@ Blueprint Table (locked until the market unlock) and Level II also from village 
 - Beds and residents: none. No code counts beds here.
 - Storage: none read. No job or test reads a container in the Well (a container drawn in is free, but builders never
   break containers on a take-down, so it stays behind).
-- Furniture kinds a job or test needs: none (there is no `blueprint_furniture/well*.json`, and none is needed).
+- Furniture kinds a job or test needs: none. Since 52.1 `blueprint_furniture/well_2.json` records the Market Well's
+  six bench seats (spruce-stair chairs) as furniture spots; no job reads them.
 - **Water (Level I and Level II):** at least one **water source block** in the drawing.
   - `QaTakeDown1105GameTests.wellTakenDownLeavesNoWaterAndGivesBackItsCost` refuses a Well that "pours no liquid".
   - Every water cell must be a source the builder pours from a bucket, held in so it never flows out of the build
@@ -41,7 +42,7 @@ Blueprint Table (locked until the market unlock) and Level II also from village 
   GameTests place Wells by hard-coded coordinates for a 7 x 7, see below). Height: at most **10** for either level
   (PlotGameTests clears only 10 blocks of air above its ground; the take-down test allows 16). Level II at least as
   tall as Level I. y = 0 sits on the clicked block; the front is the z = 0 side.
-- Declared sizes: `StarterBlueprints.WELL` is `7, 5, 7` and `WELL_2` is `7, 7, 7` today. If a new height differs, the
+- Declared sizes: `StarterBlueprints.WELL` is `7, 9, 7` and `WELL_2` is `7, 10, 7` today (52.1). If a new height differs, the
   ship step changes those two `Vec3i`s to match (`BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`).
 - Front and way in: the Steward turns the plot so the z = 0 side faces the road, or else the hall
   (`PlotGameTests.plotOnFlatGroundFacesTheRoad`). There is no door: a lane to it starts one block in front of the

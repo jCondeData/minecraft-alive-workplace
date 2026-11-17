@@ -156,7 +156,7 @@ final class RebuildDrawings1117e {
 		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
 		int radius = io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS;
-		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 16;
+		io.github.jcondedata.aliveworkplace.hall.VillageHalls.RADIUS = 20; // (B1352: the village is a circle; the bench corner lies 16.3 from the hall)
 		helper.setDayTime(2000);
 		ServerPlayer owner = helper.makeMockServerPlayerInLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);

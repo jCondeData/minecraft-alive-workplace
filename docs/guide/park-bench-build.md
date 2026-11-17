@@ -5,8 +5,8 @@ type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/decor/still-1.jpg
 caption: The decorations, side by side
 Kind: decoration
-Size: 5 wide, 3 tall, 2 deep
-Blocks: 12 (spruce stairs and fences, oak leaves, a lantern)
+Size: 7 wide, 9 tall, 6 deep
+Blocks: about 100 (stone bricks and slabs, cherry logs and leaves, dark oak stairs and trapdoors, a lantern)
 Upgrade: none
 Beauty: 1
 Where: the Blueprint Table
@@ -14,8 +14,9 @@ categories: Builds, Village life
 related: decorations.md, builder.md, street-lamp-build.md, moods.md
 ```
 
-A spruce bench between two little hedges of oak leaves, with a lantern behind it. Tuck one along a path or by the
-square and the village feels like a place people live.
+A dark oak bench on a stone plinth, its back the rim of a raised stone bed where a cherry tree grows; the tree's
+wide pink crown shades the seat and a lantern hangs from its forward limb over the sitter's head (redrawn in 52.2). Tuck
+one along a path or by the square and the village feels like a place people live.
 
 ## Building it
 

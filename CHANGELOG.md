@@ -37,7 +37,36 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Well** is redrawn from scratch (52.1): a stepped stone dais, a round mossy curb with the windlass and chain
+  between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
+  (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already
+  built keep their old look until refreshed.
+- **The Well House, the Fountain, the Lily Pond and the Footbridge** are redrawn from scratch (52.1). The Well House is
+  an open pavilion round the well on a stone podium under a cross-gabled roof with a louver, a stone channel running out
+  on arches to the Well Keeper's cauldron (17 x 15 x 13). The Fountain rises in three brimming tiers from an octagonal
+  basin on a ring of steps, with planters and lamp posts in its corners (9 x 8 x 9). The Lily Pond sits in a grassy
+  knoll with a stone curb seat, a dipping stage and an old flowering azalea leaning over the water (9 x 8 x 7). The
+  Footbridge is a humpback stone arch over a bending stream with a lantern gate at its crown (9 x 8 x 7). Builds
+  already standing keep their old look until refreshed.
+- **The street pieces are redrawn from scratch** (52.2): the Park Bench now sits in the shade of a cherry tree grown
+  from a raised stone bed, a lantern hung over the seat (7 x 9 x 6); the Sundial is a stone half-cylinder dial with hour
+  lines and a chain gnomon on a sandstone dais (9 x 8 x 9); the Flower Planters step up in three tiers of beds round a
+  little court and bench under a spruce pergola (9 x 6 x 8); the Fire Pit's campfire sits in a round stone dais ringed by
+  standing stones, with a trilithon at the back (9 x 6 x 9); the Gazebo is an open octagon of white posts under a flared
+  slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
+  tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
+  Builds already standing keep their old look until refreshed.
+
 ### Fixed
+- Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
+  the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
+  takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and
+  an upgrade from the Upgrades page takes down what of the old level the next one doesn't cover (B1369, B1370, B1372).
+- Moving a house built from an older drawing of a redrawn building: the Mover now moves the whole house as it stands
+  (nothing left behind at the old spot), the Move page shows and plans its real size, and another building can no
+  longer be moved onto part of it (B1373, B1374).
+- A house still being built when its building is redrawn (the mod updated mid-build) is finished as the drawing it
+  was begun from, instead of switching to the new drawing and leaving the old floor's back rows beside it (B1371).
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
   is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put
   back finds its plaza again (B1188).

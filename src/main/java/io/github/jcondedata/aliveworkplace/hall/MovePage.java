@@ -1,6 +1,5 @@
 package io.github.jcondedata.aliveworkplace.hall;
 
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
@@ -201,7 +200,7 @@ public final class MovePage {
 		for (BuildSiteManager.Finished f : buildings.subList(0, Math.min(fit, buildings.size()))) {
 			BlockPos from = f.placement().origin();
 			List<Component> lore = new ArrayList<>();
-			BlockPos middle = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()).getCenter()).orElse(from);
+			BlockPos middle = Optional.ofNullable(MovePlan.box(level, f)).map(BoundingBox::getCenter).orElse(from); // B1374: as it stands
 			lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.now", fromHall(hall, middle)), ChatFormatting.GRAY));
 			pending.forBuilding(from).ifPresent(m -> lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.move.planned_to",
 				m.to().getX(), m.to().getY(), m.to().getZ()), ChatFormatting.AQUA)));
@@ -239,7 +238,7 @@ public final class MovePage {
 	 */
 	static void row(ServerLevel level, BlockPos hall, BuildSiteManager.Finished f, BlockPos from, ServerPlayer viewer, ItemStack row) {
 		CompoundTag tag = new CompoundTag();
-		BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size())).ifPresent(box -> {
+		Optional.ofNullable(MovePlan.box(level, f)).ifPresent(box -> { // B1374: as it stands
 			tag.putInt("w", box.getXSpan());
 			tag.putInt("d", box.getZSpan());
 		});
@@ -299,7 +298,7 @@ public final class MovePage {
 		}
 		BuildSiteManager.Finished f = building.get();
 		MovePlan p = plan.get();
-		BoundingBox old = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+		BoundingBox old = Optional.ofNullable(MovePlan.box(level, f)) // B1374: the building as it stands, not today's drawing
 			.orElse(BoundingBox.fromCorners(from, from.offset(p.size().getX() - 1, p.size().getY() - 1, p.size().getZ() - 1)));
 		Picking picking = new Picking(hall, from, f.structure(), p, old, old.minX() + p.size().getX() / 2, old.minZ() + p.size().getZ() / 2, Rotation.NONE);
 		Optional<PendingMoves.Move> planned = PendingMoves.get(level).forBuilding(from);

@@ -1079,8 +1079,12 @@ public final class Builders {
 			return;
 		}
 		if (site.isDeconstruction()) {
-			BuildSiteManager.get(level).forgetFinished(site.placement());
-			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
+			// B1372: a take-down that took nothing down while the building still stands (its plan didn't match what stands)
+			// leaves it known to the hall, to be moved, repaired, refreshed or taken down again
+			if (site.placed() > 0 || !stillStands(level, site)) {
+				BuildSiteManager.get(level).forgetFinished(site.placement());
+				io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
+			}
 		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
 			BuildSiteManager.get(level).setFurniture(site.placement(), site.isRefresh() // 37.3: upkeep keeps what was built
@@ -1107,6 +1111,36 @@ public final class Builders {
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
 		io.github.jcondedata.aliveworkplace.city.Renewals.siteFinished(level, villager, site); // 27.21: the old house down, the new one next
+	}
+
+	/**
+	 * B1372: whether a block of the building on {@code site}'s spot (as today's drawing or the one it was built from has
+	 * it) still stands there, not counting what always stays (a chest, a job block, a bed someone sleeps in).
+	 */
+	private static boolean stillStands(ServerLevel level, BuildSite site) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		if (manager.finishedIn(level).stream().noneMatch(f -> f.placement().equals(site.placement()))) {
+			return false; // (not a building the hall knows)
+		}
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(site.placement());
+		java.util.Set<String> from = new java.util.LinkedHashSet<>();
+		from.add("");
+		java.util.Optional.ofNullable(site.builtFrom()).ifPresent(from::add);
+		java.util.Optional.ofNullable(Refreshes.builtFrom(level, site.structure(), site.placement(), furniture)).ifPresent(from::add);
+		for (String key : from) {
+			java.util.Optional<io.github.jcondedata.aliveworkplace.blueprint.Blueprint> drawing = Refreshes.drawing(level, site.structure(), key, furniture);
+			if (drawing.isEmpty()) {
+				continue;
+			}
+			for (java.util.Map.Entry<BlockPos, net.minecraft.world.level.block.state.BlockState> e
+				: BuildPlan.create(drawing.get(), site.placement()).targets().entrySet()) {
+				net.minecraft.world.level.block.state.BlockState world = level.getBlockState(e.getKey());
+				if (!e.getValue().isAir() && !world.isAir() && MaterialRules.matches(world, e.getValue()) && !Refreshes.kept(level, e.getKey(), world)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

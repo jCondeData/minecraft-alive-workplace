@@ -40,6 +40,11 @@ from quarry import quarry
 from waystones import waystone_plaza, save_all as save_waystone_plazas
 from storage_halls import storage_hall, terminal_nook, warehouse, save_all as save_storage_halls
 
+# The blueprints redrawn with the rebuild kit (REBUILD.md): rebuild.py saves them, generate.py leaves them alone
+REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge",
+           # 52.2, the street pieces
+           "park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue"}
+
 
 # --- Gametest fixtures ------------------------------------------------------------------
 def test_hut():
@@ -137,11 +142,17 @@ if __name__ == "__main__":
     town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
     for name, draw in (("village_hall", village_hall), ("village_hall_2", village_hall_2), ("village_hall_3", village_hall_3)):
         draw().save(MAIN_STRUCTURES, name)
-    for name, draw in (("well", well), ("well_2", well_2), ("street_lamp", street_lamp), ("park_bench", park_bench),
-                       ("fountain", fountain), ("gazebo", gazebo), ("market_square", market_square)):
-        draw().save(MAIN_STRUCTURES, name)
+    # ROADMAP 52.1: the well, the fountain, the lily pond, the footbridge and the well house come from the rebuild kit
+    # (tools/blueprints/js/<family>/, saved by tools/blueprints/rebuild.py), so their old Python drawings no longer
+    # overwrite them
+    # (52.2: the park bench and the gazebo too)
+    for name, draw in (("street_lamp", street_lamp), ("park_bench", park_bench), ("gazebo", gazebo),
+                       ("market_square", market_square)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
@@ -198,7 +209,7 @@ if __name__ == "__main__":
     crafters_workshop().save(MAIN_STRUCTURES, "crafters_workshop")  # ROADMAP 37.14: the Crafter's workroom and store
     glassblowers_workshop().save(MAIN_STRUCTURES, "glassblowers_workshop")  # ROADMAP 46.6: the Glassblower's glasshouse
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
-    for name, draw in (("fire_station", fire_station), ("well_house", well_house), ("physicians_house", physicians_house)):
+    for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
         draw().save(MAIN_STRUCTURES, name)

@@ -1,0 +1,10 @@
+{
+  "name": "fountain",
+  "private": true,
+  "type": "module",
+  "description": "The Fountain (fountain), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/fountain.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py fountain fountain --candidate --nbt out/fountain.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

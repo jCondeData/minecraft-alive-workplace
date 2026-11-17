@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.move;
 
+import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
@@ -11,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.mc.Ids;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
@@ -191,8 +193,10 @@ public final class MoveFit {
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		for (BuildSiteManager.Finished f : sites.finishedInVillage(level, hall)) {
 			if (!f.placement().origin().equals(from)) {
-				BlueprintLibrary.get(level, f.structure()).ifPresent(b -> out.add(new Other(BlueprintOutline.bounds(f.placement(), b.size()),
-					Blueprints.displayName(f.structure()))));
+				BoundingBox box = MovePlan.box(level, f); // B1374: as it stands (a house of an older drawing by that drawing)
+				if (box != null) {
+					out.add(new Other(box, Blueprints.displayName(f.structure())));
+				}
 			}
 		}
 		for (BuildSite site : sites.all()) {
@@ -229,12 +233,14 @@ public final class MoveFit {
 			if (move.from().equals(from) || started.contains(move.from())) {
 				continue;
 			}
-			BlueprintLibrary.get(level, move.structure()).ifPresent(b -> {
+			// B1374: the building's size as it stands (a house of an older drawing by that drawing), else its blueprint's
+			Optional<Vec3i> standing = BuildSiteManager.get(level).finishedAt(level, move.structure(), move.from()).map(f -> MovePlan.size(level, f));
+			standing.or(() -> BlueprintLibrary.get(level, move.structure()).map(Blueprint::size)).ifPresent(size -> {
 				boolean quarter = move.rotation() == Rotation.CLOCKWISE_90 || move.rotation() == Rotation.COUNTERCLOCKWISE_90;
-				int sx = quarter ? b.size().getZ() : b.size().getX();
-				int sz = quarter ? b.size().getX() : b.size().getZ();
+				int sx = quarter ? size.getZ() : size.getX();
+				int sz = quarter ? size.getX() : size.getZ();
 				BlockPos to = move.to();
-				out.add(new Other(new BoundingBox(to.getX(), to.getY(), to.getZ(), to.getX() + sx - 1, to.getY() + Math.max(1, b.size().getY()) - 1,
+				out.add(new Other(new BoundingBox(to.getX(), to.getY(), to.getZ(), to.getX() + sx - 1, to.getY() + Math.max(1, size.getY()) - 1,
 					to.getZ() + sz - 1), Blueprints.displayName(move.structure())));
 			});
 		}

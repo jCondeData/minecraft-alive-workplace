@@ -25,16 +25,24 @@
 //             stands 1.5 blocks over the dais, chest-high, and the water lies a block down inside it.
 //   Mouth     five water sources in a cross (round in Minecraft's terms) at y 1, on the dais's stone, shut in by the
 //             curb on every side: five buckets, all poured, all picked up again on a take-down.
-//   Uprights  two spruce posts on the curb, front and back (x 3, z 1 and z 5), y 2..6, a tie beam across each at y 4.
-//   Windlass  a stripped spruce axle between the uprights at y 3 over the mouth, a chain rope down to the water, and a
-//             crank (a lever) on the front upright's face, toward the road.
-//   Hat       the roof: a steep spruce-shingle gable over the uprights only (z 1..5, so the dais shows front and
-//             back), ridge along z at y 8 on a ridge beam (y 7) whose ends stick a block out of each gable to carry
-//             the rope's pulley and Level II's lanterns, bell-cast eaves kicking out over the side steps in dark oak
-//             (y 4), birch-plank spandrels in each gable over the tie beam (a light face under the dark rake).
+//   Uprights  two spruce posts on the curb's sides (x 1 and x 5, z 3), y 2..5, so nothing stands between the road and
+//             the water: from the front you look straight over the rim into the mouth (critic's note 1).
+//   Frame     on the uprights' heads (y 5): a cross beam over the mouth (x 2..4) and an eave plate along each side
+//             (z 1..5) carrying the roof's foot; a king post on the cross beam's middle carries the ridge beam (y 7).
+//   Windlass  a stripped spruce axle between the uprights at y 4 over the mouth, a chain rope down to the centre
+//             source, and a crank (a lever) on the east upright's outer face.
+//   Hat       the roof: a 45-degree spruce-shingle gable over the frame (z 1..5, so the dais shows front and back),
+//             ridge along z at y 8 on the ridge beam (y 7) whose ends stick a block out of each gable to carry Level
+//             II's lanterns, eaves kicking out over the side steps in dark oak (y 5). Its gables are open trusses:
+//             the cross-section shows the beam and two dark braces, no infill (critic's notes 2 and 3: a course lower
+//             than the dry run's steep hat, the eaves a course higher, so a person stands upright at the rim).
 //   Tufts     the four corners the round curb leaves on the dais: grass with a fern or a flower in it.
-//   Level II (the Market Well) adds, on the same spot and keeping every Level I block but the four corner steps:
-//   Lamps     four stone lamp posts at the dais's corners, lanterns on them under the flared eaves' corners.
+//   Level II (the Market Well) adds, on the same spot and keeping Level I's blocks but the four corner steps and the
+//   two back tufts:
+//   Basins    two stone dipping basins in the back corners, each a held water source walled against the curb (y 1):
+//             a trough for the village's animals and a dip for a Well Keeper's bucket that never needs the windlass
+//             (critic's note 4: a gain at the water itself).
+//   Lamps     four stone lamp posts at the dais's corners, lanterns on them under the eaves' corners.
 //   Benches   a spruce bench along each side (west and east) on the dais, facing the water.
 //   Lights    lanterns hung from the ridge beam's ends over the front and back.
 //   Vane      a copper rod on the ridge's middle (y 9) that greens as the village ages: the Market Well's crown.
@@ -56,7 +64,8 @@ export const PALETTE = {
   kick: 'dark_oak_stairs', // the bell-cast eave line
   ridge: 'dark_oak_planks', // the ridge cap
   trim: 'dark_oak', // barge boards
-  infill: 'birch_planks', // gable spandrels: a pale face so the hat doesn't read as one brown mass
+  brace: 'dark_oak_stairs', // the open gables' braces, upside down under the rake
+  basin: 'mossy_stone_bricks', // Level II's dipping basins
   wood: 'spruce', // benches
   lampPost: 'stone_brick_wall',
   lampFoot: 'mossy_stone_bricks',
@@ -68,9 +77,11 @@ export const MASSES = {
   dais: { x0: 0, z0: 0, x1: 6, z1: 6, y: 0 },
   curb: { cx: 3, cz: 3, r: 2, y: 1, rimY: 2 },
   mouth: { y: 1, cells: [[3, 2], [2, 3], [3, 3], [4, 3], [3, 4]] }, // [x, z]
-  uprights: { x: 3, zs: [1, 5], y0: 2, y1: 6, tieY: 4, tie: [1, 5] },
-  windlass: { x: 3, y: 3, z0: 2, z1: 4, rope: [3, 2, 3], crank: [3, 3, 0] },
-  hat: { axis: 'z', across: [0, 6], along: [1, 5], eaveY: 4, beamY: 7, beam: [0, 6] },
+  uprights: { xs: [1, 5], z: 3, y0: 2, y1: 5 }, // on the curb's sides, the front left open
+  frame: { y: 5, cross: [2, 4], plates: [1, 5], king: [3, 6, 3] }, // cross beam z 3, plates along z at x 1 and x 5
+  windlass: { z: 3, y: 4, x0: 2, x1: 4, rope: [[3, 3, 3], [3, 2, 3]], crank: [6, 4, 3] },
+  hat: { axis: 'z', across: [0, 6], along: [1, 5], eaveY: 5, steep: false, beamY: 7, beam: [0, 6] },
+  basins: [[1, 5, [[0, 5], [1, 6]]], [5, 5, [[6, 5], [5, 6]]]], // Level II: [x, z, its outer walls [x, z]], y 1
   tufts: [[1, 1, 'fern'], [5, 1, 'cornflower'], [1, 5, 'oxeye_daisy'], [5, 5, 'fern']], // [x, z, plant]
   lamps: [[0, 0], [6, 0], [0, 6], [6, 6]], // Level II: [x, z], post y 1..2, lantern y 3
   vane: [3, 9, 3], // Level II
@@ -85,21 +96,23 @@ export const ROOMS = [
 export const OPENINGS = { approach: { lane: [3, 0, -1], step: [3, 0, 0], standAt: [3, 1, 0] } }
 
 // Every piece of furniture, footprint first (kind: a furniture.py kind, recorded as a furniture spot; part: the
-// furnitureParts part that draws it). Level I has none beyond its hanging lantern; Level II seats the dais.
+// furnitureParts part that draws it). Level I has none; Level II seats the dais. The lanterns are part of the frame
+// (LIGHTS), not furniture spots: a furniture mod's lamp has no business on a well's beam, and a lamp spot would make
+// the open well-head a "room" for RebuildScene to film from a floor it doesn't have.
 export const FURNITURE = {
-  1: [
-    { room: 'Mouth', kind: 'lamp', part: 'hangingLamp', pos: [3, 6, 3], facing: 'north', wood: 'spruce' }, // lights the water
-  ],
+  1: [],
   2: [
-    { room: 'Mouth', kind: 'lamp', part: 'hangingLamp', pos: [3, 6, 3], facing: 'north', wood: 'spruce' },
     ...[2, 3, 4].map(z => ({ room: 'Mouth', kind: 'chair', part: 'chair', pos: [0, 1, z], facing: 'east', wood: 'spruce' })),
     ...[2, 3, 4].map(z => ({ room: 'Mouth', kind: 'chair', part: 'chair', pos: [6, 1, z], facing: 'west', wood: 'spruce' })),
-    { room: 'Mouth', kind: 'lamp', part: 'hangingLamp', pos: [3, 6, 0], facing: 'north', wood: 'spruce' }, // over the road
-    { room: 'Mouth', kind: 'lamp', part: 'hangingLamp', pos: [3, 6, 6], facing: 'south', wood: 'spruce' },
   ],
 }
 
+// Lanterns hung from the ridge beam: Level I's over the front source (it lights the water, seen from the road),
+// Level II's also at the beam's two proud ends, over the front and the back.
+export const LIGHTS = { 1: [[3, 6, 2]], 2: [[3, 6, 2], [3, 6, 0], [3, 6, 6]] }
+
 // The walking line: the lane's end -> the front step -> the rim (a Well Keeper stands at (3, 1, 0), two blocks from the
-// source at (3, 1, 2), and reaches it; the chain rope hangs over the centre source, the others have air over them).
+// source at (3, 1, 2), and reaches it; the chain rope hangs over the centre source, the others have air over them;
+// Level II's basins are reached from the side benches' ends).
 // Round the dais on the step ring (Level I), or between the benches and the lamp posts (Level II).
 export const WALK = [[3, 0, -1], [3, 1, 0], [2, 1, 0], [1, 1, 0], [0, 1, 1], [0, 1, 3], [0, 1, 5], [1, 1, 6], [3, 1, 6]]

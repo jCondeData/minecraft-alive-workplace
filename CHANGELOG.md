@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Drowned pirates: after a pirate ship sinks, its old hold below the waterline is still sea like the water round it,
+  instead of spots of falling water that pushed a swimmer down (B1317).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

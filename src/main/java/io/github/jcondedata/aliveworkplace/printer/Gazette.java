@@ -156,9 +156,14 @@ public final class Gazette {
 		}
 		pages.add(quests);
 		// The calendar.
-		long festival = Festivals.nextDay(level, hall, entity);
-		long market = MarketDays.nextDay(level, hall, entity.lastMarketDay());
-		pages.add(Component.translatable("book.aliveworkplace.gazette.calendar", when(festival, today), when(market, today)));
+		// Only what will come (B1361, as the Seer): no festival with festivals off or too few villagers, no market day with
+		// market days off or no Market Square.
+		long festival = Festivals.foretold(level, hall, entity, VillageHalls.census(level, hall).villagers());
+		long market = MarketDays.foretold(level, hall, entity.lastMarketDay());
+		pages.add(Component.translatable("book.aliveworkplace.gazette.calendar",
+			festival < 0 ? Component.translatable("book.aliveworkplace.gazette.no_festival") : when(festival, today),
+			market < 0 ? Component.translatable(MarketDays.ENABLED ? "book.aliveworkplace.gazette.no_square" : "book.aliveworkplace.gazette.no_market")
+				: when(market, today)));
 		// The week: births, weddings and the households that rose.
 		List<Component> week = new ArrayList<>();
 		for (Chronicle.Entry e : chronicle) {

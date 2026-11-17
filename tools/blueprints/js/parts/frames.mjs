@@ -36,3 +36,14 @@ export function steppedPlinth(c, x0, z0, x1, z1, stone, step, y = 0) {
     c.set(x, y, z, step(x, z), { facing, half: 'bottom', shape: 'straight', waterlogged: 'false' })
   }
 }
+
+/** cellar: a room dug under the ground floor (a LiftedCanvas with base >= depth): a floor at y = -depth over the walls'
+ *  rectangle x0..x1, z0..z1 and the wall ring up to y = -1 (the ground floor's floor is its ceiling). `wall` may be a
+ *  mix(). Returns the inside box [x0, z0, x1, z1] (rebuild.py --cellar: those cells are dug out). */
+export function cellar(c, x0, z0, x1, z1, depth, wall, floorId) {
+  c.fill(x0, -depth, z0, x1, -depth, z1, floorId)
+  for (let y = -depth + 1; y <= -1; y++)
+    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++)
+      if (x === x0 || x === x1 || z === z0 || z === z1) c.set(x, y, z, wall)
+  return [x0 + 1, z0 + 1, x1 - 1, z1 - 1]
+}

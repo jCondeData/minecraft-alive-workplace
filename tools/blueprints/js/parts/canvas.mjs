@@ -73,3 +73,14 @@ export const stair = (c, x, y, z, id, facing, half = 'bottom') =>
 export const slab = (c, x, y, z, id, type = 'bottom') => c.set(x, y, z, id, { type, waterlogged: 'false' })
 export const trapdoor = (c, x, y, z, id, facing, half = 'bottom', open = false) =>
   c.set(x, y, z, id, { facing, half, open: String(open), powered: 'false', waterlogged: 'false' })
+
+// A canvas with a basement (ROADMAP 26.15): the drawing's y = 0 is the ground floor's layer and the cells below it, down
+// to y = -base, are the cellar. The file holds the basement at the bottom (every cell `base` higher), as the kit's
+// Build saves it; furniture spots keep the drawing's coordinates. CUT (cutAbove) takes the drawing's y.
+export class LiftedCanvas extends Canvas {
+  constructor([w, h, d], base = 0) { super([w, h + base, d]); this.base = base }
+  set(x, y, z, id, props = {}) { super.set(x, y + this.base, z, typeof id === "function" ? id(x, y, z) : id, props) } // a mix() by the drawing's y
+  get(x, y, z) { return super.get(x, y + this.base, z) }
+  clear(x, y, z) { super.clear(x, y + this.base, z) }
+  cutAbove(y) { return super.cutAbove(y + this.base) }
+}

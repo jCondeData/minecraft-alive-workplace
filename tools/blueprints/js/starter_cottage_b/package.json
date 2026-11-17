@@ -1,0 +1,10 @@
+{
+  "name": "starter-cottage-b",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, Version B (the Saltbox and its cross-wing), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/starter_cottage.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "for L in 1 2 3 4; do ID=starter_cottage; [ $L = 1 ] || ID=starter_cottage_$L; EXTRA=; [ $L = 4 ] && EXTRA='--basement 4 --cellar 2,3,6,9'; LEVEL=$L node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py starter_cottage_b $ID --candidate --nbt out/$(echo $ID | tr _ -).nbt $EXTRA || exit 1; done",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

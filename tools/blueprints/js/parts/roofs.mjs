@@ -87,3 +87,29 @@ export function flaredGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], ea
     }
   return { ridgeY: body.ridgeY, under: { ...body.under, [a0]: eaveY, [a1]: eaveY } }
 }
+
+/** catslideRoof: a 45-degree roof whose ridge (`ridge`, a cell across the span) need not sit in the middle: the
+ *  slope on one side runs further and lower than the other (a saltbox's catslide over its outshot), or, with the ridge
+ *  at one end of `across`, a lean-to. y = ridgeY - |u - ridge| across `across` [a0, a1], repeated along `along`. The
+ *  ridge cell is `roof.full` unless `ridgeStair` names the way a lean-to's top stair rises. `keep(x, y, z)` as in
+ *  gableRoof. Returns {ridgeY, under} (under[u]: the roof's y over column u). */
+export function catslideRoof(c, { axis, across: [a0, a1], ridge, along: [l0, l1], ridgeY }, roof, keep = () => true) {
+  const put = (u, y, v, id, props) => {
+    const [x, z] = axis === 'z' ? [u, v] : [v, u]
+    if (keep(x, y, z)) c.set(x, y, z, id, props)
+  }
+  const under = {}
+  for (let u = a0; u <= a1; u++) under[u] = ridgeY - Math.abs(u - ridge)
+  for (let v = l0; v <= l1; v++) for (let u = a0; u <= a1; u++) {
+    if (u === ridge) { put(u, ridgeY, v, roof.full); continue }
+    const rise = u < ridge ? (axis === 'z' ? 'east' : 'south') : (axis === 'z' ? 'west' : 'north')
+    put(u, under[u], v, roof.stairs, { facing: rise, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+  }
+  return { ridgeY, under }
+}
+
+/** pentice: a little lean-to roof of stairs along a wall face between storeys (`cells`: [x, z] outside the wall at
+ *  y, rising toward the wall `toward`), the way a pent roof sheds rain off a ground-floor window. */
+export function pentice(c, cells, y, roof, toward) {
+  for (const [x, z] of cells) stair(c, x, y, z, roof.stairs, toward)
+}

@@ -17,3 +17,11 @@ export function stairwell(c, cells) { for (const [x, y, z] of cells) c.clear(x, 
 export function lining(c, section, z0, z1, id, skip = () => false) {
   for (let z = z0; z <= z1; z++) for (const [x, y] of section) if (!skip(x, z)) c.set(x, y, z, id)
 }
+
+/** hatchLadder: a ladder from a cellar's floor (y0) up to just under the floor at `top` (the ground floor's layer),
+ *  against the wall behind it (`facing`: the way it faces, away from that wall), under a closed hatch (a top-half
+ *  trapdoor of `wood` flush with the floor): floor to a villager walking over it, a way down to a player. */
+export function hatchLadder(c, x, z, y0, top, facing, wood) {
+  for (let y = y0; y < top; y++) c.set(x, y, z, 'ladder', { facing, waterlogged: 'false' })
+  c.set(x, top, z, `${wood}_trapdoor`, { facing, half: 'top', open: 'false', powered: 'false', waterlogged: 'false' })
+}

@@ -7,6 +7,32 @@ import { hearthFire } from './hearths.mjs'
 import { kitchenParts } from './kitchens.mjs'
 
 const roomParts = {
+  couch(c, f) { // f.length stair seats along the wall behind them (the sitters face f.facing), each a couch spot; with
+    // f.arms, an open trapdoor at each end goes with its end seat
+    const [x, y, z] = f.pos
+    const along = { north: 'east', east: 'south', south: 'west', west: 'north' }[f.facing]
+    const [ax, az] = DIRS[along]
+    const n = f.length ?? 2
+    for (let i = 0; i < n; i++) {
+      const sx = x + ax * i, sz = z + az * i
+      c.free([sx, y, sz])
+      stair(c, sx, y, sz, `${f.wood}_stairs`, OPP[f.facing])
+      const cells = [[0, 0, 0]]
+      for (const [end, d] of [[0, -1], [n - 1, 1]]) {
+        if (!f.arms || i !== end) continue
+        c.free([sx + ax * d, y, sz + az * d])
+        trapdoor(c, sx + ax * d, y, sz + az * d, `${f.wood}_trapdoor`, d < 0 ? along : OPP[along], 'bottom', true)
+        cells.push([ax * d, 0, az * d])
+      }
+      c.spot('couch', [sx, y, sz], f.facing, cells, f.wood, f.colour ?? null)
+    }
+  },
+  blinds(c, f) { // blinds rolled up at a window's head, inside: a closed top-half trapdoor, f.facing into the room
+    const [x, y, z] = f.pos
+    c.free(f.pos)
+    trapdoor(c, x, y, z, `${f.wood}_trapdoor`, f.facing, 'top')
+    c.spot('blinds', f.pos, f.facing, [[0, 0, 0]], f.wood)
+  },
   table(c, f) { // a fence leg with a carpet top
     const [x, y, z] = f.pos
     c.free([x, y, z], [x, y + 1, z])

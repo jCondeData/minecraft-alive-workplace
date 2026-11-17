@@ -11,7 +11,8 @@ and the furniture spots.
     python3 tools/blueprints/rebuild.py <family> <id> --candidate     # build/rebuild/<family>/<id>.nbt, for the critic
     python3 tools/blueprints/rebuild.py <family> <id>                 # the live structure/<id>.nbt, once the critic says SHIP
 
---nbt <path> picks the recipe's output when out/ holds more than one .nbt (default: the newest).
+--nbt <path> picks the recipe's output when out/ holds more than one .nbt (default: the newest). --basement <n> and
+--cellar x0,z0,x1,z1: a drawing with a cellar (its .nbt holds n layers under the ground at the bottom).
 """
 import argparse
 import glob
@@ -29,14 +30,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CANDIDATES = os.path.join(ROOT, "build", "rebuild")
 
 
-def load_recipe(nbt, spots_file):
-    """The recipe's .nbt as a kit Build, with the plan's furniture spots recorded."""
+def load_recipe(nbt, spots_file, basement=0, cellars=()):
+    """The recipe's .nbt as a kit Build, with the plan's furniture spots recorded. basement: the file holds that many
+    layers of cellar at its bottom (a LiftedCanvas), moved back under y = 0; cellars: the inside boxes (x0, z0, x1, z1)
+    dug out under the ground."""
     (w, h, d), cells, states = load(nbt, props=True)
-    b = Build(w, h, d)
+    b = Build(w, h - basement, d, basement)
+    b.cellars = [tuple(c) for c in cellars]
     for (x, y, z), name in cells.items():
         if name is None or name == "minecraft:air":
             continue
-        b.set(x, y, z, name, **states[(x, y, z)])
+        b.set(x, y - basement, z, name, **states[(x, y, z)])
     b.fill_air()
     with open(spots_file) as f:
         plan = json.load(f)["spots"]
@@ -56,12 +60,15 @@ def main(argv=None):
     a.add_argument("id")
     a.add_argument("--candidate", action="store_true", help="save to build/rebuild/<family>/, not the live structure")
     a.add_argument("--nbt")
+    a.add_argument("--basement", type=int, default=0, help="layers of cellar at the bottom of the recipe's .nbt")
+    a.add_argument("--cellar", action="append", default=[], help="x0,z0,x1,z1: a cellar's inside, dug out")
     args = a.parse_args(argv)
     recipe = os.path.join(HERE, "js", args.family)
     nbt = args.nbt or max(glob.glob(os.path.join(recipe, "out", "*.nbt")), key=os.path.getmtime, default=None)
     if not nbt:
         a.error(f"no .nbt in {recipe}/out: run the recipe first")
-    b = load_recipe(nbt, os.path.join(recipe, "furniture.json"))
+    cellars = [tuple(int(v) for v in c.split(",")) for c in args.cellar]
+    b = load_recipe(nbt, os.path.join(recipe, "furniture.json"), args.basement, cellars)
     folder = os.path.join(CANDIDATES, args.family) if args.candidate else MAIN_STRUCTURES
     b.save(folder, args.id)
     if args.candidate:  # outside structure/, so save() wrote no spots file: keep them beside the candidate

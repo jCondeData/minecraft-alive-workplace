@@ -131,8 +131,8 @@ top when Challenge is off ("Can't challenge now" and the reason), "Challenge <na
 **cards** (the real Pokémon model, the name and level; a level brought down to the cap in Lantern with the warning
 glyph; "???" and "Not seen yet" until the player wins once), the team's hint line, **Your party** as striped rows (name,
 level, a status glyph and word: Ready, Fainted, Over the cap) and the rules. When it doesn't fit (a big team, a small
-screen) the stage scrolls with the wheel and shows a scroll bar. The team grid takes as many columns as fit at 64
-pixels or more and evens them out over its rows (a team of six: three and three on a roomy screen, two by three at
+screen) the stage scrolls with the wheel and shows a scroll bar. The team grid takes as many columns as fit at 79
+pixels or more (room for a capped "Lv 100" whole, B1351) and evens them out over its rows (a team of six: three and three on a roomy screen, two by three at
 320x180). The whisper line says what the thing under the mouse is or does (the trainer, the record, today, a card, a
 party line, the rules, each button; a grayed Challenge gives its reason); with nothing under the mouse it keeps the
 screen's hint.

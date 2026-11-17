@@ -6895,7 +6895,7 @@ rooms and furniture planned first, named parts, built in passes, furnished, film
 Lane B builds Milestone 49 in order (49.1 first: Milestones 50-52 wait for it). Lanes E, C and D take Milestones 50, 51
 and 52 when their Copperline work is done (`sessions.py next` gives each its own).
 
-- [ ] **49.1** **The rebuild kit.** `tools/blueprints/REBUILD.md` (the method above, the three subagent prompts word for
+- [x] **49.1** (review: pending 2026-11-17) **The rebuild kit.** `tools/blueprints/REBUILD.md` (the method above, the three subagent prompts word for
   word, the brief template, the critic's scorecard); the Daub House's JavaScript parts made a shared library
   (`tools/blueprints/js/parts/`: frames, walls, roofs and gables, hearths, kitchens, stairs and lofts, porches,
   railings) that every family can use and grow, each family keeping its own palette and massing; one generic furnished

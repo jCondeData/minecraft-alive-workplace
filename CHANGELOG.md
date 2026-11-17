@@ -25,6 +25,8 @@ asks for the steps, `latest.log` and any crash report).
   raiders or piglins (B1352).
 - Chronicle: a Festival Cup's line written when its village next loads goes under its own day, so the days read
   newest first with one header each (DAY 47, then DAY 46 with both of its lines), not DAY 46, DAY 47, DAY 46 (B1353).
+- Pokémon Trader: at the smallest screen size (320x180, GUI scale 3) the copper name plaque is no longer cut off at the
+  top; the window keeps the same 8-pixel margin as the Village Hall's (B1354).
 
 ## 0.156.0 — 2026-11-16
 

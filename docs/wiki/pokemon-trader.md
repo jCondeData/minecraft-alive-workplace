@@ -41,8 +41,9 @@ as a vanilla villager does at its trade screen, so he can't walk out of reach an
 - The screen closes if you walk more than 8 blocks away, or the trader dies or falls asleep. It won't open during a
   battle.
 - The screen (28.23, 43.2) is drawn with the Village Hall's `TableStyle` (no texture of its own since 43.2:
-  `textures/gui/pokemon_trader.png` is gone). `PokemonTradeView` holds the layout (a fixed 300x174 panel, which fits
-  the smallest screen), and `PokemonTradeView.offerAt` turns a click anywhere on a row into a click on its offer's
+  `textures/gui/pokemon_trader.png` is gone). `PokemonTradeView` holds the layout (a fixed 300x164 panel, which fits
+  the smallest screen, 320x180, with Copperline's 8-pixel margin round it, so the plaque that rises over its top stays
+  on screen: B1354), and `PokemonTradeView.offerAt` turns a click anywhere on a row into a click on its offer's
   cell. The server decides every click; the screen only draws them.
 
 ## Switches
@@ -83,7 +84,9 @@ turns; walking away and a dead trader closing the screen; every sentence through
 `PokemonTradeLayoutGameTests` (43.2: every button inside the panel and no two cells overlapping, a click anywhere on a
 row picks that row and nowhere else does, the status lines' room, the panel fits a 320x240 screen, the hint's text).
 QA (lane D, 2026-11-09, 43.2): `QaTradeRows1109dGameTests` asks every pixel of the panel and 20 round it which row it
-picks: each row's whole card, first pixel to last on all four edges, picks that row (30x176 pixels each), and nothing else does; every
+picks: each row's whole card, first pixel to last on all four edges, picks that row (28x176 pixels each since B1354), and nothing else does; every
 card is inside the offers list and clear of the party's box. It kills three hand mutants of PokemonTradeView.offerAt (the card's right
 edge, its last row of pixels, its first), two of which the layout test lets through.
+`QaTraderPlaqueB1354GameTests` (B1354: the plaque on screen at 320x180 and 427x240, the window keeping the Hall's 8-pixel
+margin from 320x180 to 1920x1080, and the shorter window still showing four offer rows and six status lines).
 Showcase scene `trader`.

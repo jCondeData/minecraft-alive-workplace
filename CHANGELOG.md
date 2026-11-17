@@ -22,6 +22,11 @@ asks for the steps, `latest.log` and any crash report).
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
 
+### Fixed
+- A Village Hall's leftover point of interest with no hall standing on it (left by region edits or world-editing mods)
+  no longer counts as a village for work blocks in a far zone, raid dens or village fires, and a fire no longer counts
+  as in a village for a few seconds after its hall is gone (B1356).
+
 ### Dev
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in

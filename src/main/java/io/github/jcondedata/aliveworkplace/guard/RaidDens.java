@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.guard;
 
 import io.github.jcondedata.aliveworkplace.Expansions;
 import io.github.jcondedata.aliveworkplace.hall.Chronicle;
+import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -223,9 +224,10 @@ public final class RaidDens {
 		return Component.translatableWithFallback("cobblemon.type." + type, plain);
 	}
 
-	/** The nearest Village Hall within {@link #REACH} of a den. */
+	/** The nearest Village Hall within {@link #REACH} of a den (B1356: a hall point with no hall standing is none). */
 	public static Optional<BlockPos> hallNear(ServerLevel level, BlockPos pos) {
-		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), pos, REACH, PoiManager.Occupancy.ANY);
+		return level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> VillageHalls.standsAt(level, p), pos, REACH,
+			PoiManager.Occupancy.ANY);
 	}
 
 	/** The den at {@code pos} as its block state says: properties read by name, missing ones as "not known". */

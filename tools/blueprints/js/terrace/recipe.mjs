@@ -5,9 +5,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZES, PALETTE, HOUSE, HOMES, at, face, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
+import { SIZES, PALETTE, HOUSE, HOMES, at, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  Canvas, mix, floor, wallPanel, window, door, evenGableRoof, crowGable, doorCanopy, furnitureParts, slab,
+  Canvas, mix, floor, wallPanel, window, door, evenGableRoof, crowGable, doorCanopy, furnitureParts, slab, quoins,
+  brackets,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -22,103 +23,110 @@ export function drawLevel(level) {
   const lines = new Map()
   for (const h of homes) for (const u of [0, 5]) lines.set(at(h, u), (lines.get(at(h, u)) ?? 0) + 1)
   const isEnd = x => lines.get(x) === 1
-  const X = (h, u) => at(h, u)
+  const xs = [...lines.keys()]
+  const west = Math.min(...xs), east = Math.max(...xs)
+  const out = x => (x === west ? -1 : 1) // the side an end wall looks out to (x step)
 
   // --- Pass 1: block-out and structure -----------------------------------------------------------------------------
   for (const h of homes) {
-    const xa = Math.min(X(h, 0), X(h, 5)), xb = Math.max(X(h, 0), X(h, 5))
+    const xa = at(h, 0), xb = at(h, 5)
     for (let x = xa; x <= xb; x++) for (let z = z0; z <= z1; z++) {
       const wall = x === xa || x === xb || z === z0 || z === z1
       c.set(x, 0, z, wall ? plinthStone : P.floor)
     }
-    // walls: the side walls (party or end) and the front and back, brick from the plinth to the wall top
     wallPanel(c, [xa, z0], [xa, z1], 1, HOUSE.wallTop, P.brick)
     wallPanel(c, [xb, z0], [xb, z1], 1, HOUSE.wallTop, P.brick)
     wallPanel(c, [xa, z0], [xb, z0], 1, HOUSE.wallTop, P.brick)
     wallPanel(c, [xa, z1], [xb, z1], 1, HOUSE.wallTop, P.brick)
+    // the belt course at the bedroom floor, front and back
+    for (let x = xa + 1; x <= xb - 1; x++) for (const z of [z0, z1]) c.set(x, HOUSE.belt, z, P.dressed)
     // the bedroom floor, on two dark joists across the house
     floor(c, xa + 1, z0 + 1, xb - 1, z1 - 1, HOUSE.upperFloor, P.floor)
     for (const z of [3, 6]) for (let x = xa + 1; x <= xb - 1; x++) c.set(x, HOUSE.upperFloor, z, P.joist, { axis: 'x' })
   }
-  // piers: every wall line stands a block proud of the front and the back, plinth to wall top; a white cap in front
-  // (the back ones carry the roofs' overhang)
-  for (const x of lines.keys()) for (const z of HOUSE.piers) {
+  // the end walls: the belt course carried round
+  for (const x of xs) if (isEnd(x)) for (let z = z0; z <= z1; z++) c.set(x, HOUSE.belt, z, P.dressed)
+  // piers: every wall line stands a block proud of the front and the back, plinth to wall top, a white cap; the row's
+  // corners in long-and-short white quoins
+  for (const x of xs) for (const z of HOUSE.piers) {
     c.set(x, 0, z, plinthStone)
     for (let y = 1; y <= HOUSE.wallTop; y++) c.set(x, y, z, P.brick)
-    if (z === 0) slab(c, x, HOUSE.wallTop + 1, z, P.coping, 'bottom')
+    slab(c, x, HOUSE.wallTop + 1, z, P.coping, 'bottom')
   }
+  quoins(c, [[west, 0], [west, 9], [east, 0], [east, 9]], 1, HOUSE.wallTop, P.dressed, P.brick)
+  for (const x of [west, east]) for (const z of HOUSE.piers) c.set(x, HOUSE.belt, z, P.dressed)
 
-  // --- Pass 2: roofs, gables and stacks ------------------------------------------------------------------------------
+  // --- Pass 2: roofs and gables --------------------------------------------------------------------------------------
   for (const h of homes) {
-    const xa = Math.min(X(h, 0), X(h, 5)), xb = Math.max(X(h, 0), X(h, 5))
+    const xa = at(h, 0), xb = at(h, 5)
     const ends = { a0: isEnd(xa) ? 'eave' : 'gutter', a1: isEnd(xb) ? 'eave' : 'gutter' }
-    const roof = evenGableRoof(c, { axis: 'z', across: [xa, xb], along: HOUSE.roofAlong, eaveY: HOUSE.eaveY, ends }, P.roof)
-    // the front: a crow-stepped parapet gable standing over the roof, the gable window and its lintel in it
+    evenGableRoof(c, { axis: 'z', across: [xa, xb], along: HOUSE.roofAlong, eaveY: HOUSE.eaveY, ends }, P.roof)
     const tops = {}
-    for (let u = 0; u <= 5; u++) tops[X(h, u)] = HOUSE.steps[u]
-    const gw = OPENINGS.windows.find(w => w.name === 'front gable')
-    const gxs = gw.us.map(u => X(h, u))
-    crowGable(c, 'z', z0, [xa, xb], HOUSE.wallTop + 1, tops, P.brick, P.coping, (x, y) => {
-      if (gxs.includes(x) && gw.ys.includes(y)) return P.glass
-      if (gxs.includes(x) && y === gw.lintel) return P.dressed
-      if (y === HOUSE.cornice && x !== xa && x !== xb) return P.dressed
-      return undefined
-    })
-    // the back gable, under the roof's overhang
-    for (let x = xa + 1; x <= xb - 1; x++) for (let y = HOUSE.eaveY; y < roof.under[x]; y++) c.set(x, y, z1, P.brick)
+    for (let u = 0; u <= 5; u++) tops[at(h, u)] = HOUSE.steps[u]
+    // both gables crow-stepped parapets standing over the roof, a cornice where each begins, a window in each
+    for (const [z, name] of [[z0, 'front gable'], [z1, 'back gable']]) {
+      const gw = OPENINGS.windows.find(w => w.name === name)
+      const gxs = gw.us.map(u => at(h, u))
+      crowGable(c, 'z', z, [xa, xb], HOUSE.wallTop + 1, tops, P.brick, P.coping, (x, y) => {
+        if (gxs.includes(x) && gw.ys.includes(y)) return P.glass
+        if (gxs.includes(x) && y === gw.lintel) return P.dressed
+        if (y === HOUSE.cornice && x !== xa && x !== xb) return P.dressed
+        return undefined
+      })
+    }
+    // the chimney: the back gable's apex capped in stone, the household's smoke on its flue
+    const ch = HOUSE.chimney
+    for (const u of ch.us) {
+      c.set(at(h, u), ch.cap, z1, P.cap)
+      if (u === ch.flue) c.set(at(h, u), ch.cap + 1, z1, 'campfire', { facing: 'south', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
+      else slab(c, at(h, u), ch.cap + 1, z1, P.capSlab, 'bottom')
+    }
   }
-  // the stacks: one on the back of every wall line, a flue (and a smoke) per household it serves
-  for (const [x, n] of lines) {
-    for (const z of HOUSE.stack.z) for (let y = HOUSE.stack.y0; y <= HOUSE.stack.top; y++) c.set(x, y, z, P.brick)
-    for (const z of HOUSE.stack.z) c.set(x, HOUSE.stack.top, z, P.stoop)
-    const flues = n === 2 ? HOUSE.stack.z : [HOUSE.stack.z[1]]
-    for (const z of flues) c.set(x, HOUSE.stack.top + 1, z, 'campfire', { facing: 'north', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
-    if (n === 1) slab(c, x, HOUSE.stack.top + 1, HOUSE.stack.z[0], P.coping, 'bottom')
+  // the end eaves: corbels under the overhang, and a kneeler step closing it behind each parapet
+  for (const x of [west, east]) {
+    const ox = x + out(x)
+    for (const z of HOUSE.corbels) brackets(c, [[ox, HOUSE.eaveY - 2, z]], P.roof.stairs, out(x) < 0 ? 'east' : 'west')
+    for (const z of [z0, z1]) {
+      c.set(ox, HOUSE.eaveY - 1, z, P.brick)
+      slab(c, ox, HOUSE.eaveY, z, P.coping, 'bottom')
+      brackets(c, [[ox, HOUSE.eaveY - 2, z]], P.brickStairs, out(x) < 0 ? 'east' : 'west')
+    }
   }
 
   // --- Pass 3: openings ----------------------------------------------------------------------------------------------
   for (const h of homes) {
     const d = OPENINGS.door
-    const dx = X(h, d.u)
-    door(c, [dx, d.y, d.z], 'south', 'north', { wood: h.door, step: [dx, 0, 0], stepStair: P.step, hinge: h.mirror ? 'left' : 'right' })
+    const dx = at(h, d.u)
+    door(c, [dx, d.y, d.z], 'south', 'north', { wood: P.door, step: [dx, 0, 0], stepStair: P.step, hinge: 'right' })
     c.set(dx, d.transom, d.z, P.glass)
-    c.set(dx, d.transom + 1, d.z, P.dressed)
     for (const w of OPENINGS.windows) {
-      if (w.name === 'front gable') continue
-      const cells = w.us.flatMap(u => w.ys.map(y => [X(h, u), y, w.z]))
+      if (w.name.endsWith('gable')) continue
+      const cells = w.us.flatMap(u => w.ys.map(y => [at(h, u), y, w.z]))
       window(c, cells, w.out, w.dress, { glass: P.glass, pots: OUTSIDE.pots[w.name] ?? [], sill: P.sill })
-      if (w.lintel) for (const u of w.us) c.set(X(h, u), w.lintel, w.z, P.dressed)
     }
-    // the end walls: a window on each floor
     for (const u of [0, 5]) {
-      const x = X(h, u)
+      const x = at(h, u)
       if (!isEnd(x)) continue
-      const out = x === Math.min(X(h, 0), X(h, 5)) ? 'west' : 'east'
-      for (const w of OPENINGS.endWindows) {
-        window(c, w.ys.map(y => [x, y, w.z]), out, 'shutters', { glass: P.glass, wood: P.wood })
-        c.set(x, w.lintel, w.z, P.dressed)
-      }
+      for (const w of OPENINGS.endWindows)
+        window(c, w.ys.map(y => [x, y, w.z]), x === west ? 'west' : 'east', 'shutters', { glass: P.glass, wood: P.wood })
     }
-    // the ladder up the back wall through the bedroom floor
     const l = OPENINGS.ladder
-    for (let y = l.y0; y <= l.y1; y++) c.set(X(h, l.u), y, l.z, 'ladder', { facing: l.facing, waterlogged: 'false' })
+    for (let y = l.y0; y <= l.y1; y++) c.set(at(h, l.u), y, l.z, 'ladder', { facing: l.facing, waterlogged: 'false' })
   }
 
-  // --- Pass 4: depth and detail: the stoop, the door canopies ------------------------------------------------------
+  // --- Pass 4: depth and detail: the stoop, the door canopies --------------------------------------------------------
   for (const h of homes) {
-    for (let u = 1; u <= 4; u++) if (!c.get(X(h, u), 0, 0)) c.set(X(h, u), 0, 0, P.stoop)
-    doorCanopy(c, [X(h, OPENINGS.door.u), OPENINGS.door.y, OPENINGS.door.z], 'north', face(h, 'west'), P.roof)
+    for (let u = 1; u <= 4; u++) if (!c.get(at(h, u), 0, 0)) c.set(at(h, u), 0, 0, P.stoop)
+    doorCanopy(c, [at(h, OPENINGS.door.u), OPENINGS.door.y, OPENINGS.door.z], 'north', 'west', P.roof)
   }
 
   // --- Pass 5: interior ----------------------------------------------------------------------------------------------
   for (const h of homes) {
     for (const f of FURNITURE) {
-      const u = typeof f.pos?.[0] === 'string' ? h[f.pos[0]] : f.pos?.[0]
       const g = { ...f }
-      if (f.pos) g.pos = [X(h, u), f.pos[1], f.pos[2]]
-      if (f.facing) g.facing = face(h, f.facing)
+      if (f.pos) g.pos = [at(h, typeof f.pos[0] === 'string' ? h[f.pos[0]] : f.pos[0]), f.pos[1], f.pos[2]]
       if (f.colour === 'home') g.colour = f.kind === 'bed' ? h.beds : h.rug
-      if (f.cells) g.cellsAbs = f.cells.map(([cu, y, z]) => [X(h, cu), y, z])
+      if (f.cells) g.cellsAbs = f.cells.map(([u, y, z]) => [at(h, u), y, z])
       furnitureParts[f.part](c, g)
     }
   }

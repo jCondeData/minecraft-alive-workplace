@@ -30,11 +30,12 @@ need: a line per request as the Village Hall lists it, with its icon ("Needs Oak
 pickaxe or ladders), three at most, then "and 5 more"; or "Needs: Nothing" in green. A tool or seeds read as part of
 the sentence: "Needs a pickaxe", "Needs an axe", "Needs a fishing rod", "Needs seeds" (B1096).
 
-The buttons: **In chat** (gold) puts the old status lines in chat, word for word (the builder's whole material list,
-the coordinates, the routes, the pace and the clickable **[Stop]**/**[Cancel]** link); **Hall page** opens the Village
-Hall on their own page (the worker's page with Find and Change job, or a jobless villager's free workstations) with
-Back to the people list; **Close**. With no Village Hall near them, Hall page is gray and "There's no Village Hall near
-Mason." shows under the row; in a protected village that keeps you out it's gray with the village's "only they and
+The buttons: **In chat** (the card's one copper button, the first usable one) puts the old status lines in chat, word
+for word (the builder's whole material list, the coordinates, the routes, the pace and the clickable
+**[Stop]**/**[Cancel]** link); **Hall page** opens the Village Hall on their own page (the worker's page with Find and
+Change job, or a jobless villager's free workstations) with Back to the people list; the **close X** at the card's top
+right closes it. With no Village Hall near them, Hall page is gray and "There's no Village Hall near Mason." shows above
+the row in a Redstone-edged box; in a protected village that keeps you out it's gray with the village's "only they and
 their friends" line. The buttons always stay inside the card (B1103): with room to spare they have the Hall's roomy
 width; when they don't fit that way (a narrow card, or longer labels in another language) they shrink to what their
 labels need and share the room left out evenly to the card's edge, then wrap onto another row, and a label wider than

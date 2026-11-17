@@ -32,30 +32,36 @@ public class PokemonTradeView extends AbstractContainerMenu {
 	public static final int PARTY = 18;
 	public static final int COSTS = 27;
 	public static final int STATUS = 35;
-	/** The panel's size (fixed: it fits the smallest GUI-scaled screen, 320 wide, with 8 pixels round it). */
+	/**
+	 * The panel's size (fixed: it fits the smallest GUI-scaled screen, 320x180, with Copperline's 8-pixel margin round it,
+	 * as the Hall's windows do, so the plaque rising over its top edge stays on screen; B1354).
+	 */
 	public static final int WIDTH = 300;
-	public static final int HEIGHT = 174;
+	public static final int HEIGHT = 180 - 2 * io.github.jcondedata.aliveworkplace.ui.CopperLayout.MARGIN;
 	/** The offers list's box on the panel. */
 	/** The trader's book: on the Copperline lintel, left of the close X (48.4). */
 	public static final int INFO_X = WIDTH - 36;
 	public static final int INFO_Y = 2;
 	public static final int LIST_X = 6;
-	public static final int LIST_Y = 22;
+	public static final int LIST_Y = 21;
 	public static final int LIST_W = 180;
-	public static final int LIST_H = 134;
+	public static final int LIST_H = 124;
 	/** An offer row's left edge and top (rows are {@link #ROW_H} tall, {@link #ROW_STEP} apart). */
 	public static final int CARD_X = LIST_X + 2;
-	public static final int CARD_Y = LIST_Y + 3;
+	public static final int CARD_Y = LIST_Y + 2;
 	public static final int CARD_W = LIST_W - 4;
-	public static final int ROW_H = 30;
-	public static final int ROW_STEP = 32;
+	public static final int ROW_H = 28;
+	public static final int ROW_STEP = 30;
 	/** The party's box on the right: a heading, then two rows of three cells. */
 	public static final int PARTY_X = LIST_X + LIST_W + 8;
-	public static final int PARTY_Y = LIST_Y + 4;
+	public static final int PARTY_Y = LIST_Y + 1;
 	public static final int SIDE_W = WIDTH - PARTY_X - 6;
 	/** Where the status lines start, under the party, and how far down they may go. */
 	public static final int STATUS_Y = PARTY_Y + 64;
 	public static final int STATUS_BOTTOM = LIST_Y + LIST_H;
+
+	/** A row's Pokémon and ball cells, down from the row's top (centered in it). */
+	public static final int ROW_ICON_Y = (ROW_H - 16) / 2;
 
 	public static int cardY(int offer) {
 		return CARD_Y + offer * ROW_STEP;
@@ -85,10 +91,10 @@ public class PokemonTradeView extends AbstractContainerMenu {
 			boolean shown = true;
 			if (i >= OFFERS && i < OFFERS + MAX_OFFERS) {
 				x = CARD_X + 5;
-				y = cardY(i - OFFERS) + 7;
+				y = cardY(i - OFFERS) + ROW_ICON_Y;
 			} else if (i >= BALLS && i < BALLS + MAX_OFFERS) {
 				x = CARD_X + CARD_W - 22;
-				y = cardY(i - BALLS) + 7;
+				y = cardY(i - BALLS) + ROW_ICON_Y;
 			} else if (i >= PARTY && i < PARTY + 6) {
 				x = PARTY_X + 5 + (i - PARTY) % 3 * 24;
 				y = PARTY_Y + 17 + (i - PARTY) / 3 * 22;

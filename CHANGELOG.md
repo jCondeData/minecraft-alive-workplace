@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Pokémon Trader: at the smallest screen size (320x180, GUI scale 3) the copper name plaque is no longer cut off at the
+  top; the window keeps the same 8-pixel margin as the Village Hall's (B1354).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

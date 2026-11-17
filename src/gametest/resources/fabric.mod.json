@@ -10,6 +10,8 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaBlueprintBook1117eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCityPlanCopper1117eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidSize1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigIds1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigNewFields1116eGameTests",
@@ -540,7 +542,9 @@
 			"io.github.jcondedata.aliveworkplace.test.CopperlineGuideSettingsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTrainerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineStatusCardGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStatusCardCopper1117dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineChronicleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",
@@ -1849,6 +1853,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderUpgrade1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseSupply1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallCopper1116cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHallDefenseCopper1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseCopper1116cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseGiveAll1116c3GameTests",
@@ -1858,7 +1863,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaUpgradeEntry1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStorehouseReach1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCopperline1116c3GameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCopperline1116c3GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperTrades1117cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests"
 		]
 	},
 	"depends": {

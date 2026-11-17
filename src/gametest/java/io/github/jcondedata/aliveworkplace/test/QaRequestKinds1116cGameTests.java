@@ -221,13 +221,14 @@ public class QaRequestKinds1116cGameTests implements FabricGameTest {
 		PersonalRequestGameTests.village(helper, () -> {
 			ServerLevel level = helper.getLevel();
 			BlockPos hall = helper.absolutePos(HALL);
-			int radius = VillageHalls.RADIUS;
-			VillageHalls.RADIUS = 6; // two villages in one test area
+			// two villages in one test area. HeartEventGameTests.village puts the radius back: a reset here would run after
+			// that one (resets run in the order they were added) and leave its 16 for every later batch (the Hall's beds and
+			// the questbook's rank counts read 16, not 64, in the 2026-11-16 nightly repeats)
+			VillageHalls.RADIUS = 6;
 			BlockPos farRel = new BlockPos(25, 2, 25);
 			BlockPos far = helper.absolutePos(farRel);
 			helper.setBlock(farRel, ModBlocks.VILLAGE_HALL);
 			Leftovers.after(helper, () -> {
-				VillageHalls.RADIUS = radius;
 				Caravans.Data.get(level).remove(far);
 				Stories.Data.get(level).remove(far);
 			});

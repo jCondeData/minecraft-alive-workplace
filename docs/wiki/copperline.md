@@ -165,7 +165,7 @@ its item: a brush, a map, a sponge, a dirt path, a stone brick wall), the chosen
 with the steps left as its count; at 320x180 (GUI scale 3) the rail is the two-column icon grid. The map keeps its look:
 the land, the grid, each zone tinted and edged in its kind's color, Keep Clear hatched, roads, the wall line, the
 banners and the zone names, now in a Void frame with "N ^" in its corner. Under the map, the road width (Lane, Street,
-Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **New**, the
+Avenue) or the wall's Closed/Open and the next road's style, as before. On the right, "ZONES 3/16" with **+ New**, the
 one copper button; the zones in a sunken list (the kind's swatch, the name, the cells; the chosen one copper-marked);
 the chosen zone's name in a well, its style (with the style's icon), kind, Renew and a red Delete; and "LEGEND" when
 there's room (not at 320x180, where the zone swatches and the foot line do its work). The foot line says what the tool,
@@ -225,9 +225,10 @@ whisper line says when an entry was written and that a click reads all of it, wh
 Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
 and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
 research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
-scholars' research: Worked by the village's scholars at their desks"), and its tooltip shows as before. The list sits on
+scholars' research: Worked by the village's scholars at their desks"); a tab has no floating tooltip (it would cover the
+list), so only its name and the first line of its tooltip show, in the whisper line. The list sits on
 the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
-line's right. Every row, button, price, tooltip and click is as before.
+line's right. Every row, button, price, row tooltip and click is as before.
 
 **The Pokémon Trader** has the shell round its offers and party: the trader's name on the plaque, "3 offers today" on the
 lintel beside the trader's book (moved there from the corner, so the close X has room), the close X, and a whisper line
@@ -251,7 +252,7 @@ Pokémon or book under it.
   get a few pixels less and trim with "..." on narrow cards (the whisper line gives them in full).
 - **The list menus' rail is icons (48.4).** A worded rail took a quarter of the window and cut the list's columns
   ("Level 0 ..." for "Level 0 of 3" on Research); the icon grid takes 50 pixels, so every column reads as it did under
-  the old row of tabs, and the whisper line and tooltip give the tab's name.
+  the old row of tabs, and the whisper line gives the tab's name and its tooltip's first line.
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
 - **The village's name and date moved from the rail to the lintel** ("where you are"), so the rail is the sections only
@@ -298,6 +299,18 @@ opening says so; every slot clear of the list, the level row, the arrow, the lin
 `QaEveryMenuGameTests` pairing the new menu type and the shop tests (`QaClicksShops1101GameTests`, `ShopStockGameTests`,
 `QaShopFerry1031GameTests` and the rest) still passing.
 
+QA (lane c, 2026-11-17): `QaCopperTrades1117cGameTests` (12, from the spec, through the packets a client sends: too
+few emeralds trade nothing and come back on closing; a sold-out offer is shown sold out and refused; a shift-click on
+the goods repeats the trade; Hero of the Village prices reach the screen and buy; a second player is refused and a
+killed villager closes the screen with the emeralds kept; a mod job with no offers and a baby open no screen, the
+wandering trader and a Librarian keep vanilla's; the Ferryman sells a ticket in Copperline without CobbleDollars; a
+shop lot emptied while the screen is open is refused, shown sold out and the buyer keeps the price; a job change
+switches the screen both ways; a Tailor saved and loaded keeps his offers and trades; a Master trades with no level
+bar; the new sentences) and `QaCopperCityPlan1117cGameTests` (4: the City Plan's and the Charter's parts inside the
+window and apart at a dozen screen sizes, from GUI scale 1 at 1920x1080 to both sides of the compact switch, the map
+never smaller on a bigger screen; the zone list's row picking with no zones, scrolled, at 16 zones and outside the
+list; the new sentences).
+
 Showcase scenes: `copperline` (the shell, the parts in every state, the boxes, and the 320x180 icon-grid rail), `mail`,
 `counter` and `drop_box` (44.1: the three slot screens), `crafter_trades` (44.2: a Journeyman Tailor's trades, then an
 offer chosen).
@@ -326,6 +339,13 @@ the lintel clear of the plaque and the close X; the new sentences), with `Copper
 `PokemonTradeLayoutGameTests`, `QaTradeRows1109dGameTests`, the hall page tests and the list menu tests still passing.
 Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
 list menu with its tab on the rail).
+QA (lane-d-1117-0107): `QaChronicleCopper1117dGameTests` (11: the Chronicle opened through a right-click, the Calendar
+section and the Chronicle button, each Show filter clicked through the click packet showing only its group with its
+count and only it marked open, Back to the Calendar; garbage slots and sidebar ids from the client changing nothing; an
+empty chronicle at 0 everywhere; entries over many days newest first with the Calendar's dates, also with 5-day
+seasons; a 1,500-character entry reaching the client whole and scrolling to its end; save and reload; the 100-entry cap
+and the 101st; the Show column at every height from 60 to 260 pixels; list-menu tabs 1 to 12 at 320x180 and 427x240;
+the Trader's close X, book and offers on those screens; every new sentence with its arguments).
 
 48.3: `CopperlineStatusCardGameTests` (3: a builder's card, an empty card and a thirty-line card at 427x240, 480x270,
 640x360 and 320x180 with labels one, three and five times as long: the card inside the screen, portrait, name and close
@@ -342,3 +362,13 @@ three sizes with every setting's name fitting beside its control; a switch, a sm
 clicks, a page reset, and the file read back; the new sentences), with `GuideGameTests` and `ConfigGameTests` still
 passing. Scenes: `guide` (every page, a chapter from the rail, then at 320x180) and `config` (Work's numbers, Village's
 switches, Festivals turned off and saved, then at 320x180).
+
+QA, lane E, 2026-11-17: `QaCityPlanCopper1117eGameTests` (44.3, 3: the City Plan and the Charter on both sides of the
+compact boundary, a 1920x1080 and an ultrawide screen and 320x180, the map a square of whole cells and nothing
+overlapping; a full plan's 16 zones each picked by a click on its row at some scroll, no click on an empty row, the
+strip under the last drawn row, the scroll bar or under the list picks a zone; the tool and width lines read with
+their real arguments in American English) and `QaBlueprintBook1117eGameTests` (48.1, 5: the most-styled build's style
+rail fits at every GUI scale; a style the build lacks, a deleted build and a press from 20 blocks away hand nothing out
+and keep the blank; a shelved blueprint of a deleted build is listed, survives a save and reload and comes back out;
+every listed build's materials name real items). With Create: `QaTableCreate1117eCompatTests` (every Create build's
+materials, preview and styles, and Get Blueprint for each).

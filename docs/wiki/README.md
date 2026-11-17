@@ -73,6 +73,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 
 **The village**
 - [The Village Hall](village-hall.md): the village at a glance, its needs, ranks, calendar, treasury and pages.
+- [Market days](market-days.md): once a week a village with a Market Square holds a morning market: traders with a blueprint to sell for 6 emeralds.
 - [House looks](house-looks.md): the hall's Builds button, a leader giving a village house another style's outside (23.10a, 23.10).
 - [Edicts](edicts.md): laws with a boost, a cost and a reform (1.4).
 - [Civic items](civic-items.md): the Cradle, the Village Banner and the Harvest Idol with the village year (1.4).

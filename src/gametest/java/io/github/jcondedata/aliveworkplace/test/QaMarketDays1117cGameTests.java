@@ -57,7 +57,13 @@ public class QaMarketDays1117cGameTests implements FabricGameTest {
 			helper.getLevel().setDayTime(dayTime);
 		});
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
-		return helper.absolutePos(HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		// the hall goes with the test: left standing outside a later batch's smaller area, it is that test's "hall near"
+		Leftovers.after(helper, () -> {
+			helper.getLevel().removeBlock(hall, false);
+			VillageHalls.forgetNearest();
+		});
+		return hall;
 	}
 
 	/** A finished Market Square (of {@code id}) in the village, forgotten after the test. */
@@ -288,6 +294,37 @@ public class QaMarketDays1117cGameTests implements FabricGameTest {
 			}
 		}
 		helper.assertTrue(traders == 40 * MarketDays.traders(level, hall), traders + " traders over 40 markets");
+		helper.succeed();
+	}
+
+	/**
+	 * How many come: two, three from Town rank on, one more a level of Commerce research; and as many as that stand at the
+	 * square on market morning.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaMarketCount1117c"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaMarketCount1117c")
+	public void theTradersCountGrowsWithRankAndCommerce(GameTestHelper helper) {
+		BlockPos hall = village(helper);
+		ServerLevel level = helper.getLevel();
+		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
+		square(helper, StarterBlueprints.MARKET_SQUARE.id());
+		io.github.jcondedata.aliveworkplace.research.Research.Topic commerce = io.github.jcondedata.aliveworkplace.research.Research.Topic.COMMERCE;
+		int[][] cases = {{0, 0, 2}, {1, 0, 2}, {2, 0, 3}, {3, 0, 3}, {0, 1, 3}, {2, 1, 4}, {3, commerce.maxLevel, 3 + commerce.maxLevel}};
+		io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank[] ranks = io.github.jcondedata.aliveworkplace.hall.VillageRanks.Rank.values();
+		long day = marketDay(hall, 90);
+		for (int[] c : cases) {
+			entity.setRank(ranks[c[0]]);
+			entity.setResearch(new io.github.jcondedata.aliveworkplace.research.Research.State(
+				c[1] == 0 ? java.util.Map.of() : java.util.Map.of(commerce.key(), c[1]), Optional.empty(), 0, false));
+			helper.assertTrue(MarketDays.traders(level, hall) == c[2],
+				ranks[c[0]] + " with Commerce " + c[1] + ": " + MarketDays.traders(level, hall) + " traders, wanted " + c[2]);
+			at(helper, day, 1000);
+			entity.setLastMarketDay(-1);
+			helper.assertTrue(MarketDays.tick(level, hall, entity), "no market for " + ranks[c[0]]);
+			List<WanderingTrader> came = traders(helper, hall);
+			helper.assertTrue(came.size() == c[2], ranks[c[0]] + " with Commerce " + c[1] + ": " + came.size() + " came, wanted " + c[2]);
+			came.forEach(WanderingTrader::discard);
+		}
 		helper.succeed();
 	}
 

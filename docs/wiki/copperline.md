@@ -227,9 +227,10 @@ whisper line says when an entry was written and that a click reads all of it, wh
 Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
 and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
 research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
-scholars' research: Worked by the village's scholars at their desks"), and its tooltip shows as before. The list sits on
+scholars' research: Worked by the village's scholars at their desks"); a tab has no floating tooltip (it would cover the
+list), so only its name and the first line of its tooltip show, in the whisper line. The list sits on
 the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
-line's right. Every row, button, price, tooltip and click is as before.
+line's right. Every row, button, price, row tooltip and click is as before.
 
 **The Pokémon Trader** has the shell round its offers and party: the trader's name on the plaque, "3 offers today" on the
 lintel beside the trader's book (moved there from the corner, so the close X has room), the close X, and a whisper line
@@ -253,7 +254,7 @@ Pokémon or book under it.
   get a few pixels less and trim with "..." on narrow cards (the whisper line gives them in full).
 - **The list menus' rail is icons (48.4).** A worded rail took a quarter of the window and cut the list's columns
   ("Level 0 ..." for "Level 0 of 3" on Research); the icon grid takes 50 pixels, so every column reads as it did under
-  the old row of tabs, and the whisper line and tooltip give the tab's name.
+  the old row of tabs, and the whisper line gives the tab's name and its tooltip's first line.
 - **Old names, new colors.** `TableStyle` keeps its color names (`TITLE`, `NAME`, `SUBLINE`...) so the eight screens on it
   switched without each being rewritten; `TITLE` is now Copper Light, text Quartz, second lines Tuff.
 - **The village's name and date moved from the rail to the lintel** ("where you are"), so the rail is the sections only
@@ -342,6 +343,13 @@ QA's `QaChronicleCopper1117dBugGameTests` (B1353: a Cup line written late, dated
 DAY 47 then DAY 46 with both of its lines, also after the hall is saved and loaded).
 Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
 list menu with its tab on the rail).
+QA (lane-d-1117-0107): `QaChronicleCopper1117dGameTests` (11: the Chronicle opened through a right-click, the Calendar
+section and the Chronicle button, each Show filter clicked through the click packet showing only its group with its
+count and only it marked open, Back to the Calendar; garbage slots and sidebar ids from the client changing nothing; an
+empty chronicle at 0 everywhere; entries over many days newest first with the Calendar's dates, also with 5-day
+seasons; a 1,500-character entry reaching the client whole and scrolling to its end; save and reload; the 100-entry cap
+and the 101st; the Show column at every height from 60 to 260 pixels; list-menu tabs 1 to 12 at 320x180 and 427x240;
+the Trader's close X, book and offers on those screens; every new sentence with its arguments).
 
 48.3: `CopperlineStatusCardGameTests` (3: a builder's card, an empty card and a thirty-line card at 427x240, 480x270,
 640x360 and 320x180 with labels one, three and five times as long: the card inside the screen, portrait, name and close

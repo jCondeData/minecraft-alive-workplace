@@ -551,6 +551,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverHomecomingSaves1111eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TrainerScreenButtonsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTrainerScreen1111dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaTrainerCopper1116dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaTrainerCopper1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobCardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonTradeLayoutGameTests",

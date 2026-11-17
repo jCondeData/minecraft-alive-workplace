@@ -27,6 +27,8 @@ asks for the steps, `latest.log` and any crash report).
   newest first with one header each (DAY 47, then DAY 46 with both of its lines), not DAY 46, DAY 47, DAY 46 (B1353).
 - Pokémon Trader: at the smallest screen size (320x180, GUI scale 3) the copper name plaque is no longer cut off at the
   top; the window keeps the same 8-pixel margin as the Village Hall's (B1354).
+- Trainer screen: every Pokémon's level shows whole again. Team cards no longer cut a capped "Lv 40" to "L…" (a team
+  of four now sits two by two), and at GUI scale 3 a party line's "Lv 100" no longer runs into its status glyph (B1351).
 
 ## 0.156.0 — 2026-11-16
 

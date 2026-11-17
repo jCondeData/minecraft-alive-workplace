@@ -246,8 +246,9 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 				g.blitSprite(CopperStyle.Status.INFO.glyph, x, y, 8, 8);
 				y = wrapped(g, view().partyNote(), CopperStyle.TUFF, x + 10, y, w - 10, 2) + 2;
 			}
-			int levelX = x + 4 + w * 42 / 100;
-			int stateX = x + 4 + w * 58 / 100;
+			int[] cols = TrainerLayout.partyColumns(w);
+			int levelX = x + 4 + cols[0];
+			int stateX = x + 4 + cols[1];
 			for (int i = 0; i < view().party().size(); i++) {
 				TrainerView.PartyLine line = view().party().get(i);
 				boolean over = inStage && mouseY >= y && mouseY < y + PARTY_ROW && mouseX >= x && mouseX < x + w;
@@ -283,9 +284,6 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 		CopperStyle.scrollbar(g, s[0] + s[2] - 4, s[1], s[3], scroll, max, contentH, inStage && max > 0);
 	}
 
-	/** A team card's model well: the card's height less a 2-pixel margin above and below. */
-	private static final int ICON_WELL = TrainerLayout.CARD_H - 4;
-
 	/** One of the trainer's Pokémon: a card with its model, its name and level, or "???" for one not seen yet. */
 	private void card(GuiGraphics g, TrainerView.TeamSlot slot, int[] b, boolean over) {
 		CopperStyle.panel(g, b[0], b[1], b[2], b[3]);
@@ -294,11 +292,13 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 		}
 		// The Pokémon is the card's subject (the board draws it big): a sunken well as tall as the card allows, the same
 		// well a Pokémon not seen yet gets, so a seen one never reads weaker than its "???" (48.2 critique).
-		int ws = ICON_WELL;
-		int ix = b[0] + 3;
-		int iy = b[1] + (b[3] - ws) / 2;
-		int tx = ix + ws + 3;
-		int tw = b[0] + b[2] - 3 - tx;
+		int[] well = TrainerLayout.cardWell(b);
+		int ws = well[2];
+		int ix = well[0];
+		int iy = well[1];
+		int[] text = TrainerLayout.cardText(b);
+		int tx = text[0];
+		int tw = text[2];
 		CopperStyle.well(g, ix, iy, ws, ws);
 		if (slot.hidden()) {
 			g.drawString(font, "?", ix + (ws - font.width("?")) / 2, iy + (ws - 8) / 2, CopperStyle.SLATE, false);
@@ -316,7 +316,7 @@ public class TrainerScreen extends AbstractContainerScreen<TrainerMenu> {
 		String level = Component.translatable("screen.aliveworkplace.trainer.level", slot.level()).getString();
 		if (slot.scaled()) {
 			g.blitSprite(CopperStyle.Status.WARNING.glyph, tx, b[1] + 17, 8, 8);
-			g.drawString(font, CopperStyle.trim(font, level, tw - 10), tx + 10, b[1] + 17, CopperStyle.LANTERN, false);
+			g.drawString(font, CopperStyle.trim(font, level, tw - TrainerLayout.LEVEL_GLYPH), tx + TrainerLayout.LEVEL_GLYPH, b[1] + 17, CopperStyle.LANTERN, false);
 		} else {
 			g.drawString(font, CopperStyle.trim(font, level, tw), tx, b[1] + 17, CopperStyle.TUFF, false);
 		}

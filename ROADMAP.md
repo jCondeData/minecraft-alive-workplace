@@ -6956,7 +6956,7 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
 Same method (Milestone 49, `tools/blueprints/REBUILD.md`), one item per family with all its levels. Lane E builds it
 once 49.1 has landed; the other lanes join when their own milestones are empty.
 
-- [ ] **50.1** (blocked: waits for the owner's pick of A or B, review package 2026-11-17) (picked: B, 2026-11-17) **Builder's Workshop** (flagship: A and B).
+- [ ] **50.1** (picked: B, 2026-11-17) **Builder's Workshop** (flagship: A and B).
 - [ ] **50.2** **Carpenter's Workshop**, **Mason's Yard** and **Sawmill**.
 - [ ] **50.3** **Smithy**, **Brass Foundry** and **Tinker's Workshop**.
 - [ ] **50.4** **Butcher's Shop**, **Kitchen** and **Winery**.

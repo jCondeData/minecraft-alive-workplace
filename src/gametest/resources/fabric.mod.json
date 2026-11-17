@@ -506,6 +506,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBack1114cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaResearchDoneClick1109eBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaListTabTooltip1117aBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageBugs1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1109cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JobListsGameTests",

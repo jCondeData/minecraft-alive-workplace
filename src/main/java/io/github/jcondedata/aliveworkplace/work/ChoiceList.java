@@ -10,8 +10,12 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ItemLore;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -168,6 +172,27 @@ public final class ChoiceList {
 		}
 		return new Mark(kind, get(mark, "second"), get(mark, "price"), get(mark, "button"), Nbt.getBoolean(mark, "off"), Nbt.getBoolean(mark, "on"),
 			Nbt.getInt(mark, "order"));
+	}
+
+	/**
+	 * The whisper line's words while a rail tab is under the mouse (48.4): its name (only its icon shows on the rail), then
+	 * its tooltip's first line, "Ivysaur: 3 moves to learn"; just the name when it has no lines.
+	 */
+	public static Component tabWhisper(ItemStack tab) {
+		ItemLore lore = tab.get(DataComponents.LORE);
+		if (lore == null || lore.lines().isEmpty()) {
+			return tab.getHoverName();
+		}
+		return Component.translatable("screen.aliveworkplace.list.tab_whisper", tab.getHoverName(), lore.lines().get(0).getString());
+	}
+
+	/**
+	 * Every line the tooltip of a rail tab under the mouse shows (B1355): the whole tooltip, as the chest and the row of tabs
+	 * before 48.4 showed it (its name and every line under it, such as the Move Tutor's "N more moves at a higher tier" and
+	 * Research's click line), since the whisper line has room for only the name and the first line.
+	 */
+	public static List<Component> tabTooltip(ItemStack tab, Item.TooltipContext context, @Nullable Player player, TooltipFlag flag) {
+		return tab.getTooltipLines(context, player, flag);
 	}
 
 	/** The menu's own line from its {@link Kind#INFO} icon, or null for any other icon. */

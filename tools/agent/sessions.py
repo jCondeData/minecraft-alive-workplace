@@ -23,7 +23,8 @@ Nothing here rebases or force-pushes.
   review ID --as NAME --message TEXT FILE... hand in a review package: commits it to the `reviews` branch
   pause ID --as NAME --note "done..; next.." [--blocked WHY]   push unfinished work, free the item
   unblock ID --as NAME --note WHY            the thing it waited for has happened
-  reply "approve 22.3, B1" | "veto 22.3: why" | "change 22.3: what" --as NAME
+  reply "approve 22.3, B1" | "approve all [bugs] [except 49.2]" | "pick 49.3 B" | "veto 22.3: why" | "change 22.3: what"
+        --as NAME                            plain wording works; prints exactly what was recorded and exits 1 if any part was not
   bug "what, when, expected; Test: name" --as NAME
   handoff "in progress / next / traps" --as NAME
 
@@ -719,55 +720,182 @@ def cmd_unblock(a):
     print(f"{a.id} is open again.")
 
 
-def cmd_reply(a):
-    m = re.match(r"\s*(approve|veto|change)\s+(.+)$", a.text, re.S | re.I)
-    if not m:
-        die('Expected "approve <ids>", "veto <id>: <why>" or "change <id>: <what>".')
-    verb, rest = m.group(1).lower(), m.group(2).strip()
-    if verb == "approve":
-        ids = [x for x in re.split(r"[\s,]+", rest) if x]
+ID_RE = re.compile(r"\b(B\d+[a-z]?|\d+\.\d+[a-z]?)\b", re.I)
+CLAUSE_SPLIT = re.compile(
+    r"(?:\n+|;|\u00b7)(?=\s*[-*\u2022]?\s*(?:approve|approved|veto|reject|change|pick|ok|okay|yes|accept|B\d|\d+\.\d))"
+    r"|(?:\.\s+|,\s*(?:and\s+)?|\s+and\s+)(?=\s*[-*\u2022]?\s*(?:approve|approved|veto|reject|change|pick)\b)", re.I)
+REPLY_FORMS = ('Say it like: "approve 22.3, B1", "approve all", "approve all bugs", "approve all except 49.2", '
+               '"pick 49.3 B", "veto 22.3: why" or "change 22.3: what".')
 
-        def transform(text):
+
+def norm_id(x):
+    return x[0].upper() + x[1:].lower() if x[0] in "bB" else x.lower()
+
+
+def parse_reply(text):
+    """The owner's words -> ([operations], [clauses we could not read]). An operation is a dict with a kind
+    (approve, approve_all, veto, change, pick) and its ids and words. Plain-language wording is fine."""
+    ops, bad = [], []
+    for clause in CLAUSE_SPLIT.split(text.strip()):
+        c = clause.strip().lstrip("-*\u2022 ").strip()
+        if not c or re.fullmatch(r"(yes|yep|ok|okay|sure|great|good|please|thanks?|thank you)[\s.,!]*", c, re.I):
+            continue
+        low = c.lower()
+        ids = [norm_id(x) for x in ID_RE.findall(c)]
+        head = re.match(r"(veto|reject|change)\b[\s:]*(.*)$", c, re.S | re.I)
+        if head:
+            kind = "change" if head.group(1).lower() == "change" else "veto"
+            m = ID_RE.match(head.group(2).strip())
+            words = re.sub(r"^[\s:,\-\u2013]+", "", head.group(2).strip()[m.end():]) if m else ""
+            if not m or not words:
+                bad.append((c, f'"{kind}" needs an id and his words: "{kind} 22.3: what he said".'))
+            else:
+                ops.append({"kind": kind, "ids": [norm_id(m.group(1))], "words": words})
+            continue
+        pk = re.search(r"\b(?:pick|picks|picked|choose|chose|go with|going with|prefer)\s+(?:version\s+)?([ab])\b", low) \
+            or re.search(r"\bpick\s+(?:B?\d[\w.]*)\s+(?:version\s+)?([ab])\b", low) \
+            or re.search(r"\bversion\s+([ab])\b", low)
+        if pk:
+            if len(ids) != 1:
+                bad.append((c, 'a pick needs exactly one item id: "pick 49.3 B".'))
+            else:
+                ops.append({"kind": "pick", "ids": ids, "words": pk.group(1).upper()})
+            continue
+        if re.search(r"\b(approve|approved|approves|accept|accepted|ok|okay|yes|lgtm|looks good|ship it)\b", low):
+            if re.search(r"\b(all|every|everything)\b", low):
+                ex = re.split(r"\b(?:except|but not|besides|apart from|other than|excluding)\b", c, maxsplit=1, flags=re.I)
+                skip = [norm_id(x) for x in ID_RE.findall(ex[1])] if len(ex) > 1 else []
+                ops.append({"kind": "approve_all", "ids": skip, "words": "bugs" if re.search(r"\bbugs?\b", low) else ""})
+            elif ids:
+                ops.append({"kind": "approve", "ids": ids, "words": ""})
+            else:
+                bad.append((c, 'approve what? Give item ids or say "approve all".'))
+            continue
+        bad.append((c, "I can't tell what to record."))
+    if not ops and not bad:
+        bad.append((text.strip(), "empty reply."))
+    return ops, bad
+
+
+def apply_reply(text, ops):
+    """Apply every operation to the roadmap text; returns the new text and one result per operation:
+    (op, ok, what happened). A problem with one operation never stops the others, and none is silent."""
+    out = []
+    for op in ops:
+        items = parse(text)
+        kind, ids = op["kind"], op["ids"]
+        if kind in ("approve", "approve_all"):
+            if kind == "approve_all":
+                skip = set(ids)
+                ids = [it["id"] for it in items if mark(it, "review") and it["id"] not in skip
+                       and (op["words"] != "bugs" or it["area"] == "Bugs")]
+                if not ids:
+                    out.append((op, False, "nothing is pending review, so there was nothing to approve."))
+                    continue
             for i in ids:
-                def fn(checked, marks, i=i):
-                    if not checked:
-                        die(f"{i} isn't built yet, so it can't be approved.")
-                    keep = [x for x in marks if not x.startswith(("review", "approved"))]
-                    return True, keep + [f"approved {today()}"]
-                text = rewrite(text, i, fn)
-            return text
-        push_main_change(transform, f"Record the owner's approval of {', '.join(ids)}", a.as_)
-        print(f"Recorded: approved {', '.join(ids)}.")
-        return
-    i, sep, words = rest.partition(":")
-    i, words = i.strip(), words.strip()
-    if not sep or not words:
-        die(f'Expected "{verb} <id>: <his words>".')
-    if verb == "veto":
-        def fn(checked, marks):
-            keep = [x for x in marks if not x.startswith(("review", "approved", "vetoed", "claimed", "verified"))]
-            return False, keep + [f"vetoed {today()}: {clean(words)}"]
-        push_item_change(i, fn, f"Record the owner's veto of {i}", a.as_)
-        print(f"Recorded: {i} vetoed. It's redone next; revert it first if later work would build on it "
-              f"(claim it, git revert its commits on the branch, land --keep-open).")
-        return
-    base = re.sub(r"(?<=\d)[a-z]$", "", i)
-    state = {}
+                it = find(items, i)
+                if not it:
+                    out.append(({**op, "ids": [i]}, False, f"no item {i} in the roadmap."))
+                elif not it["done"]:
+                    out.append(({**op, "ids": [i]}, False, f"{i} isn't built yet, so it can't be approved."))
+                elif mark(it, "approved") and not mark(it, "review"):
+                    out.append(({**op, "ids": [i]}, True, f"{i} was already approved ({mark(it, 'approved')})."))
+                else:
+                    def fn(checked, marks):
+                        return True, [x for x in marks if not x.startswith(("review", "approved"))] + [f"approved {today()}"]
+                    text = rewrite(text, i, fn)
+                    out.append(({**op, "ids": [i]}, True, f"approved {i}."))
+        elif kind == "veto":
+            i = ids[0]
+            if not find(items, i):
+                out.append((op, False, f"no item {i} in the roadmap."))
+                continue
+            def fn(checked, marks):
+                keep = [x for x in marks if not x.startswith(("review", "approved", "vetoed", "claimed", "verified"))]
+                return False, keep + [f"vetoed {today()}: {clean(op['words'])}"]
+            text = rewrite(text, i, fn)
+            out.append((op, True, f"vetoed {i}. It's redone next; revert it first if later work would build on it "
+                                  f"(claim it, git revert its commits on the branch, land --keep-open)."))
+        elif kind == "pick":
+            i = ids[0]
+            if not find(items, i):
+                out.append((op, False, f"no item {i} in the roadmap."))
+                continue
+            def fn(checked, marks):
+                return checked, [x for x in marks if not x.startswith("picked")] + [f"picked: {op['words']}, {today()}"]
+            text = rewrite(text, i, fn)
+            out.append((op, True, f"recorded his pick of version {op['words']} for {i}."))
+        else:
+            i = ids[0]
+            base = re.sub(r"(?<=\d)[a-z]$", "", i)
+            lines = text.split("\n")
+            n = next((k for k, ln in enumerate(lines) if (mm := ITEM.match(ln)) and mm.group(4) == base), None)
+            if n is None:
+                out.append((op, False, f"no item {base}."))
+                continue
+            used = {x["id"] for x in items}
+            sub = next((f"{base}{c}" for c in "abcdefghijklmnopqrstuvwxyz" if f"{base}{c}" not in used), None)
+            if not sub:
+                out.append((op, False, f"{base} has run out of sub-item letters: add a new item instead."))
+                continue
+            indent = " " * (len(lines[n]) - len(lines[n].lstrip()) + 2)
+            lines.insert(block_end(lines, n),
+                         f"{indent}- [ ] **{sub}** Change from the owner ({today()}): {lead_safe(op['words'])}")
+            text = "\n".join(lines)
+            out.append(({**op, "sub": sub}, True, f"recorded as {sub}. Do it next."))
+    return text, out
+
+
+def verify_reply(text, results):
+    """Re-read the roadmap that is now on origin/main and check each successful result really is there."""
+    items = parse(text)
+    problems = []
+    for op, ok, _ in results:
+        if not ok:
+            continue
+        it = find(items, op["ids"][0])
+        k = op["kind"]
+        if not it:
+            problems.append(f"{op['ids'][0]} is missing from main's roadmap.")
+        elif k in ("approve", "approve_all") and not (it["done"] and mark(it, "approved")):
+            problems.append(f"{it['id']} is not approved on main.")
+        elif k == "veto" and not (not it["done"] and mark(it, "vetoed")):
+            problems.append(f"{it['id']} is not vetoed on main.")
+        elif k == "pick" and mark(it, "picked") is None:
+            problems.append(f"the pick for {it['id']} is not on main.")
+        elif k == "change" and not find(items, op.get("sub", "")):
+            problems.append(f"the change {op.get('sub')} is not on main.")
+    return problems
+
+
+def cmd_reply(a):
+    """Record the owner's answers on main, say exactly what was recorded, and exit 1 if any part failed:
+    an answer is never dropped silently."""
+    ops, bad = parse_reply(a.text)
+    results = []
 
     def transform(text):
-        lines = text.split("\n")
-        n = next((k for k, ln in enumerate(lines) if (mm := ITEM.match(ln)) and mm.group(4) == base), None)
-        if n is None:
-            die(f"No item {base}.")
-        used = {x["id"] for x in parse(text)}
-        state["sub"] = next((f"{base}{c}" for c in "abcdefghijklmnopqrstuvwxyz" if f"{base}{c}" not in used), None) \
-            or die(f"{base} has run out of sub-item letters: add a new item instead.")
-        indent = " " * (len(lines[n]) - len(lines[n].lstrip()) + 2)
-        lines.insert(block_end(lines, n),
-                     f"{indent}- [ ] **{state['sub']}** Change from the owner ({today()}): {lead_safe(words)}")
-        return "\n".join(lines)
-    push_main_change(transform, f"Record the owner's change to {i}", a.as_)
-    print(f"Recorded as {state['sub']}. Do it next.")
+        new, res = apply_reply(text, ops)
+        results[:] = res
+        return new
+    if ops:
+        push_main_change(transform, "Record the owner's reply: " + " ".join(a.text.split())[:90], a.as_)
+        fetch()
+        problems = verify_reply(main_roadmap(), results)
+    else:
+        problems = []
+    print("RECORDED ON MAIN:" if any(ok for _, ok, _ in results) else "NOTHING RECORDED.")
+    for op, ok, what in results:
+        print(f"  {'ok  ' if ok else 'FAIL'} {what}")
+    for c, why in bad:
+        print(f"  FAIL not understood: \"{c[:120]}\": {why}")
+    for p in problems:
+        print(f"  FAIL after pushing: {p}")
+    failed = bad or problems or any(not ok for _, ok, _ in results)
+    if failed:
+        print(f"SOME OF THIS WAS NOT RECORDED. {REPLY_FORMS}", file=sys.stderr)
+        sys.exit(1)
+    print("All of it is on main, checked by re-reading the roadmap.")
 
 
 def cmd_bug(a):

@@ -1,0 +1,13 @@
+{
+  "name": "masons-yard",
+  "private": true,
+  "type": "module",
+  "description": "Mason's Yard (masons_yard, masons_yard_2), rebuilt blind for ROADMAP 49 (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. LEVEL=1|2 picks the level; 'build' writes both candidates.",
+  "scripts": {
+    "build": "npm run build:1 && npm run build:2",
+    "build:1": "rm -rf out && LEVEL=1 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py masons_yard masons_yard --candidate",
+    "build:2": "rm -rf out && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py masons_yard masons_yard_2 --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/masons-yard.nbt"
+  }
+}

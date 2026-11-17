@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.craft.CraftJobs;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -27,7 +28,7 @@ import io.github.jcondedata.aliveworkplace.work.Jobs;
  * a recipe that takes 4 logs). crafter.md (B1273): "Of an ingredient's options the base game's come first"; the line
  * names what a player gathers in Minecraft's own wood. Moves to main with the fix.
  */
-public class QaShortageGathers1115fBugCompatTests implements FabricGameTest {
+public class QaShortageGathers1115fBugCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** A smoker from nothing, and from a furnace: only Minecraft's things, and 4 logs (the recipe's four), not 8. */

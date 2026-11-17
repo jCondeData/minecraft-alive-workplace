@@ -153,7 +153,7 @@ public final class LegendsPage {
 		if (!Legends.ENABLED) {
 			return List.of();
 		}
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> {
+		return VillageHalls.villagers(level, hall, v -> {
 			LegendData data = ModAttachments.LEGEND.get(v);
 			return v.isAlive() && data != null && Legends.get(data.id()).isPresent()
 				&& (data.hall().isEmpty() || data.hall().get().equals(hall));

@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, 47.3
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, B1300, 47.3
 
 ## What a player sees
 
@@ -336,7 +336,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   one block are 3 eggs, though vanilla's turtle egg loot gives one per break (a player breaks that block three times;
   `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
   than for one, so candles, sea pickles and pink petals, whose loot counts them, are left as they drop, never doubled:
-  B1258; a double slab is 2 slabs). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
+  B1258; a double slab is 2 slabs; a glow lichen or any block on several faces is one item per face, 3 faces 3 glow
+  lichen, though vanilla's glow lichen loot counts faces only for shears: B1300). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
   nothing without one: 1 to 7 snow layers are that many snow, never snowballs (B1274: vanilla's snow loot asks for a
   breaking entity, so they came back as 1 snow), and 8 layers are 8 snow, also when the site is saved and loaded back with the snow packed, or the crate was set down on
   the snow's new spot after the move was confirmed (B1281, B1282: vanilla's Silk Touch loot is one

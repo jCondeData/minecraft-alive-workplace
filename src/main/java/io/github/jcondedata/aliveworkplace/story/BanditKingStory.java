@@ -514,7 +514,7 @@ public final class BanditKingStory {
 	/** The King's raid on the village round {@code hall}: bandits, sized as for half again as many villagers. */
 	@Nullable
 	public static VillageRaids.Raid raid(ServerLevel level, BlockPos hall) {
-		List<Villager> villagers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> villagers = VillageHalls.villagers(level, hall, Villager::isAlive);
 		int guards = (int) villagers.stream().filter(Guards::isGuard).count();
 		var culture = Threats.get(Threats.BANDITS).orElse(null);
 		if (culture == null) {

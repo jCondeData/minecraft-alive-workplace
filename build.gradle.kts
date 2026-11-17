@@ -105,6 +105,7 @@ compattest?.let { set ->
             include("**/test/GameTestWatchdog.java")
             include("**/test/MockPlayerSweep.java")
             include("**/test/RepeatNewTests.java") // the nightly's repeats of the compat suite's new tests (22.7)
+            include("**/test/FreshPlanning.java") // B1321: a fresh tick's planning for the tests that ask for plans themselves
         }
         into(layout.buildDirectory.dir("generated/compatWatchdog"))
     }

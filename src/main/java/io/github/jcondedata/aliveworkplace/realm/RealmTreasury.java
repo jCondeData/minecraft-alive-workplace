@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.hall.Chronicle;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallScreen;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.work.Money;
+import io.github.jcondedata.aliveworkplace.work.Words;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -259,9 +260,12 @@ public final class RealmTreasury {
 			lore.toArray(Component[]::new));
 	}
 
-	/** How to give to the treasury: in CobbleDollars, one emerald's worth or a stack's, thousands marked ("6,400", B1326). */
+	/**
+	 * How to give to the treasury: in CobbleDollars, one emerald's worth or a stack's, thousands marked ("6,400", B1326),
+	 * "1 CobbleDollar" in the singular at a rate of 1 (B1347).
+	 */
 	public static Component giveHint() {
-		return Money.cobbleDollars() ? Component.translatable("screen.aliveworkplace.realm.treasury.give_dollars", Money.grouped(Money.DOLLARS_PER_EMERALD),
+		return Money.cobbleDollars() ? Words.counted("screen.aliveworkplace.realm.treasury.give_dollars", Money.DOLLARS_PER_EMERALD, Money.grouped(Money.DOLLARS_PER_EMERALD),
 			Money.grouped(64L * Money.DOLLARS_PER_EMERALD)) : Component.translatable("screen.aliveworkplace.realm.treasury.give_emeralds");
 	}
 

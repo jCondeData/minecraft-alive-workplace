@@ -91,9 +91,9 @@ public final class MegaStones {
 	/** The village's trainers: those round the nearest Village Hall, or without one those near {@code pos}; nearest first. */
 	public static List<Villager> trainers(ServerLevel level, BlockPos pos) {
 		Optional<BlockPos> hall = VillageHalls.nearest(level, pos);
-		AABB area = hall.map(VillageHalls::area).orElseGet(() -> new AABB(pos).inflate(REACH));
-		List<Villager> out = new ArrayList<>(level.getEntitiesOfClass(Villager.class, area,
-			v -> v.isAlive() && Trainers.isTrainer(v) && !StadiumDays.isVisitor(v) && !CupDays.isDelegate(v)));
+		java.util.function.Predicate<Villager> trainer = v -> v.isAlive() && Trainers.isTrainer(v) && !StadiumDays.isVisitor(v) && !CupDays.isDelegate(v);
+		List<Villager> out = new ArrayList<>(hall.isPresent() ? VillageHalls.villagers(level, hall.get(), trainer) // the village: the circle (B555)
+			: level.getEntitiesOfClass(Villager.class, new AABB(pos).inflate(REACH), trainer));
 		out.sort(Comparator.comparingDouble(v -> v.blockPosition().distSqr(pos)));
 		return out;
 	}

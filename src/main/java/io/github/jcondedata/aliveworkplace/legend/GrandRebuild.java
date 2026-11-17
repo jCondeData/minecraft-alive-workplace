@@ -194,7 +194,7 @@ public final class GrandRebuild {
 			return Optional.empty();
 		}
 		BlockPos centre = BlueprintOutline.bounds(choice.building().placement(), blueprint.get().size()).getCenter();
-		return level.getEntities(EntityType.VILLAGER, VillageHalls.area(hall), v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
 			.stream()
 			.filter(v -> io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).orElseThrow(), centre, Builders.MAX_SITE_DISTANCE))
 			.filter(v -> busy(level, v) <= Builders.MAX_QUEUE)

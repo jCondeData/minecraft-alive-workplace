@@ -38,7 +38,7 @@ public final class StewardResearch {
 	public static Village village(ServerLevel level, BlockPos hall) {
 		StewardConditions.Facts facts = StewardConditions.Facts.of(level, hall);
 		long raid = level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.lastRaidDay() : -100;
-		int ill = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Sickness.isIll(v)).size();
+		int ill = VillageHalls.villagers(level, hall, v -> v.isAlive() && Sickness.isIll(v)).size();
 		boolean food = new StewardConditions.FoodShort(VillageAdvice.MEALS_PER_ADULT).test(facts).held();
 		StewardConditions.Check store = new StewardConditions.StoreFull(STORE_FULL).test(facts);
 		return new Village(Chronicle.day(level) - raid, ill, food, store.held() ? (int) store.value() : 0);

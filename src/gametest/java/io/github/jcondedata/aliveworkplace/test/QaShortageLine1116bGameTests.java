@@ -35,7 +35,7 @@ import net.minecraft.world.level.block.Blocks;
  * ingots, never nuggets; "Logs of every wood at hand count: an oak and a spruce log for 2 chests read short of 2 Oak Logs,
  * and with a birch log too short of 1 Oak Log" (B1311), as the logs come in one by one, and with planks at hand.
  */
-public class QaShortageLine1116bGameTests {
+public class QaShortageLine1116bGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 

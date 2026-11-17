@@ -233,7 +233,7 @@ public final class Beastmaster {
 		List<BlockPos> chests = chests(level, beastmaster);
 		long today = Chronicle.day(level);
 		AABB area = VillageHalls.area(hall);
-		List<Villager> guards = level.getEntitiesOfClass(Villager.class, area, v -> v.isAlive() && Guards.isGuard(v));
+		List<Villager> guards = VillageHalls.villagers(level, hall, Guards::isGuard); // the village's guards: the circle (B555)
 		Map<UUID, Villager> byId = new HashMap<>();
 		for (Villager g : guards) {
 			byId.put(g.getUUID(), g);

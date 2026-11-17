@@ -1267,6 +1267,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShipsMutants1116dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinsMutants1116d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovensMutants1116d2GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampCleanupMutants1117dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCultureMutants1117dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRisings1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovens1102dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PirateLandingGameTests",

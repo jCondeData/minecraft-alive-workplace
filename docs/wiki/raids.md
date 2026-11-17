@@ -302,3 +302,8 @@ None.
 - B1320 (QA, lane D): `QaRaidSize1116dGameTests` (real raids at 12 villagers with 0, 1, 2, 3, 7, 8, 9 and 10 guards:
   6, 6, 7, 7, 9, 10, 10, 10, the guards' share in iron; never more than 16 from both sides, at 47, 51 and 52 villagers;
   the Barracks quest gives the size once).
+- QA (lane D, 2026-11-17): `QaCultureMutants1117dGameTests` (3): the culture reader's limits hold at both ends: a
+  captain's extra health 0 to 1000; an extra's count 0 to 8 by rank (0 at a lower rank: none come yet); what a captain
+  raises comes back at over 0 and at most 1 of its health (half when not given). The first mutation pass on `Culture`
+  (18 mutants against 12 culture classes, 1 not compiling) killed 11; these kill five of the other six. Left: the roster
+  pick's last-member fallback (never reached).

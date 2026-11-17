@@ -42,8 +42,8 @@ public class QaCultureMutants1117dGameTests implements FabricGameTest {
 	}
 
 	/** A captain's extra health is read from 0 to 1000, both ends included, and refused just past either. */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaCultureReader1117d"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaCultureReader1117d")
 	public void aCaptainsExtraHealthIsReadFromNoneToAThousand(GameTestHelper helper) {
 		for (String fine : new String[] {"0", "36", "999.5", "1000"}) {
 			String refused = refusal(captain(fine));
@@ -66,8 +66,8 @@ public class QaCultureMutants1117dGameTests implements FabricGameTest {
 	 * What a captain raises (32.9) rises at a share of its full health over 0 and at most 1: half when the file doesn't
 	 * say, 1 and a little over 0 read; 0 (a mob that would rise dead), less, or more than its full health refused.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaCultureReader1117d"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaCultureReader1117d")
 	public void whatACaptainRaisesComesBackWithOverNoneAndAtMostAllItsHealth(GameTestHelper helper) {
 		double share = read(raises(null)).captain().orElseThrow().raises().orElseThrow().health();
 		helper.assertTrue(share == 0.5, "a raise with no health given comes back at " + share + " of its health, not half");
@@ -86,8 +86,8 @@ public class QaCultureMutants1117dGameTests implements FabricGameTest {
 	 * An extra's count is 0 to 8 for a rank: 0 at a lower rank (none come yet) and 8 read; 9 or -1 refused. With
 	 * {@code {"village": 0, "town": 2, "city": 8}} a hamlet and a village get none, a town 2 and a city 8.
 	 */
-	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
-	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"qaCultureReader1117d"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "qaCultureReader1117d")
 	public void anExtrasCountIsNoneToEightAndNoneAtALowerRankMeansNoneComeYet(GameTestHelper helper) {
 		String extras = "\"extras\": [{\"entity\": \"minecraft:ravager\", \"role\": \"ram\", \"count\": {\"village\": 0, \"town\": 2, \"city\": 8}}]";
 		String refused = refusal(extras);

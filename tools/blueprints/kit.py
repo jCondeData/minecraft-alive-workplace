@@ -173,10 +173,11 @@ class Build:
         under = f" (+{self.basement} below ground)" if self.basement else ""
         print(f"{name}: {self.w}x{self.h}x{self.d}{under}, {solid} blocks -> {os.path.relpath(path, ROOT)}")
         if checked:
-            from check import check
-            for problem in check(self):
-                print(f"  CHECK {name}: {problem}")
+            from check import check, report
             main = os.path.abspath(MAIN_STRUCTURES)
+            listed = os.path.relpath(os.path.join(os.path.abspath(folder), name), main)  # its owner_rules_baseline name
+            for problem in report(listed, check(self)):
+                print(f"  CHECK {name}: {problem}")
             if os.path.abspath(folder).startswith(main):  # our blueprints: their furniture spots (37.2)
                 import furniture
                 rel = os.path.relpath(os.path.join(os.path.abspath(folder), name), main)

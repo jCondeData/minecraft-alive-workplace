@@ -228,6 +228,8 @@ if __name__ == "__main__":
         for name, fit_out in VILLAGE_HOUSES.items():
             job = HOUSE_JOBS.get(name)
             staffed_house(style, fit_out, "aliveworkplace:" + job if job else None).save(VILLAGE_STRUCTURES, f"{style}_{name}")
+        # ROADMAP 49.2: the Daub House (its blueprint comes from the rebuild kit, tools/blueprints/rebuild.py) as a village home
+        daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files

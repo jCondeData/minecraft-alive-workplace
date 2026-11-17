@@ -509,3 +509,88 @@ def workplace(name):
     z = 0. Its size is in StarterBlueprints.java."""
     from workplaces import WORKPLACE_BUILDS
     return WORKPLACE_BUILDS[name]()
+
+
+# --- The Daub House in villages (ROADMAP 49.2) ------------------------------------------------------------------
+# The Level I home of 36.23 (the rebuild kit's tools/blueprints/js/house_t1_b), grown in vanilla villages as a home:
+# no job block, a jobless villager from the worker pool, four beds. Its door already sits where the village houses'
+# do (4, 1, 2), so the street joins the same way. The plains house is the blueprint itself; each other style swaps its
+# materials (by block id, keeping every block's state): plinth stone, frame, daub, roof tiles, floors and joinery.
+DAUB_HOUSE = "house_t1_b"
+DAUB_STYLES = {
+    "plains": {},
+    "desert": {  # sandstone on a sandstone plinth, jungle wood, a red sandstone roof
+        "cobblestone": "sandstone", "mossy_cobblestone": "cut_sandstone", "stone": "smooth_sandstone",
+        "andesite": "sandstone", "stone_bricks": "cut_sandstone", "cobblestone_stairs": "sandstone_stairs",
+        "smooth_stone_slab": "smooth_sandstone_slab", "bricks": "cut_red_sandstone",
+        "brick_stairs": "smooth_red_sandstone_stairs", "brick_slab": "smooth_red_sandstone_slab",
+        "birch_planks": "smooth_sandstone", "grass_block": "sand", "poppy": "dead_bush", "cornflower": "dead_bush",
+        "oxeye_daisy": "dead_bush", "allium": "dead_bush", "potted_poppy": "potted_cactus",
+        "potted_azure_bluet": "potted_dead_bush", "potted_oxeye_daisy": "potted_cactus",
+        "@wood": {"dark_oak": "jungle", "spruce": "jungle"}},
+    "savanna": {  # white terracotta between an acacia frame, an acacia roof
+        "mud_bricks": "white_terracotta", "bricks": "acacia_planks", "brick_stairs": "acacia_stairs",
+        "brick_slab": "acacia_slab", "birch_planks": "acacia_planks",
+        "@wood": {"dark_oak": "acacia", "spruce": "acacia"}},
+    "snowy": {  # calcite between stripped spruce, a dark oak roof on a stone brick plinth
+        "cobblestone": "stone_bricks", "mossy_cobblestone": "cobblestone", "andesite": "diorite",
+        "cobblestone_stairs": "stone_brick_stairs", "mud_bricks": "calcite", "dark_oak_log": "stripped_spruce_log",
+        "bricks": "dark_oak_planks", "brick_stairs": "dark_oak_stairs", "brick_slab": "dark_oak_slab",
+        "birch_planks": "spruce_planks"},
+    "taiga": {  # spruce boards in a spruce frame, a dark oak roof on a mossy cobble plinth
+        "mud_bricks": "spruce_planks", "dark_oak_log": "spruce_log", "bricks": "dark_oak_planks",
+        "brick_stairs": "dark_oak_stairs", "brick_slab": "dark_oak_slab", "andesite": "mossy_cobblestone"},
+}
+
+
+def daub_block(style, name):
+    """The block {@code name} (a minecraft: id) of the Daub House in the village {@code style}."""
+    swaps = DAUB_STYLES[style]
+    short = name.split(":", 1)[1]
+    if short in swaps:
+        return "minecraft:" + swaps[short]
+    for old, new in swaps.get("@wood", {}).items():
+        for prefix in ("", "stripped_"):
+            if short.startswith(prefix + old + "_"):
+                return "minecraft:" + prefix + new + short[len(prefix + old):]
+    return name
+
+
+def daub_house_village(style):
+    """The Daub House as a village house in {@code style}: the street's jigsaw before the door at (4, 1, 0) (the front row
+    left as the ground it lands on), a jobless villager from the worker pool on the hall floor (4, 0, 5)."""
+    from holes import load
+    (w, h, d), cells, states = load(os.path.join(MAIN_STRUCTURES, DAUB_HOUSE + ".nbt"), props=True)
+    b = Build(w, h, d)
+    for (x, y, z), name in cells.items():
+        if name is None or name == "minecraft:air":
+            continue
+        b.set(x, y, z, daub_block(style, name), **states[(x, y, z)])
+    for x in range(w):
+        for y in range(h):
+            cell = b.get(x, y, 0)
+            # the front row is the street's ground (VillageGameTests, B5): the blueprint's flower beds there are left out
+            if cell is None or y <= 1 and cell[0] in ("minecraft:grass_block", "minecraft:sand") or y == 1 and b.get(x, 0, 0)[0] == "minecraft:structure_void":
+                b.set(x, y, 0, "structure_void")
+    assert b.get(4, 1, 0)[0] == "minecraft:structure_void" and b.get(4, 1, 2)[0].endswith("_door"), "the Daub House's door moved"
+    b.set(4, 1, 0, "jigsaw", orientation="north_up")
+    b.set_nbt(4, 1, 0, Compound({
+        "name": String("minecraft:building_entrance"), "target": String("minecraft:building_entrance"),
+        "pool": String("minecraft:empty"), "final_state": String("minecraft:structure_void"),
+        "joint": String("aligned"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    floor = b.get(4, 0, 5)[0]
+    b.set(4, 0, 5, "jigsaw", orientation="up_north")
+    b.set_nbt(4, 0, 5, Compound({
+        "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
+        "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String(floor),
+        "joint": String("rollable"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    b.fill_air()
+    return b
+
+
+if __name__ == "__main__":
+    # python3 tools/blueprints/village.py: the Daub House's five village pieces (generate.py also writes them)
+    for style in VILLAGE_STYLES:
+        daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")

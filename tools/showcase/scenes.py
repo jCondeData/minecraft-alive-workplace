@@ -1392,6 +1392,20 @@ SCENES = [
            ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
+    # The rebuild kit (ROADMAP 49.1, tools/blueprints/REBUILD.md): SCENE=rebuild_<family> films any blueprint from four sides
+    # and at eye level in each of its rooms (RebuildScene); the Well is its dry run (no rooms: the four outside views)
+    S("rebuild_well", "Build families", "The rebuild kit's scene: the Well from four sides",
+      "the Well's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a well) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Well from the front"), ("02_outside_back", "From the back"),
+           ("03_outside_west", "From the west"), ("04_outside_east", "From the east")], furniture=True),
+    # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
+    # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
+    S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",
+      "the Daub House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and both rooms (the hall with its kitchen, the loft of beds) get an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Daub House from the front: the hooded door under the steep brick gable"),
+           ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
+           ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
+           ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",
@@ -1729,6 +1743,8 @@ def harness_scenes(root):
         text = open(os.path.join(dev, f), encoding="utf-8").read()
         names |= set(re.findall(r'"(\w+)"\.equals\(System\.getProperty\("aliveworkplace\.scene"\)\)', text))
         names |= set(re.findall(r'(?:SCENES|SCREENS)\.put\("(\w+)"', text))
+        for listed in re.findall(r'FILMED = List\.of\(([^)]*)\)', text):  # RebuildScene's families (49.1)
+            names |= {"rebuild_" + n for n in re.findall(r'"(\w+)"', listed)}
     names.add("builders")  # the default scene
     return names
 

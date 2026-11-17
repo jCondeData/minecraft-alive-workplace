@@ -1,0 +1,11 @@
+{
+  "name": "stone-house",
+  "private": true,
+  "type": "module",
+  "description": "Stone House (ROADMAP 49): four levels. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py house_t1_b house_t1_b --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/stone-house.nbt"
+  }
+}

@@ -16,6 +16,17 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Daub House**, a new Level I home (the owner's pick of 36.23's two): mud-brick daub in a dark oak frame under a
+  steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
+  In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
+  Steward for a hamlet three beds short (49.2).
+
+### Dev
+- The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
+  library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
+  `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

@@ -1414,6 +1414,15 @@ SCENES = [
            ("03_outside_west", "From the west: the stack on the gable over the hearth"),
            ("10_room_1", "Downstairs at eye level: the table for four, the hearth with its two chairs, the kitchen"),
            ("11_room_2", "The chamber at eye level: the bed to the back wall, its nightstand and chest, the desk at the front window")], furniture=True),
+    # ROADMAP 49.5: the Burgher's Townhouse rebuilt from scratch (a tall merchant's house gable-end to the street: a stone
+    # shop below a jettied timber floor, a steep attic, the stack up the back gable), its first level built as a server
+    # with the furniture mods builds it, from four sides and at eye level in every room
+    S("rebuild_townhouse", "Build families", "The Burgher's Townhouse, rebuilt from scratch, furnished: from four sides and every room",
+      "the Townhouse's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the shop and kitchen downstairs, the hall and chamber over them, the attic) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Townhouse from the front: the jettied timber floor on its brackets over the stone shop, the steep gable and the hoist beam"),
+           ("02_outside_back", "From the back: the chimney stack up the back gable, the kitchen hearth set in its foot"),
+           ("10_room_1", "The ground floor at eye level"),
+           ("11_room_2", "The next room up at eye level")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

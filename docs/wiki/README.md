@@ -87,6 +87,7 @@ How everything in the mod works, in plain words: written for the owner first, th
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
 - [The Stone House](stone-house.md): the village's second kind of home (four levels), rebuilt from scratch with the rebuild kit (49.4).
+- [The Burgher's Townhouse](townhouse.md): the grade II home for Burghers (four levels), rebuilt from scratch with the rebuild kit (49.5).
 - [The Daub House](daub-house.md): the Level I home of 36.23 (the owner's pick) in the Blueprint Table, in vanilla villages of all five styles and in the Steward's plans, built with the rebuild kit (49.2).
 - [Graveyards](graveyards.md): the Undertaker lays the village's graves to rest in its Graveyard, in rows, or in a plot by the hall (B222).
 - [Elders](elders.md): elders, their retirement and apprentices, their passing, the Evergreen Charm that keeps a good one, and family trees (1.8).

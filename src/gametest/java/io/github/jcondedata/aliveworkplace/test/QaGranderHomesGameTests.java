@@ -212,14 +212,14 @@ public class QaGranderHomesGameTests implements FabricGameTest {
 		Villager dara = villager(helper, new BlockPos(3, 2, 20), "Dara");
 		Villager tomas = villager(helper, new BlockPos(5, 2, 20), "Tomas");
 		marry(dara, tomas);
-		Beds.home(dara, helper.absolutePos(new BlockPos(6, 8, 10)));
+		Beds.home(dara, helper.absolutePos(new BlockPos(7, 8, 13))); // Townhouse I's chamber bed, head (5, 6, 11)
 		Beds.home(tomas, helper.absolutePos(new BlockPos(21, 3, 5)));
 		SocialClasses.seed(dara, SocialClasses.get(ours("burgher")));
 		SocialClasses.seed(tomas, SocialClasses.get(ours("burgher")));
 		List<String> tips = homeTips(level, hall);
 		helper.assertTrue(tips.size() == 1 && (tips.contains("Dara and Tomas are Burghers and want a grade II home | " + HOW)
 			|| tips.contains("Tomas and Dara are Burghers and want a grade II home | " + HOW)), "the couple at the lower of their homes: " + tips);
-		Beds.home(tomas, helper.absolutePos(new BlockPos(8, 8, 10)));
+		Beds.home(tomas, helper.absolutePos(new BlockPos(9, 12, 4))); // an attic bed, head (7, 10, 2)
 		helper.assertTrue(homeTips(level, hall).isEmpty(), "both in the Townhouse, no tip: " + homeTips(level, hall));
 		helper.succeed();
 	}
@@ -257,7 +257,8 @@ public class QaGranderHomesGameTests implements FabricGameTest {
 		BlockPos hall = village(helper, HALL, 32);
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		BlueprintData.Placement townhouse = placement(helper, new BlockPos(2, 2, 2));
-		BlueprintData.Placement artisans = placement(helper, new BlockPos(18, 2, 2));
+		// clear of Townhouse II (18 wide since 49.5: x 2-19 here), so Bertram's bed is in the Artisan's House alone
+		BlueprintData.Placement artisans = placement(helper, new BlockPos(21, 2, 2));
 		Leftovers.after(helper, () -> {
 			sites.forgetFinished(townhouse);
 			sites.forgetFinished(artisans);
@@ -272,10 +273,10 @@ public class QaGranderHomesGameTests implements FabricGameTest {
 		SocialClasses.seed(dara, SocialClasses.get(ours("peasant")));
 		SocialClasses.seed(tomas, SocialClasses.get(ours("peasant")));
 		Villager aldous = villager(helper, new BlockPos(9, 2, 26), "Aldous");
-		Beds.home(aldous, helper.absolutePos(new BlockPos(6, 8, 10)));
+		Beds.home(aldous, helper.absolutePos(new BlockPos(7, 8, 13))); // Townhouse I's chamber bed, head (5, 6, 11)
 		SocialClasses.seed(aldous, SocialClasses.get(ours("noble")));
 		Villager bertram = villager(helper, new BlockPos(11, 2, 26), "Bertram");
-		Beds.home(bertram, helper.absolutePos(new BlockPos(19, 3, 3)));
+		Beds.home(bertram, helper.absolutePos(new BlockPos(22, 3, 3)));
 		SocialClasses.seed(bertram, SocialClasses.get(ours("burgher")));
 
 		List<String> tips = homeTips(level, hall);

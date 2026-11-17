@@ -54,6 +54,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
+	/** 30 tall: the Townhouse rebuilt in 49.5 (22 and 26 tall) is taller than the huge area (20), whose barrier ceiling it would meet. */
+	private static final String TALL = "aliveworkplace_test:tall_area";
 	private static final BlockPos HOUSE = new BlockPos(7, 2, 2);
 	private static final BlockPos HALL = new BlockPos(1, 2, 1);
 	private static final BlockPos BENCH = new BlockPos(3, 2, 27);
@@ -86,7 +88,8 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 		List<TestFunction> out = new ArrayList<>();
 		for (String[] r : REDRAWN) {
 			String name = "qaReleaseRefresh_" + r[0].replace('/', '_');
-			out.add(new TestFunction(name, name, HUGE, 200, 0, true, helper -> refreshesToAFreshBuild(helper, AliveWorkplace.id(r[0]), r[1])));
+			String area = r[0].startsWith("townhouse") ? TALL : HUGE;
+			out.add(new TestFunction(name, name, area, 200, 0, true, helper -> refreshesToAFreshBuild(helper, AliveWorkplace.id(r[0]), r[1])));
 		}
 		return out;
 	}

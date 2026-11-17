@@ -24,16 +24,14 @@ tier below:
   jettied a block out over the street on brackets, with two beds. A brick chimney runs up the side.
 - **Artisan's House II** (grade II). A stone workshop wing at the back, through a doorway in the back wall: a long
   bench, a loom, a barrel and a third bed in the corner, under its own lower red gambrel.
-- **Burgher's Townhouse** (grade II). Three stories: a rusticated stone shop below with a shop window either side of
-  the door and a stall board under each, a counter and shelves inside; two stories of warm sandstone stucco above
-  between stone quoins and string courses, the first jettied over the street with a little iron balcony at each
-  window, with the main bedroom (two beds) and a second bedroom (one bed); a loft in a slate mansard roof (steep sides
-  with dormer windows, a flat top); a brick chimney up the side.
-- **Townhouse II** (grade III). A walled courtyard garden behind, through a back door: brick walls with stone caps, a
-  gate, flower beds in their own soil, an azalea, a bench and a lamp; and the loft fitted out as a third bedroom.
-- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four stories up to a study
-  under a slate cap: shelves of books, a desk, a reading chair and windows every way, reached from the main bedroom
-  and up ladders.
+- **Burgher's Townhouse** (grade II; rebuilt from scratch in 49.5, [its own page](townhouse.md)). A tall merchant's
+  house standing gable-end to the street: a stone shop and kitchen below, a timber-framed floor jettied out over the
+  street on dark brackets with the hall and the parents' chamber, a steep red-tiled attic with the children's two beds,
+  a hoist beam at the gable's peak and the chimney stack up the back gable over the kitchen hearth.
+- **Townhouse II** (grade III). A counting-house wing on the east with its own small street gable and door: the clerks'
+  table below, two beds above under the open roof.
+- **Townhouse III** (grade III). A square stone strongroom tower behind the wing, under a steep pyramid roof: the
+  strongroom, a library, a bedroom and a lookout study at the top, up ladders.
 - **Noble's Manor** (a grade III home). A stone house of two stories standing back behind a graveled forecourt with
   clipped hedges and two lamps. Inside, a double-height hall with a chequered floor, a three-wide grand stair up to a
   gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlor to the

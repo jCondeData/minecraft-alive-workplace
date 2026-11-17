@@ -151,8 +151,9 @@ if __name__ == "__main__":
     save_waystone_plazas()  # ROADMAP 41.1: proposed only with Waystones
     # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then
     # rebuild.py stone_house <id>); its old Python drawing in houses.py and basements.py is no longer saved
-    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2), ("townhouse", townhouse),
-                       ("townhouse_2", townhouse_2), ("townhouse_3", townhouse_3)):
+    # ROADMAP 49.5: the Townhouse (I-IV) comes from the rebuild kit too (tools/blueprints/js/townhouse/build.sh, then
+    # rebuild.py townhouse <id>); its old Python drawing is no longer saved
+    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
     for name, draw in (("manor", manor), ("manor_2", manor_2), ("manor_3", manor_3)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16

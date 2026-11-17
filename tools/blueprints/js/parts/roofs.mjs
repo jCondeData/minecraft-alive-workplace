@@ -120,3 +120,21 @@ export function catslideRoof(c, { axis, across: [a0, a1], ridge, along: [l0, l1]
 export function pentice(c, cells, y, roof, toward) {
   for (const [x, z] of cells) stair(c, x, y, z, roof.stairs, toward)
 }
+
+/** pyramidRoof: a steep four-sided roof over a square tower centred on (cx, cz): a ring of stairs `r` out from the
+ *  centre at y0 (the overhang when r is the walls' half-width + 1), each ring in one block and two up from the last
+ *  (a full course under each ring of stairs), solid inside, to a full block at the peak (y0 + 2r). Grown from the
+ *  Burgher's Townhouse (49), whose stair tower carries one. Returns the peak's y. */
+export function pyramidRoof(c, cx, cz, r, y0, roof) {
+  const face = (dx, dz) => (Math.abs(dx) >= Math.abs(dz) ? (dx < 0 ? 'east' : 'west') : (dz < 0 ? 'south' : 'north'))
+  for (let k = 0; k <= r; k++) {
+    const rr = r - k, y = y0 + 2 * k
+    for (let dx = -rr; dx <= rr; dx++) for (let dz = -rr; dz <= rr; dz++) {
+      const ring = Math.max(Math.abs(dx), Math.abs(dz)) === rr && rr > 0
+      if (ring) stair(c, cx + dx, y, cz + dz, roof.stairs, face(dx, dz))
+      else c.set(cx + dx, y, cz + dz, roof.full)
+      if (!ring && k < r) c.set(cx + dx, y + 1, cz + dz, roof.full)
+    }
+  }
+  return y0 + 2 * r
+}

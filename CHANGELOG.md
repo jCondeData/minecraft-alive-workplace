@@ -27,6 +27,11 @@ asks for the steps, `latest.log` and any crash report).
   quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
   kitchen and a chamber upstairs; II adds a parlour wing, III a back room under a catslide roof, IV a store cellar down a
   ladder by the hearth. Houses already standing keep their look until you press Refresh on the hall's Repairs page (49.4).
+- **The Burgher's Townhouse is rebuilt from scratch** (all four levels): a tall merchant's house gable-end to the street,
+  a stone shop and kitchen below a timber floor jettied over the street, a steep attic with a hoist beam, the hearth set
+  in the foot of the chimney stack; II adds a counting-house wing with two beds, III a stone strongroom tower with a
+  lookout study, IV a vaulted cellar under the shop. Houses already standing keep their look until you press Refresh
+  on the hall's Repairs page (49.5).
 
 ### Dev
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts

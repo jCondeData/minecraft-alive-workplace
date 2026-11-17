@@ -342,3 +342,13 @@ three sizes with every setting's name fitting beside its control; a switch, a sm
 clicks, a page reset, and the file read back; the new sentences), with `GuideGameTests` and `ConfigGameTests` still
 passing. Scenes: `guide` (every page, a chapter from the rail, then at 320x180) and `config` (Work's numbers, Village's
 switches, Festivals turned off and saved, then at 320x180).
+
+QA, lane E, 2026-11-17: `QaCityPlanCopper1117eGameTests` (44.3, 3: the City Plan and the Charter on both sides of the
+compact boundary, a 1920x1080 and an ultrawide screen and 320x180, the map a square of whole cells and nothing
+overlapping; a full plan's 16 zones each picked by a click on its row at some scroll, no click on an empty row, the
+strip under the last drawn row, the scroll bar or under the list picks a zone; the tool and width lines read with
+their real arguments in American English) and `QaBlueprintBook1117eGameTests` (48.1, 5: the most-styled build's style
+rail fits at every GUI scale; a style the build lacks, a deleted build and a press from 20 blocks away hand nothing out
+and keep the blank; a shelved blueprint of a deleted build is listed, survives a save and reload and comes back out;
+every listed build's materials name real items). With Create: `QaTableCreate1117eCompatTests` (every Create build's
+materials, preview and styles, and Get Blueprint for each).

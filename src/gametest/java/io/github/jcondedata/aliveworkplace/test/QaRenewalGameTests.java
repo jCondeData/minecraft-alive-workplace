@@ -459,7 +459,7 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		Resource ours = files.get(homes);
 		helper.assertTrue(ours != null, "setup: no " + homes);
 		Map<ResourceLocation, Resource> withPack = new HashMap<>(files);
-		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:no_such_building\", \"aliveworkplace:stone_house\"]}"));
+		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:no_such_building\", \"aliveworkplace:starter_cottage\"]}"));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/broken.json"), json(ours.source(), "{\"kind\": \"home\", \"buildings\": [ "));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/no_kind.json"), json(ours.source(), "{\"buildings\": [\"aliveworkplace:stone_house\"]}"));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/no_buildings.json"), json(ours.source(), "{\"job\": \"minecraft:mason\", \"buildings\": []}"));
@@ -476,7 +476,7 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 			BoundingBox old = OldHousesGameTests.placeVanilla(helper, SMALL_HOUSE, HOUSE);
 			OldHouses.House house = measure(v, beds(level, old).get(0));
 			Optional<Renewals.Replacement> r = Renewals.replacement(level, v.hall(), house);
-			helper.assertTrue(r.isPresent() && BlueprintStyles.base(r.get().blueprint()).getPath().equals("stone_house"),
+			helper.assertTrue(r.isPresent() && BlueprintStyles.base(r.get().blueprint()).getPath().equals("starter_cottage"),
 				"past the unknown building the next wasn't taken: " + r.map(Renewals.Replacement::blueprint));
 		} finally {
 			listener.onResourceManagerReload(real);

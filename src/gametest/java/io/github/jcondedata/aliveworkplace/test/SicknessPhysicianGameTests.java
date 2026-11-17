@@ -269,8 +269,9 @@ public class SicknessPhysicianGameTests implements FabricGameTest {
 		// The villager cured of the ordinary illness is kept well: the cough doesn't take them for 10 days.
 		helper.assertTrue(!Sickness.greyCough(level, ordinary), "a villager kept well by a Remedy caught the Grey Cough");
 
-		// A Nurse in the village comes first.
-		Villager nurse = nurse(helper, new BlockPos(6, 2, 6));
+		// A Nurse in the village comes first, though farther from the hall than the Physician. She stands 8 and 6 off the
+		// hall, inside its circle of 12 (B555: at 8 and 9 off, 12.04 across, she was in the square's corner, no village's).
+		Villager nurse = nurse(helper, new BlockPos(6, 2, 9));
 		setDay(level, Chronicle.day(level) + 1, 1000);
 		Sickness.recover(level, coughing);
 		Sickness.recover(level, other);

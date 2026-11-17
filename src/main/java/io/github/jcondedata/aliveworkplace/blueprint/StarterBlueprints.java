@@ -218,9 +218,13 @@ public final class StarterBlueprints {
 		return BASEMENTS.getOrDefault(id, 0);
 	}
 
-	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
+	/**
+	 * Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. Rebuilt from
+	 * scratch (ROADMAP 49.6, {@code tools/blueprints/js/terrace}): the Crow-Step Row, narrow brick houses each under its
+	 * own steep roof between crow-stepped gables, a kitchen below and a bedroom up a ladder.
+	 */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
-	/** A third home on the east end: six beds. */
+	/** A third house on the east end, the same again: six beds. */
 	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
 	/** A tavern below, three guest rooms with six beds above. */
 	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));

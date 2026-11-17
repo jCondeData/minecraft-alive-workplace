@@ -32,6 +32,11 @@ asks for the steps, `latest.log` and any crash report).
   in the foot of the chimney stack; II adds a counting-house wing with two beds, III a stone strongroom tower with a
   lookout study, IV a vaulted cellar under the shop. Houses already standing keep their look until you press Refresh
   on the hall's Repairs page (49.5).
+- **The Terrace is rebuilt from scratch** (both levels): narrow brick houses side by side, each under its own steep
+  slate roof between crow-stepped gables with white copings, a slate canopy and lantern over every door, and a chimney
+  in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
+  two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
+  you press Refresh on the hall's Repairs page (49.6).
 ### Fixed
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
   is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put

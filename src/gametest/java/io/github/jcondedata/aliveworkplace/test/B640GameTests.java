@@ -41,13 +41,16 @@ public class B640GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabric
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos ORIGIN = new BlockPos(8, 2, 8);
-	/** The Terrace's front glass (blueprint positions): the two bays (z 0) and the two dormers (z 1). */
+	/**
+	 * The Terrace's front glass (blueprint positions): the two front-room windows (z 1, y 2-3) and the two gable windows
+	 * (z 1, y 10-11) of the rebuilt Crow-Step Row (49.6; before it, the bays at z 0 and the dormers).
+	 */
 	private static final List<BlockPos> FRONT = new ArrayList<>();
 
 	static {
-		for (int x : new int[] {4, 5, 7, 8}) {
-			FRONT.add(new BlockPos(x, 2, 0));
-			FRONT.add(new BlockPos(x, 3, 0));
+		for (int x : new int[] {2, 3, 7, 8}) {
+			FRONT.add(new BlockPos(x, 2, 1));
+			FRONT.add(new BlockPos(x, 3, 1));
 		}
 		for (int x : new int[] {3, 4, 8, 9}) {
 			FRONT.add(new BlockPos(x, 10, 1));

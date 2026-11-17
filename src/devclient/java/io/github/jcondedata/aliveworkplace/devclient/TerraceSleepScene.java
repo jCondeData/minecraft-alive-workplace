@@ -108,8 +108,8 @@ final class TerraceSleepScene {
 			server.execute(this::watch);
 		}
 		if (claimed && !inKitchen) {
-			inKitchen = true; // the west home's kitchen, its ladder up in the corner
-			look(mc, Vec3.atLowerCornerOf(ORIGIN).add(2.4, 3.3, 3.2), Vec3.atLowerCornerOf(ORIGIN).add(5.5, 2.2, 7.5));
+			inKitchen = true; // the west home, from its front room: the kitchen and the ladder up the party wall (49.6)
+			look(mc, Vec3.atLowerCornerOf(ORIGIN).add(2.5, 3.3, 2.5), Vec3.atLowerCornerOf(ORIGIN).add(5.5, 2.2, 5.5));
 		}
 		if (climbing && !ladderShot) {
 			ladderShot = true;
@@ -117,7 +117,7 @@ final class TerraceSleepScene {
 		}
 		if ((ladderShot || asleep) && !inBedroom) {
 			inBedroom = true; // the west home's bedroom, from beside the ladder's top
-			look(mc, Vec3.atLowerCornerOf(ORIGIN).add(4.6, 7.9, 7.4), Vec3.atLowerCornerOf(ORIGIN).add(2.5, 6.3, 3.6));
+			look(mc, Vec3.atLowerCornerOf(ORIGIN).add(4.5, 7.9, 4.5), Vec3.atLowerCornerOf(ORIGIN).add(2.5, 6.4, 7.2));
 		}
 		if (asleep && sleptAt < 0) {
 			sleptAt = tick;
@@ -208,7 +208,7 @@ final class TerraceSleepScene {
 		}
 		newcomer = EntityType.VILLAGER.create(level);
 		if (newcomer != null) {
-			newcomer.moveTo(ORIGIN.getX() + 11.5, ORIGIN.getY(), ORIGIN.getZ() - 1.5, 0, 0); // on the lawn by the east home's door
+			newcomer.moveTo(ORIGIN.getX() + 10.5, ORIGIN.getY(), ORIGIN.getZ() - 1.5, 0, 0); // on the lawn by the east home's door (x 10)
 			newcomer.setPersistenceRequired();
 			level.addFreshEntity(newcomer);
 		}
@@ -222,7 +222,7 @@ final class TerraceSleepScene {
 		}
 		claimed |= newcomer.getBrain().getMemory(MemoryModuleType.HOME).filter(g -> westBeds.contains(g.pos())).isPresent();
 		BlockPos feet = newcomer.blockPosition();
-		climbing |= feet.getX() == ORIGIN.getX() + 5 && feet.getZ() == ORIGIN.getZ() + 7 && feet.getY() >= ORIGIN.getY() + 2;
+		climbing |= feet.getX() == ORIGIN.getX() + 5 && feet.getZ() == ORIGIN.getZ() + 5 && feet.getY() >= ORIGIN.getY() + 2; // the west ladder (5, 1..5, 5)
 		asleep |= claimed && newcomer.isSleeping() && newcomer.getSleepingPos().filter(westBeds::contains).isPresent();
 	}
 

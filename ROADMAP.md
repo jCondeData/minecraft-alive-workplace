@@ -6904,7 +6904,7 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
   sheet tool; the owner's three rules in `check.py` with tests that a corner without its post, a floor lantern and
   plates by a door are refused. Done when: all of it, and a dry run on one small family (`well`) through brief, blind
   design, critic and sheet.
-- [ ] **49.2** **The Daub House goes into villages** (36.23, the owner's pick, with 36.23a-c's changes: joined railings,
+- [x] **49.2** (review: pending 2026-11-17) **The Daub House goes into villages** (36.23, the owner's pick, with 36.23a-c's changes: joined railings,
   the lamp on its table, the plates in the kitchen) from `wip/house-t1-furnished`: a Level I home in the village
   plans and the Blueprint Table, its village and modded variants, its GameTests; the Hearthstead (A) stays unused on
   `wip/house-t1`.

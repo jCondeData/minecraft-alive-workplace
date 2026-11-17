@@ -244,6 +244,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaUploadLoot1108cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LuxuryWorkshopsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AnsweringHousesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.DaubHouseGameTests",
 			"io.github.jcondedata.aliveworkplace.test.AgelessElderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MourningGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RandomJobsGameTests",

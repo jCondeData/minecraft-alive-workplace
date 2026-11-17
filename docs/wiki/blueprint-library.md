@@ -165,9 +165,9 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
-- 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
-  is on the Table or in villages until the owner picks one (36.23a). The Daub House's hall has no shelves by the door;
-  its plates stand on the kitchen counters (36.23c).
+- 36.23: a new Level I house was drawn two ways (the Hearthstead and the Daub House); the owner picked the Daub House,
+  which is on the Table since 49.2 (locked at first, like most builds; [The Daub House](daub-house.md)). The Hearthstead
+  stays unused on branch `wip/house-t1`.
 
 ## 8. Proof
 

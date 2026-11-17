@@ -42,7 +42,7 @@ import net.minecraft.world.phys.Vec3;
 final class RebuildScene {
 	/** The families with a scene in tools/showcase/scenes.py (rebuild_&lt;family&gt;): each rebuild adds its own. Any other
 	 *  family films too, by hand (SCENE=rebuild_&lt;family&gt;), but isn't in the nightly showcase. */
-	static final List<String> FILMED = List.of("well");
+	static final List<String> FILMED = List.of("well", "house_t1_b");
 	private static final BlockPos AT = new BlockPos(0, -60, 0);
 	private static final int FIRST = 80;
 	private static final int EACH = 50;

@@ -1398,6 +1398,14 @@ SCENES = [
       "the Well's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a well) gets an eye-level shot from a free floor cell with a clear view",
       40, [("01_outside_front", "The Well from the front"), ("02_outside_back", "From the back"),
            ("03_outside_west", "From the west"), ("04_outside_east", "From the east")], furniture=True),
+    # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
+    # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
+    S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",
+      "the Daub House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and both rooms (the hall with its kitchen, the loft of beds) get an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Daub House from the front: the hooded door under the steep brick gable"),
+           ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
+           ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
+           ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

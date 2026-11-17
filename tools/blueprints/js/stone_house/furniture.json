@@ -1,7 +1,7 @@
 {"spots": [
   {"kind":"chair","pos":[2,1,2],"facing":"south","cells":[[0,0,0]],"wood":"dark_oak","colour":"red"},
   {"kind":"chair","pos":[2,1,4],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":"red"},
-  {"kind":"clock","pos":[3,1,5],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"clock","pos":[4,1,2],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
   {"kind":"table","pos":[6,1,4],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"white"},
   {"kind":"table","pos":[6,1,5],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"white"},
   {"kind":"chair","pos":[5,1,4],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":null},

@@ -8,7 +8,7 @@ Roadmap items: 34.15, 26.15, 49.5
 ## 1. What a player sees
 
 - **Burgher's Townhouse** (11 x 22 x 14, grade II; builders sell it once the village has Artisans): a tall merchant's
-  house standing gable-end to the street. A stone-brick ground storey on a cobble plinth with dressed andesite quoins;
+  house standing gable-end to the street. A stone-brick ground story on a cobble plinth with dressed andesite quoins;
   over it a timber-framed floor of white plaster between dark oak posts, jettied a block out over the street on dark
   brackets, with lanterns hung under the jetty either side of the door; a steep red roof of polished granite with barge
   boards on both gables, two dormers down the west slope, a hoist beam with a chain and lantern at the front gable's

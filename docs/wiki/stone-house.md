@@ -7,7 +7,7 @@ Roadmap items: 26.15, 49.4
 
 ## 1. What a player sees
 
-- **Stone House** (11 x 16 x 11, in every Table's starting set): the mason's house. A square two-storey house of rubble
+- **Stone House** (11 x 16 x 11, in every Table's starting set): the mason's house. A square two-story house of rubble
   stone (cobble, stone and andesite, moss only where water lies: the plinth, the corners' feet, under the eaves) with
   dressed stone-brick quoins up every corner, a stone-brick floor band all round at the upper floor, a dark slate roof
   with dark oak trim under the gable ends, and a fat stack on the west gable with a stepped breast. A slate hood and a
@@ -18,7 +18,7 @@ Roadmap items: 26.15, 49.4
     furnace, a counter with the plates, the barrel with a shelf of crockery over it.
   - A straight stair up the east wall to the **chamber** under the slates: the bed to the back wall with its nightstand
     and the chest at its foot, a desk and chair in the front window's light, a cupboard, one lantern from the ridge.
-- **Stone House II** (13 x 16 x 11): a lower **parlour wing** with a lean-to roof against the east gable, through the
+- **Stone House II** (13 x 16 x 11): a lower **parlor wing** with a lean-to roof against the east gable, through the
   hall's old east window: a settle under its window, a bed for a grandparent, its nightstand and a lamp.
 - **Stone House III** (13 x 16 x 14): the back roof carried on down as a **catslide** over a back room behind the house,
   through the kitchen's old back window: two beds for the children, nightstands, a rug, a lamp.
@@ -62,7 +62,7 @@ keep their drawing until a refresh.
 
 ## 6. Decisions
 
-- The critic's optional notes: the cellar's middle got the summer beam and post (cheap, and the store now has a centre);
+- The critic's optional notes: the cellar's middle got the summer beam and post (cheap, and the store now has a center);
   a dormer or step in III-IV's long rear roof was left for a later pass (the roof parts' dormer runs only along z).
 - Time limits of the GameTests whose builder now does nearly a whole house (the refresh tests from an older drawing,
   12,000 to 20,000 ticks; the crew-scaling test's nine builds, 36,000 to 60,000) were raised for the bigger house; what

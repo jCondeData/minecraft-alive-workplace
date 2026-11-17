@@ -203,6 +203,10 @@ public class DaubHouseGameTests implements FabricGameTest {
 			helper.assertTrue(bedHeads(states) == 4, id + " has " + bedHeads(states) + " beds");
 			long jobs = states.stream().filter(DaubHouseGameTests::jobSite).count();
 			helper.assertTrue(jobs <= 1, id + " has " + jobs + " job blocks");
+			// the daub is the plains house's mud brick; every other style swaps it for its own walls (B1367: the desert
+			// piece kept all 113 mud-brick panels)
+			long daub = states.stream().filter(s -> s.is(Blocks.MUD_BRICKS)).count();
+			helper.assertTrue(style.equals("plains") ? daub > 0 : daub == 0, id + " has " + daub + " mud-brick daub panels");
 			CompoundTag saved = template.save(new CompoundTag());
 			helper.assertTrue(saved.getList("entities", Tag.TAG_COMPOUND).isEmpty(), id + " stores a villager: the worker pool gives it one");
 			helper.assertTrue(template.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.AIR).stream()

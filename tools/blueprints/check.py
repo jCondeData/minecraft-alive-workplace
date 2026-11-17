@@ -151,7 +151,7 @@ def check(b, only=None, whole=None):
             pass  # a hanging pot (37.5): a flower pot needs nothing under it in game, the chain holds it to the beam
         elif any(s in short for s in STANDS) and "wall_" not in short:
             bad = not grounded(x, y, z) and below is None and "stands on air"
-        elif any(name.startswith(g) or g in name for g in GRAVITY):
+        elif any(name == g if ":" in g else g in name for g in GRAVITY):  # "minecraft:sand", not sandstone
             bad = not grounded(x, y, z) and below is None and "will fall"
         if not bad and (short in CENTRE_STANDS or short.endswith("candle")) and props.get("hanging") != "true" \
                 and below is not None and not holds_on_top(below):

@@ -4,7 +4,7 @@ Milestone 49, item 49.2 (the owner's pick of 36.23's two new Level I houses, 202
 House"), with his three changes (36.23a-c): the loft railing joined at its corners, the short lamp on a side table, the
 plates in the kitchen. A new home for a village's first families, the first building made with the rebuild kit
 (`tools/blueprints/REBUILD.md`).
-Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2
+Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, B1367
 
 ## 1. What a player sees
 

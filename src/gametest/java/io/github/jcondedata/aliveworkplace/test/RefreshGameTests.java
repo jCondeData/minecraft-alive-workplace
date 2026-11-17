@@ -384,8 +384,10 @@ public class RefreshGameTests implements FabricGameTest {
 	 * A Stone House built from its first drawing, refreshed through the hall to the current one: every leftover the
 	 * latest drawing no longer has is gone (or turned into the new piece), and every new piece stands.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"refresh_stone_house"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "refresh_stone_house")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"refresh_stone_house"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "refresh_stone_house")
 	public void aStoneHouseFromAnOlderDrawingIsRefreshedToTheCurrentOne(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.finished(helper);

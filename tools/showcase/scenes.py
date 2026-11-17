@@ -1406,6 +1406,14 @@ SCENES = [
            ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
            ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
            ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
+    # ROADMAP 49.4: the Stone House rebuilt from scratch (the mason's house: rubble walls, dressed quoins, the end stack),
+    # its first level built as a server with the furniture mods builds it, from four sides and at eye level downstairs and up
+    S("rebuild_stone_house", "Build families", "The Stone House, rebuilt from scratch, furnished: from four sides, the hall and the chamber",
+      "the Stone House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and both floors (the hall with its kitchen and box room, the chamber upstairs) get an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Stone House from the front: the door under its slate hood, the dressed quoins and the floor band"),
+           ("03_outside_west", "From the west: the stack on the gable over the hearth"),
+           ("10_room_1", "Downstairs at eye level: the table for four, the hearth with its two chairs, the kitchen"),
+           ("11_room_2", "The chamber at eye level: the bed to the back wall, its nightstand and chest, the desk at the front window")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

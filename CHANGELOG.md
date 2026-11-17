@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
 
+### Changed
+- **The Stone House is rebuilt from scratch** (all four levels): a two-storey mason's house of rubble stone with dressed
+  quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
+  kitchen and a chamber upstairs; II adds a parlour wing, III a back room under a catslide roof, IV a store cellar down a
+  ladder by the hearth. Houses already standing keep their look until you press Refresh on the hall's Repairs page (49.4).
+
 ### Dev
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in

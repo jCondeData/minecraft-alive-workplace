@@ -236,8 +236,10 @@ public class QaRefreshFurnishedGameTests implements FabricGameTest {
 	 * through the hall's button, the sites and the Builder are saved and loaded mid-way: afterwards the house is a fresh
 	 * build (both gold blocks aside, both kept), nothing floats, and the page has no second refresh to offer.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"qa_b642_reload"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "qa_b642_reload")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"qa_b642_reload"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qa_b642_reload")
 	public void aFurnishedOldStoneHouseRefreshedAcrossAReloadKeepsThePlayersBlocksWithoutDoubles(GameTestHelper helper) {
 		ResourceLocation stoneHouse = AliveWorkplace.id("stone_house");
 		FurnitureChoice furniture = RefreshMatchesFreshBuildGameTests.oldFurniture();

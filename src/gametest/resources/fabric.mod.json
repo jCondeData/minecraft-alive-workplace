@@ -1861,6 +1861,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperline1116c3GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperTrades1117cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests"
 		]
 	},

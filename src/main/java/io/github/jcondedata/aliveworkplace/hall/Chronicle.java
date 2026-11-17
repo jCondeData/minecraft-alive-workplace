@@ -113,6 +113,18 @@ public final class Chronicle {
 	public record Entry(long day, Kind kind, Component text) {
 	}
 
+	/**
+	 * {@code entries} (oldest written first, as the hall keeps them) in date order, oldest first; entries of one day keep
+	 * the order they were written (B1353). A line can be written late and dated an earlier day (a Cup that ended while
+	 * its village was unloaded, 28.19), so the written order isn't always the date order; the Chronicle page lists by
+	 * date so each day gets one header, newest day on top. The saved list stays as written: nothing in a save changes.
+	 */
+	public static java.util.List<Entry> byDate(java.util.List<Entry> entries) {
+		java.util.List<Entry> sorted = new java.util.ArrayList<>(entries);
+		sorted.sort(java.util.Comparator.comparingLong(Entry::day)); // List.sort is stable: one day's lines keep their order
+		return sorted;
+	}
+
 	/** The day number of {@code level}'s clock (the first day is day 1). */
 	public static long day(ServerLevel level) {
 		return level.getDayTime() / VillageNeeds.DAY + 1;

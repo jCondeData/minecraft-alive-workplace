@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Chronicle: a Festival Cup's line written when its village next loads goes under its own day, so the days read
+  newest first with one header each (DAY 47, then DAY 46 with both of its lines), not DAY 46, DAY 47, DAY 46 (B1353).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

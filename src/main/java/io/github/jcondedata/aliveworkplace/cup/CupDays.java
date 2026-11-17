@@ -203,6 +203,7 @@ public final class CupDays {
 
 	/** The delegates of the Cup at {@code host} near it now. */
 	public static List<Villager> delegates(ServerLevel level, BlockPos host) {
+		// Wider than the village on purpose (B555): visiting delegates wait round the host's village, not in it.
 		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(host).inflate(32), v -> v.isAlive() && isDelegate(v) && delegate(v).host().equals(host));
 	}
 
@@ -386,7 +387,7 @@ public final class CupDays {
 	/** The village's bard (the one nearest the hall), or null. */
 	@Nullable
 	static Villager bard(ServerLevel level, BlockPos host) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(host), v -> v.isAlive() && v.getVillagerData().getProfession() == ModVillagers.BARD)
+		return VillageHalls.villagers(level, host, v -> v.isAlive() && v.getVillagerData().getProfession() == ModVillagers.BARD)
 			.stream().min(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(Vec3.atCenterOf(host)))).orElse(null);
 	}
 
@@ -517,7 +518,7 @@ public final class CupDays {
 		if (free.isEmpty()) {
 			return;
 		}
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(host), v -> v.isAlive() && !v.isSleeping() && !v.isPassenger()
+		for (Villager v : VillageHalls.villagers(level, host, v -> v.isAlive() && !v.isSleeping() && !v.isPassenger()
 			&& !isDelegate(v) && !entrants.contains(v.getUUID()) && v.getVillagerData().getProfession() != ModVillagers.BARD)) {
 			if (free.isEmpty()) {
 				return;

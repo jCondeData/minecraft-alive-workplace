@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Villages: a villager out in the corners of the square round a Village Hall, outside the village's circle, no longer
+  comes to its festivals and banquets, becomes a parent of its babies, or counts as one of its villagers anywhere else
+  (guilds, guards, scouts, legends, the cough, Wonders and more) (B555).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

@@ -109,7 +109,7 @@ public final class DishRequests extends SavedData {
 	@Nullable
 	public static Villager chef(ServerLevel level, BlockPos hall) {
 		Villager best = null;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Chefs.isChef(v)
+		for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && Chefs.isChef(v)
 			&& v.getBrain().getMemory(MemoryModuleType.JOB_SITE).isPresent())) {
 			if (best == null || BuilderLevels.level(v) > BuilderLevels.level(best)) {
 				best = v;

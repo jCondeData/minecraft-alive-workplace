@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2, B555
 
 ## What a player sees
 
@@ -265,7 +265,10 @@ Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's 
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
-always both in or both out (B361, `VillageHalls.contains`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+always both in or both out (B361, `VillageHalls.contains`). The same circle decides who comes to a festival or a
+banquet, who can be a new baby's parent, who a friend asked for by name, a guild, a war party or a cough can reach, and
+every other "the village's villagers": a villager out in the corners of the square round the hall belongs to none of it
+(B555, `VillageHalls.villagers`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform

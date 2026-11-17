@@ -423,8 +423,7 @@ public final class PersonalRequests {
 		if (!active()) {
 			return null;
 		}
-		List<Villager> askers = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> mayAsk(level, hall, v, today) && friendNear(level, v) != null));
+		List<Villager> askers = new ArrayList<>(VillageHalls.villagers(level, hall, v -> mayAsk(level, hall, v, today) && friendNear(level, v) != null));
 		askers.sort(Comparator.comparing(Villager::getUUID)); // the same order every time, so a fixed random picks the same villager
 		while (!askers.isEmpty()) {
 			Villager villager = askers.remove(random.nextInt(askers.size()));

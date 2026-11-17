@@ -331,7 +331,7 @@ public final class Festivals {
 		boolean bannered = underBanner(level, hall);
 		net.minecraft.world.item.Item dish = io.github.jcondedata.aliveworkplace.cup.CupDays.dish(level, hall); // a Cup's dish first (28.19)
 		boolean ball = NobleBalls.today(level, hall);
-		List<Villager> guests = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> guests = VillageHalls.villagers(level, hall, Villager::isAlive);
 		for (Villager villager : guests) {
 			villagers++;
 			ModAttachments.FESTIVAL_DAY.set(villager, today);
@@ -418,7 +418,7 @@ public final class Festivals {
 			}
 			BlockPos square = square(level, hall);
 			if (!io.github.jcondedata.aliveworkplace.trainer.MegaShrines.tick(level, hall)) { // the Mega Shrine's show first (38.7)
-				for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+				for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping())) {
 					gather(level, villager, square);
 				}
 			}

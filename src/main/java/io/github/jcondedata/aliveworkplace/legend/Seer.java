@@ -413,7 +413,7 @@ public final class Seer {
 	/** A blessed couple of the village round {@code hall} whose first baby is due (within its days, both there), or empty. */
 	public static List<Villager> blessedCouple(ServerLevel level, BlockPos hall) {
 		long today = Chronicle.day(level);
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby());
+		List<Villager> village = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby());
 		for (Villager v : village) {
 			Blessing b = ModAttachments.SEER_BLESSING.get(v);
 			Couples.Partner p = Couples.partner(v);

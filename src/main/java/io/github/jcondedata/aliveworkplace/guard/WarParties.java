@@ -103,8 +103,7 @@ public final class WarParties {
 
 	/** The guards who could march from the village round {@code hall}: three in four of them, at most 12, nearest first. */
 	public static List<Villager> marchers(ServerLevel level, BlockPos hall) {
-		List<Villager> guards = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v) && !Scouts.out(v)));
+		List<Villager> guards = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v) && !Scouts.out(v)));
 		guards.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5)));
 		int marching = Math.min(RallyBannerItem.MAX_GUARDS, guards.size() * SHARE / 4);
 		return List.copyOf(guards.subList(0, marching));
@@ -155,7 +154,7 @@ public final class WarParties {
 	public static Component said(ServerLevel level, BlockPos hall, Muster result, int guards) {
 		return switch (result) {
 			case MUSTERED -> {
-				int all = (int) level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v)).size();
+				int all = (int) VillageHalls.villagers(level, hall, v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v)).size();
 				int staying = Math.max(0, all - guards);
 				yield Words.countedTwo("message.aliveworkplace.war_party.mustered", guards, staying, guards, staying).withStyle(ChatFormatting.GOLD);
 			}
@@ -355,6 +354,7 @@ public final class WarParties {
 		io.github.jcondedata.aliveworkplace.people.Moods.forget();
 		// The siege-breakers leave at the next dawn.
 		long dawn = level.getGameTime() + toDawn(level);
+		// The square on purpose (B555): every siege-breaker round the village is sent home, even one past its rim.
 		java.util.Set<Villager> mercs = new java.util.LinkedHashSet<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(lair.hall()), WarParties::isSiegeBreaker));
 		mercs.addAll(level.getEntitiesOfClass(Villager.class, new AABB(lair.pos()).inflate(AT_LAIR, 24, AT_LAIR), WarParties::isSiegeBreaker));
 		for (Villager merc : mercs) {
@@ -414,7 +414,7 @@ public final class WarParties {
 		}
 		long now = level.getGameTime();
 		for (Map.Entry<BlockPos, Long> e : cheer.entrySet()) {
-			if (e.getValue() > now && VillageHalls.area(e.getKey()).contains(villager.position())) {
+			if (e.getValue() > now && VillageHalls.contains(e.getKey(), villager.blockPosition())) {
 				return new LegendPowers.MoodReason(Component.translatable("mood.aliveworkplace.reason.warband_broken"), MOOD);
 			}
 		}

@@ -183,7 +183,7 @@ public final class LighthousePowers {
 		}
 		int sent = 0;
 		long until = level.getGameTime() + 2L * EVERY;
-		for (Villager guard : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v))) {
+		for (Villager guard : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v))) {
 			GuardRally.lineUp(guard, shore.spot().offset(sent % 5 - 2, 0, sent / 5), until);
 			sent++;
 		}

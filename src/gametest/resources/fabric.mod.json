@@ -263,6 +263,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaElderClassSceneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassMigrationBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageCircleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.VillageCircleB555GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaClassLayerRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DaycareKeeperGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallPagesSeasonsGameTests",

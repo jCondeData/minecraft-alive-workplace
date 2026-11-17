@@ -177,7 +177,7 @@ public final class LegendSlots {
 		if (!Legends.ENABLED) {
 			return;
 		}
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && ModAttachments.LEGEND.has(v))) {
+		for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && ModAttachments.LEGEND.has(v))) {
 			LegendData data = ModAttachments.LEGEND.get(v);
 			if (data == null || data.hall().equals(Optional.of(hall))
 				|| data.hall().isPresent() && level.getBlockEntity(data.hall().get()) instanceof VillageHallBlockEntity) {

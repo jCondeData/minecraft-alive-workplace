@@ -6,6 +6,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -40,7 +41,7 @@ import net.minecraft.world.level.block.Blocks;
  * Every read here is one per tick: a tick's planning is capped at {@link Crafting#TICK_TRIALS}, and a capped plan reads
  * as "nothing short", which would hide what's being checked.
  */
-public class QaCreateRivals1115bCompatTests implements FabricGameTest {
+public class QaCreateRivals1115bCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	private static Item create(String path) {

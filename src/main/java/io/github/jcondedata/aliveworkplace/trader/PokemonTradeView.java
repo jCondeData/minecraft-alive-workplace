@@ -32,9 +32,12 @@ public class PokemonTradeView extends AbstractContainerMenu {
 	public static final int PARTY = 18;
 	public static final int COSTS = 27;
 	public static final int STATUS = 35;
-	/** The panel's size (fixed: it fits the smallest GUI-scaled screen, 320 wide, with 8 pixels round it). */
+	/**
+	 * The panel's size (fixed: it fits the smallest GUI-scaled screen, 320x180, with Copperline's 8 pixels round it, so
+	 * the plaque rising over its top stays on the screen; B1354).
+	 */
 	public static final int WIDTH = 300;
-	public static final int HEIGHT = 174;
+	public static final int HEIGHT = 164;
 	/** The offers list's box on the panel. */
 	/** The trader's book: on the Copperline lintel, left of the close X (48.4). */
 	public static final int INFO_X = WIDTH - 36;
@@ -42,13 +45,13 @@ public class PokemonTradeView extends AbstractContainerMenu {
 	public static final int LIST_X = 6;
 	public static final int LIST_Y = 22;
 	public static final int LIST_W = 180;
-	public static final int LIST_H = 134;
+	public static final int LIST_H = 124;
 	/** An offer row's left edge and top (rows are {@link #ROW_H} tall, {@link #ROW_STEP} apart). */
 	public static final int CARD_X = LIST_X + 2;
 	public static final int CARD_Y = LIST_Y + 3;
 	public static final int CARD_W = LIST_W - 4;
-	public static final int ROW_H = 30;
-	public static final int ROW_STEP = 32;
+	public static final int ROW_H = 28;
+	public static final int ROW_STEP = 30;
 	/** The party's box on the right: a heading, then two rows of three cells. */
 	public static final int PARTY_X = LIST_X + LIST_W + 8;
 	public static final int PARTY_Y = LIST_Y + 4;
@@ -85,10 +88,10 @@ public class PokemonTradeView extends AbstractContainerMenu {
 			boolean shown = true;
 			if (i >= OFFERS && i < OFFERS + MAX_OFFERS) {
 				x = CARD_X + 5;
-				y = cardY(i - OFFERS) + 7;
+				y = cardY(i - OFFERS) + 6;
 			} else if (i >= BALLS && i < BALLS + MAX_OFFERS) {
 				x = CARD_X + CARD_W - 22;
-				y = cardY(i - BALLS) + 7;
+				y = cardY(i - BALLS) + 6;
 			} else if (i >= PARTY && i < PARTY + 6) {
 				x = PARTY_X + 5 + (i - PARTY) % 3 * 24;
 				y = PARTY_Y + 17 + (i - PARTY) / 3 * 22;

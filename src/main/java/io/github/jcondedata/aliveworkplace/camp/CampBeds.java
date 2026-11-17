@@ -360,7 +360,7 @@ public final class CampBeds {
 			return 0;
 		}
 		int moved = 0;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager v : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 			GlobalPos home = v.getBrain().getMemory(MemoryModuleType.HOME).orElse(null);
 			if (home == null || !home.dimension().equals(level.dimension()) || !beds.contains(home.pos())) {
 				continue;

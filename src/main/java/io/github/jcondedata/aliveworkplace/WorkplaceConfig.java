@@ -560,6 +560,45 @@ public final class WorkplaceConfig {
 		}
 	}
 
+	/** The maps whose every entry is an on/off switch (read entry by entry, B1359). */
+	private static final java.util.Set<String> SWITCH_MAPS = java.util.Set.of("raiderCultures", "disasters");
+
+	/**
+	 * {@code map} (raiderCultures or disasters) with each entry {@link OnOff} can't read set to its default, on, and named
+	 * in the log (B1359). Without this one unreadable word made Gson refuse the whole map, so every other entry the owner
+	 * wrote (a culture or disaster set to false) took its default too and was lost from the file.
+	 */
+	private static com.google.gson.JsonObject readableSwitches(String key, com.google.gson.JsonObject map) {
+		com.google.gson.JsonObject out = new com.google.gson.JsonObject();
+		for (Map.Entry<String, com.google.gson.JsonElement> entry : map.entrySet()) {
+			com.google.gson.JsonElement value = entry.getValue();
+			try {
+				GSON.fromJson(value, Boolean.class);
+			} catch (RuntimeException e) {
+				AliveWorkplace.LOG.warn("Couldn't read \"{}\" in {} in {} ({}), it takes its default", entry.getKey(), key, FILE, e.getMessage());
+				value = new com.google.gson.JsonPrimitive(true);
+			}
+			out.add(entry.getKey(), value);
+		}
+		return out;
+	}
+
+	/**
+	 * {@code map} (raiderCultures or disasters) keyed by ids as ids are written: trimmed and lower-cased, blank keys dropped
+	 * (B1360, as B1323 does for the disabled lists). Two keys that become one ("Bandits": false beside "bandits": true, as
+	 * the file was written back before) are off if either is: off is always someone's choice, on is the default.
+	 */
+	private static Map<String, Boolean> cleanSwitchKeys(Map<String, Boolean> map, Map<String, Boolean> into) {
+		if (map != null) {
+			map.forEach((id, on) -> {
+				if (id != null && !id.isBlank()) {
+					into.merge(id.trim().toLowerCase(java.util.Locale.ROOT), on == null || on, Boolean::logicalAnd);
+				}
+			});
+		}
+		return into;
+	}
+
 	/** Reads the config (or the defaults), clamps it, writes it back complete and applies it. */
 	public static WorkplaceConfig loadAndApply(Path configDir) {
 		WorkplaceConfig config = load(configDir);
@@ -636,6 +675,9 @@ public final class WorkplaceConfig {
 		// every other value in the file is kept (B411).
 		for (String key : new java.util.ArrayList<>(options.keySet())) {
 			options.add(key, wholeNumbersInRange(key, options.get(key)));
+			if (SWITCH_MAPS.contains(key) && options.get(key) instanceof com.google.gson.JsonObject map) {
+				options.add(key, readableSwitches(key, map));
+			}
 			com.google.gson.JsonObject single = new com.google.gson.JsonObject();
 			single.add(key, options.get(key));
 			try {
@@ -844,20 +886,8 @@ public final class WorkplaceConfig {
 		colonyRank = colonyRank(colonyRank).name().toLowerCase(java.util.Locale.ROOT);
 		leaderboardDay = leaderboardDay(leaderboardDay).name().toLowerCase(java.util.Locale.ROOT);
 		disabledArcs = cleanIds(disabledArcs);
-		Map<String, Boolean> cultures = defaultCultures();
-		if (raiderCultures != null) {
-			raiderCultures.forEach((id, on) -> {
-				if (id != null) {
-					cultures.put(id, on == null || on);
-				}
-			});
-		}
-		raiderCultures = cultures;
-		if (disasters == null) {
-			disasters = new java.util.TreeMap<>();
-		}
-		disasters.replaceAll((id, on) -> on == null || on);
-		disasters.keySet().removeIf(java.util.Objects::isNull);
+		raiderCultures = cleanSwitchKeys(raiderCultures, defaultCultures()); // the defaults are on, so a key in the file decides
+		disasters = cleanSwitchKeys(disasters, new java.util.TreeMap<>());
 	}
 
 	/**

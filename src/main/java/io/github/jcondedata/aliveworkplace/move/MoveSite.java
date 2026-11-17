@@ -470,7 +470,10 @@ public final class MoveSite {
 			before.addAll(loose(level, at));
 		}
 		for (int j : taken) {
-			level.setBlock(j == i ? pos : atNew ? newPos(j) : oldPos(j), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			BlockPos at = j == i ? pos : atNew ? newPos(j) : oldPos(j);
+			// B1310: a village's waystone stays the Waystones mod's same waystone, discovered by whoever had found it
+			io.github.jcondedata.aliveworkplace.hall.VillageWaystones.lifting(level, at, level.getBlockState(at));
+			level.setBlock(at, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
 		// 45.5: a modded store that isn't a vanilla Container (nothing to clear) may still spill its items as it goes
 		// (Create's crafter, ejector and belt, B1127); they're packed with the block's data, so what it spilled is taken
@@ -587,6 +590,7 @@ public final class MoveSite {
 					level.sendBlockUpdated(at, states.get(k), states.get(k), Block.UPDATE_CLIENTS);
 				}
 			}
+			io.github.jcondedata.aliveworkplace.hall.VillageWaystones.setDown(level, at, states.get(k)); // B1310: the same waystone again
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}
@@ -832,6 +836,17 @@ public final class MoveSite {
 			List<net.minecraft.world.item.ItemStack> drops) {
 		net.minecraft.world.item.Item item = state.getBlock().asItem();
 		if (item == net.minecraft.world.item.Items.AIR) {
+			return;
+		}
+		if (state.getBlock() instanceof net.minecraft.world.level.block.MultifaceBlock) {
+			// B1300: a block on several faces (a glow lichen on the floor and two walls) is one of its item per face, as a
+			// player places it. A sculk vein's Silk Touch loot counts its faces already; a glow lichen's loot is shears-only,
+			// so the fallback above made 3 faces 1 glow lichen. Tops its item up to one per face, never past it
+			int faces = net.minecraft.world.level.block.MultifaceBlock.availableFaces(state).size();
+			int whole = count(drops, item);
+			if (whole > 0 && whole < faces) {
+				drops.add(new net.minecraft.world.item.ItemStack(item, faces - whole));
+			}
 			return;
 		}
 		for (net.minecraft.world.level.block.state.properties.IntegerProperty p : HOW_MANY) {

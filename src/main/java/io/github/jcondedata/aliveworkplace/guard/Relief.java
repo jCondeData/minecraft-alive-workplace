@@ -320,8 +320,7 @@ public final class Relief {
 			return 0;
 		}
 		// a guard counts for the hall nearest them, where two villages' areas overlap
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(home.pos()),
-			v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v)
+		return VillageHalls.villagers(level, home.pos(), v -> v.isAlive() && Guards.isGuard(v) && !Mercenaries.isMercenary(v)
 				&& VillageHalls.nearest(level, v.blockPosition()).map(home.pos()::equals).orElse(false)).size();
 	}
 
@@ -432,6 +431,7 @@ public final class Relief {
 
 	/** The riders helping the village round {@code hall} now. */
 	public static List<Villager> riders(ServerLevel level, BlockPos hall) {
+		// Wider than the village on purpose (B555): riders on their way in count before they reach it.
 		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall).inflate(EDGE), v -> {
 			Rider r = ModAttachments.RELIEF_RIDER.get(v);
 			return v.isAlive() && r != null && r.target().equals(hall);

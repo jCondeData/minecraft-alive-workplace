@@ -40,13 +40,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -533,8 +531,7 @@ public final class StewardDesk {
 
 	/** The builders of the village: villagers with the job and a bench, by the hall. */
 	static List<Villager> builders(ServerLevel level, BlockPos hall) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
+		return VillageHalls.villagers(level, hall, v -> Builders.isBuilder(v) && Builders.benchPos(v).isPresent()) // B1352: the circle
 			.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX(), hall.getY(), hall.getZ()))).toList();
 	}
 

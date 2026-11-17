@@ -99,7 +99,7 @@ public final class WorkHorn {
 	}
 
 	private static List<Villager> grown(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby());
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby());
 	}
 
 	/** Whether the village of {@code hall} is rushing now. */

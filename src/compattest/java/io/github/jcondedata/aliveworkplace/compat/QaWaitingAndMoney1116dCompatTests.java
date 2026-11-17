@@ -162,7 +162,9 @@ public class QaWaitingAndMoney1116dCompatTests implements FabricGameTest {
 	}
 
 	private static String hint(String one, String stack) {
-		return "Click to give " + one + " CobbleDollars (shift-click: " + stack + "), or click with emeralds";
+		// one dollar reads singular since B1347's fix ('1 CobbleDollar')
+		String unit = one.equals("1") ? " CobbleDollar" : " CobbleDollars";
+		return "Click to give " + one + unit + " (shift-click: " + stack + "), or click with emeralds";
 	}
 
 	/**

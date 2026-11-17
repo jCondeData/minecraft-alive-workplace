@@ -401,6 +401,7 @@ public final class BattleStations {
 			watch.found = true;
 		}
 		watch.ramparts = Sieges.ramparts(level, siege.hall);
+		// A square 48 tall on purpose (B1352): a guard posted on a wall or tower in the square's corner, or high up, keeps his station.
 		List<Villager> guards = level.getEntitiesOfClass(Villager.class, new AABB(siege.hall).inflate(VillageHalls.RADIUS, 48, VillageHalls.RADIUS),
 			v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v));
 		guards.sort(Comparator.comparing(Villager::getUUID));

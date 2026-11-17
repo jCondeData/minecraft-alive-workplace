@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.Blocks;
  * a slime block there or not), other chains of the same kind (a lead's slimeball, a painting's wool), the exact sentence
  * through a builder and his Librarian or Tinkerer, and a save and reload of the site.
  */
-public class QaShortageGathers1115fGameTests implements FabricGameTest {
+public class QaShortageGathers1115fGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final TagKey<Item> ORES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "ores"));
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);

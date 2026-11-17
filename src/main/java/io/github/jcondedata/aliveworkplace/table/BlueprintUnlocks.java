@@ -280,13 +280,19 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		return id.isPresent() && unlockAt(level, table, id.get(), player);
 	}
 
-	/** A builder of the village levelled up: the next {@link #PER_LEVEL} locked builds (not the rare ones) unlock. */
+	/**
+	 * A builder of the village levelled up: the next {@link #PER_LEVEL} locked builds (not the rare ones) unlock in the
+	 * library his Table uses, wherever he stands (B1345: one out on a job past the village's reach unlocked them in the
+	 * server-wide set, which every later village takes in, and his own village was never told). Where he stands only when
+	 * he has no Table in this dimension.
+	 */
 	public static void onLevelUp(Villager villager) {
 		if (!ENABLED || villager.getVillagerData().getProfession() != ModVillagers.BUILDER || !(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
-		BlockPos hall = village(level, villager.blockPosition());
-		BlockPos centre = hall != null ? hall : villager.blockPosition();
+		BlockPos anchor = io.github.jcondedata.aliveworkplace.build.Builders.benchPos(villager).orElse(villager.blockPosition());
+		BlockPos hall = village(level, anchor);
+		BlockPos centre = hall != null ? hall : anchor;
 		List<ServerPlayer> near = level.getPlayers(p -> p.blockPosition().distSqr(centre) <= (double) VillageHalls.RADIUS * VillageHalls.RADIUS);
 		for (ResourceLocation id : nextForLevelUp(level, hall)) {
 			unlock(level, hall, id, near);

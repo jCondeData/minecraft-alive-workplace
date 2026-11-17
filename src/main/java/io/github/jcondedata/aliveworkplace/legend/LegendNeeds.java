@@ -89,7 +89,7 @@ public final class LegendNeeds {
 			return;
 		}
 		long today = Chronicle.day(level);
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && ModAttachments.LEGEND.has(v))) {
+		for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && ModAttachments.LEGEND.has(v))) {
 			LegendData data = ModAttachments.LEGEND.get(v);
 			if (data == null || !data.settled() || !data.hall().equals(Optional.of(hall))) {
 				continue;
@@ -177,7 +177,7 @@ public final class LegendNeeds {
 		}
 		Couples.Partner partner = Couples.partner(legend);
 		UUID spouse = partner != null && partner.married() ? partner.id() : null;
-		for (Villager other : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager other : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 			if (other == legend || other.getUUID().equals(spouse)) {
 				continue;
 			}
@@ -218,7 +218,7 @@ public final class LegendNeeds {
 		if (Moods.ENABLED) {
 			int sum = 0;
 			int n = 0;
-			for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby()
+			for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby()
 				&& VillageHalls.nearest(level, v.blockPosition()).equals(Optional.of(hall)))) {
 				Moods.Mood mood = Moods.of(v);
 				if (mood != null) {

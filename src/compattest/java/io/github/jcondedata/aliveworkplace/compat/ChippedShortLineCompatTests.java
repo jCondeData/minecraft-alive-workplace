@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCompatTests.Asker;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -22,7 +23,7 @@ import net.minecraft.world.level.block.Blocks;
  * Chipped's decorative planks, which no crafting recipe makes, and the line for a lantern's torch's sticks named
  * chipped:acacia_planks_mosaic. It must name the base game's wood (or bamboo), never a Chipped item.
  */
-public class ChippedShortLineCompatTests implements FabricGameTest {
+public class ChippedShortLineCompatTests implements FreshPlanning {
 	private static final String AREA = QaCreateRivals1115cCompatTests.AREA;
 
 	/** Setup and logic: the planks tag holds Chipped planks, and a lantern, torch, sticks or piston from nothing names none. */

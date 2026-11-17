@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345
 
 ## 1. What a player sees
 
@@ -51,6 +51,10 @@ Ways to unlock, all for the village round the nearest hall:
 1. Buying a Blueprint from any villager or trader (builders, the other jobs' blueprint trades, market-day traders).
    The item is still sold.
 2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
+   The village is his Blueprint Table's, wherever he stands (out on a job past the village's reach too), and every
+   player in that village is told; where he stands counts only for a builder with no Table. Before (B1345), one
+   leveling up past the village's reach put them in the server-wide set. `QaLevelUpVillage1116bGameTests` (2),
+   `QaLevelUpVillage1116bBugGameTests` (1).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
    Unlike the others, a reward (`/workplace unlock {p} <id>`, `BlueprintUnlocks.unlockFor`) goes to the claiming
    player's own village wherever they stand when they claim it (B1318, `hall/HomeVillages`): the village they stand in

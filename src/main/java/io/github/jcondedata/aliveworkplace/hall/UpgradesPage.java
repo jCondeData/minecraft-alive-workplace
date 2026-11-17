@@ -39,7 +39,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +46,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -348,16 +346,15 @@ public final class UpgradesPage {
 
 	/** The village's Builders among those {@code allowed} whose bench reaches a build centred on {@code centre}, nearest first. */
 	static List<Villager> builders(ServerLevel level, BlockPos hall, BlockPos centre, Predicate<Villager> allowed) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)
+		return VillageHalls.villagers(level, hall, // B1352: the village's circle
+				v -> Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)
 					&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), centre, Builders.MAX_SITE_DISTANCE)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 	}
 
 	/** The name of whoever hired the village's nearest Builder that {@code player} may not command ("" if none). */
 	static String othersEmployer(ServerLevel level, BlockPos hall, ServerPlayer player) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && !Friends.mayCommand(player, v)).stream()
+		return VillageHalls.villagers(level, hall, v -> Builders.isBuilder(v) && !Friends.mayCommand(player, v)).stream() // B1352
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(player)))
 			.map(v -> ModAttachments.BUILDER_EMPLOYER.get(v)).filter(java.util.Objects::nonNull).map(Employer::name)
 			.findFirst().orElse("");

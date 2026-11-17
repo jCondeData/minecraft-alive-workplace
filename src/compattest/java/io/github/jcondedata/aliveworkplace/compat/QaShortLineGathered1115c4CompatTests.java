@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCompatTests.Asker;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,7 +30,7 @@ import static io.github.jcondedata.aliveworkplace.compat.QaCreateRivals1115cComp
  * the one short of the Raw Zinc a player mines, never the Crushed Raw Zinc"; and "It goes further down only when that uses
  * something that's there" (what the chests hold, Chipped's planks or Create's crushed zinc, is still used).
  */
-public class QaShortLineGathered1115c4CompatTests implements FabricGameTest {
+public class QaShortLineGathered1115c4CompatTests implements FreshPlanning {
 	private static final String AREA = QaCreateRivals1115cCompatTests.AREA;
 
 	/** Other things made of planks or sticks, from nothing at the table or forge: something named, never a Chipped, Create or Cobblemon item. */

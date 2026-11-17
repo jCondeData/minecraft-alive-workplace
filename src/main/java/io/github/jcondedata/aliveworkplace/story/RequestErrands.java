@@ -185,8 +185,7 @@ public final class RequestErrands {
 			halls.sort(Comparator.comparingLong(BlockPos::asLong)); // the same order every time, so a fixed random picks the same village
 			while (!halls.isEmpty()) {
 				BlockPos there = halls.remove(context.random.nextInt(halls.size()));
-				List<Villager> people = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(there),
-					v -> v != giver && !v.isBaby() && Friendship.eligible(v) && !VillageHalls.area(context.hall).contains(v.position())));
+				List<Villager> people = new ArrayList<>(VillageHalls.villagers(level, there, v -> v != giver && !v.isBaby() && Friendship.eligible(v) && !VillageHalls.contains(context.hall, v.blockPosition())));
 				if (people.isEmpty()) {
 					continue;
 				}
@@ -402,7 +401,7 @@ public final class RequestErrands {
 				return null;
 			}
 			String parent = Objectives.name(giver);
-			List<Villager> children = new ArrayList<>(context.level.getEntitiesOfClass(Villager.class, VillageHalls.area(context.hall), v -> {
+			List<Villager> children = new ArrayList<>(VillageHalls.villagers(context.level, context.hall, v -> {
 				Families.Parents p = v.isAlive() && v.isBaby() && !Schools.isSchooled(v) ? Families.parents(v) : null;
 				return p != null && (p.mother().getString().equals(parent) || p.father().getString().equals(parent));
 			}));
@@ -490,7 +489,7 @@ public final class RequestErrands {
 	static Villager courting(ServerLevel level, BlockPos hall, Villager villager) {
 		Couples.Partner p = Couples.partner(villager);
 		return p != null && !p.married() && level.getEntity(p.id()) instanceof Villager other && other.isAlive()
-			&& VillageHalls.area(hall).contains(other.position()) ? other : null;
+			&& VillageHalls.contains(hall, other.blockPosition()) ? other : null;
 	}
 
 	/**
@@ -1068,7 +1067,7 @@ public final class RequestErrands {
 			} else if (o instanceof Build build && build.wedding() && giver != null) {
 				Villager other = courting(level, hall, giver);
 				if (other != null) {
-					Couples.wed(level, hall, giver, other); // at the Chapel, now that it's finished (Couples.venue)
+					Couples.wed(level, hall, giver, other, false); // at the Chapel, now that it's finished (Couples.venue); its own line below, not the bell's (B1348)
 					Festivals.feast(level, hall);
 					Chronicle.atHall(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.chapel_wedding",
 						giver.getDisplayName(), other.getDisplayName()));

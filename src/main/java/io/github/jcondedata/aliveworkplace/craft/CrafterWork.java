@@ -1054,8 +1054,8 @@ public class CrafterWork extends Behavior<Villager> {
 				}
 				Crafting.Plan made = planFor(level, want.getKey(), want.getValue(), usable);
 				if (!fits(made)) {
-					if (chains() && !Crafting.planningSpent(level)) {
-						Map<Item, Integer> lack = JobShortages.positive(lackFor(level, want.getKey(), want.getValue(), usable));
+					if (chains()) {
+						Map<Item, Integer> lack = lackNow(level, want.getKey(), want.getValue(), usable);
 						if (!lack.isEmpty()) {
 							JobShortages.lacks(site.id(), want.getKey(), JobShortages.lackLine(lack, want.getValue(), want.getKey()), now);
 						}
@@ -1115,6 +1115,9 @@ public class CrafterWork extends Behavior<Villager> {
 				CraftJobs.Job job = CraftJobs.tagged(i);
 				return job != null && job != maker;
 			}));
+		if (Crafting.planningSpent(level)) {
+			return null; // B1349: worked out only part way this tick
+		}
 		for (Map.Entry<Item, Integer> making : lack.entrySet()) {
 			if (!wants(level, making.getKey())) {
 				continue;
@@ -1321,6 +1324,20 @@ public class CrafterWork extends Behavior<Villager> {
 			return Map.of();
 		}
 		return Crafting.lacking(level, kind, item, Math.min(Math.max(1, count), Crafting.MAX_CRAFTS), usable);
+	}
+
+	/**
+	 * What the builder's shortage line may say now is short of making {@code count} of {@code item} ({@link #lackFor},
+	 * only what's truly short), or nothing while the tick's planning is used up, before or while it was worked out
+	 * (B1321): a job that asks twice (the Mason's stonecutter, then his kiln) would say only the half it got an answer
+	 * for. The crafter asks again next time.
+	 */
+	public final Map<Item, Integer> lackNow(ServerLevel level, Item item, int count, Map<Item, Long> usable) {
+		if (Crafting.planningSpent(level)) {
+			return Map.of();
+		}
+		Map<Item, Integer> lack = JobShortages.positive(lackFor(level, item, count, usable));
+		return Crafting.planningSpent(level) ? Map.of() : lack;
 	}
 
 	/** Whether another crafter is on {@code claim} (a request they took); forgets claims that ran out. */

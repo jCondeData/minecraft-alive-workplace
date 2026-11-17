@@ -54,7 +54,7 @@ import net.minecraft.world.level.block.Blocks;
  * tips and the Steward's reasons in {@code /workplace steward explain}, the hall name tag's tax split, a Librarian's
  * shortage line under a waiting builder, and the weekly leaderboard's realm line. No line shows a raw translation key.
  */
-public class QaVillageWords1103cGameTests implements FabricGameTest {
+public class QaVillageWords1103cGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final String BIG = "aliveworkplace_test:big_area";
 	private static final String LAND = "aliveworkplace_test:huge_area";

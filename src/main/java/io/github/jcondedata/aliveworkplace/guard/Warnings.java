@@ -133,8 +133,7 @@ public final class Warnings {
 	public static Optional<Source> source(ServerLevel level, BlockPos hall, int ahead) {
 		List<BlockPos> towers = ahead <= 1 ? towers(level, hall) : List.of();
 		if (!towers.isEmpty()) {
-			List<Villager> watch = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-				v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v) && !Scouts.out(v) && byATower(v, towers)));
+			List<Villager> watch = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && Guards.isGuard(v) && !Scouts.out(v) && byATower(v, towers)));
 			watch.sort(Comparator.<Villager>comparingInt(v -> Scouts.isScout(v) ? 0 : 1).thenComparing(Villager::getUUID));
 			if (!watch.isEmpty()) {
 				Villager first = watch.get(0);
@@ -271,7 +270,7 @@ public final class Warnings {
 	/** The evening of a warned attack: the villagers (not the guards) go in, as at the bell. */
 	static void keepIn(ServerLevel level, BlockPos hall) {
 		long now = level.getGameTime();
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !Guards.isGuard(v))) {
+		for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !Guards.isGuard(v))) {
 			villager.getBrain().setMemory(MemoryModuleType.HEARD_BELL_TIME, now);
 		}
 	}

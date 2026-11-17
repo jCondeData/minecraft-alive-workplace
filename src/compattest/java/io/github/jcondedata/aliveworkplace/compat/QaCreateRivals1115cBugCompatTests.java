@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,7 +40,7 @@ import net.minecraft.world.level.block.Blocks;
  * Flour (and Redstone Ore and Chipped planks). (2) With no leather at all, a book, an item frame or bookshelves name Rabbit
  * Hide, not Leather (probably not Create-specific). Moves to main with the fix.
  */
-public class QaCreateRivals1115cBugCompatTests implements FabricGameTest {
+public class QaCreateRivals1115cBugCompatTests implements FreshPlanning {
 	private static final String AREA = QaCreateRivals1115cCompatTests.AREA;
 
 	/**

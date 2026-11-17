@@ -4,7 +4,7 @@ Milestone 49, item 49.2 (the owner's pick of 36.23's two new Level I houses, 202
 House"), with his three changes (36.23a-c): the loft railing joined at its corners, the short lamp on a side table, the
 plates in the kitchen. A new home for a village's first families, the first building made with the rebuild kit
 (`tools/blueprints/REBUILD.md`).
-Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2
+Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, B1367
 
 ## 1. What a player sees
 
@@ -41,7 +41,8 @@ Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2
   `python3 tools/blueprints/village.py`) loads the blueprint, swaps its materials per style (`DAUB_STYLES`), leaves the
   front row as the ground it lands on (its two flower beds left out) with the street's jigsaw before the door (4, 1, 0), and a worker-pool jigsaw on the
   hall floor (4, 0, 5) for a jobless villager. `world/VillageHouses.HOMES` adds them to the five house pools (and Repurposed
-  Structures' villages) when the server starts; they are not staffed houses (no job block).
+  Structures' villages) when the server starts; they are not staffed houses: their one job block is the kitchen's crafting table (a Carpenter's, so the villager who
+  moves in may take that job).
 - Modded copy: `structure/modded/house_t1_b.nbt` (`modded_library.py house_t1_b`).
 - Steward rule `steward_rules/homes_house_t1_b.json` (priority 90: beds short 3+, below Village rank, no upgrade adds
   beds). Built advancement `advancement/built/house_t1_b.json` (`tools/questbook/generate.py`).

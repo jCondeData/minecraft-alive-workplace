@@ -233,7 +233,7 @@ public final class SeasonSoak {
 		running = run;
 		VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(run.hall);
 		String text = "Season: a " + entity.rank().name().toLowerCase(Locale.ROOT) + " of "
-			+ level.getEntitiesOfClass(Villager.class, VillageHalls.area(run.hall), Villager::isAlive).size() + " villagers, " + FARMERS
+			+ VillageHalls.villagers(level, run.hall, Villager::isAlive).size() + " villagers, " + FARMERS
 			+ " farms, a kitchen and a store of " + meals(run) + " meals; " + entity.edicts().size() + " edicts in force"
 			+ (run.reformed ? " (all reformed)" : "") + ", " + (Cradles.nursery(level, run.hall) ? "a Cradle" : "no Cradle") + ", "
 			+ (HarvestIdols.harvestSeason(level) ? "harvest season" : "not harvest season") + " with " + HarvestIdols.idols(level).size()
@@ -360,7 +360,7 @@ public final class SeasonSoak {
 		}
 		// Everybody last ate a day ago, so day 1 has its meals like every other day.
 		long ate = level.getGameTime() - VillageNeeds.DAY;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager v : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 			ModAttachments.LAST_MEAL.set(v, ate);
 		}
 
@@ -591,7 +591,7 @@ public final class SeasonSoak {
 	}
 
 	private static List<Villager> villagers(Run run) {
-		return run.level.getEntitiesOfClass(Villager.class, VillageHalls.area(run.hall), Villager::isAlive);
+		return VillageHalls.villagers(run.level, run.hall, Villager::isAlive);
 	}
 
 	private static int ill(Run run) {

@@ -76,7 +76,7 @@ public final class Dedications {
 	/** Where {@code bard} plays while a dedication of their village is on: beside its stone, on the side away from the Wonder. */
 	public static Optional<BlockPos> bardSpot(ServerLevel level, Villager bard) {
 		for (Ceremony c : ON.values()) {
-			if (c.dimension().equals(level.dimension()) && level.getGameTime() <= c.until() && VillageHalls.area(c.hall()).contains(bard.position())) {
+			if (c.dimension().equals(level.dimension()) && level.getGameTime() <= c.until() && VillageHalls.contains(c.hall(), bard.blockPosition())) {
 				return Optional.of(c.stone().offset(2 * c.dx(), 0, 0));
 			}
 		}
@@ -107,7 +107,7 @@ public final class Dedications {
 				continue;
 			}
 			int guards = 0;
-			for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(c.hall()), v -> v.isAlive() && !v.isSleeping() && !v.isBaby())) {
+			for (Villager villager : VillageHalls.villagers(level, c.hall(), v -> v.isAlive() && !v.isSleeping() && !v.isBaby())) {
 				if (Guards.isGuard(villager)) {
 					if (guards < LINE) {
 						// renewed every second, so the line breaks up soon after the dedication ends (or the stone is broken)

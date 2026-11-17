@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.craft.RecipeStandIns;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -18,7 +19,7 @@ import net.minecraft.world.item.Items;
  * makes a plain chest from any one carved chest. The {@code recipe_stand_ins} file reads that special recipe as a plain
  * one, so the planner finds a player's two crafts, and the line for a chest from nothing names logs.
  */
-public class RecipeStandInsCompatTests implements FabricGameTest {
+public class RecipeStandInsCompatTests implements FreshPlanning {
 	private static Item item(String id) {
 		return QaCarvedChest1115eCompatTests.block(id).asItem();
 	}

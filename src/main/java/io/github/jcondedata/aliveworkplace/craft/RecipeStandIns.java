@@ -30,10 +30,14 @@ import net.minecraft.world.item.crafting.RecipeManager;
  * Carved Wood (in the owner's pack) turns Minecraft's planks chest into one carved chest per wood and makes the plain
  * chest only by its {@code carved_wood:chest_from_modded_chests} recipe: any one carved wooden chest in the grid makes a
  * plain chest. A player gets a plain chest from 8 oak planks in two crafts; the crafters plan that route through this
- * file's one-slot recipe.
+ * file's one-slot recipe. B1290: its {@code carved_wood:crafting_special_crafting_table} makes Minecraft's crafting table
+ * from any 2x2 of planks no other recipe takes (Chipped's mosaic planks); that one is a {@code "count": 4} stand-in.
  *
  * <p>Read from {@code data/<namespace>/recipe_stand_ins/*.json}:
- * {@code {"serializer": "somemod:special_type", "from": ["#c:some_tag", "somemod:item"], "except": [...], "result": "minecraft:chest"}}.
+ * {@code {"serializer": "somemod:special_type", "from": ["#c:some_tag", "somemod:item"], "except": [...], "result": "minecraft:chest"}},
+ * with an optional {@code "count"} (default 1): how many of one of them it takes. A thing that a plain recipe already takes
+ * {@code count} of (four acacia planks make Carved Wood's acacia crafting table) is left out, as the special recipe only
+ * matches what no other recipe does.
  * A stand-in counts only while a recipe of that serializer id is loaded (the mod installed and its config switch on), so
  * it never makes something a player can't. By id only: no class of the other mod is used.
  */
@@ -41,8 +45,11 @@ public final class RecipeStandIns {
 	private static final ResourceLocation ID = AliveWorkplace.id("recipe_stand_ins");
 	public static final String FOLDER = "recipe_stand_ins";
 
-	/** One stand-in: what any one of {@code from} (but not {@code except}) makes, while a {@code serializer} recipe is loaded. */
-	public record StandIn(ResourceLocation id, ResourceLocation serializer, List<String> from, List<String> except, ResourceLocation result) {
+	/** One stand-in: what {@code count} of any one of {@code from} (but not {@code except}) make, while a {@code serializer} recipe is loaded. */
+	public record StandIn(ResourceLocation id, ResourceLocation serializer, List<String> from, List<String> except, ResourceLocation result, int count) {
+		public StandIn(ResourceLocation id, ResourceLocation serializer, List<String> from, List<String> except, ResourceLocation result) {
+			this(id, serializer, from, except, result, 1);
+		}
 	}
 
 	private static volatile List<StandIn> loaded = List.of();
@@ -92,11 +99,51 @@ public final class RecipeStandIns {
 			Set<Item> options = items(standIn.from());
 			options.removeAll(items(standIn.except()));
 			options.remove(result); // never the thing from itself
-			if (options.stream().anyMatch(crafted::contains)) {
+			if (standIn.count() > 1) {
+				List<List<net.minecraft.world.item.crafting.Ingredient>> plain = plainRecipesOf(manager, standIn.count());
+				options.removeIf(item -> takenByAPlainRecipe(plain, item));
+			}
+			if (standIn.count() > 1) {
+				// B1290: any of them that's there is used (Chipped's mosaic planks beside Cobblemon's apricorn planks, which a
+				// recipe makes), so none is dropped; the crafted ones come first, for the line to name from nothing
+				Set<Item> first = new LinkedHashSet<>(options);
+				first.retainAll(crafted);
+				first.addAll(options);
+				options = first;
+			} else if (options.stream().anyMatch(crafted::contains)) {
 				options.retainAll(crafted);
 			}
 			if (!options.isEmpty()) {
-				out.add(Recipes.shapeless(standIn.id(), new ItemStack(result), List.copyOf(options)));
+				out.add(Recipes.shapeless(standIn.id(), new ItemStack(result), List.copyOf(options), standIn.count()));
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * Whether a plain (not special) crafting recipe takes exactly {@code count} things, each of which can be {@code item}: then
+	 * a grid of {@code count} of it is that recipe's, not the special one's (B1290: four acacia planks make Carved Wood's
+	 * acacia crafting table; four of Chipped's mosaic planks, which no plain recipe takes four of, make Minecraft's).
+	 */
+	private static boolean takenByAPlainRecipe(List<List<net.minecraft.world.item.crafting.Ingredient>> plain, Item item) {
+		ItemStack stack = new ItemStack(item);
+		for (List<net.minecraft.world.item.crafting.Ingredient> slots : plain) {
+			if (slots.stream().allMatch(i -> i.test(stack))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** The non-empty ingredients of each plain (not special) crafting recipe that takes exactly {@code count} things. */
+	private static List<List<net.minecraft.world.item.crafting.Ingredient>> plainRecipesOf(RecipeManager manager, int count) {
+		List<List<net.minecraft.world.item.crafting.Ingredient>> out = new ArrayList<>();
+		for (RecipeHolder<?> holder : Recipes.all(manager, net.minecraft.world.item.crafting.RecipeType.CRAFTING)) {
+			if (!holder.value().isSpecial()) {
+				List<net.minecraft.world.item.crafting.Ingredient> slots = Recipes.ingredients(holder.value()).stream().filter(i -> !i.isEmpty()).toList();
+				if (slots.size() == count) {
+					out.add(slots);
+				}
 			}
 		}
 		return out;
@@ -128,8 +175,12 @@ public final class RecipeStandIns {
 		if (from.isEmpty()) {
 			throw new IllegalArgumentException("nothing to make it from");
 		}
+		int count = object.has("count") ? object.get("count").getAsInt() : 1;
+		if (count < 1 || count > 9) {
+			throw new IllegalArgumentException("count " + count + " is not 1 to 9");
+		}
 		return new StandIn(id, ResourceLocation.parse(object.get("serializer").getAsString()), from, entries(object, "except"),
-			ResourceLocation.parse(object.get("result").getAsString()));
+			ResourceLocation.parse(object.get("result").getAsString()), count);
 	}
 
 	/** {@code key}'s item ids and {@code #tag}s, each checked (B1312: a typo in one threw later, at server start). */

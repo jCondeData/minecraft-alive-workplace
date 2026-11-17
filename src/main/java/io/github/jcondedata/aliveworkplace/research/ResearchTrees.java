@@ -37,7 +37,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -76,7 +75,7 @@ public final class ResearchTrees implements ResourceManagerReloadListener {
 		counter("research_levels", Component.translatable("research_tree.aliveworkplace.counter.research_levels"),
 			(level, hall) -> level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity ? entity.research().totalLevels() : 0);
 		counter("villagers", Component.translatable("research_tree.aliveworkplace.counter.villagers"),
-			(level, hall) -> level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS), v -> v.isAlive() && !v.isBaby()).size());
+			(level, hall) -> VillageHalls.villagers(level, hall, v -> !v.isBaby()).size()); // B1352: the village's circle
 	}
 
 	public static void init() {

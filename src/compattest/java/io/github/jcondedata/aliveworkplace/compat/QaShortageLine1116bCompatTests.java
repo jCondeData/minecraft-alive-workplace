@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCo
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.craft.JobShortages;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ import net.minecraft.world.level.block.Blocks;
  * Handcrafted's sheet), the one-form-short boundary (2 polished andesite for 3 andesite), and the Mason cutting andesite
  * from polished andesite through the builder's own request.
  */
-public class QaShortageLine1116bCompatTests implements FabricGameTest {
+public class QaShortageLine1116bCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** Every thing B1308 named as reading itself short of itself; ids absent from the pack are skipped (and listed). */

@@ -121,13 +121,13 @@ public class PokemonTradeScreen extends AbstractContainerScreen<PokemonTradeView
 			}
 			name = TableStyle.trim(font, name, room - (shiny ? 10 : 0));
 			boolean on = picked(offer);
-			g.drawString(font, name, x, y + 6, on ? TableStyle.TITLE : TableStyle.NAME, false);
+			g.drawString(font, name, x, y + 5, on ? TableStyle.TITLE : TableStyle.NAME, false);
 			if (shiny) {
-				g.drawString(font, STAR, x + font.width(name) + 3, y + 6, TableStyle.TITLE, false);
+				g.drawString(font, STAR, x + font.width(name) + 3, y + 5, TableStyle.TITLE, false);
 			}
 			ItemStack cost = icon(PokemonTradeView.COSTS + i);
 			if (!cost.isEmpty()) {
-				g.drawString(font, TableStyle.trim(font, cost.getHoverName().getString(), room), x, y + 17, TableStyle.SUBLINE, false);
+				g.drawString(font, TableStyle.trim(font, cost.getHoverName().getString(), room), x, y + 16, TableStyle.SUBLINE, false);
 			}
 		}
 		if (!any) {

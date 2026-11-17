@@ -450,7 +450,7 @@ public final class HeartEvents implements ResourceManagerReloadListener {
 		String name = villager.getDisplayName().getString();
 		Families.Parents mine = parents ? Families.parents(villager) : null;
 		List<Villager> out = new ArrayList<>();
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall.getBlockPos()), v -> v.isAlive() && v != villager)) {
+		for (Villager v : VillageHalls.villagers(level, hall.getBlockPos(), v -> v.isAlive() && v != villager)) {
 			Families.Parents theirs = children ? Families.parents(v) : null;
 			if (theirs != null && (theirs.mother().getString().equals(name) || theirs.father().getString().equals(name))) {
 				out.add(v);

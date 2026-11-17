@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ import net.minecraft.world.level.block.Rotation;
  * Carpenter makes Large Cogwheels from a three-wood chest through his own work loop, also saved and loaded mid-plan,
  * and with a plank taken out of the chest under his plan. Nothing here is random.
  */
-public class QaMixedTagPack1115eCompatTests implements FabricGameTest {
+public class QaMixedTagPack1115eCompatTests implements FreshPlanning {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

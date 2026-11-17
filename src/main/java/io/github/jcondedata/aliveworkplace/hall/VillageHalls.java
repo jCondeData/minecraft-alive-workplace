@@ -356,9 +356,10 @@ public final class VillageHalls {
 	 * (a block swapped without a block update, as region edits and some mods do) was taken for the nearest hall, and
 	 * with no hall there every villager nearer to it than to the real hall had no village: no friendship, no requests.
 	 * A point in a chunk that isn't loaded is trusted (asking for its block would load the chunk). Server thread only;
-	 * also the waystone network's check that a village still has its hall (B996).
+	 * also the waystone network's check that a village still has its hall (B996), the City Plan's nearer-hall rule
+	 * (B1266), and Reach's, the raid dens' and the village fires' hall lookups (B1356).
 	 */
-	static boolean standsAt(ServerLevel level, BlockPos pos) {
+	public static boolean standsAt(ServerLevel level, BlockPos pos) {
 		net.minecraft.world.level.chunk.LevelChunk chunk = level.getChunkSource().getChunkNow(pos.getX() >> 4, pos.getZ() >> 4);
 		return chunk == null || chunk.getBlockState(pos).getBlock() instanceof VillageHallBlock;
 	}

@@ -211,7 +211,7 @@ public final class GolemSmith {
 		if (!Legends.ENABLED) {
 			return;
 		}
-		for (Villager smith : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && power(v).isPresent())) {
+		for (Villager smith : VillageHalls.villagers(level, hall, v -> v.isAlive() && power(v).isPresent())) {
 			forgeOne(level, hall, smith);
 		}
 	}
@@ -228,7 +228,7 @@ public final class GolemSmith {
 		if (forge.lastDay() >= 0 && today - forge.lastDay() < power.days()) {
 			return null;
 		}
-		int villagers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive).size();
+		int villagers = VillageHalls.villagers(level, hall, Villager::isAlive).size();
 		if (forged(level, hall) >= villagers / power.villagersPerGolem()) {
 			return null;
 		}

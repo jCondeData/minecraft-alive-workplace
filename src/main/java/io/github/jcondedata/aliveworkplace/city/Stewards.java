@@ -103,6 +103,7 @@ public final class Stewards {
 	@Nullable
 	public static Villager stewardOf(ServerLevel level, BlockPos hall) {
 		GlobalPos at = GlobalPos.of(level.dimension(), hall);
+		// Twice the village's reach on purpose (B1352): found by his job site, the Steward counts even out of the village on an errand.
 		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS * 2),
 			v -> isSteward(v) && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(at::equals).isPresent()).stream().findFirst().orElse(null);
 	}
@@ -193,6 +194,7 @@ public final class Stewards {
 	/** The hall at {@code hall} was broken: its loaded Steward loses the job. */
 	public static void hallGone(ServerLevel level, BlockPos hall) {
 		GlobalPos at = GlobalPos.of(level.dimension(), hall);
+		// Twice the village's reach on purpose (B1352): a Steward away from the village loses the job too.
 		for (Villager v : level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS * 2),
 				v -> isSteward(v) && v.getBrain().getMemory(MemoryModuleType.JOB_SITE).filter(at::equals).isPresent())) {
 			dismiss(level, v);

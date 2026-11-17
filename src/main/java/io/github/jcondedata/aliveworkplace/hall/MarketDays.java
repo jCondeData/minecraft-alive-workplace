@@ -65,6 +65,14 @@ public final class MarketDays {
 		return day == today && (lastMarketDay == today || level.getDayTime() % VillageNeeds.DAY >= 6000) ? day + EVERY_DAYS : day;
 	}
 
+	/**
+	 * The next market day to tell of (the Seer, the Gazette, the Observatory): {@link #nextDay}, or -1 when no market will
+	 * come (market days switched off, or the village has no Market Square; B1361).
+	 */
+	public static long foretold(ServerLevel level, BlockPos hall, long lastMarketDay) {
+		return ENABLED && square(level, hall).isPresent() ? nextDay(level, hall, lastMarketDay) : -1;
+	}
+
 	/** The village's Market Square (a finished one in its claimed area), or empty. */
 	public static Optional<BlockPos> square(ServerLevel level, BlockPos hall) {
 		return BuildSiteManager.get(level).finishedInVillage(level, hall).stream()
@@ -98,6 +106,15 @@ public final class MarketDays {
 			+ io.github.jcondedata.aliveworkplace.people.ClassPerks.marketTraders(level, hall)); // the Burghers' trader (34.7)
 	}
 
+	/**
+	 * How long traders arriving now stay in the village round {@code hall}: {@link #STAY} at most, and gone by dusk
+	 * ({@link Curfew#DUSK}) whenever they come, so a market that begins late in the morning doesn't keep them into the night
+	 * (B1362); the Curfew edict's cap is the same or sooner.
+	 */
+	public static int stay(ServerLevel level, BlockPos hall) {
+		return (int) Math.max(20, Math.min(Curfew.marketStay(level, hall, STAY), Curfew.DUSK - Curfew.timeOfDay(level)));
+	}
+
 	/** The traders come to the square at {@code square}. */
 	public static List<WanderingTrader> hold(ServerLevel level, BlockPos hall, BlockPos square) {
 		return hold(level, hall, square, 0, t -> {
@@ -120,7 +137,7 @@ public final class MarketDays {
 			if (trader == null) {
 				continue;
 			}
-			trader.setDespawnDelay(Curfew.marketStay(level, hall, STAY)); // Curfew: gone by dusk
+			trader.setDespawnDelay(stay(level, hall)); // gone by dusk
 			trader.setWanderTarget(square);
 			addBlueprintOffer(level, trader);
 			each.accept(trader);

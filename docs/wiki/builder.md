@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280, B1294
 
 ## 1. What a player sees
 
@@ -133,7 +133,9 @@ world was saved and loaded at midnight (test `QaSavesAfterFixes1103eGameTests`).
   through (under a jetty's deck): over a pond's solid bed (stone, gravel, sand) a drawn pool, a drawn hole in the floor
   or a drawn waterlogged slab leaves the room shut, and it ends dry, also when saved and loaded mid-CLEAR; over a
   water-filled pocket in the bed, shut in by stone, it ends dry too: the water under the floor counts only when it
-  reaches past the box's footprint or up to its height (B1280: the pocket made the room flood). Before, CLEAR passed over water,
+  reaches past the box's footprint or up to its height (B1280: the pocket made the room flood), however wide the pocket
+  is under the floor (B1294: a pocket two wide or L-shaped under the solid floor still flooded it, because the spots
+  the foundation fills there were measured as part of the box). Before, CLEAR passed over water,
   the walls went up round it and the room stayed flooded (B1243; nothing saved, so it is the same after a reload).
 - A post's footing on the bed of shallow water (the Fisher's Hut's jetty posts, two blocks under its deck) is always laid:
   when no bank or floor in reach is dry, the builder wades into the water beside it, on the bed, to lay the footing,
@@ -860,5 +862,8 @@ the pool basin saved and loaded mid-CLEAR: each ends dry but its pool, every mat
 and a lava pocket shut in the bed (no fire), a drawn floor hole and a drawn waterlogged slab over a water pocket, the
 pocket case saved and loaded mid-CLEAR, turned a quarter and mirrored and turned: each ends dry but its pool; water under
 the pool running past the footprint to an open lake is never drained or dammed there.
+`QaBuilderPocketDrain1115gBugTests` (2, the QA lane, B1294): the pool basin over a pocket two wide (under the pool and
+the solid floor beside it) and over an L-shaped pocket out to the footprint's edge and corner, two deep there: each
+ends dry but its pool, every material adding up.
 `QaPocketPlants1116bGameTests` (3, B1280): the pool basin over a pocket shut in the bed and filled with kelp, with
 waterlogged stairs, or with a bubble column over magma: each ends dry but its pool, every material adding up.

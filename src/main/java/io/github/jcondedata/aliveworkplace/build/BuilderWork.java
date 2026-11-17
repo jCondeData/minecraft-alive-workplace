@@ -2427,7 +2427,8 @@ public class BuilderWork extends Behavior<Villager> {
 	 * through and, through spots that let water through and aren't the box's, reaches past the box's footprint or up to
 	 * its height (water under a jetty's deck, a lake running on below). A pocket in a pond's bed shut in by stone (or a
 	 * hole that holds only the drawing's pool's water) is no way in. {@code known} keeps the answer for each spot looked
-	 * at, so a pocket is searched once.
+	 * at, so a pocket is searched once. B1294: {@code box} and {@code bounds} are the drawing's spots without the ones
+	 * FOUNDATION will fill, which still hold the bed's water and are searched like any other spot under the floor.
 	 */
 	private static boolean openBelow(ServerLevel level, BlockPos below, Set<BlockPos> box, net.minecraft.world.level.levelgen.structure.BoundingBox bounds,
 			Map<BlockPos, Boolean> known) {
@@ -2487,8 +2488,16 @@ public class BuilderWork extends Behavior<Villager> {
 		// the open spots of the box (drawn air, or a block that shuts nothing: a torch, a flower) reached from outside it
 		Set<BlockPos> outside = new HashSet<>();
 		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		// B1294: the footprint and height a way in from below is measured against are the drawing's own. The spots
+		// FOUNDATION will fill under the solid floor (water or air in the bed today) are the plan's too, and with them the
+		// box reached down into a pocket wider than the pool's spot, so the pocket itself stood "at the box's height"
+		// and the room counted as open. They are still what the world holds, so the search goes through them.
+		Set<BlockPos> drawn = new HashSet<>(box);
+		for (BuildPlan.Step s : plan.steps(BuildPlan.Stage.FOUNDATION)) {
+			drawn.remove(s.pos());
+		}
 		net.minecraft.world.level.levelgen.structure.BoundingBox bounds =
-			net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(box).orElse(null);
+			net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(drawn).orElse(null);
 		Map<BlockPos, Boolean> below = new HashMap<>();
 		for (BlockPos p : box) {
 			if (!opens(level, plan, p)) {
@@ -2499,7 +2508,7 @@ public class BuilderWork extends Behavior<Villager> {
 				// floor that shuts nothing (the drawing's own pool, a carpet, a pressure plate) standing on the solid bed
 				// of a pond made the whole room count as open, and nothing was drained
 				if (!box.contains(p.relative(d))
-					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below(), box, bounds, below))) {
+					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below(), drawn, bounds, below))) {
 					if (outside.add(p)) {
 						open.add(p);
 					}

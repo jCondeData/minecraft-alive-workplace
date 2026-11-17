@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import java.util.List;
@@ -41,7 +42,7 @@ import net.minecraft.world.level.block.Rotation;
  * Crafter, recipe type {@code cobblefurnies:furni_crafting}, shipped as a {@code crafter_benches} file): its pieces are
  * planned only while a Furni Crafter stands in the workshop. A bench file whose mod isn't installed is left out.
  */
-public class CrafterFurnitureCompatTests implements FabricGameTest {
+public class CrafterFurnitureCompatTests implements FreshPlanning {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

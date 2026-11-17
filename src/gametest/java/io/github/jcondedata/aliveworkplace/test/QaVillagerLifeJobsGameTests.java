@@ -84,7 +84,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
  * each of its jobs.</li>
  * </ul>
  */
-public class QaVillagerLifeJobsGameTests implements FabricGameTest {
+public class QaVillagerLifeJobsGameTests implements FreshPlanning {
 	private static final String BUILD = "aliveworkplace_test:build_area";
 	private static final String BIG = "aliveworkplace_test:big_area";
 

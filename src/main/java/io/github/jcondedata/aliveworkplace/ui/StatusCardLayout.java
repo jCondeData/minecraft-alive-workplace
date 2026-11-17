@@ -106,6 +106,71 @@ public final class StatusCardLayout {
 		return new Boxes(card, portrait, name, tag, close, subtitle, body, divider, refusal, buttons, hintBox, room < bodyH);
 	}
 
+	/** A gap between a tooltip and what it sits beside. */
+	public static final int TIP_GAP = 4;
+	/** The item icon at a line's left (TableStyle.cardLine draws it at the row's x, 16 pixels). */
+	public static final int ICON = 16;
+
+	/** A Copperline tooltip's height: its title, {@code lines} lines and the status line if there is one (CopperStyle.tooltip). */
+	public static int tooltipHeight(int lines, boolean status) {
+		return 6 + 10 + lines * 10 + (status ? 10 : 0) + 3;
+	}
+
+	/** The width a grayed-out button's reason wraps at in its tooltip: 180, or less on a narrow screen. */
+	public static int tooltipWrap(int sw) {
+		return Math.max(40, Math.min(180, sw - 20));
+	}
+
+	private static int clamp(int v, int lo, int hi) {
+		return Math.max(lo, Math.min(v, Math.max(lo, hi)));
+	}
+
+	/**
+	 * Where a grayed-out button's reason tooltip ({@code w x h}) goes for the mouse at {@code mx, my} on a screen
+	 * {@code sw x sh} (B1357): right of the mouse as vanilla's, flipped left of it when it doesn't fit, and above the mouse
+	 * (below if there's no room above) when neither side has room; always fully on screen. Returns {x, y}.
+	 */
+	public static int[] buttonTooltip(int sw, int sh, int mx, int my, int w, int h) {
+		int x;
+		int y;
+		if (mx + 8 + w <= sw) {
+			x = mx + 8;
+			y = my - 12;
+		} else if (mx - 8 - w >= 0) {
+			x = mx - 8 - w;
+			y = my - 12;
+		} else {
+			x = mx - w / 2;
+			y = my - 12 - h >= 0 ? my - 12 - h : my + 12;
+		}
+		return new int[]{clamp(x, 0, sw - w), clamp(y, 0, sh - h)};
+	}
+
+	/**
+	 * Where an item line's tooltip ({@code w x h}) goes for the line's row {@code row} ({x, y, w, h}) on the card {@code card}
+	 * on a screen {@code sw x sh} (B1357; the spec: beside the card at that row, so it never covers the row it describes):
+	 * right of the card, else left of it, else just above the row, else just below it; always fully on screen, and when
+	 * none of those fit, still off the row's item icon. Returns {x, y}.
+	 */
+	public static int[] lineTooltip(int sw, int sh, int[] card, int[] row, int w, int h) {
+		int y = clamp(row[1], 0, sh - h);
+		if (card[0] + card[2] + TIP_GAP + w <= sw) {
+			return new int[]{card[0] + card[2] + TIP_GAP, y};
+		}
+		if (card[0] - TIP_GAP - w >= 0) {
+			return new int[]{card[0] - TIP_GAP - w, y};
+		}
+		int x = clamp(row[0], 0, sw - w);
+		if (row[1] - 2 - h >= 0) {
+			return new int[]{x, row[1] - 2 - h};
+		}
+		if (row[1] + row[3] + 2 + h <= sh) {
+			return new int[]{x, row[1] + row[3] + 2};
+		}
+		// No room anywhere clear of the row: over its text, right of its icon.
+		return new int[]{clamp(row[0] + ICON + 2, 0, sw - w), y};
+	}
+
 	private StatusCardLayout() {
 	}
 }

@@ -246,6 +246,7 @@ public final class StewardJobs {
 
 	/** Whether someone of the building's job already works at a block inside it. */
 	private static boolean worked(ServerLevel level, Building b) {
+		// A square round the building on purpose (B555): anyone working at it, of this village or not.
 		return !level.getEntitiesOfClass(Villager.class, VillageHalls.area(b.box().getCenter()),
 			v -> v.isAlive() && v.getVillagerData().getProfession() == b.job()
 				&& v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).filter(b.box()::isInside).isPresent()).isEmpty();

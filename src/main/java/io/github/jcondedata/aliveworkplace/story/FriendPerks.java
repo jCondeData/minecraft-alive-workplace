@@ -162,7 +162,7 @@ public final class FriendPerks {
 		}
 		long today = Chronicle.day(level);
 		int brought = 0;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Friendship::eligible)) {
+		for (Villager v : VillageHalls.villagers(level, hall, Friendship::eligible)) {
 			Friendship.Data data = Friendship.of(v);
 			Friendship.Bond bond = data.bond(player.getUUID());
 			if (bond.hearts() < GIFT_HEARTS || bond.festivalGift() == today) {

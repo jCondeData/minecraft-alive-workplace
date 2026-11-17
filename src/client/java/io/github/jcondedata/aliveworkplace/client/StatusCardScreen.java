@@ -182,8 +182,12 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 			CopperStyle.button(g, font, button.label(), null, b[i][0], b[i][1], b[i][2], b[i][3],
 				i == copper ? CopperStyle.Kind.COPPER : CopperStyle.Kind.NEUTRAL, over && button.usable(), false, !button.usable());
 			if (over && !button.usable()) {
-				tooltip = () -> CopperStyle.tooltip(g, font, button.label(), wrap(button.refusal(), 180), CopperStyle.Status.BAD,
-					Component.translatable("screen.aliveworkplace.card.off"), mouseX + 8, mouseY - 12);
+				List<Component> reason = wrap(button.refusal(), StatusCardLayout.tooltipWrap(width));
+				Component word = Component.translatable("screen.aliveworkplace.card.off");
+				int[] at = StatusCardLayout.buttonTooltip(width, height, mouseX, mouseY,
+					CopperStyle.tooltipWidth(font, button.label(), reason, CopperStyle.Status.BAD, word),
+					StatusCardLayout.tooltipHeight(reason.size(), true));
+				tooltip = () -> CopperStyle.tooltip(g, font, button.label(), reason, CopperStyle.Status.BAD, word, at[0], at[1]);
 			}
 		}
 		int[] h = boxes.hint();
@@ -232,8 +236,9 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 
 	/**
 	 * A line's tooltip, as the board's: the item, the line's label when it says more, the value with its status glyph. It
-	 * sits beside the card at the row's height (right of it, or left when the screen has no room), so it never covers the
-	 * row it describes or the rows under it (the design critique's first point).
+	 * sits beside the card at the row's height (right of it, or left when the screen has no room; above or below the row when
+	 * neither side has room), so it never covers the row it describes, and always on screen ({@link StatusCardLayout#lineTooltip},
+	 * B1357).
 	 */
 	private void lineTooltip(GuiGraphics g, StatusCard.Line line, int rowY) {
 		Component item = line.icon().getHoverName();
@@ -245,14 +250,11 @@ public class StatusCardScreen extends AbstractContainerScreen<StatusCardMenu> {
 		if (status == null && !line.value().getString().isEmpty()) {
 			lines.add(line.value());
 		}
-		int w = font.width(item);
-		for (Component l : lines) {
-			w = Math.max(w, font.width(l));
-		}
-		w = Math.max(w, status == null ? 0 : font.width(line.value()) + 10) + 10;
-		int[] c = boxes.card();
-		int x = c[0] + c[2] + 4 + w <= width ? c[0] + c[2] + 4 : Math.max(0, c[0] - 4 - w);
-		CopperStyle.tooltip(g, font, item, lines, status, line.value(), x, rowY);
+		int w = CopperStyle.tooltipWidth(font, item, lines, status, line.value());
+		int h = StatusCardLayout.tooltipHeight(lines.size(), status != null);
+		int[] row = {boxes.body()[0], rowY, boxes.body()[2], TableStyle.CARD_LINE};
+		int[] at = StatusCardLayout.lineTooltip(width, height, boxes.card(), row, w, h);
+		CopperStyle.tooltip(g, font, item, lines, status, line.value(), at[0], at[1]);
 	}
 
 	/** {@code text} wrapped at {@code w} pixels, one Component per line. */

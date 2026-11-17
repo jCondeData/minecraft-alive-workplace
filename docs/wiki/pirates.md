@@ -25,7 +25,8 @@ Roadmap items: 32.8, B823
   between the ship and the village (past the bow, or off a side if the bow's water is taken), and the ship burns and
   sinks over ten seconds, from the mastheads down, with smoke, flames and bubbles. Only the ship's own blocks go: a
   block that isn't the ship's any more (one a player put on deck, or a ship's block a player changed) stays where it
-  was. The sea comes back where the hull was. The crew at the ship scatters and no new lair comes for five days.
+  was. The sea comes back where the hull was: below the waterline the old hold is still sea like the water round
+  it, not water still running down into it (B1317). The crew at the ship scatters and no new lair comes for five days.
 - **The chest** (`aliveworkplace:chests/pirate_ship`): gold, emeralds, a trident, nautilus shells, often gold nuggets,
   fish, prismarine shards, a map or an enchanted book, now and then a diamond, and one time in ten a heart of the sea.
 
@@ -93,6 +94,9 @@ Roadmap items: 32.8, B823
 - `PirateGameTests.aSinkingShipCarriesOnAfterARestartAndTheSwitches`: a chest taken before the captain fell (no raft);
   a save and load mid-sinking; the lines a player reads; the config switch, the expansion gate, a Village and an inland
   Town.
+- `QaShipsMutants1116dBugTests.qaTheSunkenHoldIsStillSeaNotRunningWater` and
+  `qaTheSunkenHoldIsStillSeaAfterAReloadMidSinking`: 100 ticks after the sinking, every spot of the ship below the
+  waterline is still (source) water, with and without a save and load halfway through (B1317).
 - `PirateLandingGameTests.theClocksPirateRaidWadesAshoreAtTheBeachNearestTheShip`: the raid the clock set for tonight
   (as every real pirate raid comes) wades ashore within 5 blocks of the beach nearest the ship (B823).
 - `PirateLandingGameTests.withNoShipAToldPirateRaidKeepsToTheToldSide`: with no ship, a raid told for the east gathers

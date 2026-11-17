@@ -23,6 +23,8 @@ asks for the steps, `latest.log` and any crash report).
 - Villages: the same villager outside the circle no longer counts toward a research tree's villager count, gets the
   Steward's or the hall's build orders, counts as the village's Scholar for the printing press, or draws a raid's
   raiders or piglins (B1352).
+- Chronicle: a Festival Cup's line written when its village next loads goes under its own day, so the days read
+  newest first with one header each (DAY 47, then DAY 46 with both of its lines), not DAY 46, DAY 47, DAY 46 (B1353).
 
 ## 0.156.0 — 2026-11-16
 

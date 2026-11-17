@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4, B1353
 
 ## What a player sees
 
@@ -217,7 +217,9 @@ column: All, People, Building, Trade, Festivals, Defense and Stories, each with 
 holds, the open one copper-marked; a click lists only that kind (every entry kind is in exactly one group:
 `Chronicle.Group`), and Back is at the column's foot. At 320x180 the column is icons with their counts and the whisper line
 names them. On the right the entries, newest first, under **day headers** ("DAY 47 · AUTUMN 5" over a rule, the season
-and its day worked out with the server's season length); each entry is a chevron, its icon and its text on one line, and
+and its day worked out with the server's season length). The page lists by date, not in the order the lines were written
+(B1353, `Chronicle.byDate`): a Cup line written when its village next loads, dated the Cup's day, goes under that day's
+one header, below newer days (the hall's saved list stays as written, so no save changes); each entry is a chevron, its icon and its text on one line, and
 a click **opens** it to its whole text (a copper-edged box) and closes it again. The mouse wheel scrolls the list. The
 whisper line says when an entry was written and that a click reads all of it, what a filter shows, or the page's hint.
 
@@ -336,6 +338,8 @@ filter's click showing only its group, an empty group's line, All bringing every
 menus' rail with no, 1, 6 and 12 tabs, the list beside it and the page arrows in the whisper line; the Trader's book on
 the lintel clear of the plaque and the close X; the new sentences), with `CopperlineShellGameTests`,
 `PokemonTradeLayoutGameTests`, `QaTradeRows1109dGameTests`, the hall page tests and the list menu tests still passing.
+QA's `QaChronicleCopper1117dBugGameTests` (B1353: a Cup line written late, dated day 46 after a day-47 line, lists as
+DAY 47 then DAY 46 with both of its lines, also after the hall is saved and loaded).
 Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
 list menu with its tab on the rail).
 

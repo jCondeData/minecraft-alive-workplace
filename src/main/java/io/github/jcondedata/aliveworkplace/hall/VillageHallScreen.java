@@ -720,7 +720,7 @@ public final class VillageHallScreen {
 		menu.clearButtons();
 		menu.button(0, icon(Items.ARROW, Component.translatable("screen.aliveworkplace.hall.back"), ChatFormatting.WHITE), p -> refresh(menu, level, hall, 0));
 		VillageHallBlockEntity entity = level.getBlockEntity(hall) instanceof VillageHallBlockEntity e ? e : null;
-		List<Chronicle.Entry> entries = entity == null ? List.of() : entity.chronicle();
+		List<Chronicle.Entry> entries = entity == null ? List.of() : Chronicle.byDate(entity.chronicle()); // by date, not as written (B1353)
 		ItemStack head = icon(Items.WRITTEN_BOOK, Component.translatable("screen.aliveworkplace.hall.chronicle_title", VillageHalls.name(level, hall)),
 			ChatFormatting.GOLD, line(Component.translatable("screen.aliveworkplace.hall.chronicle_about", Chronicle.day(level)), ChatFormatting.GRAY));
 		CompoundTag headTag = new CompoundTag();

@@ -57,6 +57,9 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
   world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
+### Fixed
+- Waystones: a village's plaza moved by a Mover keeps its waystone. Everyone who had discovered it still has it
+  (the hall's Map still says "discovered"), instead of having to walk there and find it again (B1310).
 
 ## 0.156.0 — 2026-11-16
 

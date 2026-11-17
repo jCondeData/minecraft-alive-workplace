@@ -591,6 +591,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConfigFileBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ConfigHandWrittenGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigThreatMaps1117dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaConfigThreatMaps1117dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.ConfigZeroLabelGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConfigHandEditsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVillageMachinesGameTests",

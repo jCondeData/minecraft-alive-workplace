@@ -19,6 +19,11 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.156.0 — 2026-11-16
 
 ### Fixed
+- Village Hall Chronicle: a Festival Cup entry written late (the Cup ended while the village was unloaded) now sits
+  under its own day, so the day headers stay newest first with one header per day, instead of reading DAY 46, DAY 47,
+  DAY 46 (B1353).
+- Pokemon Trader: at GUI scale 3 (a 320x180 screen) the trader's name plaque is no longer cut off at the top; the
+  window is 10 pixels shorter and keeps an 8-pixel margin like the Village Hall's windows (B1354).
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

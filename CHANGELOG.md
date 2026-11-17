@@ -47,17 +47,13 @@ asks for the steps, `latest.log` and any crash report).
   (B1355).
 - Trainer screen: every Pokémon's level shows whole again. Team cards no longer cut a capped "Lv 40" to "L…" (a team
   of four now sits two by two), and at GUI scale 3 a party line's "Lv 100" no longer runs into its status glyph (B1351).
-### Fixed
 - Builder: a room with a pool in its floor, built on the bed of a pond, no longer ends up flooded when a water-filled
   hollow in the bed runs under the floor beside the pool (two blocks wide, or L-shaped out to the build's edge). The
   room ends dry and the pool keeps its water (B1294).
-### Fixed
 - Drowned pirates: after a pirate ship sinks, its old hold below the waterline is still sea like the water round it,
   instead of spots of falling water that pushed a swimmer down (B1317).
-### Fixed
 - City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
   world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
-### Fixed
 - Waystones: a village's plaza moved by a Mover keeps its waystone. Everyone who had discovered it still has it
   (the hall's Map still says "discovered"), instead of having to walk there and find it again (B1310).
 

@@ -6996,19 +6996,19 @@ Same method (Milestone 49), but a small piece is only rebuilt when the critic fi
 village; one that holds up is ticked with the critic's sheet and no new drawing. Lane D builds it once Milestone 48 is
 done.
 
-- [ ] **52.1** (blocked: waits for 49.1, the rebuild kit) **Wells, fountains and water**: well, well house, fountain,
+- [ ] **52.1** **Wells, fountains and water**: well, well house, fountain,
   lily pond, footbridge.
-- [ ] **52.2** (blocked: waits for 49.1, the rebuild kit) **Street pieces**: street lamp, signpost, notice board, park
+- [ ] **52.2** **Street pieces**: street lamp, signpost, notice board, park
   bench, sundial, hay cart, flower planters, lantern pergola, gazebo, bandstand, topiary garden, stag statue, stone
   archway, fire pit, camp kitchen.
-- [ ] **52.3** (blocked: waits for 49.1, the rebuild kit) **Walls**: stone wall, wall tower, palisade, palisade gate,
+- [ ] **52.3** **Walls**: stone wall, wall tower, palisade, palisade gate,
   palisade tower.
-- [ ] **52.4** (blocked: waits for 49.1, the rebuild kit) **Portals and shrines**: Nether gate, waystone plaza, mega
+- [ ] **52.4** **Portals and shrines**: Nether gate, waystone plaza, mega
   shrine.
-- [ ] **52.5** (blocked: waits for 49.1, the rebuild kit) **Story and legend sites** (`story/`, `legend/`): bandit fort,
+- [ ] **52.5** **Story and legend sites** (`story/`, `legend/`): bandit fort,
   raiders' stockade, the bandit camp (`camp`), caravan wreck, trails, shift bell, castaway and traveller camps, hermit hut, founder statue,
   prisoner cage.
-- [ ] **52.6** (blocked: waits for 49.1, the rebuild kit) **The eight Wonders** (`wonder/`), one item each in the
+- [ ] **52.6** **The eight Wonders** (`wonder/`), one item each in the
   Notes as they start; flagship treatment (A and B) for the Great Cathedral and the Colossus.
 
 ## Notes / blocked

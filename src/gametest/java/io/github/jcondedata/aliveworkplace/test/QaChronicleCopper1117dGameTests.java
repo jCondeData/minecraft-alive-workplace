@@ -550,8 +550,8 @@ public class QaChronicleCopper1117dGameTests implements FabricGameTest {
 
 	// ---------------------------------------------------------------------------------------------- layouts
 
-	//$ gametest EMPTY_STRUCTURE
-	@GameTest(template = EMPTY_STRUCTURE)
+	//$ gametest_batch EMPTY_STRUCTURE '"qaChronicle1117dLayout"'
+	@GameTest(template = EMPTY_STRUCTURE, batch = "qaChronicle1117dLayout")
 	public void everyListMenuTabIsReachableOnSmallScreens(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		for (int[] screen : SMALL) {
@@ -594,8 +594,8 @@ public class QaChronicleCopper1117dGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	//$ gametest EMPTY_STRUCTURE
-	@GameTest(template = EMPTY_STRUCTURE)
+	//$ gametest_batch EMPTY_STRUCTURE '"qaChronicle1117dLayout"'
+	@GameTest(template = EMPTY_STRUCTURE, batch = "qaChronicle1117dLayout")
 	public void theShowColumnNeverPutsAFilterUnderBackAtAnyHeight(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		int groups = Chronicle.Group.values().length;
@@ -633,8 +633,8 @@ public class QaChronicleCopper1117dGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	//$ gametest EMPTY_STRUCTURE
-	@GameTest(template = EMPTY_STRUCTURE)
+	//$ gametest_batch EMPTY_STRUCTURE '"qaChronicle1117dLayout"'
+	@GameTest(template = EMPTY_STRUCTURE, batch = "qaChronicle1117dLayout")
 	public void thePokemonTradersCloseBookAndOffersAreOnSmallScreens(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		for (int[] screen : SMALL) {
@@ -674,8 +674,8 @@ public class QaChronicleCopper1117dGameTests implements FabricGameTest {
 	private static final Pattern BRITISH = Pattern.compile("\\b(colou?rs?|defence|honour|centre|cancelled|grey|armour|favourite|neighbour|travell)",
 		Pattern.CASE_INSENSITIVE);
 
-	//$ gametest EMPTY_STRUCTURE
-	@GameTest(template = EMPTY_STRUCTURE)
+	//$ gametest_batch EMPTY_STRUCTURE '"qaChronicle1117dLayout"'
+	@GameTest(template = EMPTY_STRUCTURE, batch = "qaChronicle1117dLayout")
 	public void everyNewSentenceReadsRightWithItsArguments(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		Component village = Component.literal("Oakhaven");

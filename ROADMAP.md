@@ -6952,25 +6952,25 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
 Same method (Milestone 49, `tools/blueprints/REBUILD.md`), one item per family with all its levels. Lane E builds it
 once 49.1 has landed; the other lanes join when their own milestones are empty.
 
-- [ ] **50.1** (blocked: waits for 49.1, the rebuild kit) **Builder's Workshop** (flagship: A and B).
-- [ ] **50.2** (blocked: waits for 49.1, the rebuild kit) **Carpenter's Workshop**, **Mason's Yard** and **Sawmill**.
-- [ ] **50.3** (blocked: waits for 49.1, the rebuild kit) **Smithy**, **Brass Foundry** and **Tinker's Workshop**.
-- [ ] **50.4** (blocked: waits for 49.1, the rebuild kit) **Butcher's Shop**, **Kitchen** and **Winery**.
-- [ ] **50.5** (blocked: waits for 49.1, the rebuild kit) **Fisher's Hut**, **Ferry House** and **Watermill**.
-- [ ] **50.6** (blocked: waits for 49.1, the rebuild kit) **Fletcher's Lodge**, **Tailor's Shop** and **Print Shop**.
-- [ ] **50.7** (blocked: waits for 49.1, the rebuild kit) **Glassblower's**, **Jeweler's** and **Crafter's
+- [ ] **50.1** **Builder's Workshop** (flagship: A and B).
+- [ ] **50.2** **Carpenter's Workshop**, **Mason's Yard** and **Sawmill**.
+- [ ] **50.3** **Smithy**, **Brass Foundry** and **Tinker's Workshop**.
+- [ ] **50.4** **Butcher's Shop**, **Kitchen** and **Winery**.
+- [ ] **50.5** **Fisher's Hut**, **Ferry House** and **Watermill**.
+- [ ] **50.6** **Fletcher's Lodge**, **Tailor's Shop** and **Print Shop**.
+- [ ] **50.7** **Glassblower's**, **Jeweler's** and **Crafter's
   Workshop**, and **Workshop**.
-- [ ] **50.8** (blocked: waits for 49.1, the rebuild kit) **Physician's House**, **Clinic** and **Healing Center**
+- [ ] **50.8** **Physician's House**, **Clinic** and **Healing Center**
   (4 levels).
-- [ ] **50.9** (blocked: waits for 49.1, the rebuild kit) **Berry Farm**, **Berry Nursery**, **Apiary Garden**,
+- [ ] **50.9** **Berry Farm**, **Berry Nursery**, **Apiary Garden**,
   **Greenhouse** and **Compost Yard**.
-- [ ] **50.10** (blocked: waits for 49.1, the rebuild kit) **Quarry**, **Sifting Shed**, **Crushing Mill**, **Gem
+- [ ] **50.10** **Quarry**, **Sifting Shed**, **Crushing Mill**, **Gem
   Grotto** and **Windmill**.
-- [ ] **50.11** (blocked: waits for 49.1, the rebuild kit) **Flower Shop**, **Supply Shop** (4 levels) and **Market
+- [ ] **50.11** **Flower Shop**, **Supply Shop** (4 levels) and **Market
   Stall** (3).
-- [ ] **50.12** (blocked: waits for 49.1, the rebuild kit) **Pokémon Center**, **Trainer's House**, **Daycare**,
+- [ ] **50.12** **Pokémon Center**, **Trainer's House**, **Daycare**,
   **Ball Workshop**, **Habitat Garden**, **Research Lab** and **Arena** (Cobblemon's; the mod absent, nothing changes).
-- [ ] **50.13** (blocked: waits for 49.1, the rebuild kit) **Train Station**, the **Village Train** (`train/`), **Pump House**, **Terminal Nook** and
+- [ ] **50.13** **Train Station**, the **Village Train** (`train/`), **Pump House**, **Terminal Nook** and
   the Create builds (Create's; the mod absent, nothing changes).
 
 ## Milestone 51: Rebuild from scratch: the big buildings

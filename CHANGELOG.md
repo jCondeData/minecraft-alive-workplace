@@ -23,6 +23,10 @@ asks for the steps, `latest.log` and any crash report).
 - Villages: the same villager outside the circle no longer counts toward a research tree's villager count, gets the
   Steward's or the hall's build orders, counts as the village's Scholar for the printing press, or draws a raid's
   raiders or piglins (B1352).
+- Config file: one unreadable word in `raiderCultures` or `disasters` ("maybe", a typo like "flase") no longer resets the
+  whole map, so a culture or disaster you switched off beside it stays off; that one entry takes its default, on, and
+  the log names it (B1359). Their ids are now read trimmed and in any case, so "Bandits": false switches the bandits
+  off (B1360).
 
 ## 0.156.0 — 2026-11-16
 

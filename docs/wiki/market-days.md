@@ -74,8 +74,8 @@ chronicle, and the day isn't spent, so switching it back on that morning brings 
 ## Proof
 
 - `VillageHallGameTests#marketDayBringsTraders`: the happy path.
-- `QaMarketDays1117cGameTests` (8): the morning's edges (999, 1000, 5999, 6000), one market day in every 7 for halls
+- `QaMarketDays1117cGameTests` (9): the morning's edges (999, 1000, 5999, 6000), one market day in every 7 for halls
   all over the map, the next day told against the day it comes, no square then a square finished that morning, who
-  is told, the chronicle's count, the switch, a styled square, 40 markets' blueprints all real and priced 6, and the
+  is told, the chronicle's count, the count by rank and Commerce, the switch, a styled square, 40 markets' blueprints all real and priced 6, and the
   day held kept over a save.
 - The two bugs' tests are on the branch tests/market-days-1117c until they are fixed.

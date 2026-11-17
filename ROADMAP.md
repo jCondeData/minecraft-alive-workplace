@@ -6858,7 +6858,7 @@ pieces; lane E redoes Milestone 44 in Copperline at the same time.
   table's tests pass; scenes of the table and the book.
 - [x] **48.2** (review: pending 2026-11-16) **The Trainer screen in Copperline**, like
   `Trainer.png` (the real Cobblemon models stay). Done when: the trainer screen's tests pass; its scenes.
-- [x] **48.3** (review: pending 2026-11-16) **The villager status card, toasts and tooltips in
+- [x] **48.3** (review: pending 2026-11-16) (verified 2026-11-17: lane-d-1117-0408 QA from the spec: QaStatusCardCopper1117dGameTests [5: StatusCardLayout over ~1.4M layouts 200-854 x 120-400 incl. GUI 2/3 sizes, 0-5 buttons, cut bodies: card on screen, buttons inside in order above the hint, reason box only for a grayed-out button, close X clear of face and name; copper only on the first usable button; a real builder card with no hall grays Hall page with its reason in the box at 427x240/480x270/640x360; Builders.finish chat line and toast words for named/unnamed builders and take-downs, no toast or error for a vanilla client; the 3 new sentences]; 4 of 6 hand mutants in StatusCardLayout killed [2 survivors equivalent/cosmetic]; wiki job-status-cards.md and status-cards.md corrected; drawing, tooltips beside the card and the toast arriving on a modded client only in scene copperline_status_card; full build green 9490 + 1880) **The villager status card, toasts and tooltips in
   Copperline**, like `VillagerCard.png`. Done when: `StatusCardButtonsGameTests` and the card's tests pass; its scenes.
 - [x] **48.4** (review: pending 2026-11-16) **The Chronicle and the Pokemon and menu screens of
   Milestones 42 and 43 in Copperline**, like `Chronicle.png` (each laid out in the shell). Done when: their tests pass;

@@ -18,6 +18,7 @@
 //   planters  plantFlower, tieredBed, boxBoards, beamRun, kneeBrace, hangingLantern   (planters, pergolas)
 //   furniture furnitureParts (every room piece, kitchens included; couch and blinds)
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
+//   brickwork quoinsLS, plinthCourse, moulding, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -45,3 +46,4 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './brickwork.mjs' // quoinsLS, plinthCourse, moulding, faceCells, mullionWindow, kneeler, bayWindow (brick houses with stone dressings)

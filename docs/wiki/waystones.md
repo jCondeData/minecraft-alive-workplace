@@ -51,7 +51,7 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
   the new name; QaWaystoneRenamedBroken1110dCompatTests).
-- **Travelling to a village's stone** costs what Waystones asks for any of its waystones, nothing more or less: the stone
+- **Traveling to a village's stone** costs what Waystones asks for any of its waystones, nothing more or less: the stone
   is an ordinary one (discovered by using it, not a free global waystone). With Waystones' default config a survival
   player pays an experience point per 100 blocks from where they stand to the stone, rounded down (705 blocks: 7 points,
   exactly level 1), and a player short of it, even by one point, isn't sent and keeps their experience; in creative the

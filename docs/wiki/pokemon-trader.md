@@ -2,7 +2,7 @@
 
 Needs Cobblemon. ROADMAP 28.x (the trader), 28.23 (its own trade screen), 43.2 (the screen in the Village Hall's look).
 
-Roadmap items: 28.23, B312, 43.2
+Roadmap items: 28.23, B312, 43.2, B1354
 
 ## What a player sees
 

@@ -31,7 +31,7 @@ import net.minecraft.world.level.block.Blocks;
  * the long way round, so a line for polished andesite from nothing should name the Andesite, never Nether Quartz from
  * another dimension.
  */
-public class QaStoneLine1115bGameTests {
+public class QaStoneLine1115bGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 

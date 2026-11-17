@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.Blocks;
  * with Silk Touch) and the wrong count (five raw iron are right there; one more is what's short). With coal and no ore
  * it also names Deepslate Iron Ore rather than the raw iron.
  */
-public class QaTinkererShortBugGameTests {
+public class QaTinkererShortBugGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("aliveworkplace-qa");
 

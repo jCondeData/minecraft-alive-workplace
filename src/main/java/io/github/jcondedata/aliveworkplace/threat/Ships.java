@@ -472,6 +472,12 @@ public final class Ships {
 			}
 			BlockState now = level.getBlockState(p);
 			boolean below = p.getY() <= ship.waterTop();
+			if (below && now.is(Blocks.WATER) && !now.getFluidState().isSource()) {
+				// The ship goes top down, so the sea pours in from the layers above before this one's turn: the water
+				// running down the old hold (or where something washed away) becomes still sea like the rest (B1317).
+				level.setBlock(p, Blocks.WATER.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+				continue;
+			}
 			if (e.getValue().isAir()) {
 				if (below && now.isAir()) {
 					level.setBlock(p, Blocks.WATER.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE); // the hold floods

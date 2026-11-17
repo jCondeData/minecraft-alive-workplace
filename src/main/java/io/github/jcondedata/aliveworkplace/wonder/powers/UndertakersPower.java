@@ -96,7 +96,7 @@ public record UndertakersPower(boolean village, boolean byMorning) implements Wo
 			return 0;
 		}
 		AABB area = VillageHalls.area(hall);
-		Villager undertaker = level.getEntitiesOfClass(Villager.class, area, v -> v.isAlive() && UndertakerWork.isUndertaker(v)
+		Villager undertaker = VillageHalls.villagers(level, hall, v -> v.isAlive() && UndertakerWork.isUndertaker(v)
 			&& Builders.benchPos(v).isPresent()).stream().findFirst().orElse(null);
 		if (undertaker == null) {
 			return 0;

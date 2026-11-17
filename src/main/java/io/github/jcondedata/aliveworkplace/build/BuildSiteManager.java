@@ -373,6 +373,28 @@ public final class BuildSiteManager extends SavedData {
 		});
 	}
 
+	/**
+	 * B1322: scaffolding of removed sites that stood in a chunk nobody had loaded, each with its site's bench (the scaffold
+	 * itself when it had none): {@link Scaffolds} takes it down when that chunk loads. Saved; empty by default.
+	 */
+	private final Map<net.minecraft.core.BlockPos, net.minecraft.core.BlockPos> leftScaffolds = new LinkedHashMap<>();
+
+	/** The scaffolding left waiting for its chunk to load, with its site's bench (B1322). */
+	public Map<net.minecraft.core.BlockPos, net.minecraft.core.BlockPos> leftScaffolds() {
+		return Collections.unmodifiableMap(leftScaffolds);
+	}
+
+	void leaveScaffold(net.minecraft.core.BlockPos pos, @Nullable net.minecraft.core.BlockPos bench) {
+		leftScaffolds.put(pos.immutable(), bench != null ? bench.immutable() : pos.immutable());
+		setDirty();
+	}
+
+	void forgetLeftScaffold(net.minecraft.core.BlockPos pos) {
+		if (leftScaffolds.remove(pos) != null) {
+			setDirty();
+		}
+	}
+
 	public static BuildSiteManager get(ServerLevel level) {
 		BuildSiteManager manager = level.getDataStorage().computeIfAbsent(new SavedData.Factory<>(BuildSiteManager::new, BuildSiteManager::load, null), NAME);
 		manager.level = level;
@@ -427,6 +449,10 @@ public final class BuildSiteManager extends SavedData {
 			list.add(site.save());
 		}
 		tag.put("sites", list);
+		if (!leftScaffolds.isEmpty()) { // B1322
+			tag.putLongArray("left_scaffolds", leftScaffolds.keySet().stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+			tag.putLongArray("left_scaffold_benches", leftScaffolds.values().stream().mapToLong(net.minecraft.core.BlockPos::asLong).toArray());
+		}
 		ListTag done = new ListTag();
 		for (Finished f : finished) {
 			CompoundTag entry = new CompoundTag();
@@ -513,6 +539,11 @@ public final class BuildSiteManager extends SavedData {
 					manager.refreshAsked.add(placement.get());
 				}
 			}
+		}
+		long[] leftAt = Nbt.getLongArray(tag, "left_scaffolds"); // B1322: older saves have none
+		long[] leftBench = Nbt.getLongArray(tag, "left_scaffold_benches");
+		for (int i = 0; i < leftAt.length && i < leftBench.length; i++) {
+			manager.leftScaffolds.put(net.minecraft.core.BlockPos.of(leftAt[i]), net.minecraft.core.BlockPos.of(leftBench[i]));
 		}
 		ListTag checks = Nbt.getList(tag, "turn_checks", Tag.TAG_COMPOUND); // 39.5: older saves have none
 		for (int i = 0; i < checks.size(); i++) {

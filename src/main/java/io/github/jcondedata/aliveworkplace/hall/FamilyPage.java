@@ -168,7 +168,7 @@ public final class FamilyPage {
 		if (!io.github.jcondedata.aliveworkplace.printer.Printers.ENABLED) {
 			return null;
 		}
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && io.github.jcondedata.aliveworkplace.printer.Printers.isPrinter(v))
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && io.github.jcondedata.aliveworkplace.printer.Printers.isPrinter(v))
 			.stream().findFirst().orElse(null);
 	}
 

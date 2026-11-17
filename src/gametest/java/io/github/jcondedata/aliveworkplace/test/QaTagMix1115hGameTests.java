@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.Blocks;
  * things the recipe doesn't take left alone, two chests' worth, and the Carpenter saved and loaded back mid-job.
  * Nothing here is random.
  */
-public class QaTagMix1115hGameTests implements FabricGameTest {
+public class QaTagMix1115hGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 	private static final BlockPos ORIGIN = new BlockPos(6, 2, 9);
 	private static final Item[] PLANKS = {Items.OAK_PLANKS, Items.SPRUCE_PLANKS, Items.BIRCH_PLANKS};

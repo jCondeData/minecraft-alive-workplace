@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4, B1353
 
 ## What a player sees
 
@@ -131,8 +131,8 @@ top when Challenge is off ("Can't challenge now" and the reason), "Challenge <na
 **cards** (the real Pokémon model, the name and level; a level brought down to the cap in Lantern with the warning
 glyph; "???" and "Not seen yet" until the player wins once), the team's hint line, **Your party** as striped rows (name,
 level, a status glyph and word: Ready, Fainted, Over the cap) and the rules. When it doesn't fit (a big team, a small
-screen) the stage scrolls with the wheel and shows a scroll bar. The team grid takes as many columns as fit at 64
-pixels or more and evens them out over its rows (a team of six: three and three on a roomy screen, two by three at
+screen) the stage scrolls with the wheel and shows a scroll bar. The team grid takes as many columns as fit at 79
+pixels or more (room for a capped "Lv 100" whole, B1351) and evens them out over its rows (a team of six: three and three on a roomy screen, two by three at
 320x180). The whisper line says what the thing under the mouse is or does (the trainer, the record, today, a card, a
 party line, the rules, each button; a grayed Challenge gives its reason); with nothing under the mouse it keeps the
 screen's hint.
@@ -225,8 +225,9 @@ whisper line says when an entry was written and that a click reads all of it, wh
 Professor, the Innkeeper, the Legend guest's terms, Research, the Smith's orders, the builder's tool pickers, the shops
 and the Ferry) put their **tabs down a rail** at the left, a two-column grid of icon cells (a Pokémon of your party, a
 research tree's book), the open one copper-marked; the whisper line names the tab under the mouse and what it is ("The
-scholars' research: Worked by the village's scholars at their desks"); a tab has no floating tooltip (it would cover the
-list), so only its name and the first line of its tooltip show, in the whisper line. The list sits on
+scholars' research: Worked by the village's scholars at their desks"), and its whole tooltip shows under the mouse as
+before (B1355: the whisper line has room for only the name and first line, so the Move Tutor's "N more from a more
+experienced tutor" and Research's click line would otherwise be lost). The list sits on
 the stage beside it, laid out by `ui/ListMenuLayout`. A menu without tabs has no rail and its list fills the stage. The page arrows stay at the whisper
 line's right. Every row, button, price, row tooltip and click is as before.
 

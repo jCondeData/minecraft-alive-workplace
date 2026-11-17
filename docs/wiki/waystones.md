@@ -4,7 +4,7 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2, 41.3, B996, B1244
+Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310, B1188
 
 ## What a player sees
 
@@ -47,10 +47,16 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244
   waystone, even with its plaza and stone still standing, and it drops off every other hall's Map. A caravan already
   on its way there turns home with its load. Put the hall back and, after its next round, the village is on the
   network again with its stone named after it.
+- **A plaza stays its own village's** (B1188): a neighboring village doesn't take a ruined village's plaza as its own
+  or rename its stone, so its settlers and caravans keep stepping out of its own stone. Only a village with no plaza
+  of its own (a new hall set down beside the old plaza) takes it over.
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
   the new name; QaWaystoneRenamedBroken1110dCompatTests).
+- **A plaza moved by a Mover keeps its stone** (B1310): the stone at the new spot is the same waystone of the
+  Waystones mod's, with the village's name, so every player who had discovered it still has it and the Map still says
+  "discovered". It holds through a save and reload while the stone is packed.
 
 ## How it works
 
@@ -120,6 +126,16 @@ The build: `tools/blueprints/waystones.py` (`waystone_plaza(culture)`), saved as
 Gradle: `deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"` (Waystones 21.1.37, compile only, which makes
 `waystones` a Stonecutter constant), Waystones and Balm 21.0.63 (`MBAkmtvl:R6U3hZRZ`) in `tests.compat_mods` and
 `tests.screenshot_waystones` (`-Pwaystones=true`, the catalog's `waystones=True`), `waystones` in `suggests`.
+
+A Mover moving a plaza (B1310): broken, a waystone is taken off the mod's list with every player's discovery of it
+(`WaystoneBlockBase.onRemove` calls `WaystoneManagerImpl.removeWaystone` and `PlayerWaystoneManager.removeKnownWaystone`);
+picked up with Silk Touch it is kept instead, marked transient. `MoveSite.take` calls `VillageWaystones.lifting` before a
+waystone half comes down, and the extension's `lifting(level, pos)` marks both halves' block entities silk-touched (by name: Balm, which their class extends, isn't on the compile classpath), so
+the mod keeps the waystone (saved, transient) and players keep it. `MoveSite.put` calls `VillageWaystones.setDown` once
+the packed data is back in the block entity; the extension's `setDown(level, pos)` reads the waystone's id from that data
+(the block entity's `UUID`) and binds the stone to it with `WaystoneBlockEntityBase.initializeFromExisting` (the new spot, no longer transient),
+what Waystones does for a silk-touched stone placed again; the upper half takes it with `WaystoneBlockEntityBase.initializeFromBase`. `raise`
+does the same before it would place a new waystone, and clears a leftover transient flag.
 
 ## Switches
 
@@ -205,6 +221,10 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
 
 ## Proof
 
+- `QaWaystoneCross1115d3BugCompatTests` (compat suite, B1310): a player who discovered the plaza's stone still has it
+  after a Mover moves the plaza, and the Map reads "discovered"; the same with a save and reload (the move and the
+  Waystones mod's list) while the stone is packed, the moved stone being the same waystone (same id, one in the list,
+  none at the old spot).
 - `WaystonesCompatTests` (compat suite): the rule holds with a hall and the culture's look comes first, each look
   carries its culture's waystone, the builder builds the plaza and its stone is a working, named waystone a player
   discovers; renaming the hall renames it; a broken stone is repaired by upkeep and named again; the switch off, no

@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2, B555, B1352, B1356, B1266
 
 ## What a player sees
 
@@ -207,7 +207,8 @@ the owner and their friends can order one. The tab says how many builds can go u
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
 village: within its radius across and 32 blocks up or down, so a death on its rim up a hill is written too, B780;
-"(1 entry)" on its button for a chronicle of one, B744), trade routes
+"(1 entry)" on its button for a chronicle of one, B744; newest day first with one header per day, even for a Cup entry
+written late when its village loads again, B1353), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A festival or a Grand Chef's banquet goes on only while someone is near the village: once everyone has left, nothing of it
@@ -257,6 +258,9 @@ village: left out"; `QaZoneNearerHall1115cGameTests`, 6: the tie and one block e
 radius, the hall broken and put back, a Wall Tower and the rank, a save and load).
 Nearer means across the ground, as the radius measures it, so a hall on higher ground still takes a cell it is nearer
 to across (B1270, `QaZoneNearerHall1115bBugTests`).
+Only a hall that really stands is another village here: a hall's point of interest left behind with no hall block on
+it (in a loaded chunk) refuses no painting and takes no painted cell (B1266, `OrphanHallPointGameTests`: the stroke
+paints whole and a Stone Wall there still walls the village; a real hall on the spot refuses the next stroke).
 A building also counts by its corner (B620, so nothing that counted before stops counting), but only when its middle
 doesn't lie nearer another hall (B1271): a Stone Wall whose middle is in a cell nearer hall B is village B's only, even
 with its corner in a cell village A painted or inside A's radius (`QaZoneNearerHall1115bBugTests`). A building whose
@@ -265,7 +269,11 @@ Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's 
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
-always both in or both out (B361, `VillageHalls.contains`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+always both in or both out (B361, `VillageHalls.contains`). The same circle decides who comes to a festival or a
+banquet, who can be a new baby's parent, who a friend asked for by name, a guild, a war party or a cough can reach, and
+every other "the village's villagers": a villager out in the corners of the square round the hall belongs to none of it
+(B555, `VillageHalls.villagers`). The same goes for the research trees' villager count, the builders the Steward and the
+hall's build pages give orders to, the press's Scholar, and whom a raid's raiders and piglins go for (B1352). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform
@@ -680,6 +688,8 @@ A villager's hall is the nearest Village Hall within the hall radius (`VillageHa
 point of interest). Only a hall that really stands counts: a point of interest left behind with no hall block on it
 (a block swapped without a block update, as region edits and some world-editing mods do) is skipped, so the villager
 keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
-point in a chunk that isn't loaded is trusted.
+point in a chunk that isn't loaded is trusted. The same holds for a work block's village past the radius (a painted
+zone), a raid den's nearest hall and the village a fire breaks out in, and a hall swapped away is no village for fires
+at once, not a few seconds later (B1356, `OrphanHallLookupGameTests`).
 
 See also: [House looks](house-looks.md), the page the Builds button opens.

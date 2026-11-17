@@ -144,7 +144,7 @@ public final class CupChampions {
 		for (BlockPos hall : villages) {
 			if (level.isLoaded(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
 				fly(level, hall);
-				level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive).forEach(Moods::forget);
+				VillageHalls.villagers(level, hall, Villager::isAlive).forEach(Moods::forget);
 			}
 		}
 	}

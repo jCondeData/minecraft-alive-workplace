@@ -80,7 +80,8 @@ stock only while the village has a Scholar) and 2 copies of the Village Gazette 
 Journeyman an Illuminated Book from a book, 2 gold nuggets, a lapis lazuli and a glow ink sac. The Gazette is the
 luxury the Burghers need every 7 days, the Illuminated Book the one the Nobles want every 16. Both read like a written
 book (right-click): the Gazette is printed from the hall that day (the newest chronicle entries, the open quests and
-what they pay, the next festival and market day, the week's births, weddings and households that rose), the
+what they pay, the next festival and market day (only ones that will come: "none planned" with festivals off or too
+few villagers, "none until the village builds a Market Square" without one, B1361), the week's births, weddings and households that rose), the
 Illuminated Book is the whole chronicle. The hall quest **Spread the news** (a Printer and a caravan route) pays 6
 emeralds for this week's Gazette handed in at the hall of the village at the other end of the route. "This week's" is
 printed that day or in the 6 days before (7 days old is old news); one copy of a stack is taken, and another village's
@@ -276,6 +277,8 @@ zombie villager never sent a look, nothing on tracking with `classOutfits` off, 
 `ClassChatterGameTests` (5, B551 and B552: wine and clothes talked of when the class lacks them and not once had, the
 Gazette the week it's read, the tavern where it reaches home, every new line, the plain diet tip's 2 kinds) and
 `QaClassHallRetirementBugTests` (three lines each for wine, clothes, the Gazette and the tavern).
+`QaMarketDays1117cBugTests` (4, B1361 and B1362: no market day or festival dated that won't come, in the Gazette, the
+Seer and the Observatory; market traders gone by dusk whenever the market begins) and `QaMarketDays1117cGameTests`.
 QA: `QaHallClasses1027GameTests` (7, 34.6 with its fixes: one household in the singular and none as "0 of 0", the
 closest-to-rising list, a mixed couple as one household, three tips on a tie, the rise's moods ending on day 3, the
 food icon's luxuries, the Job list's first slot).

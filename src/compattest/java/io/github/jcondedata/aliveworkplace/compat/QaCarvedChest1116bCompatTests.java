@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.craft.JobShortages;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -30,7 +31,7 @@ import net.minecraft.world.level.block.Blocks;
  * chest (never used, the line still names logs), and the other way round: a blueprint asking for a carved chest is never
  * built with a plain one. Nothing here is random.
  */
-public class QaCarvedChest1116bCompatTests implements FabricGameTest {
+public class QaCarvedChest1116bCompatTests implements FreshPlanning {
 	private static final String AREA = QaCarvedChest1115eCompatTests.AREA;
 	private static final BlockPos ROW = new BlockPos(6, 2, 9);
 

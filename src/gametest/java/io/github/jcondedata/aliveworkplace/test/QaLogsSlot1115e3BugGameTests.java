@@ -13,7 +13,7 @@ import net.minecraft.world.item.Items;
  * four woods in the chest, reads "3 Oak Logs" short: every slot picks the first wood that's there. crafter.md (B409):
  * "The line names what the chest is short of"; the smoker's recipe takes any 4 logs, so nothing is. Moves to main with the fix.
  */
-public class QaLogsSlot1115e3BugGameTests implements FabricGameTest {
+public class QaLogsSlot1115e3BugGameTests implements FreshPlanning {
 
 	/** Four logs of four woods, or stripped logs and wood there: nothing is short (the tag takes them all). */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'

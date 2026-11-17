@@ -144,8 +144,7 @@ public final class RaidHelpers {
 		Data data = Data.get(level);
 		Set<UUID> taken = new HashSet<>(data.homeward.keySet());
 		data.hires.values().forEach(h -> taken.addAll(h.helpers));
-		List<Villager> free = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && Trainers.isTrainer(v) && !taken.contains(v.getUUID())));
+		List<Villager> free = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && Trainers.isTrainer(v) && !taken.contains(v.getUUID())));
 		free.sort(Comparator.comparingInt(Trainers::tier).reversed().thenComparing(Villager::getUUID));
 		return free;
 	}

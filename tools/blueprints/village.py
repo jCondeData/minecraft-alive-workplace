@@ -520,7 +520,7 @@ DAUB_HOUSE = "house_t1_b"
 DAUB_STYLES = {
     "plains": {},
     "desert": {  # sandstone on a sandstone plinth, jungle wood, a red sandstone roof
-        "cobblestone": "sandstone", "mossy_cobblestone": "cut_sandstone", "stone": "smooth_sandstone",
+        "mud_bricks": "sandstone", "cobblestone": "sandstone", "mossy_cobblestone": "cut_sandstone", "stone": "smooth_sandstone",
         "andesite": "sandstone", "stone_bricks": "cut_sandstone", "cobblestone_stairs": "sandstone_stairs",
         "smooth_stone_slab": "smooth_sandstone_slab", "bricks": "cut_red_sandstone",
         "brick_stairs": "smooth_red_sandstone_stairs", "brick_slab": "smooth_red_sandstone_slab",

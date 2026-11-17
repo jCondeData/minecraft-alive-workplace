@@ -22,7 +22,7 @@ import net.minecraft.world.level.block.Blocks;
  * line counts the whole tag, and a Carpenter makes the things from a chest of mixed planks and uses all of them.
  * Nothing here is random.
  */
-public class MixedTagSlotGameTests implements FabricGameTest {
+public class MixedTagSlotGameTests implements FreshPlanning {
 	private static final String AREA = QaCrafterFurnitureGameTests.AREA;
 
 	/**

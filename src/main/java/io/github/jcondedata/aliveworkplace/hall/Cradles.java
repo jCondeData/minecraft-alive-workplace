@@ -58,7 +58,7 @@ public final class Cradles {
 		if (cradles.isEmpty()) {
 			return;
 		}
-		for (Villager child : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && v.isBaby())) {
+		for (Villager child : VillageHalls.villagers(level, hall, v -> v.isAlive() && v.isBaby())) {
 			child.setAge(Math.min(0, child.getAge() + ticks));
 		}
 		if (Curfew.isNight(level)) {

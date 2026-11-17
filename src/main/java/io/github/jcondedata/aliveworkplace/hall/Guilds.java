@@ -899,7 +899,7 @@ public final class Guilds implements ResourceManagerReloadListener {
 		Component name = guild != null ? guild.name() : Component.literal(m.guild().toString());
 		Villager heir = null;
 		if (guild != null) {
-			for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(m.hall()), v -> v != dead && v.isAlive() && !v.isBaby() && guild.gathers(v))) {
+			for (Villager v : VillageHalls.villagers(level, m.hall(), v -> v != dead && v.isAlive() && !v.isBaby() && guild.gathers(v))) {
 				if (heir == null || experience(v) > experience(heir)) {
 					heir = v;
 				}

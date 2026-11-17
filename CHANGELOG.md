@@ -23,9 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
-- **The Stone House is rebuilt from scratch** (all four levels): a two-storey mason's house of rubble stone with dressed
+- **The Stone House is rebuilt from scratch** (all four levels): a two-story mason's house of rubble stone with dressed
   quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
-  kitchen and a chamber upstairs; II adds a parlour wing, III a back room under a catslide roof, IV a store cellar down a
+  kitchen and a chamber upstairs; II adds a parlor wing, III a back room under a catslide roof, IV a store cellar down a
   ladder by the hearth. Houses already standing keep their look until you press Refresh on the hall's Repairs page (49.4).
 - **The Burgher's Townhouse is rebuilt from scratch** (all four levels): a tall merchant's house gable-end to the street,
   a stone shop and kitchen below a timber floor jettied over the street, a steep attic with a hoist beam, the hearth set

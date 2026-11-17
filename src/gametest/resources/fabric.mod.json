@@ -539,6 +539,7 @@
 			"io.github.jcondedata.aliveworkplace.test.CopperlineTrainerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineStatusCardGameTests",
 			"io.github.jcondedata.aliveworkplace.test.CopperlineChronicleGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",

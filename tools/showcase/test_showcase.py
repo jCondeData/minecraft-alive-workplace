@@ -162,6 +162,10 @@ def catalog_tests(tmp):
     # Cobblemon scenes get Cobblemon in the client, the others don't pay for it.
     wrong = [s["name"] for s in scenes.SCENES if (scenes.env(s["name"])["COBBLEMON"] == "true") != s["cobblemon"]]
     check("catalog: run.sh gets COBBLEMON=true exactly for the Cobblemon scenes", not wrong, wrong)
+    # B1376: the furniture mods include CobbleFurnies, which needs Cobblemon; without it the client never starts.
+    alone = [s["name"] for s in scenes.SCENES if scenes.env(s["name"])["FURNITURE"] == "true"
+             and scenes.env(s["name"])["COBBLEMON"] != "true"]
+    check("catalog: every furniture scene loads Cobblemon too (CobbleFurnies needs it)", not alone, alone)
     check("catalog: the battle scene gets Mega Showdown", scenes.env("battle")["MEGA"] == "true"
           and scenes.env("quarry")["MEGA"] == "false")
     check("catalog: a scene's own settings reach run.sh", scenes.env("village").get("WORKSHOP_WEIGHT") == "200")

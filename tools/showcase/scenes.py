@@ -40,11 +40,12 @@ def S(name, group, title, what, est, stills, env=None, cobblemon=False, mega=Fal
       create=False, waystones=False):
     """One scene. est: seconds the scene itself takes on GitHub's runner (the client's start-up is added).
     cobblemon18: a Cobblemon-1.8-only feature, always filmed with Cobblemon 1.8.1 (-Pcobblemon18=true, ROADMAP 28.14).
-    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4).
+    furniture: filmed with the pack's furniture mods (-Pfurniture=true, ROADMAP 37.4). Implies cobblemon: one of them,
+      CobbleFurnies, needs Cobblemon, and without it Fabric refuses to start the client (B1376: every rebuild_* scene).
     create: filmed with the owner's Create port (libs/, -Pcreate=true; Milestone 39).
     waystones: filmed with Waystones and Balm (-Pwaystones=true; Milestone 41)."""
     return {"name": name, "group": group, "title": title, "what": what, "est": est, "stills": stills,
-            "env": env or {}, "cobblemon": cobblemon or cobblemon18, "mega": mega, "cobblemon18": cobblemon18,
+            "env": env or {}, "cobblemon": cobblemon or cobblemon18 or furniture, "mega": mega, "cobblemon18": cobblemon18,
             "furniture": furniture, "create": create, "waystones": waystones}
 
 

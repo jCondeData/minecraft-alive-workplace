@@ -153,11 +153,12 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					level.setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-					if (step.state().getBlock() instanceof BedBlock) { // (as the Builder puts a bed: both halves at once)
-						BlockPos other = step.pos().relative(BedBlock.getConnectedDirection(step.state()));
-						if (now.containsKey(other)) {
-							level.setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-						}
+					// (as the Builder puts a two-block block: both halves at once, a bed's other half and a door's top with its
+					// bottom, MaterialRules.secondaryPos; the rebuilt Townhouse's upstairs door stands where 0.151.0 drew air)
+					BlockPos other = step.state().getBlock() instanceof BedBlock ? step.pos().relative(BedBlock.getConnectedDirection(step.state()))
+						: io.github.jcondedata.aliveworkplace.build.MaterialRules.secondaryPos(step.pos(), step.state());
+					if (other != null && now.containsKey(other)) {
+						level.setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 					}
 				}
 			}

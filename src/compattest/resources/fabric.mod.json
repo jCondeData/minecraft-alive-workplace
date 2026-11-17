@@ -23,6 +23,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaQuestbookClaims1116eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MoverFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGlassblower1110eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaystones1117dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystonesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneNetworkCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystones1107dBugCompatTests",

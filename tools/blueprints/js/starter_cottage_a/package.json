@@ -1,0 +1,7 @@
+{
+  "name": "starter-cottage-a",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, Version A (ROADMAP 49): a candidate for the critic. LEVEL=1..4 picks the level; build.sh builds and saves all four.",
+  "scripts": { "build": "sh build.sh" }
+}

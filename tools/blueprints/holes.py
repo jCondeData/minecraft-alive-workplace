@@ -67,6 +67,10 @@ ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) f
 # The Lantern Pergola (26.14) is an open lattice of slats with azalea grown over some of the gaps, not a roof
 ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
               for p in ((2, 5, 1), (1, 5, 5), (2, 5, 5), (3, 5, 3))})
+# The Well (49.1 rebuild) is an open well-head: a hat roof on two uprights over the water, open on all four sides on
+# purpose (you lean on the rim and draw from any side); the air under the hat is its mouth, not a room
+ALLOW.update({(n, p): "an open well-head under its roof, not a room" for n in ("well", "well_2")
+              for p in ((2, 2, 3), (2, 4, 2))})
 
 
 def load(path, props=False):
@@ -414,6 +418,8 @@ def main(argv):
     for path in blueprints(args):
         size, cells, states = load(path, props=True)
         name = os.path.relpath(path, STRUCTURES)[:-4]
+        if name.startswith(".."):  # a rebuild candidate (build/rebuild/<family>/<id>.nbt): known by its id
+            name = os.path.basename(path)[:-4]
         deep = under.get(name, under.get(name[len("modded/"):], 0) if name.startswith("modded/") else 0)
         if deep:
             size = (size[0], size[1] - deep, size[2])

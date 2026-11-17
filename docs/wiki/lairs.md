@@ -212,6 +212,11 @@ attacks (`day`, `culture`, `came`, `fell`, `fled`).
   sweep the same way, its band away: the story's record of the camp on the fire, 24 blocks off by its spot, or 24 off
   by its built origin, and the camp stays; 25 blocks from both and it is swept. Kills `CampCleanup.inUse`'s story check
   with `||` turned to `&&`.
+- QA (lane D, 2026-11-17): `QaCampCleanupMutants1117dGameTests`: an old camp with a cow and a wild pillager (no
+  band's tag) near is still found by the sweep and comes down, and both are left alone. The first mutation pass on
+  `CampCleanup` lines 126-414 (8 mutants against the 11 camp classes) killed 4; this kills the one a player would see
+  (any living mob near read as the camp's guard). Left: a smoke puff's x (looks only), the save flag after ruins (set
+  already that tick), and the clearing ending one tick later at 101 ticks.
 - `B225GameTests`: a camp on a grassy slope taken down leaves every block round it as it was before the camp; the same
   after a save and reload before and halfway through the clearing; with `campRuins` the tents stay and every open column
   is as it was; a camp whose record was saved without its ground (before B225) is blended: grass on every top, no

@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1
 
 ## 1. What a player sees
 
@@ -165,9 +165,9 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
-- 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
-  is on the Table or in villages until the owner picks one (36.23a). The Daub House's hall has no shelves by the door;
-  its plates stand on the kitchen counters (36.23c).
+- 36.23: a new Level I house was drawn two ways (the Hearthstead and the Daub House); the owner picked the Daub House,
+  which is on the Table since 49.2 (locked at first, like most builds; [The Daub House](daub-house.md)). The Hearthstead
+  stays unused on branch `wip/house-t1`.
 
 ## 8. Proof
 
@@ -237,3 +237,11 @@ is still handed out after.
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
 starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search
 for nothing lists nothing, and an emptied box lists everything).
+
+## Rebuilding the library (49.1)
+
+From 49.2 on, every blueprint the mod ships is being redrawn from scratch with the rebuild kit
+(`tools/blueprints/REBUILD.md`): a brief written from what the building must do, a designer who never sees the old
+building, and a critic who ships the new one only when it is clearly better. Ids never change, so standing buildings
+and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
+family from four sides and at eye level in every room.

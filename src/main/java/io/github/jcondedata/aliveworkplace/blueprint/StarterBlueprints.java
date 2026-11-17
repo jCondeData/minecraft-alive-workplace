@@ -267,6 +267,14 @@ public final class StarterBlueprints {
 	/** Stone House III with a wine cellar under the front house, down a ladder by the door (26.15). */
 	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(11, 16, 14), 4);
 
+	/**
+	 * The Daub House (ROADMAP 36.23, the owner's pick of two; 49.2): a Level I home of mud-brick daub in a dark oak frame
+	 * under a steep brick roof, a hall round its hearth, a low stone kitchen on the east side and a loft of four beds up a
+	 * stair. Drawn with the rebuild kit ({@code tools/blueprints/js/house_t1_b}); one tier. Villages grow it in all five
+	 * styles ({@code world/VillageHouses#HOMES}), and the Steward raises one for a hamlet three beds short.
+	 */
+	public static final Entry DAUB_HOUSE = new Entry(AliveWorkplace.id("house_t1_b"), new Vec3i(13, 14, 13));
+
 	/** The Artisan's House (34.15, a grade I home): a narrow timber house, a stone workroom below and two beds above. */
 	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
 	/** A stone workshop wing at the back with a third bed (grade II). */
@@ -636,7 +644,7 @@ public final class StarterBlueprints {
 		MANOR, MANOR_2, MANOR_3, MANOR_4);
 
 	/** Starter builds with no upgrade (the rest of {@link #ALL} come in tiers): in the Blueprint Table and the creative tab too. */
-	public static final List<Entry> ONE_TIER = List.of(MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP, GLASSBLOWERS_WORKSHOP,
+	public static final List<Entry> ONE_TIER = List.of(DAUB_HOUSE, MAP_ROOM, BANDSTAND, FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE, BUTCHERS_SHOP, QUARRY, CRAFTERS_WORKSHOP, GLASSBLOWERS_WORKSHOP,
 		STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 
 	/** The decorations (in the Blueprint Table with the rest; near a Village Hall they make the village prettier). */

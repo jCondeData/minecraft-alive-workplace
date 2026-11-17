@@ -10,8 +10,9 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639
 
 - **Builder's Workshop**: a saltbox drawing studio (a short steep roof side, a long low one) beside a fenced yard with a
   timber crane, its chain holding a block of stone, and stacks of stone and planks.
-- **Carpenter's Workshop**: a long saw shed, its west end a closed workshop, the rest open on braced posts over logs on
-  trestles; log piles before it (their ends to the street) and along the back, boards stood on end by the open gable.
+- **Carpenter's Workshop**: a cruck-framed shop under a steep roof with a dormer and a stone glue-stove flue; logs, a
+  sawhorse and plank stacks on the porch, an L of workbench round the crafting table, the Carpenter's bed in the loft
+  (rebuilt from scratch in 50.2). The village houses below keep their own looks.
 - **Kitchen**: a white plastered cookhouse under a hipped roof, a domed brick bread oven bulging out of its side (the
   smoker is its mouth inside) with a tall smoking flue, and herb beds either side of the path.
 - **Post Office**: a narrow two-story house, its timber upper floor jettied over the street with flower boxes, a red

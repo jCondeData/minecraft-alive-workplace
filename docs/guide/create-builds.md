@@ -27,8 +27,8 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
   furnace.
 - **Brass Foundry**: a tall brick hall with a chimney. Its wheel is geared up fast enough for a mechanical mixer over a
   basin and a blaze burner, and a belt carries things out to a depot by the door. The chef's smoker is inside.
-- **Sawmill**: a timber mill with a log store on its side. A belt runs through two mechanical saws to a depot, beside
-  the fletching table.
+- **Sawmill**: a water tank on log legs pours down a chute onto the wheel. In the long saw shed a belt carries logs
+  through two mechanical saws to a depot, and the Lumberjack's fletching table is in the lodge beside it.
 - **Crushing Mill**: two crushing wheels turning towards each other, fed by a belt over the gap. What they crush drops
   into a pit with an item drain in front. A blast furnace stands by the door.
 - **Greenhouse**: a glass house with beds of wheat, carrots and potatoes, watered by two channels. A belt runs down

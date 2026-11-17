@@ -260,7 +260,8 @@ SAW_FRAME = "spruce_log"
 
 
 def sawmill():
-    """15 x 11 x 12 (ROADMAP 39.8): the Sawmill. An eleven-by-ten timber mill, spruce posts and oak plank walls over a
+    """The OLD drawing (ROADMAP 50.2: the live sawmill.nbt now comes from the rebuild kit, tools/blueprints/js/sawmill;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 11 x 12 (ROADMAP 39.8): the Sawmill. An eleven-by-ten timber mill, spruce posts and oak plank walls over a
     cobblestone plinth under a dark oak gable, a log store under a lean-to on its east side; the water wheel on the
     west wall (header tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running to the
     front, through two mechanical saws facing up (each driven from the belt's far pulley by a column of cogwheels; the

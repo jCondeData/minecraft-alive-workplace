@@ -94,6 +94,12 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
     print(f"{name}: test area {w}x{h}x{d} -> {os.path.relpath(path, ROOT)}")
 
 
+# ROADMAP 50.2: these come from the rebuild kit (tools/blueprints/REBUILD.md), not from their old Python drawings:
+# tools/blueprints/js/<family>/ (MC_BUILDER=<minecraft-builder skill>; masons_yard: npm run build with LEVEL=1|2), then
+# python3 tools/blueprints/rebuild.py <family> <id>. Their old drawings are kept in blueprint_history/ (history.py).
+REBUILT = ("masons_yard", "masons_yard_2", "sawmill", "carpenters_workshop")
+
+
 if __name__ == "__main__":
     starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
     starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
@@ -143,6 +149,8 @@ if __name__ == "__main__":
     for name, draw in MORE_DECORATIONS:  # ROADMAP 26.14
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
+        if name in REBUILT:
+            continue  # ROADMAP 50.2: drawn by the rebuild kit (below)
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
@@ -183,7 +191,7 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
-    for name, draw in (("smithy", smithy), ("smithy_2", smithy_2), ("masons_yard", masons_yard), ("masons_yard_2", masons_yard_2),
+    for name, draw in (("smithy", smithy), ("smithy_2", smithy_2),
                        ("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
@@ -231,6 +239,8 @@ if __name__ == "__main__":
         # ROADMAP 49.2: the Daub House (its blueprint comes from the rebuild kit, tools/blueprints/rebuild.py) as a village home
         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
+        if name in REBUILT:
+            continue  # ROADMAP 50.2: drawn by the rebuild kit (below)
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
         save_wonder(wonder_id)

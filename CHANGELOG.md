@@ -22,6 +22,15 @@ asks for the steps, `latest.log` and any crash report).
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
 
+### Changed
+- **The Mason's Yard, the Sawmill and the Carpenter's Workshop are rebuilt from scratch** (50.2). The Mason's Yard is
+  a stone lodge whose roof sweeps down over an open banker shed, the stonecutter in its bay facing a walled yard with a
+  jib crane; Level II adds a second stonecutter and a tall tracing house where the master draws. The Sawmill (with
+  Create) has a hooped water tank on log legs whose flume drops onto the water wheel, a long saw shed over the belt and
+  both saws, and a lower Lumberjack's lodge. The Carpenter's Workshop is a cruck-framed shop under a steep roof with a
+  dormer, logs, a sawhorse and plank stacks on its porch, and the Carpenter's bed in the loft. Buildings already
+  standing keep the drawing they were built from until you refresh them.
+
 ### Fixed
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down

@@ -4,7 +4,7 @@ ROADMAP 32.8. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. The pirates are a raider culture (see
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is a ship on the sea.
 
-Roadmap items: 32.8, B823
+Roadmap items: 32.8, B823, B1317
 
 ## What a player sees
 

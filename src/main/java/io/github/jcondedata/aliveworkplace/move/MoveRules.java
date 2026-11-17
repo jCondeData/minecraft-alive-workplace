@@ -52,7 +52,7 @@ public final class MoveRules {
 			return Component.translatable("message.aliveworkplace.move.refused.not_ours");
 		}
 		BuildSiteManager.Finished f = building.get();
-		BoundingBox box = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+		BoundingBox box = Optional.ofNullable(MovePlan.box(level, f)) // B1374: as it stands
 			.orElse(new BoundingBox(from));
 		Optional<BlockPos> keeper = VillageProtection.keeper(level, player, box);
 		if (keeper.isPresent()) {
@@ -93,7 +93,7 @@ public final class MoveRules {
 	/** {@link #underBuilders(ServerLevel, BlockPos, BoundingBox)} for the village's finished building {@code f}. */
 	public static boolean underBuilders(ServerLevel level, BuildSiteManager.Finished f) {
 		BlockPos from = f.placement().origin();
-		BoundingBox box = BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+		BoundingBox box = Optional.ofNullable(MovePlan.box(level, f)) // B1374: as it stands
 			.orElse(new BoundingBox(from));
 		return underBuilders(level, from, box);
 	}

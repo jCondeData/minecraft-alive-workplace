@@ -76,10 +76,12 @@ public final class Refreshes {
 	public static synchronized void addHistory(ResourceLocation structure, String key, Blueprint drawing) {
 		EXTRA.computeIfAbsent(structure, k -> new ArrayList<>()).removeIf(o -> o.key().equals(key));
 		EXTRA.get(structure).add(new Old(key, drawing));
+		STANDING.clear();
 	}
 
 	public static synchronized void removeHistory(ResourceLocation structure) {
 		EXTRA.remove(structure);
+		STANDING.clear();
 	}
 
 	/** The older drawings of {@code structure}: those the mod ships, then any added. */
@@ -88,6 +90,7 @@ public final class Refreshes {
 		if (resources != loadedFrom) {
 			loadedFrom = resources;
 			history = load(resources);
+			STANDING.clear();
 		}
 		List<Old> out = new ArrayList<>(history.getOrDefault(structure, List.of()));
 		out.addAll(EXTRA.getOrDefault(structure, List.of()));
@@ -301,6 +304,44 @@ public final class Refreshes {
 			}
 		}
 		return BlueprintLibrary.get(level, structure).map(b -> furniture.apply(b, structure));
+	}
+
+	/** B1373, B1374: what {@link #standingSize} found for one building, and on which tick. */
+	private record Standing(long tick, @Nullable net.minecraft.core.Vec3i size) {
+	}
+
+	private record StandingKey(ResourceLocation structure, BlueprintData.Placement placement) {
+	}
+
+	/** How long (ticks) a building's {@link #standingSize} is kept before it is looked at again. */
+	private static final int STANDING_TICKS = 40;
+	private static final Map<StandingKey, Standing> STANDING = new HashMap<>();
+
+	/**
+	 * B1373, B1374: the size of the older drawing the finished building {@code f} still stands as (its box is that size at
+	 * its placement), or null when it stands as today's drawing (or no older drawing of its blueprint is shipped): the
+	 * Mover, the Move page and its fit check measure a house of an old drawing as it stands. Kept for a couple of seconds
+	 * per building, since the fit check and the Move page ask it for every building of the village on each click.
+	 */
+	@Nullable
+	public static synchronized net.minecraft.core.Vec3i standingSize(ServerLevel level, BuildSiteManager.Finished f) {
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
+		if (history(level.getServer(), historyId(f.structure(), furniture)).isEmpty()) {
+			return null; // (most builds: nothing to look at)
+		}
+		long now = level.getGameTime();
+		StandingKey key = new StandingKey(f.structure(), f.placement());
+		Standing known = STANDING.get(key);
+		if (known != null && now >= known.tick() && now - known.tick() < STANDING_TICKS) {
+			return known.size();
+		}
+		String from = builtFrom(level, f.structure(), f.placement(), furniture);
+		net.minecraft.core.Vec3i size = from == null ? null : drawing(level, f.structure(), from, furniture).map(Blueprint::size).orElse(null);
+		if (STANDING.size() > 1024) {
+			STANDING.clear();
+		}
+		STANDING.put(key, new Standing(now, size));
+		return size;
 	}
 
 	/**

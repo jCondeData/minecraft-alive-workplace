@@ -103,10 +103,10 @@ export function draw() {
     }
   }
 
-  // barge boards under the overhanging rakes: the Hall's front and back, the Kitchen's east gable
+  // barge boards under the overhanging rakes: the Hall's front and back, the Kitchen's east gable (upside-down stairs)
   bargeTrim(c, 'z', H.roof.along[0], H.roof.across, main.under, `${P.trim}_slab`)
   bargeTrim(c, 'z', H.roof.along[1], H.roof.across, main.under, `${P.trim}_slab`)
-  bargeTrim(c, 'x', K.roof.along[1], K.roof.across, wing.under, `${P.trim}_slab`)
+  bargeTrim(c, 'x', K.roof.along[1], K.roof.across, wing.under, `${P.trim}_stairs`)  // 45 degrees: stairs, not slabs
 
   // --- Pass 4: interior (the plan's furniture) --------------------------------------------------------------------
   for (const f of FURNITURE) furnitureParts[f.part](c, f)

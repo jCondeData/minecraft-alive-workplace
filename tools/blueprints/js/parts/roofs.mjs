@@ -47,11 +47,18 @@ export function gableWall(c, axis, line, [a0, a1], y0, under, pick) {
 }
 
 /** bargeTrim: a dark board under a gable's overhanging rake, stepping up with it (an upside-down slab under each
- *  column's lowest roof cell on the overhang line), so the roof's edge reads apart from the gable. */
+ *  column's lowest roof cell on the overhang line), so the roof's edge reads apart from the gable. Given a `_stairs`
+ *  id it lays upside-down stairs instead, each facing up its slope (the ridge column faces a0's way): use that under a
+ *  45-degree rake, where a top slab beside the next roof stair down reads as a table with a chair at it (B148's check). */
 export function bargeTrim(c, axis, line, [a0, a1], under, id) {
+  const mid = (a0 + a1) / 2
   for (let u = a0; u <= a1; u++) {
     const [x, z] = axis === 'z' ? [u, line] : [line, u]
-    if (!c.get(x, under[u] - 1, z)) slab(c, x, under[u] - 1, z, id, 'top')
+    if (c.get(x, under[u] - 1, z)) continue
+    if (id.endsWith('_stairs')) {
+      const up = u <= mid ? (axis === 'z' ? 'east' : 'south') : (axis === 'z' ? 'west' : 'north')
+      stair(c, x, under[u] - 1, z, id, up, 'top')
+    } else slab(c, x, under[u] - 1, z, id, 'top')
   }
 }
 

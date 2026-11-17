@@ -258,14 +258,17 @@ public final class StarterBlueprints {
 	/** A lych-gate over the way in. */
 	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 11, 13));
 
-	/** A stone cottage with a bed downstairs and one in the attic. */
-	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 11, 9));
-	/** A timber-framed upper storey with two more beds. */
-	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(11, 16, 9));
-	/** A stone wing at the back with two more beds. */
-	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(11, 16, 14));
-	/** Stone House III with a wine cellar under the front house, down a ladder by the door (26.15). */
-	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(11, 16, 14), 4);
+	/**
+	 * The Mason's House: a two-storey rubble house with dressed corners and a west chimney, a box-room bed downstairs and
+	 * a bedroom under the slates. Drawn with the rebuild kit ({@code tools/blueprints/js/stone_house}, 49.4).
+	 */
+	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 16, 11));
+	/** A lean-to parlor wing on the east gable, with a bed for a grandparent and a settle. */
+	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(13, 16, 11));
+	/** The back roof carried down over a rear room with two more beds. */
+	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(13, 16, 14));
+	/** Stone House III with a store cellar under the house, down a ladder by the hearth. */
+	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(13, 16, 14), 4);
 
 	/**
 	 * The Daub House (ROADMAP 36.23, the owner's pick of two; 49.2): a Level I home of mud-brick daub in a dark oak frame

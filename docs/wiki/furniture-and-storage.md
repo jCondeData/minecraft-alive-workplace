@@ -63,7 +63,7 @@ floor, so a shelf on a wall stays a slab; a two-block-tall piece (a `half=lower|
 half or not at all. The generator refuses a furnished build that breaks these rules, and `FurnishedRoomsGameTests`
 checks every shipped one. The Stone House was redone for it: the table by the west window and the clock by the bed
 (not beside the door), the attic a bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a rug and a
-lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each.
+lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each. (49.4 rebuilt the Stone House from scratch: [its page](stone-house.md).)
 
 The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
 Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display

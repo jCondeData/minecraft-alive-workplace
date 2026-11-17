@@ -55,7 +55,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
-	private static final BlockPos HOUSE = new BlockPos(9, 2, 9);
+	/** 49.4: (12, 2, 12), so the rebuilt Stone House (11 x 11) stays inside the area turned or mirrored, clear of the hall at (1, 2, 1). */
+	private static final BlockPos HOUSE = new BlockPos(12, 2, 12);
 	private static final ResourceLocation STONE_HOUSE = AliveWorkplace.id("stone_house");
 	/** The Stone House as drawn before B260 redrew its rooms (what the owner's house was built from). */
 	static final String BEFORE_B260 = "aec09cb26";
@@ -181,12 +182,13 @@ public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					s.level().setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-					if (step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock) {
-						// (as the Builder puts a bed: both halves at once)
-						BlockPos other = step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()));
-						if (now.containsKey(other)) {
-							s.level().setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-						}
+					// (as the Builder puts a two-block block: a bed's both halves at once, and a door's top with its bottom,
+					// MaterialRules.secondaryPos, as QaRefreshFurnishedGameTests does; 49.4's box-room door is new)
+					BlockPos other = step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock
+						? step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()))
+						: io.github.jcondedata.aliveworkplace.build.MaterialRules.secondaryPos(step.pos(), step.state());
+					if (other != null && now.containsKey(other)) {
+						s.level().setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 					}
 				}
 			}

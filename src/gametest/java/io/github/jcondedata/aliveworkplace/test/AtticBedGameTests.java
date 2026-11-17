@@ -42,11 +42,12 @@ public class AtticBedGameTests implements net.fabricmc.fabric.api.gametest.v1.Fa
 			.map(BlockPos::immutable).sorted().toList();
 		helper.assertTrue(beds.size() == 2 && beds.get(1).getY() > beds.get(0).getY(), "setup: the Stone House's beds are " + beds);
 		BlockPos atticBed = beds.get(1);
-		BlockPos barrel = origin.offset(2, 1, 2);
+		BlockPos barrel = origin.offset(8, 1, 8); // the kitchen's barrel (49.4: the rebuilt Stone House)
 		helper.assertTrue(level.getBlockState(barrel).is(Blocks.BARREL), "setup: no barrel downstairs at " + barrel);
 
-		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(origin.offset(2, 6, 3)));
-		villager.moveTo(origin.getX() + 2.5, origin.getY() + 6, origin.getZ() + 3.5, 0, 0);
+		// on the bedroom floor two blocks from the bed's foot (3, 6, 7), on the walk between the stair head and the bed
+		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(origin.offset(5, 6, 7)));
+		villager.moveTo(origin.getX() + 5.5, origin.getY() + 6, origin.getZ() + 7.5, 0, 0);
 		level.getPoiManager().take(h -> h.is(PoiTypes.HOME), (h, p) -> p.equals(atticBed), atticBed, 1);
 		villager.getBrain().setMemory(MemoryModuleType.HOME, GlobalPos.of(level.dimension(), atticBed));
 		// the barrel picked as a workstation, as a jobless villager picks one by day; it stands where the walk to it ends

@@ -49,8 +49,9 @@ tier below:
   like the house's, through a doorway from the parlor. **The Noble's Ball is held in the ballroom.**
 
 **Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
-Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
-breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
+Stone House (rebuilt in 49.4, [its page](stone-house.md)) a two-storey rubble house with dressed corners, a stone
+floor band and a west chimney stack under a slate roof, growing a parlor wing at II and a rear room under a long
+catslide roof at III; the Terrace a brick
 row with a stone string course and cornice, a bay window between two stone piers and a hooded door for each home,
 the middle home's front plastered white, a chimney stack over each party wall and dormers in a dark oak roof; then the three grander homes
 above. Their beds, chests and rooms are where they were, so homes already built keep working.

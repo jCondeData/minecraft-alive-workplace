@@ -21,6 +21,11 @@ asks for the steps, `latest.log` and any crash report).
   steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
+- **The Stone House, rebuilt from scratch** (all four levels): a two-storey rubble house with dressed corners, a stone
+  floor band and a smoking west chimney under a slate roof; the hall round its hearth with a table for four, a box-room
+  bed and an open kitchen downstairs, a bedroom under the slates; a parlor wing with a grandparent's bed at II, a back
+  room of two beds under a long catslide roof at III, a store cellar of barrels and shelves at IV. Same beds, same ids;
+  houses already standing keep theirs and are offered a Refresh in the Hall (49.4).
 
 ### Dev
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts

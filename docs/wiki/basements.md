@@ -18,7 +18,7 @@ floor above, and has a ladder or a stone stair down from inside.
 | Build | The basement | Way down |
 |---|---|---|
 | Starter Cottage IV | a root cellar: bins of pumpkins and melons, hay, sacks (chests), mushrooms in pots on a shelf, a sorting table | ladder by the kitchen door |
-| Stone House IV | a wine cellar: racks of casks, chests and pots of wine, a tasting table with two chairs and a candle | ladder by the front door |
+| Stone House IV | a store under the whole house (49.4): barrels two high along the east wall, shelves on the west, a workbench with a lamp and a chest at the back, a spruce post in the middle | ladder by the hearth |
 | Burgher's Townhouse IV | a brick-vaulted cellar of casks with the coal store in a corner | stone stair from the hall |
 | Noble's Manor IV | a great wine cellar under the hall, held up by two stone columns | stone stair beside the hall's table |
 | Supply Shop IV | a stockroom: chests two high, bolts of cloth, crates, a packing table | ladder behind the counter |

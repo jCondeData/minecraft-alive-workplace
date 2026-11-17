@@ -71,8 +71,10 @@ public class BuilderCrewGameTests implements net.fabricmc.fabric.api.gametest.v1
 	/** How many times the whole run is made, each time with new villagers. */
 	private static final int RUNS = 3;
 
-	//$ gametest_ticks_batch HUGE '36000' '"crewScaling"'
-	@GameTest(template = HUGE, timeoutTicks = 36000, batch = "crewScaling")
+	// (49.4: the rebuilt Stone House takes a builder alone about 8,200 ticks, twice the old one: three runs of 1, 2 and 4 take
+	// some 43,000, so the time limit grew from 36,000; the shares checked are unchanged)
+	//$ gametest_ticks_batch HUGE '54000' '"crewScaling"'
+	@GameTest(template = HUGE, timeoutTicks = 54000, batch = "crewScaling")
 	public void aCrewBuildsInAboutTheTimeOfOneBuilderDividedByItsSize(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper); // B181: not a village, so its needs and moods don't change a builder's pace between builds

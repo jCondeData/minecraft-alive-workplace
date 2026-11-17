@@ -473,7 +473,8 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 			listener.onResourceManagerReload(manager(real, withPack));
 			helper.assertTrue(RenewalLists.all().size() == before, "lists loaded " + RenewalLists.all().size() + ", expected the " + before + " good ones");
 			helper.assertTrue(RenewalLists.homes().map(l -> l.buildings().get(0).getPath().equals("no_such_building")).orElse(false), "the pack's homes list didn't load");
-			BoundingBox old = OldHousesGameTests.placeVanilla(helper, SMALL_HOUSE, HOUSE);
+			// the two-bed house: the rebuilt Stone House (49.4, 11 deep) no longer fits the one-bed house's footprint plus 3
+			BoundingBox old = OldHousesGameTests.placeVanilla(helper, TWO_BED_HOUSE, HOUSE);
 			OldHouses.House house = measure(v, beds(level, old).get(0));
 			Optional<Renewals.Replacement> r = Renewals.replacement(level, v.hall(), house);
 			helper.assertTrue(r.isPresent() && BlueprintStyles.base(r.get().blueprint()).getPath().equals("stone_house"),

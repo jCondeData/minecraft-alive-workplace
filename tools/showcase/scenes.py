@@ -1387,7 +1387,7 @@ SCENES = [
     # B679: the card shows four stills (the selftest's limit); the harness still films 08_stone_attic and 09_terrace_west
     S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, the Terrace's two lit kitchens and the Clinic's ward (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has four whole beds and nothing open under its ridges",
-      110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
+      110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the stair, the table for four, the box room's door in its plank partition"),
            ("10_terrace_east", "The Terrace's east kitchen: its own mods' table (against the party wall) and chair, and its own lantern"),
            ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
@@ -1406,6 +1406,14 @@ SCENES = [
            ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
            ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
            ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
+    # ROADMAP 49.4: the Stone House rebuilt from scratch (the Mason's House), Level I as a server with the furniture
+    # mods builds it, from four sides and at eye level downstairs and in the bedroom under the slates
+    S("rebuild_stone_house", "Build families", "The Stone House rebuilt, Level I furnished: from four sides, downstairs and the bedroom",
+      "the Stone House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and both floors (the hall with the box room and kitchen, the bedroom under the slates) get an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Stone House from the front: the slate-hooded door, dressed corners and the stone floor band"),
+           ("03_outside_west", "From the west: the stone chimney stack on the gable"),
+           ("10_room_1", "Downstairs at eye level: the hearth with its two armchairs, the table for four, the kitchen behind"),
+           ("11_room_2", "The bedroom under the slates: the bed, its nightstand and chest, the desk by the front window")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

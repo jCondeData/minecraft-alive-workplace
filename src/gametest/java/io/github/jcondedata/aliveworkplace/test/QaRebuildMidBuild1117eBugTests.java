@@ -19,8 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 
 /**
  * QA lane E (2026-11-17, lane-e-1117-1013), B1371: the mid-build case of QaRebuildSaves1117eBugTests, moved here by
- * lane-a-1117-1223 when B1369 and B1370 were fixed and that class was registered. It FAILS on main (not registered in
- * fabric.mod.json, so main stays green; register it to reproduce).
+ * lane-a-1117-1223 when B1369 and B1370 were fixed and that class was registered; registered once B1371 was fixed.
  */
 public class QaRebuildMidBuild1117eBugTests implements FabricGameTest {
 

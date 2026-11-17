@@ -69,6 +69,7 @@ public final class BuildSite {
 	 * B1369, B1370, B1372: the older drawing (its key in {@link Refreshes}' history) of the build standing on this spot that
 	 * a repair or take-down works by, or an upgrade clears the leftovers of; "" for today's drawing; null when not worked
 	 * out yet (older saves: a repair or take-down not begun works it out from what stands, one under way goes by today's).
+	 * B1371: for a new build, the older drawing it was begun from, set when its family's drawing is rebuilt mid-build.
 	 */
 	@Nullable
 	private String builtFrom;
@@ -436,6 +437,25 @@ public final class BuildSite {
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
 			if (cellarOnly) {
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
+			}
+			boolean newBuild = !deconstruct && !repair && !cellarOnly && wonder == null && builtFromOf == null;
+			if (newBuild && builtFrom == null && drawnHash != null && drawnHash != fingerprint(drawn)) {
+				// B1371: today's drawing isn't the one this site was begun from. If that one is an older drawing the mod ships
+				// (its family rebuilt under the same id), the site keeps it (tools/blueprints/REBUILD.md: "sites mid-build keep
+				// their old drawing until a refresh"), so no half of the old house is left beside the new one; else (a
+				// schematic uploaded again, nothing shipped) it starts the new one from the top (B1049, below).
+				String from = Refreshes.drawnAs(level.getServer(), structure, drawnHash);
+				if (from != null && Refreshes.olderAsBuilt(level, structure, from, furniture).isPresent()) {
+					builtFrom = from;
+					onChange.run();
+				}
+			}
+			if (newBuild && builtFrom != null && !builtFrom.isEmpty()) {
+				Optional<Blueprint> old = Refreshes.olderAsBuilt(level, structure, builtFrom, furniture);
+				if (old.isPresent()) {
+					blueprint = old;
+					drawn = old.get(); // (its fingerprint differs from the library's once: its lists start again from the top)
+				}
 			}
 			boolean ofStanding = (deconstruct || repair && refresh == null) && !cellarOnly && wonder == null;
 			if (ofStanding && builtFrom == null) {

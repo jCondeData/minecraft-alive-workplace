@@ -30,6 +30,8 @@ asks for the steps, `latest.log` and any crash report).
 - Moving a house built from an older drawing of a redrawn building: the Mover now moves the whole house as it stands
   (nothing left behind at the old spot), the Move page shows and plans its real size, and another building can no
   longer be moved onto part of it (B1373, B1374).
+- A house still being built when its building is redrawn (the mod updated mid-build) is finished as the drawing it
+  was begun from, instead of switching to the new drawing and leaving the old floor's back rows beside it (B1371).
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
   is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put
   back finds its plaza again (B1188).

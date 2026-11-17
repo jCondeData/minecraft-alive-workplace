@@ -63,7 +63,8 @@ public final class Refreshes {
 	public static final int DECORATION = 0, FURNITURE = 1, BLOCK = 2;
 
 	private static final String DIR = "blueprint_history";
-	private record Old(String key, Blueprint drawing) {
+	/** An older drawing; {@code file} is the shipped file it was read from (null for one added by hand). */
+	private record Old(String key, Blueprint drawing, @Nullable ResourceLocation file) {
 	}
 
 	@Nullable
@@ -75,13 +76,15 @@ public final class Refreshes {
 	/** Adds an older drawing of {@code structure} under {@code key} (as a shipped one would be). */
 	public static synchronized void addHistory(ResourceLocation structure, String key, Blueprint drawing) {
 		EXTRA.computeIfAbsent(structure, k -> new ArrayList<>()).removeIf(o -> o.key().equals(key));
-		EXTRA.get(structure).add(new Old(key, drawing));
+		EXTRA.get(structure).add(new Old(key, drawing, null));
+		DRAWN_AS.clear();
 		STANDING.clear();
 	}
 
 	public static synchronized void removeHistory(ResourceLocation structure) {
 		EXTRA.remove(structure);
 		STANDING.clear();
+		DRAWN_AS.clear();
 	}
 
 	/** The older drawings of {@code structure}: those the mod ships, then any added. */
@@ -91,6 +94,7 @@ public final class Refreshes {
 			loadedFrom = resources;
 			history = load(resources);
 			STANDING.clear();
+			DRAWN_AS.clear();
 		}
 		List<Old> out = new ArrayList<>(history.getOrDefault(structure, List.of()));
 		out.addAll(EXTRA.getOrDefault(structure, List.of()));
@@ -116,7 +120,7 @@ public final class Refreshes {
 				// (with the blueprint's own id, so its basement and features are worked out as for the current drawing)
 				Blueprint drawing = StarterBlueprints.withBasement(StarterBlueprints.withFeatures(
 					Blueprint.fromStructureNbt(structure, tag, Lookup.lookup(BuiltInRegistries.BLOCK))));
-				out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Old(path.substring(slash + 1), drawing));
+				out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Old(path.substring(slash + 1), drawing, e.getKey()));
 			} catch (Exception ex) {
 				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawing {}: {}", e.getKey(), ex.toString());
 			}
@@ -221,7 +225,7 @@ public final class Refreshes {
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
 		List<Old> olds = new ArrayList<>(history(level.getServer(), historyId(f.structure(), furniture)));
 		if (furniture.staleFor(io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.of(f.structure()))) {
-			latestDrawing(level, f.structure(), furniture).ifPresent(d -> olds.add(new Old(LATEST, d))); // B641
+			latestDrawing(level, f.structure(), furniture).ifPresent(d -> olds.add(new Old(LATEST, d, null))); // B641
 		}
 		if (olds.isEmpty()) {
 			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
@@ -289,6 +293,72 @@ public final class Refreshes {
 		}
 		Old best = best(level, current.get(), olds, placement, furniture);
 		return best == null ? null : best.key();
+	}
+
+	// ---- the drawing a site mid-build was begun from (B1371) -----------------------------------------------------------
+
+	/** B1371: {@link BuildSite#fingerprint} of each older drawing as the library would have read it, by blueprint and key. */
+	private static final Map<ResourceLocation, Map<String, Integer>> DRAWN_AS = new HashMap<>();
+
+	/**
+	 * B1371: the key of the older drawing of {@code structure} that, as the blueprint library read it when it was today's
+	 * drawing, has the fingerprint {@code drawnHash} (what a site begun from it saved, B1049); null if none has. Exact, not
+	 * a likeness: a site mid-build when its family's drawing is rebuilt keeps the drawing it was begun from
+	 * (tools/blueprints/REBUILD.md), and a blueprint replaced with no older drawing shipped (a Create schematic uploaded
+	 * again) still restarts as the new one (B1049).
+	 */
+	@Nullable
+	static synchronized String drawnAs(MinecraftServer server, ResourceLocation structure, int drawnHash) {
+		List<Old> olds = history(server, structure);
+		if (olds.isEmpty()) {
+			return null;
+		}
+		Map<String, Integer> known = DRAWN_AS.computeIfAbsent(structure, k -> new HashMap<>());
+		for (Old old : olds) {
+			Integer print = known.get(old.key());
+			if (print == null) {
+				print = libraryPrint(server, structure, old);
+				known.put(old.key(), print);
+			}
+			if (print == drawnHash) {
+				return old.key();
+			}
+		}
+		return null;
+	}
+
+	/** The fingerprint of {@code old} read as {@link BlueprintLibrary} reads a drawing: loaded into a structure template first. */
+	private static int libraryPrint(MinecraftServer server, ResourceLocation structure, Old old) {
+		try {
+			CompoundTag tag = null;
+			if (old.file() != null) {
+				Optional<Resource> file = server.getResourceManager().getResource(old.file());
+				if (file.isPresent()) {
+					try (InputStream in = file.get().open()) {
+						tag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
+					}
+				}
+			}
+			if (tag == null) {
+				tag = io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles.toStructureNbt(old.drawing());
+			}
+			net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template
+				= new net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate();
+			template.load(Lookup.lookup(BuiltInRegistries.BLOCK), tag);
+			return BuildSite.fingerprint(StarterBlueprints.withBasement(StarterBlueprints.withFeatures(
+				Blueprint.fromTemplate(structure, template, Lookup.lookup(BuiltInRegistries.BLOCK)))));
+		} catch (Exception ex) {
+			return BuildSite.fingerprint(old.drawing()); // (unreadable: as it was read for the history)
+		}
+	}
+
+	/**
+	 * B1371: the older drawing {@code key} of {@code structure} as a build begun from it is built and furnished, with no
+	 * fallback to today's drawing.
+	 */
+	static Optional<Blueprint> olderAsBuilt(ServerLevel level, ResourceLocation structure, String key,
+										   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		return LATEST.equals(key) ? Optional.empty() : asBuilt(level, structure, key, furniture);
 	}
 
 	/**

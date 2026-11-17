@@ -95,6 +95,20 @@ public final class VillageWaystones {
 		 */
 		default void warp(ServerLevel level, BlockPos pos) {
 		}
+
+		/**
+		 * A Mover is about to take the waystone whose lower half is at {@code pos} down, to put it up again (45.1, B1310):
+		 * the mod keeps the waystone, and every player's discovery of it, while it is packed. Nothing by default.
+		 */
+		default void lifting(ServerLevel level, BlockPos pos) {
+		}
+
+		/**
+		 * A Mover put the waystone whose lower half is at {@code pos} up again with its packed data (45.1, B1310): it is the
+		 * same waystone of the mod's it was before, now standing here. Nothing by default.
+		 */
+		default void setDown(ServerLevel level, BlockPos pos) {
+		}
 	}
 
 	public static final Extension<Stones> EXTENSION = new Extension<>("village waystones");
@@ -145,6 +159,35 @@ public final class VillageWaystones {
 		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
 		return id.getNamespace().equals(MOD) && id.getPath().endsWith("waystone")
 			&& state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF) && state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER;
+	}
+
+	/** The lower half of the waystone {@code state} at {@code pos} is part of (either half), or null when it's no waystone. */
+	@org.jetbrains.annotations.Nullable
+	private static BlockPos lowerHalf(BlockPos pos, BlockState state) {
+		ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+		if (!id.getNamespace().equals(MOD) || !id.getPath().endsWith("waystone") || !state.hasProperty(BlockStateProperties.DOUBLE_BLOCK_HALF)) {
+			return null;
+		}
+		return state.getValue(BlockStateProperties.DOUBLE_BLOCK_HALF) == DoubleBlockHalf.LOWER ? pos : pos.below();
+	}
+
+	/**
+	 * A Mover is about to take {@code state} at {@code pos} down to put it up elsewhere (45.1): a waystone (either half)
+	 * stays the same waystone of the Waystones mod's, still discovered by every player who had found it (B1310).
+	 */
+	public static void lifting(ServerLevel level, BlockPos pos, BlockState state) {
+		BlockPos lower = EXTENSION.present() ? lowerHalf(pos, state) : null;
+		if (lower != null) {
+			EXTENSION.run(s -> s.lifting(level, lower));
+		}
+	}
+
+	/** A Mover put {@code state} up at {@code pos} with its packed data (45.1): a waystone is the one it was (B1310). */
+	public static void setDown(ServerLevel level, BlockPos pos, BlockState state) {
+		BlockPos lower = EXTENSION.present() ? lowerHalf(pos, state) : null;
+		if (lower != null) {
+			EXTENSION.run(s -> s.setDown(level, lower));
+		}
 	}
 
 	/** The village's name, as its stone carries it. */

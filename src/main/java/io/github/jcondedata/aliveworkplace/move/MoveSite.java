@@ -470,7 +470,10 @@ public final class MoveSite {
 			before.addAll(loose(level, at));
 		}
 		for (int j : taken) {
-			level.setBlock(j == i ? pos : atNew ? newPos(j) : oldPos(j), Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			BlockPos at = j == i ? pos : atNew ? newPos(j) : oldPos(j);
+			// B1310: a village's waystone stays the Waystones mod's same waystone, discovered by whoever had found it
+			io.github.jcondedata.aliveworkplace.hall.VillageWaystones.lifting(level, at, level.getBlockState(at));
+			level.setBlock(at, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
 		// 45.5: a modded store that isn't a vanilla Container (nothing to clear) may still spill its items as it goes
 		// (Create's crafter, ejector and belt, B1127); they're packed with the block's data, so what it spilled is taken
@@ -587,6 +590,7 @@ public final class MoveSite {
 					level.sendBlockUpdated(at, states.get(k), states.get(k), Block.UPDATE_CLIENTS);
 				}
 			}
+			io.github.jcondedata.aliveworkplace.hall.VillageWaystones.setDown(level, at, states.get(k)); // B1310: the same waystone again
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
 		}

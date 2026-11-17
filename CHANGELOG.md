@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- Waystones: a village's plaza moved by a Mover keeps its waystone. Everyone who had discovered it still has it
+  (the hall's Map still says "discovered"), instead of having to walk there and find it again (B1310).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

@@ -5,7 +5,7 @@ at once: who the trainer is, your record against them, the rules, the prize, the
 Challenge, Trade and Close. Cobblemon's own battle screen is unchanged. Part of Milestone 43 (One look for every screen,
 Pokémon).
 
-Roadmap items: 43.1, 48.2, B1091, B1102, B1104, B1122, B1131, B1157, B473
+Roadmap items: 43.1, 48.2, B1091, B1102, B1104, B1122, B1131, B1157, B473, B1351
 
 ## What a player sees
 

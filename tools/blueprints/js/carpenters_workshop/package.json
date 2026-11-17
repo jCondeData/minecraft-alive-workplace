@@ -1,0 +1,11 @@
+{
+  "name": "carpenters-workshop",
+  "private": true,
+  "type": "module",
+  "description": "The Carpenter's Workshop (49, the rebuild): the cruck hall. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate until the critic says SHIP.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py carpenters_workshop carpenters_workshop --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/carpenters_workshop.nbt"
+  }
+}

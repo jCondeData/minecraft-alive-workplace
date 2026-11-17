@@ -1,11 +1,12 @@
 // Stairs and lofts: a straight flight up to a loft, its stairwell, and a loft's ceiling lining (parts library).
 import { stair } from './canvas.mjs'
 
-/** flight: a straight stair flight, solid (`under`) beneath each step down to y = 1. */
-export function flight(c, steps, rises, wood, under) {
+/** flight: a straight stair flight, solid (`under`) beneath each step down to y = `base` (1: the ground floor's; an
+ *  upper floor's flight passes the layer over its floor, so it never fills the room below). */
+export function flight(c, steps, rises, wood, under, base = 1) {
   for (const [x, y, z] of steps) {
     stair(c, x, y, z, `${wood}_stairs`, rises)
-    for (let yy = 1; yy < y; yy++) c.set(x, yy, z, under)
+    for (let yy = base; yy < y; yy++) c.set(x, yy, z, under)
   }
 }
 

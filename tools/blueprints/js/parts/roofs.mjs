@@ -1,6 +1,6 @@
 // Roofs and gables: a gable roof (steep or 45-degree, ridge along x or z), the gable wall under it, barge boards under
 // its rake, and a dormer (parts library, tools/blueprints/REBUILD.md). `roof` is the palette's {full, stairs, slab}.
-import { slab, stair } from './canvas.mjs'
+import { slab, stair, trapdoor } from './canvas.mjs'
 
 /** gableRoof: a roof over `across` (the span, eaves at both ends) running `along` (gable ends at both ends).
  *  steep: a full block under each stair (two up per one across). `keep(x,y,z)` returns false for cells another roof
@@ -47,11 +47,15 @@ export function gableWall(c, axis, line, [a0, a1], y0, under, pick) {
 }
 
 /** bargeTrim: a dark board under a gable's overhanging rake, stepping up with it (an upside-down slab under each
- *  column's lowest roof cell on the overhang line), so the roof's edge reads apart from the gable. */
+ *  column's lowest roof cell on the overhang line), so the roof's edge reads apart from the gable. An `id` ending in
+ *  `_trapdoor` lays a thin board instead (a closed top-half trapdoor): a top slab beside the next column's roof stair
+ *  reads to the chair checks (QaChairFacingGameTests) as a table with a chair turned away from it. */
 export function bargeTrim(c, axis, line, [a0, a1], under, id) {
   for (let u = a0; u <= a1; u++) {
     const [x, z] = axis === 'z' ? [u, line] : [line, u]
-    if (!c.get(x, under[u] - 1, z)) slab(c, x, under[u] - 1, z, id, 'top')
+    if (c.get(x, under[u] - 1, z)) continue
+    if (id.endsWith('_trapdoor')) trapdoor(c, x, under[u] - 1, z, id, axis === 'z' ? 'east' : 'south', 'top')
+    else slab(c, x, under[u] - 1, z, id, 'top')
   }
 }
 
@@ -112,4 +116,46 @@ export function catslideRoof(c, { axis, across: [a0, a1], ridge, along: [l0, l1]
  *  y, rising toward the wall `toward`), the way a pent roof sheds rain off a ground-floor window. */
 export function pentice(c, cells, y, roof, toward) {
   for (const [x, z] of cells) stair(c, x, y, z, roof.stairs, toward)
+}
+
+/** steppedGable: a crow-stepped gable, the gable wall standing up past the roof in steps (the roof is drawn with a
+ *  `keep` that leaves this line to the gable). Column u of the wall line (`axis` 'z': x = u on line z; 'x': z = u on
+ *  line x) runs from y0 to tops[u]; its top cell is `coping` (a dressed stone, so each step reads as capped), the rest
+ *  `wall` (an id or a mix()). `skip(u, y)` leaves an opening (a window, a door). Grown from the Townhouse (49). */
+export function steppedGable(c, axis, line, tops, y0, wall, coping = wall, skip = () => false) {
+  for (const [key, top] of Object.entries(tops)) {
+    const u = Number(key)
+    for (let y = y0; y <= top; y++) {
+      if (skip(u, y)) continue
+      const [x, z] = axis === 'z' ? [u, line] : [line, u]
+      c.set(x, y, z, y === top ? coping : wall)
+    }
+  }
+}
+
+/** pyramidRoof: a roof rising from all four sides to a point (a tower's spire), over x0..x1, z0..z1 (the overhang
+ *  ring, eaves at eaveY): each ring one in and `rise` up (steep: 2, else 1; 3 for a needle spire), full blocks under
+ *  each stair after the first ring, the stairs rising inward (kit.finish turns the corners). The last cell (or ridge,
+ *  if the rectangle isn't square) is `roof.full`, with `cap` on top when given. `keep(x, y, z)` as in gableRoof.
+ *  Returns {topY}. Grown from the Townhouse's tower (49). */
+export function pyramidRoof(c, { x0, z0, x1, z1, eaveY, steep = true, rise = steep ? 2 : 1 }, roof, keep = () => true, cap = null) {
+  const put = (x, y, z, id, props) => { if (keep(x, y, z)) c.set(x, y, z, id, props) }
+  const rings = Math.floor(Math.min(x1 - x0, z1 - z0) / 2)
+  const yOf = i => eaveY + rise * i
+  for (let i = 0; i < rings; i++) {
+    const ax = x0 + i, bx = x1 - i, az = z0 + i, bz = z1 - i
+    for (let x = ax; x <= bx; x++) for (let z = az; z <= bz; z++) {
+      if (x !== ax && x !== bx && z !== az && z !== bz) continue
+      const facing = z === az ? 'south' : z === bz ? 'north' : x === ax ? 'east' : 'west'
+      if (i > 0) for (let y = yOf(i - 1) + 1; y < yOf(i); y++) put(x, y, z, roof.full)
+      put(x, yOf(i), z, roof.stairs, { facing, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+    }
+  }
+  const top = rings > 0 ? yOf(rings - 1) + 1 : eaveY
+  for (let x = x0 + rings; x <= x1 - rings; x++) for (let z = z0 + rings; z <= z1 - rings; z++) put(x, top, z, roof.full)
+  if (cap) for (let x = x0 + rings; x <= x1 - rings; x++) for (let z = z0 + rings; z <= z1 - rings; z++) {
+    const [id, props] = Array.isArray(cap) ? cap : [cap, {}]
+    put(x, top + 1, z, id, props)
+  }
+  return { topY: cap ? top + 1 : top }
 }

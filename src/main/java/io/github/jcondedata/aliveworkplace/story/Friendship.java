@@ -436,7 +436,7 @@ public final class Friendship {
 		if (name == null || name.isEmpty()) {
 			return null;
 		}
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && v.hasCustomName()
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && v.hasCustomName()
 			&& v.getDisplayName().getString().equals(name)).stream().findFirst().orElse(null);
 	}
 
@@ -474,7 +474,7 @@ public final class Friendship {
 			return;
 		}
 		long today = Chronicle.day(level);
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && v.hasCustomName())) {
+		for (Villager v : VillageHalls.villagers(level, hall, v -> v.isAlive() && v.hasCustomName())) {
 			Long day = ModAttachments.FESTIVAL_DAY.get(v);
 			if (day != null && day == today) {
 				favour(v, player, Favour.FESTIVAL);

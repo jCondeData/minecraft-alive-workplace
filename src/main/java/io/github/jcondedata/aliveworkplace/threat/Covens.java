@@ -177,6 +177,7 @@ public final class Covens {
 	/** The coven by the village round {@code hall} is broken: every hexed villager there is cured at once. Returns how many. */
 	public static int lift(ServerLevel level, BlockPos hall) {
 		int cured = 0;
+		// Wider than the village on purpose (B555): breaking the coven cures every hexed villager near it.
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall).inflate(16), Villager::isAlive)) {
 			if (Sickness.isHexed(v) && !cursed(level, v)) {
 				Sickness.recover(level, v);
@@ -192,8 +193,7 @@ public final class Covens {
 	 */
 	public static List<Villager> hexNight(ServerLevel level, Lairs.Lair lair, RandomSource random) {
 		Data.get(level).hexed(lair.hall(), Chronicle.day(level));
-		List<Villager> open = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(lair.hall()),
-			v -> v.isAlive() && !v.isBaby() && !Sickness.isHexed(v)));
+		List<Villager> open = new ArrayList<>(VillageHalls.villagers(level, lair.hall(), v -> v.isAlive() && !v.isBaby() && !Sickness.isHexed(v)));
 		Collections.shuffle(open, new java.util.Random(random.nextLong()));
 		int count = Math.min(open.size(), 1 + random.nextInt(3));
 		List<Villager> hexed = new ArrayList<>(open.subList(0, count));
@@ -453,7 +453,7 @@ public final class Covens {
 	@Nullable
 	private static Villager nearestVillager(ServerLevel level, BlockPos hall, Mob mob) {
 		Villager best = null;
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager v : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 			if (best == null || v.distanceToSqr(mob) < best.distanceToSqr(mob)) {
 				best = v;
 			}

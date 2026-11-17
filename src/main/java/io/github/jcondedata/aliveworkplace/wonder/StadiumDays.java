@@ -432,8 +432,7 @@ public final class StadiumDays {
 
 	/** The village's own trainers who take the visitors on: the highest rank first. */
 	public static List<Villager> homeTrainers(ServerLevel level, BlockPos hall) {
-		List<Villager> out = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isSleeping() && Trainers.isTrainer(v) && !isVisitor(v) && !CupDays.isDelegate(v)));
+		List<Villager> out = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping() && Trainers.isTrainer(v) && !isVisitor(v) && !CupDays.isDelegate(v)));
 		out.sort(Comparator.<Villager>comparingInt(v -> -Trainers.tier(v)).thenComparingInt(v -> -v.getVillagerXp()).thenComparing(Villager::getUUID));
 		return out;
 	}
@@ -540,6 +539,7 @@ public final class StadiumDays {
 			return;
 		}
 		Map<BlockPos, Boolean> claimed = new HashMap<>();
+		// The square and the Stadium's surroundings on purpose (B555): the nearest-hall check below picks this village's own.
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(site.hall()).minmax(around), v -> v.isAlive() && !v.isSleeping()
 			&& !v.isPassenger() && !v.isBaby() && !isVisitor(v) && !CupDays.isDelegate(v) && !Trainers.isTrainer(v) && CupDays.offWork(v)
 			&& VillageHalls.nearest(level, v.blockPosition()).map(site.hall()::equals).orElse(false))) {

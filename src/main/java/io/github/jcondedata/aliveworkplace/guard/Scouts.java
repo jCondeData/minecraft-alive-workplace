@@ -126,7 +126,7 @@ public final class Scouts {
 
 	/** The village's scouts (in its area, alive), nearest the hall first. */
 	public static List<Villager> scouts(ServerLevel level, BlockPos hall) {
-		List<Villager> scouts = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isScout(v)));
+		List<Villager> scouts = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && isScout(v)));
 		scouts.sort(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX() + 0.5, hall.getY(), hall.getZ() + 0.5)));
 		return scouts;
 	}

@@ -18,7 +18,7 @@ final class Village {
 	}
 
 	static List<Villager> villagers(ServerLevel level, BlockPos hall) {
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		return VillageHalls.villagers(level, hall, Villager::isAlive);
 	}
 
 	static ResourceLocation job(Villager villager) {

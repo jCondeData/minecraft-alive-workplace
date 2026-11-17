@@ -135,7 +135,7 @@ public final class Banquets {
 		int came = 0;
 		int fed = 0;
 		int meals = 0;
-		for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+		for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping())) {
 			came++;
 			ModAttachments.BANQUET.set(villager, new Feasted(today, power.mood(), power.moodDays()));
 			io.github.jcondedata.aliveworkplace.people.Moods.forget(villager);
@@ -223,7 +223,7 @@ public final class Banquets {
 				continue;
 			}
 			BlockPos square = square(level, hall);
-			for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+			for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping())) {
 				Festivals.gatherAt(level, villager, square);
 			}
 			level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE, square.getX() + 0.5, square.getY() + 1.2, square.getZ() + 0.5, 1, 0.6, 0.1, 0.6, 0.01);

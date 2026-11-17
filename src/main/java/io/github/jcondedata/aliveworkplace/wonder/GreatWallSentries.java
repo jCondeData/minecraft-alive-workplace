@@ -261,8 +261,7 @@ public final class GreatWallSentries {
 		if (smith.isPresent()) {
 			return smith;
 		}
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.TINKERER).stream().findFirst();
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.TINKERER).stream().findFirst();
 	}
 
 	/** The nearest foe within the power's range of the wall, for {@code golem} keeping {@code post}. */

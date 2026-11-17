@@ -22,6 +22,12 @@ asks for the steps, `latest.log` and any crash report).
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
 
+### Changed
+- **The Well** is redrawn from scratch (52.1): a stepped stone dais, a round mossy curb with the windlass and chain
+  between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
+  (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already
+  built keep their old look until refreshed.
+
 ### Fixed
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
   is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put

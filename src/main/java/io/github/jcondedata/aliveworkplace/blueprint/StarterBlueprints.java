@@ -435,10 +435,10 @@ public final class StarterBlueprints {
 	/** A strongroom dug under the hall's west end (36.7). */
 	public static final Entry GUILDHALL_3 = new Entry(AliveWorkplace.id("guildhall_3"), new Vec3i(26, 20, 14), 4);
 
-	/** Decorations: a well with a lantern on a chain over the water. */
-	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 5, 7));
-	/** A roof over the well, benches and lamp posts. */
-	public static final Entry WELL_2 = new Entry(AliveWorkplace.id("well_2"), new Vec3i(7, 7, 7));
+	/** Decorations: a well on a stepped stone dais, a windlass and a gable roof on two posts, a lantern over the water. */
+	public static final Entry WELL = new Entry(AliveWorkplace.id("well"), new Vec3i(7, 9, 7));
+	/** The Market Well: dipping basins, benches, lamp posts, lanterns at the ridge's ends and a copper vane. */
+	public static final Entry WELL_2 = new Entry(AliveWorkplace.id("well_2"), new Vec3i(7, 10, 7));
 	/** A tall street lamp with two lanterns. */
 	public static final Entry STREET_LAMP = new Entry(AliveWorkplace.id("street_lamp"), new Vec3i(3, 6, 3));
 	/** A bench between bushes with a lamp behind it. */

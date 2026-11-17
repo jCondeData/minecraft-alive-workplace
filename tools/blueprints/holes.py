@@ -67,10 +67,10 @@ ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) f
 # The Lantern Pergola (26.14) is an open lattice of slats with azalea grown over some of the gaps, not a roof
 ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
               for p in ((2, 5, 1), (1, 5, 5), (2, 5, 5), (3, 5, 3))})
-# The Well (49.1 rebuild) is an open well-head: a hat roof on two uprights over the water, open on all four sides on
-# purpose (you lean on the rim and draw from any side); the air under the hat is its mouth, not a room
+# The Well (49.1 rebuild, shipped in 52.1) is an open well-head: a roof on two uprights over the water, open on all
+# four sides on purpose (you lean on the rim and draw from any side); the air under the roof is its mouth, not a room
 ALLOW.update({(n, p): "an open well-head under its roof, not a room" for n in ("well", "well_2")
-              for p in ((2, 2, 3), (2, 4, 2))})
+              for p in ((2, 3, 3),)})
 
 
 def load(path, props=False):

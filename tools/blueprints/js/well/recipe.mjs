@@ -6,9 +6,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, PALETTE, MASSES, FURNITURE } from './plan.mjs'
+import { SIZE, PALETTE, MASSES, FURNITURE, LIGHTS } from './plan.mjs'
 import {
-  Canvas, mix, steppedPlinth, post, slab, stair, roundCurb, pool, flaredGableRoof, gableWall, bargeTrim, furnitureParts,
+  Canvas, mix, steppedPlinth, post, slab, stair, roundCurb, pool, flaredGableRoof, bargeTrim, furnitureParts,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -23,18 +23,21 @@ export function draw(level = 1) {
   steppedPlinth(c, D.x0, D.z0, D.x1, D.z1, dais, step, D.y)
   const C = M.curb
   const ring = roundCurb(c, C.cx, C.cz, C.r, C.y, curb, M.mouth.cells)
-  const U = M.uprights
-  for (const z of U.zs) post(c, U.x, z, U.y0, U.y1, P.frame)
-  for (const z of U.zs) for (let x = U.tie[0]; x <= U.tie[1]; x++) if (x !== U.x) c.set(x, U.tieY, z, P.frame, { axis: 'x' })
+  const U = M.uprights, F = M.frame
+  for (const x of U.xs) post(c, x, U.z, U.y0, U.y1, P.frame) // on the curb's sides: the front stays open to the water
+  for (let x = F.cross[0]; x <= F.cross[1]; x++) c.set(x, F.y, U.z, P.frame, { axis: 'x' }) // the cross beam
+  for (const x of F.plates) for (let z = M.hat.along[0]; z <= M.hat.along[1]; z++)
+    if (z !== U.z) c.set(x, F.y, z, P.frame, { axis: 'z' }) // the eave plates, the roof's foot
+  c.set(...F.king, P.frame, { axis: 'y' }) // the king post under the ridge beam
   const H = M.hat
-  for (let z = H.beam[0]; z <= H.beam[1]; z++) c.set(U.x, H.beamY, z, P.frame, { axis: 'z' }) // the ridge beam, its ends proud
+  for (let z = H.beam[0]; z <= H.beam[1]; z++) c.set(F.king[0], H.beamY, z, P.frame, { axis: 'z' }) // the ridge beam, its ends proud
 
-  // the hat: steep spruce shingles, bell-cast in dark oak at the eaves, the ridge on the beam
+  // the hat: spruce shingles at 45 degrees, the eaves kicked out in dark oak, a dark ridge cap on the beam
   const hat = flaredGableRoof(c, H, P.roof, P.kick)
-  for (let z = H.along[0]; z <= H.along[1]; z++) c.set(U.x, hat.ridgeY, z, P.ridge) // a dark ridge cap, the eave line's twin
-  // spandrels: plank infill in each gable over the tie beam, round the upright
-  for (const z of U.zs)
-    gableWall(c, 'z', z, [U.tie[0], U.tie[1]], U.tieY + 1, hat.under, (u, y) => (u === U.x || y >= H.beamY ? null : P.infill))
+  for (let z = H.along[0]; z <= H.along[1]; z++) c.set(F.king[0], hat.ridgeY, z, P.ridge)
+  // the open gables: no infill, only a dark brace under the rake where the cross-section has a gap (bargeTrim skips
+  // the plates and the beam, which are there already)
+  for (const z of H.along) bargeTrim(c, 'z', z, [H.across[0] + 1, H.across[1] - 1], hat.under, P.brace)
 
   // --- Pass 2: the water --------------------------------------------------------------------------------------------
   pool(c, M.mouth.cells, M.mouth.y)
@@ -42,19 +45,26 @@ export function draw(level = 1) {
   // --- Pass 3: depth and detail -------------------------------------------------------------------------------------
   // the rim: stone-brick slabs capping the curb (the uprights stand through it)
   for (const [x, z] of ring) if (!c.get(x, C.rimY, z)) slab(c, x, C.rimY, z, P.rim)
-  // the windlass: an axle between the uprights, a chain rope to the water, the crank on the front upright toward the road
+  // the windlass: an axle between the uprights over the mouth, a chain rope to the centre source, the crank outside
   const W = M.windlass
-  for (let z = W.z0; z <= W.z1; z++) c.set(W.x, W.y, z, P.axle, { axis: 'z' })
-  c.set(...W.rope, 'chain', { axis: 'y', waterlogged: 'false' })
-  c.set(...W.crank, 'lever', { face: 'wall', facing: 'north', powered: 'false' })
+  for (let x = W.x0; x <= W.x1; x++) c.set(x, W.y, W.z, P.axle, { axis: 'x' })
+  for (const r of W.rope) c.set(...r, 'chain', { axis: 'y', waterlogged: 'false' })
+  c.set(...W.crank, 'lever', { face: 'wall', facing: 'east', powered: 'false' })
 
   // --- Pass 4: interior (the plan's furniture) ----------------------------------------------------------------------
   // --- Pass 5: ground: the tufts in the corners the round curb leaves --------------------------------------------
   for (const [x, z, plant] of M.tufts) { c.set(x, D.y, z, P.soil, { snowy: 'false' }); c.set(x, D.y + 1, z, plant) }
 
   if (level >= 2) {
-    // --- Level II, the Market Well: lamp posts at the dais corners (each standing on a stone foot where Level I had
-    // its corner step), benches along the sides, lanterns at the beam ends, the copper vane on the ridge
+    // --- Level II, the Market Well: two dipping basins in the back corners (a held source each, walled against the
+    // curb), lamp posts at the dais corners (each standing on a stone foot where Level I had its corner step), benches
+    // along the sides, lanterns at the beam ends, the copper vane on the ridge
+    for (const [x, z, walls] of M.basins) {
+      c.set(x, D.y, z, P.basin)
+      for (const [wx, wz] of walls) c.set(wx, D.y + 1, wz, P.basin)
+      c.clear(x, D.y + 1, z)
+      pool(c, [[x, z]], D.y + 1)
+    }
     for (const [x, z] of M.lamps) {
       c.set(x, D.y, z, P.lampFoot)
       for (let y = D.y + 1; y <= D.y + 2; y++) c.set(x, y, z, P.lampPost)
@@ -62,7 +72,9 @@ export function draw(level = 1) {
     }
     c.set(...M.vane, P.vane, { facing: 'up', powered: 'false', waterlogged: 'false' })
   }
-  // the furniture (Level I's lantern over the water; Level II's benches and beam-end lanterns)
+  // the lanterns, hung from the ridge beam (Level I's over the water; Level II's at the beam's ends too)
+  for (const p of LIGHTS[level]) c.set(...p, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  // the furniture (Level II's benches)
   for (const f of FURNITURE[level]) furnitureParts[f.part](c, f)
   return c
 }

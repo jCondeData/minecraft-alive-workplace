@@ -82,11 +82,12 @@ export function dormer(c, z, roof, infill, glass, frame, { face = 1, eave = 0, y
   for (const x of [eave, face, face + step]) c.set(x, y0 + 4, z, roof.full)
 }
 
-/** flaredGableRoof: a steep gable roof (gableRoof, steep) whose eaves kick out one block further and one lower in a
- *  shallow `kick` stair (a bell-cast flare, the eave line in its own trim), over `across` (the kick columns are its
- *  ends) running `along`. Returns gableRoof's {ridgeY, under}, with the kick columns' undersides added. */
-export function flaredGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY }, roof, kick, keep = () => true) {
-  const body = gableRoof(c, { axis, across: [a0 + 1, a1 - 1], along: [l0, l1], eaveY: eaveY + 1, steep: true }, roof, keep)
+/** flaredGableRoof: a gable roof (gableRoof, steep unless `steep: false`) whose eaves kick out one block further and
+ *  one lower in a `kick` stair (the eave line in its own trim; under a steep body it reads bell-cast), over `across`
+ *  (the kick columns are its ends) running `along`. Returns gableRoof's {ridgeY, under}, with the kick columns'
+ *  undersides added. */
+export function flaredGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY, steep = true }, roof, kick, keep = () => true) {
+  const body = gableRoof(c, { axis, across: [a0 + 1, a1 - 1], along: [l0, l1], eaveY: eaveY + 1, steep }, roof, keep)
   for (let v = l0; v <= l1; v++)
     for (const [u, rise] of [[a0, axis === 'z' ? 'east' : 'south'], [a1, axis === 'z' ? 'west' : 'north']]) {
       const [x, z] = axis === 'z' ? [u, v] : [v, u]

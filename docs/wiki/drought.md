@@ -5,7 +5,7 @@ ROADMAP 32.17. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 drought: the crops wilt, the farmland dries, the cauldrons run low and the villagers fret about the wells. A new job,
 the **Well Keeper**, carries water to the fields.
 
-Roadmap items: 32.17
+Roadmap items: 32.17, 52.1
 
 ## What a player sees
 
@@ -20,6 +20,11 @@ Roadmap items: 32.17
   waters it or it rains); every water cauldron
   loses a level a day; and every villager is 10 less happy, "The wells are low", unless the village has a finished
   **Well** (either tier) or **Fountain**.
+- **The Well** (redrawn in 52.1 with the rebuild kit) stands on a stepped stone dais: a round mossy curb holding five
+  water sources, a windlass and chain between two posts on the curb's sides (so the water shows from the road), under
+  a spruce gable roof with dark oak eaves and open gables. The Market Well (Level II) keeps all of that and adds two
+  stone dipping basins of water in the back corners, benches on both sides, four lamp posts, lanterns at the ridge's
+  ends and a copper vane. Wells already built keep their old look until refreshed.
 - **The Well Keeper** (a villager at a cauldron given a shovel) works the long day shift. In a drought they fill a
   bucket at the nearest well, river or pond and carry it to the village's fields: each bucket wets the 9 farmland
   round where it lands (moisture 7) in a splash, and the crops on them grow at the full pace that day. Above their

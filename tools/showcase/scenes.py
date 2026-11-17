@@ -1393,10 +1393,11 @@ SCENES = [
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
     # The rebuild kit (ROADMAP 49.1, tools/blueprints/REBUILD.md): SCENE=rebuild_<family> films any blueprint from four sides
-    # and at eye level in each of its rooms (RebuildScene); the Well is its dry run (no rooms: the four outside views)
-    S("rebuild_well", "Build families", "The rebuild kit's scene: the Well from four sides",
+    # and at eye level in each of its rooms (RebuildScene); the Well was its dry run and shipped in 52.1 (no rooms: the
+    # four outside views)
+    S("rebuild_well", "Build families", "The rebuilt Well from four sides",
       "the Well's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a well) gets an eye-level shot from a free floor cell with a clear view",
-      40, [("01_outside_front", "The Well from the front"), ("02_outside_back", "From the back"),
+      40, [("01_outside_front", "The Well from the front: the water and the windlass seen between the two side posts"), ("02_outside_back", "From the back"),
            ("03_outside_west", "From the west"), ("04_outside_east", "From the east")], furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft

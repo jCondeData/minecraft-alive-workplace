@@ -71,6 +71,10 @@ ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
 # four sides on purpose (you lean on the rim and draw from any side); the air under the roof is its mouth, not a room
 ALLOW.update({(n, p): "an open well-head under its roof, not a room" for n in ("well", "well_2")
               for p in ((2, 3, 3),)})
+# The Well House (49 rebuild) is an open pavilion round the well on purpose: railings and benches between its posts,
+# no walls, so villagers see and reach the windlass and the channel's head from every side
+ALLOW.update({(n, (2, 4, 7)): "the Well House's open pavilion round the well, not a walled room"
+              for n in ("well_house", "modded/well_house")})
 
 
 def load(path, props=False):

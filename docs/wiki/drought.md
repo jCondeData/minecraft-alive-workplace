@@ -25,6 +25,10 @@ Roadmap items: 32.17, 52.1
   a spruce gable roof with dark oak eaves and open gables. The Market Well (Level II) keeps all of that and adds two
   stone dipping basins of water in the back corners, benches on both sides, four lamp posts, lanterns at the ridge's
   ends and a copper vane. Wells already built keep their old look until refreshed.
+- **The Fountain** (redrawn in 52.1, 9 x 8 x 9) is three tiers narrowing upward: an octagonal stone basin on a ring
+  of steps, a column rising out of its water to a wide white bowl and a small one on top, each filled to the brim, with
+  moss planters, flowers and a lamp post in the four cut corners and lanterns hung under the wide bowl. Fountains
+  already built keep their old look until refreshed.
 - **The Well Keeper** (a villager at a cauldron given a shovel) works the long day shift. In a drought they fill a
   bucket at the nearest well, river or pond and carry it to the village's fields: each bucket wets the 9 farmland
   round where it lands (moisture 7) in a splash, and the crops on them grow at the full pace that day. Above their

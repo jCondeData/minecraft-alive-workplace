@@ -6996,7 +6996,7 @@ Same method (Milestone 49), but a small piece is only rebuilt when the critic fi
 village; one that holds up is ticked with the critic's sheet and no new drawing. Lane D builds it once Milestone 48 is
 done.
 
-- [ ] **52.1** **Wells, fountains and water**: well, well house, fountain,
+- [x] **52.1** (review: pending 2026-11-17) **Wells, fountains and water**: well, well house, fountain,
   lily pond, footbridge.
 - [ ] **52.2** **Street pieces**: street lamp, signpost, notice board, park
   bench, sundial, hay cart, flower planters, lantern pergola, gazebo, bandstand, topiary garden, stag statue, stone

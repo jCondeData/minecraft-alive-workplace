@@ -4,7 +4,7 @@ Fourteen new small builds that aren't houses, to sit beside the Well, Street Lam
 village with more than lamps and benches (the owner, 2026-10-16: "there should be a wider variety of builds that arent
 houses, but decorations similar to fountain or lamp").
 
-Roadmap items: 26.14, 36.4, B186
+Roadmap items: 26.14, 36.4, B186, 52.1
 
 ## 1. What a player sees
 
@@ -15,7 +15,7 @@ Roadmap items: 26.14, 36.4, B186
 | Flower Planters | 7 x 3 x 3 | 1 | a two-tier brick planter of flowers in their own soil between two lanterns |
 | Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards at two heights that name what lies each way (36.4), a lantern on top |
 | Stone Archway | 7 x 7 x 3 | 2 | mossy stone brick piers, an arch of stairs to a chiseled keystone, ivy, a hanging lantern, lilies at its feet |
-| Lily Pond | 9 x 3 x 7 | 2 | an oval of water in a low mossy curb with lily pads, a grassy bank of ferns and flowers, a stone seat |
+| Lily Pond | 9 x 8 x 7 | 2 | redrawn in 52.1: a pond with lily pads set in a grassy knoll, a stone kerb seat at the front, a spruce dipping stage with a lantern post, mossy boulders and an old flowering azalea leaning its crown over the water |
 | Hay Cart | 6 x 4 x 5 | 1 | a spruce cart on dark oak wheels loaded with bales, its shafts down, a lantern on the corner |
 | Notice Board | 5 x 5 x 3 | 1 | a spruce board between dark oak posts under a little gabled roof, notices pinned to it, lanterns either side |
 | Lantern Pergola | 5 x 6 x 7 | 2 | a pergola walk of spruce posts and slats grown over with azalea, lanterns on chains, benches either side |
@@ -23,7 +23,7 @@ Roadmap items: 26.14, 36.4, B186
 | Sundial | 7 x 3 x 7 | 2 | a round smooth-stone plaza with chiseled hour stones, a dial of slabs and its gnomon, two lamp posts |
 | Topiary Garden | 9 x 5 x 9 | 3 | a clipped hedge round gravel walks, four shapes (cones of spruce, a ball and a cube of oak) and an azalea urn |
 | Market Corner | 5 x 5 x 5 | 1 | crates, wool sacks, hay, pumpkins and melons under a striped awning on dark oak posts |
-| Footbridge | 7 x 4 x 7 | 2 | a spruce bridge with rails over a stone-curbed channel of water with lily pads, a lantern at each end |
+| Footbridge | 9 x 8 x 7 | 2 | redrawn in 52.1: a humpback stone arch over a bending stream with lily pads, sloping coping for parapets, lanterns on newel posts at both ends and a little roofed lantern gate at the crown |
 
 All are in the Blueprint Table with the other decorations. The Flower Planters are unlocked from the start; the rest
 start locked ("A market-day trader"): a traveling trader on market day may sell any of them, a builder's level-up

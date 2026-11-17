@@ -27,6 +27,13 @@ asks for the steps, `latest.log` and any crash report).
   between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
   (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already
   built keep their old look until refreshed.
+- **The Well House, the Fountain, the Lily Pond and the Footbridge** are redrawn from scratch (52.1). The Well House is
+  an open pavilion round the well on a stone podium under a cross-gabled roof with a louvre, a stone channel running out
+  on arches to the Well Keeper's cauldron (17 x 15 x 13). The Fountain rises in three brimming tiers from an octagonal
+  basin on a ring of steps, with planters and lamp posts in its corners (9 x 8 x 9). The Lily Pond sits in a grassy
+  knoll with a stone kerb seat, a dipping stage and an old flowering azalea leaning over the water (9 x 8 x 7). The
+  Footbridge is a humpback stone arch over a bending stream with a lantern gate at its crown (9 x 8 x 7). Builds
+  already standing keep their old look until refreshed.
 
 ### Fixed
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall

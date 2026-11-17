@@ -1,0 +1,10 @@
+{
+  "name": "footbridge",
+  "private": true,
+  "type": "module",
+  "description": "The Footbridge (footbridge), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/footbridge.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py footbridge footbridge --candidate --nbt out/footbridge.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

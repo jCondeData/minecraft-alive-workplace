@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
+  world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

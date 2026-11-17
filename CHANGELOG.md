@@ -16,6 +16,11 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- The list menus' tabs on the left rail show their whole tooltip again when you point at one: the Move Tutor's "N more
+  from a more experienced tutor" and Research's "Click: show this research" can be read again (B1355).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed

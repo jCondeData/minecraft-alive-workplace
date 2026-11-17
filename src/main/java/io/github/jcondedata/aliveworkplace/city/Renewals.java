@@ -415,6 +415,7 @@ public final class Renewals {
 		}
 		List<Occupant> sleepers = new ArrayList<>();
 		List<Occupant> workers = new ArrayList<>();
+		// Twice the village's reach on purpose (B1352): whoever sleeps or works in the old house, even out of the village just now.
 		for (Villager v : level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS * 2), Villager::isAlive)) {
 			v.getBrain().getMemory(MemoryModuleType.HOME).filter(g -> g.dimension().equals(level.dimension()) && oldBox.get().isInside(g.pos()))
 				.ifPresent(g -> sleepers.add(new Occupant(v.getUUID(), "")));
@@ -616,6 +617,7 @@ public final class Renewals {
 	/** Someone else, not one of {@code ours}, took the place at {@code at} while the house went up: they let it go. */
 	private static void takeBack(ServerLevel level, MemoryModuleType<GlobalPos> memory, GlobalPos at, Set<UUID> ours) {
 		boolean released = false;
+		// A wide box round the place on purpose (B1352): anyone holding it lets it go, of this village or not.
 		for (Villager other : level.getEntities(EntityType.VILLAGER, new AABB(at.pos()).inflate(VillageHalls.RADIUS * 2),
 				o -> !ours.contains(o.getUUID()) && o.getBrain().getMemory(memory).filter(at::equals).isPresent())) {
 			other.getBrain().eraseMemory(memory);

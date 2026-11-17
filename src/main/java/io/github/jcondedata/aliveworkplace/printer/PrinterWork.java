@@ -71,9 +71,13 @@ public class PrinterWork extends LuxuryWork {
 
 	/** Whether the village round {@code station} (its hall's, else the press's own surroundings) has a Scholar. */
 	public static boolean hasScholar(ServerLevel level, BlockPos station) {
-		BlockPos centre = VillageHalls.nearest(level, station).orElse(station);
-		return !level.getEntitiesOfClass(Villager.class, new AABB(centre).inflate(VillageHalls.RADIUS),
-			v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.SCHOLAR).isEmpty();
+		java.util.function.Predicate<Villager> scholar = v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.SCHOLAR;
+		java.util.Optional<BlockPos> hall =VillageHalls.nearest(level, station);
+		if (hall.isPresent()) {
+			return !VillageHalls.villagers(level, hall.get(), scholar).isEmpty(); // B1352: the village's circle
+		}
+		// No hall: a box round the press itself, on purpose (B1352): there is no village circle to go by.
+		return !level.getEntitiesOfClass(Villager.class, new AABB(station).inflate(VillageHalls.RADIUS), scholar).isEmpty();
 	}
 
 	/** The papers are written as they come off the press, from the hall that day. */

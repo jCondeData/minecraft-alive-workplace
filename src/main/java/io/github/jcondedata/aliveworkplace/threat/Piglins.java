@@ -108,7 +108,9 @@ public final class Piglins {
 		if (fighting(mob) != null) {
 			return;
 		}
-		List<Villager> villagers = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS), LivingEntity::isAlive);
+		// The village's villagers (B1352: its circle, not the square's corners), but only 16 up or down: the ones a piglin can walk to.
+		List<Villager> villagers = level.getEntitiesOfClass(Villager.class, new AABB(hall).inflate(VillageHalls.RADIUS, 16, VillageHalls.RADIUS),
+			v -> v.isAlive() && VillageHalls.contains(hall, v.blockPosition()));
 		Villager nearest = villagers.stream().min(Comparator.comparingDouble(mob::distanceToSqr)).orElse(null);
 		if (nearest != null && mob.distanceToSqr(nearest) <= SIGHT * SIGHT) {
 			anger(mob, nearest);

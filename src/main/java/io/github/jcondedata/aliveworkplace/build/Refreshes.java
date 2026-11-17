@@ -223,18 +223,7 @@ public final class Refreshes {
 		if (olds.isEmpty()) {
 			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
 		}
-		Map<BlockPos, BlockState> now = BuildPlan.create(current.get(), f.placement()).targets();
-		Old best = null;
-		int bestScore = 0;
-		for (Old old : olds) {
-			// B642: as it was built, its pieces where they were put (the spots of their day), not as today's spots would furnish it
-			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.applyAsBuilt(old.drawing()), f.placement()).targets();
-			int score = score(level, was, now);
-			if (score > bestScore) {
-				best = old;
-				bestScore = score;
-			}
-		}
+		Old best = best(level, current.get(), olds, f.placement(), furniture);
 		if (best == null) {
 			return Optional.empty();
 		}
@@ -254,6 +243,64 @@ public final class Refreshes {
 		}
 		Change change = new Change(best.key(), added, removed);
 		return change.total() == 0 ? Optional.empty() : Optional.of(change);
+	}
+
+	/** The older drawing among {@code olds} the build on {@code placement} stands as better than {@code current}, or null. */
+	@Nullable
+	private static Old best(ServerLevel level, Blueprint current, List<Old> olds, BlueprintData.Placement placement,
+							io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		Map<BlockPos, BlockState> now = BuildPlan.create(current, placement).targets();
+		Old best = null;
+		int bestScore = 0;
+		for (Old old : olds) {
+			// B642: as it was built, its pieces where they were put (the spots of their day), not as today's spots would furnish it
+			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.applyAsBuilt(old.drawing()), placement).targets();
+			int score = score(level, was, now);
+			if (score > bestScore) {
+				best = old;
+				bestScore = score;
+			}
+		}
+		return best;
+	}
+
+	// ---- the drawing a standing build was built from (B1369, B1370, B1372) ----------------------------------------------
+
+	/**
+	 * B1369, B1370, B1372: the older drawing (its key in the shipped history) the finished build of {@code structure} on
+	 * {@code placement} still stands as, better than today's drawing; null when it stands as today's (or no older drawing
+	 * is shipped). Once a family's drawing is rebuilt under the same id, a house of the old drawing keeps it until it is
+	 * refreshed (tools/blueprints/REBUILD.md): its repairs, its take-down and its upgrade go by this drawing, not today's.
+	 */
+	@Nullable
+	public static String builtFrom(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement,
+								   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		List<Old> olds = history(level.getServer(), historyId(structure, furniture));
+		if (olds.isEmpty()) {
+			return null; // (most builds: nothing to look at)
+		}
+		Optional<Blueprint> current = BlueprintLibrary.get(level, structure)
+			.map(b -> refreshedFurniture(level, structure, furniture).apply(b, structure));
+		if (current.isEmpty()) {
+			return null;
+		}
+		Old best = best(level, current.get(), olds, placement, furniture);
+		return best == null ? null : best.key();
+	}
+
+	/**
+	 * The drawing of {@code structure} the builder works a standing build by: the older drawing {@code from} as the build
+	 * was built and furnished from it, or (null, or that drawing no longer shipped) today's, with what it was built with.
+	 */
+	public static Optional<Blueprint> drawing(ServerLevel level, ResourceLocation structure, @Nullable String from,
+											  io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		if (from != null && !from.isEmpty() && !LATEST.equals(from)) {
+			Optional<Blueprint> old = asBuilt(level, structure, from, furniture);
+			if (old.isPresent()) {
+				return old;
+			}
+		}
+		return BlueprintLibrary.get(level, structure).map(b -> furniture.apply(b, structure));
 	}
 
 	/**

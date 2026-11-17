@@ -448,6 +448,42 @@ public final class BuildPlan {
 		return out;
 	}
 
+	/**
+	 * B1370: this plan (an upgrade) with what the level below, built from {@code below}, put outside this plan's blocks
+	 * cleared too: each of its blocks that still stands as {@code below} drew it and that this plan doesn't put or clear
+	 * itself, except those {@code kept} says stay (a chest, a bed someone sleeps in, a job block). Worked out from what
+	 * stands, so the site works its clearing list from the top again whenever it is worked out anew.
+	 */
+	BuildPlan clearingAlso(Blueprint below, BlueprintData.Placement placement, Level level,
+						   java.util.function.BiPredicate<BlockPos, BlockState> kept) {
+		java.util.Set<BlockPos> mine = new java.util.HashSet<>(targets.keySet());
+		for (Step s : clear) {
+			mine.add(s.pos());
+		}
+		List<Step> more = new ArrayList<>();
+		for (Map.Entry<BlockPos, BlockState> e : create(below, placement).targets.entrySet()) {
+			if (e.getValue().isAir() || mine.contains(e.getKey())) {
+				continue;
+			}
+			BlockState world = level.getBlockState(e.getKey());
+			if (!MaterialRules.matches(world, e.getValue()) || kept.test(e.getKey(), world)) {
+				continue; // a player's block (or gone), or one that always stays
+			}
+			more.add(new Step(e.getKey(), net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), null, null, null));
+		}
+		if (more.isEmpty()) {
+			return this;
+		}
+		List<Step> all = new ArrayList<>(clear);
+		all.addAll(more);
+		all.sort(order(bounds, true));
+		BuildPlan out = new BuildPlan(List.copyOf(all), foundation, structure, decoration, landscape, deconstruct, bounds);
+		out.entities = entities;
+		out.standing = standing;
+		out.kineticStarts = kineticStarts;
+		return out;
+	}
+
 	/** A crop a farmer tends (wheat, carrots, stems, ...): planted on the first build, never put back by a repair. */
 	static boolean isCrop(BlockState state) {
 		return state.is(net.minecraft.tags.BlockTags.CROPS) || state.getBlock() instanceof net.minecraft.world.level.block.CropBlock;

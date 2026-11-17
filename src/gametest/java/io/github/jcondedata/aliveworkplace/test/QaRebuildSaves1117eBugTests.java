@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.test;
 
 import static io.github.jcondedata.aliveworkplace.test.RebuildDrawings1117e.*;
 
-import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
@@ -11,7 +10,6 @@ import io.github.jcondedata.aliveworkplace.hall.UpgradesPage;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTest;
@@ -21,8 +19,9 @@ import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * QA lane E (2026-11-17, lane-e-1117-1013): the cases of {@link QaRebuildSaves1117eGameTests} that FAIL on main because
- * of the mod (not registered in fabric.mod.json, so main stays green; register it to reproduce). Each is REBUILD.md's
+ * QA lane E (2026-11-17, lane-e-1117-1013): the cases of {@link QaRebuildSaves1117eGameTests} that failed on main because
+ * of the mod (B1369, B1370; registered since lane-a-1117-1223 fixed them; B1371's case is in
+ * {@link QaRebuildMidBuild1117eBugTests}, not registered while it fails). Each is REBUILD.md's
  * "standing buildings and sites mid-build keep their old drawing until a refresh (36.21)" against a drawing rebuilt
  * under the same id ({@link RebuildDrawings1117e}).
  */
@@ -37,49 +36,6 @@ public class QaRebuildSaves1117eBugTests implements FabricGameTest {
 		List<BlockPos> out = new ArrayList<>(where(helper, Blocks.STONE_BRICKS));
 		out.addAll(where(helper, Blocks.SPRUCE_PLANKS));
 		return out;
-	}
-
-	/**
-	 * A site half-way through the old drawing's STRUCTURE when the rebuilt drawing ships and the world restarts. REBUILD.md:
-	 * sites mid-build keep their old drawing. Caught once the floor is down and a few walls stand. Wanted: the old house whole (25 cobblestone, 15 oak planks) and none of the
-	 * new drawing's blocks.
-	 */
-	//$ gametest_ticks_batch AREA '3000' '"qaRebuild1117eBugMidBuild"'
-	@GameTest(template = AREA, timeoutTicks = 3000, batch = "qaRebuild1117eBugMidBuild")
-	public void aSiteMidBuildKeepsItsOldDrawingAfterTheRebuild(GameTestHelper helper) {
-		ResourceLocation id = id(helper, "bugmid");
-		Stage s = stage(helper, id, false);
-		Villager[] builder = {builder(helper, s)};
-		BuildSite site = Builders.start(s.level(), builder[0], s.owner(), id, s.placement());
-		helper.assertTrue(site != null, "(setup) the old drawing didn't start");
-		UUID siteId = site.id();
-		boolean[] swapped = {false};
-		helper.onEachTick(() -> {
-			if (swapped[0]) {
-				return;
-			}
-			BuildSite now = BuildSiteManager.get(s.level()).get(siteId);
-			if (now == null || now.stage() != BuildPlan.Stage.STRUCTURE) {
-				return;
-			}
-			// late in the structure: the whole floor down (the back two rows outside the new footprint too) and some walls
-			int planks = where(helper, Blocks.OAK_PLANKS).size();
-			if (where(helper, Blocks.COBBLESTONE).size() == 25 && planks >= 2 && planks <= 12) {
-				swapped[0] = true;
-				rebuild(s.level(), id, false);
-				builder[0] = reload(helper, s.level(), builder[0]);
-			}
-		});
-		helper.succeedWhen(() -> {
-			helper.assertTrue(swapped[0], "(setup) never caught half-way");
-			helper.assertTrue(BuildSiteManager.get(s.level()).get(siteId) == null, "the site hasn't ended");
-			int cobble = where(helper, Blocks.COBBLESTONE).size();
-			int planks = where(helper, Blocks.OAK_PLANKS).size();
-			List<BlockPos> mixed = newBlocks(helper);
-			helper.assertTrue(cobble == 25 && planks == 15 && mixed.isEmpty(), "a house begun from the old drawing ended with " + cobble
-				+ " of its 25 cobblestone and " + planks + " of its 15 oak planks, and " + mixed.size() + " blocks of the new drawing (stone bricks, spruce) at "
-				+ first(mixed));
-		});
 	}
 
 	/**

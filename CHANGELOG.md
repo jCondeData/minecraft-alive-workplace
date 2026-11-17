@@ -23,6 +23,10 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Fixed
+- Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
+  the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
+  takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and
+  an upgrade from the Upgrades page takes down what of the old level the next one doesn't cover (B1369, B1370, B1372).
 - Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
   is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put
   back finds its plaza again (B1188).

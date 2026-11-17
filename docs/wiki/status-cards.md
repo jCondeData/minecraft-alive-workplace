@@ -88,7 +88,7 @@ none (the cards read the Fossil Scientist's saved queue and save nothing)
 `NurseCardGameTests.nurseCardGraysHealWhileSheSleeps`, `NurseCardGameTests.nurseCardNotOnASneakClick`,
 `NurseCardGameTests.nurseCardAfterASaveAndReload`, `StatusCardCompatTests.nurseCardShowsThePartyAndHealHealsIt`,
 `StatusCardCompatTests.nurseCardGraysHealWhileHerMachineIsBusy`, `StatusCardCompatTests.fossilCardShowsProgressAndHandOverDelivers`,
-`StatusCardCompatTests.fossilCardWithNothingHandedOver`, `StatusCardButtonsGameTests.statusCardButtonsStayInsideTheCard`, `StatusCardCompatTests.fossilCardAfterASaveAndReload` (Cobblemon),
+`StatusCardCompatTests.fossilCardWithNothingHandedOver`, `StatusCardButtonsGameTests.statusCardButtonsStayInsideTheCard`, `StatusCardTooltipGameTests.statusCardButtonReasonStaysOnScreen` and `StatusCardTooltipGameTests.statusCardLineTooltipStaysOnScreenAndOffItsRow` (B1357: a grayed-out button's reason and an item line's tooltip stay fully on screen at 320x180, 427x240 and 11 other sizes, a line's tooltip never over its row's icon), `StatusCardCompatTests.fossilCardAfterASaveAndReload` (Cobblemon),
 the click tests of `QaNurseWait1103dGameTests`, `QaNurseMachine1102dCompatTests` and `QaFossilScientist1102dCompatTests`
 (now through the card's button) and `QaEveryMenuGameTests.everyServerMenuAndItsClientCopyAgreeSlotForSlot`.
 

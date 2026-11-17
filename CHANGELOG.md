@@ -30,6 +30,9 @@ asks for the steps, `latest.log` and any crash report).
 ## 0.156.0 — 2026-11-16
 
 ### Fixed
+- The villager status card's tooltips stay on screen on small windows (B1357): a grayed-out button's reason now flips
+  left of the mouse, or above it, instead of running off the right edge, and an item line's tooltip goes above or below
+  its row when neither side of the card has room, instead of covering the card's edge and the row's item.
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't

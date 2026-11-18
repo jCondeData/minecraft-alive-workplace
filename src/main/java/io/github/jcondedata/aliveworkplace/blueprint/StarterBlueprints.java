@@ -597,12 +597,12 @@ public final class StarterBlueprints {
 	public static final Entry FERRY_HOUSE = workplace("ferry_house", 9, 10, 10);
 	/** A long low dojo with a deep veranda and a fenced sparring ring. */
 	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
-	/** A stone hall with a columned portico and a pediment. */
-	public static final Entry LEADERS_HALL = workplace("leaders_hall", 13, 14, 14);
+	/** The Challenge Hall: a buttressed stone nave behind a gate-porch, benches facing a sparring ring, the Training Post on a dais (rebuilt 51.5). */
+	public static final Entry LEADERS_HALL = workplace("leaders_hall", 15, 15, 17);
 	/** A round apricorn-drying tower under a copper cone and a low workshop wing. */
 	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
-	/** A market hall: an upper storey on a stone arcade, a cupola on the ridge. */
-	public static final Entry TRADE_HALL = workplace("trade_hall", 11, 17, 11);
+	/** The Ball Tower: a timber-framed counting hall with a round corner tower, the Trader's bed in the tower room (rebuilt 51.5). */
+	public static final Entry TRADE_HALL = workplace("trade_hall", 18, 18, 19);
 	/** The Half Court: a gatehouse onto a sparring ring round the tutor's post, a cloister and the Tutor's hall behind (rebuilt 51.4). */
 	public static final Entry SCHOOL = workplace("school", 17, 12, 18);
 

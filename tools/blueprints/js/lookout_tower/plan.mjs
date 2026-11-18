@@ -134,7 +134,8 @@ export const FURNITURE = [
   { level: 4, room: 'Armory', kind: 'lamp', part: 'hangingLamp', pos: [16, -1, 3], facing: 'north', wood: 'spruce' },
 ]
 
-// Job blocks: the Guard Post (aliveworkplace:guard_post) at the ladder's foot (II), a second in the guardhouse (III).
+// Job blocks: a guard's grindstone at the ladder's foot (II), a second in the guardhouse (III). (Drawn as Guard Posts
+// until the ship step: the Guard Post has no recipe any more, so a builder could never be stocked with one.)
 export const POSTS = [
   { level: 2, at: [5, 1, 5], facing: 'north' },
   { level: 3, at: [16, 1, 2], facing: 'west' },

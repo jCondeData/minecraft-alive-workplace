@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 13 wide, 11 deep, 10 high (II: 19 wide)
-Tiers: I, II (a wing with two more posts), III (an armory)
+Size: 13 wide, 13 deep, 13 high (II and III: 21 wide)
+Tiers: I, II (a second range with two more posts), III (an armory)
 Houses: two Guards at the grindstones, with two bunks; four of each at tier II
 Where to get it: Blueprint Table
-Main materials: deepslate tile stairs, stone bricks, spruce planks, dark oak logs
+Main materials: stone bricks, deepslate tile stairs, spruce planks, dark oak logs, polished andesite
 categories: Builds
 related: lookout-tower-build.md, guard-house-build.md, defence.md
 ```
 
-A low stone barracks with two **grindstones** (guard posts), bunks, chests, an anvil and two **Training Dummies**.
+The Gate Ward: a square stone gate tower with a vaulted passage through it and a glazed watch lantern under a slate cap, and beside it a stone barrack range under a steep slate roof with two **grindstones** (guard posts), two bunks, gear chests and a hearth. Behind the tower lies a walled training court with a **Training Dummy**, an archery butt and a spear rack.
 
 ## Getting the blueprint
 
@@ -25,8 +25,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Barracks, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Barracks II** adds a wing with two more grindstones and two more bunks.
-- **Barracks III** digs an **armory and lock-up** under the barracks, down a ladder under a hatch by the east wall: a cell behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
+- **Barracks II** adds a second range on the tower's other side, the first one's mirror image, with two more grindstones and two more bunks: the front becomes gable, tower, gable round a closed court.
+- **Barracks III** digs an **armory and lock-up** under the west range, down a ladder under a hatch in the guard room floor: a lock-up cell behind iron bars and an iron door, chests of kit and straw targets. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 

@@ -4,16 +4,16 @@
 type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/builders/still-4.jpg
 caption: A finished Lookout Tower
-Size: 7 by 7, 14 high (II: 23 high; III: 14 by 7, 23 high)
-Tiers: I, II (a guard's grindstone and a bell), III (a guardhouse), IV (a basement)
+Size: 9 by 9, 16 high (II: 13 by 9; III and IV: 19 by 9)
+Tiers: I, II (a gear shed with a guard's grindstone and a bell), III (a guardhouse), IV (a basement)
 Houses: a Guard at the grindstone (from tier II), two at tier III, with two bunks
 Where to get it: Blueprint Table; a Journeyman builder sells it for 12 emeralds
-Main materials: stone bricks and stairs, spruce planks and logs, ladders, lanterns
+Main materials: cobblestone and stone bricks, deepslate tile stairs, spruce planks and logs, ladders, lanterns
 categories: Builds
 related: barracks-build.md, guard-house-build.md, defence.md
 ```
 
-A square stone-brick tower with a ladder up the middle and a lookout platform at the top: the first thing that makes a village look like it can look after itself.
+A slim rubble-stone tower on a battered foot, with a ladder up the middle to a timber watch gallery jettied out on stone corbels, open on every side under a steep slate hat with a copper lightning rod: the first thing that makes a village look like it can look after itself.
 
 ## Getting the blueprint
 
@@ -27,9 +27,9 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the tower, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Lookout Tower II** raises the tower to 23 blocks under a pointed dark oak roof, with a **bell** at the top and a **grindstone** and chest at the foot of the ladder: a guard's post.
-- **Lookout Tower III** adds a guardhouse beside the tower: a second grindstone, an anvil and two bunks.
-- **Lookout Tower IV** digs an **armory** under the tower and the guardroom, down a ladder by the guardroom door: a lock-up behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was.
+- **Lookout Tower II** leans a timber gear shed against the tower's flank, tucked under the gallery: a **grindstone** and a chest inside, and the alarm **bell** under its front eave.
+- **Lookout Tower III** ends the shed against a squat crenellated stone guardhouse: a second grindstone and two bunks, and its flat roof is a second, lower fighting platform.
+- **Lookout Tower IV** digs an **armory** under the guardhouse, down a ladder under a hatch: a lock-up behind iron bars, an anvil, chests of kit and hay targets. The builder digs the room out of the ground himself and leaves the building above as it was.
 
 ## What it does for the village
 

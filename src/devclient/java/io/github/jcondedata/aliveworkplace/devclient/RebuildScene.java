@@ -48,7 +48,7 @@ final class RebuildScene {
 		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "palisade", "butchers_shop", "winery", "farmstead",
 		"library", "schoolhouse", "school", "watermill", "manor", "weavers_cottage", "post_office", "graveyard", "ferry_house", "clock_tower",
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "chapel", "market_cross", "market_corner", "market_square",
-		"leaders_hall", "trade_hall");
+		"leaders_hall", "trade_hall", "barracks", "guard_house", "fire_station", "gatehouse", "lookout_tower");
 	private static final BlockPos AT = new BlockPos(0, -60, 0);
 	private static final int FIRST = 80;
 	private static final int EACH = 50;

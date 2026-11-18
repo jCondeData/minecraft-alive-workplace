@@ -147,6 +147,26 @@ asks for the steps, `latest.log` and any crash report).
   the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
   market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
   already standing keep their look until you refresh them.
+- **The defenses are rebuilt from scratch** (51.8). Buildings already standing keep their look until you refresh them.
+  - **Barracks** ("the Gate Ward", 13 x 13, 13 high): a square stone gate tower with a vaulted passage and a glazed
+    watch lantern under a slate cap, a barrack range beside it with the two guards' grindstones, two bunks and a
+    hearth, and a walled training court behind with the Training Dummy, an archery butt and a spear rack. Barracks II
+    (21 wide) adds the range's mirror image on the tower's other side, with two more grindstones and two more bunks;
+    Barracks III digs an armory and lock-up under the west range.
+  - **Guard House** ("the Gate Watch", 15 x 11, 15 high): two stone piers with a road arch between them, a guardroom
+    with the grindstone in one and an armory and barred lock-up in the other, and the guard's timber barrack room
+    bridging both on a jetty under one steep slate roof, with a watch desk at the window over the gate. Guard houses
+    that grow in villages keep their own look.
+  - **Fire Station** ("the Hose Tower", 15 x 16, 18 high): a stone engine house with a timber watch loft jettied over
+    its doors under a red tile roof, and a tall hose tower at the front corner rising past the ridge to a lookout
+    gallery. The Firewarden's grindstone stands by the water trough, buckets on racks beside it.
+  - **Gatehouse** (11 x 5, now 16 high): two stout towers clasp the road under crenellated fighting tops, with a
+    gabled fighting loggia for the archers over the portcullis between them. Gatehouse II throws a walled barbican
+    forward with its own gate, portcullis, murder holes and archers' deck. The gates and portcullis work as before.
+  - **Lookout Tower** ("the Hoarded Watchtower", 9 x 9, 16 high): a slim rubble tower on a battered foot carries a
+    timber watch gallery, open on every side, under a steep slate hat. II leans a gear shed with a guard's grindstone
+    and the alarm bell against it, III adds a crenellated guardhouse with a second grindstone, two bunks and a lower
+    fighting roof, and IV digs an armory under the guardhouse.
 - **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
   of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
   canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying

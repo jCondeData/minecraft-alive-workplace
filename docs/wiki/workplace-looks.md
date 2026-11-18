@@ -24,8 +24,9 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5
   smoker is its mouth inside) with a tall smoking flue, and herb beds either side of the path.
 - **Post Office**: a narrow two-story house, its timber upper floor jettied over the street with flower boxes, a red
   tiled roof with its gable to the street and a little dovecote on the ridge. A ladder leads upstairs.
-- **Guard House**: a squat stone blockhouse with barred arrow slits, a corbelled battlement round a flat roof and a
-  timber watch hut on it; a ladder inside leads up.
+- **Guard House**: two stone piers with a road arch between them (the guardroom with the grindstone in one, an armory
+  and a barred lock-up in the other) and the guard's timber barrack room bridging both on a jetty under one steep slate
+  roof, a watch gable over the gate (rebuilt from scratch in 51.8); a ladder inside leads up.
 - **Clinic**: a white pavilion with its gable to the street and a stone-mullioned cross window over the door, and a ward
   across the back with cross windows and four white beds, heads to the back wall, for the ill. Its ceilings are closed
   up to the ridge.

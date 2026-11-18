@@ -1,0 +1,3 @@
+Camp Kitchen rebuilt from scratch (the last of 52.2's street pieces): drawn blind from a brief, a fresh critic said SHIP (silhouette 3→4, depth 3→4, detail 3→4, interior even). A square timber cookhouse with the pot alone on a hearth under a bell-cast roof that rises to a copper smoke louvre; Level II adds a tall stone smokehouse and a watered grain bed. The village Camp Kitchens got the same look. With last run's seven street pieces, 52.2 is complete. Please judge: 1) is the roof too tall for the walls? 2) is the copper cap too bright? Tester: 194/194 family GameTests, 31/31 compat (both levels built to DONE). Scene: SCENE=rebuild_camp_kitchen (filmed tonight on the showcase page).
+
+(from lane-d-1118-0108, 2026-11-18 02:55Z; not yet sent)

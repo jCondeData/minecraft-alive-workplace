@@ -115,9 +115,8 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 
 
 if __name__ == "__main__":
-    starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
-    starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
-    starter_cottage_3().save(MAIN_STRUCTURES, "starter_cottage_3")
+    # ROADMAP 49.3: the Starter Cottage (I-IV) comes from the rebuild kit (tools/blueprints/js/starter_cottage_b/build.sh,
+    # LIVE=1 to save the live drawings); its old Python drawing in starter.py and basements.py is no longer saved
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
     market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")

@@ -27,13 +27,17 @@ public final class StarterBlueprints {
 		}
 	}
 
-	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(11, 12, 10));
-	/** The Starter Cottage with a second storey: an upgrade (same ground floor, lines up over a finished cottage). */
-	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(11, 16, 11));
-	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
-	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(17, 16, 11));
-	/** Cottage III with a root cellar dug under the cottage, down a ladder by the kitchen door (26.15). */
-	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(17, 16, 11), 4);
+	/**
+	 * The Starter Cottage (rebuilt from scratch, ROADMAP 49.3, the owner's pick of two: {@code tools/blueprints/js/starter_cottage_b}):
+	 * a one-room saltbox, a tall front over the hearth and the table, the bed nook and the work corner under the long back slope.
+	 */
+	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(9, 11, 12));
+	/** A two-storey cross-wing on the east end, its gable to the road, with two more beds upstairs (an upgrade). */
+	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(13, 12, 12));
+	/** Cottage II with a stone kitchen leaning on the wing's east side, its own door: an upgrade that grows sideways. */
+	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(18, 12, 12));
+	/** Cottage III with a store cellar under the hall, down a ladder through a hatch (26.15, 49.3). */
+	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(18, 12, 12), 4);
 	/**
 	 * A timber hall with the Village Hall block inside (tools/blueprints/village_hall.py): finished, it is a placed Village
 	 * Hall like any other, owned by the player who handed over the blueprint. The bell hangs under its porch.

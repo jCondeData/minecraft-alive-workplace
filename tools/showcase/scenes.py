@@ -120,10 +120,10 @@ SCENES = [
       "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,
       [("01_signpost_crossroads", "The signpost at the crossroads"), ("02_board_east", "East: the next village"),
        ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
-    # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
-    S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
-      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
-      [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
+    # 36.5 in Copperline (48.4, B1344): a long entry opened with one click in the list and scrolled to its end
+    S("hall_reading", "Village Hall", "Reading a long entry",
+      "a long chronicle entry was pointed at, opened to its whole text with one click and scrolled to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
+      [("01_chronicle_hovered", "A long entry pointed at"), ("02_chronicle_held", "Opened to its whole text with one click"),
        ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_tooltip", "The Storehouse board: a row's every line in its icon's tooltip")]),
     # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
     S("table_basement", "Builder", "Blueprint Table: basements in the preview",

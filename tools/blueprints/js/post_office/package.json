@@ -1,0 +1,11 @@
+{
+  "name": "post-office",
+  "private": true,
+  "type": "module",
+  "description": "The Post Office (the Signal Tower, ROADMAP 51.6): rebuilt from scratch with the rebuild kit (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py post_office post_office --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/post-office.nbt"
+  }
+}

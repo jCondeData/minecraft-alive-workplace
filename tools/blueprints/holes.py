@@ -76,10 +76,10 @@ ALLOW.update({(n, (2, 4, 7)): "the Well House's open pavilion round the well, no
 # The Gazebo (49 rebuild) is an open pavilion on purpose: eight posts under a tent roof, railings and benches in three
 # bays, flower urns in four, the front bay its way in; the air under the roof is a sheltered seat, not a walled room
 ALLOW.update({(n, (2, 2, 3)): "the Gazebo's open bays under its roof, not a walled room" for n in ("gazebo", "modded/gazebo")})
-# The School (49 rebuild) is a court with two open cloisters on purpose: a colonnade of posts faces the sparring ring
-# so spectators on the benches (west) and at the straw targets (east) watch the lesson; each walk is a loggia, not a room
+# The School (49 rebuild, round 3) is a court with an open cloister on purpose: a colonnade of posts faces the sparring
+# ring so spectators on the bench watch the lesson; the walk is a loggia, not a room
 ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not a walled room"
-              for n in ("school", "modded/school") for p in ((4, 2, 7), (12, 1, 5))})
+              for n in ("school", "modded/school") for p in ((2, 1, 9),)})
 # The Guildhall (51.5 rebuild) is a market guildhall on purpose: an open stone arcade where the village trades out of the
 # rain, the guild's closed hall jettied over it (its stair boxed in behind a door); the arcade is a market, not a room
 ALLOW.update({(n, (2, 1, 6)): "the Guildhall's open market arcade under the closed hall, not a walled room"

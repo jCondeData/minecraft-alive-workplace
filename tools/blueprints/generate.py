@@ -90,7 +90,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 52.5, the story and legend sites: js/{founder_statue,shift_bell,prisoner_cage,castaway_camp,traveller_camp}
            # (MC_BUILDER=...), then rebuild.py <family> legend/<family> (story/shift_bell) --nbt <out .nbt>; the
            # Traveler's Camp's map frame afterwards: python3 tools/blueprints/js/traveller_camp/frames.py <live .nbt>
-           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp"}
+           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp",
+           # 52.5, the trail marks ("the Carter's Rags"): js/trail (MC_BUILDER=...; npm run build writes candidates, npm
+           # run live the five live story/trail_N); their old drawings in caravan.py are no longer saved
+           "trail_1", "trail_2", "trail_3", "trail_4", "trail_5"}
 
 
 
@@ -225,7 +228,8 @@ if __name__ == "__main__":
     caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
     raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
     for i, draw in enumerate(TRAIL, 1):
-        draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
+        if f"trail_{i}" not in REBUILT:  # 52.5: the trail marks come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")
     pirate_ship().save(os.path.join(MAIN_STRUCTURES, "camp"), "pirate_ship")  # ROADMAP 32.8
     tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9

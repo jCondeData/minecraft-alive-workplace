@@ -75,6 +75,12 @@ asks for the steps, `latest.log` and any crash report).
   free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
   broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
   they are.
+- **The Lost Caravan's five trail marks are rebuilt from scratch** (52.5): the captive carter ties strips of the
+  wagon's white cover high wherever he can, so every mark is a piece of the same wagon standing up with white cloth on
+  it, easy to spot from the last one. A lantern pole with the carter's lantern, a cross-tree with the lost wheel and a
+  burst barrel, the torn cover slumped over its hoop under the settlers' banner, the cart levered up on its tail with
+  its shafts to the sky, and the raiders' arrow-shot crates and black standard over the last rag. Marks already
+  placed stay as they are.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II

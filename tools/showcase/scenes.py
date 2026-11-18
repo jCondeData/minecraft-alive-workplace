@@ -1525,6 +1525,14 @@ SCENES = [
            ("02_outside_back", "From the back: the cloak and the azaleas on the back corners"),
            ("03_outside_west", "From the west"),
            ("04_outside_east", "From the east")], env={"REBUILD_BLUEPRINT": "legend/founder_statue"}, furniture=True),
+    # ROADMAP 52.5: the Lost Caravan's trail marks, rebuilt ("the Carter's Rags"): the third mark, the Torn Banner, from
+    # four sides (the other four are in the wiki's trail-marks.png)
+    S("rebuild_trail", "Build families", "The Lost Caravan's trail, rebuilt: the third mark from four sides",
+      "the third trail mark stands on a patch of trodden earth on a cleared lawn: the wagon's white cover thrown over its one standing hoop and slumped to the ground, hacked through, the settlers' white banner jammed on a splintered pole before it, wheel ruts running through",
+      40, [("01_outside_front", "The Torn Banner from the front: the white banner on its pole, the canvas wall behind"),
+           ("02_outside_back", "From the back: the slumped cover, holes hacked through it"),
+           ("03_outside_west", "From the west: the hoop's rib and the canvas, five blocks tall"),
+           ("04_outside_east", "From the east")], env={"REBUILD_BLUEPRINT": "story/trail_3"}, furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",

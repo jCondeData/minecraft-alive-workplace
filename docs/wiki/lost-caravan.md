@@ -44,9 +44,21 @@ Roadmap items: 31.19, 31.20
   stands up like a wall, its white canvas arches out torn at the back with a hoop showing, one upper wheel lies flat in
   the air and the other is broken in the grass. Crates, barrels, hay, a sack and a pumpkin have spilled out of its open
   end, and the lantern that lit their way lies in the grass behind. Ruts show where it slid off the road.
-- **The trail**: five marks, about 3 x 3 each, evenly spaced between the wreck and the stockade: trampled coarse dirt
-  and a dropped lantern; a smashed barrel with its staves and lid scattered; a torn white banner on a fence post; cart
-  ruts of path blocks; a crate stuck with arrows.
+- **The trail**: five marks ("the Carter's Rags", rebuilt in 52.5), evenly spaced between the wreck and the stockade.
+  The captive carter tears strips off the wagon's white cover and ties them high wherever he can, so each mark is a
+  piece of the same wagon standing up with white cloth on it, easy to spot from the last mark 20 to 30 blocks away,
+  from any side. Each lies on a patch of trodden earth with the wagon's ruts running through it:
+  1. **The Lantern Pole** (3 x 5, 7 tall): the wagon's lantern pole stuck upright, two rags at its top, the carter's
+     lantern hanging low on a hook, a snapped shaft along the rut.
+  2. **The Lost Wheel** (5 x 5, 7 tall): a cross-tree with a rag at each end of its spar, the lost wheel propped
+     against it, a burst barrel with its staves round it and a split sack of grain.
+  3. **The Torn Banner** (5 x 7, 8 tall): the cover thrown over its one standing hoop, a wall of white canvas five
+     blocks tall slumping to the ground, hacked through; the settlers' white banner jammed on a splintered pole.
+  4. **The Drag** (5 x 9, 10 tall): the cart levered up on its tail, both wheels on its axle, shafts to the sky, a rag
+     on the upturned bed; a wide scar of path where the goods were dragged off on a sledge.
+  5. **The Shot Crate** (5 x 7, 9 tall): the raiders' camp edge: two crates stuck with arrows, a smoking fire in a
+     ring of stones, their black standard over the carter's last rag torn down into the dirt, and their stakes, one
+     capped with a skull.
 - **Following the tracks** (`follow_trail`): walk up to the marks in order. At each, the action bar says where the
   tracks go next ("The tracks go on to the north-east"), and after the last, towards the stockade. A mark reached out
   of turn counts nothing: you have to find them in order. The quest's line is "Follow the tracks", counting 0 to 5.
@@ -91,8 +103,9 @@ Renders: [the wreck](../media/caravan-wreck.png), [the stockade](../media/raider
 ## Items, blocks, jobs, commands
 
 - Blueprints `aliveworkplace:story/caravan_wreck`, `aliveworkplace:story/raiders_stockade` and
-  `aliveworkplace:story/trail_1` to `aliveworkplace:story/trail_5` (drawn in `tools/blueprints/caravan.py`; not in the
-  blueprint library).
+  `aliveworkplace:story/trail_1` to `aliveworkplace:story/trail_5` (the wreck and stockade drawn in
+  `tools/blueprints/caravan.py`, the marks in `tools/blueprints/js/trail/` since 52.5, their y = 0 layer the ground
+  itself; not in the blueprint library).
 - The stockade's chest uses the bandit camps' loot table `aliveworkplace:chests/bandit_camp`.
 - Arc `aliveworkplace:lost_caravan` (`arcs/lost_caravan.json`), its effect `lost_caravan` (steps `overdue`, `ending`)
   and the objective `deliver_goods` (`{"type": "deliver_goods"}`; the village's name is filled in when it's posted).
@@ -188,4 +201,4 @@ every objective's.
   Tobin's catch-up past 32 and wait past 64, Journeyman with and without a free workstation, save and reload of Tobin
   and the trail, the chest holding exactly what left the store, the delivery paying once and only at the receiving
   hall, only helpers thanked, and the day-7 failure (nothing on day 6).
-- Showcase scenes: `caravan_trail`, `lost_caravan`.
+- Showcase scenes: `caravan_trail`, `lost_caravan`, `rebuild_trail` (the third mark from four sides).

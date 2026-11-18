@@ -88,3 +88,12 @@ table with four seats at the west end; the new Master's chamber has his table an
 frame, two coffers (empty chests), shelves and lamps. (5) Eye-level shots: not filmed (no client in this run).
 Checks: `rebuild.py --candidate` printed no CHECK line, holes.py 0 (3 allowed), II keeps 97.6% of I's blocks, III
 differs from II only by the hatch at (13,0,10). Not tested: the GameTests.
+
+**Guildhall round 3: BACK a third time; goes to the owner as it stands** (critic lane-c-1118-0953; OLD 4/3/3/3,
+NEW 3/4/4/3; nothing missed in the brief: no job block or bed on any level, 4/7/8 empty frames on solid blocks, II keeps
+97.6% of I, III changes only the hatch). Remaining notes for the ship step: (1) the wing's rear slope ends as a ragged
+half-gable on the hall's ridge (II back, right, top): a full rear gable or a hip into the hall roof; (2) Level I reads
+as a plain gable box (I front, top): raise the front dormer into a cross gable over the arcade's middle bays; (3) the
+stone ground floor's back has no opening (I and II back): windows between the buttresses; (4) no entrance reads from
+the front (I and II front): a door on the arcade's back wall with lanterns, windows on the wing's blind front wall;
+(5) the cellar strongroom is bare (III cut -1): chests on both long walls, a table with a lantern.

@@ -1,0 +1,11 @@
+{
+  "name": "observatory",
+  "private": true,
+  "type": "module",
+  "description": "The Observatory Wonder (52.6 rebuild): STAGE=<n> builds the Wonder as it stands after stage n; stages.py saves the four stage candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 stages.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/observatory.nbt"
+  }
+}

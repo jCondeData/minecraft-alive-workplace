@@ -1,0 +1,19 @@
+{
+  "name": "clock-tower",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 32
+  },
+  "nbtPath": "/home/claude/w516/tools/blueprints/js/clock_tower/out/clock-tower.nbt",
+  "summaryPath": "/home/claude/w516/tools/blueprints/js/clock_tower/out/summary.json",
+  "size": [
+    15,
+    26,
+    15
+  ],
+  "blockCount": 896,
+  "paletteCount": 75,
+  "recipePath": "/home/claude/w516/tools/blueprints/js/clock_tower/recipe.mjs"
+}

@@ -37,6 +37,13 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
+  jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
+  crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.
+  The Blueprint Table and its chest stand by the hearth, three more chests and a lumber rack fill the store, and the
+  Builder sleeps in the loft up a ladder (18 x 16 x 11). Villages grow it too, in their own materials, with its bed
+  downstairs; it no longer has a crafting table, which could take a Carpenter. Workshops already standing keep the
+  drawing they were built from until you refresh them.
 - **The Well** is redrawn from scratch (52.1): a stepped stone dais, a round mossy curb with the windlass and chain
   between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
   (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already
@@ -56,6 +63,20 @@ asks for the steps, `latest.log` and any crash report).
   slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
   tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
   Builds already standing keep their old look until refreshed.
+- **The Camp Kitchen is redrawn from scratch** (52.2): a square timber cookhouse of spruce logs and birch boards on a
+  stone terrace, under a steep bell-cast deepslate roof that climbs to a copper louver right over the Campfire Pot,
+  which stands alone on a brick hearth with a bench facing it, the dresser and two chests behind, shutters, lanterns
+  hung by the door and a lean-to of Hearty Grain bales (13 x 15 x 12). Camp Kitchen II adds a stone smokehouse with
+  its own chimney, a smoker and a smoking rack, and a raised, watered Hearty Grain bed behind (20 x 15 x 21). The
+  Camp Kitchens villages grow take the same look in each village's materials. Builds already standing keep their old
+  look until refreshed.
+- **The Mason's Yard, the Sawmill and the Carpenter's Workshop are rebuilt from scratch** (50.2). The Mason's Yard is
+  a stone lodge whose roof sweeps down over an open banker shed, the stonecutter in its bay facing a walled yard with a
+  jib crane; Level II adds a second stonecutter and a tall tracing house where the master draws. The Sawmill (with
+  Create) has a hooped water tank on log legs whose flume drops onto the water wheel, a long saw shed over the belt and
+  both saws, and a lower Lumberjack's lodge. The Carpenter's Workshop is a cruck-framed shop under a steep roof with a
+  dormer, logs, a sawhorse and plank stacks on its porch, and the Carpenter's bed in the loft. Buildings already
+  standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to

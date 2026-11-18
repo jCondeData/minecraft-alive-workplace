@@ -4,18 +4,21 @@
 type: Build
 expansion: M28
 Needs: Cobblemon
-Size: 13 wide, 11 deep, 10 high (II: 21 wide, 19 deep)
+Size: 13 wide, 12 deep, 15 high (II: 20 wide, 21 deep)
 Tiers: I, II (a Hearty Grain plot and a smokehouse)
 Houses: a Camp Cook at the Campfire Pot
 Where to get it: Blueprint Table (with Cobblemon); a Journeyman camp cook sells it for 12 emeralds
-Main materials: spruce posts and beams, cobblestone, dark oak roof, log crib, barrels
+Main materials: spruce logs, birch planks, stone bricks, deepslate tiles, bricks, waxed cut copper
 categories: Builds, Pokémon
 related: camp-cook.md, kitchen-build.md, pokemon-village-houses.md
 ```
 
-An open timber shelter round a **Campfire Pot**: spruce posts and beams on a cobblestone plinth under a dark oak gable
-roof, benches on three sides of the pot, lanterns hanging from the tie beams, and at the back a grain store of Hearty
-Grain bales in a log crib, barrels and the cook's chest.
+A square timber cookhouse built round a **Campfire Pot**: spruce logs and pale birch boards on a stone terrace, under a
+steep bell-cast roof of deepslate tiles that climbs to a copper louver right over the pot, so you can tell from across
+the valley where the cooking happens. Inside, the pot stands alone on a brick hearth in the middle of the room, a bench
+faces the fire, and along the back a dresser of counters and crockery stands between the cook's two chests. Shuttered
+windows, lanterns hung either side of the door, planters by the steps and a lean-to of Hearty Grain bales on the west
+side.
 
 ## Getting the blueprint
 
@@ -32,8 +35,9 @@ first to pick another style. See [The Builder and blueprints](builder.md).
 
 Once a builder finishes it, they sell the upgrade too (the Blueprint Table has it as well):
 
-- **Camp Kitchen II** adds a fenced Hearty Grain plot behind (farmland either side of a water channel) and a cobblestone
-  smokehouse on the east with a brick chimney and a smoker by the door.
+- **Camp Kitchen II** adds a narrow stone smokehouse on the east under a steep gable, with its own smoking chimney, a
+  smoker, a chest, counters and a rack of hooks inside, and behind the cookhouse a raised stone bed of ripe Hearty
+  Grains, watered by a channel down its middle.
 
 ## What it does for the village
 

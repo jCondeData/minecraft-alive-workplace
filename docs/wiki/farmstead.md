@@ -20,7 +20,7 @@ Roadmap items: 27.14, 36.7, 49.9
   - Under the eave, the **gallery**: the Farmer's composter (his job block) and his harvest chest, a step from the
     farmland, so he works from under his own roof.
   - The **field**: 9 x 5 of farmland round a water channel, rows of wheat, carrots and potatoes, a scarecrow standing in
-    the channel, a fence on a cobble kerb with a lantern on its corner posts.
+    the channel, a fence on a cobble curb with a lantern on its corner posts.
 - **Farmstead II** (15 x 15 x 22): the same roof line carried on, two blocks higher, over a **cross passage** (a door
   each end) into a **red barn**: the second Farmer's chamber under the hay loft (bed, nightstand, his own chest), two
   stalls with gates, troughs and hay down the east wall, a tool wall, the loft up a ladder, wagon doors in the back
@@ -39,7 +39,7 @@ Roadmap items: 27.14, 36.7, 49.9
 
 - Drawn in JavaScript with the rebuild kit: `tools/blueprints/js/farmstead/` (`plan.mjs`: three concepts, story,
   palette, masses, rooms, openings, every furniture footprint, the walking lines; `recipe.mjs`: the passes for all three
-  levels), on the shared parts library `tools/blueprints/js/parts/` (the catslide roof, the field plot, the kerb fence,
+  levels), on the shared parts library `tools/blueprints/js/parts/` (the catslide roof, the field plot, the curb fence,
   the scarecrow, the cellar and its hatch ladder). `build.sh` builds the three levels as candidates; `LIVE=1 build.sh`
   saves the live drawings through `tools/blueprints/rebuild.py` (III with `--basement 4` and its cellar box), which
   runs check.py's checks with the owner's rules, `finish()` and writes `blueprint_furniture/<id>.json`.

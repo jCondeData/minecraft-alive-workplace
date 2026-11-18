@@ -1568,6 +1568,18 @@ SCENES = [
            ("03_outside_west", "From the west: the buttressed hall wall and the lantern's glazing"),
            ("02_outside_back", "From the back: the water tank on its brick tower and the wheel"),
            ("10_room_1", "Inside at eye level: the mixer over the basin, the belt to the depot")], furniture=True, create=True),
+    # ROADMAP 51.4: the Library and the Schoolhouse rebuilt from scratch (REBUILD.md), each built as a server
+    # with the furniture mods builds it, from four sides and at eye level in its rooms
+    S("rebuild_library", "Build families", "The Library, rebuilt: from four sides and at eye level inside",
+      "the Library's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Library from the front: the gabled porch under the rose-windowed gable"),
+           ("02_outside_back", "From the back: the buttressed gable"), ("04_outside_east", "From the east: the buttresses between the window pairs"),
+           ("10_room_1", "The reading hall at eye level: the shelves under the windows, the reading desks, the lectern closing the aisle")], furniture=True),
+    S("rebuild_schoolhouse", "Build families", "The Schoolhouse, rebuilt: from four sides and at eye level inside",
+      "the Schoolhouse's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Schoolhouse from the front: the cloak porch and the copper bell-cote on the gable"),
+           ("02_outside_back", "From the back"), ("04_outside_east", "From the east: the tall windows down the schoolroom"),
+           ("10_room_1", "The schoolroom at eye level: the bench rows facing the lectern and the blackboard")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

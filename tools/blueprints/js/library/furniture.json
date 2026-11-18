@@ -16,7 +16,7 @@
   {"kind":"chair","pos":[13,1,4],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
   {"kind":"lamp","pos":[14,4,5],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0],[0,3,0],[0,4,0]],"wood":"dark_oak","colour":null},
   {"kind":"hanging_pot","pos":[16,8,5],"facing":"north","cells":[[0,0,0],[0,-1,0]],"wood":"dark_oak","colour":null},
-  {"kind":"picture","pos":[12,3,7],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":"blue"},
+  {"kind":"picture","pos":[13,3,7],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":"blue"},
   {"kind":"lamp","pos":[3,4,13],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"dark_oak","colour":null},
   {"kind":"lamp","pos":[9,4,13],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"dark_oak","colour":null},
   {"kind":"lamp","pos":[3,4,17],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"dark_oak","colour":null},

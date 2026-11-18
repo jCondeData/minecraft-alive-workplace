@@ -480,7 +480,7 @@ PASS_NAMES = {"air", "cave_air", "structure_void", "jigsaw", "ladder", "vine", "
               "twisting_vines", "twisting_vines_plant", "cave_vines", "cave_vines_plant", "rail", "powered_rail",
               "detector_rail", "activator_rail", "fire", "soul_fire"}
 PASS = ("_door", "_carpet", "pressure_plate", "_button", "_sign", "_banner", "trapdoor", "fence_gate", "_sapling",
-        "_tulip", "_propagule")
+        "_tulip", "_propagule", "_ladder")  # _ladder: a modded copy's wood ladders (Carved Wood's dark_oak_ladder)
 CLIMB = ("ladder", "vine", "scaffolding")
 FURNITURE = ("_bed", "chest", "barrel", "_carpet", "lantern", "candle", "potted_", "flower_pot", "lectern", "hay_block",
              "crafting_table", "cartography_table", "smithing_table", "fletching_table", "loom", "anvil", "cauldron",

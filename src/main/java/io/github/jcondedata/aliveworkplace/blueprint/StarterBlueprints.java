@@ -234,18 +234,18 @@ public final class StarterBlueprints {
 	/** An ale and wine cellar dug under the inn (36.7). */
 	public static final Entry INN_3 = new Entry(AliveWorkplace.id("inn_3"), new Vec3i(19, 16, 13), 4);
 
-	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
-	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 14, 12));
-	/** A fenced schoolyard with a sandpit. */
-	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(16, 14, 12));
-	/** A stone library with a Scholar's Desk and shelves of books. */
+	/** A bell-cote schoolroom open to the roof timbers, bench rows facing the lectern and blackboard (rebuilt 51.4). */
+	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 16, 13));
+	/** An infants' reading wing and a fenced schoolyard. */
+	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(17, 16, 13));
+	/** The Lamplit Nave: a buttressed stone library with a rose-windowed gable, a lectern and shelves of books (rebuilt 51.4). */
 	public static final Entry LIBRARY = new Entry(AliveWorkplace.id("library"), new Vec3i(13, 15, 12));
-	/** A study tower with a second Scholar's Desk. */
+	/** An aisle wing with a second lectern. */
 	public static final Entry LIBRARY_2 = new Entry(AliveWorkplace.id("library_2"), new Vec3i(18, 15, 12));
-	/** An enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a lectern for a librarian. */
-	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 15, 20));
-	/** Library III with an archive of shelves and ledgers under the reading room, down a stair (26.15). */
-	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 15, 20), 4);
+	/** A spired tower holding the enchanting room: an Enchanting Table ringed by bookshelves and a third lectern. */
+	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 18, 22));
+	/** Library III with an archive of shelves and ledgers dug under it (26.15). */
+	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 18, 22), 4);
 	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
 	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
 	/** The paddock doubled, a stable wing and a brick silo. */

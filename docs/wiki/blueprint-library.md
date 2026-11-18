@@ -249,3 +249,19 @@ From 49.2 on, every blueprint the mod ships is being redrawn from scratch with t
 building, and a critic who ships the new one only when it is clearly better. Ids never change, so standing buildings
 and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
 family from four sides and at eye level in every room.
+
+**51.4: the Library and the Schoolhouse** (the School's rebuild waits, below). Recipes
+`tools/blueprints/js/{library,schoolhouse}/`
+(`build.sh` writes the Library's four levels and the Schoolhouse's two; Library IV with `--basement 4 --cellar
+out/cellar.txt`), saved live by `rebuild.py`; briefs and the critics' scorecards in `tools/blueprints/briefs/`
+(`library.md`, `school.md`, `schoolhouse.md`, `library_school_critic.md`: all three SHIP in round 2). Sizes:
+`library` 13 x 15 x 12, `library_2` 18 x 15 x 12, `library_3` and `library_4` 18 x 18 x 22 (IV 4 deep below),
+`schoolhouse` 11 x 16 x 13, `schoolhouse_2` 17 x 16 x 13. The old drawings are in `blueprint_history/` (and
+`modded/`); the vanilla village houses `<style>_schoolhouse` keep their own looks (`village_looks.py`), as the
+Carpenter's Workshop's did in 50.2. `check.py` counts a modded wood ladder (Carved Wood's, in the modded Library IV)
+as a ladder. Scenes `rebuild_library`, `rebuild_schoolhouse`; `furnished_workplaces`' schoolroom shot stands inside the
+new front wall. The School's rebuild (`js/school`, 17 x 14 x 20, 1,410 blocks against the old 759) stays a candidate:
+in the School's build test (`WorkplacesGameTests`' generated workplaceBuilt_school) the builder was still on STRUCTURE at 12,000 ticks (the brief's limit;
+at tick 9,200 only up to y 7, then stuck 2,400 ticks on the gate roof's back barge stair at (4, 7, 5), over the west
+cloister's lean-to), so `school` keeps its old drawing until a lighter design builds in time. Its reading table now
+seats six (a chair at every place), so the modded copy's crockery at its middle is at a seat.

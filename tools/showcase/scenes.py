@@ -1569,6 +1569,14 @@ SCENES = [
            ("04_outside_east", "From the east: the sheep fold on the gable, its lean-to over the fold door, the hoist beam over the glazed taking-in hatch"),
            ("10_room_1", "The workroom at eye level: the loom in the window, the hearth, the carding table"),
            ("11_room_2", "The wool loft at eye level")], furniture=True),
+    # ROADMAP 49.9: the Farmstead rebuilt from scratch (a limewashed house under one catslide roof sweeping down over a
+    # gallery along the field, the composter and the harvest chest on it), its first level built as a server with the
+    # furniture mods builds it, from four sides and at eye level in the hall
+    S("rebuild_farmstead", "Build families", "The Farmstead, rebuilt from scratch, furnished: from four sides and its hall",
+      "the Farmstead's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Farmstead from the front: the tall west wall and chimney, the pent roof over the door, the catslide falling toward the field"),
+           ("04_outside_east", "From the east: the fenced field with its water channel and scarecrow, the gallery under the long eave with the composter and the harvest chest"),
+           ("10_room_1", "The hall at eye level: the hearth in the west wall, the table for two, the box bed")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",

@@ -76,6 +76,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
            # build.sh the live weavers_cottage and weavers_cottage_2)
            "weavers_cottage", "weavers_cottage_2",
+           # 49.9, the Farmstead: js/farmstead (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the
+           # live farmstead, farmstead_2 and farmstead_3, III with its 4-deep cellar); countryside.py and cellars.py keep
+           # the old drawings, which ship in blueprint_history/
+           "farmstead", "farmstead_2", "farmstead_3",
            # 51.6, the Post Office ("the Signal Tower") and the Graveyard ("the Lantern Yard"): js/post_office (npm run
            # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
            # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's

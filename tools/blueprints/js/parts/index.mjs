@@ -70,4 +70,5 @@ export * from './tinker.mjs' // hipCap, skirtRing, doubleChest, lampOn, railSpur
 export * from './smithy.mjs' // taperedStack, quenchTrough, furnaceMouth, clumped (furnace stacks, quench water, a furnace in a wall, patchy rubble)
 export * from './foundry.mjs' // shaftRun, gearbox, cog, waterWheel, mixerStack, settledWater, roofLantern, bandedTank (Create foundries)
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
+export * from './post_office_tower.mjs' // pigeonholes, tieBeams, pillarBox, spireTip (post offices: a sorting wall, a hall's tie beams, a street post box, a slender spire tip)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)

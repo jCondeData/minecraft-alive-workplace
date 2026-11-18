@@ -29,11 +29,22 @@ asks for the steps, `latest.log` and any crash report).
   under the street windows and a sitting room. Level II adds the journeyman's room at the back with the third bed, and
   a yard for drying pots. Level III digs a clay cellar under the workroom, down a ladder through a hatch. Houses already
   standing keep their look until you press Refresh on the Village Hall's Repairs page.
+- **The Ranch is rebuilt from scratch** (49.9): a horse barn with a tall center over the stable aisle and the hay loft,
+  two low stall sheds on its sides, a cupola on the ridge and a hay hood with a hoist over the big doors. In front, a
+  ranch gate with the ranch's banner leads into a yard with a trough, with no fence gate in the way, so the Rancher walks
+  straight down the aisle to his smoker and tack chests. Level II adds a feed and bunk wing and a big paddock behind,
+  with a gap a villager can walk through and a horse can't. Ranches already standing keep their look until you press
+  Refresh on the hall's Repairs page.
 - **The Weaver's Cottage is rebuilt from scratch** (49.8): a hill weaver's stone house with the loom behind a long
   mullioned window and a second band of lights over it for the wool loft, up a stair inside. The sheep fold leans on its
   gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold
   lifts fleeces to a hatch in the loft. Level II walls a dye garden behind, rows of flowers by color and a frame of dyed
   cloth. Cottages already standing keep their look until you press Refresh on the hall's Repairs page.
+- **The Farmstead is rebuilt from scratch** (49.9): a whitewashed farmhouse under one slate roof that sweeps down low
+  over a covered walk along the field, where the Farmer's composter and harvest chest stand a step from his crops.
+  Level II carries the roof on into a red barn with the second Farmer's room, stalls, a hay loft and a cupola, beside a
+  second field. Level III digs a root cellar under the house, down a ladder through a hatch by the door. Farmsteads
+  already standing keep their look until you press Refresh on the hall's Repairs page.
 - **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
   saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
   the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a
@@ -220,6 +231,15 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
+  visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
+  list, so the afternoon no longer stutters the server (B644).
+- Far sites (a quarry, a field, a tree farm, an orchard, a berry plot or a build marked far outside the village) no
+  longer make the server load their chunks when nobody is there. Before, the worker's first moment at work loaded (or
+  generated) the far chunks in the middle of a tick, a hitch for everyone online, and a Miner could call a far quarry
+  finished from his bench without digging it. Now the site waits exactly as it was until its chunks are loaded again
+  (you come back, or `workplaceKeepWorkLoaded` keeps your build or quarry running), and the worker carries on from
+  there. Meanwhile a Lumberjack and an Orchard Keeper go on with the trees and fruit round their own block (B666, B667).
 - With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
   the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
   time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while

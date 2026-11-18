@@ -105,6 +105,21 @@ public class OrchardWork extends Behavior<Villager> {
 			return;
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
+		// An orchard in chunks nobody has loaded (far outside the village) is left alone until it's back: looking for
+		// fruit or room there would load them (B667). The fruit round the basket is picked as ever.
+		net.minecraft.world.level.levelgen.structure.BoundingBox orchard = Orchards.orchard(villager);
+		if (orchard != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, orchard)) {
+			orchard = null;
+			if (fruit != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, fruit)) {
+				fruit = null;
+				walker.reset();
+			}
+			if (plantSpot != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, plantSpot)) {
+				plantSpot = null;
+				walker.reset();
+			}
+			ripe.removeIf(p -> !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, p));
+		}
 
 		// 1. A full basket (or a finished round) goes to the chests.
 		if (depositDue || carried(bag) >= CARRY || bag.freeSlots() < 2) {
@@ -117,7 +132,6 @@ public class OrchardWork extends Behavior<Villager> {
 		}
 
 		// 1b. Planting the orchard (between rounds of picking).
-		net.minecraft.world.level.levelgen.structure.BoundingBox orchard = Orchards.orchard(villager);
 		if (orchard != null && (plantSpot != null || seedChest != null)) {
 			plant(level, villager, basket, bag);
 			return;

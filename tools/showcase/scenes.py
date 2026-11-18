@@ -1586,6 +1586,15 @@ SCENES = [
            ("02_outside_back", "From the back: the lean-to fuel shed stacked with logs against the kiln, the back gable"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.9: the Ranch rebuilt from scratch (a monitor horse barn: a tall center over the aisle and the hay loft
+    # between two lean-to stall sheds, a cupola, a hay hood with a hoist, the ranch gate and yard in front), its first
+    # level built as a server with the furniture mods builds it, from four sides and at eye level in the aisle and loft
+    S("rebuild_ranch", "Build families", "The Ranch, rebuilt from scratch, furnished: from four sides and every room",
+      "the Ranch's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the stable aisle with the Rancher's smoker and tack chests, the hay loft up the ladder) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ranch from the front: the ranch gate with its banner over the way in, the yard and its trough, the big barn doors under the hay hood and hoist"),
+           ("02_outside_back", "From the back: the stone flue up the back gable, the two lean-to stall sheds either side of the tall centre"),
+           ("10_room_1", "The stable aisle at eye level: the stall gates either side, the smoker and the tack chests at its end"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 49.8: the Weaver's Cottage rebuilt from scratch (a two-story stone range with the long weaver's window, a
     # wool loft, a sheep fold on its east gable with a hoist over it), its first level built as a server with the
     # furniture mods builds it, from four sides and at eye level in the workroom and the loft
@@ -1595,6 +1604,14 @@ SCENES = [
            ("04_outside_east", "From the east: the sheep fold on the gable, its lean-to over the fold door, the hoist beam over the glazed taking-in hatch"),
            ("10_room_1", "The workroom at eye level: the loom in the window, the hearth, the carding table"),
            ("11_room_2", "The wool loft at eye level")], furniture=True),
+    # ROADMAP 49.9: the Farmstead rebuilt from scratch (a limewashed house under one catslide roof sweeping down over a
+    # gallery along the field, the composter and the harvest chest on it), its first level built as a server with the
+    # furniture mods builds it, from four sides and at eye level in the hall
+    S("rebuild_farmstead", "Build families", "The Farmstead, rebuilt from scratch, furnished: from four sides and its hall",
+      "the Farmstead's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Farmstead from the front: the tall west wall and chimney, the pent roof over the door, the catslide falling toward the field"),
+           ("04_outside_east", "From the east: the fenced field with its water channel and scarecrow, the gallery under the long eave with the composter and the harvest chest"),
+           ("10_room_1", "The hall at eye level: the hearth in the west wall, the table for two, the box bed")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",

@@ -124,6 +124,15 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 		for (Map.Entry<BlockPos, BlockState> e : was.entrySet()) {
 			level.setBlock(e.getKey(), e.getValue(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
+		// the old drawing's cellar as its builder left it: dug out (its air under the ground), not left as the area's stone
+		// (49.3: the redrawn Starter Cottage IV's cellar holds other things in other cells than 0.151.0's)
+		for (Blueprint.Entry e : old.blocks()) {
+			if (e.state().isAir() && e.pos().getY() < 0) {
+				BlockPos at = placement.origin().offset(e.pos());
+				touched.add(at);
+				level.setBlock(at, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+			}
+		}
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
 		helper.setBlock(BENCH.east(), Blocks.CHEST);

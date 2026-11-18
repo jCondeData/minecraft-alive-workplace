@@ -86,7 +86,7 @@ export const MASSES = {
   },
   // z 2..8, not to the back wall: inside the cellar every older Level IV dug (x 1..9, z 2..8), so a refresh from one
   // finds the ground already dug (QaReleaseRefresh1028); the beam spans the room wall to wall
-  cellar: { x0: 1, z0: 2, x1: 7, z1: 8, depth: 4, beam: { y: -1, z: 4 } },
+  cellar: { x0: 1, z0: 2, x1: 7, z1: 8, depth: 4, beam: { y: -1, z: 6 } },
 }
 
 export const ROOMS = [

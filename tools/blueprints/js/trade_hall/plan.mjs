@@ -133,13 +133,10 @@ export const FURNITURE = [
   { room: 'Back counter', kind: 'picture', part: 'picture', pos: [4, 3, 12], facing: 'north', wood: 'spruce', colour: 'white' },
   { room: 'Back counter', kind: 'picture', part: 'picture', pos: [10, 3, 12], facing: 'north', wood: 'spruce', colour: 'red' },
   { room: 'Back counter', kind: 'lamp', part: 'hangingLamp', pos: [9, 4, 10], facing: 'north', wood: 'spruce' },
-  // the ledger shelves and the bay's desk each get a lantern of their own, from the tie at x 5 and the bay's tie
-  { room: 'Back counter', kind: 'lamp', part: 'hangingLamp', pos: [5, 4, 11], facing: 'north', wood: 'spruce' },
-  { room: 'Back counter', kind: 'lamp', part: 'hangingLamp', pos: [7, 4, 14], facing: 'north', wood: 'spruce' },
   // Tower room: the Trader's bed, a nightstand at its head, a lantern hung from the cap, his chest, a pennant and a rug
   { room: 'Tower room', kind: 'bed', part: 'bed', pos: [13, 7, 4], facing: 'north', colour: 'red' },
   { room: 'Tower room', kind: 'nightstand', part: 'nightstand', pos: [13, 7, 2], facing: 'south', wood: 'spruce' },
-  { room: 'Tower room', kind: 'lamp', part: 'hangingLamp', pos: [14, 10, 3], facing: 'north', chain: 2, wood: 'spruce' }, // on a chain from the cap, 3 over the floor
+  { room: 'Tower room', kind: 'lamp', part: 'hangingLamp', pos: [14, 12, 3], facing: 'north', wood: 'spruce' },
   { room: 'Tower room', kind: 'chest', part: 'chest', pos: [15, 7, 4], facing: 'west', wood: 'spruce' },
   { room: 'Tower room', kind: 'picture', part: 'picture', pos: [14, 9, 4], facing: 'north', wood: 'spruce', colour: 'red' },
   { room: 'Tower room', kind: 'rug', part: 'rug', cellsAbs: [[14, 7, 3], [14, 7, 4]], colour: 'white' },

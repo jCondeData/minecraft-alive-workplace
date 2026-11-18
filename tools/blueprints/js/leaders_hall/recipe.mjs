@@ -29,7 +29,6 @@ export function draw() {
   beamRing(c, W.x0, W.z0, W.x1, W.z1, N.beamY, P.frame)
   piers(c, 'x', W.x0 - 1, N.piers.at, 0, N.piers.y1, P.pier, { cap: P.pierCap, out: 'west' })
   piers(c, 'x', W.x1 + 1, N.piers.at, 0, N.piers.y1, P.pier, { cap: P.pierCap, out: 'east' })
-  piers(c, 'z', W.z1 + 1, N.piers.back, 0, N.piers.y1, P.pier, { cap: P.pierCap, out: 'south' }) // round the back wall too (critic's polish)
   const main = gableRoof(c, N.roof, P.roof)
   const gable = (u, y) => (y === N.wallTop && (u === W.x0 || u === W.x1) ? null : wall)
   gableWall(c, 'z', W.z0, [W.x0, W.x1], N.wallTop, main.under, gable)

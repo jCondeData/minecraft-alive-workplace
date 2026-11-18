@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 15 wide, 17 deep, 15 high
+Size: 9 wide, 10 deep, 10 high
 Tiers: one
 Houses: a Trainer Leader at the Training Post
 Where to get it: Blueprint Table (with Cobblemon)
-Main materials: stone bricks, deepslate tiles, polished deepslate, deepslate bricks, dark oak
+Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
 categories: Builds, Pokémon
 related: pokemon.md, trainers-house-build.md
 ```
 
-A tall stone hall under a dark slate roof, its long walls propped by dark piers, a round window in each gable and a little gate-porch out front under the Leader's red banner. Inside, the challenger walks the whole length of the hall: past the benches down both walls, across a sparring ring set into the floor, and up a step to the dais, where the **Training Post** stands before the Leader's seat and her banners. (The village houses of this name are smaller: a white house in an oak frame with a bed for the leader.)
+A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Training Post**: everything one worker needs to live and work in the same place.
 
 ## Getting the blueprint
 
@@ -25,6 +25,6 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Sneak-right-click a villager by the Training Post with a **block of gold** and they become the village's **Trainer Leader** (left alone, a jobless villager takes a training post as a trainer). The leader battles at Expert strength from the start, pays three times the prize, and takes one challenge a day from each player. See [Pokémon and villagers](pokemon.md).
 
-**A home.** The hall has no bed (the leader sleeps at home), but a village's Leader's Hall has one, the worker's own. A villager with a bed of their own is happier, and a bed in a building of tier II or higher counts as **a fine home** (tier III and up: **a grand home**) on the hall's list, lifting their mood more. Free beds also let the village grow: with a free bed, plenty of food and a fairly happy village, a couple has a baby. See [Village life](village-life.md).
+**A home.** Its one bed is the worker's own. A villager with a bed of their own is happier, and a bed in a building of tier II or higher counts as **a fine home** (tier III and up: **a grand home**) on the hall's list, lifting their mood more. Free beds also let the village grow: with a free bed, plenty of food and a fairly happy village, a couple has a baby. See [Village life](village-life.md).
 
 Near a [Village Hall](village-hall.md) every finished building counts toward the village's rank (a Village needs 5 of them, a Town 12, a City 25, besides villagers and research), and a Village Map drawn at the hall marks it with a purple banner (other buildings).

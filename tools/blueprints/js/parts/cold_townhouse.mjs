@@ -38,20 +38,23 @@ export function oriel(c, { x0, x1, z, y0, y1 }, { base, post, glass, roof, snow 
  *  x = `face` (cheeks at z +- 1 and the apex over the window in `infill`, two panes of `glass` at y0..y0 + 1), under a
  *  clean little 45-degree gable roof of `roof.stairs` (eaves at z +- 2 on y0 + 1, z +- 1 on y0 + 2, the `roof.full`
  *  ridge on y0 + 3) running from one block outside the face (`run` 1: the slope rises east, the overhang at face - 1)
- *  `depth` columns back into the main slope (`infill` an id or [id, props]); the cell behind the upper pane is opened into the attic. No stepped
- *  blocks: the face is two cheeks and one apex block, the rest is stair rake. */
-export function sideDormer(c, z, roof, { infill: fill, glass }, { face, y0, run = 1, depth = 3 }) {
+ *  `depth` columns back into the main slope (`infill` an id or [id, props]; `cheek` the cheeks' block when not the
+ *  infill, e.g. the roof's own tile so they read hung with slate); the cell behind the upper pane is opened into the attic. No stepped
+ *  blocks: the face is two cheeks and one apex block, the rest is stair rake. `overhang` false: the little roof starts
+ *  flush with the face (its eaves and ridge end in the face's plane, nothing hangs out over the main eave). */
+export function sideDormer(c, z, roof, { infill: fill, glass, cheek = null }, { face, y0, run = 1, depth = 3, overhang = true }) {
   const [id, props] = Array.isArray(fill) ? fill : [fill, {}]
   const infill = id
   const st = (facing) => ({ facing, half: 'bottom', shape: 'straight', waterlogged: 'false' })
-  for (let i = 0; i < depth; i++) {
+  for (let i = overhang ? 0 : 1; i < depth; i++) {
     const x = face - run + i * run
     c.set(x, y0 + 1, z - 2, roof.stairs, st('south')); c.set(x, y0 + 1, z + 2, roof.stairs, st('north'))
     c.set(x, y0 + 2, z - 1, roof.stairs, st('south')); c.set(x, y0 + 2, z + 1, roof.stairs, st('north'))
     c.set(x, y0 + 3, z, roof.full)
     if (i >= 2) c.set(x, y0 + 2, z, infill, props) // the pocket under the ridge, behind the face, closed
   }
-  for (const dz of [-1, 1]) for (let y = y0; y <= y0 + 1; y++) c.set(face, y, z + dz, infill, props)
+  const [cid, cprops] = cheek ? (Array.isArray(cheek) ? cheek : [cheek, {}]) : [infill, props]
+  for (const dz of [-1, 1]) for (let y = y0; y <= y0 + 1; y++) c.set(face, y, z + dz, cid, cprops)
   c.set(face, y0, z, glass); c.set(face, y0 + 1, z, glass)
   c.set(face, y0 + 2, z, infill, props)
   c.clear(face + run, y0 + 1, z)

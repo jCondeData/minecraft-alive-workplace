@@ -50,6 +50,10 @@ export function drawLevel(level) {
     floor(c, Wg.x0 + 1, Wg.z0 + 1, Wg.x1 - 1, Wg.z1 - 1, 0, P.floor)
     ring(c, Wg.x0, Wg.z0, Wg.x1, Wg.z1, 1, 4, stone)
     logPen(c, { x0: Wg.x0, z0: Wg.z0, x1: Wg.x1, z1: Wg.z1, y0: 5, y1: 9 }, P.log)
+    // round 2: the wing's corners against the house lie along its gables (two notched corners side by side read as a
+    // checkerboard of log ends)
+    for (const z of [Wg.z0, Wg.z1]) for (let y = 5; y <= 9; y++) c.set(Wg.x0, y, z, P.log, { axis: 'x' })
+    for (let y = 5; y <= H.kneeTop; y++) c.set(H.x1, y, H.z1, P.log, { axis: 'x' }) // and the house's corner beside it
     floor(c, Wg.x0 + 1, Wg.z0 + 1, Wg.x1 - 1, Wg.z1 - 1, 5, P.floor)
     for (const y of [5, 9]) band(Wg.x0, Wg.z0, Wg.x1, Wg.z1, y)
   }
@@ -58,9 +62,13 @@ export function drawLevel(level) {
   const roof = gableRoof(c, H.roof, P.roof)
   for (const z of [J, H.z1]) gableWall(c, 'z', z, [H.x0 + 1, H.x1 - 1], H.kneeTop + 1, roof.under, () => logX)
   const Dm = MASSES.dormer
-  sideDormer(c, Dm.z, P.roof, { infill: [P.log, { axis: 'z' }], glass: P.glass }, { face: H.x0, y0: Dm.y0, depth: 4 })
+  sideDormer(c, Dm.z, P.roof, { infill: [P.trimLog, { axis: 'z' }], glass: P.glass, cheek: P.roof.full }, { face: H.x0, y0: Dm.y0, depth: 4, overhang: false })
   if (level >= 2) {
     const wing = gableRoof(c, Wg.roof, P.roof, (x, y, z) => !c.get(x, y, z))
+    // round 2: the wing's west eave lies under the house's wall but for its back overhang, where it hung as a lone
+    // stair under the valley: the house's own eave closes the valley there
+    for (let z = Wg.roof.along[0]; z <= Wg.roof.along[1]; z++)
+      if (c.name(Wg.roof.across[0], Wg.roof.eaveY, z) === `minecraft:${P.roof.stairs}`) c.clear(Wg.roof.across[0], Wg.roof.eaveY, z)
     for (const z of [Wg.z0, Wg.z1]) gableWall(c, 'z', z, [Wg.x0 + 1, Wg.x1 - 1], 10, wing.under, () => logX)
   }
 
@@ -100,7 +108,12 @@ export function drawLevel(level) {
   c.set(ho.x, ho.y - 2, ho.z, 'lantern', { hanging: 'true', waterlogged: 'false' })
   // the stacks: the hearth's at the back with its breast, the west one on the eave, both past the ridge, smoking
   const bs = MASSES.backStack
-  chimney(c, bs.x, bs.z, 0, bs.top, stack, { breast: { axis: 'x', top: 4, stair: P.sill } })
+  chimney(c, bs.x, bs.z, 0, bs.top, stack)
+  // round 2: its breast stands whole to under the gable's sill course and ends in a mossy slab, no stair pieces
+  for (const x of [bs.x - 1, bs.x + 1]) {
+    for (let y = 0; y <= bs.breastTop; y++) c.set(x, y, bs.z, stack)
+    c.set(x, bs.breastTop + 1, bs.z, P.capSlab, { type: 'bottom', waterlogged: 'false' })
+  }
   const ss = MASSES.sideStack
   for (const z of ss.zs) for (let y = 0; y <= ss.top; y++) c.set(ss.x, y, z, stack)
   c.set(ss.x, ss.top + 1, ss.zs[0], 'campfire', { facing: 'north', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
@@ -131,6 +144,8 @@ export function drawLevel(level) {
     for (const y of [5, ...T.floors.slice(1)]) band(T.x0, T.z0, T.x1, T.z1, y) // a pale band at each floor line
     for (const y of [...T.floors, T.logTop]) floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, y, P.floor)
     hipRoof(c, T.roof, P.roof) // its first ring the eaves round the pen's top, the second over the walls
+    // round 2: a king post under the peak, so the hip's top block stands on wood, not air
+    for (let y = T.logTop + 1; y < T.roof.eaveY + 3; y++) c.set(15, y, 15, P.log, { axis: 'y' })
     for (const w of OPENINGS.windows) if (has(w) && w.from === 3) window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood })
     for (const d of OPENINGS.doorways) if (has(d)) for (const a of d.at) doorway(c, a)
     const L = T.ladder

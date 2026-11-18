@@ -43,8 +43,8 @@
 //  Snow     on every ridge (three wide: the courses beside it carry it too), along every outer eave, on the reveals'
 //           and sills' tops and the porch caps; never on a tread mid-slope (no stripes), never in a valley, never on a
 //           step or a walk to a door; one continuous drift skirt round the walls.
-//  Dormers  two on the west slope at z 4 and 9 (faces on the knee line x 1, panes y 11..12): calcite cheeks and apex,
-//           a clean stair rake (sideDormer), snow only along their ridges.
+//  Dormers  two on the west slope at z 4 and 9 (faces on the knee line x 1, panes y 11..12): slate cheeks, a birch
+//           lintel at the apex, a clean stair rake (sideDormer), no snow.
 //  Lamps    the shipped furniture cell for cell; only the chains change to the new roofs: the attic's to the ridge (4
 //           and 3), the wing bedroom's (5).
 //  Own render rounds (2026-11-18): birch barge boards under the rakes read as a pale zigzag (dropped: the steep rake
@@ -55,10 +55,16 @@
 //  Done (2026-11-18): all four levels saved as candidates (build.sh -> build/rebuild/townhouse_snowy/), each with no
 //           CHECK line from rebuild.py (the owner's rules included), holes.py 0 (open included), and look_spots.py SAME
 //           BUILDING (38/54/65/71 shipped spots, no bed, container, door or ladder moved; three lamp chains changed).
-//           Blocks per level 1326/1917/2438/2676; II keeps 95 % of I, III 99 % of II, IV 100 % of III. Sizes as the
+//           Blocks per level (round 2) 1284/1852/2375/2613; II keeps 95 % of I, III 99 % of II, IV 99 % of III. Sizes as the
 //           shipped house (11x22x14, 18x22x14, 19x26x19, IV + 4 below). Not shipped (no SHIP=1): the critic goes first.
-//  Left for the critic: the steep gables' edges step (stair, block) as every 2:1 roof does; the back rakes overhang
-//           the wing's gable by a block where the two roofs meet.
+//  Round 2 (2026-11-18, the critic's five notes, briefs/townhouse_looks_critic.md): 1 the dormers start flush with
+//           their faces (no overhang hanging over the eave), their cheeks hung with the roof's own slate, a birch
+//           lintel over the panes, the little gable joined to the slope; no snow on them; 2 snow only on the main ridges,
+//           the outer eaves, the tower's eave ring, the porch caps and the sills: no strips at other heights; 3 one
+//           ridge strip (the shoulders' second line dropped); 4 a verge on every gable's overhanging rake row: the block
+//           under each roof stair an upside-down stair facing the eave, so the edge runs at the pitch; 5 the plinth one
+//           dressed course of stone bricks.
+//  Left for the critic: the white gable walls still step behind the verge (a 2:1 gable's outline).
 import {
   FURNITURE as TH_FURNITURE, OPENINGS as TH_OPENINGS, MASSES as TH_MASSES, BASEMENT, SIZES, IDS,
 } from '../townhouse/plan.mjs'
@@ -71,7 +77,7 @@ export const LEVELS = [1, 2, 3, 4]
 // spruce doors and shutters.
 export const PALETTE = {
   wall: [['calcite', 1]],
-  plinth: [['stone_bricks', 3], ['cobblestone', 2], ['andesite', 1]],
+  plinth: [['stone_bricks', 1]], // round 2: one dressed course (the cobble and andesite read as patches)
   stack: [['stone_bricks', 5], ['cracked_stone_bricks', 1]],
   quoin: 'stone_bricks', quoinAlt: 'polished_andesite', course: 'polished_andesite', cheek: 'stone_bricks',
   trim: 'stripped_birch_log', capSlab: 'stone_brick_slab',

@@ -34,13 +34,13 @@
 //           pale stripped-log bands at the floor lines (y 5, the jetty's sill, and y 9); the hoist beam under the apex at (5, 14, 0), its chain and lantern.
 //  Porch    a slate pent across the front (z 0, y 5) on log posts at x 0, 3, 7 and 10 with brackets, a lantern over
 //           the door; log posts under the jetty's corners (x 1 and 9 on z 1); ferns in moss beds either side.
-//  Stacks   the hearth's at the back (x 5, z 13, breast x 4..6 to y 4), to y 16, smoking; a two-wide fieldstone stack
+//  Stacks   the hearth's at the back (x 5, z 13, breast x 4..6 to y 8 under mossy slabs), to y 16, smoking; a two-wide fieldstone stack
 //           on the west eave (x 0, z 7..8) to y 16, smoking; firewood stacked under the west eave (x 0, z 2..3).
 //  Wing     II: fieldstone x 10..16, z 4..12 (y 1..4), a log pen y 5..9, a 45-degree roof (ridge x 13, y 13; eaves
 //           x 9 and 17), log gables at z 4 and 12; a little gabled porch on posts before its door (z 2..3).
 //  Tower    III: x 13..17, z 13..17: fieldstone y 1..4, a log pen y 5..18 (a ceiling at y 18 over the lookout), a
 //           broad 45-degree hipped roof with deep eaves all round (x 12..18, z 12..18 at y 18, peak y 21).
-//  Dormer   one gabled dormer in the west slope at z 4 (face x 1, panes y 11..12), log cheeks, a clean stair rake.
+//  Dormer   one gabled dormer in the west slope at z 4 (face x 1, panes y 11..12), slate cheeks, a clean stair rake.
 //  Windows  shutters on the fieldstone storeys only; in the logs plain panes (spruce shutters on spruce logs read as a
 //           checkerboard of squares).
 //  Vault    IV: the shipped vault, cell for cell.
@@ -54,9 +54,15 @@
 //  Done (2026-11-18): all four levels saved as candidates (build.sh -> build/rebuild/townhouse_taiga/), each with no
 //           CHECK line from rebuild.py (the owner's rules included), holes.py 0 (open included), and look_spots.py SAME
 //           BUILDING (38/54/65/71 shipped spots, no bed, container, door or ladder moved; three lamp chains changed).
-//           Blocks per level 1067/1604/2054/2292; II keeps 99 % of I, III 99 % of II, IV 100 % of III. Sizes as the
+//           Blocks per level (round 2) 1072/1608/2060/2298; II keeps 98 % of I, III 99 % of II, IV 99 % of III. Sizes as the
 //           shipped house. Not shipped (no SHIP=1): the critic goes first.
-//  Left for the critic: the porch's four log posts are heavy; the tower's faces are plain logs between the bands.
+//  Round 2 (2026-11-18, the critic's five notes, briefs/townhouse_looks_critic.md): 1 the wing's west eave no longer
+//           hangs as a lone stair under the back valley, so the house's and the wing's back rakes meet in one clean V; the
+//           corners where the wing meets the house lie along the gables (two notched corners side by side read as a
+//           checkerboard); 2 the dormer flush with its face, slate-hung cheeks, a stripped log over the panes; 3 the back
+//           stack's breast stands whole to y 8 under mossy slabs, no stair pieces at the jetty line; 4 a king post under the
+//           tower's peak (15, 19..20, 15), so its top block stands on wood; 5 a window in the tower's middle storey (east).
+//  Left for the critic: the porch's four log posts are heavy.
 import {
   FURNITURE as TH_FURNITURE, OPENINGS as TH_OPENINGS, MASSES as TH_MASSES, BASEMENT, SIZES, IDS,
 } from '../townhouse/plan.mjs'
@@ -73,7 +79,7 @@ export const PALETTE = {
   quoin: 'stone_bricks', quoinAlt: 'mossy_stone_bricks', cap: 'mossy_stone_bricks',
   log: 'spruce_log', post: 'spruce_log', trimLog: 'stripped_spruce_log',
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
-  bracket: 'spruce_stairs', woodCap: 'spruce_slab',
+  bracket: 'spruce_stairs', woodCap: 'spruce_slab', capSlab: 'mossy_stone_brick_slab',
   wood: 'spruce', floor: 'spruce_planks', partition: 'spruce_planks', glass: 'glass_pane', sill: 'cobblestone_stairs',
   kitchenFloor: 'stone_bricks', cellarFloor: 'cobblestone', cellarWall: [['cobblestone', 3], ['stone', 2], ['mossy_cobblestone', 1]],
   firewood: ['spruce_log', 'oak_log', 'spruce_log', 'birch_log'], bedSoil: 'moss_block', plants: ['fern'], // split rounds end-on, mixed woods
@@ -84,7 +90,7 @@ export const MASSES = {
     roof: { axis: 'z', across: [0, 10], along: [0, 13], eaveY: 10, steep: false } },
   porch: { x0: 0, x1: 10, z: 0, y: 5, posts: [0, 3, 7, 10], lamps: [5], jettyPosts: [1, 9] },
   hoist: { x: 5, y: 14, z: 0 },
-  backStack: { x: 5, z: 13, top: 16 },
+  backStack: { x: 5, z: 13, top: 16, breastTop: 8 },
   sideStack: { x: 0, zs: [7, 8], top: 16 },
   woodpile: { x: 0, zs: [2, 3], top: 3 },
   wing: { x0: 10, x1: 16, z0: 4, z1: 12, roof: { axis: 'z', across: [9, 17], along: [3, 13], eaveY: 9, steep: false },
@@ -135,6 +141,7 @@ export const OPENINGS = {
     // III, the tower: a window a storey on its open faces, the lookout's on three sides, one in its back gable
     { cells: [[15, 2, 17], [15, 3, 17]], out: 'south', ...shut, from: 3 },
     { cells: [[17, 6, 15], [17, 7, 15]], out: 'east', dress: null, from: 3 },
+    { cells: [[17, 10, 15], [17, 11, 15]], out: 'east', dress: null, from: 3 }, // round 2: the middle storey's
     { cells: [[15, 10, 17], [15, 11, 17]], out: 'south', dress: null, from: 3 },
     { cells: [[13, 10, 15], [13, 11, 15]], out: 'west', dress: null, from: 3 },
     { cells: [[13, 14, 15], [13, 15, 15]], out: 'west', dress: null, from: 3 },

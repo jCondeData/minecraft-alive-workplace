@@ -50,7 +50,7 @@ export function drawLevel(level) {
   // two gabled dormers on the long west slope lighting the attic (calcite faces between birch posts)
   const Dm = MASSES.dormers
   for (const z of Dm.at) {
-    sideDormer(c, z, P.roof, { infill: wall, glass: P.glass }, { face: H.x0, y0: Dm.y0 })
+    sideDormer(c, z, P.roof, { infill: [P.trim, { axis: 'z' }], glass: P.glass, cheek: P.roof.full }, { face: H.x0, y0: Dm.y0, overhang: false })
   }
   let wing = null
   if (level >= 2) {
@@ -150,18 +150,32 @@ export function drawLevel(level) {
     }
   }
 
-  // --- Pass 8: snow and ground -------------------------------------------------------------------------------------
+  // --- Pass 8: the verges, snow and ground ---------------------------------------------------------------------------
+  // round 2: on each gable's overhanging rake row, the full block under every roof stair becomes an upside-down stair
+  // facing the eave, so the rake's edge and its soffit run at the roof's pitch instead of stepping a block at a time
+  const full = `minecraft:${P.roof.full}`, roofStairs = `minecraft:${P.roof.stairs}`
+  const verge = (x0, x1, z) => {
+    for (let x = x0; x <= x1; x++) for (let y = 0; y < c.size[1] - 1; y++) {
+      const above = c.get(x, y + 1, z)
+      const out = { east: 'west', west: 'east' }[above?.props?.facing]
+      if (c.name(x, y, z) !== full || above?.id !== roofStairs || above.props.half !== 'bottom' || !out) continue
+      stair(c, x, y, z, P.roof.stairs, out, 'top')
+    }
+  }
+  for (const z of H.roof.along) verge(H.roof.across[0], H.roof.across[1], z)
+  if (level >= 2) for (const z of Wg.roof.along) verge(Wg.roof.across[0] + 1, Wg.roof.across[1], z)
+
+  // --- Pass 9: snow and ground -------------------------------------------------------------------------------------
   // snow on every ridge (three wide), along the outer eaves (the bell-cast kicks), on the spire's eave ring; never on a
   // tread mid-slope, never on the body's first course over a wall (a second line under the kick's), never in the
   // valley between the house and the wing
   const bodyEave = (x, y, z) => ((x === H.x0 || x === H.x1) && y === H.roof.eaveY + 1) ||
     (level >= 2 && (x === Wg.x0 || x === Wg.x1) && y === Wg.roof.eaveY + 1)
-  const D = MASSES.dormers, dormerCell = (x, y, z) => x <= H.x0 + 1 && D.at.some(dz => Math.abs(z - dz) <= 2) && y > D.y0
+  const D = MASSES.dormers, dormerCell = (x, y, z) => x <= H.x0 + 2 && D.at.some(dz => Math.abs(z - dz) <= 2) && y > D.y0
   const valley = (x, y, z) => level >= 2 && x === Wg.x0 && y === H.roof.eaveY && z >= Wg.roof.along[0] && z <= Wg.roof.along[1] ||
     level >= 2 && x === Wg.roof.across[0] && y === Wg.roof.eaveY // the wing's west kick: only its back corner shows
-  const roofStairs = `minecraft:${P.roof.stairs}`
-  snowLoad(c, P.roof, P.snow, { eaves: true, shoulders: true, tread: () => false,
-    skip: (x, y, z) => dormerCell(x, y, z) && c.name(x, y, z) === roofStairs, eaveSkip: (x, y, z) => bodyEave(x, y, z) || valley(x, y, z) || dormerCell(x, y, z) })
+  snowLoad(c, P.roof, P.snow, { eaves: true, tread: () => false,
+    skip: (x, y, z) => dormerCell(x, y, z), eaveSkip: (x, y, z) => bodyEave(x, y, z) || valley(x, y, z) || dormerCell(x, y, z) })
   snowSkirt(c, P.snow, OUTSIDE.bare)
   return { c, dug }
 }

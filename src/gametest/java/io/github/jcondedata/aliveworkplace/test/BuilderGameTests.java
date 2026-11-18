@@ -961,6 +961,20 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE);
 	}
 
+	/** The whole Starter Cottage II from bare ground (49.3: the rebuilt cottage, its cross-wing and chamber). */
+	//$ gametest_ticks_batch BIG_AREA '20000' '"starter_cottage_2_whole"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "starter_cottage_2_whole")
+	public void buildsStarterCottageII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE_2);
+	}
+
+	/** The whole Starter Cottage III from bare ground (49.3; 18 wide, so it starts further west). */
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_cottage_3_whole"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_cottage_3_whole")
+	public void buildsStarterCottageIII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE_3, new BlockPos(3, 2, 9));
+	}
+
 	//$ gametest_ticks_batch BIG_AREA '6000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "starter_builds")
 	public void buildsMarketStall(GameTestHelper helper) {

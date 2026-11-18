@@ -1,0 +1,19 @@
+{
+  "name": "tailors-shop-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 53
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/out/tailors-shop-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/out/summary.json",
+  "size": [
+    15,
+    17,
+    13
+  ],
+  "blockCount": 772,
+  "paletteCount": 71,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/recipe.mjs"
+}

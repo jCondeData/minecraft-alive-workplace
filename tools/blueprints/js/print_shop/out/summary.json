@@ -1,0 +1,19 @@
+{
+  "name": "print-shop-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 60
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/out/print-shop-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/out/summary.json",
+  "size": [
+    17,
+    12,
+    11
+  ],
+  "blockCount": 745,
+  "paletteCount": 43,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/recipe.mjs"
+}

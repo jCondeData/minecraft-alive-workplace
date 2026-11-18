@@ -276,3 +276,18 @@ the screen doorway (12, 1, 13): `check.py`'s doorway rule looks at the doorway c
 and behind it, (11, 1, 13) and (13, 1, 13), both open floor, so the way through is clear. The old drawing (and its
 modded copy) is in `blueprint_history/school/` as v0.145.0; the village houses `<style>_school` keep their own looks
 (`village.py`'s staffed house). Scene `rebuild_school`.
+
+**51.5: the Leader's Hall and the Trade Hall** (critic SHIP: the Leader's Hall in round 1, "the Challenge Hall"; the
+Trade Hall in round 3, "the Ball Tower"; scorecards in `tools/blueprints/briefs/halls_51_5_critic.md`, briefs
+`leaders_hall.md` and `trade_hall.md`). Recipes `tools/blueprints/js/{leaders_hall,trade_hall}/` (`node
+"$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955`), then `rebuild.py <family> <family>`.
+`leaders_hall` is 15 x 15 x 17, 1,026 blocks, the Training Post on the dais at (7, 2, 13); `trade_hall` is 18 x 18 x 19,
+1,427 blocks, the Shop Counter at (6, 1, 8) and the Trader's bed in the tower room at (13, 7, 4), up a ladder. Ship-step
+changes: the Leader's Hall's piers are carried round its back wall (the critic's polish); its hall lanterns hang on
+long chains to y 4 and the Trade Hall's tower lantern to y 10, so each lamp counts with its room's furniture in the
+eye-level shots; the Trade Hall gets two more lanterns (the ledger shelves and the bay desk), as `check.py`'s
+dark-room rule asked once the drawings went live. The critic's other polish (a straight gable trim on the Leader's
+Hall; a second tower window, the loft and the back gable on the Trade Hall) waits for a run that can render it. The old
+drawings (and their modded copies) are in `blueprint_history/` as v0.145.0; the village houses `<style>_leaders_hall`
+and `<style>_trade_hall` keep their own looks (`village.py`'s staffed house). Scenes `rebuild_leaders_hall`,
+`rebuild_trade_hall`.

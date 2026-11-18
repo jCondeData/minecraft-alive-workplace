@@ -71,7 +71,13 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
-           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school"}
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
+           # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
+           # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
+           # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
+           # staffed house)
+           "leaders_hall", "trade_hall"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

@@ -39,6 +39,13 @@ asks for the steps, `latest.log` and any crash report).
   smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
   floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
   you refresh them, and are never offered a dig of the new freezer.
+- **The Leader's Hall and the Trade Hall are rebuilt from scratch** (51.5, with Cobblemon). The Leader's Hall is a tall
+  stone hall behind a gate-porch, dark piers down its walls and round its back: the challenger walks past benches either
+  side of a sparring ring set into the floor and up to the dais, where the Training Post stands before the Leader's
+  seat (15 x 15 x 17). The Trade Hall is a white counting hall in a proud dark oak frame with a round corner tower whose
+  dark band and white button make it a Poké Ball from afar: the Shop Counter faces the door, a desk sits in the gabled
+  ledger bay at the back and the Trader sleeps up a ladder in the tower (18 x 18 x 19). Buildings already standing keep
+  the drawing they were built from until you refresh them.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The

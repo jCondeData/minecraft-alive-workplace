@@ -21,6 +21,7 @@ import io.github.jcondedata.aliveworkplace.work.Walker;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,7 +69,7 @@ import org.jetbrains.annotations.Nullable;
  * <ul>
  * <li><b>Mending</b> comes first: a shaft, gearbox, cogwheel or belt gone from a finished build near the toolbox (within
  * {@link #REACH}) is put back from the build's blueprint, the way builders mend a build ({@code build/Upkeep}): the
- * part's own item is fetched from the store by the toolbox (a belt costs one belt connector, on its controller segment),
+ * part's own item is fetched from the store by the toolbox (a belt goes back whole for one belt connector, B669),
  * carried there and placed with the blueprint's axis and facing. Parts go back in their order ({@link Kinetics#group}):
  * shafts before the cogwheels that sit on them, both before belts. A build a builder is repairing is left to them; a
  * part whose item isn't in the store waits, and the Mechanic says what's needed.</li>
@@ -101,8 +102,20 @@ public class MechanicWork extends Behavior<Villager> {
 	private static final float SPEED = 0.6f;
 	private static final ItemStores STORES = Platform.get().items();
 
-	/** A drive-train part gone from a finished build: where, what goes there (with its data), what it costs, whose build. */
-	public record Part(BlockPos pos, BlockState state, @Nullable CompoundTag nbt, Item cost, ResourceLocation structure) {
+	/**
+	 * A drive-train part gone from a finished build: where, what goes there (with its data), what it costs, whose build.
+	 * A belt is one part, laid whole from the pulley shaft at {@code pos} to the one at {@code end} for one belt connector
+	 * (B669); {@code end} is null for every other part.
+	 */
+	public record Part(BlockPos pos, BlockState state, @Nullable CompoundTag nbt, Item cost, ResourceLocation structure, @Nullable BlockPos end) {
+		public Part(BlockPos pos, BlockState state, @Nullable CompoundTag nbt, Item cost, ResourceLocation structure) {
+			this(pos, state, nbt, cost, structure, null);
+		}
+
+		/** Whether this is a whole belt, laid between its two pulley shafts. */
+		public boolean belt() {
+			return end != null;
+		}
 	}
 
 	private enum Task {
@@ -178,8 +191,11 @@ public class MechanicWork extends Behavior<Villager> {
 	/**
 	 * The drive-train parts gone from the finished builds reaching within {@link #REACH} of {@code post} (to the build's
 	 * nearest block, not its corner: B598), in the order they go back: shafts and
-	 * gearboxes, then cogwheels, then belts (a belt's controller segment first), lowest first. A build that has a build
-	 * site open (a builder's repair) is left out.
+	 * gearboxes, then cogwheels, then belts, lowest first. A build that has a build site open (a builder's repair) is left
+	 * out. A belt is never a segment at a time (B669: a lone segment isn't a belt, and Create breaks it into a belt
+	 * connector, from nothing): a belt gone whole is first its two pulley shafts (each a shaft from the store), then one
+	 * part for the whole belt between them, laid as a player lays one ({@link BeltLayer}) for one belt connector. A belt
+	 * partly standing, or one Create can't lay there now, is left alone.
 	 */
 	public static List<Part> missingParts(ServerLevel level, BlockPos post) {
 		BuildSiteManager manager = BuildSiteManager.get(level);
@@ -192,25 +208,29 @@ public class MechanicWork extends Behavior<Villager> {
 			if (blueprint.isEmpty()) {
 				continue;
 			}
-			BlockPos sourceOrigin = beltOrigin(blueprint.get());
+			BlueprintData.Placement placement = f.placement();
+			Map<BlockPos, BlockState> belts = new LinkedHashMap<>();
 			for (Blueprint.Entry entry : blueprint.get().blocks()) {
 				if (!Kinetics.isDrivePart(entry.state())) {
 					continue;
 				}
-				BlueprintData.Placement placement = f.placement();
 				BlockPos world = toWorld(placement, entry.pos());
+				BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
+				if (Kinetics.isBelt(state)) {
+					belts.put(world, state); // a belt goes back whole, below
+					continue;
+				}
 				if (!level.isLoaded(world)) {
 					continue;
 				}
-				BlockState state = MaterialRules.forPlacement(MaterialRules.transformed(entry.state(), placement.mirror(), placement.rotation()));
 				BlockState there = level.getBlockState(world);
 				if (!there.canBeReplaced() || MaterialRules.matches(there, state)) {
 					continue; // in place, or something else stands there now (a player's): not a hole to fill
 				}
-				boolean belt = Kinetics.isBelt(state);
-				boolean controller = belt && entry.nbt() != null && Nbt.getBoolean(entry.nbt(), "IsController");
-				CompoundTag nbt = belt ? beltData(entry.nbt(), sourceOrigin, placement) : null;
-				out.add(new Part(world, state, nbt, Kinetics.cost(state, controller), f.structure()));
+				out.add(new Part(world, state, null, Kinetics.cost(state, false), f.structure()));
+			}
+			if (!belts.isEmpty()) {
+				missingBelts(level, belts, f.structure(), out);
 			}
 		}
 		out.sort(Comparator.<Part>comparingInt(p -> Kinetics.group(p.state()))
@@ -218,6 +238,53 @@ public class MechanicWork extends Behavior<Villager> {
 			.thenComparingInt(p -> p.pos().getY())
 			.thenComparingDouble(p -> p.pos().distSqr(post)));
 		return out;
+	}
+
+	/**
+	 * The parts that put back the belts among a build's belt segments ({@code belts}, where each stands and its state
+	 * there): for a belt gone whole, a shaft at each end that has none, and once both ends have their shafts, the belt
+	 * itself (B669). A belt with a segment still standing, or with anything else in its way, is left alone.
+	 */
+	private static void missingBelts(ServerLevel level, Map<BlockPos, BlockState> belts, ResourceLocation structure, List<Part> out) {
+		if (!BeltLayer.EXTENSION.present()) {
+			return; // nothing can lay a belt: never a segment on its own
+		}
+		Item connector = Kinetics.cost(belts.values().iterator().next(), true);
+		if (connector == Items.AIR) {
+			return;
+		}
+		for (List<BlockPos> run : BeltLayer.EXTENSION.call(b -> b.runs(belts), List.<List<BlockPos>>of())) {
+			if (!run.stream().allMatch(level::isLoaded)) {
+				continue;
+			}
+			BlockPos start = run.get(0);
+			BlockPos end = run.get(run.size() - 1);
+			boolean gone = true;
+			for (BlockPos pos : run) {
+				BlockState there = level.getBlockState(pos);
+				boolean pulley = pos.equals(start) || pos.equals(end);
+				if (Kinetics.isBelt(there) || !there.canBeReplaced() && !(pulley && Kinetics.isDrivePart(there))) {
+					gone = false; // still (partly) standing, or something else is in the way: not a hole to fill
+					break;
+				}
+			}
+			if (!gone) {
+				continue;
+			}
+			boolean shafts = true;
+			for (BlockPos pos : List.of(start, end)) {
+				if (level.getBlockState(pos).canBeReplaced()) {
+					shafts = false;
+					BlockState shaft = BeltLayer.EXTENSION.call(b -> b.pulley(belts.get(pos)), null);
+					if (shaft != null && shaft.getBlock().asItem() != Items.AIR) {
+						out.add(new Part(pos, shaft, null, shaft.getBlock().asItem(), structure));
+					}
+				}
+			}
+			if (shafts && BeltLayer.EXTENSION.call(b -> b.canLay(level, start, end), false)) {
+				out.add(new Part(start, belts.get(start), null, connector, structure, end));
+			}
+		}
 	}
 
 	private static BlockPos toWorld(BlueprintData.Placement placement, BlockPos local) {
@@ -293,9 +360,17 @@ public class MechanicWork extends Behavior<Villager> {
 	 * nothing holds it up).
 	 */
 	public static boolean putBack(ServerLevel level, Villager villager, Part part) {
+		if (part.belt()) {
+			// B669: the whole belt between its two shafts, as a player lays one with a belt connector
+			if (!BeltLayer.EXTENSION.call(b -> b.lay(level, part.pos(), part.end()), false)) {
+				return false;
+			}
+			done(level, villager, part);
+			return true;
+		}
 		BlockState there = level.getBlockState(part.pos());
-		if (!there.canBeReplaced() || !part.state().canSurvive(level, part.pos())) {
-			return false;
+		if (part.cost() == Items.AIR || !there.canBeReplaced() || !part.state().canSurvive(level, part.pos())) {
+			return false; // never a part from nothing (B669)
 		}
 		BlockState shaped = Block.updateFromNeighbourShapes(part.state(), level, part.pos());
 		level.setBlock(part.pos(), shaped.isAir() ? part.state() : shaped, Block.UPDATE_ALL);
@@ -312,12 +387,16 @@ public class MechanicWork extends Behavior<Villager> {
 				}
 			}
 		}
+		done(level, villager, part);
+		return true;
+	}
+
+	private static void done(ServerLevel level, Villager villager, Part part) {
 		SoundType sound = part.state().getSoundType();
 		level.playSound(null, part.pos(), sound.getPlaceSound(), SoundSource.BLOCKS, (sound.getVolume() + 1f) / 2f, sound.getPitch() * 0.8f);
 		level.gameEvent(villager, GameEvent.BLOCK_PLACE, part.pos());
 		villager.swing(InteractionHand.MAIN_HAND, true);
 		BuilderLevels.addXp(level, villager, XP_PER_PART, null);
-		return true;
 	}
 
 	// ---- the round --------------------------------------------------------------------------------------------------
@@ -427,7 +506,10 @@ public class MechanicWork extends Behavior<Villager> {
 			stash(level, villager);
 		}
 		for (Part part : missing) {
-			if (part.cost() == Items.AIR || villager.getMainHandItem().is(part.cost())) {
+			if (part.cost() == Items.AIR) {
+				continue; // never put back for nothing (B669)
+			}
+			if (villager.getMainHandItem().is(part.cost())) {
 				state.part = part;
 				state.task = Task.PLACE;
 				return true;
@@ -520,7 +602,8 @@ public class MechanicWork extends Behavior<Villager> {
 			return;
 		}
 		BlockState there = level.getBlockState(part.pos());
-		if (!there.canBeReplaced() || MaterialRules.matches(there, part.state())) {
+		if (part.belt() ? !BeltLayer.EXTENSION.call(b -> b.canLay(level, part.pos(), part.end()), false)
+			: !there.canBeReplaced() || MaterialRules.matches(there, part.state())) {
 			state.part = null; // put back by someone else (a builder, a player): the part in hand goes back with stop()
 			return;
 		}
@@ -529,10 +612,8 @@ public class MechanicWork extends Behavior<Villager> {
 		villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(part.pos()));
 		if (state.walker.reach(level, villager, part.pos(), 3.5)) {
 			state.walker.reset();
-			if (putBack(level, villager, part)) {
-				if (part.cost() != Items.AIR && villager.getMainHandItem().is(part.cost())) {
-					villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-				}
+			if (villager.getMainHandItem().is(part.cost()) && putBack(level, villager, part)) {
+				villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 				state.busyUntil = gameTime + WORK_TICKS;
 				state.part = null;
 			} else {

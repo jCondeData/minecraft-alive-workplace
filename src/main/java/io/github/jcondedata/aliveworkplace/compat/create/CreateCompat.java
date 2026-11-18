@@ -1,7 +1,10 @@
 package io.github.jcondedata.aliveworkplace.compat.create;
 
 import io.github.jcondedata.aliveworkplace.build.TurnedBlockEntities;
+import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import io.github.jcondedata.aliveworkplace.city.CaravanTrains;
+import io.github.jcondedata.aliveworkplace.hall.StandIns;
+import java.util.Optional;
 
 /**
  * The Create integration (Milestone 39). Most of it goes by block ids and needs no Create class; the village trains
@@ -18,5 +21,8 @@ public final class CreateCompat {
 	public static void init() {
 		CaravanTrains.RAILWAY.register("create", new CreateTrains());
 		TurnedBlockEntities.EXTENSION.register("create", new CreateTurns());
+		// B843: a deployer a player placed acts for them; one nobody placed answers to Create's own "Deployer" id, nobody
+		StandIns.ACTS_FOR.register("create", player -> !(player instanceof DeployerFakePlayer deployer) ? null
+			: DeployerFakePlayer.fallbackID.equals(deployer.getUUID()) ? Optional.empty() : Optional.of(deployer.getUUID()));
 	}
 }

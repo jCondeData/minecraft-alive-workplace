@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.shop;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.hall.StandIns;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
 import io.github.jcondedata.aliveworkplace.work.Money;
@@ -84,8 +85,8 @@ public class ShopCounterBlock extends BaseEntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.setPlacedBy(level, pos, state, placer, stack);
-		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter) {
-			counter.setOwner(player.getUUID(), player.getGameProfile().getName());
+		if (placer instanceof ServerPlayer player && StandIns.mayOwn(player) && level.getBlockEntity(pos) instanceof ShopCounterBlockEntity counter) {
+			counter.setOwner(StandIns.person(player), StandIns.name(player));
 			Chat.chat(player, placedMessage());
 		}
 	}
@@ -121,7 +122,10 @@ public class ShopCounterBlock extends BaseEntityBlock {
 			return Interact.success(level.isClientSide());
 		}
 		if (counter.owner() == null) {
-			counter.setOwner(serverPlayer.getUUID(), serverPlayer.getGameProfile().getName());
+			if (!StandIns.mayOwn(serverPlayer)) {
+				return InteractionResult.CONSUME; // B843: a machine acting for nobody claims nothing
+			}
+			counter.setOwner(StandIns.person(serverPlayer), StandIns.name(serverPlayer));
 		}
 		boolean mine = serverPlayer.hasPermissions(2) || Friends.get(serverPlayer.server).mayDirect(counter.owner(), serverPlayer.getUUID());
 		if (!mine) {

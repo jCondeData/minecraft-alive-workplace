@@ -201,6 +201,51 @@ public class WaystoneQaCompatTests implements FabricGameTest {
 	}
 
 	/**
+	 * B1375: the plazas earlier tests left round this one, taken away: each finished or half-built plaza outside this
+	 * test's area and within a hall's reach of it (as {@link RaidHelperCompatTests#clearAround}, which calls this, clears
+	 * halls), its record forgotten and its stone broken, which takes the waystone off the Waystones mod's list. A village
+	 * founded by a plaza whose own hall is gone takes that plaza over (B1188) and names its stone after itself, so a
+	 * neighbor test's plaza (WaystonesCompatTests leaves its own standing, its stone 16 blocks west of the next test's) was
+	 * a second stone of the next test's village, and that village had a plaza before the test gave it one.
+	 */
+	static void clearPlazasAround(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BuildSiteManager sites = BuildSiteManager.get(level);
+		BlockPos center = BlockPos.containing(helper.getBounds().getCenter());
+		double reach = VillageHalls.RADIUS + 32;
+		net.minecraft.world.phys.AABB own = helper.getBounds();
+		java.util.function.Predicate<BlueprintData.Placement> left = p -> !own.contains(Vec3.atCenterOf(p.origin())) && p.origin().distSqr(center) <= reach * reach;
+		List<Map.Entry<net.minecraft.resources.ResourceLocation, BlueprintData.Placement>> plazas = new java.util.ArrayList<>();
+		for (BuildSiteManager.Finished f : List.copyOf(sites.finishedIn(level))) {
+			if (VillageWaystones.isPlaza(f.structure()) && left.test(f.placement())) {
+				plazas.add(Map.entry(f.structure(), f.placement()));
+				sites.forgetFinished(f.placement());
+			}
+		}
+		for (io.github.jcondedata.aliveworkplace.build.BuildSite site : List.copyOf(sites.all())) {
+			if (VillageWaystones.isPlaza(site.structure()) && left.test(site.placement())) {
+				plazas.add(Map.entry(site.structure(), site.placement()));
+				sites.remove(site.id());
+			}
+		}
+		for (Map.Entry<net.minecraft.resources.ResourceLocation, BlueprintData.Placement> plaza : plazas) {
+			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, plaza.getKey());
+			if (blueprint.isEmpty() || !level.isLoaded(plaza.getValue().origin())) {
+				continue;
+			}
+			BuildPlan plan = BuildPlan.create(blueprint.get(), plaza.getValue());
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+				for (BuildPlan.Step step : plan.steps(stage)) {
+					if (VillageWaystones.isStone(step.state()) && VillageWaystones.isStone(level.getBlockState(step.pos()))) {
+						level.setBlock(step.pos().above(), Blocks.AIR.defaultBlockState(), 3);
+						level.setBlock(step.pos(), Blocks.AIR.defaultBlockState(), 3);
+					}
+				}
+			}
+		}
+	}
+
+	/**
 	 * {@code villageWaystones} turned off after both stones stand (41.1's switch, 41.3's "they walk as today"): the stones
 	 * stay working waystones with the village's name, a new caravan walks the road, settlers don't go through, and a caravan
 	 * that left by waystone before the switch went off walks the whole road when it's due, its goods all there.

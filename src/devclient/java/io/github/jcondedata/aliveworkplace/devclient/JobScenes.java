@@ -1559,7 +1559,7 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
 				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
-				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(6, 10, 1),
+				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(7, 15, 3),
 				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			for (int row = 0; row < 2; row++) {

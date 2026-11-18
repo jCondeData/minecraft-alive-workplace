@@ -1,15 +1,15 @@
 // Fletcher's Lodge, the recipe: assembles plan.mjs from the parts library (../parts) in passes (block-out and
-// structure, roof, openings, depth and detail, interior, ground and light) and returns the structure for the
+// structure, roofs, openings, depth and detail, interior, ground and light) and returns the structure for the
 // minecraft-builder skill's runner. LEVEL = 1 or 2: Level II is Level I grown (every Level I cell it keeps is drawn by
-// the same lines; the roof runs on along its ridge). Writes furniture.json beside it. Both levels: build.sh.
-// CUT=<y> builds a cutaway with everything above y removed.
+// the same lines; the main roof runs on one column and dies into the wing's). Writes furniture.json beside it. Both
+// levels: build.sh. CUT=<y> builds a cutaway with everything above y removed.
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SIZES, PALETTE, MASSES, OPENINGS, FURNITURE, STORE, TARGET, OUTSIDE } from './plan.mjs'
 import {
   Canvas, mix, plinth, floor, post, wallPanel, window, door, gableRoof, gableWall, bargeTrim, chimney, strawTarget,
-  logStack, furnitureParts, logPen, porchGable,
+  logStack, furnitureParts, logPen, porchGable, doubleChest, stair,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -20,47 +20,58 @@ export function draw(level) {
   const stone = mix(P.stone, 11)
   const at = l => (l ?? 1) <= level
   const pens = [MASSES.westPen, MASSES.eastPen].filter(p => at(p.level))
-  const R = MASSES.roof
+  const R = MASSES.roof, W = MASSES.wing
 
   // --- Pass 1: block-out and structure -------------------------------------------------------------------------
-  // each pen: a rubble sill ring at y 0, plank floor inside, log courses y 1..4 notched at the corners
+  // each pen: a rubble sill ring at y 0, plank floor inside, log courses y 1..4 notched at the corners, a tie beam
   for (const p of pens) {
     plinth(c, p.x0, p.z0, p.x1, p.z1, stone)
     floor(c, p.room.x0, p.room.z0, p.room.x1, p.room.z1, 0, P.floor)
     logPen(c, p, P.log)
-    for (const x of p.ties) for (let z = p.room.z0; z <= p.room.z1; z++) c.set(x, p.y1, z, P.beam, { axis: 'z' }) // tie beams
+    for (const x of p.ties) for (let z = p.room.z0; z <= p.room.z1; z++) c.set(x, p.y1, z, P.beam, { axis: 'z' })
   }
-  if (at(2)) { // the breezeway: a plank floor between the pens, the plates carried across on log beams
-    const B = MASSES.breezeway
-    floor(c, B.x0, B.z0, B.x1, B.z1, 0, P.deck)
-    for (let x = B.x0; x <= B.x1; x++) for (const z of [B.z0, B.z1, B.tie]) c.set(x, 4, z, P.beam, { axis: 'x' })
-    for (const z of [B.z0, B.z1]) wallPanel(c, [B.x0, z], [B.x1, z], 1, 3, P.boards) // board walls, a door in each (pass 3)
-  }
-  // the porch: a deck the whole front, stripped posts
+  // the porch: a deck along the West pen, stripped posts
   const PO = MASSES.porch
   floor(c, PO.x0, PO.z0, PO.x1[level], PO.z1, 0, P.deck)
-  for (const x of PO.posts[level]) post(c, x, PO.z0, 1, PO.eave - 1, P.beam)
+  for (const x of PO.posts) post(c, x, PO.z0, 1, PO.eave - 1, P.beam)
 
-  // --- Pass 2: roof ---------------------------------------------------------------------------------------------
-  const roof = gableRoof(c, { ...R, along: R.along[level] }, P.roof)
-  const ridgeZ = (R.across[0] + R.across[1]) / 2 // the ridge pole: a light log along the top, the dark roof's one line
-  for (let x = R.along[level][0]; x <= R.along[level][1]; x++) c.set(x, roof.ridgeY, ridgeZ, P.beam, { axis: 'x' })
-  for (let x = 0; x <= PO.kick[level]; x++) c.set(x, PO.eave, PO.z0, P.roof.stairs, { facing: 'south', half: 'bottom', shape: 'straight', waterlogged: 'false' }) // the porch's kick
-  // gables: the pens' end walls carried up in logs under the roof (on Level II the West pen's east gable and the East
-  // pen's west gable stand in the breezeway's attic)
-  for (const p of pens) for (const x of p.gables[level])
-    gableWall(c, 'x', x, R.across, p.y1 + 1, roof.under, (u) => (u > p.z0 && u < p.z1 ? [P.log, { axis: 'z' }] : null))
-  // barge boards under the overhanging rakes at the two outer ends
-  for (const x of [R.along[level][0], R.along[level][1]]) bargeTrim(c, 'x', x, R.across, roof.under, P.trim)
-  if (at(2)) { // the mouth gable over the breezeway, a target in its pediment
-    const G = MASSES.mouthGable
-    const walls = (x, y, z) => !(c.name(x, y, z).endsWith('_log'))
-    porchGable(c, G, P.roof, { beam: P.beam, face: [P.target, { power: '0' }] }, walls)
+  // --- Pass 2: roofs --------------------------------------------------------------------------------------------
+  // Level II's wing first (its own front-gabled roof, a block lower at the ridge), then the main roof where it's free
+  const wing = at(W.level) ? gableRoof(c, W, P.roof) : null
+  const free = (x, y, z) => !c.get(x, y, z)
+  const main = gableRoof(c, { ...R, along: R.along[level] }, P.roof, free)
+  for (let x = 0; x <= PO.kick; x++) c.set(x, PO.eave, PO.z0, P.roof.stairs, { facing: 'south', half: 'bottom', shape: 'straight', waterlogged: 'false' }) // the porch's kick
+  // gables: boards set a block back behind the plate (its log throws the shadow), the main roof's dying gable at x 9
+  for (const g of MASSES.gables) {
+    if (g.only && g.only !== level) continue
+    gableWall(c, 'x', g.x, R.across, 5, main.under, (u, y) => (u >= 3 && u <= 7 && !c.get(g.x, y, u) ? P.boards : null))
+  }
+  if (wing) for (const z of W.gables) {
+    gableWall(c, 'z', z, W.across, 5, wing.under, (u) => (u >= 11 && u <= 13 ? P.boards : null))
+    const apex = (W.across[0] + W.across[1]) / 2
+    c.set(apex, wing.ridgeY - 1, z, P.log, { axis: 'z' }) // a log end at the apex
+  }
+  // barge boards under the overhanging rakes: the main roof's west end (and its east end on Level I), the wing's two
+  bargeTrim(c, 'x', R.along[level][0], R.across, main.under, P.trim)
+  if (level === 1) bargeTrim(c, 'x', R.along[1][1], R.across, main.under, P.trim)
+  if (wing) for (const z of W.along) bargeTrim(c, 'z', z, W.across, wing.under, P.trim)
+  // the entry gable over the West pen's door, a target in its pediment
+  const walls = (x, y, z) => !(c.name(x, y, z).endsWith('_log'))
+  porchGable(c, MASSES.entryGable, P.roof, { beam: P.beam, face: [P.target, { power: '0' }] }, walls)
+  if (at(2)) { // the breezeway: a plank floor between the pens, board walls front and back (a door in each), plates
+    const B = MASSES.breezeway
+    floor(c, B.x0, B.z0, B.x1, B.z1, 0, P.deck)
+    for (const z of [B.z0, B.z1]) wallPanel(c, [B.x0, z], [B.x1, z], 1, 3, P.boards)
+    for (const z of [B.z0, B.z1, B.tie]) c.set(B.x0, 4, z, P.beam, { axis: 'x' }) // x 9 at y 4 is the wing's eave
   }
 
   // --- Pass 3: openings -----------------------------------------------------------------------------------------
   for (const d of OPENINGS.doors) if (at(d.level)) door(c, d.at, d.facing, d.out, { wood: P.wood, hinge: d.hinge ?? 'left' })
-  for (const w of OPENINGS.windows) if (at(w.level) && (!w.only || w.only === level)) window(c, w.cells, w.out, w.bare ? null : 'shutters', { glass: P.glass, wood: P.wood })
+  for (const w of OPENINGS.windows) {
+    if (!at(w.level) || (w.only && w.only !== level)) continue
+    const dress = w.bare || (w.dressOnly && w.dressOnly !== level) ? null : 'shutters'
+    window(c, w.cells, w.out, dress, { glass: P.glass, wood: P.wood })
+  }
 
   // --- Pass 4: depth and detail: the chimneys and their hearths -------------------------------------------------
   for (const ch of MASSES.chimneys) {
@@ -74,6 +85,7 @@ export function draw(level) {
   for (const f of FURNITURE) {
     if (!at(f.level)) continue
     if (f.kind === 'fixture' && !f.part) { c.set(...f.pos, f.block); continue }
+    if (f.part === 'doubleChest') { doubleChest(c, f.pos, f.facing, f.along); continue }
     furnitureParts[f.part](c, f)
     if (f.plant) c.set(f.pos[0], f.pos[1] + 1, f.pos[2], f.plant)
   }
@@ -86,6 +98,9 @@ export function draw(level) {
     logStack(c, cells, P.rick, 'x')
   }
   logStack(c, OUTSIDE.porchPile, P.rick, 'z')
+  for (const k of OUTSIDE.skirt) if (at(k.level)) for (const [x, y, z] of k.cells) stair(c, x, y, z, P.stoneStair, 'north')
+  if (at(OUTSIDE.backStep.level)) stair(c, ...OUTSIDE.backStep.at, P.stoneStair, 'north')
+  for (const w of OUTSIDE.sills) if (at(w.level)) window(c, w.cells, w.out, 'sill', { glass: P.glass, wood: P.wood, pots: w.pots })
   strawTarget(c, TARGET.at, { bale: P.hay, face: P.target, post: `${P.wood}_fence` })
   for (const l of OUTSIDE.lanterns) if (at(l.level)) c.set(...l.at, 'lantern', { hanging: 'true', waterlogged: 'false' })
   return c

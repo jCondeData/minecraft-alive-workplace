@@ -128,7 +128,9 @@ public class ModdedLibraryCompatTests implements FabricGameTest {
 			helper.assertTrue(dressed(blocks), "the cottage isn't dressed: " + blocks);
 			helper.assertTrue(blocks.contains("handcrafted:spruce_chair") && blocks.contains("handcrafted:spruce_fancy_bed"),
 				"the modded cottage lost its Handcrafted furniture: " + blocks);
-			helper.assertTrue(blocks.contains("handcrafted:wood_crockery_combo"), "no crockery on the table: " + blocks);
+			// (49.3: the rebuilt cottage sets its own white crockery on the kitchen table; the library adds wood crockery only where
+			// the owner's rule allows plates)
+			helper.assertTrue(blocks.stream().anyMatch(b -> b.startsWith("handcrafted:") && b.endsWith("_crockery_combo")), "no crockery on the table: " + blocks);
 			helper.assertTrue(!blocks.contains("minecraft:white_concrete") && !blocks.contains("minecraft:red_bed"), "vanilla plaster or bed left: " + blocks);
 		} finally {
 			new WorkplaceConfig().apply();

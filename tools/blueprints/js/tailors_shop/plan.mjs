@@ -28,9 +28,11 @@
 //               shopfront: two three-high display windows flanking the door, a fanlight, livery banners on the corners.
 //   Stack       the pressing stove's stone chimney on the back wall (x 3, z 11), a stepped breast at its foot.
 //   Tower (II)  the drying tower astride the back-east corner: x 9..13, z 7..11 (its west wall is the shop's east wall,
-//               one bay of it standing out past the back), a stone base y 0..4, a timbered drying loft y 6..8 whose
-//               north and east bays are hung with dyed cloths, a top loft y 10..11, a steep cap y 12..15 sitting on
-//               the wall line (no eave over the shop's roof) and a lightning-rod finial at y 16.
+//               one bay of it standing out past the back): a stone foot y 0..4 with dark oak corner posts and a pent
+//               skirt of tiles at the beam line, a drying shaft open from the foot up to y 8 whose glazed band (y 7..8)
+//               shows the cloths hung inside, the cutting room y 10..11 (floor y 9), a steep cap y 12..15 sitting on
+//               the wall line (no eave over the shop's roof) and a lightning-rod finial at y 16. Where the shop's east
+//               slope meets the tower, a cricket course of tiles rising to the wall makes a valley (the joint).
 
 export const SIZES = { 1: [12, 13, 12], 2: [15, 17, 13] } // w, h, d (plot limit 18 x 18 x 22)
 
@@ -67,24 +69,23 @@ export const TOWER = {
   walls: { x0: 9, x1: 13, z0: 7, z1: 11 },
   room: { x0: 10, x1: 12, z0: 8, z1: 10 },
   baseTop: 4, // stone to y 4
-  floors: [5, 9], // the drying loft's floor (on the beam ring at y 5) and the top loft's
+  floors: [9], // the cutting room's floor; below it the foot and the drying shaft are one tall space
   beams: [5, 9],
-  cap: { cx: 11, cz: 9, half: 2, y0: 12 }, // on the top loft's walls (y 10..11)
-  // the dyed cloths, hung in the drying loft's north and east bays (y 7..8 over a louvre slat at y 6): a spectrum
-  // running round the corner from the street side
-  cloths: {
-    north: { line: 7, at: [10, 11, 12], colours: ['red', 'orange', 'yellow'] },
-    east: { line: 13, at: [8, 9, 10], colours: ['lime', 'cyan', 'blue'] },
+  cap: { cx: 11, cz: 9, half: 2, y0: 12 }, // on the cutting room's walls (y 10..11)
+  // a pent skirt of tiles round the stone foot at the beam line (y 5), on the three sides clear of the shop
+  skirt: {
+    north: [[11, 6], [12, 6], [13, 6], [14, 6]],
+    east: [[14, 7], [14, 8], [14, 9], [14, 10], [14, 11]],
+    south: [[9, 12], [10, 12], [11, 12], [12, 12], [13, 12], [14, 12]],
   },
-  ladder: { x: 11, z: 10, y0: 1, y1: 9, facing: 'north' }, // 9 rungs up the south wall, through both floors
+  ladder: { x: 11, z: 10, y0: 1, y1: 9, facing: 'north' }, // 9 rungs up the shaft's south wall to the cutting room's hatch
   doorway: [9, 1, 8], // from the shop's back-east corner
 }
 
 export const ROOMS = [
   { name: 'Shop', use: 'the window display, the loom, the sewing table, the fitting bench, the pressing stove and the bolt rack', box: [2, 1, 3, 8, 4, 9] },
-  { name: 'Dye store (II)', use: 'the tower foot: the ladder, a chest of dyes, bolts waiting to be hung', box: [10, 1, 8, 12, 4, 10] },
-  { name: 'Drying loft (II)', use: 'cloths hung to dry in the open bays', box: [10, 6, 8, 12, 8, 10] },
-  { name: 'Top loft (II)', use: 'the lookout under the cap', box: [10, 10, 8, 12, 12, 10] },
+  { name: 'Drying shaft (II)', use: 'the tower foot, open to the cutting room floor: a chest of dyes, bolts waiting, the ladder, and dyed cloths hung from the joists behind the glazed band', box: [10, 1, 8, 12, 8, 10] },
+  { name: 'Cutting room (II)', use: 'stock shelves of bolts in the four corners, a cutting bench under the west window and a stool at it, the hatch', box: [10, 10, 8, 12, 12, 10] },
 ]
 
 export const OPENINGS = {
@@ -101,7 +102,9 @@ export const OPENINGS = {
   ],
   towerWindows: [
     { name: 'tower foot east', cells: [[13, 2, 9], [13, 3, 9]] },
-    { name: 'tower foot north', cells: [[11, 2, 7], [11, 3, 7]] },
+    { name: 'tower foot north (the street side)', cells: [[10, 2, 7], [11, 2, 7], [12, 2, 7], [10, 3, 7], [11, 3, 7], [12, 3, 7]] },
+    { name: 'drying band north', cells: [[10, 7, 7], [11, 7, 7], [12, 7, 7], [10, 8, 7], [11, 8, 7], [12, 8, 7]] },
+    { name: 'drying band east', cells: [[13, 7, 8], [13, 7, 9], [13, 7, 10], [13, 8, 8], [13, 8, 9], [13, 8, 10]] },
     { name: 'top loft north', cells: [[11, 10, 7], [11, 11, 7]] },
     { name: 'top loft east', cells: [[13, 10, 9], [13, 11, 9]] },
     { name: 'top loft south', cells: [[11, 10, 11], [11, 11, 11]] },
@@ -137,20 +140,25 @@ export const FURNITURE = [
   { room: 'Shop', kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 6], facing: 'north', wood: 'dark_oak' },
   { room: 'Shop', kind: 'lamp', part: 'hangingLamp', pos: [7, 4, 6], facing: 'north', wood: 'dark_oak' },
   // Level II, the top loft: two bolts ready to hang
-  { level: 2, room: 'Top loft (II)', kind: 'fixture', part: 'bolts', cells: [[10, 10, 8, 'white'], [12, 10, 8, 'lime']], stand: [] },
-  // Level II, the tower foot: a chest of dyes, bolts waiting to go up, a lantern under each floor
-  { level: 2, room: 'Dye store (II)', kind: 'fixture', part: 'chest', pos: [12, 1, 8], facing: 'west', block: 'chest' },
-  { level: 2, room: 'Dye store (II)', kind: 'fixture', part: 'bolts', cells: [[10, 1, 10, 'purple'], [10, 2, 10, 'light_blue'], [12, 1, 10, 'yellow'], [12, 2, 10, 'red']], stand: [] },
-  { level: 2, room: 'Dye store (II)', kind: 'lamp', part: 'hangingLamp', pos: [12, 4, 10], facing: 'north', wood: 'dark_oak' },
-  { level: 2, room: 'Drying loft (II)', kind: 'lamp', part: 'hangingLamp', pos: [10, 8, 8], facing: 'north', wood: 'dark_oak' },
-  { level: 2, room: 'Top loft (II)', kind: 'lamp', part: 'hangingLamp', pos: [11, 13, 9], facing: 'north', chain: 1, wood: 'dark_oak' },
+  // Level II, the drying shaft: dyed cloths hung from the cutting room's joists (y 7..8) behind the glazed band, a
+  // chest of dyes against the shop wall (8 across from the loom), bolts waiting, a lantern under the joists
+  { level: 2, room: 'Drying shaft (II)', kind: 'fixture', part: 'bolts', cells: [[10, 7, 8, 'red'], [10, 8, 8, 'red'], [11, 7, 8, 'orange'], [11, 8, 8, 'orange'], [12, 7, 8, 'yellow'], [12, 8, 8, 'yellow'], [12, 7, 9, 'cyan'], [12, 8, 9, 'cyan']], stand: [] },
+  { level: 2, room: 'Drying shaft (II)', kind: 'fixture', part: 'chest', pos: [10, 1, 9], facing: 'east', block: 'chest' },
+  { level: 2, room: 'Drying shaft (II)', kind: 'fixture', part: 'bolts', cells: [[12, 1, 10, 'purple'], [12, 2, 10, 'yellow']], stand: [] },
+  { level: 2, room: 'Drying shaft (II)', kind: 'lamp', part: 'hangingLamp', pos: [10, 8, 10], facing: 'north', wood: 'dark_oak' },
+  // Level II, the cutting room: stock shelves of bolts two high in the four corners, the cutting bench and its stool
+  // between the hatch and the west window, a lantern on a chain from the cap's peak
+  { level: 2, room: 'Cutting room (II)', kind: 'fixture', part: 'bolts', cells: [[10, 10, 8, 'white'], [10, 11, 8, 'light_gray'], [12, 10, 8, 'lime'], [12, 11, 8, 'green'], [10, 10, 10, 'pink'], [10, 11, 10, 'magenta'], [12, 10, 10, 'light_blue'], [12, 11, 10, 'blue']], stand: [] },
+  { level: 2, room: 'Cutting room (II)', kind: 'table', part: 'table', pos: [10, 10, 9], facing: 'east', wood: 'spruce', colour: 'white' },
+  { level: 2, room: 'Cutting room (II)', kind: 'chair', part: 'chair', pos: [11, 10, 9], facing: 'west', wood: 'spruce' },
+  { level: 2, room: 'Cutting room (II)', kind: 'lamp', part: 'hangingLamp', pos: [11, 13, 9], facing: 'north', chain: 1, wood: 'dark_oak' },
 ]
 
 // The walking line: the street -> the paved shop porch -> the door -> the loom (the Tailor stands at (3, 1, 5)) ->
 // the chests; and in II on past the bench to the tower doorway and up the ladder.
 export const WALK = [
   [1, 0, -3], [5, 0, -1], [5, 0, 0], [5, 0, 1], [5, 1, 2], [5, 1, 3], [4, 1, 4], [3, 1, 5], [3, 1, 6], [3, 1, 7], [3, 1, 8],
-  [7, 1, 4], [7, 1, 8], [8, 1, 8], [9, 1, 8], [10, 1, 8], [11, 1, 9], [11, 1, 10], [11, 9, 10], [11, 10, 9],
+  [7, 1, 4], [7, 1, 8], [8, 1, 8], [9, 1, 8], [10, 1, 8], [11, 1, 9], [11, 1, 10], [11, 9, 10], [11, 10, 10],
 ]
 
 // Outside: raised flower beds in their own soil in front of the display windows; the shop porch's paving; and in

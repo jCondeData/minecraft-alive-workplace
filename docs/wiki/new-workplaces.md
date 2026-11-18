@@ -31,7 +31,9 @@ job block: "1 job here has no workplace of its trade".
   Farmstead II adds a barn and a second field.
 - **Fisher's Hut**: a shore hut with a jetty on log posts and a barrel. Its plot must be on a shore: water near its
   front, at most 3 deep under the jetty. Fisher's Hut II adds a smokehouse with a smoker.
-- **Weaver's Cottage**: a cottage with a loom and a fenced sheep pen. Its II adds a dye garden.
+- **Weaver's Cottage**: a two-story stone weaver's house with the loom at its long front window, a wool loft and a
+  fenced sheep fold on its gable (rebuilt in 49.8: [The Weaver's Cottage](weavers-cottage.md)). Its II adds a walled
+  dye garden with a tenter frame of dyed cloth.
 - **Bandstand**: an open eight-sided bandstand with a jukebox, in the Gardens zone. It counts 3 for beauty, like the
   other decorations; the workplaces count nothing.
 

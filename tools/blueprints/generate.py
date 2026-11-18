@@ -73,11 +73,17 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
            "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
+           # build.sh the live weavers_cottage and weavers_cottage_2)
+           "weavers_cottage", "weavers_cottage_2",
            # 51.6, the Post Office ("the Signal Tower") and the Graveyard ("the Lantern Yard"): js/post_office (npm run
            # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
            # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
            # village pieces keep their own looks (village.py's staffed house)
-           "post_office", "graveyard", "graveyard_2"}
+           "post_office", "graveyard", "graveyard_2",
+           # 51.6, the Clock Tower ("the Water Clock", Create only): js/clock_tower (npm run cut), then rebuild.py
+           # clock_tower clock_tower --nbt out/clock-tower.nbt
+           "clock_tower"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -136,9 +142,8 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 
 
 if __name__ == "__main__":
-    starter_cottage().save(MAIN_STRUCTURES, "starter_cottage")
-    starter_cottage_2().save(MAIN_STRUCTURES, "starter_cottage_2")
-    starter_cottage_3().save(MAIN_STRUCTURES, "starter_cottage_3")
+    # ROADMAP 49.3: the Starter Cottage (I-IV) comes from the rebuild kit (tools/blueprints/js/starter_cottage_b/build.sh,
+    # LIVE=1 to save the live drawings); its old Python drawing in starter.py and basements.py is no longer saved
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
     market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")
@@ -200,10 +205,10 @@ if __name__ == "__main__":
     # rebuild.py stone_house <id>); its old Python drawing in houses.py and basements.py is no longer saved
     # ROADMAP 49.5: the Townhouse (I-IV) comes from the rebuild kit too (tools/blueprints/js/townhouse/build.sh, then
     # rebuild.py townhouse <id>); its old Python drawing is no longer saved
-    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
-    for name, draw in (("manor", manor), ("manor_2", manor_2), ("manor_3", manor_3)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16
+    # ROADMAP 49.7: the Noble's Manor (I-IV) comes from the rebuild kit (tools/blueprints/js/manor/build.sh, LIVE=1 to
+    # save the live drawings); its old Python drawing in houses.py and basements.py is no longer saved
+    # ROADMAP 49.8: the Artisan's House (I-III) comes from the rebuild kit too (tools/blueprints/js/artisans_house/build.sh,
+    # LIVE=1 to save the live drawings); its old Python drawing in houses.py and cellars.py is no longer saved
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
@@ -234,7 +239,8 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # 49.8: the Weaver's Cottage comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
         if name not in REBUILT:  # ROADMAP 50.4: the Winery comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13

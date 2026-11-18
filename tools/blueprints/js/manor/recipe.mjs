@@ -10,7 +10,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, BRACKET_LAMPS, OUTSIDE } from './plan.mjs'
+import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, BRACKET_LAMPS, OUTSIDE, ORIELS } from './plan.mjs'
 import {
   Canvas, LiftedCanvas, mix, stair, slab, plinth, floor, wallPanel, door, hood, gableRoof, crowGable, pyramidRoof,
   chimney, hearthFire, flight, stairwell, railingRun, lampPost, cellar, hatchLadder, plantFlower, clip, leafColumn,
@@ -145,6 +145,13 @@ function levelOne(c) {
     door(c, d.at, d.facing, d.facing, { wood: P.wood })
   windows(c, 1)
   c.set(13, 9, 1, P.datestone) // over the study window: the house's datestone
+  // the west flank's two oriels: stone piers either side of the chamber window, a stone apron on the string course,
+  // glass to the eave; the window's own cell opens into the room
+  for (const z of ORIELS) {
+    for (let y = 6; y <= 8; y++) { c.set(0, y, z - 1, P.dress); c.set(0, y, z + 1, P.dress) }
+    c.set(0, 6, z, P.dress)
+    for (const y of [7, 8]) { c.set(0, y, z, P.glass); c.clear(1, y, z) }
+  }
   bayWindow(c, 'x', 1, [2, 6], 'north', { y0: 0, g0: 2, g1: 3, top: 4 }, { pier: P.dress, apron: stone, glass: P.glass, lintel: P.dress, cap: P.dressSlab })
 
   // Pass 3, depth and detail: a projecting plinth course and a moulded string course at the floor line round every
@@ -208,6 +215,9 @@ function levelOne(c) {
   const t = OUTSIDE.terrace
   for (let x = t.x0; x <= t.x1; x++) for (let z = t.z0; z <= t.z1; z++) if (!c.get(x, 0, z)) c.set(x, 0, z, paving)
   c.set(...OUTSIDE.rainButt, 'barrel', { facing: 'up', open: 'false' })
+  // a threshold stone outside the garden door (a slab, not paving: the modded library's pot beside the rain butt
+  // would otherwise stand in the doorway)
+  slab(c, 14, 0, 14, P.dressSlab, 'top')
   lampPost(c, 18, 1, 15, `${P.wood}_fence`)
 }
 
@@ -289,7 +299,7 @@ function levelThree(c) {
   // Pass 4, interior: the gallery's railing, the lamps hung from arms on the walls, the plan's furniture, note blocks
   railingRun(c, [[gl.x0, gl.y + 1, gl.z0], [gl.x1, gl.y + 1, gl.z0]], P.wood)
   for (const [x, y, z, side] of BRACKET_LAMPS[3]) {
-    c.set(x, y + 1, z, `${P.wood}_fence`) // a short iron-dark arm out of the wall (it joins the wall behind)
+    c.set(x, y + 1, z, P.dress) // a stone block out of the wall (a fence arm read as floating, a stair drops the lantern)
     c.set(x, y, z, 'lantern', { hanging: 'true', waterlogged: 'false' })
     c.spot('lamp', [x, y, z], side === 'west' ? 'east' : 'west', [[0, 0, 0]], P.wood)
   }

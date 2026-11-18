@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { SIZE, MIDDLE, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
   Canvas, mix, floor, stair, door, quoins, flaredGableRoof, needleSpire, corbelRing, roundArch,
-  compassRose, clip, tree, flowerBed, lampPost, furnitureParts, louvres, pew, choirStall,
+  compassRose, clip, flowerBed, lampPost, furnitureParts, pew, choirStall, buttress,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -38,7 +38,7 @@ export function draw() {
     for (let y = 1; y <= T.top; y++) c.set(x, y, z, P.wall)
   }
   quoins(c, [[T.x0, T.z0], [T.x1, T.z0], [T.x0, T.z1], [T.x1, T.z1]], 1, T.top, D.full, D.alt)
-  floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, T.ceiling, `${P.wood}_planks`) // the vestibule's ceiling, the belfry's floor
+  floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, T.ceiling, `${P.wood}_planks`) // the vestibule's ceiling
 
   // The nave: limewashed side walls on a plinth course, to the eaves (the roof's kick sits beside the wall head)
   for (const x of [N.x0, N.x1]) for (let z = N.z0; z <= N.z1; z++) {
@@ -48,7 +48,7 @@ export function draw() {
 
   // --- Pass 2: roofs and gables ----------------------------------------------------------------------------------
   // The spire: a steep slate broach spire straight off the tower's wall head, to a point and a copper rod
-  needleSpire(c, T.spire, P.roof, P.finial)
+  needleSpire(c, T.spire, P.roof) // to the plot's top (y 15): no room for a rod
   // The nave roof: ONE bell-cast roof (45-degree body, a kick stair a block out and down at the eaves) as a single
   // ridge from the tower's back wall to one block past the back gable; the tower keeps its own cells on row z 5
   const roof = flaredGableRoof(c, N.roof, P.roof, P.roof.stairs, (x, y, z) => !inTower(x, z))
@@ -83,39 +83,61 @@ export function draw() {
   c.set(td.at[0], 3, td.at[2], D.key)
   // windows: the tower's slit lights, the front gable stubs' lights, the nave's and sanctuary's side lights
   for (const w of OPENINGS.windows) for (const [x, y, z] of w.cells) c.set(x, y, z, P.glass)
-  // the belfry: louvres in twin openings on the front and side faces
-  const L = OPENINGS.louvres, S = T.spire
-  for (let y = L.y0; y <= L.y1; y++) for (const i of L.offsets) {
-    if (L.faces.includes('north')) louvres(c, [[S.cx + i, y, T.z0]], `${P.wood}_trapdoor`, 'north')
-    if (L.faces.includes('south')) louvres(c, [[S.cx + i, y, T.z1]], `${P.wood}_trapdoor`, 'south')
-    if (L.faces.includes('west')) louvres(c, [[T.x0, y, S.cz + i]], `${P.wood}_trapdoor`, 'west')
-    if (L.faces.includes('east')) louvres(c, [[T.x1, y, S.cz + i]], `${P.wood}_trapdoor`, 'east')
+  // the belfry: twin openings either side of a stone mullion on all four faces, above the nave's ridge, each a
+  // grille of iron bars from the mullion to the corner (both ends on stone; holes.py: an open belfry lets the outside
+  // into the tower's shaft)
+  const B = OPENINGS.belfry, S = T.spire
+  const bars = (x, y, z, ns) => c.set(x, y, z, 'iron_bars', ns
+    ? { east: 'true', west: 'true', north: 'false', south: 'false', waterlogged: 'false' }
+    : { north: 'true', south: 'true', east: 'false', west: 'false', waterlogged: 'false' })
+  for (let y = B.y0; y <= B.y1; y++) for (const i of B.offsets) {
+    bars(S.cx + i, y, T.z0, true); bars(S.cx + i, y, T.z1, true); bars(T.x0, y, S.cz + i, false); bars(T.x1, y, S.cz + i, false)
+  }
+  // the side lights: three tall in the wall plane, set back behind a dressed frame one block out (jambs to the eave
+  // kick, which heads them, and a sill stair), a buttress standing in as the jamb where one meets the frame
+  const SL = OPENINGS.sideLights
+  for (const [wx, fx, back] of [[N.x0, N.x0 - 1, 'east'], [N.x1, N.x1 + 1, 'west']]) for (const z of SL.zs) {
+    for (let y = SL.y0; y <= SL.y1; y++) {
+      c.set(wx, y, z, P.glass)
+      for (const jz of [z - 1, z + 1]) if (!N.buttresses.includes(jz)) c.set(fx, y, jz, D.full)
+    }
+    stair(c, fx, SL.y0 - 1, z, D.stairs, back, 'top')
   }
 
   // --- Pass 4: depth and detail ----------------------------------------------------------------------------------
-  // a string course on the tower's front and sides under the belfry, stopping a block short of the nave roof's front
-  // row (the back run would meet the roof)
-  corbelRing(c, T.x0 - 1, T.z0 - 1, T.x1 + 1, T.z1 + 1, T.course, D.stairs, (x, z) => z >= T.z1 - 1)
-  // the belfry's lantern on a chain from the needle
-  for (let y = L.y1 + 1; y <= S.heights[1]; y++) c.set(S.cx, y, S.cz, 'chain', { axis: 'y', waterlogged: 'false' })
-  c.set(S.cx, L.y1, S.cz, 'lantern', { hanging: 'true', waterlogged: 'false' })
-  // the rose set one block deep: a dressed frame standing proud of the back gable under the roof's overhang (sill,
-  // jambs, a keyed head; its corners open so it reads round), and a plinth course along the gable's foot
+  // a sill course of corbels on the tower's front and sides under the belfry arches, stopping at the nave roof's
+  // front row (the back run would meet the roof)
+  corbelRing(c, T.x0 - 1, T.z0 - 1, T.x1 + 1, T.z1 + 1, T.course, D.stairs, (x, z) => z >= T.z1)
+  // the spire's needle on a solid core (nothing hangs over air), the belfry's lantern on a chain from it
+  c.set(S.cx, S.heights[1], S.cz, P.roof.full)
+  for (let y = B.y0 + 1; y < S.heights[1]; y++) c.set(S.cx, y, S.cz, 'chain', { axis: 'y', waterlogged: 'false' })
+  c.set(S.cx, B.y0, S.cz, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  // the ridge dropped into line with the top stairs (B1384: a ridge block over air between them hung the builder):
+  // a flush ridge at y 10, and the belfry stands clear above it
+  for (let z = N.roof.along[0]; z <= N.roof.along[1]; z++) {
+    if (inTower(mx, z)) continue
+    c.clear(mx, roof.ridgeY, z); c.set(mx, roof.ridgeY - 1, z, P.roof.full)
+  }
+  // stepped buttresses at the vow arch and the chancel arch: a full pier up to the eave (the kick rests on it) and a
+  // lower stage outside the eave line weathered with a stair rising to the wall
+  for (const z of N.buttresses) for (const [px, ox, toward] of [[N.x0 - 1, N.x0 - 2, 'east'], [N.x1 + 1, N.x1 + 2, 'west']]) {
+    c.set(px, 0, z, stone); for (let y = 1; y < N.roof.eaveY; y++) c.set(px, y, z, D.full)
+    c.set(ox, 0, z, stone); buttress(c, ox, z, 1, 2, D.full, D.stairs, toward)
+  }
+  // the rose set one block deep: a dressed frame standing proud of the back gable under the roof's overhang (a sill
+  // and a keyed head)
   const fz = rose.frameZ
   for (let x = rose.cx - 1; x <= rose.cx + 1; x++) { c.set(x, rose.cy - 2, fz, D.full); c.set(x, rose.cy + 2, fz, x === rose.cx ? D.key : D.full) }
-  for (let y = rose.cy + 3; y < roof.under[rose.cx]; y++) c.set(rose.cx, y, fz, D.full) // the head tied up to the ridge
-  for (let y = rose.cy - 1; y <= rose.cy + 1; y++) { c.set(rose.cx - 2, y, fz, D.full); c.set(rose.cx + 2, y, fz, D.full) }
-  for (let x = N.x0; x <= N.x1; x++) c.set(x, 0, fz, stone)
-  // the chancel arch at z 11: a thin segmental arch of dressed stone across the nave from the wall pilasters, the
-  // whole width open under it to y 3
-  const cz = OPENINGS.chancelArch.z
+  for (let y = rose.cy + 3; y < roof.ridgeY - 1; y++) c.set(rose.cx, y, fz, D.full) // the head tied up to the ridge
+  // the chancel arch at z 11: a thin segmental arch of dressed stone across the nave from the side walls, the whole
+  // width open under it to y 4, the middle three cells to y 5
+  const cz = OPENINGS.chancelArch.z, ay = N.wallTop - 1
   for (const [s, x0] of [[-1, R.x0], [1, R.x1]]) {
     const inward = s < 0 ? 'west' : 'east' // an upside-down stair's low half toward the pier: the arch's curve
-    c.set(x0, 4, cz, D.full); stair(c, x0 - s, 4, cz, D.stairs, inward, 'top')
-    c.set(x0, 5, cz, D.full); c.set(x0 - s, 5, cz, D.full); stair(c, x0 - 2 * s, 5, cz, D.stairs, inward, 'top')
-    c.set(x0 - 3 * s, 5, cz, D.full)
+    c.set(x0, ay, cz, D.full); stair(c, x0 - s, ay, cz, D.stairs, inward, 'top')
+    c.set(x0, ay + 1, cz, D.full); c.set(x0 - s, ay + 1, cz, D.full); stair(c, x0 - 2 * s, ay + 1, cz, D.stairs, inward, 'top')
   }
-  c.set(mx, 5, cz, D.key)
+  c.set(mx, ay + 1, cz, D.key)
   // the vow arch over the rose: a round stone arch across the aisle, wreathed in flowering azalea, a lantern under it
   roundArch(c, { cx: mx, z: mz, y0: 1, spring: 3, r: 2 }, { full: D.full, stairs: D.stairs, key: D.key })
   clip(c, [[mx - 2, 5, mz], [mx - 1, 6, mz], [mx, 6, mz], [mx + 1, 6, mz], [mx + 2, 5, mz], [mx, 7, mz]], mix(P.wreath, 5))
@@ -139,20 +161,10 @@ export function draw() {
   // --- Pass 6: ground ------------------------------------------------------------------------------------------------
   for (const b of OUTSIDE.flowerBeds) flowerBed(c, b.x0, b.x1, b.z, b.plants)
   for (const [x, y, z] of OUTSIDE.lampPosts) lampPost(c, x, y, z, `${P.wood}_fence`, 2)
-  // a cherry tree standing free on the lawn either side of the tower: a trunk from the ground, a round crown
-  // (a ring at y 3, a full 3 x 3 at y 4, a cross at y 5), a block clear of the tower's face
+  // a low bush of blossom at each of the lawn's front corners, nothing above y 1
   const blossom = mix(P.blossom, 7)
-  for (const { trunk: [tx, tz] } of OUTSIDE.trees) {
-    const logs = [0, 1, 2, 3].map(y => [tx, y, tz])
-    const crown = []
-    for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) {
-      if (tx + dx < 0 || tx + dx >= SIZE[0]) continue
-      if (dx === 0 || dz === 0) crown.push([tx + dx, 3, tz + dz], [tx + dx, 5, tz + dz])
-      crown.push([tx + dx, 4, tz + dz])
-    }
-    crown.push([tx, 6, tz])
-    tree(c, logs, crown, P.trunk, blossom)
-  }
+  for (const cells of OUTSIDE.bushes) for (const [x, y, z] of cells)
+    c.set(x, y, z, blossom(x, y, z), { persistent: 'true', distance: '1', waterlogged: 'false' })
   return c
 }
 

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { SIZES, PALETTE, SHOP, TOWER, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
   Canvas, mix, slab, plinth, floor, post, beamRing, wallPanel, window, door, gableRoof, gableWall, bargeTrim, chimney,
-  flowerBed, furnitureParts, jettyBeam, clothBolts, boltRack, dressForm, clothBay, postBanner, steepCap,
+  flowerBed, furnitureParts, jettyBeam, pentice, stair, clothBolts, boltRack, dressForm, postBanner, steepCap,
 } from '../parts/index.mjs'
 import { doubleChest } from '../parts/tinker.mjs'
 
@@ -47,6 +47,10 @@ export function draw(level) {
   // the shop's roof: 45 degrees, ridge along z, everywhere but where the tower stands
   const main = gableRoof(c, S.roof, P.roof, (x, y, z) => !inTower(x, z))
 
+  // Level II: where the shop's east slope meets the tower, a cricket: a course of tiles rising to the tower wall, so
+  // the two make a valley against it (a joint, not a slope cut off by a wall)
+  if (level >= 2) for (let z = TW.z0; z <= TW.z1; z++) stair(c, TW.x0 - 1, main.under[TW.x0 - 1] + 1, z, P.roof.stairs, 'east')
+
   // gables: the jettied front one (studs either side of a two-high window), the back one flush over the back wall
   const pick = (u, y) => {
     if (u === 3 || u === 7) return [P.frame, { axis: 'y' }]
@@ -69,8 +73,8 @@ export function draw(level) {
   for (const w of OPENINGS.windows) window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood })
 
   // --- Pass 3: depth and detail ---------------------------------------------------------------------------------
-  // the pressing stove's stack up the back, its flue in the wall behind the stove, a stepped breast at its foot
-  chimney(c, 3, W.z1 + 1, 0, 11, stone, { breast: { axis: 'x', top: 1, stair: 'cobbled_deepslate_stairs' } })
+  // the pressing stove's stack up the back, its flue in the wall behind the stove
+  chimney(c, 3, W.z1 + 1, 0, 11, stone)
   for (let y = 1; y <= S.wallTop; y++) c.set(3, y, W.z1, stone)
   // barge boards under the rakes (45 degrees: upside-down stairs)
   bargeTrim(c, 'z', S.roof.along[0], S.roof.across, main.under, `${P.wood}_stairs`)
@@ -105,23 +109,33 @@ export function draw(level) {
   return c
 }
 
-// The Dyer's Tower (Level II): a stone foot, a drying loft hung with dyed cloths, a top loft, a steep cap; a ladder of
-// nine rungs up its south wall through both floors; its west wall is the shop's east wall up to the beam.
+// The Dyer's Tower (Level II): a stone foot framed at its corners under a pent skirt, a tall drying shaft (its cloths
+// hung inside behind a glazed band), the cutting room on top, a steep cap; a ladder of nine rungs up the shaft's south
+// wall to the cutting room's hatch; its west wall is the shop's east wall up to the beam.
 function tower(c, P, stone) {
   const T = TOWER, { x0, x1, z0, z1 } = T.walls, r = T.room
   const ring = (x, z) => x === x0 || x === x1 || z === z0 || z === z1
   const corner = (x, z) => (x === x0 || x === x1) && (z === z0 || z === z1)
   const shopWall = (x, z) => x === x0 && z <= SHOP.walls.z1 // the shop's east wall, already drawn below the beam
   plinth(c, x0, z0, x1, z1, stone)
+  // the stone foot, its corners dark oak posts like the shop's
   for (let y = 1; y <= T.baseTop; y++)
-    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) if (ring(x, z) && !shopWall(x, z)) c.set(x, y, z, stone)
-  // beam rings at each floor and under the cap (the shop's own beam stays where it runs along the shared wall)
+    for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
+      if (!ring(x, z) || shopWall(x, z)) continue
+      if (corner(x, z)) c.set(x, y, z, P.frame, { axis: 'y' })
+      else c.set(x, y, z, stone)
+    }
+  // beam rings at the floor lines (the shop's own beam stays where it runs along the shared wall)
   for (const y of T.beams)
     for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
       if (!ring(x, z) || (y === SHOP.beamY && shopWall(x, z))) continue
       c.set(x, y, z, P.frame, { axis: corner(x, z) ? 'y' : (z === z0 || z === z1) ? 'x' : 'z' })
     }
-  // the timbered storeys: corner posts, plaster panels; the drying loft's street-side bays hung with cloth
+  // a pent skirt of tiles round the foot at the beam line, falling away from the tower (not on the shop's side)
+  pentice(c, T.skirt.north, SHOP.beamY, P.roof, 'south')
+  pentice(c, T.skirt.east, SHOP.beamY, P.roof, 'west')
+  pentice(c, T.skirt.south, SHOP.beamY, P.roof, 'north')
+  // the timbered storeys: corner posts, plaster panels, studs up the plain bays (the ladder's backing; over the roof)
   for (const [ya, yb] of [[6, 8], [10, 11]])
     for (let y = ya; y <= yb; y++)
       for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
@@ -129,13 +143,8 @@ function tower(c, P, stone) {
         if (corner(x, z)) c.set(x, y, z, P.frame, { axis: 'y' })
         else c.set(x, y, z, P.infill)
       }
-  const slat = `${P.joinery}_trapdoor`
-  const N = T.cloths.north, E = T.cloths.east
-  clothBay(c, { axis: 'x', line: N.line, at: N.at, top: 9, out: 'north', colours: N.colours, slat })
-  clothBay(c, { axis: 'z', line: E.line, at: E.at, top: 9, out: 'east', colours: E.colours, slat })
-  // studs up the middle of the plain bays (south: the ladder's backing; west: over the shop's roof)
   for (let y = 6; y <= 8; y++) { c.set(T.cap.cx, y, z1, P.frame, { axis: 'y' }); c.set(x0, y, T.cap.cz, P.frame, { axis: 'y' }) }
-  // floors (the ladder's cell left open in each)
+  // the cutting room's floor (the ladder's hatch left open)
   const L = T.ladder
   for (const y of T.floors)
     for (let x = r.x0; x <= r.x1; x++) for (let z = r.z0; z <= r.z1; z++) {

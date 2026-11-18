@@ -4,7 +4,7 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 60
+    "updatedBlocks": 52
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/out/print-shop-2.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/out/summary.json",
@@ -13,7 +13,7 @@
     12,
     11
   ],
-  "blockCount": 745,
-  "paletteCount": 43,
+  "blockCount": 732,
+  "paletteCount": 54,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/print_shop/recipe.mjs"
 }

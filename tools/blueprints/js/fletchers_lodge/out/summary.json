@@ -4,16 +4,16 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 14
+    "updatedBlocks": 16
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fletchers_lodge/out/fletchers-lodge-2.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fletchers_lodge/out/summary.json",
   "size": [
-    17,
+    16,
     11,
     10
   ],
-  "blockCount": 650,
-  "paletteCount": 47,
+  "blockCount": 644,
+  "paletteCount": 52,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fletchers_lodge/recipe.mjs"
 }

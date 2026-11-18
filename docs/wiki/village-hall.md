@@ -554,7 +554,7 @@ point of interest, saved by Minecraft).
 - B1015: `BlockItemMixin` refuses `BlockItem.place` where the placing player may not change things, judged where the
   block lands, so a machine's stand-in player (Create's Deployer) can't place inside a village its owner may not
   change; a real player's click was already judged there (B741).
-- B994, B1015 (Create): item transport is judged where the items are. Create's inventory behaviour (funnels, chutes)
+- B994, B1015 (Create): item transport is judged where the items are. Create's inventory behavior (funnels, chutes)
   sees no inventory at a block inside a protected village it stands outside of, and a Mechanical Arm outside takes
   nothing from and puts nothing onto its points inside; both are asked at each use, so switching protection takes
   effect at once.

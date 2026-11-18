@@ -309,6 +309,11 @@ public class QaClinicTerrace1028GameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> new WorkplaceConfig().apply());
 		Furnishings.MODS = TEST_MODS;
 		Villager builder = builder(helper);
+		// The whole build in one working day: a builder stops at dusk (B839) and goes on next morning, ~13,000 ticks later.
+		// 2026-11-18, the rebuilt Terrace II (49.6, 1281 blocks, the old drawing 1219): one builder worked steadily from
+		// day time 2000 (his cursor moved in every 200-tick look, nothing skipped), had the structure's 1166 steps done at
+		// ~10,400 and stopped at 11,000 on the decoration's 36th step; the night outlasted the 24,000-tick timeout.
+		helper.onEachTick(() -> helper.setDayTime(2000));
 		ResourceLocation id = AliveWorkplace.id(name);
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(16, 2, 6)), rotation, mirror);
 		BuildSite site = Builders.start(level, builder, null, id, placement);

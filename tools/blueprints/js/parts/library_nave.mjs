@@ -32,7 +32,7 @@ export function enchantRing(c, [x, y, z], shelf, table, gap = []) {
 
 /** pyramidRoof: a tented roof over x0..x1, z0..z1 (a square), one ring of stairs per course rising inward from y,
  *  a full `roof.full` block at the apex; returns the apex [x, y, z]. `keep(x,y,z)` as gableRoof's. */
-export function pyramidRoof(c, { x0, z0, x1, z1, y }, roof, keep = () => true) {
+export function boxPyramidRoof(c, { x0, z0, x1, z1, y }, roof, keep = () => true) {
   let k = 0
   for (; x0 + k < x1 - k && z0 + k < z1 - k; k++) {
     const a = x0 + k, b = x1 - k, f = z0 + k, g = z1 - k, yy = y + k

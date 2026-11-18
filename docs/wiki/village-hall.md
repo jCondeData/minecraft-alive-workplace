@@ -456,7 +456,7 @@ empty unless a default is given here:
   edit) is left out with a warning in the log; the hall's other quests and data load as usual.
 - Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
   or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
-  was lost without a word). The Steward's `steward` and `steward_desk` are still read whole (B821).
+  was lost without a word). The same holds for the Steward's `steward` and `steward_desk` (B821, see the Steward's page).
 - A village on the caravan list (`aliveworkplace_caravans`) whose saved name is missing or can't be read (an old or
   hand-edited save) keeps its trade routes, wants, banner color, stations and tracks and is named by its made-up name
   (B1233; before, the whole entry was dropped).

@@ -14,7 +14,7 @@
 //   ringFacing   which way a cell on a square's edge looks out (north, south, west, east)
 import { slab } from './canvas.mjs'
 import { gableRoof } from './roofs.mjs'
-import { pyramidRoof as tent } from './library_nave.mjs'
+import { boxPyramidRoof as tent } from './library_nave.mjs'
 
 /** extrude: draw `section` ([z, y, id, props]) on every column x0..x1. */
 export function extrude(c, x0, x1, section) {

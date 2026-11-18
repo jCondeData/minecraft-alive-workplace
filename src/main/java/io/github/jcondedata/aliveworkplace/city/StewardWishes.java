@@ -58,8 +58,8 @@ public final class StewardWishes {
 		public static final State EMPTY = new State(-1, List.of(), Map.of());
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.LONG.optionalFieldOf("day", -1L).forGetter(State::day),
-			Wish.CODEC.listOf().optionalFieldOf("wishes", List.of()).forGetter(State::wishes),
-			Codec.unboundedMap(Codec.STRING, Used.CODEC).optionalFieldOf("used", Map.of()).forGetter(State::used)
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Wish.CODEC, "steward wish").optionalFieldOf("wishes", List.of()).forGetter(State::wishes),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.map(Codec.STRING, Used.CODEC, "steward rule use").optionalFieldOf("used", Map.of()).forGetter(State::used)
 		).apply(i, State::new));
 
 		public State {

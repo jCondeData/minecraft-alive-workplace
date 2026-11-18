@@ -133,8 +133,8 @@ if __name__ == "__main__":
     berry_farm_2().save(MAIN_STRUCTURES, "berry_farm_2")
     research_lab().save(MAIN_STRUCTURES, "research_lab")
     research_lab_2().save(MAIN_STRUCTURES, "research_lab_2")
-    terrace().save(MAIN_STRUCTURES, "terrace")
-    terrace_2().save(MAIN_STRUCTURES, "terrace_2")
+    # ROADMAP 49.6: the Terrace (I-II) comes from the rebuild kit (tools/blueprints/js/terrace/build.sh, then
+    # rebuild.py terrace <id>); its old Python drawing in starter.py is no longer saved
     inn().save(MAIN_STRUCTURES, "inn")
     inn_2().save(MAIN_STRUCTURES, "inn_2")
     school_building().save(MAIN_STRUCTURES, "schoolhouse")
@@ -173,11 +173,11 @@ if __name__ == "__main__":
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
     mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
     save_waystone_plazas()  # ROADMAP 41.1: proposed only with Waystones
-    stone_house().save(MAIN_STRUCTURES, "stone_house")
-    stone_house_2().save(MAIN_STRUCTURES, "stone_house_2")
-    stone_house_3().save(MAIN_STRUCTURES, "stone_house_3")
-    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2), ("townhouse", townhouse),
-                       ("townhouse_2", townhouse_2), ("townhouse_3", townhouse_3)):
+    # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then
+    # rebuild.py stone_house <id>); its old Python drawing in houses.py and basements.py is no longer saved
+    # ROADMAP 49.5: the Townhouse (I-IV) comes from the rebuild kit too (tools/blueprints/js/townhouse/build.sh, then
+    # rebuild.py townhouse <id>); its old Python drawing is no longer saved
+    for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
     for name, draw in (("manor", manor), ("manor_2", manor_2), ("manor_3", manor_3)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16

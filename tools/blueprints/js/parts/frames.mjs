@@ -47,3 +47,10 @@ export function cellar(c, x0, z0, x1, z1, depth, wall, floorId) {
       if (x === x0 || x === x1 || z === z0 || z === z1) c.set(x, y, z, wall)
   return [x0 + 1, z0 + 1, x1 - 1, z1 - 1]
 }
+
+/** brackets: upside-down stairs under an overhang (a jetty's beam, a bay), each with its back to the wall behind it
+ *  (`facing`: the way the wall lies from the bracket), so the storey above reads as carried. Grown from the Burgher's
+ *  Townhouse (49). */
+export function brackets(c, cells, id, facing) {
+  for (const [x, y, z] of cells) c.set(x, y, z, id, { facing, half: 'top', shape: 'straight', waterlogged: 'false' })
+}

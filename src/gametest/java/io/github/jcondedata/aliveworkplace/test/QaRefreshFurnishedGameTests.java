@@ -57,6 +57,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class QaRefreshFurnishedGameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
+	private static final String TALL = "aliveworkplace_test:tall_area";
 	/** The house's origin: the middle of the area, so it fits however it's turned. */
 	private static final BlockPos HOUSE = new BlockPos(15, 2, 15);
 
@@ -224,8 +225,9 @@ public class QaRefreshFurnishedGameTests implements FabricGameTest {
 	}
 
 	/** The Townhouse, furnished before its own-exterior redraw, mirrored left to right. */
-	//$ gametest_ticks_batch HUGE '400' '"qa_b642_townhouse"'
-	@GameTest(template = HUGE, timeoutTicks = 400, batch = "qa_b642_townhouse")
+	// (in the tall area since 49.5: the rebuilt Townhouse is 22 tall, the huge area 20 under its barrier ceiling)
+	//$ gametest_ticks_batch TALL '400' '"qa_b642_townhouse"'
+	@GameTest(template = TALL, timeoutTicks = 400, batch = "qa_b642_townhouse")
 	public void aFurnishedOldTownhouseMirroredIsRefreshedToAFreshBuild(GameTestHelper helper) {
 		refreshedEqualsAFreshBuild(helper, AliveWorkplace.id("townhouse"), "42864073a", Rotation.NONE, Mirror.LEFT_RIGHT);
 	}
@@ -236,8 +238,10 @@ public class QaRefreshFurnishedGameTests implements FabricGameTest {
 	 * through the hall's button, the sites and the Builder are saved and loaded mid-way: afterwards the house is a fresh
 	 * build (both gold blocks aside, both kept), nothing floats, and the page has no second refresh to offer.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"qa_b642_reload"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "qa_b642_reload")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"qa_b642_reload"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qa_b642_reload")
 	public void aFurnishedOldStoneHouseRefreshedAcrossAReloadKeepsThePlayersBlocksWithoutDoubles(GameTestHelper helper) {
 		ResourceLocation stoneHouse = AliveWorkplace.id("stone_house");
 		FurnitureChoice furniture = RefreshMatchesFreshBuildGameTests.oldFurniture();

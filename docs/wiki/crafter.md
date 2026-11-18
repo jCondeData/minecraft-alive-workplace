@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1290, B1293, B1301, B1311, B1334, B1349
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1290, B1293, B1301, B1311, B1334, B1349, B1378
 
 ## 1. What a player sees
 
@@ -99,7 +99,9 @@ in two crafts (the Oak Chest of Carved Wood, then the chest), turns a carved che
 and a chest from nothing names the logs (B1302, B1286). A carved trapped chest is never used for it. Carved Wood's
 mixed crafting table recipe (on by default) makes Minecraft's crafting table from any 2x2 of planks no other recipe
 takes, so four of Chipped's mosaic planks in the chest make one for the Carpenter as for a player; four acacia planks
-make Carved Wood's Acacia Crafting Table instead, so those still name an Oak Log (B1290).
+make Carved Wood's Acacia Crafting Table instead, so those still name an Oak Log (B1290). Mixed kinds count too: 2 oak
+and 2 acacia planks, or 3 mosaic and 1 oak, make one, because the crafters check a mixed grid against the game's own
+crafting table before they plan it (B1378).
 
 The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted, isn't in the creative tab or any trade,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
@@ -349,6 +351,9 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
 - `QaShortLineGathered1115c4BugCompatTests` (2, B1290 with Chipped and Carved Wood): a crafting table from 4 Chipped
   planks lacks nothing (crafting table and Crafter), from 3 or from 4 acacia planks it does; a builder short of a
   crafting table with 4 Chipped planks in his chest gets it from a Carpenter.
+- `QaJobsShops1117cBugCompatTests` (2, B1378 with Chipped and Carved Wood): for seven 2x2 mixes of planks (one Chipped
+  kind, two, Chipped beside oak, oak beside acacia, oak alone, acacia alone) a crafting table lacks nothing exactly when
+  the game's own table makes one of them; and one CobbleDollar reads in the singular (B1379).
 - `QaRecipeStandInFiles1116eGameTests` (4, base game, a datapack's files through the real loader): a stand-in counts
   only while its serializer's recipe is loaded and is gone after a reload without it; without Carved Wood the shipped
   chest file adds nothing; `except` taking out all, a result from itself, and from only uncrafted things (both kept) or

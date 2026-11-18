@@ -90,7 +90,7 @@ public class HomeGradeGameTests implements FabricGameTest {
 		BlueprintData.Placement placement = placement(helper, new BlockPos(2, 2, 2));
 		Leftovers.after(helper, () -> sites.forgetFinished(placement));
 		Villager dara = villager(helper, new BlockPos(5, 2, 5), "Dara");
-		sleepsAt(helper, dara, new BlockPos(6, 8, 10)); // the first floor's bedroom (x 2-12, y 2-21, z 2-13 here)
+		sleepsAt(helper, dara, new BlockPos(7, 8, 12)); // the first floor's chamber, its bed (5, 6, 10), inside every house listed (the Stone House's z 2-12 here)
 		Map<ResourceLocation, Integer> expected = new java.util.LinkedHashMap<>();
 		expected.put(StarterBlueprints.TOWNHOUSE.id(), 2);
 		expected.put(StarterBlueprints.TOWNHOUSE_2.id(), 3);

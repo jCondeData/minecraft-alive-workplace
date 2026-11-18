@@ -25,7 +25,7 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class DoorJamGameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
-	/** The Stone House's origin: its door (blueprint 5,1,1) faces the area's z=0 side, its doorstep is (13, 2, 8). */
+	/** The Stone House's origin: its door (blueprint 5,1,1, the same in 49.4's drawing) faces the area's z=0 side, its doorstep is (13, 2, 8). */
 	private static final BlockPos HOUSE = new BlockPos(8, 2, 8);
 
 	/** Both villagers stand pressed together on the doorstep at bedtime; both are through it within 20 seconds and keep their beds. */

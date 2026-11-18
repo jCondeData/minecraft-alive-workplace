@@ -30,6 +30,20 @@ asks for the steps, `latest.log` and any crash report).
   guardroom with a table and a store with a chest inside; Wall Tower II roofs the top on stone piers. The Palisade Gate
   is now a small timber gatehouse, a gable roof over three spruce gates (7 x 9 x 2; the way through is 2 high). Pieces
   already standing keep their old look until refreshed.
+- **The Stone House is rebuilt from scratch** (all four levels): a two-story mason's house of rubble stone with dressed
+  quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
+  kitchen and a chamber upstairs; II adds a parlor wing, III a back room under a catslide roof, IV a store cellar down a
+  ladder by the hearth. Houses already standing keep their look until you press Refresh on the hall's Repairs page (49.4).
+- **The Burgher's Townhouse is rebuilt from scratch** (all four levels): a tall merchant's house gable-end to the street,
+  a stone shop and kitchen below a timber floor jettied over the street, a steep attic with a hoist beam, the hearth set
+  in the foot of the chimney stack; II adds a counting-house wing with two beds, III a stone strongroom tower with a
+  lookout study, IV a vaulted cellar under the shop. Houses already standing keep their look until you press Refresh
+  on the hall's Repairs page (49.5).
+- **The Terrace is rebuilt from scratch** (both levels): narrow brick houses side by side, each under its own steep
+  slate roof between crow-stepped gables with white copings, a slate canopy and lantern over every door, and a chimney
+  in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
+  two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
+  you press Refresh on the hall's Repairs page (49.6).
 - **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
   jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
   crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.
@@ -72,6 +86,21 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
+  mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
+  (B1378).
+- A sum of one CobbleDollar now reads "1 CobbleDollar", not "1 CobbleDollars", wherever money is named (the Village
+  Hall's treasury, quest rewards, retraining and family tree prices, the cup's purse), as at a rate of one CobbleDollar
+  an emerald (B1379).
+- A wall segment you upgraded (the Palisade's fighting step, the Stone Wall's hoardings) still counts as that piece of
+  the village's wall: the wall reads as finished again and counts as one building for the rank, not one more per
+  upgraded segment, and a Town's stone still replaces an upgraded palisade (B1380).
+- A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
+- Steward: one damaged entry in his saved record or desk (a hand-edited file, or one a crash cut short) no longer
+  empties the whole record: declined rules no longer come back, renewals of old houses under way are no longer
+  forgotten and proposal numbers no longer restart at 1. Only the bad entry is left out, with a warning in the log (B821).
+- A story arc running in two villages at once: killing one village's foe ("The Boar") no longer also finishes the
+  other village's hunt before that village's own foe has even come (B724).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
   takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and

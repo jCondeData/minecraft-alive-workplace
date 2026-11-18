@@ -42,6 +42,8 @@ Dropped an entry of a saved (builder bag|golem load|route filter|courier route|m
 Dropped an entry of a saved (edict|guild charter|reform|found service|furniture look|plan zone|plan road|research level) that no longer loads
 # QaHallFamiliesOneBadEntry1102eBugTests puts one empty entry in a Village Hall's saved families, to prove only that person is dropped (B827).
 Dropped an entry of a saved family book person that no longer loads
+# QaStewardSavesOneBadEntry1102BugTests puts one empty entry in the Steward's saved wishes, rule uses, proposals and renewals, and QaEveryCodecGameTests feeds those codecs junk entries, to prove only that entry is dropped (B821).
+Dropped an entry of a saved (steward wish|steward rule use|steward proposal|steward proposal job|steward declined rule|renewal under way) that no longer loads
 # QaVillageBannerRemovedPattern1102eBugTests loads a hall whose banner design names a removed mod's pattern, to prove only that layer is dropped (B826).
 Dropped an entry of a saved banner pattern layer that no longer loads
 # QaBlockSaveKindsGameTests and QaEveryCodecGameTests load halls with quests that can't be read, to prove each is left out and the hall still loads (B509).

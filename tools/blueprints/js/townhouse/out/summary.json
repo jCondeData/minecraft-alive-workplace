@@ -1,0 +1,19 @@
+{
+  "name": "townhouse-4",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 97
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/townhouse/out/townhouse-4.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/townhouse/out/summary.json",
+  "size": [
+    19,
+    30,
+    19
+  ],
+  "blockCount": 2602,
+  "paletteCount": 106,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/townhouse/recipe.mjs"
+}

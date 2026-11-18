@@ -219,9 +219,13 @@ public final class StarterBlueprints {
 		return BASEMENTS.getOrDefault(id, 0);
 	}
 
-	/** Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. */
+	/**
+	 * Two row houses of two storeys, four beds: building houses grows a village with a Village Hall. Rebuilt from
+	 * scratch (ROADMAP 49.6, {@code tools/blueprints/js/terrace}): the Crow-Step Row, narrow brick houses each under its
+	 * own steep roof between crow-stepped gables, a kitchen below and a bedroom up a ladder.
+	 */
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
-	/** A third home on the east end: six beds. */
+	/** A third house on the east end, the same again: six beds. */
 	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
 	/** A tavern below, three guest rooms with six beds above. */
 	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
@@ -259,14 +263,18 @@ public final class StarterBlueprints {
 	/** A lych-gate over the way in. */
 	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 11, 13));
 
-	/** A stone cottage with a bed downstairs and one in the attic. */
-	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 11, 9));
-	/** A timber-framed upper storey with two more beds. */
-	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(11, 16, 9));
-	/** A stone wing at the back with two more beds. */
-	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(11, 16, 14));
-	/** Stone House III with a wine cellar under the front house, down a ladder by the door (26.15). */
-	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(11, 16, 14), 4);
+	/**
+	 * The Stone House (rebuilt from scratch, ROADMAP 49.4, {@code tools/blueprints/js/stone_house}): the mason's house, a
+	 * two-storey rubble house with dressed quoins and an end stack, a bed in the box room off the hall and one in the
+	 * chamber upstairs.
+	 */
+	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 16, 11));
+	/** A lower parlour wing on the east gable with a third bed. */
+	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(13, 16, 11));
+	/** The back roof carried down over a rear room with two more beds. */
+	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(13, 16, 14));
+	/** Stone House III with a store cellar under the hall, down a ladder by the hearth (26.15, 49.4). */
+	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(13, 16, 14), 4);
 
 	/**
 	 * The Daub House (ROADMAP 36.23, the owner's pick of two; 49.2): a Level I home of mud-brick daub in a dark oak frame
@@ -282,14 +290,18 @@ public final class StarterBlueprints {
 	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(9, 15, 18));
 	/** A storeroom dug under the house (36.7). */
 	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(9, 15, 18), 4);
-	/** The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}): three storeys of brick and timber, a shop window, two bedrooms. */
-	public static final Entry TOWNHOUSE = new Entry(AliveWorkplace.id("townhouse"), new Vec3i(11, 20, 12));
-	/** A walled courtyard garden and a third bedroom in the loft (grade III). */
-	public static final Entry TOWNHOUSE_2 = new Entry(AliveWorkplace.id("townhouse_2"), new Vec3i(11, 20, 18));
-	/** A corner tower with a study at the top (grade III). */
-	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(15, 26, 18));
-	/** Townhouse III with a vaulted cellar of casks and coal down a stone stair from the hall (26.15). */
-	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(15, 26, 18), 4);
+	/**
+	 * The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}; rebuilt from scratch, ROADMAP 49.5,
+	 * {@code tools/blueprints/js/townhouse}): a tall merchant's house gable-end to the street, a stone shop and kitchen
+	 * below a jettied timber floor and a steep attic, three beds.
+	 */
+	public static final Entry TOWNHOUSE = new Entry(AliveWorkplace.id("townhouse"), new Vec3i(11, 22, 14));
+	/** A counting-house wing on the east with its own street gable and two more beds (grade III). */
+	public static final Entry TOWNHOUSE_2 = new Entry(AliveWorkplace.id("townhouse_2"), new Vec3i(18, 22, 14));
+	/** A square stone strongroom tower behind the wing, a bed and a lookout study at the top (grade III). */
+	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(19, 26, 19));
+	/** Townhouse III with a vaulted cellar of casks under the shop, down a ladder (26.15). */
+	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(19, 26, 19), 4);
 	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}): a stone house of two storeys round a hall with a grand stair. */
 	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(19, 18, 17));
 	/** A walled formal garden behind: clipped hedges, a fountain and gravel walks (3 beauty for the people who live there). */

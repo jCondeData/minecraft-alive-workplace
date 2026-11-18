@@ -91,7 +91,7 @@ public final class StewardDesk {
 			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Proposal::day),
 			Codec.INT.optionalFieldOf("skip", 0).forGetter(Proposal::skip),
 			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching),
-			StewardJobs.Job.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(StewardJobs.Job.CODEC, "steward proposal job").optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
 			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic),
 			Codec.STRING.optionalFieldOf("wall_kit", "").forGetter(Proposal::wallKit),
 			Codec.INT.listOf().optionalFieldOf("house", List.of()).forGetter(Proposal::house)
@@ -185,8 +185,8 @@ public final class StewardDesk {
 						long shopDay, Renewals.Book renewals) {
 		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1, -1, Renewals.Book.EMPTY);
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Proposal.CODEC.listOf().optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
-			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("declined", Map.of()).forGetter(State::declined),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Proposal.CODEC, "steward proposal").optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.map(Codec.STRING, Codec.LONG, "steward declined rule").optionalFieldOf("declined", Map.of()).forGetter(State::declined),
 			Codec.LONG.optionalFieldOf("told", -1L).forGetter(State::told),
 			Codec.LONG.optionalFieldOf("ran", -1L).forGetter(State::ran),
 			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next),

@@ -122,6 +122,79 @@ export function pentice(c, cells, y, roof, toward) {
   for (const [x, z] of cells) stair(c, x, y, z, roof.stairs, toward)
 }
 
+/** pyramidRoof: a steep four-sided roof over a square tower centred on (cx, cz): a ring of stairs `r` out from the
+ *  centre at y0 (the overhang when r is the walls' half-width + 1), each ring in one block and two up from the last
+ *  (a full course under each ring of stairs), solid inside, to a full block at the peak (y0 + 2r). Grown from the
+ *  Burgher's Townhouse (49), whose stair tower carries one. Returns the peak's y. */
+export function pyramidRoof(c, cx, cz, r, y0, roof) {
+  const face = (dx, dz) => (Math.abs(dx) >= Math.abs(dz) ? (dx < 0 ? 'east' : 'west') : (dz < 0 ? 'south' : 'north'))
+  for (let k = 0; k <= r; k++) {
+    const rr = r - k, y = y0 + 2 * k
+    for (let dx = -rr; dx <= rr; dx++) for (let dz = -rr; dz <= rr; dz++) {
+      const ring = Math.max(Math.abs(dx), Math.abs(dz)) === rr && rr > 0
+      if (ring) stair(c, cx + dx, y, cz + dz, roof.stairs, face(dx, dz))
+      else c.set(cx + dx, y, cz + dz, roof.full)
+      if (!ring && k < r) c.set(cx + dx, y + 1, cz + dz, roof.full)
+    }
+  }
+  return y0 + 2 * r
+}
+
+/** evenGableRoof: a steep roof over an even span `across` [a0, a1] (no middle column), running `along` [l0, l1], its
+ *  ridge two stairs back to back over the two middle columns. Each edge column is an 'eave' (a stair at eaveY rising
+ *  inward, and an overhang stair one out and one lower) or a 'gutter' (a full block at eaveY with a `roof.slab` on it:
+ *  where two such roofs meet over a party wall, the valley between them). Inward from the edge, each column a full
+ *  block and a stair two higher than the last (the steep pitch of a narrow-fronted house). `ends`: {a0, a1}, each
+ *  'eave' or 'gutter'; `keep(x, y, z)` as in gableRoof. Grown from the Terrace (49): one per home, side by side, so a
+ *  row reads as a saw of gables. Returns {ridgeY, under} (under[u]: the lowest roof cell over column u, overhangs too). */
+export function evenGableRoof(c, { axis, across: [a0, a1], along: [l0, l1], eaveY, ends = { a0: 'eave', a1: 'eave' } }, roof, keep = () => true) {
+  const put = (u, y, v, id, props) => {
+    const [x, z] = axis === 'z' ? [u, v] : [v, u]
+    if (c.inside(x, y, z) && keep(x, y, z)) c.set(x, y, z, id, props)
+  }
+  const n = (a1 - a0 + 1) / 2
+  if (!Number.isInteger(n)) throw new Error(`evenGableRoof: span ${a0}..${a1} is odd (use gableRoof)`)
+  const st = facing => ({ facing, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+  const under = {}
+  for (let v = l0; v <= l1; v++) {
+    for (const [edge, u0, step, rise] of [['a0', a0, 1, axis === 'z' ? 'east' : 'south'], ['a1', a1, -1, axis === 'z' ? 'west' : 'north']]) {
+      for (let i = 0; i < n; i++) {
+        const u = u0 + step * i
+        if (i > 0) {
+          put(u, eaveY + 2 * i - 1, v, roof.full)
+          put(u, eaveY + 2 * i, v, roof.stairs, st(rise))
+          under[u] = eaveY + 2 * i - 1
+        } else if (ends[edge] === 'gutter') {
+          put(u, eaveY, v, roof.full)
+          put(u, eaveY + 1, v, roof.slab, { type: 'bottom', waterlogged: 'false' })
+          under[u] = eaveY
+        } else {
+          put(u, eaveY, v, roof.stairs, st(rise)); under[u] = eaveY
+          put(u - step, eaveY - 1, v, roof.stairs, st(rise)); under[u - step] = eaveY - 1
+        }
+      }
+    }
+  }
+  return { ridgeY: eaveY + 2 * (n - 1), under }
+}
+
+/** crowGable: a crow-stepped parapet gable in the wall plane `line` over columns [a0, a1] (axis 'z': the columns are
+ *  x, the plane z = line), from y0 up to each column's step top `tops[u]` in `wall` (may be a mix()), each step capped
+ *  by a `coping` slab, so the gable stands up past the roof behind it in steps. `pick(u, y)` returns another block (an
+ *  id or [id, props]) for an opening or a lintel, null for air, undefined for the wall. Grown from the Terrace (49). */
+export function crowGable(c, axis, line, [a0, a1], y0, tops, wall, coping, pick = () => undefined) {
+  for (let u = a0; u <= a1; u++) {
+    const [x, z] = axis === 'z' ? [u, line] : [line, u]
+    for (let y = y0; y <= tops[u]; y++) {
+      const got = pick(u, y)
+      if (got === null) { c.clear(x, y, z); continue }
+      const [id, props] = Array.isArray(got) ? got : [got ?? wall, {}]
+      c.set(x, y, z, id, props)
+    }
+    slab(c, x, tops[u] + 1, z, coping, 'bottom')
+  }
+}
+
 /** crossGableRoof: two 45-degree gable roofs of one pitch crossing at right angles over a square-ish plan (x0..x1,
  *  z0..z1 with the overhang), ridges along x at z = cz and along z at x = cx, both at eaveY + half: each column takes
  *  the higher of the two slopes, so every side shows a gable and the corners fold into valleys (kit.finish shapes the

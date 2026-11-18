@@ -1,5 +1,5 @@
 // Porches: a hooded door, an open porch on posts, and the ground round the house (flower beds, woodpile) (parts library).
-import { stair } from './canvas.mjs'
+import { DIRS, OPP, slab, stair } from './canvas.mjs'
 import { railingRun } from './railings.mjs'
 
 /** hood: a little tiled hood over a door: two stairs rising to a full block, a lantern hanging under it. */
@@ -39,5 +39,17 @@ export function flowerBed(c, x0, x1, z, plants, soil = 'grass_block') {
 export function woodpile(c, x, z0, z1, log) {
   for (let z = z0; z <= z1; z++) c.set(x, 0, z, log, { axis: 'x' })
   for (let z = z0 + 1; z <= z1 - 1; z++) c.set(x, 1, z, log, { axis: 'x' })
+}
+
+/** doorCanopy: a little pent canopy over a door in a wall (`door`: its lower half [x, y, z]; `out`: the side it opens
+ *  to): a `roof.slab` one out from the wall `height` over the door's foot, a `roof.stairs` beside it on the `open`
+ *  side falling away (the other side rests on a pier or a wall), and a lantern hung under the slab. Grown from the
+ *  Terrace (49), whose paired front doors share one pier between their two canopies. */
+export function doorCanopy(c, [x, y, z], out, open, roof, { lantern = true, height = 3 } = {}) {
+  const [ox, oz] = DIRS[out], [sx, sz] = DIRS[open]
+  const cx = x + ox, cz = z + oz, cy = y + height
+  slab(c, cx, cy, cz, roof.slab, 'bottom')
+  stair(c, cx + sx, cy, cz + sz, roof.stairs, OPP[open])
+  if (lantern) c.set(cx, cy - 1, cz, 'lantern', { hanging: 'true', waterlogged: 'false' })
 }
 

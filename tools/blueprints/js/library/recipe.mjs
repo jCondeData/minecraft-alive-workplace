@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { IDS, SIZES, BASEMENT, PALETTE, MASSES, JOBS, ENCHANT, SHELVES, OPENINGS, FURNITURE, STORES, ARCHIVE_LAMPS } from './plan.mjs'
 import {
   LiftedCanvas, mix, stringCourse, stair, slab, plinth, floor, wallPanel, window, door, gableRoof, gableWall, bargeTrim, cellar,
-  buttress, shelfWall, enchantRing, pyramidRoof, lancet, hangingPot, furnitureParts,
+  buttress, shelfWall, enchantRing, boxPyramidRoof, lancet, hangingPot, furnitureParts,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -60,7 +60,7 @@ export function drawLevel(level) {
 
   // --- Pass 2: roofs and gables ---------------------------------------------------------------------------------
   if (level >= 3) {
-    const apex = pyramidRoof(c, T.roof, P.roof, empty)
+    const apex = boxPyramidRoof(c, T.roof, P.roof, empty)
     c.set(apex[0], apex[1] + 1, apex[2], P.post) // the finial
   }
   const naveRoof = { ...N.roof, along: [0, level >= 3 ? nw.z1 : N.roof.along[1]] }

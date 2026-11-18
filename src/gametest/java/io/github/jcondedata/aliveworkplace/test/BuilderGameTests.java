@@ -201,8 +201,9 @@ public class BuilderGameTests implements FreshPlanning {
 		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
+			// (49.3: the rebuilt cottage's bed in the outshot, II's in the wing's chamber)
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(2, 1, 8));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(8, 5, 3));
 			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + " blocks: the ground floor should have been kept");
 		});
 	}
@@ -281,9 +282,10 @@ public class BuilderGameTests implements FreshPlanning {
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE_2.id(), placement, java.util.UUID.randomUUID());
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(StarterBlueprints.STARTER_COTTAGE_2.id())
 			.equals(StarterBlueprints.STARTER_COTTAGE_3.id()), "starter_cottage_3 should upgrade starter_cottage_2");
-		// Where the wing goes: a mound of dirt and a stray block of cobblestone.
-		for (int x = 13; x <= 15; x++) {
-			for (int z = 8; z <= 10; z++) {
+		// Where the wing goes: a mound of dirt and a stray block of cobblestone (49.3: the rebuilt cottage's kitchen, x 13..15,
+		// z 5..7 of the drawing, clear of the wing II already has).
+		for (int x = 16; x <= 18; x++) {
+			for (int z = 11; z <= 13; z++) {
 				helper.setBlock(new BlockPos(x, 2, z), Blocks.DIRT);
 				helper.setBlock(new BlockPos(x, 3, z), Blocks.GRASS_BLOCK);
 			}
@@ -315,13 +317,13 @@ public class BuilderGameTests implements FreshPlanning {
 		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(12, 1, 2)); // where the mound was
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(9, 1, 4)); // the doorway through
-			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(14, 1, 6));
-			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(13, 1, 3)); // the wing's own door
-			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(16, 2, 2));
-			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(14, 1, 6)); // where the mound was
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(11, 1, 5)); // the doorway through
+			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(15, 1, 6));
+			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(13, 1, 4)); // the wing's own door
+			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(15, 2, 3));
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(2, 1, 8));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(8, 5, 3));
 			helper.assertTrue(s.site().placed() < total * 0.4, "placed " + s.site().placed() + " of " + total + " blocks: the cottage should have been kept");
 		});
 	}

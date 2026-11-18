@@ -86,6 +86,7 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
+- [The Starter Cottage](starter-cottage.md): every village's first home (four levels), rebuilt from scratch with the rebuild kit, the owner's pick of two designs (49.3).
 - [The Stone House](stone-house.md): the village's second kind of home (four levels), rebuilt from scratch with the rebuild kit (49.4).
 - [The Burgher's Townhouse](townhouse.md): the grade II home for Burghers (four levels), rebuilt from scratch with the rebuild kit (49.5).
 - [The Terrace](terrace.md): several households under one roof, two homes and four beds (Terrace II: three homes, six beds), rebuilt from scratch with the rebuild kit (49.6).

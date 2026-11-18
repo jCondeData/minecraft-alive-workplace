@@ -43,7 +43,7 @@ final class RebuildScene {
 	/** The families with a scene in tools/showcase/scenes.py (rebuild_&lt;family&gt;): each rebuild adds its own. Any other
 	 *  family films too, by hand (SCENE=rebuild_&lt;family&gt;), but isn't in the nightly showcase. */
 	static final List<String> FILMED = List.of("well", "house_t1_b", "well_house", "fountain", "lily_pond", "footbridge",
-		"park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue", "stone_house",
+		"park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue", "starter_cottage", "stone_house",
 		"townhouse", "terrace", "masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen", "smithy",
 		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate");
 	private static final BlockPos AT = new BlockPos(0, -60, 0);

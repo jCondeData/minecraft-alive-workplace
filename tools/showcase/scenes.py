@@ -1501,6 +1501,15 @@ SCENES = [
            ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
            ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
            ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
+    # ROADMAP 49.3: the Starter Cottage rebuilt from scratch (the owner's pick of two: a one-room saltbox, its long back
+    # slope over the bed nook and the work corner, the stack up the west gable), its first level built as a server with
+    # the furniture mods builds it, from four sides and at eye level in the room
+    S("rebuild_starter_cottage", "Build families", "The Starter Cottage, rebuilt from scratch, furnished: from four sides and the room",
+      "the Starter Cottage's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and its one room (the hall with the hearth and the table for two, the bed nook and the work corner under the back slope) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Starter Cottage from the front: the tall front under the short slope, the gabled hood over the door, flower beds either side of the path"),
+           ("02_outside_back", "From the back: the long catslide roof down over the low back wall"),
+           ("03_outside_west", "From the west: the stone stack up the gable, the campfire on top"),
+           ("10_room_1", "The room at eye level: the table for two under the front window, the hearth and the couch, the bed nook and the work corner")], furniture=True),
     # ROADMAP 49.4: the Stone House rebuilt from scratch (the mason's house: rubble walls, dressed quoins, the end stack),
     # its first level built as a server with the furniture mods builds it, from four sides and at eye level downstairs and up
     S("rebuild_stone_house", "Build families", "The Stone House, rebuilt from scratch, furnished: from four sides, the hall and the chamber",

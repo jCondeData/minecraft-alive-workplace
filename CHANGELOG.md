@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
+  saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
+  the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a
+  two-story wing to the road with two more beds upstairs, Level III leans a stone kitchen with its own door on the wing,
+  and Level IV digs a store cellar under the hall. Cottages already standing keep their look until you press Refresh on
+  the Village Hall's Repairs page.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The

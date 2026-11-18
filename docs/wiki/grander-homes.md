@@ -46,7 +46,7 @@ tier below:
   windows between pilasters, three chandeliers, a musicians' dais with a jukebox and note blocks, under a roof hipped
   like the house's, through a doorway from the parlor. **The Noble's Ball is held in the ballroom.**
 
-**Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
+**Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed saltbox under a long spruce catslide (49.3); the
 Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
 breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
 row with a stone string course and cornice, a bay window between two stone piers and a hooded door for each home,

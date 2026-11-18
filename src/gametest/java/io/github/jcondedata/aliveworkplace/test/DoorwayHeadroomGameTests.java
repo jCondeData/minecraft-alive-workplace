@@ -252,10 +252,11 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		Leftovers.halls(helper);
 		BlockPos cottage = new BlockPos(5, 1, 5);
 		place(helper, "starter_cottage", cottage);
-		// template cells (y = 1 is the ground floor): the room by the rug, and the chair (stairs) at the table's north side
-		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(5, 1, 4));
+		// template cells (y = 1 is the ground floor): the hall's walk past the couch, and the chair (stairs) at the table's
+		// north side, under the front east window (49.3: the rebuilt cottage)
+		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(4, 1, 5));
 		nitwit(helper, villager);
-		BlockPos chair = helper.absolutePos(cottage.offset(3, 1, 3));
+		BlockPos chair = helper.absolutePos(cottage.offset(6, 1, 3));
 		double floor = helper.absolutePos(cottage.offset(0, 1, 0)).getY();
 		helper.onEachTick(() -> {
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(chair));

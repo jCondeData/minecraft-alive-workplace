@@ -58,8 +58,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # winery, winery_2 and winery_3, III with --basement 4 --cellar "$(cat out/cellar.txt)")
            "winery", "winery_2", "winery_3",
            # 50.5, the Watermill (Create only): js/watermill (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh
-           # build.sh the live one)
-           "watermill",
+           # build.sh the live one); the Ferry House (the buildable only; its village pieces stay village.py's):
+           # js/ferry_house, the same way
+           "watermill", "ferry_house",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
@@ -74,7 +75,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
            # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
            # build.sh the live weavers_cottage and weavers_cottage_2)
-           "weavers_cottage", "weavers_cottage_2"}
+           "weavers_cottage", "weavers_cottage_2",
+           # 51.6, the Post Office ("the Signal Tower") and the Graveyard ("the Lantern Yard"): js/post_office (npm run
+           # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
+           # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
+           # village pieces keep their own looks (village.py's staffed house)
+           "post_office", "graveyard", "graveyard_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -166,8 +172,9 @@ if __name__ == "__main__":
     apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
     flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
     flower_shop_building_2().save(MAIN_STRUCTURES, "flower_shop_2")
-    graveyard().save(MAIN_STRUCTURES, "graveyard")
-    graveyard_2().save(MAIN_STRUCTURES, "graveyard_2")
+    for name, draw in (("graveyard", graveyard), ("graveyard_2", graveyard_2)):
+        if name not in REBUILT:  # ROADMAP 51.6: the Graveyard comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
     for name, draw in (("village_hall", village_hall), ("village_hall_2", village_hall_2), ("village_hall_3", village_hall_3)):
         draw().save(MAIN_STRUCTURES, name)
@@ -279,7 +286,7 @@ if __name__ == "__main__":
         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         if name in REBUILT:
-            continue  # ROADMAP 50.2: drawn by the rebuild kit (below)
+            continue  # ROADMAP 50.2 and 50.5: drawn by the rebuild kit (below)
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
         save_wonder(wonder_id)

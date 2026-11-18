@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.mixin;
 
 import io.github.jcondedata.aliveworkplace.city.PlayerBuilt;
+import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -18,9 +19,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /**
  * A player placed a block: the ledger of what players built marks its section (27.19, {@link PlayerBuilt}), and the
  * section of a two-block block's other half (a bed's head, a door's top), which can sit across a section edge (B603).
+ * B1015: a block a player may not place in a protected village isn't placed, judged where it lands; a player's clicks are
+ * already judged there (B741), so this stops the stand-in players of machines (Create's Deployer), which place without one.
  */
 @Mixin(BlockItem.class)
 public abstract class BlockItemMixin {
+	@Inject(method = "place", at = @At("HEAD"), cancellable = true)
+	private void aliveworkplace$notInOthersVillages(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
+		if (context.getPlayer() != null && context.getLevel() instanceof ServerLevel level
+			&& VillageProtection.keeper(level, context.getPlayer(), context.getClickedPos()).isPresent()) {
+			cir.setReturnValue(InteractionResult.FAIL);
+		}
+	}
+
 	@Inject(method = "place", at = @At("RETURN"))
 	private void aliveworkplace$placed(BlockPlaceContext context, CallbackInfoReturnable<InteractionResult> cir) {
 		if (context.getPlayer() != null && context.getLevel() instanceof ServerLevel level && cir.getReturnValue().consumesAction()) {

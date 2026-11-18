@@ -262,10 +262,10 @@ public final class StarterBlueprints {
 	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
 	/** A glass greenhouse on the side. */
 	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(15, 11, 9));
-	/** A walled churchyard with a mortuary and an Undertaker's Table. */
-	public static final Entry GRAVEYARD = new Entry(AliveWorkplace.id("graveyard"), new Vec3i(13, 11, 13));
-	/** A lych-gate over the way in. */
-	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 11, 13));
+	/** The Lantern Yard: a walled churchyard through a lychgate, a lantern tower over the chapel with the Undertaker's Table (rebuilt 51.6). */
+	public static final Entry GRAVEYARD = new Entry(AliveWorkplace.id("graveyard"), new Vec3i(13, 16, 13));
+	/** The same yard a generation on: tall yews, lanterns on the piers, stone crosses, an iron-railed front, benches. */
+	public static final Entry GRAVEYARD_2 = new Entry(AliveWorkplace.id("graveyard_2"), new Vec3i(13, 16, 13));
 
 	/**
 	 * The Stone House (rebuilt from scratch, ROADMAP 49.4, {@code tools/blueprints/js/stone_house}): the mason's house, a
@@ -604,14 +604,14 @@ public final class StarterBlueprints {
 	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop", 14, 12, 11);
 	/** A plastered cookhouse under a hipped roof, a brick bread oven bulging from its side, herb beds. */
 	public static final Entry KITCHEN = workplace("kitchen", 11, 12, 11, 4);
-	/** A narrow house, its upper floor jettied over the street, a dovecote on the ridge. */
-	public static final Entry POST_OFFICE = workplace("post_office", 9, 17, 10);
+	/** The Signal Tower: a brick tower with a slate spire standing forward of a long counter hall (rebuilt 51.6). */
+	public static final Entry POST_OFFICE = workplace("post_office", 17, 15, 15);
 	/** A stone blockhouse with a battlemented roof and a watch hut on it. */
 	public static final Entry GUARD_HOUSE = workplace("guard_house", 11, 13, 11);
 	/** A white pavilion with a ward wing across the back and cross-mullioned windows. */
 	public static final Entry CLINIC = workplace("clinic", 13, 11, 12);
-	/** A gambrel-roofed boathouse with a landing stage; the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
-	public static final Entry FERRY_HOUSE = workplace("ferry_house", 9, 10, 10);
+	/** A ferry station with a boarded landing under a canopy (rebuilt in ROADMAP 50.5); the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
+	public static final Entry FERRY_HOUSE = workplace("ferry_house", 15, 17, 11); // ROADMAP 50.5: rebuilt
 	/** A long low dojo with a deep veranda and a fenced sparring ring. */
 	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
 	/** A stone hall with a columned portico and a pediment. */

@@ -47,6 +47,11 @@ asks for the steps, `latest.log` and any crash report).
   Manor III completes the front with the east wing's double-height ballroom and its musicians' gallery (where the
   Noble's Ball gathers), and Manor IV digs a wine cellar under the kitchen. Manors already standing keep their look until
   you press Refresh on the Village Hall's Repairs page.
+- **The Ferry House is rebuilt from scratch** (50.5): a ferry station. Passengers wait in a stone waiting room with a
+  stove, a table, a bench and the station clock; the Ferryman sleeps in the white plastered room above, and a lookout
+  cupola on the slate roof carries the ferry light. A boarded landing runs the whole front under a canopy with a teal
+  valance, the Travel Post by its steps and benches against the wall. Ferry Houses already standing keep the drawing
+  they were built from until you refresh them; the village ferry houses are unchanged.
 - **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
   terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
   meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
@@ -98,6 +103,17 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Post Office and the Graveyard are rebuilt from scratch** (51.6). The Post Office is a brick tower with a
+  steep slate spire and a weathervane, standing forward of a long counter hall: you come in at the tower's foot and
+  walk straight to the Mailbox in the middle of the counter, with a writing table, a bench by the stove and the
+  pigeonholes and sorting desk behind; the Postman sleeps in the tower room over the door, and a red pillar box stands
+  outside (17 x 15 x 15). The Graveyard is a walled churchyard entered under a roofed lychgate: a flagstone path runs
+  between the two grave plots (the same 32 grave rows) to a lantern tower, and the little chapel behind it has the
+  Undertaker's brewing stand as its altar, pews along the walls and a bier under the lamp, with Irish yews either
+  side (13 x 13, now 16 high). Graveyard II is the same yard a generation on: tall yews, lanterns on the wall's piers,
+  a stone cross in each plot, an iron-railed front wall, benches facing the graves and lamp posts by the path.
+  Villages keep their own Postman's house. Buildings already standing keep the drawing they were built from until
+  you refresh them.
 - **The School is rebuilt from scratch** (51.4, with Cobblemon). A timber-framed gatehouse with a round moon window
   opens onto a paved court, where a sparring ring with straw targets circles the Move Tutor's Training Post; spectators
   sit under a cloister on the west, and behind the court the Tutor's hall holds a lecture room with a reading table, a
@@ -152,6 +168,16 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
+  andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
+- Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected
+  village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
+  blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and
+  a Deployer outside places nothing inside. Machines inside the village work as before (B808, B993, B1033, B1015).
+- A stranger's Create funnel, chute or Mechanical Arm outside a protected village no longer takes items out of (or puts
+  them into) its chests and depots, and a stranger's Deployer inside it can't rename the Village Hall (B994, B1015,
+  B844). A Deployer nobody placed no longer becomes the owner of a Village Hall it sets down or of a Mailbox or Shop
+  Counter it clicks; one a player placed still acts for that player (B843).
 - With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
   and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
   bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
@@ -203,6 +229,9 @@ asks for the steps, `latest.log` and any crash report).
   as in a village for a few seconds after its hall is gone (B1356).
 
 ### Dev
+- Tests: the Waystones travel-cost and moved-stone checks (`QaWaystones1117dCompatTests`) are in the compat suite. Its
+  "village listed twice" failure (B1375) was the test next door's plaza, taken over by the test's village, not a dead
+  entry in game: the waystone tests now clear such a plaza along with its hall (`QaWaystoneLeftover1118aCompatTests`).
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
   `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).

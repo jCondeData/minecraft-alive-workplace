@@ -1,0 +1,11 @@
+{
+  "name": "ferry-house",
+  "private": true,
+  "type": "module",
+  "description": "The Ferry House (the Ferry Station), ROADMAP 49 rebuild from tools/blueprints/briefs/ferry_house.md. MC_BUILDER = the minecraft-builder skill's folder. Until the critic passes it, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py ferry_house ferry_house --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/ferry-house.nbt"
+  }
+}

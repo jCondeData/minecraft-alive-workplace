@@ -566,7 +566,9 @@ FE_PROFILE = {0: (4, False), 1: (6, True), 2: (7, False), 3: (8, False), 4: (9, 
 
 
 def ferry_house_build():
-    """9 x 10 x 10: the ferry house, its landing stage to the front."""
+    """The OLD drawing (ROADMAP 50.5: the live ferry_house.nbt now comes from the rebuild kit, tools/blueprints/js/ferry_house;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 10: the ferry house, its landing
+    stage to the front."""
     b = Build(9, 10, 10)
     # The landing stage, rails either side, mooring posts, the light on its mast
     box(b, 0, 0, 0, 8, 0, 2, "spruce_planks")

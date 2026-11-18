@@ -5,8 +5,8 @@
 import { SIZE, TOWER, LEVELS, PALETTE, MASSES, OPENINGS, FURNITURE } from './plan.mjs'
 import {
   Canvas, mix, stair, slab, plinth, floor, post, beamRing, wallPanel, window, door, gableRoof, gableWall, bargeTrim,
-  furnitureParts, roundCells, shellCells, railCells, towardCentre, corbelCourse, weathering, lanternRoom, lampCrown, causeway, bollard,
-  dryingRack,
+  furnitureParts, roundCells, shellCells, railCells, towardCentre, corbelCourse, weathering, lanternRoom, causeway, bollard,
+  dryingRack, wallRing, spiralStair, lampHood,
 } from '../parts/index.mjs'
 
 const { cx, cz } = TOWER
@@ -14,9 +14,18 @@ const key = (x, z) => `${x},${z}`
 const inSet = cells => { const s = new Set(cells.map(([x, z]) => key(x, z))); return (x, z) => s.has(key(x, z)) }
 const interior4 = (() => { const shell = inSet(shellCells(cx, cz, TOWER.shaft)); return roundCells(cx, cz, TOWER.shaft).filter(([x, z]) => !shell(x, z)) })()
 const isInterior = inSet(interior4)
+// The winding stair's ring: the 24 wall cells of the room, started by the door at (cx + 1, cz - 3) and walked east,
+// so the doorway's own cell (cx, cz - 3) is the ring's last, passed overhead at y 27.
+const RING = (() => {
+  let r = wallRing(interior4, [cx + 1, cz - 3])
+  const i = r.findIndex(([x, z]) => x === cx + 1 && z === cz - 3)
+  r = [...r.slice(i), ...r.slice(0, i)]
+  if (!(r[1][0] === cx + 1 && r[1][1] === cz - 2)) r = [r[0], ...r.slice(1).reverse()]
+  return r
+})()
 
 // The tower's window columns: the pane sits in the outside face, the cells between it and the room are opened.
-const WINDOW_AT = { north: [cx, cz - 1, 0, -1], south: [cx, cz + 1, 0, 1], west: [cx - 1, cz, -1, 0] }
+const WINDOW_AT = { north: [cx, cz - 1, 0, -1], south: [cx, cz + 1, 0, 1], west: [cx - 1, cz, -1, 0], east: [cx + 1, cz, 1, 0] }
 
 const radiusAt = y => (y <= LEVELS.footTop ? TOWER.foot : y <= LEVELS.waistTop ? TOWER.waist : TOWER.shaft)
 
@@ -29,10 +38,10 @@ function tower(c, P, y0, y1) {
   for (let y = Math.max(y0, L.deck + 1); y <= y1; y++) {
     const r = radiusAt(y)
     const body = r === TOWER.foot ? sea : r === TOWER.waist ? waist : lime
-    const course = r !== TOWER.foot && L.floors.includes(y)
+    const course = r !== TOWER.foot && (L.floors.includes(y) || (r === TOWER.shaft && L.bands.includes(y)))
     for (const [x, z] of solid(r)) {
       if (x === door[0] && z < cz && (y === L.deck + 1 || y === L.deck + 2)) continue // the doorway through the wall
-      c.set(x, y, z, course ? P.course : body)
+      c.set(x, y, z, course ? (r === TOWER.shaft ? P.band : P.course) : body)
     }
     // windows: a pane in the outer face, the reveal behind it open to the room
     if (winRows.has(y)) for (const side of OPENINGS.towerWindows) {
@@ -40,12 +49,12 @@ function tower(c, P, y0, y1) {
       c.set(cx + dx * r, y, cz + dz * r, P.glass)
       for (let k = r - 1; k >= 1; k--) { const ix = cx + dx * k, iz = cz + dz * k; if (isInterior(ix, iz)) break; c.clear(ix, y, iz) }
     }
-    // floors and the ladder up the east wall (through a hole in each floor)
-    if (L.floors.includes(y)) for (const [x, z] of interior4) if (!(x === OPENINGS.ladder.x && z === OPENINGS.ladder.z)) c.set(x, y, z, P.floor)
-    if (L.floors.includes(y)) c.set(OPENINGS.ladder.x, y, OPENINGS.ladder.z, `${P.wood}_trapdoor`, { facing: OPENINGS.ladder.facing, half: 'top', open: 'false', powered: 'false', waterlogged: 'false' })
-    else c.set(OPENINGS.ladder.x, y, OPENINGS.ladder.z, 'ladder', { facing: OPENINGS.ladder.facing, waterlogged: 'false' })
   }
+  // the floors and the stair winding up the inside wall through them, to the gallery floor
+  spiralStair(c, RING, interior4, L.stairFrom, L.galleryY, L.floors, { stairs: P.stair, floorBlock: P.floor }, Math.max(y0, L.deck + 1), Math.min(y1, L.galleryY - 1))
 }
+// the ring cells the stair needs open through the gallery floor (the two steps under it)
+const stairAt = y => RING[((y - LEVELS.stairFrom) % RING.length + RING.length) % RING.length]
 
 export function draw(stage = 4) {
   const c = new Canvas(SIZE)
@@ -55,7 +64,10 @@ export function draw(stage = 4) {
 
   // === Stage I: the Quay, the Mole and the Bastion ===============================================================
   // --- Pass 1: block-out ---
-  floor(c, M.quay.x0, M.quay.z0, M.quay.x1, M.quay.z1, 0, quayMix)
+  floor(c, M.quay.x0, M.quay.z0, M.green.x0 - 1, M.quay.z1, 0, quayMix)
+  // the quay's east end: grass, a gravel path from the front to the ferry landing
+  for (let x = M.green.x0; x <= M.green.x1; x++) for (let z = M.green.z0; z <= M.green.z1; z++)
+    c.set(x, 0, z, x === M.green.path ? 'dirt_path' : (x * 5 + z * 3) % 7 === 0 ? 'coarse_dirt' : 'grass_block', x === M.green.path || (x * 5 + z * 3) % 7 === 0 ? {} : { snowy: 'false' })
   const mole = M.mole
   const gap = (x, z) => (x === mole.x1 && mole.gaps.east.includes(z)) || (x === mole.x0 && mole.gaps.west.includes(z))
   causeway(c, { x0: mole.x0, x1: mole.x1, z0: mole.z0 + L.deck, z1: mole.z1, deckY: mole.deckY }, { body: sea, deck: deckMix, wall: P.coping }, gap)
@@ -121,10 +133,10 @@ export function draw(stage = 4) {
   bargeTrim(c, 'x', K.roof.along[0], K.roof.across, roof.under, `${P.wood}_stairs`)
   bargeTrim(c, 'x', K.roof.along[1], K.roof.across, roof.under, `${P.wood}_stairs`)
   door(c, OPENINGS.cottageDoor.at, OPENINGS.cottageDoor.facing, OPENINGS.cottageDoor.out, { wood: P.wood })
-  for (const w of OPENINGS.cottageWindows) window(c, w.cells, w.out, 'shutters', { glass: P.glass, wood: P.wood })
+  for (const w of OPENINGS.cottageWindows) window(c, w.cells.map(([dx, y, dz]) => [K.x0 + dx, y, K.z0 + dz]), w.out, 'shutters', { glass: P.glass, wood: P.wood })
   // a chimney stack up the east gable, a campfire's smoke out of its pot
-  for (let y = 1; y <= roof.ridgeY; y++) c.set(K.x1 + 1, y, 6, plinthMix)
-  c.set(K.x1 + 1, roof.ridgeY + 1, 6, 'campfire', { lit: 'true', facing: 'north', signal_fire: 'false', waterlogged: 'false' })
+  for (let y = 1; y <= roof.ridgeY; y++) c.set(K.x0 - 1, y, 6, plinthMix)
+  c.set(K.x0 - 1, roof.ridgeY + 1, 6, 'campfire', { lit: 'true', facing: 'north', signal_fire: 'false', waterlogged: 'false' })
   // a lantern on a post beside the cottage door
   c.set(OPENINGS.cottageDoor.at[0] + 1, 1, 1, `${P.wood}_fence`)
   c.set(OPENINGS.cottageDoor.at[0] + 1, 2, 1, 'lantern', { hanging: 'false', waterlogged: 'false' })
@@ -133,10 +145,28 @@ export function draw(stage = 4) {
   const LD = M.landing
   for (let x = LD.x0; x <= LD.x1; x++) for (let z = LD.z0; z <= LD.z1; z++) { c.set(x, 0, z, sea); c.set(x, 1, z, (x === LD.x1 || z === LD.z0 || z === LD.z1) ? sea : deckMix) }
   for (const z of mole.gaps.east) stair(c, LD.x0, 2, z, 'stone_brick_stairs', 'west')
-  c.set(LD.x1 - 1, 2, LD.z0 + 1, 'aliveworkplace:travel_post', { facing: 'east' })
   for (const z of [LD.z0, LD.z1]) bollard(c, LD.x1, 2, z, { post: 'stone_brick_wall', cap: 'polished_andesite_slab' })
-  c.set(LD.x1, 2, LD.z0 + 3, `${P.wood}_fence`)
-  c.set(LD.x1, 3, LD.z0 + 3, 'lantern', { hanging: 'false', waterlogged: 'false' })
+  c.set(LD.x1, 2, LD.z0 + 1, `${P.wood}_fence`)
+  c.set(LD.x1, 3, LD.z0 + 1, 'lantern', { hanging: 'false', waterlogged: 'false' })
+  stair(c, M.green.path, 1, LD.z0 - 1, 'stone_brick_stairs', 'south') // the path's step up onto the landing
+  // the Ferry Jetty: spruce boards on log piles out to the plot's east edge, the Travel Post at its end, sea round it
+  const J = M.jetty
+  for (let x = J.x0; x <= J.x1; x++) for (let z = J.z0; z <= J.z1; z++) {
+    if ((x === J.x0 + 1 || x === J.x1) && z !== J.z0 + 1) c.set(x, 0, z, P.frame, { axis: 'y' })
+    c.set(x, 1, z, P.floor)
+  }
+  c.set(...J.post, 'aliveworkplace:travel_post', { facing: 'east' })
+  for (const z of [J.z0, J.z1]) bollard(c, J.x1, 2, z, { post: `${P.wood}_fence`, cap: `${P.wood}_slab` })
+  c.set(J.x0 + 1, 2, J.z0, `${P.wood}_fence`); c.set(J.x0 + 1, 3, J.z0, 'lantern', { hanging: 'false', waterlogged: 'false' })
+  // the Net Shed on the green: four posts, a slab roof, a boarded back, the boat gear in an empty chest, hay for the floats
+  const N = M.netShed
+  for (const [x, z] of [[N.x0, N.z0], [N.x1, N.z0], [N.x0, N.z1], [N.x1, N.z1]]) post(c, x, z, 1, 3, P.frame)
+  for (let x = N.x0; x <= N.x1; x++) for (let z = N.z0; z <= N.z1; z++) slab(c, x, 4, z, `${P.wood}_slab`, 'bottom')
+  for (let z = N.z0 + 1; z < N.z1; z++) for (let y = 1; y <= 3; y++) c.set(N.x1, y, z, P.floor)
+  furnitureParts.chest(c, { pos: [N.x1 - 1, 1, N.z0 + 1], facing: 'west', block: 'chest' })
+  c.set(N.x1 - 1, 1, N.z1 - 1, 'hay_block', { axis: 'x' })
+  c.set(N.x1 - 1, 2, N.z1 - 1, 'hay_block', { axis: 'z' })
+  furnitureParts.hangingLamp(c, { pos: [N.x0 + 2, 3, N.z0 + 2], facing: 'north', wood: P.wood })
 
   // Fish Stage: spruce boards on the ground, a step down off the mole, the fisherman's barrel, a drying rack
   const F = M.fishStage
@@ -150,9 +180,12 @@ export function draw(stage = 4) {
   // === Stage III: the Shaft and the Gallery ======================================================================
   tower(c, P, 19, L.shaftTop)
   weathering(c, cx, cz, TOWER.waist, TOWER.shaft, L.ledges[1], P.ledge)
+  // the gallery: two corbel courses carry its floor out two cells past the shaft
+  corbelCourse(c, cx, cz, TOWER.gallery - 1, TOWER.shaft, L.shaftTop - 1, P.corbel)
   corbelCourse(c, cx, cz, TOWER.gallery, TOWER.shaft, L.shaftTop, P.corbel)
-  for (const [x, z] of roundCells(cx, cz, TOWER.gallery)) c.set(x, L.galleryY, z, P.galleryFloor)
-  c.set(OPENINGS.ladder.x, L.galleryY, OPENINGS.ladder.z, `${P.wood}_trapdoor`, { facing: OPENINGS.ladder.facing, half: 'top', open: 'false', powered: 'false', waterlogged: 'false' })
+  const galleryHoles = inSet([stairAt(L.galleryY - 1), stairAt(L.galleryY - 2)])
+  for (const [x, z] of roundCells(cx, cz, TOWER.gallery)) if (!galleryHoles(x, z)) c.set(x, L.galleryY, z, P.galleryFloor)
+  spiralStair(c, RING, interior4, L.stairFrom, L.galleryY, [], { stairs: P.stair, floorBlock: P.floor }, L.galleryY, L.galleryY) // the last step, into the lantern
   const galleryIn = inSet(roundCells(cx, cz, TOWER.gallery))
   for (const [x, z] of railCells(cx, cz, TOWER.gallery)) {
     if (!galleryIn(x, z)) { c.set(x, L.galleryY, z, P.galleryFloor); stair(c, x, L.galleryY - 1, z, P.corbel, towardCentre(x, z, cx, cz), 'top') }
@@ -160,7 +193,8 @@ export function draw(stage = 4) {
   }
   // where the rail steps round the circle, a stone stanchion in the outer corner of each step: both runs join it
   const railIn = inSet(railCells(cx, cz, TOWER.gallery))
-  for (let x = cx - 6; x <= cx + 6; x++) for (let z = cz - 6; z <= cz + 6; z++) {
+  const R = TOWER.gallery + 1
+  for (let x = cx - R; x <= cx + R; x++) for (let z = cz - R; z <= cz + R; z++) {
     if (railIn(x, z)) continue
     if (!(railIn(x - 1, z) || railIn(x + 1, z)) || !(railIn(x, z - 1) || railIn(x, z + 1))) continue
     if (!galleryIn(x, z)) {
@@ -171,30 +205,26 @@ export function draw(stage = 4) {
   }
   if (stage === 3) return finish(c, stage)
 
-  // === Stage IV: the Lantern and its Crown =======================================================================
+  // === Stage IV: the Lantern and its Hood ========================================================================
   lanternRoom(c, cx, cz, TOWER.lantern, L.lanternY, L.glassH, { sill: P.copper.cut, post: P.copper.post, glass: P.glass })
+  door(c, OPENINGS.lanternDoor.at, OPENINGS.lanternDoor.facing, OPENINGS.lanternDoor.out, { wood: P.copper.door })
   c.set(cx, L.lanternY, cz, P.pedestal)
   c.set(cx, L.lanternY + 1, cz, 'sea_lantern')
   c.set(cx, L.lanternY + 2, cz, 'sea_lantern')
-  const lamps = lampCrown(c, cx, cz, TOWER.lantern, L.crownY, { corner: P.copper.post, cap: P.copper.cut })
-  // the cap: a ring of copper stairs over the crown's middle, a block and a rod on top
-  for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) {
-    if (!dx && !dz) continue
-    if (dx && dz) slab(c, cx + dx, L.crownY + 1, cz + dz, 'waxed_oxidized_cut_copper_slab')
-    else stair(c, cx + dx, L.crownY + 1, cz + dz, P.copper.stairs, dx > 0 ? 'west' : dx < 0 ? 'east' : dz > 0 ? 'north' : 'south')
-  }
-  c.set(cx, L.crownY + 1, cz, P.copper.cut)
-  c.set(cx, L.crownY + 2, cz, 'lightning_rod', { facing: 'up', powered: 'false', waterlogged: 'false' })
-  // the corner posts carry up to little copper finials over the crown
-  for (const [dx, dz] of [[-2, -2], [2, -2], [-2, 2], [2, 2]]) slab(c, cx + dx, L.crownY + 1, cz + dz, 'waxed_oxidized_cut_copper_slab')
+  // the hood: a cap over the glass, an eave of night lamps one cell out over the gallery walk, a stepped copper roof
+  const lamps = lampHood(c, cx, cz, TOWER.lantern, L.crownY,
+    { cap: P.copper.cut, corner: P.copper.post, stairs: P.copper.stairs, slab: 'waxed_oxidized_cut_copper_slab' },
+    ['lightning_rod', { facing: 'up', powered: 'false', waterlogged: 'false' }])
 
   // lamp posts along the mole and round the bastion (a lantern on a parapet post)
   const up = L.deck + 2
   for (const z of [mole.z0 + 2, mole.z1 - 1]) for (const x of [mole.x0, mole.x1]) if (c.name(x, up - 1, z).endsWith('wall')) c.set(x, up, z, 'lantern', { hanging: 'false', waterlogged: 'false' })
   for (const [x, z] of [[4, 24], [20, 24], [12, 32]]) for (const y of [up, up + 1]) if (c.name(x, y - 1, z).endsWith('wall')) c.set(x, y, z, 'lantern', { hanging: 'false', waterlogged: 'false' })
 
-  // --- Interior: the furniture of every room, and a lamp under every floor ---
+  // --- Interior: the furniture of every room, the oil casks, and a lamp under every floor ---
   for (const f of FURNITURE) furnitureParts[f.part](c, f)
+  for (const dz of [-1, 0, 1]) c.set(cx + 3, 13, cz + dz, 'stripped_spruce_log', { axis: 'x' }) // lamp-oil casks, racked
+  for (const dz of [-1, 1]) slab(c, cx + 3, 14, cz + dz, `${P.wood}_slab`, 'bottom')
   for (const y of [...L.floors, L.galleryY]) furnitureParts.hangingLamp(c, { pos: [cx, y - 1, cz], facing: 'north', wood: P.wood })
   c.lamps = lamps
   return finish(c, stage)

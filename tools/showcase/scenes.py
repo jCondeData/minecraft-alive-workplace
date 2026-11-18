@@ -1626,6 +1626,15 @@ SCENES = [
            ("02_outside_back", "From the back: the lean-to fuel shed stacked with logs against the kiln, the back gable"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.9: the Ranch rebuilt from scratch (a monitor horse barn: a tall center over the aisle and the hay loft
+    # between two lean-to stall sheds, a cupola, a hay hood with a hoist, the ranch gate and yard in front), its first
+    # level built as a server with the furniture mods builds it, from four sides and at eye level in the aisle and loft
+    S("rebuild_ranch", "Build families", "The Ranch, rebuilt from scratch, furnished: from four sides and every room",
+      "the Ranch's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the stable aisle with the Rancher's smoker and tack chests, the hay loft up the ladder) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ranch from the front: the ranch gate with its banner over the way in, the yard and its trough, the big barn doors under the hay hood and hoist"),
+           ("02_outside_back", "From the back: the stone flue up the back gable, the two lean-to stall sheds either side of the tall centre"),
+           ("10_room_1", "The stable aisle at eye level: the stall gates either side, the smoker and the tack chests at its end"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 49.8: the Weaver's Cottage rebuilt from scratch (a two-story stone range with the long weaver's window, a
     # wool loft, a sheep fold on its east gable with a hoist over it), its first level built as a server with the
     # furniture mods builds it, from four sides and at eye level in the workroom and the loft
@@ -1635,6 +1644,14 @@ SCENES = [
            ("04_outside_east", "From the east: the sheep fold on the gable, its lean-to over the fold door, the hoist beam over the glazed taking-in hatch"),
            ("10_room_1", "The workroom at eye level: the loom in the window, the hearth, the carding table"),
            ("11_room_2", "The wool loft at eye level")], furniture=True),
+    # ROADMAP 49.9: the Farmstead rebuilt from scratch (a limewashed house under one catslide roof sweeping down over a
+    # gallery along the field, the composter and the harvest chest on it), its first level built as a server with the
+    # furniture mods builds it, from four sides and at eye level in the hall
+    S("rebuild_farmstead", "Build families", "The Farmstead, rebuilt from scratch, furnished: from four sides and its hall",
+      "the Farmstead's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Farmstead from the front: the tall west wall and chimney, the pent roof over the door, the catslide falling toward the field"),
+           ("04_outside_east", "From the east: the fenced field with its water channel and scarecrow, the gallery under the long eave with the composter and the harvest chest"),
+           ("10_room_1", "The hall at eye level: the hearth in the west wall, the table for two, the box bed")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",
@@ -1709,6 +1726,19 @@ SCENES = [
            ("02_outside_back", "From the back: the chapel's stone gable with its tall lancet, a yew either side"),
            ("03_outside_west", "From the west: the lantern tower rising over the chapel roof"),
            ("10_room_1", "The chapel at eye level: pews along both walls, the bier under the lamp, the Undertaker's brewing stand at the altar between candles")], furniture=True),
+    # ROADMAP 51.7: the Market Cross rebuilt from scratch ("the Mercat Drum")
+    S("rebuild_market_cross", "Build families", "The rebuilt Market Cross from four sides",
+      "the Market Cross's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: an open platform) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Cross from the front: the stair cut into the octagonal drum, the white shaft and its lantern-hung head over the parapet"),
+           ("02_outside_back", "From the back: the drum's stone faces and pilasters, a bench against them"), ("03_outside_west", "From the west"),
+           ("04_outside_east", "From the east: the market flag flying from the head, flowering azaleas in the plinth's corners")], furniture=True),
+    # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
+    S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
+      "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Chapel from the front: the limewashed bell tower with its twin belfry openings and slate spire, lamp posts at the door, blossom bushes on the lawn"),
+           ("02_outside_back", "From the back: the nave's gable with the rose window under the roof's overhang"),
+           ("04_outside_east", "From the east: the long nave under one slate roof, stepped buttresses between the tall side lights"),
+           ("10_room_1", "Inside at eye level: dark oak pews along the aisle to the vow arch wreathed in azalea and the altar under the rose window")], furniture=True),
     # ROADMAP 51.6: the Clock Tower rebuilt from scratch ("the Water Clock", Create only)
     S("rebuild_clock_tower", "Build families", "The Clock Tower, rebuilt: from four sides and at eye level inside",
       "the Clock Tower's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -1743,6 +1773,19 @@ SCENES = [
            ("02_outside_back", "From the back: the stone ground floor, the white plastered upper floor and the slate roof with its lookout cupola"),
            ("04_outside_east", "From the east: the stove's chimney up the gable"),
            ("10_room_1", "Inside at eye level: the waiting room, its table, bench and stove")], furniture=True),
+    # ROADMAP 51.5: the Leader's Hall and the Trade Hall rebuilt from scratch (REBUILD.md)
+    S("rebuild_leaders_hall", "Build families", "The Leader's Hall, rebuilt: from four sides and at eye level inside",
+      "the Leader's Hall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Leader's Hall from the front: the gate-porch with its red banner under the round-windowed gable, a standard either side"),
+           ("02_outside_back", "From the back: the dark piers carried round the back wall under the round window"),
+           ("04_outside_east", "From the east: the four tall window bays between the piers"),
+           ("10_room_1", "The hall at eye level: benches either side of the sparring ring, the Training Post on the dais under the Leader's banners")], furniture=True),
+    S("rebuild_trade_hall", "Build families", "The Trade Hall, rebuilt: from four sides and at eye level inside",
+      "the Trade Hall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Trade Hall from the front: the shop windows in the proud dark frame, the round tower with its dark band and white button"),
+           ("02_outside_back", "From the back: the gabled ledger bay out of the long roof"),
+           ("04_outside_east", "From the east: the tower on its stone skirt, the chimney up the gable"),
+           ("10_room_1", "The trading floor at eye level: the waiting tables by the shop windows, the Shop Counter facing the door")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

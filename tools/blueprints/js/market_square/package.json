@@ -1,0 +1,10 @@
+{
+  "name": "market-square",
+  "private": true,
+  "type": "module",
+  "description": "The Market Square (market_square), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/market_square.md, REBUILD.md): the Market House. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/market_square/out --data-version 3955 && python3 ../../rebuild.py market_square market_square --candidate --nbt ../../../../build/rebuild/market_square/out/market-square.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/market_square/out --data-version 3955"
+  }
+}

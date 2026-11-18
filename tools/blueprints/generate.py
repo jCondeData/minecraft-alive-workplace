@@ -73,9 +73,16 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
            "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 49.9, the Ranch: js/ranch (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
+           # ranch and ranch_2)
+           "ranch", "ranch_2",
            # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
            # build.sh the live weavers_cottage and weavers_cottage_2)
            "weavers_cottage", "weavers_cottage_2",
+           # 49.9, the Farmstead: js/farmstead (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the
+           # live farmstead, farmstead_2 and farmstead_3, III with its 4-deep cellar); countryside.py and cellars.py keep
+           # the old drawings, which ship in blueprint_history/
+           "farmstead", "farmstead_2", "farmstead_3",
            # 51.6, the Post Office ("the Signal Tower") and the Graveyard ("the Lantern Yard"): js/post_office (npm run
            # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
            # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
@@ -84,6 +91,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 51.6, the Clock Tower ("the Water Clock", Create only): js/clock_tower (npm run cut), then rebuild.py
            # clock_tower clock_tower --nbt out/clock-tower.nbt
            "clock_tower",
+           # 51.6, the Chapel ("the Blossom Court"): js/chapel (npm run cut), then rebuild.py chapel chapel --nbt
+           # build/rebuild/chapel/out/chapel.nbt
+           "chapel",
+           # 51.7, the Market Cross ("the Mercat Drum"): js/market_cross (npm run cut), then rebuild.py market_cross
+           # market_cross --nbt build/rebuild/market_cross/out/market-cross.nbt (decor.py's market_cross() is the old one)
+           "market_cross",
            # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
            # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
            "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",
@@ -101,8 +114,13 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 52.5, the Bandit Camp (the Lookout Camp): js/bandit_camp (MC_BUILDER=...; npm run build writes the candidate,
            # npm run live the live camp/bandit_camp through its ship.py: the loot chest's table, the undrawn ground left
            # out); its old drawing in bandits.py is no longer saved
-           "bandit_camp"}
-
+           "bandit_camp",
+           # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
+           # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
+           # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
+           # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
+           # staffed house)
+           "leaders_hall", "trade_hall"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -188,8 +206,9 @@ if __name__ == "__main__":
     inn_2().save(MAIN_STRUCTURES, "inn_2")
     # ROADMAP 51.4: the Schoolhouse and the Library come from the rebuild kit (REBUILT); their old drawings are kept in
     # blueprint_history/
-    ranch().save(MAIN_STRUCTURES, "ranch")
-    ranch_2().save(MAIN_STRUCTURES, "ranch_2")
+    for name, draw in (("ranch", ranch), ("ranch_2", ranch_2)):
+        if name not in REBUILT:  # 49.9: the Ranch comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
     apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
     flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
@@ -286,7 +305,7 @@ if __name__ == "__main__":
         if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
-    chapel().save(MAIN_STRUCTURES, "chapel")
+    # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
     sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")

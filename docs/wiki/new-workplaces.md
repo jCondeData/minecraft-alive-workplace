@@ -19,7 +19,10 @@ job block: "1 job here has no workplace of its trade".
 - **Smithy**: a stone forge under a timber roof with an open front, an anvil, a quench trough and a chimney with a
   campfire; a blast furnace, a smithing table and a grindstone. Smithy II adds a coal and ore store and a second
   blast furnace.
-- **Mason's Yard**: a fenced yard of cut stone with a lean-to over a stonecutter. Its II has a second stonecutter.
+- **Mason's Yard**: a stone lodge whose roof sweeps down at the front over an open banker shed, the stonecutter in its
+  bay facing a walled yard with a jib crane, the Mason's chest and desk in the lodge behind (rebuilt from scratch in
+  50.2). Its II adds a second stonecutter and a tall tracing house on the east end, where the master draws templates
+  upstairs.
 - **Fletcher's Lodge**: a log cabin with a log pile, a straw target and a fletching table. Its II has a second
   fletching table.
 - **Map Room**: a narrow tower house with a cartography table and a lookout at the top (no upgrade).
@@ -75,7 +78,6 @@ none (a built workplace is an ordinary finished building)
 ## Known limits
 
 - The rules ask only when a worker has lost his block, not when the village wants a job nobody can take.
-- Mason's Yard II's hoist is two chains.
 
 ## Proof
 

@@ -28,8 +28,8 @@ final class PokemonBuildsScene {
 	}
 
 	private static final List<JobBlock> JOB_BLOCKS = List.of(
-		new JobBlock(StarterBlueprints.CAMP_KITCHEN, new BlockPos(6, 1, 5), "cobblemon:campfire"),
-		new JobBlock(StarterBlueprints.CAMP_KITCHEN_2, new BlockPos(6, 1, 5), "cobblemon:campfire"),
+		new JobBlock(StarterBlueprints.CAMP_KITCHEN, new BlockPos(6, 1, 6), "cobblemon:campfire"),
+		new JobBlock(StarterBlueprints.CAMP_KITCHEN_2, new BlockPos(6, 1, 6), "cobblemon:campfire"),
 		new JobBlock(StarterBlueprints.BERRY_NURSERY, new BlockPos(5, 1, 8), "minecraft:composter"),
 		new JobBlock(StarterBlueprints.BERRY_NURSERY_2, new BlockPos(5, 1, 8), "minecraft:composter"),
 		new JobBlock(StarterBlueprints.DAYCARE, new BlockPos(7, 1, 12), "cobblemon:pasture"),

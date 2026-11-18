@@ -83,7 +83,7 @@ export function drawLevel(level) {
   flight(c, st.flight, st.rises, P.wood, P.floor)
   railingRun(c, st.rail, P.wood)
   // the chamber's dormer over the desk, in the front slope
-  frontDormer(c, MASSES.dormer, P.roof, { cheek: P.post, infill: P.gable, glass: P.glass })
+  frontDormer(c, MASSES.dormer, P.roof, { cheek: P.post, infill: P.dormerFace, glass: P.glass, verge: P.verge, vergeTop: P.vergeTop, snow: P.snow })
   // the storm porch: stone cheeks under the front eave, a birch lintel, a lantern
   const pc = MASSES.porch
   stormPorch(c, pc.x, pc.z, pc.top, { cheek: rubble, lintel: P.trim })
@@ -121,14 +121,21 @@ export function drawLevel(level) {
   }
 
   // --- Pass 6: snow -------------------------------------------------------------------------------------------------
-  // snow on the ridges and the eaves, and one line of it across the back and side slopes at one height (the snow
-  // line; the front slope, broken by the dormer, keeps clean courses); the
-  // rakes (the gables' edges) and the dormer keep their stairs, so the gables read as clean rakes
+  // snow on the ridges (capping them three wide: the course under each ridge carries it too), along every eave, and,
+  // while the back slope is whole (I, II), one full course of it across the back (the snow line); the rakes (the
+  // gables' edges) and the dormer keep their stairs, so the gables read as clean rakes and the dormer as its own roof
   const D = MASSES.dormer
   const rake = (x, y, z) => x === M.roof.along[0] || x === M.roof.along[1] || (level >= 2 && x === Wg.roof.along[1]) ||
     (level >= 3 && z === B.roof.along[1])
   const dormer = (x, y, z) => x >= D.cx - 2 && x <= D.cx + 2 && z <= D.face + 1 && y >= D.y0 + 2
-  snowLoad(c, P.roof, P.snow, { eaves: true, tread: (x, y, z) => y === MASSES.snowLine && !(z <= M.roof.across[1] / 2 && x <= M.roof.along[1]), skip: (x, y, z) => rake(x, y, z) || dormer(x, y, z) })
+  const line = (x, y, z) => level < 3 && y === MASSES.snowLine && z > M.roof.across[1] / 2 && z <= M.roof.across[1] &&
+    x > M.roof.along[0] && x < M.roof.along[1]
+  // (a rake keeps its stairs but its ridge block takes snow, so each ridge's snow runs its whole length); the wing's
+  // eaves stay bare (the house's rake covers one end of them, so their snow would read as a broken piece)
+  const roofStairs = `minecraft:${P.roof.stairs}`
+  const wingEave = (x, y, z) => level >= 2 && x > Wg.x0 && x <= Wg.x1 && z <= Wg.z1 + 1
+  snowLoad(c, P.roof, P.snow, { eaves: true, shoulders: true, tread: line, eaveSkip: (x, y, z) => dormer(x, y, z) || wingEave(x, y, z),
+    skip: (x, y, z) => dormer(x, y, z) || (rake(x, y, z) && c.name(x, y, z) === roofStairs) })
   snowSkirt(c, P.snow, OUTSIDE.bare)
   return { c, dug }
 }

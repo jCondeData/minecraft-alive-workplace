@@ -29,7 +29,10 @@ public final class BlueprintLooks {
 		// 41.1: the Waystone Plaza in each village culture's style, plains as drawn (tools/blueprints/waystones.py)
 		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.LOOKS,
 		// 49.10a: the Starter Cottage in each village culture's climate, every level (tools/blueprints/js/starter_cottage_<culture>)
-		StarterBlueprints.STARTER_COTTAGE.id(), CULTURES);
+		StarterBlueprints.STARTER_COTTAGE.id(), CULTURES,
+		// 49.10b: the Stone House likewise (tools/blueprints/js/stone_house_<culture>); its snowy look went back to the
+		// critic three times and waits for the owner, so a snowy village builds it as drawn
+		StarterBlueprints.STONE_HOUSE.id(), List.of("desert", "savanna", "taiga"));
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

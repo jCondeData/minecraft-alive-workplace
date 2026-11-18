@@ -23,6 +23,13 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
+  jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
+  crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.
+  The Blueprint Table and its chest stand by the hearth, three more chests and a lumber rack fill the store, and the
+  Builder sleeps in the loft up a ladder (18 x 16 x 11). Villages grow it too, in their own materials, with its bed
+  downstairs; it no longer has a crafting table, which could take a Carpenter. Workshops already standing keep the
+  drawing they were built from until you refresh them.
 - **The Well** is redrawn from scratch (52.1): a stepped stone dais, a round mossy curb with the windlass and chain
   between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
   (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already

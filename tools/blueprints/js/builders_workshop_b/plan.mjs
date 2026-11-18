@@ -38,19 +38,25 @@
 //   Chimney    a stone stack up the back gable (x 4, z 10, its flue at z 9) past the ridge; the hearth in the back
 //              wall at (4, 1, 8) under a stone mantel and hood.
 //   Yard       the strip in front (z 0..1): the step to the door, flower beds under the windows, a lamp post by the
-//              cart doors. East of the Store (x 12..14, z 2..8), the materials yard: a fenced pen with a gate, the
-//              woodpile under the eave, stacks of cobble and stone bricks.
+//              cart doors. East of the Store (x 12..16, z 2..8), the materials yard: a fenced pen with a gate, the
+//              woodpile under the eave, stacks of cobble, stone bricks and logs, and the Crane over them.
 //
-// The village variant (for the ship step, ideas only): in PLAN coordinates the Workshop's ground storey is drawn on the
-// village contract's room (walls x 1/7, z 2/8, door (4, 1, 2), table (2, 1, 7) facing east, chest (2, 1, 6)), so a
-// village style takes this room as it is and restyles the jetty, roof and store round it. Keep in mind there:
-// (3, 1, 5) and (4, 1, 5) stay clear (the spawn villager stands at (4, 1, 5) on the floor jigsaw (4, 0, 5); the mover
-// at (3, 1, 5)): here they are a rug, walkable. The village bed's head cell (6, 1, 7) is this drawing's ladder foot,
-// so the village variant moves the ladder (to (6, 1, 3), against the front wall) or drops the loft, and puts the bed
-// at foot (6, 1, 6), head (6, 1, 7), facing south. The front row z 0 at y 0, x 0..8 must place nothing there (here the
-// step is at z 1 and the flower beds at z 1, fine; the lamp post and the store apron sit east of x 8).
+// The village variant (village.py's builders_workshop_village, ROADMAP 50.1): in PLAN coordinates the Workshop's ground
+// storey is drawn on the village contract's room (walls x 1/7, z 2/8, door (4, 1, 2), table (2, 1, 7) facing east,
+// chest (2, 1, 6)), so the village piece is this drawing moved back one block west (the west eave's column, plan
+// x -1, left off), restyled per village style round the same room. (3, 1, 5) and (4, 1, 5) stay clear (the spawn
+// villager stands at (4, 1, 5) on the floor jigsaw (4, 0, 5); the mover at (3, 1, 5)): here they are a rug, walkable.
+// The village bed (foot (6, 1, 6), head (6, 1, 7), facing south: VillagePieces' reference cell) stands on the ground
+// floor's free east end, so the ladder climbs the east wall at (6, 1..5, 4) instead, and the village piece leaves the
+// loft's bed out (one bed, the reference one). The front row z 0 at y 0, x 0..8 places nothing (the step and the
+// flower beds are at z 1; the lamp post and the store apron start east of x 8).
+//
+// The Crane (ROADMAP 50.1, the critic's 'a real hoist or gantry so the front says builder'): a timber jib crane
+// stands in the materials yard by the front, its mast as tall as the jetty's top with a counterweighted jib run out
+// west over the stacks, the hook hanging over the cobble it lifts: the one outline in a village that says 'builder'
+// from down the street, beside the gable's small loading hoist.
 
-export const SIZE = [16, 16, 11] // the file's w, h, d (limit 18 x 18 x 20)
+export const SIZE = [18, 16, 11] // the file's w, h, d (limit 18 x 18 x 20)
 export const SHIFT = [1, 0, 0] // file = plan + SHIFT
 
 // Palette (60/30/10): masonry walls (rubble stone below, brick nogging above) / a slate roof and a dark oak frame /
@@ -105,7 +111,7 @@ export const OPENINGS = {
   frontDoor: { at: [4, 1, 2], facing: 'south', step: [4, 0, 1] },
   storeDoorway: { at: [7, 1, 5], height: 2 },
   cartDoors: { cells: [[9, 1, 2], [10, 1, 2]], facing: 'south' },
-  ladder: { x: 6, z: 7, y0: 1, y1: 5, facing: 'north' }, // against the back wall, up through the loft floor
+  ladder: { x: 6, z: 4, y0: 1, y1: 5, facing: 'west' }, // against the east wall, up through the loft floor (off the village bed's cells)
   windows: [
     // ground storey: two-high panes in the stone, a flower bed under each front one
     { name: 'front west', cells: [[2, 2, 2], [2, 3, 2]], out: 'north', dress: 'shutters' },
@@ -162,19 +168,23 @@ export const FURNITURE = [
 export const WALK = [
   [4, 0, 0], [4, 0, 1], [4, 1, 2], [4, 1, 3], [4, 1, 4], [3, 1, 5], [3, 1, 6], [3, 1, 7],
   [5, 1, 5], [6, 1, 5], [7, 1, 5], [8, 1, 5], [8, 1, 6], [9, 1, 6], [9, 1, 4],
-  [6, 1, 6], [6, 2, 7], [6, 5, 7], [6, 6, 6], [5, 6, 6], [3, 6, 6], [4, 6, 3], [3, 6, 3],
+  [5, 1, 4], [6, 2, 4], [6, 5, 4], [6, 6, 4], [5, 6, 5], [3, 6, 5], [4, 6, 3], [3, 6, 4],
 ]
 
 // Outside the rooms (not furniture spots)
 export const OUTSIDE = {
-  apron: { x0: 8, x1: 11, z0: 0, z1: 1 }, // stone before the cart doors
+  apron: { x0: 9, x1: 11, z0: 0, z1: 1 }, // stone before the cart doors (east of x 8: the village front row stays the street's)
   flowerBeds: [{ x0: 2, x1: 2, z: 1, plants: ['poppy'] }, { x0: 6, x1: 6, z: 1, plants: ['cornflower'] }],
   lampPost: [12, 1, 1],
   woodpile: { x: 12, z0: 4, z1: 6 }, // under the east window's shutters
   rack: [[10, 1, 4], [10, 1, 5], [10, 1, 6], [10, 2, 4], [10, 2, 6]], // the lumber rack inside the store, along its east wall
   // the materials yard east of the Store: a fence from the store's corner posts round to x 14, a gate in the middle
-  pen: { fence: [[12, 1, 2], [14, 1, 2], [14, 1, 8], [12, 1, 8]], gate: [14, 1, 5] },
-  stacks: [[13, 1, 3, 'cobblestone'], [13, 2, 3, 'cobblestone'], [13, 1, 4, 'cobblestone'], [13, 1, 6, 'stone_bricks'],
+  pen: { fence: [[12, 1, 2], [16, 1, 2], [16, 1, 8], [12, 1, 8]], gate: [16, 1, 5] },
+  stacks: [[13, 1, 3, 'cobblestone'], [13, 1, 4, 'cobblestone'], [13, 1, 6, 'stone_bricks'],
     [13, 1, 7, 'stone_bricks'], [13, 2, 7, 'stone_bricks']],
+  logs: [[15, 1, 6], [15, 1, 7], [15, 2, 7]], // a stack of logs by the gate
+  // the Crane: a mast in the yard's front corner, a jib out west over the cobble with its hook, a short counter-jib east
+  // with a block of stone hung under it as the weight, a slab cap
+  crane: { mast: [15, 1, 3], height: 11, reach: 2, drop: 4, counterweight: 'cobblestone' },
   cartHoist: { at: [10, 6, 1], reach: 2, drop: 1 }, // a beam out of the store's front over the cart doors
 }

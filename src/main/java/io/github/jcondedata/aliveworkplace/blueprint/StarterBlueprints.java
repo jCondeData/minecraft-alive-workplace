@@ -565,8 +565,9 @@ public final class StarterBlueprints {
 
 	// The workplaces (ROADMAP 27.11), one per job the Steward asks for: the job's block, a bed, no villager (the worker who
 	// wants it moves in). Each its own build since ROADMAP 26.11, drawn by tools/blueprints/workplaces.py.
-	/** A saltbox drawing studio and a fenced yard with a timber crane. */
-	public static final Entry BUILDERS_WORKSHOP = workplace("builders_workshop", 13, 13, 11);
+	/** A stone workshop under a jettied brick-and-timber loft and a catslide roof over its store, a jib crane in the
+	 * materials yard (rebuilt from scratch, ROADMAP 50.1: tools/blueprints/js/builders_workshop_b). */
+	public static final Entry BUILDERS_WORKSHOP = workplace("builders_workshop", 18, 16, 11);
 	/** A long saw shed, half closed workshop, half open trestles, log piles front and back. */
 	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop", 14, 12, 11);
 	/** A plastered cookhouse under a hipped roof, a brick bread oven bulging from its side, herb beds. */

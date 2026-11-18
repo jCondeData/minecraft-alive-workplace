@@ -1491,6 +1491,12 @@ SCENES = [
       40, [("01_outside_front", "The Carpenter's Workshop from the front: the cruck-framed shop and its porch of logs and planks"),
            ("02_outside_back", "From the back"), ("04_outside_east", "From the east"),
            ("10_room_1", "Inside at eye level: the crafting table and the workbench")], furniture=True),
+    # ROADMAP 50.1: the Builder's Workshop rebuilt from scratch (Version B, the owner's pick), filmed the same way
+    S("rebuild_builders_workshop", "Build families", "The Builder's Workshop, rebuilt: from four sides and at eye level inside",
+      "the Builder's Workshop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Builder's Workshop from the front: the jettied loft over the stone workshop, the store's cart doors and the jib crane in the yard"),
+           ("02_outside_back", "From the back: the chimney up the gable"), ("04_outside_east", "From the east: the crane over the materials yard and the store's dormer"),
+           ("10_room_1", "Inside at eye level: the Blueprint Table and its chest by the hearth, the store beyond")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

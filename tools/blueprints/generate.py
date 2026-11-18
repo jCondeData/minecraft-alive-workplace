@@ -46,7 +46,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue",
            # 50.2, the workshops: tools/blueprints/js/<family>/ (MC_BUILDER=<minecraft-builder skill>; masons_yard: npm
            # run build with LEVEL=1|2), then python3 tools/blueprints/rebuild.py <family> <id>
-           "masons_yard", "masons_yard_2", "sawmill", "carpenters_workshop"}
+           "masons_yard", "masons_yard_2", "sawmill", "carpenters_workshop",
+           # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
+           # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
+           "builders_workshop"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

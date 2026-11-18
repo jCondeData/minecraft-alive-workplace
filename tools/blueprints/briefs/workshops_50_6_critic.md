@@ -10,3 +10,14 @@ No brief requirement missed. Notes: (1) Level II tower rooms (y6-11) are bare 3x
 
 ### Print Shop: BACK (silhouette 3/4, depth 3/3, interior 3/3, detail 2/3)
 No brief requirement missed. Notes: (1) back of I and II is flat brick with bare openings: shutters, band, sills, back gable overhang; (2) Level I's ridge runs into the side of the skylight tower and the back slope steps unevenly; (3) the slab boxes before the front windows are empty and there is no plant: real planters or none (II budget 745/750); (4) reading room shelves on one wall only: line the others; (5) shop floor sparse round the press: paper, ink and type-case shelving along the walls.
+
+## Round 2 (sheets `<family>_r2_sheet.png`, `<family>_2_r2_sheet.png`, `<family>_r2_cut_sheet.png`; fresh critics; eye-level not filmed)
+
+### Fletcher's Lodge: SHIP (silhouette 3/4, depth 3/4, interior 2/3, detail 2/4)
+No requirement missed. Optional: the back skirt and sill read as steps to a missing door; the right and back of Level I are the weakest sides; film eye-level shots.
+
+### Tailor's Shop: SHIP (silhouette 3/4, depth 3/4, interior 3/4, detail 3/4)
+No requirement missed. Risks: Level II at 794 blocks (cap ~800), watch `luxuryWorkshopBuilt_tailors_shop_2`; the tower base's back face is flat.
+
+### Print Shop: SHIP (silhouette 3/4, depth 3/4, interior 3/3, detail 2/4)
+No requirement missed. Optional: Level II wing's east end nearly bare; the skylight box's pale cladding is a third wall color.

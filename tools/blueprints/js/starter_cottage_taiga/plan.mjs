@@ -7,7 +7,7 @@
 //  Done: Level I (the Log Cabin), Level II (+ the Loft Pen) and Level III (+ the Cook Shed), and Level IV (+ B's cellar under the hall, in the look's own stone), as candidates (build.sh, build/rebuild/
 //  starter_cottage_taiga/). Not yet: the critic's pass (REBUILD.md) and the in-game build-to-DONE test.
 //  Critic round 2 (2026-11-18): note 1, the low side walls get flower boxes and shutters (east, under the eave);
-//  a dormer is still open. Note 2, the east wall's foot: the woodpile squared off into one stack between the boxes.
+//  and a gabled dormer in the west slope (MASSES.dormer). Note 2, the east wall's foot: the woodpile squared off into one stack between the boxes.
 //  Own render pass (2026-11-18): a dark oak roof merged into the logs (now slate); the open porch gable left a cave and an
 //  open pocket (now a closed pediment and ceiling). Open for the critic: the back reads busier than the front (the pen's
 //  back gable, its log ends and the shed's verge all meet at x 11..12); the cabin's west side is mostly stone and roof.
@@ -59,6 +59,7 @@ export const MASSES = {
   // gable over the beam, flush with the roof's front: the cabin shows the road a whole gable, the porch tucked under it
   chimney: { x: 0, z: 5, top: { 1: 9, 2: 10 }, breastTop: 3 },
   woodpile: { x: 8, z0: 5, z1: 7 },
+  dormer: { z: 7, face: 2, eave: 1, y0: 6 }, // in the west slope: face on x 2 (window y 6..7 over the eave), roof to y 10
   pen: { walls: { x0: 7, x1: 11, z0: 1, z1: 10 }, room: { x0: 8, x1: 10, z0: 2, z1: 9 }, floorY: 4, plateY: 8,
     roof: { axis: 'z', across: [6, 12], along: [0, 11], eaveY: 8, steep: true } },
   // Level III: the cook shed, B's kitchen cells (walls x 12..16, z 4..9) as a low log pen under a slate lean-to that

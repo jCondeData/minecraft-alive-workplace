@@ -9,7 +9,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  Canvas, LiftedCanvas, mix, trapdoor, cellar, hatchLadder, stair, plinth, floor, post, window, door, doorway, gableRoof, gableWall, bargeTrim, pentice, chimney,
+  Canvas, LiftedCanvas, mix, trapdoor, dormer, cellar, hatchLadder, stair, plinth, floor, post, window, door, doorway, gableRoof, gableWall, bargeTrim, pentice, chimney,
   woodpile, railingRun, flight, stairwell, furnitureParts, logPen, catslideRoof, lampPost,
 } from '../parts/index.mjs'
 
@@ -85,6 +85,8 @@ function levelOne(c) {
   for (const [a, b] of Po.rails) railingRun(c, [[a, 1, Po.z0], [b, 1, Po.z0]], P.wood)
   for (const x of Po.posts) c.set(x, 1, Po.z0, P.log, { axis: 'y' }) // the rail's ends are the posts
   c.set(...OUTSIDE.doorLamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  // a gabled dormer in the west slope over the couch, lighting the hall (critic round 2, note 1: break the roof plane)
+  dormer(c, MASSES.dormer.z, P.roof, P.gable, P.glass, P.log, { face: MASSES.dormer.face, eave: MASSES.dormer.eave, y0: MASSES.dormer.y0 })
   for (const { at: [x, z], pot } of OUTSIDE.sideBoxes) { // a box (an upside-down stair) with flowers, shutters either side
     stair(c, x, 1, z, `${P.wood}_stairs`, 'west', 'top')
     c.set(x, 2, z, pot)

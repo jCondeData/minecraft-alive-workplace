@@ -1,0 +1,836 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index 0840130a8..c61596f7d 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -23,6 +23,16 @@ asks for the steps, `latest.log` and any crash report).
+   Steward for a hamlet three beds short (49.2).
+ 
+ ### Changed
++- **The Ferry House is rebuilt from scratch** (50.5): a ferry station. Passengers wait in a stone waiting room with a
++  stove, a table, a bench and the station clock; the Ferryman sleeps in the white plastered room above, and a lookout
++  cupola on the slate roof carries the ferry light. A boarded landing runs the whole front under a canopy, the Travel
++  Post by its steps, with a signal mast at one end and a stone store on the other. Ferry Houses already standing keep the
++  drawing they were built from until you refresh them; the village ferry houses are unchanged.
++- **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
++  terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
++  meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
++  chests with his composter in the yard. Watermills already standing keep the drawing they were built from until you
++  refresh them.
+ - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
+   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
+   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
+diff --git a/docs/guide/create-builds.md b/docs/guide/create-builds.md
+index 50b21c717..1538b1cc6 100644
+--- a/docs/guide/create-builds.md
++++ b/docs/guide/create-builds.md
+@@ -21,7 +21,9 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
+ 
+ ## The builds
+ 
+-- **Watermill**: a stone-and-timber mill house whose wheel turns a millstone, with the farmer's composter.
++- **Watermill**: a stone-and-timber mill. A pond behind it feeds a timber channel over the top of the wheel, which
++  turns the millstone inside; a sack hoist's hood juts over the front steps, and the farmer's chests are in the
++  granary beside it, his composter in the yard.
+ - **Windmill**: a stone tower with 24 sails on its front and a millstone at the bottom.
+ - **Workshop**: a brick shop whose wheel drives a belt to a depot under a mechanical press, with the armorer's blast
+   furnace.
+diff --git a/docs/guide/ferry-house-build.md b/docs/guide/ferry-house-build.md
+index 8256d2534..69df50277 100644
+--- a/docs/guide/ferry-house-build.md
++++ b/docs/guide/ferry-house-build.md
+@@ -2,16 +2,16 @@
+ 
+ ```infobox
+ type: Build
+-Size: 9 wide, 10 deep, 10 high
++Size: 18 wide, 11 deep, 17 high
+ Tiers: one
+ Houses: a Ferryman at the Travel Post
+ Where to get it: Blueprint Table
+-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
++Main materials: deepslate tile stairs, spruce planks and logs, cobblestone, white concrete
+ categories: Builds
+ related: jobs-services.md, fishers-hut-build.md
+ ```
+ 
+-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Travel Post**: everything one worker needs to live and work in the same place.
++A ferry station on the water's edge. A boarded landing runs the whole front under a canopy, with the **Travel Post** by its steps, benches against the wall and a signal mast at one end. Inside, passengers wait in a stone room with a stove, a table, a bench and the station clock; the Ferryman's bedroom is up the stair, in the white plastered floor under the slate roof, and a lookout on the ridge carries the ferry light. A stone store leans on its east end: everything one worker needs to live and work in the same place.
+ 
+ ## Getting the blueprint
+ 
+diff --git a/docs/wiki/create.md b/docs/wiki/create.md
+index 7625579a7..a196897ac 100644
+--- a/docs/wiki/create.md
++++ b/docs/wiki/create.md
+@@ -44,9 +44,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
+   workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
+ 
+ - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
+-  **Watermill**, a stone-and-timber mill house whose water wheel on the west wall is turned by water falling from a
+-  header tank into a walled mill race, its shaft running through the wall to a gearbox and a millstone inside, with
+-  the farmer's composter and the store chest; the **Windmill**, a seven-square stone tower with a windmill bearing and
++  **Watermill** (rebuilt from scratch in 50.5), a stone-and-timber mill on a stone undercroft: a mill pond on a terrace
++  against its back wall feeds a timber launder along the west side, over the top of the water wheel and down into a
++  stone pit, and the wheel's shaft runs through the wall to a gearbox under the millstone on the meal floor; a sack
++  hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
++  and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
++  keep their old drawing until refreshed); the **Windmill**, a seven-square stone tower with a windmill bearing and
+   24 sails on its front and a shaft down the middle to the millstone; and the **Workshop**, a brick shop whose water
+   wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
+   pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
+@@ -434,7 +437,8 @@ The planned fields of later items, each with its default, are listed in the desi
+ - Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
+   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
+ 
+-- Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
++- Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
++  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (9 x 17 x 9) and
+   `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
+   listed only with Create (`mechanic/CreateBuilds`).
+ 
+diff --git a/docs/wiki/workplace-looks.md b/docs/wiki/workplace-looks.md
+index c51e4e0cb..91f9cf24d 100644
+--- a/docs/wiki/workplace-looks.md
++++ b/docs/wiki/workplace-looks.md
+@@ -29,7 +29,11 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3
+ - **Clinic**: a white pavilion with its gable to the street and a stone-mullioned cross window over the door, and a ward
+   across the back with cross windows and four white beds, heads to the back wall, for the ill. Its ceilings are closed
+   up to the ridge.
+-- **Ferry House**: a boathouse under a gambrel roof, a landing stage of planks at the front with a light on a mast.
++- **Ferry House** (rebuilt from scratch in 50.5): a ferry station. A stone waiting room with a stove, a table, a bench
++  and the station clock under a white plastered upper floor (the Ferryman's bedroom, up a stair inside) and a slate roof
++  with a lookout cupola carrying the ferry light; a boarded landing the whole width of the front under a canopy with a
++  teal valance, the Travel Post by the landing steps and benches against the wall; a signal mast at its west end and a
++  stone store on the east gable. 18 x 17 x 11; standing Ferry Houses keep their old drawing until refreshed.
+ - **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
+   targets.
+ - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
+@@ -82,7 +86,7 @@ the **Inn** has its guest story jettied over the street on brackets, under two g
+ tall post at the corner.
+ 
+ The buildings are bigger than the old 9 x 10 house (up to 17 x 17 x 14), so their plots are bigger; the Ferry House
+-keeps its 9 x 10 plot (the shore rule measures from its front).
++(18 x 11 since its 50.5 rebuild) keeps the old plot's depth of 10 or 11 (the shore rule measures from its front).
+ 
+ ## 2. How it works
+ 
+diff --git a/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/CreateBuildsCompatTests.java b/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/CreateBuildsCompatTests.java
+index fb5c64970..9fd2c8a92 100644
+--- a/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/CreateBuildsCompatTests.java
++++ b/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/CreateBuildsCompatTests.java
+@@ -71,8 +71,10 @@ public class CreateBuildsCompatTests implements FabricGameTest {
+ 	//$ gametest_ticks_batch HUGE_AREA '30000' '"watermill_build"'
+ 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "watermill_build")
+ 	public void aBuilderBuildsTheWatermillAndItTurns(GameTestHelper helper) {
+-		build(helper, StarterBlueprints.WATERMILL, List.of(at(7, 1, 2, "minecraft:composter"), at(1, 1, 4, "create:water_wheel"),
+-			at(4, 1, 4, "create:gearbox")), new BlockPos(4, 2, 4));
++		// ROADMAP 50.5 (the rebuilt Watermill): the composter in the yard, the wheel on the west wall, the gearbox and the
++		// millstone over it at the end of the shaft through the wall
++		build(helper, StarterBlueprints.WATERMILL, List.of(at(15, 0, 3, "minecraft:composter"), at(2, 2, 9, "create:water_wheel"),
++			at(5, 2, 9, "create:gearbox")), new BlockPos(5, 3, 9));
+ 	}
+ 
+ 	/** The Windmill: the builder starts the bearing, its sails turn the millstone at the foot of the tower. */
+diff --git a/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/QaCreateBuildsTurnedCompatTests.java b/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/QaCreateBuildsTurnedCompatTests.java
+index 885ec6bc6..39b637e2a 100644
+--- a/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/QaCreateBuildsTurnedCompatTests.java
++++ b/src/compattest/java/io/github/jcondedata/aliveworkplace/compat/QaCreateBuildsTurnedCompatTests.java
+@@ -69,8 +69,8 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
+ 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa_watermill_mirrored")
+ 	public void aFlippedWatermillIsBuiltAndItTurns(GameTestHelper helper) {
+ 		Run run = start(helper, StarterBlueprints.WATERMILL, Rotation.NONE, Mirror.FRONT_BACK);
+-		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(7, 1, 2), "minecraft:composter",
+-			List.of(new BlockPos(4, 2, 4))));
++		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(15, 0, 3), "minecraft:composter",
++			List.of(new BlockPos(5, 3, 9)))); // ROADMAP 50.5: the rebuilt Watermill's composter and millstone
+ 	}
+ 
+ 	/**
+@@ -145,7 +145,7 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
+ 				CreateBuilds.ENABLED = was; // the build is over: the switch back as the other tests expect it
+ 			}
+ 			helper.assertTrue(switched[0], "the switch never went off mid-build (stage " + run.site.stage() + ")");
+-			assertBuiltAndTurning(helper, run, new BlockPos(7, 1, 2), "minecraft:composter", List.of(new BlockPos(4, 2, 4)));
++			assertBuiltAndTurning(helper, run, new BlockPos(15, 0, 3), "minecraft:composter", List.of(new BlockPos(5, 3, 9)));
+ 		});
+ 	}
+ 
+diff --git a/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/JobScenes.java b/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/JobScenes.java
+index 4a66e836a..dd733f15d 100644
+--- a/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/JobScenes.java
++++ b/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/JobScenes.java
+@@ -1480,12 +1480,14 @@ final class JobScenes {
+ 		// side by side as a builder leaves them, facing the camera. Water falls from the header tanks through the two wheels,
+ 		// the windmill's bearing is started as the builder starts it, and every machine turns: both millstones and the press.
+ 		SCENES.put("create_builds", new Job("the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
+-			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
++			900, new Vec3(0.5, -47.0, -21.5), new Vec3(0.5, -55.0, 10.0), (level, player) -> {
+ 			level.setDayTime(2000);
+ 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
+ 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
+ 			List<BlockPos> machines = new java.util.ArrayList<>();
+-			int x = -20;
++			// ROADMAP 50.5: the rebuilt Watermill is 17 wide, so the row (17 + 3 + 9 + 3 + 14) starts further west and the
++			// camera stands further back to take it all in
++			int x = -23;
+ 			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
+ 				BlockPos at = STATION.offset(x, 0, 4);
+ 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
+@@ -1494,7 +1496,7 @@ final class JobScenes {
+ 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
+ 				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
+ 				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
+-				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
++				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(5, 3, 9) // ROADMAP 50.5: the rebuilt mill's millstone
+ 					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
+ 				x += entry.size().getX() + 3;
+ 			}
+diff --git a/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/RebuildScene.java b/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/RebuildScene.java
+index ad51ad2e3..2df96b95b 100644
+--- a/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/RebuildScene.java
++++ b/src/devclient/java/io/github/jcondedata/aliveworkplace/devclient/RebuildScene.java
+@@ -45,7 +45,8 @@ final class RebuildScene {
+ 	static final List<String> FILMED = List.of("well", "house_t1_b", "well_house", "fountain", "lily_pond", "footbridge",
+ 		"park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue", "stone_house",
+ 		"townhouse", "terrace", "masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen", "smithy",
+-		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "butchers_shop", "winery");
++		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "butchers_shop", "winery",
++		"ferry_house", "watermill");
+ 	private static final BlockPos AT = new BlockPos(0, -60, 0);
+ 	private static final int FIRST = 80;
+ 	private static final int EACH = 50;
+diff --git a/src/main/java/io/github/jcondedata/aliveworkplace/blueprint/StarterBlueprints.java b/src/main/java/io/github/jcondedata/aliveworkplace/blueprint/StarterBlueprints.java
+index 148c128f7..b2efcb086 100644
+--- a/src/main/java/io/github/jcondedata/aliveworkplace/blueprint/StarterBlueprints.java
++++ b/src/main/java/io/github/jcondedata/aliveworkplace/blueprint/StarterBlueprints.java
+@@ -522,7 +522,7 @@ public final class StarterBlueprints {
+ 	 * millstone), the Windmill (a windmill bearing with 24 sails over a millstone) and the Workshop (a water wheel driving
+ 	 * a belt to a depot under a mechanical press). Workplaces for 39.3's machine work.
+ 	 */
+-	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(11, 11, 9));
++	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(17, 16, 17)); // ROADMAP 50.5: rebuilt
+ 	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
+ 	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
+ 	/** The three Create-powered builds of 39.4. */
+@@ -596,7 +596,7 @@ public final class StarterBlueprints {
+ 	/** A white pavilion with a ward wing across the back and cross-mullioned windows. */
+ 	public static final Entry CLINIC = workplace("clinic", 13, 11, 12);
+ 	/** A gambrel-roofed boathouse with a landing stage; the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
+-	public static final Entry FERRY_HOUSE = workplace("ferry_house", 9, 10, 10);
++	public static final Entry FERRY_HOUSE = workplace("ferry_house", 18, 17, 11); // ROADMAP 50.5: rebuilt
+ 	/** A long low dojo with a deep veranda and a fenced sparring ring. */
+ 	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
+ 	/** A stone hall with a columned portico and a pediment. */
+diff --git a/src/main/resources/data/aliveworkplace/blueprint_furniture/ferry_house.json b/src/main/resources/data/aliveworkplace/blueprint_furniture/ferry_house.json
+index 2c38daed9..510c689a6 100644
+--- a/src/main/resources/data/aliveworkplace/blueprint_furniture/ferry_house.json
++++ b/src/main/resources/data/aliveworkplace/blueprint_furniture/ferry_house.json
+@@ -1,3 +1,21 @@
+ {"spots": [
+-  {"kind": "bed", "pos": [6, 1, 7], "facing": "north", "wood": "spruce", "colour": "cyan", "blocks": [{"at": [0, 0, 0], "state": "minecraft:cyan_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:cyan_bed[facing=north,occupied=false,part=head]"}], "support": ["floor", "wall"]}
++  {"kind": "clock", "pos": [8, 1, 4], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:stripped_spruce_log[axis=y]"}, {"at": [0, 1, 0], "state": "minecraft:spruce_trapdoor[facing=south,half=bottom,open=false,powered=false,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "couch", "pos": [3, 1, 5], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "couch", "pos": [3, 1, 6], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "chair", "pos": [8, 1, 6], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=west,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
++  {"kind": "table", "pos": [9, 1, 6], "facing": "north", "wood": "spruce", "colour": "cyan", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:cyan_carpet"}], "support": ["floor"]},
++  {"kind": "chair", "pos": [10, 1, 6], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
++  {"kind": "picture", "pos": [3, 3, 6], "facing": "east", "wood": "spruce", "colour": "cyan", "blocks": [{"at": [0, 0, 0], "state": "minecraft:cyan_wall_banner[facing=east]"}], "support": ["wall"]},
++  {"kind": "lamp", "pos": [4, 4, 1], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["wall", "ceiling"]},
++  {"kind": "lamp", "pos": [10, 4, 1], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["wall", "ceiling"]},
++  {"kind": "lamp", "pos": [5, 4, 5], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
++  {"kind": "lamp", "pos": [9, 4, 5], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
++  {"kind": "lamp", "pos": [14, 4, 6], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
++  {"kind": "cupboard", "pos": [3, 6, 4], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:bookshelf"}, {"at": [0, 1, 0], "state": "minecraft:spruce_slab[type=bottom,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "nightstand", "pos": [9, 6, 4], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "desk", "pos": [3, 6, 5], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}], "support": ["floor", "wall"]},
++  {"kind": "chair", "pos": [4, 6, 5], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_stairs[facing=east,half=bottom,shape=straight,waterlogged=false]"}], "support": ["floor"]},
++  {"kind": "bed", "pos": [10, 6, 5], "facing": "north", "wood": "spruce", "colour": "cyan", "blocks": [{"at": [0, 0, 0], "state": "minecraft:cyan_bed[facing=north,occupied=false,part=foot]"}, {"at": [0, 0, -1], "state": "minecraft:cyan_bed[facing=north,occupied=false,part=head]"}], "support": ["floor"]},
++  {"kind": "lamp", "pos": [4, 10, 6], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}, {"at": [0, 1, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 2, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}], "support": ["wall", "ceiling"]},
++  {"kind": "lamp", "pos": [7, 10, 6], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}, {"at": [0, 1, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 2, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}], "support": ["wall", "ceiling"]}
+ ]}
+diff --git a/src/main/resources/data/aliveworkplace/structure/ferry_house.nbt b/src/main/resources/data/aliveworkplace/structure/ferry_house.nbt
+index 9f042bb5e4fb15ea841c76c1b90a198325901cac..f8169c5530b3e12e2e3e65fb0c0c31c1124bc731 100644
+GIT binary patch
+literal 10515
+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
+
+literal 3207
+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
+N2mL$ITX+b>{{gcX<z4^)
+
+diff --git a/src/main/resources/data/aliveworkplace/structure/modded/ferry_house.nbt b/src/main/resources/data/aliveworkplace/structure/modded/ferry_house.nbt
+index 12bd01fb3251e0cddac5a2c1b2f4770bc96b48ce..75f9658be0c27b4a2cc4f5322ae47526b663ef27 100644
+GIT binary patch
+literal 10660
+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
+
+literal 3236
+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
+
+diff --git a/src/main/resources/data/aliveworkplace/structure/watermill.nbt b/src/main/resources/data/aliveworkplace/structure/watermill.nbt
+index 1e654955ad301c2ba60043ff535a2076a6207bbe..c47cb8503b2f1248a26e9da9f52993fc4428dd21 100644
+GIT binary patch
+literal 13887
+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
+RwaLK!QDMT*9+kQ-`Y$e_7#{!t
+
+literal 3781
+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
+TPm?#Zm(~45U!_kxR8#vOPP8EP
+
+diff --git a/tools/blueprints/create_builds.py b/tools/blueprints/create_builds.py
+index 4191bb818..1c59d54e9 100644
+--- a/tools/blueprints/create_builds.py
++++ b/tools/blueprints/create_builds.py
+@@ -43,7 +43,8 @@ def _wheel(b, x, y, z):
+ 
+ 
+ def watermill():
+-    """11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
++    """The OLD drawing (ROADMAP 50.5: the live watermill.nbt now comes from the rebuild kit, tools/blueprints/js/watermill; this one
++    is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
+     on the west wall turned by water falling from a header tank into a walled mill race. The wheel's shaft runs
+     through the wall into a gearbox on the floor with the millstone over it (the farmer's machine, 39.3); the farmer's
+     composter and the store chest beside it, hay by the back wall."""
+diff --git a/tools/blueprints/generate.py b/tools/blueprints/generate.py
+index 413559888..33a6d102a 100644
+--- a/tools/blueprints/generate.py
++++ b/tools/blueprints/generate.py
+@@ -57,6 +57,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
+            # 50.4, the Winery: js/winery (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
+            # winery, winery_2 and winery_3, III with --basement 4 --cellar "$(cat out/cellar.txt)")
+            "winery", "winery_2", "winery_3",
++           # 50.5, the Ferry House (the buildable only; its village pieces stay village.py's) and the Watermill (Create
++           # only): js/ferry_house and js/watermill (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 the live one)
++           "ferry_house", "watermill",
+            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
+            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
+            "builders_workshop",
+@@ -176,7 +179,7 @@ if __name__ == "__main__":
+             draw().save(MAIN_STRUCTURES, name)
+     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
+         if name in REBUILT:
+-            continue  # ROADMAP 50.2 and 50.3: drawn by the rebuild kit
++            continue  # ROADMAP 50.2, 50.3 and 50.5: drawn by the rebuild kit
+         draw().save(MAIN_STRUCTURES, name)
+     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
+         draw().save(MAIN_STRUCTURES, name)
+@@ -269,7 +272,7 @@ if __name__ == "__main__":
+         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
+     for name in WORKPLACES + COBBLEMON_WORKPLACES:
+         if name in REBUILT:
+-            continue  # ROADMAP 50.2: drawn by the rebuild kit (below)
++            continue  # ROADMAP 50.2 and 50.5: drawn by the rebuild kit (below)
+         workplace(name).save(MAIN_STRUCTURES, name)
+     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
+         save_wonder(wonder_id)
+diff --git a/tools/blueprints/js/parts/index.mjs b/tools/blueprints/js/parts/index.mjs
+index 1dac6ae8f..fa973d38b 100644
+--- a/tools/blueprints/js/parts/index.mjs
++++ b/tools/blueprints/js/parts/index.mjs
+@@ -74,3 +74,6 @@ export * from './kitchen_hall.mjs' // ledgeRing, louvredHip, hipRolls, tieBeams,
+ export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruitingVines (wineries: a double perron, log casks on their sides, vineyard rows, glow berries on a beam)
+ export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
+ export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)
++export * from './shore.mjs' // upturnedHull, transom, pier, dryingRack (shore buildings: an upturned boat for a roof, a pier on piles, a fish-drying rack)
++export * from './landing.mjs' // platformCanopy, mast (ferry and station platforms: a lean-to canopy with brackets and a valance, a signal mast; the Ferry House, 49)
++export * from './watermill_lucam.mjs' // raisedPond, overshotWheel, driveToMillstone, hurst, lucam, sluiceGate (watermills: a raised mill pond, a launder over an overshot wheel into a closed pit, the millstone on its hurst, a gable's sack-hoist hood)
+diff --git a/tools/blueprints/owner_rules_baseline.json b/tools/blueprints/owner_rules_baseline.json
+index fc63285fb..46f859b4e 100644
+--- a/tools/blueprints/owner_rules_baseline.json
++++ b/tools/blueprints/owner_rules_baseline.json
+@@ -106,7 +106,6 @@
+   "village/taiga_ball_workshop": 2,
+   "village/taiga_ferry_house": 1,
+   "village/taiga_ranch_house": 1,
+-  "watermill": 2,
+   "weavers_cottage_2": 2,
+   "windmill": 2,
+   "wonder/great_library/stage_1_0": 3,
+diff --git a/tools/blueprints/workplaces.py b/tools/blueprints/workplaces.py
+index 7a14ad8a4..6d39bef28 100644
+--- a/tools/blueprints/workplaces.py
++++ b/tools/blueprints/workplaces.py
+@@ -566,7 +566,9 @@ FE_PROFILE = {0: (4, False), 1: (6, True), 2: (7, False), 3: (8, False), 4: (9,
+ 
+ 
+ def ferry_house_build():
+-    """9 x 10 x 10: the ferry house, its landing stage to the front."""
++    """The OLD drawing (ROADMAP 50.5: the live ferry_house.nbt now comes from the rebuild kit, tools/blueprints/js/ferry_house;
++    this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 10: the ferry house, its landing
++    stage to the front."""
+     b = Build(9, 10, 10)
+     # The landing stage, rails either side, mooring posts, the light on its mast
+     box(b, 0, 0, 0, 8, 0, 2, "spruce_planks")
+diff --git a/tools/showcase/scenes.py b/tools/showcase/scenes.py
+index 430a42ce8..61eb91005 100755
+--- a/tools/showcase/scenes.py
++++ b/tools/showcase/scenes.py
+@@ -1582,6 +1582,19 @@ SCENES = [
+            ("04_outside_east", "From the east: the stone Tasting Room under its tiled lean-to"),
+            ("03_outside_west", "From the west: the stone Cask Hall under the white timber-framed press floor"),
+            ("10_room_1", "Inside at eye level: the first furnished room, its furniture in view")], furniture=True),
++    # ROADMAP 50.5: the Ferry House and the Watermill rebuilt from scratch (REBUILD.md)
++    S("rebuild_ferry_house", "Build families", "The Ferry House, rebuilt: from four sides and at eye level inside",
++      "the Ferry House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
++      40, [("01_outside_front", "The Ferry House from the front: the boarded landing under its canopy, the Travel Post by the steps, the signal mast at the west end"),
++           ("02_outside_back", "From the back: the stone ground floor, the white plastered upper floor and the slate roof with its lookout cupola"),
++           ("04_outside_east", "From the east: the stone store on the gable and the stove's chimney"),
++           ("10_room_1", "Inside at eye level: the waiting room, its table, bench and stove")], furniture=True),
++    S("rebuild_watermill", "Build families", "The Watermill, rebuilt: from four sides and at eye level inside",
++      "the Watermill's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
++      40, [("01_outside_front", "The Watermill from the front: the stone perron up under the lucam, the granary wing's door and the composter in the yard"),
++           ("03_outside_west", "From the west: the mill pond on its terrace, the launder over the wheel and the tail pit"),
++           ("02_outside_back", "From the back: the pond terrace against the mill's back wall"),
++           ("10_room_1", "Inside at eye level: the meal floor, the millstone over its gearbox")], furniture=True, create=True),
+     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
+     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
+       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -129,7 +129,7 @@ public final class Renewals {
 	public record Book(List<Renewal> active, long lastDay) {
 		public static final Book EMPTY = new Book(List.of(), -100L);
 		public static final Codec<Book> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Renewal.CODEC.listOf().optionalFieldOf("active", List.of()).forGetter(Book::active),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Renewal.CODEC, "renewal under way").optionalFieldOf("active", List.of()).forGetter(Book::active),
 			Codec.LONG.optionalFieldOf("last_day", -100L).forGetter(Book::lastDay)
 		).apply(i, Book::new));
 

@@ -179,8 +179,8 @@ public class QaStorageHallGameTests implements FabricGameTest {
 	 * player breaks the diamonds' chest: the board then counts one chest and 10 items fewer, exactly 10 diamonds lie on
 	 * the ground, and a builder still builds the hut from the hall's other chests with every item accounted for.
 	 */
-	//$ gametest_ticks_batch HUGE_AREA '6000' '"qaHallBroken"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 6000, batch = "qaHallBroken")
+	//$ gametest_ticks_batch HUGE_AREA '12000' '"qaHallBroken"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 12000, batch = "qaHallBroken")
 	public void aChestOfTheHallBrokenLeavesTheRestServingWithNothingDuplicated(GameTestHelper helper) {
 		ServerLevel level = setup(helper, 48);
 		StarterBlueprints.Entry entry = StarterBlueprints.STORAGE_HALL;
@@ -208,6 +208,12 @@ public class QaStorageHallGameTests implements FabricGameTest {
 		Leftovers.after(helper, () -> level.getServer().getPlayerList().remove(player));
 		long[] before = stockNumbers(helper, player, board);
 		helper.assertTrue(level.destroyBlock(broken, true, player), "the chest wasn't broken");
+		// B571: counted as they fall, then kept from despawning: dropped items vanish at 6000 ticks, this test's timeout, so
+		// a hut slow to finish showed as "0 diamonds on the ground" instead of its own message
+		int dropped = onGround(helper, Items.DIAMOND);
+		helper.assertTrue(dropped == 10, dropped + " diamonds on the ground after the break, wanted the 10 the chest held");
+		AABB aroundArea = helper.getBounds().inflate(8);
+		helper.getLevel().getEntitiesOfClass(ItemEntity.class, aroundArea, e -> e.getItem().is(Items.DIAMOND)).forEach(ItemEntity::setUnlimitedLifetime);
 		long[] after = stockNumbers(helper, player, board);
 		helper.assertTrue(after[0] == before[0] - 1, "the board's chests went from " + before[0] + " to " + after[0] + ", wanted one fewer");
 		helper.assertTrue(after[1] == before[1] - 10, "the board's items went from " + before[1] + " to " + after[1] + ", wanted 10 fewer");

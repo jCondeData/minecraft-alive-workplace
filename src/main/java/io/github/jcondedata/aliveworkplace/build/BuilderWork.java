@@ -2726,6 +2726,48 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * B1377: whether placing {@code placed} at {@code pos} could flood a waterloggable block the drawing has dry. In
+	 * vanilla, a spot with two water sources beside it and a floor under it becomes a source itself, and water spreading
+	 * into a slab, stair or other waterloggable block there waterlogs it; the block then pours out over its open side.
+	 * A Fountain's bowl with a slab at an inner corner came out so, spilling. So a water source poured beside such a
+	 * block, or such a block placed beside a water source, goes in quietly: nothing round it is told, and the poured
+	 * water gets no tick of its own, so still water stays as drawn and the block stays dry, as a player's careful build
+	 * would. Anything else (water with no dry block beside it, which may be drawn to run) is placed as before.
+	 */
+	static boolean keepsDrawnDry(ServerLevel level, BuildPlan plan, BlockPos pos, BlockState placed) {
+		boolean water = placed.getBlock() instanceof LiquidBlock && placed.getFluidState().is(net.minecraft.tags.FluidTags.WATER)
+			&& placed.getFluidState().isSource();
+		boolean dry = drawnDry(placed);
+		if (!water && !dry) {
+			return false;
+		}
+		if (water) {
+			// two steps round, as the water beside this spot, told of it, would tick and run into its own neighbours
+			for (int dx = -2; dx <= 2; dx++) {
+				for (int dz = -2; dz <= 2; dz++) {
+					int far = Math.abs(dx) + Math.abs(dz);
+					if (far >= 1 && far <= 2 && drawnDry(plan.targets().get(pos.offset(dx, 0, dz)))) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			net.minecraft.world.level.material.FluidState there = level.getFluidState(pos.relative(d));
+			if (there.is(net.minecraft.tags.FluidTags.WATER) && there.isSource()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** B1377: a waterloggable block drawn without water. */
+	private static boolean drawnDry(@Nullable BlockState state) {
+		return state != null && state.hasProperty(BlockStateProperties.WATERLOGGED) && !state.getValue(BlockStateProperties.WATERLOGGED);
+	}
+
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
@@ -2796,6 +2838,10 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 			level.setBlock(step.secondaryPos(), step.secondaryState(), Block.UPDATE_ALL);
 			level.blockUpdated(pos, state.getBlock());
+		} else if (keepsDrawnDry(level, plan, pos, shaped)) {
+			// B1377: placed without waking the water beside it (no neighbour or shape updates, its own fluid tick dropped)
+			level.setBlock(pos, shaped, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			level.getFluidTicks().clearArea(new net.minecraft.world.level.levelgen.structure.BoundingBox(pos));
 		} else {
 			level.setBlock(pos, shaped, Block.UPDATE_ALL);
 		}

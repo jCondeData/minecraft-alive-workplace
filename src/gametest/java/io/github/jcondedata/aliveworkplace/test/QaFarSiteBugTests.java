@@ -49,6 +49,11 @@ public class QaFarSiteBugTests {
 		});
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
+		BlockPos hall = helper.absolutePos(HALL);
+		Leftovers.after(helper, () -> { // not left standing in a later batch's village
+			level.removeBlock(hall, false);
+			VillageHalls.forgetNearest();
+		});
 		VillageHalls.RADIUS = 160; // the largest villageHallRadius the config allows
 		VillageHalls.forgetNearest();
 		// B619: his is the only table round the spot (the report counts at the nearest one with the spot in reach, so another

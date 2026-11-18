@@ -276,6 +276,19 @@ public class QaFarSiteGameTests {
 		Leftovers.after(helper, () -> entity.setPlan(CityPlan.EMPTY));
 		BlockPos corner = hall.offset(58, 0, 58); // about 82 from the hall: past the radius of 64, inside the grid (half 64)
 		BlockPos across = hall.offset(58, 0, -58);
+		// B619: another batch's hall left standing nearer the corner than this one (71 blocks from it, 38 from this hall, when
+		// two new test classes moved this batch's spot) owns the corner's cells (CityPlan.nearerAnotherHall), and the field
+		// was refused as outside the village. Every other hall as near the corner as this one can be goes first.
+		List<BlockPos> others = level.getPoiManager().getInSquare(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI),
+			corner, 90, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos).filter(other -> !other.equals(hall)).toList();
+		for (BlockPos other : others) {
+			level.removeBlock(other, false);
+			if (level.getPoiManager().getType(other).filter(h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.VILLAGE_HALL_POI)).isPresent()) {
+				level.getPoiManager().remove(other); // a point with no hall under it
+			}
+		}
+		VillageHalls.forgetNearest();
 		BitSet cells = new BitSet();
 		for (int dx = -2; dx <= 2; dx++) {
 			for (int dz = -2; dz <= 2; dz++) {

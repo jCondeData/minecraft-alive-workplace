@@ -84,6 +84,13 @@ public class FarSiteAsksGameTests implements net.fabricmc.fabric.api.gametest.v1
 		if (village) {
 			helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 			VillageHalls.forgetNearest();
+			// the hall goes when the test ends: left standing, it would be a village (and the nearer hall of a City Plan cell)
+			// for whichever later batch is laid out beside this spot
+			BlockPos hall = helper.absolutePos(HALL);
+			Leftovers.after(helper, () -> {
+				level.removeBlock(hall, false);
+				VillageHalls.forgetNearest();
+			});
 		}
 
 		// the wall, standing and recorded as finished; then one plank is knocked out

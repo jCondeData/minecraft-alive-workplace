@@ -29,6 +29,13 @@ asks for the steps, `latest.log` and any crash report).
   two-story wing to the road with two more beds upstairs, Level III leans a stone kitchen with its own door on the wing,
   and Level IV digs a store cellar under the hall. Cottages already standing keep their look until you press Refresh on
   the Village Hall's Repairs page.
+- **The Noble's Manor is rebuilt from scratch** (49.7): a brick hall-and-cross-wing house dressed in cut stone. A porch
+  tower under a steep pyramid roof leads through an arch into a black-and-white hall with the grand stair, the hearth and
+  a dining table for nine; a crow-gabled west wing holds the parlor and the kitchen, with two chambers and their oriels
+  above, and the Long Gallery and the tower study are up the stair. Manor II walls in a knot garden behind the hall,
+  Manor III completes the front with the east wing's double-height ballroom and its musicians' gallery (where the
+  Noble's Ball gathers), and Manor IV digs a wine cellar under the kitchen. Manors already standing keep their look until
+  you press Refresh on the Village Hall's Repairs page.
 - **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
   terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
   meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's

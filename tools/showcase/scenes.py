@@ -1533,6 +1533,16 @@ SCENES = [
            ("02_outside_back", "From the back: the chimney stack up the back gable, the kitchen hearth set in its foot"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room up at eye level")], furniture=True),
+    # ROADMAP 49.7: the Noble's Manor rebuilt from scratch (a brick hall and cross-wing house: the porch tower and its
+    # pyramid roof on the hall's front, the crow-gabled west wing of parlour, kitchen and chambers, a grand stair to the
+    # Long Gallery), its first level built as a server with the furniture mods builds it, from four sides and every room
+    S("rebuild_manor", "Build families", "The Noble's Manor, rebuilt from scratch, furnished: from four sides and every room",
+      "the Manor's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the porch, the hall, the parlour, the kitchen, the Long Gallery, the study and both chambers) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Manor from the front: the porch tower under its pyramid roof, the crow-stepped gable of the west wing with the parlour's stone bay"),
+           ("02_outside_back", "From the back: the hall's chimney stack, the garden door and the rain butt on the terrace"),
+           ("03_outside_west", "From the west: the kitchen stack up the wing's side between the chambers' two oriels"),
+           ("10_room_1", "A ground-floor room at eye level"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 49.6: the Terrace rebuilt from scratch (the Crow-Step Row: narrow brick houses side by side, each under its
     # own steep roof between crow-stepped gables, a chimney in each back gable), its first level built as a server with
     # the furniture mods builds it, from four sides and at eye level in every room

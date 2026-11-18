@@ -1131,21 +1131,21 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.TOWNHOUSE_3, new BlockPos(9, 2, 8));
 	}
 
-	/** The Noble's Manor (34.16) from bare ground, in the huge area (19 wide, the forecourt in front). */
+	/** The Noble's Manor (34.16, rebuilt in 49.7) from bare ground, in the huge area (21 x 17, the porch tower's step in front). */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_manor"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_manor")
 	public void buildsManor(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR, new BlockPos(1, 2, 5));
 	}
 
-	/** The Manor II (34.16) from bare ground: the walled garden with its fountain makes it 24 deep. */
+	/** The Manor II (34.16) from bare ground: the walled knot garden makes it 25 deep. */
 	//$ gametest_ticks_batch HUGE_AREA '80000' '"starter_builds_manor_2"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 80000, batch = "starter_builds_manor_2")
 	public void buildsManorII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR_2, new BlockPos(1, 2, 5));
 	}
 
-	/** The Manor III (34.16) from bare ground: the gatehouse and the ballroom wing make it 26 x 24. */
+	/** The Manor III (34.16) from bare ground: the ballroom wing makes it 29 x 25. */
 	//$ gametest_ticks_batch HUGE_AREA '100000' '"starter_builds_manor_3"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 100000, batch = "starter_builds_manor_3")
 	public void buildsManorIII(GameTestHelper helper) {

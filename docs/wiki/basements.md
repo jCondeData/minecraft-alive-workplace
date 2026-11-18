@@ -20,7 +20,7 @@ floor above, and has a ladder or a stone stair down from inside.
 | Starter Cottage IV | a store cellar under the hall (49.3): two chests along the back, shelves, kelp and hay, pumpkins and a melon, a summer beam across the ceiling | ladder through a hatch in the hall floor |
 | Stone House IV | a store cellar (49.4): casks two high, shelves, a workbench with its lamp and a chest, a summer beam on one post | ladder by the hearth |
 | Burgher's Townhouse IV | a vaulted cellar under the shop (49.5): casks two high, shelves, a chest and a workbench with its lamp, two stone ribs | ladder down from the shop |
-| Noble's Manor IV | a great wine cellar under the hall, held up by two stone columns | stone stair beside the hall's table |
+| Noble's Manor IV | a vaulted wine cellar under the kitchen and the hall (49.7): casks along both ends, the family's chests between decorated pots, a spine wall with two doorways | ladder through a hatch in the kitchen floor |
 | Supply Shop IV | a stockroom: chests two high, bolts of cloth, crates, a packing table | ladder behind the counter |
 | Library IV | an archive: bookshelves round the walls, chests of old ledgers, a reading table | stair along the back of the reading room |
 | Healing Center IV | a cool store: shelves of potted herbs and fungi, kelp and moss, chests of remedies | ladder in the back room |

@@ -306,14 +306,15 @@ public final class StarterBlueprints {
 	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(19, 26, 19));
 	/** Townhouse III with a vaulted cellar of casks under the shop, down a ladder (26.15). */
 	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(19, 26, 19), 4);
-	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}): a stone house of two storeys round a hall with a grand stair. */
-	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(19, 18, 17));
-	/** A walled formal garden behind: clipped hedges, a fountain and gravel walks (3 beauty for the people who live there). */
-	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(19, 18, 24));
-	/** A gatehouse on the street and a ballroom wing, where the Noble's Ball is held. */
-	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(26, 18, 24));
-	/** Manor III with a great wine cellar under the hall, down a stone stair beside the table (26.15). */
-	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(26, 18, 24), 4);
+	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}; rebuilt in 49.7): a brick hall under a porch tower, a
+	 *  crow-gabled west wing of parlour, kitchen and two chambers, a grand stair to the Long Gallery. */
+	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(21, 18, 17));
+	/** A walled formal garden behind: four box-edged knots round a lamp, clipped yews and a bench (3 beauty for the people who live there). */
+	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(21, 18, 25));
+	/** The east cross-wing: a double-height ballroom with a musicians' gallery, where the Noble's Ball is held, and the garden's east half. */
+	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(29, 18, 25));
+	/** Manor III with a vaulted wine cellar under the kitchen and the hall, down a hatch ladder from the kitchen (26.15). */
+	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(29, 18, 25), 4);
 
 	/** A stone barracks with two Guard Posts, bunks and training dummies. */
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));

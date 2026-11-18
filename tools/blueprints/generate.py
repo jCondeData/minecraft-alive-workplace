@@ -194,8 +194,8 @@ if __name__ == "__main__":
     # rebuild.py townhouse <id>); its old Python drawing is no longer saved
     for name, draw in (("artisans_house", artisans_house), ("artisans_house_2", artisans_house_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.15
-    for name, draw in (("manor", manor), ("manor_2", manor_2), ("manor_3", manor_3)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.16
+    # ROADMAP 49.7: the Noble's Manor (I-IV) comes from the rebuild kit (tools/blueprints/js/manor/build.sh, LIVE=1 to
+    # save the live drawings); its old Python drawing in houses.py and basements.py is no longer saved
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):

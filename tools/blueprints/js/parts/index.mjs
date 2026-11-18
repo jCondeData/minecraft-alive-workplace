@@ -52,3 +52,7 @@ export * from './storehouse_b_warehouse.mjs' // chestStack, countingDesk, crowSt
 export * from './schoolhouse_school.mjs' // schoolBellcote, blackboard, lectern (schoolhouses: the bell-cote, the board, the lectern)
 export * from './school_dojo.mjs' // sparringRing, moonWindow, strawTarget (the Move Tutor's School, 49 A: a sparring ring in the yard's paving, a round gable window, practice targets)
 export * from './library_nave.mjs' // buttress, shelfWall, enchantRing, pyramidRoof, lancet (the Lamplit Nave library, 49)
+export * from './leaders_hall_arena.mjs' // piers, dais, standard (challenge halls: proud piers, the leader's dais, banner poles)
+export * from './guildhall_arcade.mjs' // arcadeRun, jettyCorbels (guildhalls: an open arcade under a jettied hall)
+export * from './map_room_tower.mjs' // corbelRing, compassRose, lookoutRail, ladderShaft, batter (towers: a jettied lookout on corbels, a floor compass rose, a ladder shaft, a splayed foot)
+export * from './trade_hall_ball.mjs' // roundShaft, ballCap, steppedCap (the Ball Tower trade hall: a chamfered tower and the ball on it)

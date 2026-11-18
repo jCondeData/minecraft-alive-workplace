@@ -1,0 +1,10 @@
+{
+  "name": "leaders-hall",
+  "private": true,
+  "type": "module",
+  "description": "The Leader's Hall (49 rebuild): a challenge hall with a sparring ring and the Leader's dais. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py leaders_hall leaders_hall --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

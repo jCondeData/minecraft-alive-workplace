@@ -1,0 +1,7 @@
+{
+  "name": "barracks",
+  "private": true,
+  "type": "module",
+  "description": "The Barracks (ROADMAP 49): the Gate Ward, a gate tower between barrack ranges round a training court; three levels, an armoury under Level III. LEVEL=1..3 picks the level; build.sh builds and saves all three. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": { "build": "sh build.sh" }
+}

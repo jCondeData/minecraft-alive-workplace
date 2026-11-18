@@ -8,8 +8,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SIZE, PALETTE, MASSES, JOB, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  Canvas, mix, plinth, floor, wallPanel, window, door, doorway, gableRoof, gableWall, bargeTrim, chimney, hood,
-  stringCourse, quoins, quoinsLS, plinthCourse, faceCells, corbelRing, pyramidRoof, ladderShaft, lampPost, mapWall,
+  Canvas, mix, plinth, floor, wallPanel, window, door, doorway, gableRoof, gableWall, bargeTrim, chimney,
+  stringCourse, quoins, courseOut, corbelRing, pyramidRoof, ladderShaft, lampPost, mapWall,
   furnitureParts, pigeonholes, hallBeams, pillarBox, spireTip,
 } from '../parts/index.mjs'
 
@@ -23,25 +23,23 @@ export function draw() {
   const inTower = (x, z) => x >= T.x0 && x <= T.x1 && z >= T.z0 && z <= T.z1
 
   // --- Pass 1: block-out and structure -------------------------------------------------------------------------
-  // the plinth under both masses, a course of it proud of every hall wall, floors on it
+  // the plinth under both masses (under the walls only: no apron outside them), floors on it
   plinth(c, W.x0, W.z0, W.x1, W.z1, stone)
   plinth(c, T.x0, T.z0, T.x1, T.z1, stone)
-  // (the front flanks only: the street face, carrying the window ledges)
-  const proud = [...faceCells('x', W.z0, W.x0, T.x0 - 1, 'north'), ...faceCells('x', W.z0, T.x1 + 1, W.x1, 'north')]
-  plinthCourse(c, proud, 0, stone)
   floor(c, R.x0, R.z0, R.x1, R.z1, 0, P.floor)
   floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, 0, P.lobbyFloor)
 
-  // Hall: brick walls 4 high, a stone band at the wall top, long-and-short quoins at the corners
+  // Hall: brick walls 4 high, a stone band at the wall top, quoins at the corners
   wallPanel(c, [W.x0, W.z0], [W.x1, W.z0], 1, H.wallTop, P.brick)
   wallPanel(c, [W.x0, W.z1], [W.x1, W.z1], 1, H.wallTop, P.brick)
   wallPanel(c, [W.x0, W.z0], [W.x0, W.z1], 1, H.wallTop, P.brick)
   wallPanel(c, [W.x1, W.z0], [W.x1, W.z1], 1, H.wallTop, P.brick)
-  quoinsLS(c, [W.x0, W.z0], [1, 0], [0, 1], 1, H.band - 1, P.dressing)
-  quoinsLS(c, [W.x1, W.z0], [-1, 0], [0, 1], 1, H.band - 1, P.dressing)
-  quoinsLS(c, [W.x0, W.z1], [1, 0], [0, -1], 1, H.band - 1, P.dressing)
-  quoinsLS(c, [W.x1, W.z1], [-1, 0], [0, -1], 1, H.band - 1, P.dressing)
-  stringCourse(c, W.x0, W.z0, W.x1, W.z0, H.band, P.dressing) // the street front's band (the lintel over its windows)
+  // one stone column at each corner, as on the tower: the hall's brick faces stay clean between plinth and band
+  quoins(c, [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]], 1, H.band - 1, P.dressing)
+  stringCourse(c, W.x0, W.z0, W.x1, W.z1, H.band, P.dressing) // the band round the hall (the lintel over its windows)
+  // the back wall's depth: stone piers proud of it between the windows, carrying the eave
+  const pr = H.piers
+  for (const x of pr.xs) for (let y = pr.y0; y <= pr.y1; y++) c.set(x, y, pr.z, P.dressing)
 
   // Tower: brick walls to the cornice, quoins up the front corners, a stone band at the floor line, the room's floor
   wallPanel(c, [T.x0, T.z0], [T.x1, T.z0], 1, T.top, P.brick)
@@ -72,9 +70,14 @@ export function draw() {
   door(c, fd.at, fd.facing, 'north', { wood: P.joinery, step: fd.step, stepStair: P.dressingStairs })
   doorway(c, OPENINGS.hallDoorway.at, OPENINGS.hallDoorway.height)
   for (const w of OPENINGS.windows) {
-    window(c, w.cells, w.out, { stone: null, 'stone+shutters': 'shutters' }[w.dress] ?? w.dress, { glass: P.glass, wood: P.joinery, sill: P.dressingSlab, pots: OUTSIDE.pots[w.name] ?? [] })
+    window(c, w.cells, w.out, w.dress?.startsWith('stone') ? null : w.dress, { glass: P.glass, wood: P.joinery, sill: P.dressingSlab, pots: OUTSIDE.pots[w.name] ?? [] })
     if (!w.dress?.startsWith('stone')) continue
     const low = Math.min(...w.cells.map(p => p[1])), high = Math.max(...w.cells.map(p => p[1]))
+    if (w.dress === 'stone+ledge') { // a ledge proud of the wall under the glass, its back to the wall
+      const [ox, oz] = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] }[w.out]
+      const back = { north: 'south', south: 'north', west: 'east', east: 'west' }[w.out]
+      courseOut(c, w.cells.filter(p => p[1] === low).map(([x, , z]) => [x + ox, z + oz]), low - 1, P.dressingStairs, back)
+    }
     for (const [x, y, z] of w.cells) {
       if (y === low) c.set(x, y - 1, z, P.dressing) // the sill
       if (y === high && high + 1 < H.band) c.set(x, y + 1, z, P.dressing) // a lintel under the band
@@ -84,7 +87,9 @@ export function draw() {
   ladderShaft(c, L.x, L.z, L.y0, L.y1, L.facing)
 
   // --- Pass 3: depth and detail ---------------------------------------------------------------------------------
-  hood(c, fd.at[0], T.bands[0], T.z0 - 1, P.roof) // a slate hood on the lower band, its lantern over the door
+  // a lantern on a dark bracket from the band over the door (no hood: nothing roof-like under the tower's cornice)
+  c.set(fd.at[0], T.bands[0], T.z0 - 1, P.lampPost)
+  c.set(fd.at[0], T.bands[0] - 1, T.z0 - 1, 'lantern', { hanging: 'true', waterlogged: 'false' })
   const ch = MASSES.chimney
   chimney(c, ch.x, ch.z, 0, ch.top, stone)
   bargeTrim(c, 'x', H.roof.along[0], H.roof.across, main.under, `${P.trim}_stairs`)

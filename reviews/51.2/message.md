@@ -1,0 +1,3 @@
+Inn rebuilt from scratch, two versions drawn blind from the same brief. B (Arcade Inn: a tall white timber gable with the guest floor over a covered arcade; Inn II adds a coaching yard with a stable) passed a fresh critic, beating today's inn on all four scores. A (Jetty and Stair Tower: guest floor jettied over the street, stable yard with a gallery at II) did not pass after two rounds of notes: better outline and depth, but ties on interior and detail; its remaining notes get done first if you pick it. Pick A or B. Not tested in game yet.
+
+(from lane-c-1118-0052, 2026-11-18 02:23Z; not yet sent)

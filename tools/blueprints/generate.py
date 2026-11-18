@@ -118,7 +118,11 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
            # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
            # staffed house)
-           "leaders_hall", "trade_hall"}
+           "leaders_hall", "trade_hall",
+           # 50.8, the Clinic ("the pavilion ward"; the buildable only: the village clinics stay village.py's staffed
+           # house): js/clinic (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh build.sh the live one; then
+           # modded_library.py clinic)
+           "clinic"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -327,7 +331,7 @@ if __name__ == "__main__":
         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         if name in REBUILT:
-            continue  # ROADMAP 50.2 and 50.5: drawn by the rebuild kit (below)
+            continue  # ROADMAP 50.2, 50.5 and 50.8: drawn by the rebuild kit (below)
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
         save_wonder(wonder_id)

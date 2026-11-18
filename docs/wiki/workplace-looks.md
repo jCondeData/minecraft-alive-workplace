@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8
 
 ## 1. What a player sees
 
@@ -26,9 +26,12 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5
   tiled roof with its gable to the street and a little dovecote on the ridge. A ladder leads upstairs.
 - **Guard House**: a squat stone blockhouse with barred arrow slits, a corbelled battlement round a flat roof and a
   timber watch hut on it; a ladder inside leads up.
-- **Clinic**: a white pavilion with its gable to the street and a stone-mullioned cross window over the door, and a ward
-  across the back with cross windows and four white beds, heads to the back wall, for the ill. Its ceilings are closed
-  up to the ridge.
+- **Clinic** (rebuilt from scratch in 50.8, "the pavilion ward"): one tall white ward on a stone plinth, its gable to
+  the street, under a steep slate roof with a louvered lantern ventilator on the ridge and a small dormer breaking the
+  east eave. Six white beds stand heads to the long walls, a window between each pair; the Nurse's station across the
+  front end holds the brewing stand, the remedy chest, a medicine cupboard and her desk. The west slope runs on as a
+  catslide over a sun veranda on log posts, its ends closed in boards, with seats under the windows and a door in from
+  the ward. Its ridge is closed under a slab cap. 15 x 14 x 12; standing Clinics keep their old drawing until refreshed.
 - **Ferry House** (rebuilt from scratch in 50.5): a ferry station. A stone waiting room with a stove, a table, a bench
   and the station clock under a white plastered upper floor (the Ferryman's bedroom, up a stair inside) and a slate roof
   with a lookout cupola carrying the ferry light; a boarded landing the whole width of the front under a canopy with a

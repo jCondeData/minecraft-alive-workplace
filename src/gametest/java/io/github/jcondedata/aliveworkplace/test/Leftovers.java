@@ -24,6 +24,56 @@ final class Leftovers {
 		// 27.19: what an earlier batch's players built here isn't this test's
 		io.github.jcondedata.aliveworkplace.city.PlayerBuilt.get(helper.getLevel()).forget(net.minecraft.world.level.levelgen.structure.BoundingBox.fromCorners(
 			net.minecraft.core.BlockPos.containing(around.minX, around.minY, around.minZ), net.minecraft.core.BlockPos.containing(around.maxX, around.maxY, around.maxZ)));
+		legends(helper);
+	}
+
+	/** The tests that already forget their own Legends when they end ({@link #legends}), so a second clear adds no second reset. */
+	private static final java.util.Set<net.minecraft.gametest.framework.GameTestInfo> FORGETTING = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
+	/**
+	 * B604: forgets, when the test ends, every LegendRecord entry the test added. The record is saved with the test world,
+	 * and a Legend a test settled stayed in it: a later run in the same world (the class alone, then a full build; a repeat
+	 * copy) refused that Legendary as "already lives in this world". The sweeps of the area's villagers in the tests' own
+	 * resets can't do it on a pass, as GameTestInfo.succeed discards the area's entities before any listener runs, so this
+	 * goes by the record: an entry that wasn't there when the test began is the test's own, unless its villager still
+	 * lives away from this test's area (another test's, if a test that should be alone in its batch isn't).
+	 */
+	static void legends(GameTestHelper helper) {
+		net.minecraft.gametest.framework.GameTestInfo info = info(helper);
+		if (info.isDone() || !FORGETTING.add(info)) {
+			return; // called again by the test, or from its own reset as it ends
+		}
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.Set<java.util.UUID> before = new java.util.HashSet<>();
+		io.github.jcondedata.aliveworkplace.legend.LegendRecord.get(level).entries().forEach(e -> before.add(e.villager()));
+		after(helper, () -> {
+			var record = io.github.jcondedata.aliveworkplace.legend.LegendRecord.get(level);
+			AABB area = helper.getBounds().inflate(16);
+			java.util.List<java.util.UUID> own = new java.util.ArrayList<>();
+			for (var e : record.entries()) {
+				if (before.contains(e.villager())) {
+					continue;
+				}
+				Entity alive = null;
+				for (net.minecraft.server.level.ServerLevel l : level.getServer().getAllLevels()) {
+					alive = alive != null ? alive : l.getEntity(e.villager());
+				}
+				if (alive == null || alive.isRemoved() || (alive.level() == level && area.contains(alive.position()))) {
+					own.add(e.villager());
+				}
+			}
+			own.forEach(record::forget);
+		});
+	}
+
+	private static net.minecraft.gametest.framework.GameTestInfo info(GameTestHelper helper) {
+		try {
+			java.lang.reflect.Field field = GameTestHelper.class.getDeclaredField("testInfo");
+			field.setAccessible(true);
+			return (net.minecraft.gametest.framework.GameTestInfo) field.get(helper);
+		} catch (ReflectiveOperationException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 	/**

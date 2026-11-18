@@ -52,6 +52,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoveSpotQa1114c4GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMovePutBackVerify1114fGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BuilderWaterSlabGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderWater1114bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnloadedHall1114eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderSwitches1114bGameTests",

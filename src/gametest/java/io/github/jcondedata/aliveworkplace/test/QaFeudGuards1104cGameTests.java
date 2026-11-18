@@ -356,6 +356,7 @@ public class QaFeudGuards1104cGameTests implements FabricGameTest {
 
 	/** Only {@code id}'s Legend file loaded, moods and Legend needs off; all put back after. */
 	private static void staged(GameTestHelper helper, ResourceLocation id) {
+		Leftovers.legends(helper); // B604: the Legend it settles is forgotten even on a pass
 		ServerLevel level = helper.getLevel();
 		boolean moods = Moods.ENABLED;
 		boolean needs = LegendNeeds.ENABLED;

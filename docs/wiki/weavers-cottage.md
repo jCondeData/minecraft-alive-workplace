@@ -81,7 +81,7 @@ mid-build keep their drawing until a refresh.
 
 ## 8. Proof
 
-`CountryWorkplacesGameTests.countryWorkplaceBuilt_weavers_cottage` and `_2` (sizes, no entity, one loom and no other job
+`CountryWorkplacesGameTests` (its generated tests for `weavers_cottage` and `weavers_cottage_2`: sizes, no entity, one loom and no other job
 block, built from its supply report, a Shepherd walks in and takes the loom), `QaNewWorkplacesGameTests` (the loom, the
 pen's fences and gate, II's dye garden), `BuilderGameTests.starterUpgradesKeepMostOfTheirBase` and
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `ModdedLibraryGameTests`, `QaBuildReachGameTests`,

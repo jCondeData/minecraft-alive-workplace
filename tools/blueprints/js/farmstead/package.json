@@ -1,0 +1,9 @@
+{
+  "name": "farmstead",
+  "private": true,
+  "type": "module",
+  "description": "The Farmstead (farmstead, farmstead_2, farmstead_3; ROADMAP 49): a rebuild family (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes all three levels as candidates.",
+  "scripts": {
+    "build": "sh build.sh"
+  }
+}

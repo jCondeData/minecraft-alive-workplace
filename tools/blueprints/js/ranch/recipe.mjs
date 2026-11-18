@@ -15,7 +15,15 @@ import {
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
-const pieces = { ...furnitureParts, doubleChest: (c, f) => doubleChest(c, f.pos, f.facing, f.along) }
+const pieces = {
+  ...furnitureParts,
+  doubleChest: (c, f) => doubleChest(c, f.pos, f.facing, f.along),
+  // the shelf with a pot plant on it: the pot is a plant (no spot), not crockery (the critic's note 2)
+  shelf: (c, f) => {
+    furnitureParts.shelf(c, f)
+    if (f.plant) { const [x, y, z] = f.pos; c.free([x, y + 1, z]); c.set(x, y + 1, z, f.plant) }
+  },
+}
 
 export function draw(level = 1) {
   const c = new Canvas(SIZE[level])
@@ -60,7 +68,7 @@ export function draw(level = 1) {
   // The big doors: two birch leaves either side of the wicket door, a dark track over them
   const bd = OPENINGS.barnDoor
   for (const [x, z] of bd.leaves) for (let y = 1; y <= 3; y++) c.set(x, y, z, `${P.accent}_planks`)
-  c.set(bd.at[0], 3, bd.at[2], `${P.accent}_planks`) // the leaves' head over the wicket
+  c.set(bd.at[0], 3, bd.at[2], P.frame, { axis: 'x' }) // a dark lintel over the wicket (the critic's note 1: no birch in the gable)
   door(c, bd.at, bd.facing, bd.out, { wood: P.door, step: bd.step })
   const hd = OPENINGS.hayDoor
   door(c, hd.at, hd.facing, hd.out, { wood: P.door })

@@ -43,10 +43,10 @@
 export const SIZE = { 1: [13, 16, 13], 2: [21, 16, 21] }
 
 // Palette (60/30/10): spruce board walls / dark oak frame and a gray deepslate-tile roof (the tin roof of a working
-// barn) / white birch trim on doors, shutters and the cupola, hay gold, fieldstone at the foot. Why: warm brown boards
+// barn) / white birch trim on the big doors' leaves, shutters and the cupola, hay gold, fieldstone at the foot. Why: warm brown boards
 // under a cool gray roof read as a barn rather than a house; the white trim is the barn's own, the one bright note.
 export const PALETTE = {
-  stone: [['cobblestone', 5], ['andesite', 2], ['stone', 2], ['mossy_cobblestone', 1]],
+  stone: [['cobblestone', 4], ['mossy_cobblestone', 1]], // fieldstone only (the critic's note 1: no andesite or stone)
   boards: 'spruce_planks',
   frame: 'dark_oak_log',
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
@@ -146,7 +146,7 @@ export const FURNITURE = {
     { room: 'Aisle', kind: 'fixture', part: 'stove', pos: [6, 1, 10], facing: 'north', block: 'smoker' }, // the Rancher's job block
     { room: 'Aisle', kind: 'fixture', part: 'pantry', pos: [5, 1, 10], facing: 'north', block: 'chest' }, // tack: saddles, armor, carpets, feed
     { room: 'Aisle', kind: 'fixture', part: 'pantry', pos: [5, 1, 9], facing: 'east', block: 'chest' }, // more tack, against the first
-    { room: 'Aisle', kind: 'shelf', part: 'shelf', pos: [7, 2, 10], facing: 'north', wood: 'spruce', crockery: 'potted_cactus' },
+    { room: 'Aisle', kind: 'shelf', part: 'shelf', pos: [7, 2, 10], facing: 'north', wood: 'spruce', plant: 'potted_cactus' }, // a plant, not crockery
     { room: 'Aisle', kind: 'lamp', part: 'hangingLamp', pos: [6, 3, 6], facing: 'north', wood: 'spruce' },
     { room: 'Aisle', kind: 'lamp', part: 'hangingLamp', pos: [6, 3, 9], facing: 'north', wood: 'spruce' },
     { room: 'Stalls', kind: 'lamp', part: 'hangingLamp', pos: [3, 5, 5], facing: 'east', wood: 'spruce' },
@@ -163,7 +163,7 @@ export const FURNITURE = {
     { room: 'Feed and bunk room (II)', kind: 'desk', part: 'desk', pos: [14, 1, 7], facing: 'west', wood: 'spruce' },
     { room: 'Feed and bunk room (II)', kind: 'chair', part: 'chair', pos: [15, 1, 7], facing: 'west', wood: 'spruce' },
     { room: 'Feed and bunk room (II)', kind: 'rug', part: 'rug', cellsAbs: [[16, 1, 8], [17, 1, 8], [16, 1, 9], [17, 1, 9]], colour: 'red' },
-    { room: 'Feed and bunk room (II)', kind: 'lamp', part: 'hangingLamp', pos: [16, 6, 8], facing: 'north', chain: 1, wood: 'spruce' },
+    { room: 'Feed and bunk room (II)', kind: 'lamp', part: 'hangingLamp', pos: [16, 5, 8], facing: 'north', chain: 2, wood: 'spruce' }, // low enough to light the bunk's nightstand
   ],
 }
 

@@ -47,6 +47,9 @@ asks for the steps, `latest.log` and any crash report).
 - A sum of one CobbleDollar now reads "1 CobbleDollar", not "1 CobbleDollars", wherever money is named (the Village
   Hall's treasury, quest rewards, retraining and family tree prices, the cup's purse), as at a rate of one CobbleDollar
   an emerald (B1379).
+- A wall segment you upgraded (the Palisade's fighting step, the Stone Wall's hoardings) still counts as that piece of
+  the village's wall: the wall reads as finished again and counts as one building for the rank, not one more per
+  upgraded segment, and a Town's stone still replaces an upgraded palisade (B1380).
 - A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down

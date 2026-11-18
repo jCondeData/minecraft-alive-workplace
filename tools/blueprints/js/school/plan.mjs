@@ -121,13 +121,12 @@ export const FURNITURE = [
   { room: 'East cloister', kind: 'fixture', part: 'chest', pos: [14, 1, 11], facing: 'west', block: 'chest' },
   { room: 'East cloister', kind: 'lamp', part: 'hangingLamp', pos: [13, 3, 6], facing: 'west', wood: W },
   { room: 'East cloister', kind: 'lamp', part: 'hangingLamp', pos: [13, 3, 10], facing: 'west', wood: W },
-  // Lecture room: the wall of move books on the west gable, a reading table for four, the Tutor's desk at the back
+  // Lecture room: the wall of move books on the west gable, a reading table for six, the Tutor's desk at the back
   ...[13, 14, 16, 17].map(z => ({ room: 'Lecture room', kind: 'cupboard', part: 'cupboard', pos: [2, 1, z], facing: 'east', cells: [[0, 0, 0], [0, 1, 0]], wood: W })),
   ...[4, 5, 6].map(x => ({ room: 'Lecture room', kind: 'table', part: 'table', pos: [x, 1, 15], facing: 'north', cells: [[0, 0, 0], [0, 1, 0]], wood: W, colour: 'white' })),
-  { room: 'Lecture room', kind: 'chair', part: 'chair', pos: [4, 1, 14], facing: 'south', wood: W },
-  { room: 'Lecture room', kind: 'chair', part: 'chair', pos: [6, 1, 14], facing: 'south', wood: W },
-  { room: 'Lecture room', kind: 'chair', part: 'chair', pos: [4, 1, 16], facing: 'north', wood: W },
-  { room: 'Lecture room', kind: 'chair', part: 'chair', pos: [6, 1, 16], facing: 'north', wood: W },
+  // a chair at every place along the table, so the plates the modded copy sets at its middle are at a seat
+  ...[4, 5, 6].map(x => ({ room: 'Lecture room', kind: 'chair', part: 'chair', pos: [x, 1, 14], facing: 'south', wood: W })),
+  ...[4, 5, 6].map(x => ({ room: 'Lecture room', kind: 'chair', part: 'chair', pos: [x, 1, 16], facing: 'north', wood: W })),
   { room: 'Lecture room', kind: 'desk', part: 'desk', pos: [9, 1, 17], facing: 'south', wood: W },
   { room: 'Lecture room', kind: 'chair', part: 'chair', pos: [9, 1, 16], facing: 'south', wood: W },
   { room: 'Lecture room', kind: 'fixture', part: 'hearth', pos: [8, 1, 17], facing: 'north' },

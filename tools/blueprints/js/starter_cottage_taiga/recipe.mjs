@@ -9,7 +9,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  Canvas, LiftedCanvas, mix, cellar, hatchLadder, stair, plinth, floor, post, window, door, doorway, gableRoof, gableWall, bargeTrim, pentice, chimney,
+  Canvas, LiftedCanvas, mix, trapdoor, cellar, hatchLadder, stair, plinth, floor, post, window, door, doorway, gableRoof, gableWall, bargeTrim, pentice, chimney,
   woodpile, railingRun, flight, stairwell, furnitureParts, logPen, catslideRoof, lampPost,
 } from '../parts/index.mjs'
 
@@ -85,8 +85,14 @@ function levelOne(c) {
   for (const [a, b] of Po.rails) railingRun(c, [[a, 1, Po.z0], [b, 1, Po.z0]], P.wood)
   for (const x of Po.posts) c.set(x, 1, Po.z0, P.log, { axis: 'y' }) // the rail's ends are the posts
   c.set(...OUTSIDE.doorLamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  for (const { at: [x, z], pot } of OUTSIDE.sideBoxes) { // a box (an upside-down stair) with flowers, shutters either side
+    stair(c, x, 1, z, `${P.wood}_stairs`, 'west', 'top')
+    c.set(x, 2, z, pot)
+    for (const dz of [-1, 1]) trapdoor(c, x, 2, z + dz, `${P.wood}_trapdoor`, 'east', 'bottom', true)
+  }
   const Wp = MASSES.woodpile
   woodpile(c, Wp.x, Wp.z0, Wp.z1, P.log)
+  for (let z = Wp.z0; z <= Wp.z1; z++) c.set(Wp.x, 1, z, P.log, { axis: 'x' }) // squared off: one tidy stack (critic note 2)
 
   // Pass 4, interior
   furnish(c, 1)

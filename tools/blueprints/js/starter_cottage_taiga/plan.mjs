@@ -6,6 +6,8 @@
 // --- Design notes: what is done, what is left (2026-11-18) -----------------------------------------------------------
 //  Done: Level I (the Log Cabin), Level II (+ the Loft Pen) and Level III (+ the Cook Shed), and Level IV (+ B's cellar under the hall, in the look's own stone), as candidates (build.sh, build/rebuild/
 //  starter_cottage_taiga/). Not yet: the critic's pass (REBUILD.md) and the in-game build-to-DONE test.
+//  Critic round 2 (2026-11-18): note 1, the low side walls get flower boxes and shutters (east, under the eave);
+//  a dormer is still open. Note 2, the east wall's foot: the woodpile squared off into one stack between the boxes.
 //  Own render pass (2026-11-18): a dark oak roof merged into the logs (now slate); the open porch gable left a cave and an
 //  open pocket (now a closed pediment and ceiling). Open for the critic: the back reads busier than the front (the pen's
 //  back gable, its log ends and the shed's verge all meet at x 11..12); the cabin's west side is mostly stone and roof.
@@ -92,4 +94,6 @@ export const OUTSIDE = {
   doorLamp: [4, 3, 0], // hangs from the porch's beam over the step
   pots: [[2, 1, 1, 'potted_spruce_sapling'], [6, 1, 1, 'potted_fern']],
   kitchenLamp: [15, 1, 3],
+  // flower boxes and one-high shutters on the low east wall's windows, under the eave (critic round 2, note 1)
+  sideBoxes: [{ at: [8, 4], pot: 'potted_cornflower' }, { at: [8, 8], pot: 'potted_lily_of_the_valley' }],
 }

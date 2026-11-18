@@ -6,6 +6,8 @@
 // --- Design notes: what is done, what is left (2026-11-18) -----------------------------------------------------------
 //  Done: Level I (the Veranda House), Level II (+ the Mud Tower) and Level III (+ the Cookhouse), and Level IV (+ B's cellar under the hall, in the look's own stone), as candidates (build.sh, build/rebuild/
 //  starter_cottage_savanna/). Not yet: the critic's pass (REBUILD.md) and the in-game build-to-DONE test.
+//  Critic round 2 (2026-11-18): note 1, the crenellated flat top read as a castle keep: the tower now carries the
+//  hall's thatched hip (peak y 11), the stack up its corner; note 2, acacia posts on the upper walls.
 //  Own render pass (2026-11-18): a half-pitch slab hip was tried and read as a stacked cake of rings: the 45-degree hip
 //  stays. Open for the critic: the hip is truncated against the tower in II (a half-hip, not a valley); the hall's back
 //  wall shows little under the deep eave; the hall chimney's campfire (y 7) stays beside the tower's (y 11).
@@ -28,7 +30,7 @@
 // Coordinates as B: x across the front (west 0 -> east), y up, z from the front (z = 0) to the back.
 import * as B from '../starter_cottage_b/plan.mjs'
 
-export const SIZE = { 1: [9, 9, 12], 2: [13, 12, 12], 3: [18, 12, 12], 4: [18, 12, 12] }
+export const SIZE = { 1: [9, 9, 12], 2: [13, 13, 12], 3: [18, 13, 12], 4: [18, 13, 12] }
 export const BASEMENT = B.BASEMENT // Level IV's cellar, 4 deep, under the hall: B's room as drawn (it shows nowhere outside)
 
 // Palette (60/30/10): packed mud (the walls' warm light 60) / acacia: grey log posts and orange shingle roof (the 30) /
@@ -56,8 +58,9 @@ export const MASSES = {
   hip: { x0: 0, z0: 0, x1: 8, z1: 11, eaveY: 3 },
   veranda: { x0: 0, x1: 8, z0: 0, z1: 1, posts: [0, 2, 6, 8] },
   chimney: { x: 0, z: 5, top: 6, breastTop: 3 },
-  tower: { walls: { x0: 7, x1: 11, z0: 1, z1: 10 }, room: { x0: 8, x1: 10, z0: 2, z1: 9 }, floorY: 4, roofY: 8,
-    stack: { x: 11, z: 1, top: 10 } }, // the corner stack: its campfire at y 11 (> 10), lit from the terrace
+  tower: { walls: { x0: 7, x1: 11, z0: 1, z1: 10 }, room: { x0: 8, x1: 10, z0: 2, z1: 9 }, floorY: 4,
+    hip: { x0: 6, z0: 0, x1: 12, z1: 11, eaveY: 8 }, // the hall's thatch carried over the tower (critic round 2): peak y 11
+    stack: { x: 11, z: 1, top: 11 } }, // the corner stack: its campfire at y 12 (> 10), lit from the roof beside it
   // Level III: the cookhouse, B's kitchen cells (walls x 12..16, z 4..9; the tower's east wall is its west) under a
   // three-sided hip whose fourth side runs into the tower (drawn as one hip from x 8, kept east of the tower)
   cookhouse: { walls: { x0: 12, x1: 16, z0: 4, z1: 9 }, room: { x0: 12, x1: 15, z0: 5, z1: 8 },
@@ -68,7 +71,8 @@ const patch = (list, at, change) => list.map(f => (f.pos && f.pos.join() === at.
 // Level II: the tower's flat roof is at y 8
 // Level I: the hall's lamp hangs on one link from the hip's ridge (y 7), the outshot's on one from the slope (y 6)
 let one = patch(patch(B.FURNITURE[1], [4, 5, 5], { chain: 1 }), [3, 4, 8], { chain: 1 })
-let two = patch(patch(B.FURNITURE[2], [9, 7, 3], { chain: 0 }), [8, 7, 8], { chain: 0 })
+// Level II: the chamber's lamps hang on chains from the hip (y 11 over x 9, y 10 over x 8)
+let two = patch(patch(B.FURNITURE[2], [9, 7, 3], { chain: 3 }), [8, 7, 8], { chain: 2 })
 export const FURNITURE = { 1: one, 2: two, 3: B.FURNITURE[3], 4: B.FURNITURE[4] } // the cookhouse's hip clears B's kitchen cells as drawn
 
 const drop = (ws, names) => ws.filter(w => !names.includes(w.name))

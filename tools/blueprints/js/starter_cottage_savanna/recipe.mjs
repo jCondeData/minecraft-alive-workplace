@@ -2,7 +2,7 @@
 // picks the level. Writes furniture.json beside it for rebuild.py.
 // CUT=<y> builds a cutaway with everything above y removed.
 //   Level I    the Veranda House: the hall under one low hip, the veranda under its front eave
-//   Level II   + the Mud Tower: B's wing as a flat-roofed tower, its terrace, the corner stack with the campfire
+//   Level II   + the Mud Tower: B's wing as a two-storey mud house under the hall's thatched hip, the corner stack
 //   Level III  + the Cookhouse: B's kitchen under a three-sided hip leaning on the tower, its door under the eave
 import fs from 'node:fs'
 import path from 'node:path'
@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
   Canvas, LiftedCanvas, mix, cellar, hatchLadder, stair, plinth, floor, post, window, door, doorway, chimney, flight, stairwell, railingRun,
-  furnitureParts, hipRoof, flatRoof,
+  furnitureParts, hipRoof,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -90,11 +90,14 @@ function levelTwo(c) {
     else c.set(x, T.floorY, z, P.floor)
   }
   // upper storey in packed mud, the flat roof terrace and its gapped parapet, the toron under it
-  for (let y = T.floorY + 1; y < T.roofY; y++) for (let x = W.x0; x <= W.x1; x++) for (let z = W.z0; z <= W.z1; z++)
-    if (x === W.x0 || x === W.x1 || z === W.z0 || z === W.z1) c.set(x, y, z, P.mud)
-  flatRoof(c, { ...W, y: T.roofY }, { deck: P.mudBrick, wall: P.mud, beam: P.beam }, { gap: 3, every: 2, sides: ['north', 'south', 'east'] })
-  // corner pinnacles, and the stack up the front east corner with the campfire on it (lit from the terrace)
-  for (const [x, z] of [[W.x0, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) c.set(x, T.roofY + 2, z, P.mud)
+  // upper storey in packed mud under the same thatched hip as the hall (the critic: one roof language, not a keep),
+  // eaves out a block all round; grey acacia posts at the corners and between the bays, as the hall's
+  const under = hipRoof(c, T.hip, P.roof, (x, y, z) => !c.get(x, y, z) || !c.name(x, y, z).includes('bamboo'))
+  for (let x = W.x0; x <= W.x1; x++) for (let z = W.z0; z <= W.z1; z++)
+    if (x === W.x0 || x === W.x1 || z === W.z0 || z === W.z1) for (let y = T.floorY + 1; y < under(x, z); y++) c.set(x, y, z, P.mud)
+  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1], [W.x1, 5], [W.x1, 7], [W.x0, 5]])
+    post(c, x, z, T.floorY + 1, under(x, z) - 1, P.frame)
+  // the stack up the front east corner, through the eave, with the campfire on it (lit from the roof)
   chimney(c, T.stack.x, T.stack.z, 0, T.stack.top, P.mudBrick)
 
   // Pass 2, openings: the doorway from the hall, the stair and its well, the windows

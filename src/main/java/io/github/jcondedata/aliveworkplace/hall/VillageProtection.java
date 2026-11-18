@@ -75,7 +75,8 @@ public final class VillageProtection {
 				return InteractionResult.PASS;
 			}
 			// A stranger at the hall (33.5): the price board alone, whatever they hold, so they can trade there
-			if (!placing && hand == net.minecraft.world.InteractionHand.MAIN_HAND && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL)
+			// (not for a machine acting as a stranger, B844: Create's Deployer goes on to use the hall unless told FAIL)
+			if (!placing && hand == net.minecraft.world.InteractionHand.MAIN_HAND && !StandIns.machine(player) && state.is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.VILLAGE_HALL)
 				&& io.github.jcondedata.aliveworkplace.trade.Economy.ENABLED && level instanceof ServerLevel server && player instanceof ServerPlayer stranger
 				&& keeper(server, player, hit.getBlockPos()).isPresent()) {
 				io.github.jcondedata.aliveworkplace.trade.TradePage.openForStranger(stranger, hit.getBlockPos());
@@ -203,6 +204,43 @@ public final class VillageProtection {
 			}
 			for (BlockPos broken : resolver.getToDestroy()) {
 				if (inColumns(h, broken, radius)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * B808, B993, B1033: whether a machine standing at {@code machine} (a Create drill or saw, the controller of a piston
+	 * or bearing contraption) may change the block at {@code target}: break it, move a block into or out of it, or set one
+	 * down there. Not when {@code target} is in the area of a protected hall that the machine itself isn't in: machines
+	 * inside a village work as before, one outside stops at its edge (B745's rule for pistons). Judged where the change
+	 * lands, not where the machine is. Off with protection off.
+	 */
+	public static boolean mayMachineChange(Level level, BlockPos machine, BlockPos target) {
+		return mayMachineChange(level, machine, java.util.List.of(target));
+	}
+
+	/** Whether any loaded village is protected now (so a machine's moves need judging at all). */
+	public static boolean guarding() {
+		return ENABLED && !PROTECTED.isEmpty();
+	}
+
+	/** {@link #mayMachineChange(Level, BlockPos, BlockPos)} for every block in {@code targets} (a contraption's blocks). */
+	public static boolean mayMachineChange(Level level, BlockPos machine, Iterable<BlockPos> targets) {
+		if (!ENABLED || PROTECTED.isEmpty() || !(level instanceof ServerLevel server)) {
+			return true;
+		}
+		long radius = VillageHalls.RADIUS;
+		for (GlobalPos g : PROTECTED) {
+			BlockPos h = g.pos();
+			if (g.dimension() != level.dimension() || inColumns(h, machine, radius)
+				|| !server.isLoaded(h) || !(server.getBlockEntity(h) instanceof VillageHallBlockEntity entity) || !entity.isProtected()) {
+				continue;
+			}
+			for (BlockPos target : targets) {
+				if (inColumns(h, target, radius)) {
 					return false;
 				}
 			}

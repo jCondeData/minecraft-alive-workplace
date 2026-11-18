@@ -93,6 +93,11 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public boolean isFakePlayer(Player player) {
+		return player instanceof net.fabricmc.fabric.api.entity.FakePlayer;
+	}
+
+	@Override
 	@Nullable
 	public String modVersion(String modId) {
 		return FabricLoader.getInstance().getModContainer(modId)

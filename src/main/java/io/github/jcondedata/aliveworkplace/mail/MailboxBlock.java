@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.mail;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.Friends;
+import io.github.jcondedata.aliveworkplace.hall.StandIns;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
@@ -96,15 +97,19 @@ public class MailboxBlock extends BaseEntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.setPlacedBy(level, pos, state, placer, stack);
-		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof MailboxBlockEntity mailbox) {
+		if (placer instanceof ServerPlayer player && StandIns.mayOwn(player) && level.getBlockEntity(pos) instanceof MailboxBlockEntity mailbox) {
 			claim(player, mailbox);
 			Chat.chat(player, Component.translatable("message.aliveworkplace.mail.placed"));
 		}
 	}
 
 	private static void claim(ServerPlayer player, MailboxBlockEntity mailbox) {
-		mailbox.setOwner(player.getUUID(), player.getGameProfile().getName());
-		PostOffice.get(player.server).register(player.getUUID(), GlobalPos.of(player.level().dimension(), mailbox.getBlockPos()));
+		java.util.UUID person = StandIns.person(player);
+		if (person == null) {
+			return; // B843: a machine acting for nobody claims nothing
+		}
+		mailbox.setOwner(person, StandIns.name(player));
+		PostOffice.get(player.server).register(person, GlobalPos.of(player.level().dimension(), mailbox.getBlockPos()));
 	}
 
 	@Override

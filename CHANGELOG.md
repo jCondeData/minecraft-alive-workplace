@@ -144,6 +144,9 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- Archers on a Palisade's walk can see out and shoot again: the fence rail along the stake tops stood right in front
+  of their eyes, so they never saw a raider. The stakes now end one block over the walk; walls already built keep
+  their fence rail until the Palisade is rebuilt.
 - With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
   andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
 - Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected

@@ -126,6 +126,13 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		ItemStack axe = io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager);
+		// A tree farm in chunks nobody has loaded (far outside the village) is left alone until it's back: looking for
+		// room, trees or saplings there would load them (B667). The trees round the Chopping Block go on.
+		BoundingBox farm = TreeFarms.farm(villager);
+		if (farm != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, farm)) {
+			farm = null;
+			forgetUnloaded(level);
+		}
 
 		// 1. Drop off logs after each tree (and whenever the bag fills up).
 		if (depositDue || bag.freeSlots() < 3) {
@@ -135,7 +142,7 @@ public class LumberjackWork extends Behavior<Villager> {
 				stripForRequests(level, villager, block);
 				burnCharcoal(level, block);
 				takeSaplings(level, block, bag);
-				takeBoneMeal(level, block, bag, TreeFarms.farm(villager), false);
+				takeBoneMeal(level, block, bag, farm, false);
 				depositDue = false;
 			}
 			return;
@@ -172,7 +179,6 @@ public class LumberjackWork extends Behavior<Villager> {
 		}
 
 		// 2b. Keep the tree farm planted (saplings from the bag, topped up from the chests).
-		BoundingBox farm = TreeFarms.farm(villager);
 		if (farm != null && tree == null && plantFarm(level, villager, block, bag, farm)) {
 			return;
 		}
@@ -553,6 +559,26 @@ public class LumberjackWork extends Behavior<Villager> {
 		if (got > 0) {
 			bag.addAll(Items.BONE_MEAL, got);
 		}
+	}
+
+	/** Drops what he was about to do in chunks that aren't loaded any more (none of it is saved; he finds it again). */
+	private void forgetUnloaded(ServerLevel level) {
+		if (tree != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, tree) || chopAt != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, chopAt)) {
+			tree = null;
+			chopAt = null;
+			chopProgress = 0;
+			walker.reset();
+		}
+		if (feeding != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, feeding)) {
+			feeding = null;
+			walker.reset();
+		}
+		if (plantSpot != null && !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, plantSpot)) {
+			plantSpot = null;
+			walker.reset();
+		}
+		unplanted.keySet().removeIf(p -> !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, p));
+		replanted.removeIf(p -> !io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, p));
 	}
 
 	// --- the tree farm --------------------------------------------------------------------------

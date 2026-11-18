@@ -191,6 +191,12 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- Far sites (a quarry, a field, a tree farm, an orchard, a berry plot or a build marked far outside the village) no
+  longer make the server load their chunks when nobody is there. Before, the worker's first moment at work loaded (or
+  generated) the far chunks in the middle of a tick, a hitch for everyone online, and a Miner could call a far quarry
+  finished from his bench without digging it. Now the site waits exactly as it was until its chunks are loaded again
+  (you come back, or `workplaceKeepWorkLoaded` keeps your build or quarry running), and the worker carries on from
+  there. Meanwhile a Lumberjack and an Orchard Keeper go on with the trees and fruit round their own block (B666, B667).
 - With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
   the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
   time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while

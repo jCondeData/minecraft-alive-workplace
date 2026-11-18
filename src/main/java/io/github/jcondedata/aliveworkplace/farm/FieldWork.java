@@ -166,6 +166,12 @@ public class FieldWork extends Behavior<Villager> {
 			return;
 		}
 		BoundingBox field = job.box();
+		// A field in chunks nobody has loaded (far outside the village) waits: looking it over would load them (B667).
+		if (!io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, field)) {
+			current = null;
+			scanTimer = 0; // looked over afresh as soon as it's back
+			return;
+		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. Harvest goes to the chests when the bag fills up, and after every round of the field.

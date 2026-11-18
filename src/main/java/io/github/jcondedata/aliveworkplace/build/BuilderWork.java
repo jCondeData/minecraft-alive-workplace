@@ -260,8 +260,25 @@ public class BuilderWork extends Behavior<Villager> {
 		return !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK) && Builders.workSite(level, villager) != null;
 	}
 
+	/** The outline of the site in hand (kept while it is the same site: a styled blueprint is put together on asking). */
+	@Nullable
+	private net.minecraft.world.level.levelgen.structure.BoundingBox area;
+	@Nullable
+	private java.util.UUID areaOf;
+
+	private net.minecraft.world.level.levelgen.structure.BoundingBox area(ServerLevel level, BuildSite site) {
+		if (area == null || !site.id().equals(areaOf)) {
+			area = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
+				.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(site.placement(), b.size()))
+				.orElse(new net.minecraft.world.level.levelgen.structure.BoundingBox(site.placement().origin()));
+			areaOf = site.id();
+		}
+		return area;
+	}
+
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
+		area = null;
 		// B845: a restart never gives a free block. The same brain (he woke, a new stint) keeps the wait in hand (the
 		// tick cuts it if the rule went down meanwhile); a fresh one (a load, re-hired) starts a whole wait at today's rule.
 		if (!workTimerSet) {
@@ -296,6 +313,11 @@ public class BuilderWork extends Behavior<Villager> {
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
 		BuildSite site = Builders.workSite(level, villager);
 		if (site == null) {
+			return;
+		}
+		// A build in chunks nobody has loaded (far outside the village, its player away) waits as it is: working out its
+		// plan, its materials or its next block reads the ground there, which would load them (B667).
+		if (!io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, area(level, site))) {
 			return;
 		}
 		BuildPlan plan = site.plan(level);

@@ -1421,6 +1421,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFarReach1028bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.FarSiteUnloadedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ReachAcrossGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaReachAcross1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWordsVillage1028GameTests",

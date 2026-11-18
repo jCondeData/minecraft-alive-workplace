@@ -1,0 +1,10 @@
+{
+  "name": "townhouse-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Burgher's Townhouse, the savanna look (ROADMAP 49.10b): the shipped Townhouse drawn again as a trader's house: a red granite storey behind a veranda, a mud-and-acacia hall storey, one great thatch hip, a wing under its own hip and a thatched lookout tower. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

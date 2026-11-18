@@ -6,6 +6,9 @@
 // --- Design notes: what is done, what is left (2026-11-18) -----------------------------------------------------------
 //  Done: Level I (the Veranda House), Level II (+ the Mud Tower) and Level III (+ the Cookhouse), and Level IV (+ B's cellar under the hall, in the look's own stone), as candidates (build.sh, build/rebuild/
 //  starter_cottage_savanna/). Not yet: the critic's pass (REBUILD.md) and the in-game build-to-DONE test.
+//  Own render pass (2026-11-18): a half-pitch slab hip was tried and read as a stacked cake of rings: the 45-degree hip
+//  stays. Open for the critic: the hip is truncated against the tower in II (a half-hip, not a valley); the hall's back
+//  wall shows little under the deep eave; the hall chimney's campfire (y 7) stays beside the tower's (y 11).
 //
 // --- Three rough concepts --------------------------------------------------------------------------------------------
 //  1. "Thatched rondavel": a round mud hut under a conical thatch-coloured roof, the wing a second rondavel. Strong

@@ -62,8 +62,12 @@ export const HALL = { x0: 1, x1: 15, z0: 1, z1: 11, floorY: 5, wallTop: 9, beamY
   frontPosts: [1, 4, 6, 8, 10, 12, 15], backPosts: [1, 4, 8, 12, 15], sidePosts: [1, 4, 8, 11],
   roof: { axis: 'x', across: [0, 12], along: [0, 16], eaveY: 10, steep: false },
   gablet: { axis: 'z', across: [4, 12], along: [0, 5], eaveY: 10, steep: false },
+  // round 2: a rear gablet over the charter wall breaks the long back slope (its window lights the charter)
+  rearGablet: { axis: 'z', across: [4, 12], along: [7, 12], eaveY: 10, steep: false },
   ties: [4, 8, 12] }
-export const WING = { x0: 16, x1: 24, z0: 1, z1: 11, roof: { axis: 'z', across: [16, 24], along: [0, 12], eaveY: 10, steep: true } }
+export const WING = { x0: 16, x1: 24, z0: 1, z1: 11, roof: { axis: 'z', across: [16, 24], along: [0, 12], eaveY: 10, steep: true },
+  // round 2: a steep cross gable on the wing's east side, so its end to the lane is a gable, not a bare slope
+  eastGable: { axis: 'x', across: [3, 9], along: [21, 24], eaveY: 10, steep: true } }
 export const CELLAR = { x0: 1, z0: 2, x1: 15, z1: 11, depth: 4, hatch: [13, 10] }
 
 export const OPENINGS = {
@@ -80,6 +84,8 @@ export const OPENINGS = {
     { cells: [[1, 12, 6], [1, 13, 6]], out: 'west' },
     { cells: [[15, 7, 5], [15, 8, 5], [15, 7, 7], [15, 8, 7]], out: 'east', level: 1 },
     { cells: [[15, 12, 6], [15, 13, 6]], out: 'east', level: 1 },
+    { cells: [[7, 11, 11], [8, 11, 11], [9, 11, 11], [8, 12, 11]], out: 'south' }, // the rear gablet
+    { cells: [[1, 7, 9], [1, 8, 9]], out: 'west' }, // the master's end, west
   ],
   wingWindows: [
     { cells: [[18, 2, 2], [18, 3, 2]], out: 'north' }, { cells: [[22, 2, 2], [22, 3, 2]], out: 'north' },
@@ -88,6 +94,8 @@ export const OPENINGS = {
     { cells: [[19, 11, 1], [20, 11, 1], [21, 11, 1], [20, 12, 1], [20, 13, 1], [20, 14, 1]], out: 'north' },
     { cells: [[24, 7, 4], [24, 8, 4], [24, 7, 8], [24, 8, 8]], out: 'east' },
     { cells: [[19, 7, 11], [19, 8, 11], [21, 7, 11], [21, 8, 11]], out: 'south' },
+    { cells: [[24, 12, 6], [24, 13, 6]], out: 'east' }, // the east cross gable
+    { cells: [[19, 2, 11], [19, 3, 11], [21, 2, 11], [21, 3, 11]], out: 'south' }, // the counting house, back
   ],
   wingDoor: [20, 1, 2], wingGround: [16, 1, 8], wingUpper: [[15, 6, 6], [16, 6, 6]],
 }
@@ -128,7 +136,28 @@ export const FURNITURE = [
   { room: 'Chapter room', kind: 'cupboard', part: 'cupboard', pos: [23, 6, 9], facing: 'west', wood: 'spruce', wing: true },
   { room: 'Chapter room', kind: 'picture', part: 'picture', pos: [23, 8, 6], facing: 'west', wood: 'spruce', colour: 'red', wing: true },
   { room: 'Chapter room', kind: 'lamp', part: 'hangingLamp', pos: [20, 9, 6], facing: 'north', wood: 'spruce', wing: true },
-  { room: 'Chapter room', kind: 'rug', part: 'rug', cellsAbs: [[19, 6, 5], [20, 6, 5], [21, 6, 5], [19, 6, 6], [20, 6, 6], [21, 6, 6], [19, 6, 7], [20, 6, 7], [21, 6, 7]], colour: 'red', wing: true },
+  // round 2: the counting house (a tally table under its lamp, the strongbox chests, the clerk's lit desk) and the
+  // records room above (shelves round the walls, a reading table, a lit writing desk, a lectern for the rolls)
+  ...[19, 20, 21].map(x => ({ room: 'Counting house', kind: 'table', part: 'table', pos: [x, 1, 6], facing: 'north', wood: 'spruce', colour: 'green', wing: true })),
+  ...[19, 20, 21].map(x => ({ room: 'Counting house', kind: 'chair', part: 'chair', pos: [x, 1, 7], facing: 'north', wood: 'spruce', wing: true })),
+  { room: 'Counting house', kind: 'chair', part: 'armchair', pos: [20, 1, 5], facing: 'south', wood: 'dark_oak', colour: 'green', wing: true },
+  { room: 'Counting house', kind: 'chest', part: 'chest', pos: [23, 1, 6], facing: 'west', wing: true },
+  { room: 'Counting house', kind: 'chest', part: 'pantry', pos: [23, 1, 7], facing: 'west', block: 'barrel', wing: true },
+  { room: 'Counting house', kind: 'desk', part: 'desk', pos: [23, 1, 9], facing: 'west', wood: 'spruce', wing: true },
+  { room: 'Counting house', kind: 'lamp', part: 'tableLamp', pos: [17, 1, 3], facing: 'south', wood: 'spruce', wing: true },
+  { room: 'Counting house', kind: 'cupboard', part: 'cupboard', pos: [17, 1, 10], facing: 'north', wood: 'spruce', wing: true },
+  ...[18, 20, 22].map(x => ({ room: 'Chapter room', kind: 'cupboard', part: 'cupboard', pos: [x, 6, 10], facing: 'north', wood: 'spruce', wing: true })),
+  ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'table', part: 'table', pos: [x, 6, 6], facing: 'north', wood: 'spruce', colour: 'red', wing: true })),
+  ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'chair', part: 'chair', pos: [x, 6, 5], facing: 'south', wood: 'spruce', wing: true })),
+  ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'chair', part: 'chair', pos: [x, 6, 7], facing: 'north', wood: 'spruce', wing: true })),
+  { room: 'Chapter room', kind: 'desk', part: 'desk', pos: [17, 6, 10], facing: 'north', wood: 'spruce', wing: true },
+  { room: 'Chapter room', kind: 'lamp', part: 'tableLamp', pos: [17, 6, 2], facing: 'south', wood: 'spruce', wing: true },
+  // the hall table's lamp, at its foot; the arcade's two market counters with their stock barrels behind
+  { room: 'Hall', kind: 'lamp', part: 'tableLamp', pos: [5, 6, 6], facing: 'east', wood: 'spruce' },
+  ...[4, 5, 6].map(z => ({ room: 'Arcade', kind: 'counter', part: 'counter', pos: [3, 1, z], facing: 'east', wood: 'spruce', top: 'spruce_slab', topSlab: true })),
+  ...[5, 6, 7].map(z => ({ room: 'Arcade', kind: 'counter', part: 'counter', pos: [13, 1, z], facing: 'west', wood: 'spruce', top: 'spruce_slab', topSlab: true })),
+  { room: 'Arcade', kind: 'chest', part: 'pantry', pos: [2, 1, 4], facing: 'east', block: 'barrel' },
+  { room: 'Arcade', kind: 'chest', part: 'pantry', pos: [14, 1, 7], facing: 'west', block: 'barrel' },
 ]
 
 // The walking line: in under the great arch, across the arcade, up the back stair, along the hall to the charter.

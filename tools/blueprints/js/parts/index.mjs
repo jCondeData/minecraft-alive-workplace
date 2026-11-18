@@ -62,3 +62,5 @@ export * from './leaders_hall_arena.mjs' // piers, dais, standard (challenge hal
 export * from './guildhall_arcade.mjs' // arcadeRun, jettyCorbels (guildhalls: an open arcade under a jettied hall)
 export * from './map_room_tower.mjs' // corbelRing, compassRose, lookoutRail, ladderShaft, batter (towers: a jettied lookout on corbels, a floor compass rose, a ladder shaft, a splayed foot)
 export * from './trade_hall_ball.mjs' // roundShaft, ballCap, steppedCap (the Ball Tower trade hall: a chamfered tower and the ball on it)
+export * from './tower_depth.mjs' // cornerPiers, stairPlinth, towerBrackets, mapWall (towers: proud corner piers, a stepped plinth, brackets under an overhang, a banner map wall)
+export * from './trade_hall_frame.mjs' // proudFrame, shaftBand, footSkirt, seatCrossGable (a frame proud of its infill, a band round a shaft, a stone skirt, a cross-gable seated in a slope)

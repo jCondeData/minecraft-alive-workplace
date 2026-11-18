@@ -6963,8 +6963,23 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
 - [x] **49.7** (review: pending 2026-11-18) **Manor** (4 levels).
 - [x] **49.8** (review: pending 2026-11-18) **Artisan's House** (3 levels) and **Weaver's Cottage** (2).
 - [ ] **49.9** **Farmstead** (3 levels) and **Ranch** (2).
-- [ ] **49.10** **The biome looks** (`structure/looks/`: desert, lodge, plaza, savanna, snowy, taiga) redone so every
-  rebuilt home has its biome version.
+- [ ] **49.10a** **The biome looks, 1: the homes' looks by village culture, and the Starter Cottage's.** (Split from
+  49.10 "the biome looks (`structure/looks/`: desert, lodge, plaza, savanna, snowy, taiga) redone so every rebuilt home
+  has its biome version", lane-b-1118-1838: today only the Pokemon Center (lodge, plaza) and the Waystone Plaza (desert,
+  savanna, snowy, taiga, redone in 52.4) have looks, so no home has a biome version; the Pokemon Center's two looks go
+  with its rebuild in 50.12.) A home family with looks is built in its village's culture (`VillageWaystones.culture`:
+  desert, savanna, snowy, taiga; plains as drawn), not by the hall hash `BlueprintLooks.pick` uses, falling back to the
+  other looks and then as drawn where it doesn't fit; the Blueprint Table shows the looks. Then the Starter Cottage's four
+  looks of every level (`looks/<culture>/starter_cottage[_n]`), each designed by a fresh subagent from
+  `briefs/starter_cottage.md` plus a culture note (the same rooms, beds, job blocks and furniture spots, so every home
+  test holds; the shape, roof and materials of that climate), critic as in REBUILD.md against the as-drawn cottage.
+  Done when: GameTests (a desert, savanna, snowy and taiga village each start their own look; plains the drawing; a look
+  that doesn't fit falls back; a save mid-build of a look reloads), each look's build-to-DONE test, renders, scene
+  `rebuild_starter_cottage_looks`, wiki, CHANGELOG.
+- [ ] **49.10b** **The biome looks, 2:** the Stone House and the Townhouse, every level, as 49.10a.
+- [ ] **49.10c** **The biome looks, 3:** the Terrace and the Manor, every level, as 49.10a.
+- [ ] **49.10d** **The biome looks, 4:** the Artisan's House, the Weaver's Cottage and the Daub House, as 49.10a.
+- [ ] **49.10e** **The biome looks, 5:** the Farmstead and the Ranch, every level, as 49.10a.
 
 ## Milestone 50: Rebuild from scratch: the workshops
 

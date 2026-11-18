@@ -148,7 +148,7 @@ export function draw(level) {
   c.set(...FORGE.grindstone, 'grindstone', { face: 'floor', facing: 'west' })
   c.set(...FORGE.anvil, 'anvil', { facing: 'north' })
   quenchTrough(c, FORGE.quench.cells, FORGE.quench.y, P.rim) // the quench tub beside the anvil
-  if (two) c.set(...FORGE.anvil2, 'chipped_anvil', { facing: 'west' })
+  if (two) c.set(...FORGE.anvil2, 'anvil', { facing: 'west' })
   for (const s of STORE) if (at(s.level)) for (let i = 0; i < s.h; i++) c.set(s.at[0], s.at[1] + i, s.at[2], s.block)
   for (const f of FURNITURE) {
     if (!at(f.level)) continue

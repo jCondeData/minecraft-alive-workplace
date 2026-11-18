@@ -6959,7 +6959,7 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
 - [x] **49.3** (picked: B, 2026-11-17) (review: pending 2026-11-18) **Starter Cottage** (4 levels; flagship: A and B).
 - [x] **49.4** (review: pending 2026-11-18) **Stone House** (4 levels).
 - [x] **49.5** (review: pending 2026-11-18) **Townhouse** (4 levels).
-- [x] **49.6** (review: pending 2026-11-18) **Terrace** (2 levels).
+- [x] **49.6** (approved 2026-11-18) **Terrace** (2 levels).
 - [x] **49.7** (review: pending 2026-11-18) **Manor** (4 levels).
 - [x] **49.8** (review: pending 2026-11-18) **Artisan's House** (3 levels) and **Weaver's Cottage** (2).
 - [ ] **49.9** **Farmstead** (3 levels) and **Ranch** (2).

@@ -27,8 +27,9 @@ job block: "1 job here has no workplace of its trade".
 - **Fletcher's Lodge**: a log cabin with a log pile, a straw target and a fletching table. Its II has a second
   fletching table.
 - **Map Room**: a narrow tower house with a cartography table and a lookout at the top (no upgrade).
-- **Farmstead**: a farmhouse with one bed and a composter beside a 9x5 field round a water channel, with a scarecrow.
-  Farmstead II adds a barn and a second field.
+- **Farmstead**: a farmhouse with one bed and a composter beside a 9x5 field round a water channel, with a scarecrow
+  (rebuilt in 49.9: [The Farmstead](farmstead.md), the composter on a gallery under the long roof). Farmstead II adds
+  a barn and a second field.
 - **Fisher's Hut**: a shore hut with a jetty on log posts and a barrel. Its plot must be on a shore: water near its
   front, at most 3 deep under the jetty. Fisher's Hut II adds a smokehouse with a smoker.
 - **Weaver's Cottage**: a two-story stone weaver's house with the loom at its long front window, a wool loft and a

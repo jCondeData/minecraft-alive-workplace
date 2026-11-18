@@ -144,6 +144,10 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
+  the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
+  time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while
+  the belt never came back. With no belt connector in the store he now waits and says so.
 - Archers on a Palisade's walk can see out and shoot again: the fence rail along the stake tops stood right in front
   of their eyes, so they never saw a raider. The stakes now end one block over the walk; walls already built keep
   their fence rail until the Palisade is rebuilt.

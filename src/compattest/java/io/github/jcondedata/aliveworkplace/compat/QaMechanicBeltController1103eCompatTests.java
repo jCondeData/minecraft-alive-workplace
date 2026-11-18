@@ -14,21 +14,22 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 /**
- * QA lane E, 2026-11-03 (a mutant of MechanicWork.beltData, `sourceOrigin != null` to `== null`, survived the whole
- * compat suite): ROADMAP 39.2/39.5, "a belt's controller moved with the build". A three-segment belt saved where its
- * controller (the far end) stood at 12 64 10, built here and then all three segments gone: each segment the Mechanic
- * puts back names as its {@code Controller} the place where the controller segment now stands in this world, not the
- * place it stood where the blueprint was saved, plain and turned a quarter. (A flipped build is left out: the
- * builder leaves a mirrored belt's place data out for Create to work out, see the Notes, 2026-11-03.)
+ * QA lane E, 2026-11-03, reworked for B669 (2026-11-18): ROADMAP 39.2/39.5, "a belt goes back with the build". A
+ * three-segment belt in a blueprint, built here plain and turned a quarter, then all three segments gone: the Mechanic
+ * sees the two pulley shafts to put back first, each where the belt's end stands in this world and turning on the
+ * belt's axis there; once they stand, the whole belt is one part between them, for one belt connector, never three
+ * segments (B669: a lone segment is broken by Create into a belt connector from nothing). The old checks of each
+ * segment's moved {@code Controller} went with the segment-by-segment mending: Create works a laid belt's data out.
  */
 public class QaMechanicBeltController1103eCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
@@ -44,7 +45,39 @@ public class QaMechanicBeltController1103eCompatTests implements FabricGameTest 
 		return list;
 	}
 
-	private static void controllerGoesWithTheBuild(GameTestHelper helper, Rotation rotation, Mirror mirror) {
+	/** A three-segment belt along x, facing east, saved as a blueprint (its start at x = 0). */
+	static ResourceLocation beltBlueprint(ServerLevel level, String prefix, AtomicInteger counter) {
+		CompoundTag structure = new CompoundTag();
+		structure.putInt("DataVersion", net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+		structure.put("size", ints(3, 1, 1));
+		ListTag palette = new ListTag();
+		BlockState belt = MechanicCompatTests.with(MechanicCompatTests.create("belt").defaultBlockState(), "facing", "east");
+		for (String part : List.of("start", "middle", "end")) {
+			palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(MechanicCompatTests.with(belt, "part", part)));
+		}
+		structure.put("palette", palette);
+		ListTag blocks = new ListTag();
+		for (int x = 0; x < 3; x++) {
+			CompoundTag data = new CompoundTag();
+			data.putString("id", "create:belt");
+			data.putBoolean("IsController", x == 0);
+			data.putInt("Index", x);
+			data.putInt("Length", 3);
+			data.putIntArray("Controller", new int[] {10, 64, 10});
+			CompoundTag block = new CompoundTag();
+			block.put("pos", ints(x, 0, 0));
+			block.putInt("state", x);
+			block.put("nbt", data);
+			blocks.add(block);
+		}
+		structure.put("blocks", blocks);
+		structure.put("entities", new ListTag());
+		ResourceLocation id = AliveWorkplace.id(prefix + counter.incrementAndGet());
+		level.getStructureManager().getOrCreate(id).load(BuiltInRegistries.BLOCK.asLookup(), structure);
+		return id;
+	}
+
+	private static void beltGoesBackWithTheBuild(GameTestHelper helper, Rotation rotation, Mirror mirror) {
 		PartnerShowsCompatTests.clearLeftovers(helper);
 		ServerLevel level = helper.getLevel();
 		BuildSiteManager sites = BuildSiteManager.get(level);
@@ -58,49 +91,31 @@ public class QaMechanicBeltController1103eCompatTests implements FabricGameTest 
 				helper.setBlock(new BlockPos(x, 2, z), Blocks.AIR); // every segment gone, whichever way the build stands
 			}
 		}
-		CompoundTag structure = new CompoundTag();
-		structure.putInt("DataVersion", net.minecraft.SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-		structure.put("size", ints(3, 1, 1));
-		ListTag palette = new ListTag();
-		palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(MechanicCompatTests.create("belt").defaultBlockState()));
-		structure.put("palette", palette);
-		ListTag blocks = new ListTag();
-		for (int x = 0; x < 3; x++) {
-			CompoundTag data = new CompoundTag();
-			data.putString("id", "create:belt");
-			data.putBoolean("IsController", x == 2);
-			data.putInt("Index", 2 - x);
-			data.putInt("Length", 3);
-			data.putIntArray("Controller", new int[] {12, 64, 10});
-			CompoundTag block = new CompoundTag();
-			block.put("pos", ints(x, 0, 0));
-			block.putInt("state", 0);
-			block.put("nbt", data);
-			blocks.add(block);
-		}
-		structure.put("blocks", blocks);
-		structure.put("entities", new ListTag());
-		ResourceLocation id = AliveWorkplace.id("compat_test/qa_e1103_belt_" + BLUEPRINTS.incrementAndGet());
-		level.getStructureManager().getOrCreate(id).load(BuiltInRegistries.BLOCK.asLookup(), structure);
+		ResourceLocation id = beltBlueprint(level, "compat_test/qa_e1103_belt_", BLUEPRINTS);
 		helper.assertTrue(BlueprintLibrary.get(level, id).isPresent(), "setup: could not register the test blueprint");
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(LINE), rotation, mirror);
 		sites.recordFinished(id, placement, UUID.randomUUID());
+		BlockPos start = placement.origin().offset(StructureTemplate.transform(BlockPos.ZERO, mirror, rotation, BlockPos.ZERO));
+		BlockPos end = placement.origin().offset(StructureTemplate.transform(new BlockPos(2, 0, 0), mirror, rotation, BlockPos.ZERO));
+		String axis = rotation == Rotation.NONE || rotation == Rotation.CLOCKWISE_180 ? "z" : "x";
 		try {
-			List<MechanicWork.Part> belts = MechanicWork.missingParts(level, helper.absolutePos(TOOLBOX)).stream().filter(p -> p.structure().equals(id)).toList();
-			helper.assertTrue(belts.size() == 3, rotation + " " + mirror + ": expected the 3 belt segments missing, found "
-				+ belts.stream().map(p -> helper.relativePos(p.pos())).toList());
-			List<MechanicWork.Part> controllers = belts.stream().filter(p -> p.nbt() != null && p.nbt().getBoolean("IsController")).toList();
-			helper.assertTrue(controllers.size() == 1, rotation + " " + mirror + ": " + controllers.size() + " controller segments among "
-				+ belts.stream().map(p -> helper.relativePos(p.pos()) + " " + p.nbt()).toList());
-			BlockPos controller = controllers.get(0).pos();
-			helper.assertFalse(controller.equals(new BlockPos(12, 64, 10)), "setup: the controller stands where it was saved");
-			for (MechanicWork.Part part : belts) {
-				int[] at = part.nbt() != null && part.nbt().get("Controller") instanceof IntArrayTag array ? array.getAsIntArray() : null;
-				helper.assertTrue(at != null && at.length == 3 && new BlockPos(at[0], at[1], at[2]).equals(controller),
-					rotation + " " + mirror + ": the segment going back at " + helper.relativePos(part.pos()) + " names its controller at "
-					+ (at == null ? "nothing" : java.util.Arrays.toString(at)) + ", not where the controller segment stands, "
-					+ controller.toShortString() + " (" + part.nbt() + ")");
+			List<MechanicWork.Part> parts = MechanicWork.missingParts(level, helper.absolutePos(TOOLBOX)).stream().filter(p -> p.structure().equals(id)).toList();
+			helper.assertTrue(parts.size() == 2 && parts.stream().noneMatch(MechanicWork.Part::belt)
+				&& parts.stream().allMatch(p -> p.cost() == MechanicCompatTests.createItem("shaft"))
+				&& parts.stream().map(MechanicWork.Part::pos).toList().containsAll(List.of(start, end)),
+				rotation + " " + mirror + ": expected the belt's two pulley shafts first, at " + helper.relativePos(start) + " and "
+				+ helper.relativePos(end) + ", found " + parts.stream().map(p -> helper.relativePos(p.pos()) + " " + p.state() + " for " + p.cost()).toList());
+			for (MechanicWork.Part p : parts) {
+				helper.assertTrue(p.state().toString().contains("axis=" + axis), rotation + ": the pulley at " + helper.relativePos(p.pos())
+					+ " doesn't turn on the belt's axis " + axis + ": " + p.state());
+				level.setBlockAndUpdate(p.pos(), p.state());
 			}
+			parts = MechanicWork.missingParts(level, helper.absolutePos(TOOLBOX)).stream().filter(p -> p.structure().equals(id)).toList();
+			helper.assertTrue(parts.size() == 1 && parts.get(0).belt() && parts.get(0).cost() == MechanicCompatTests.createItem("belt_connector")
+				&& parts.get(0).pos().equals(start) && end.equals(parts.get(0).end()),
+				rotation + " " + mirror + ": with both pulleys back, expected one belt from " + helper.relativePos(start) + " to "
+				+ helper.relativePos(end) + " for one belt connector, found "
+				+ parts.stream().map(p -> helper.relativePos(p.pos()) + (p.belt() ? " to " + helper.relativePos(p.end()) : "") + " for " + p.cost()).toList());
 		} finally {
 			sites.forgetFinished(placement);
 		}
@@ -109,13 +124,13 @@ public class QaMechanicBeltController1103eCompatTests implements FabricGameTest 
 
 	//$ gametest_batch AREA '"qa_e1103_belt_plain"'
 	@GameTest(template = AREA, batch = "qa_e1103_belt_plain")
-	public void aGoneBeltsSegmentsNameTheControllerWhereTheBuildStands(GameTestHelper helper) {
-		controllerGoesWithTheBuild(helper, Rotation.NONE, Mirror.NONE);
+	public void aGoneBeltGoesBackBetweenItsPulleysWhereTheBuildStands(GameTestHelper helper) {
+		beltGoesBackWithTheBuild(helper, Rotation.NONE, Mirror.NONE);
 	}
 
 	//$ gametest_batch AREA '"qa_e1103_belt_turned"'
 	@GameTest(template = AREA, batch = "qa_e1103_belt_turned")
-	public void aTurnedBuildsGoneBeltNamesItsTurnedController(GameTestHelper helper) {
-		controllerGoesWithTheBuild(helper, Rotation.CLOCKWISE_90, Mirror.NONE);
+	public void aTurnedBuildsGoneBeltGoesBackBetweenItsTurnedPulleys(GameTestHelper helper) {
+		beltGoesBackWithTheBuild(helper, Rotation.CLOCKWISE_90, Mirror.NONE);
 	}
 }

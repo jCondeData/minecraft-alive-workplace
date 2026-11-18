@@ -34,9 +34,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
-  adds only what's new. **Palisade II** gets a fighting step (a timber along the walkway to stand on, high enough to shoot over the low
-  points, and a row of archers' battle stations, as many as the Palisade's walkway) and a
-  ditch of pointed dripstone stakes in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
+  adds only what's new. **Palisade II** gets a fighting step (52.3: the bank built out into a walk three wide behind the stakes, 19
+  battle stations to the Palisade's 7, at least as many as the Palisade's walkway) and a
+  ditch of seven pointed dripstone stakes in turned earth in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
   a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
   stations a side; **Gatehouse II** a barbican in front with a second gate and portcullis and murder holes over the
   gateway. In a siege **both portcullises drop** and the rams meet the **barbican's gate first**: they break all of

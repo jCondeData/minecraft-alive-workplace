@@ -557,8 +557,9 @@ public final class StarterBlueprints {
 	/** Built of Create's blocks for trains: listed only with Create and {@code villageTrains} on (city/CaravanTrains). */
 	public static final List<Entry> TRAINS_ONLY = List.of(TRAIN_STATION);
 
-	/** Walls and gates: a wooden palisade with a walkway. */
-	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
+	/** Walls and gates: a wooden palisade with a walkway: an earth bank faced in mud brick, a flight up its village
+	 *  side to a stripped-oak walk of seven stations behind a row of pointed spruce stakes (52.3, rebuilt). */
+	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 5, 4));
 	/** A gate in the palisade (shut at night): a gabled timber gatehouse on stone feet, three spruce gates under its
 	 *  lintel, a walk over the way (52.3, rebuilt). */
 	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 9, 2));
@@ -571,8 +572,9 @@ public final class StarterBlueprints {
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
 	/** A stone gatehouse (its gates shut at night). */
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
-	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes. */
-	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 6, 4));
+	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes (52.3, rebuilt: the bank built
+	 *  out into a walk three wide, 19 stations, seven dripstone stakes in a ditch of turned earth outside). */
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 5, 5));
 	/** Timber hoardings over the battlements: a roofed walkway with murder holes (52.3, rebuilt). */
 	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
 	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */

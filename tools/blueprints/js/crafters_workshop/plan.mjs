@@ -116,10 +116,10 @@ export const FURNITURE = [
   // The long bench on the back wall: five counters, a lamp on the middle one, shelves over it
   ...[4, 5, 6, 7, 8].map(x => ({ room: 'Workroom', kind: 'counter', part: 'counter', pos: [x, 1, 8], facing: 'south', wood: 'spruce', topSlab: x === 6 })),
   { room: 'Workroom', kind: 'lamp', part: 'lampOn', pos: [6, 3, 8], facing: 'south', wood: 'spruce' },
-  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [4, 3, 8], facing: 'south', wood: 'spruce', on: 'potted_fern' },
-  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [5, 3, 8], facing: 'south', wood: 'spruce', on: ['candle', { candles: '3', lit: 'false', waterlogged: 'false' }] },
-  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [7, 3, 8], facing: 'south', wood: 'spruce', on: 'flower_pot' },
-  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [8, 3, 8], facing: 'south', wood: 'spruce', on: 'potted_red_mushroom' },
+  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [4, 3, 8], facing: 'north', wood: 'spruce', on: 'potted_fern' },
+  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [5, 3, 8], facing: 'north', wood: 'spruce', on: ['candle', { candles: '3', lit: 'false', waterlogged: 'false' }] },
+  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [7, 3, 8], facing: 'north', wood: 'spruce', on: 'flower_pot' },
+  { room: 'Workroom', kind: 'shelf', part: 'wallShelf', pos: [8, 3, 8], facing: 'north', wood: 'spruce', on: 'potted_red_mushroom' },
   // The east bench under the windows, the clock and a cupboard on the pier between them
   { room: 'Workroom', kind: 'counter', part: 'counter', pos: [10, 1, 3], facing: 'east', wood: 'spruce' },
   { room: 'Workroom', kind: 'counter', part: 'counter', pos: [10, 1, 4], facing: 'east', wood: 'spruce' },

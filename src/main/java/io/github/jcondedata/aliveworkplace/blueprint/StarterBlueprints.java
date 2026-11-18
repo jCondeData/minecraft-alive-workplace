@@ -430,7 +430,7 @@ public final class StarterBlueprints {
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
-	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done (52.4,
+	/** An obsidian portal frame in a blackstone arch, with the netherworker's cartography table: the builder lights it when done (52.4,
 	 *  rebuilt from scratch, tools/blueprints/js/nether_gate). */
 	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(13, 16, 9));
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden (52.4, rebuilt). */

@@ -35,8 +35,8 @@ asks for the steps, `latest.log` and any crash report).
   refresh them.
 - **The Nether Gate, the Waystone Plaza and the Mega Shrine are rebuilt from scratch** (52.4). The Nether Gate is a
   ceremonial gate: the obsidian frame stands between blackstone piers under a steep, flared crimson roof, up a two-step
-  dais with soul fire either side, and a timbered Provisioning Lodge beside it holds the Nether Brazier and the
-  netherworker's stores; Nether Gate II adds a tall Haul House behind the lodge and a walled nether wart terrace behind
+  dais with soul fire either side, and a timbered Provisioning Lodge beside it holds the netherworker's cartography table and
+  his stores; Nether Gate II adds a tall Haul House behind the lodge and a walled nether wart terrace behind
   the gate. The Waystone Plaza (all five village looks) is a wayshrine: a low hipped roof on four posts, open over the
   stone, with benches under it for travelers waiting on three sides and the front open to the road. The Mega Shrine is a
   keystone arch: the pedestal stands under a chiseled meteorite keystone, a straight flight climbs the front to the

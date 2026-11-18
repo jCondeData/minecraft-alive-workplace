@@ -110,6 +110,12 @@ export function draw(level = 1) {
     c.set(x, y, z, end && z === 3 ? P.stripped : P.gable, end && z === 3 ? { axis: 'y' } : {})
   }
   for (const x of MASSES.gateRoof.along) bargeTrim(c, 'x', x, MASSES.gateRoof.across, gr.under, `${P.trim}_slab`)
+  // the kick's end stairs beside the barge boards' lowest slab turn top-half: a flared lip at each corner, and no
+  // stair-and-slab pair a chair check (or a villager) reads as a seat at a table
+  for (const x of MASSES.gateRoof.along) for (const z of MASSES.gateRoof.across) {
+    const k = c.get(x, MASSES.gateRoof.eaveY, z)
+    if (k?.id === `minecraft:${P.kick}` && k.props.half === 'bottom') c.set(x, MASSES.gateRoof.eaveY, z, P.kick, { ...k.props, half: 'top' })
+  }
   // horned ridge ends: a crimson post at each end of the ridge, a soul lantern on it
   for (const x of MASSES.gateRoof.along) {
     c.set(x, gr.ridgeY + 1, 3, `${P.roof.full.replace('_planks', '')}_fence`)
@@ -145,7 +151,7 @@ export function draw(level = 1) {
   // --- Pass 4: interior (the plan's furniture) -------------------------------------------------------------------
   for (const f of FURNITURE) {
     if (!at(level, f)) continue
-    if (f.part === 'brazier') { c.free(f.pos); c.set(...f.pos, 'aliveworkplace:nether_brazier', { facing: f.facing }); continue }
+    if (f.part === 'brazier') { c.free(f.pos); c.set(...f.pos, 'cartography_table'); continue }
     if (f.part === 'doubleChest') { doubleChest(c, f.pos, f.facing, f.along); continue }
     if (f.part === 'caskRack') { caskRack(c, f.pos); continue }
     furnitureParts[f.part](c, f)

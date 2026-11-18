@@ -16,7 +16,7 @@
 //      graveyard.
 // Built: A and C together, A's axis ending in C's tower. The lychgate frames the tower; the tower is the chapel's
 // porch and its belfry with no bell (a bell is a meeting point: it would gather the village) but a light; the chapel
-// behind it holds the Undertaker's table as its altar, the bier in the middle under the lamp, pews along the walls for
+// behind it holds the Undertaker's brewing stand as its altar, the bier in the middle under the lamp, pews along the walls for
 // the mourners. A, alone, is the safe churchyard; C's lit tower is what makes it the village's graveyard from a
 // distance, day and night (it is the tallest thing in it: 16 high against the chapel's 14 and the gate's 7).
 // Two young Irish yews stand either side of the chapel, the churchyard tree.
@@ -101,7 +101,7 @@ export const SLOTS = [
 ]
 
 export const ROOMS = [
-  { name: 'Chapel', use: 'the Undertaker\'s altar (his table), the bier, the mourners\' pews', box: [4, 1, 9, 8, 4, 11] },
+  { name: 'Chapel', use: 'the Undertaker\'s altar (his brewing stand), the bier, the mourners\' pews', box: [4, 1, 9, 8, 4, 11] },
 ]
 
 export const OPENINGS = {
@@ -115,11 +115,12 @@ export const OPENINGS = {
   ],
 }
 
-// Every piece of furniture, footprint first. The Undertaker's table is the altar at the back of the chapel, facing the
-// door; the chest he takes golden apples, potions and totems from stands beside it (2 blocks, within the 8 his search
+// Every piece of furniture, footprint first. The Undertaker's job block is the altar at the back of the chapel, facing
+// the door: a brewing stand, his workstation since the Undertaker's Table stopped being craftable (the Table is kept only
+// for old worlds, so a drawing that needs one could never be stocked in survival); the chest he takes golden apples, potions and totems from stands beside it (2 blocks, within the 8 his search
 // needs). Candles on dressed stone pedestals flank the altar (the chandler scene needs plain candles in Level I).
 export const FURNITURE = [
-  { room: 'Chapel', kind: 'fixture', part: 'jobBlock', pos: [6, 1, 11], facing: 'north', block: 'aliveworkplace:undertakers_table' },
+  { room: 'Chapel', kind: 'fixture', part: 'jobBlock', pos: [6, 1, 11], block: 'brewing_stand', props: { has_bottle_0: 'false', has_bottle_1: 'false', has_bottle_2: 'false' } },
   { room: 'Chapel', kind: 'fixture', part: 'chest', pos: [8, 1, 11], facing: 'north', block: 'chest' },
   { room: 'Chapel', kind: 'fixture', part: 'pedestal', pos: [5, 1, 11], candles: 3 },
   { room: 'Chapel', kind: 'fixture', part: 'pedestal', pos: [7, 1, 11], candles: 3 },
@@ -135,7 +136,7 @@ export const FURNITURE = [
 // the path's edge (x 5 and 7), and the cross walk at z 7 behind the back row.
 export const WALK = [
   [6, 0, -1], [6, 0, 0], [6, 0, 1], [6, 0, 2], [6, 0, 3], [6, 0, 4], [6, 0, 5], [6, 1, 6], [6, 1, 7], [6, 1, 8],
-  [6, 1, 9], [7, 1, 10], // the table (6, 1, 11) and the chest (8, 1, 11) are within reach of these
+  [6, 1, 9], [7, 1, 10], // the brewing stand (6, 1, 11) and the chest (8, 1, 11) are within reach of these
 ]
 
 // Level II's additions (nothing at y 0..1 on a slot).

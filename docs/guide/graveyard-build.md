@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 13 by 13, 11 high
-Tiers: I, II (a lych-gate)
+Size: 13 by 13, 16 high
+Tiers: I, II (the yard a generation on)
 Houses: an Undertaker at the brewing stand
 Where to get it: Blueprint Table
-Main materials: deepslate tiles and stairs, stone bricks, cobblestone and mossy walls, polished andesite
+Main materials: stone bricks, cobblestone, deepslate tile stairs, stone brick slabs, spruce leaves
 categories: Builds
 related: jobs-services.md, village-life.md, chapel-build.md
 ```
 
-A walled churchyard with a small mortuary, a brewing stand and a chest inside.
+A walled churchyard you enter under a roofed lychgate. A flagstone path runs between two plots of grave rows to a stone lantern tower, the tallest thing in the yard, with a light burning at its top; through the arch at its foot is the little chapel, where the Undertaker's brewing stand is the altar between candles and his chest stands beside it, with pews along the walls and a bier under the lamp. Irish yews grow either side of the chapel.
 
 ## Getting the blueprint
 
@@ -25,7 +25,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Graveyard, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Graveyard II** adds a roofed lych-gate over the way in.
+- **Graveyard II** is the same yard a generation on: the yews have grown tall, lanterns stand on the wall's piers, a stone cross rises in each plot, the front wall is raised and railed in iron, benches face the graves, and lamp posts line the path.
 
 ## What it does for the village
 

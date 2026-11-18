@@ -63,15 +63,17 @@ public class TerrainStallGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The graveyard on a hillside: its floor (y=10) is under the ground on the uphill (east) side, which is cleared,
-	 * and up to six blocks above it downhill, where it gets a foundation; levelling the ground cuts the hill
-	 * around it and fills the hollow below. The builder finishes, and never stalls 30 s on shift.
+	 * The graveyard on a hillside: its floor (y=5) is under the ground on the uphill (east) side, which is cleared,
+	 * and up to four blocks above it downhill, where it gets a foundation; levelling the ground cuts the hill
+	 * around it and fills the hollow below. The builder finishes, and never stalls 30 s on shift. (51.6: the rebuilt
+	 * graveyard is 16 tall, so it stands at x 4..16 with its floor at y 5, where the ground meets the floor at its
+	 * middle as at x 9..21, y 10 before: higher, its top would run into the area's barrier roof at y 21.)
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '40000' '"b23_graveyard_hillside"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_graveyard_hillside")
 	public void b23GraveyardOnAHillsideNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 10, 8));
+		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(4, 5, 8));
 	}
 
 	/** The same for the tinker's workshop, whose LANDSCAPE crawled in the soak. */
@@ -87,13 +89,14 @@ public class TerrainStallGameTests implements FabricGameTest {
 	 * its site was 40 to 50 blocks from the bench, so the builder walks out to clear it and back to its chests for its
 	 * first foundation block. Here the graveyard stands on the same slope as above but as far along it from the bench as
 	 * the area allows (higher up the hill its clearance would reach the area's barrier roof): even with that walk the
-	 * builder never goes 30 s on shift without placing (worst gap about 400 ticks), and the build finishes.
+	 * builder never goes 30 s on shift without placing (worst gap about 400 ticks), and the build finishes. (51.6: at
+	 * x 4..16, y 5, as above.)
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '40000' '"b23_graveyard_far"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "b23_graveyard_far")
 	public void b23AFarGraveyardNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 10, 14));
+		buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(4, 5, 14));
 	}
 
 	private void buildOnHillside(GameTestHelper helper, StarterBlueprints.Entry entry, BlockPos origin) {

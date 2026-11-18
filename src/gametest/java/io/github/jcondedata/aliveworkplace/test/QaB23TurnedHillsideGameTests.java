@@ -24,11 +24,11 @@ public class QaB23TurnedHillsideGameTests implements FabricGameTest {
 		TerrainStallGameTests.buildOnHillside(helper, StarterBlueprints.TINKERS_WORKSHOP, new BlockPos(18, 10, 8), Rotation.CLOCKWISE_90);
 	}
 
-	/** The graveyard (13 by 13) turned counterclockwise: it covers x 9..21, z 8..20, as in the builder's own test. */
+	/** The graveyard (13 by 13, 16 tall) turned counterclockwise: it covers x 4..16, z 8..20, floor y 5, as in the builder's own test. */
 	//$ gametest_ticks_batch HUGE_AREA '40000' '"qa_b23_graveyard_turned"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 40000, batch = "qa_b23_graveyard_turned")
 	public void qaB23GraveyardTurnedOnAHillsideNeverStalls(GameTestHelper helper) {
 		Leftovers.clear(helper);
-		TerrainStallGameTests.buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(9, 10, 20), Rotation.COUNTERCLOCKWISE_90);
+		TerrainStallGameTests.buildOnHillside(helper, StarterBlueprints.GRAVEYARD, new BlockPos(4, 5, 20), Rotation.COUNTERCLOCKWISE_90);
 	}
 }

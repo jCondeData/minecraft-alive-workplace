@@ -95,7 +95,7 @@ export function draw(level = 1) {
   // --- Pass 4: interior (the plan's furniture) --------------------------------------------------------------------
   const parts = {
     ...furnitureParts,
-    jobBlock(c, f) { const [x, y, z] = f.pos; c.free(f.pos); c.set(x, y, z, f.block, { facing: f.facing }) },
+    jobBlock(c, f) { const [x, y, z] = f.pos; c.free(f.pos); c.set(x, y, z, f.block, f.props ?? { facing: f.facing }) },
     pedestal(c, f) { // a dressed stone pedestal with a cluster of lit candles on it
       const [x, y, z] = f.pos
       c.free([x, y, z], [x, y + 1, z])
@@ -126,7 +126,7 @@ export function draw(level = 1) {
     }
     for (const [[ax, az], [bx]] of L2.railings) for (let x = ax; x <= bx; x++) { c.set(x, 1, az, rubble); c.set(x, 2, az, 'iron_bars') }
     for (const [x, z] of L2.pierPots) c.set(x, 3, z, 'potted_white_tulip')
-    for (const b of L2.benches) benchRun(c, { x0: b.x0, x1: b.x1, y: 0, z: b.z, facing: 'north' }, { seat: `${P.wood}_stairs`, spot: true, wood: P.wood })
+    for (const b of L2.benches) benchRun(c, { x0: b.x0, x1: b.x1, y: 0, z: b.z, facing: 'north' }, { seat: `${P.wood}_stairs` }) // plain stair benches on the ground (y 0 has no floor in the drawing for a furniture spot to stand on)
     for (const [x, y, z] of L2.pathLamps) { c.clear(x, y, z); lampPost(c, x, y, z, `${P.wood}_fence`, 2) }
     for (const X of L2.crosses) { // a stone cross: a chiseled foot, a shaft of wall posts, the arms at the top
       c.set(X.x, 0, X.z, P.keystone)

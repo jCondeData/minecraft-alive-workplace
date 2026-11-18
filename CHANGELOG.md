@@ -74,6 +74,17 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Post Office and the Graveyard are rebuilt from scratch** (51.6). The Post Office is a brick tower with a
+  steep slate spire and a weathervane, standing forward of a long counter hall: you come in at the tower's foot and
+  walk straight to the Mailbox in the middle of the counter, with a writing table, a bench by the stove and the
+  pigeonholes and sorting desk behind; the Postman sleeps in the tower room over the door, and a red pillar box stands
+  outside (17 x 15 x 15). The Graveyard is a walled churchyard entered under a roofed lychgate: a flagstone path runs
+  between the two grave plots (the same 32 grave rows) to a lantern tower, and the little chapel behind it has the
+  Undertaker's brewing stand as its altar, pews along the walls and a bier under the lamp, with Irish yews either
+  side (13 x 13, now 16 high). Graveyard II is the same yard a generation on: tall yews, lanterns on the wall's piers,
+  a stone cross in each plot, an iron-railed front wall, benches facing the graves and lamp posts by the path.
+  Villages keep their own Postman's house. Buildings already standing keep the drawing they were built from until
+  you refresh them.
 - **The School is rebuilt from scratch** (51.4, with Cobblemon). A timber-framed gatehouse with a round moon window
   opens onto a paved court, where a sparring ring with straw targets circles the Move Tutor's Training Post; spectators
   sit under a cloister on the west, and behind the court the Tutor's hall holds a lecture room with a reading table, a

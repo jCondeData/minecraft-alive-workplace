@@ -71,7 +71,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
-           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school"}
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 51.6, the Post Office ("the Signal Tower") and the Graveyard ("the Lantern Yard"): js/post_office (npm run
+           # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
+           # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
+           # village pieces keep their own looks (village.py's staffed house)
+           "post_office", "graveyard", "graveyard_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -164,8 +169,9 @@ if __name__ == "__main__":
     apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
     flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
     flower_shop_building_2().save(MAIN_STRUCTURES, "flower_shop_2")
-    graveyard().save(MAIN_STRUCTURES, "graveyard")
-    graveyard_2().save(MAIN_STRUCTURES, "graveyard_2")
+    for name, draw in (("graveyard", graveyard), ("graveyard_2", graveyard_2)):
+        if name not in REBUILT:  # ROADMAP 51.6: the Graveyard comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     town_hall().save(os.path.join(MAIN_STRUCTURES, "research"), "town_hall")
     for name, draw in (("village_hall", village_hall), ("village_hall_2", village_hall_2), ("village_hall_3", village_hall_3)):
         draw().save(MAIN_STRUCTURES, name)

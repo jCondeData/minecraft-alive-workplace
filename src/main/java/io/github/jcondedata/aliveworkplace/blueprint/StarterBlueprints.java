@@ -335,10 +335,10 @@ public final class StarterBlueprints {
 	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(13, 9, 13));
 	/** A second stonecutter and a hoist. */
 	public static final Entry MASONS_YARD_2 = new Entry(AliveWorkplace.id("masons_yard_2"), new Vec3i(18, 15, 13));
-	/** A log cabin with a log pile and a straw target, a fletching table inside (Fletcher; Lumberjack with an axe). */
-	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(11, 11, 10));
-	/** A drying-rack wing with a second fletching table. */
-	public static final Entry FLETCHERS_LODGE_2 = new Entry(AliveWorkplace.id("fletchers_lodge_2"), new Vec3i(13, 11, 10));
+	/** A log pen under a long roof with a stone chimney and a porch, a fletching table inside (Fletcher; Lumberjack with an axe); rebuilt in ROADMAP 50.6. */
+	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(9, 11, 10)); // ROADMAP 50.6: rebuilt
+	/** A dogtrot: an open breezeway and a second, front-gabled pen with a second fletching table. */
+	public static final Entry FLETCHERS_LODGE_2 = new Entry(AliveWorkplace.id("fletchers_lodge_2"), new Vec3i(16, 11, 10));
 	/** A narrow tower house with a cartography table (Cartographer) and a lookout at the top; it has no upgrade. */
 	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
 
@@ -353,17 +353,18 @@ public final class StarterBlueprints {
 	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(17, 17, 22));
 	/** A vintage vault dug under the Cask Hall, down a ladder from a hatch (36.7). */
 	public static final Entry WINERY_3 = new Entry(AliveWorkplace.id("winery_3"), new Vec3i(17, 17, 22), 4);
-	/** A timber shop with a bay window of dress forms, the loom (Tailor), bolts of coloured wool, a fitting room behind. */
-	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
-	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
-	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(11, 15, 12));
+	/** A white shop with a jettied gable over a glazed shopfront of cloth, the loom (Tailor) and sewing table inside (rebuilt in ROADMAP 50.6). */
+	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(12, 13, 12)); // ROADMAP 50.6: rebuilt
+	/** A slender drying tower at the back corner, its loft hung with dyed cloth, up a ladder through two floors. */
+	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(15, 17, 13));
 	/**
-	 * The luxury workshops of ROADMAP 34.14. A brick shop in a spruce frame: the cartography table as the press (Printer)
-	 * under a skylight, a counter for buyers, paper and ink on shelves. No lectern: that would make a librarian.
+	 * The luxury workshops of ROADMAP 34.14 (rebuilt from scratch in 50.6, tools/blueprints/js/print_shop). "The Lantern
+	 * Press": a tall brick hall, gable to the street, a dark-oak shopfront, the cartography table as the press (Printer) in
+	 * the column of light under a glazed lantern on the ridge, a counter for buyers. No lectern: that would make a librarian.
 	 */
-	public static final Entry PRINT_SHOP = new Entry(AliveWorkplace.id("print_shop"), new Vec3i(11, 11, 9));
-	/** A lower wing behind: the bindery and a reading room lined with bookshelves. */
-	public static final Entry PRINT_SHOP_2 = new Entry(AliveWorkplace.id("print_shop_2"), new Vec3i(11, 11, 16));
+	public static final Entry PRINT_SHOP = new Entry(AliveWorkplace.id("print_shop"), new Vec3i(11, 12, 11)); // ROADMAP 50.6: rebuilt
+	/** A lower reading room beside it, lined with bookshelves, its gable set back from the street. */
+	public static final Entry PRINT_SHOP_2 = new Entry(AliveWorkplace.id("print_shop_2"), new Vec3i(17, 12, 11));
 	/**
 	 * A small shop of cut stone with an iron door: the stonecutter (Jeweller) at a bench under a lantern, an amethyst
 	 * cluster in a glass case; a plank door in the east wall for the jeweller, who can't open an iron one.

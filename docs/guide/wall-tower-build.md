@@ -5,12 +5,14 @@ type: Build
 Size: 5 by 5, 10 high (II: 12 high)
 Tiers: I, II (a roofed archers' gallery)
 Where to get it: Blueprint Table
-Main materials: stone bricks, cobblestone, stone brick slabs, spruce logs and planks, ladders
+Main materials: stone bricks, polished andesite, cobblestone, cobblestone and andesite stairs, ladders (II: spruce planks, dark oak stairs and slabs)
 categories: Builds, Defense
 related: stone-wall-build.md, gatehouse-build.md, defence.md
 ```
 
-A square stone tower for a wall's end or corner, with a ladder up inside to a battlemented top.
+A square stone tower for a wall's end or corner. It stands on a sloping cobblestone foot, with andesite quoins, arrow
+slits and a band of overhanging stone under a crenelated top where 16 archers can stand. Inside, a guardroom with a
+table and bench by the door and a store with a chest above, a ladder up through both to the top.
 
 ## Getting the blueprint
 
@@ -24,7 +26,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Wall Tower, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Wall Tower II** gets a roofed top with an archers' gallery, two stations a side.
+- **Wall Tower II** gets a roofed top with an archers' gallery on stone piers, two stations a side, a lantern on
+  every side.
 
 ## What it does for the village
 

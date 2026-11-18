@@ -557,21 +557,23 @@ public final class StarterBlueprints {
 
 	/** Walls and gates: a wooden palisade with a walkway. */
 	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
-	/** A gate in the palisade (shut at night). */
-	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 6, 2));
+	/** A gate in the palisade (shut at night): a gabled timber gatehouse on stone feet, three spruce gates under its
+	 *  lintel, a walk over the way (52.3, rebuilt). */
+	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 9, 2));
 	/** A log watch platform for a palisade's corner (27.18): fits inside the Wall Tower, which takes its place in a Town. */
 	public static final Entry PALISADE_TOWER = new Entry(AliveWorkplace.id("palisade_tower"), new Vec3i(5, 10, 5));
-	/** A stone wall with battlements. */
+	/** A stone wall with battlements, a flight of steps up its village face to the walk (52.3, rebuilt). */
 	public static final Entry STONE_WALL = new Entry(AliveWorkplace.id("stone_wall"), new Vec3i(7, 6, 3));
-	/** A stone tower for a wall's end or corner. */
+	/** A stone tower for a wall's end or corner: a battered foot, a furnished guardroom, a crenelated top with 16
+	 *  stations (52.3, rebuilt). */
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
 	/** A stone gatehouse (its gates shut at night). */
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
 	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes. */
 	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 6, 4));
-	/** Timber hoardings over the battlements: a roofed walkway with murder holes. */
+	/** Timber hoardings over the battlements: a roofed walkway with murder holes (52.3, rebuilt). */
 	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
-	/** A roofed top with an archers' gallery, two stations a side. */
+	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */
 	public static final Entry WALL_TOWER_2 = new Entry(AliveWorkplace.id("wall_tower_2"), new Vec3i(5, 12, 5));
 	/** A barbican in front: a second gate and portcullis, murder holes over the gateway. */
 	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 9, 10));

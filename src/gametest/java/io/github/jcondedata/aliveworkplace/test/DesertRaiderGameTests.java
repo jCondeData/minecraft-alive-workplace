@@ -411,6 +411,7 @@ public class DesertRaiderGameTests implements FabricGameTest {
 	public void aHuskComingDownOntoAnInnerStepIsLetGo(GameTestHelper helper) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
+		innerColumn(helper);
 		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
 		long[] stepped = {-1}; // the first tick the husk stood on the step
@@ -460,6 +461,19 @@ public class DesertRaiderGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * The old Stone Wall's ladder up the inside of the walk where the ramp comes over (x 14, z 13, on the walk's face),
+	 * which these tests were drawn round. 52.3: the rebuilt wall climbs by a flight of steps instead, and there it has a
+	 * step two above the ramp's foot, where the husk would stand before the step or terrace these tests lay. With the
+	 * ladder back in its place the husk drops in past it, onto what the test lays.
+	 */
+	private static void innerColumn(GameTestHelper helper) {
+		BlockState ladder = Blocks.LADDER.defaultBlockState().setValue(net.minecraft.world.level.block.LadderBlock.FACING, net.minecraft.core.Direction.NORTH);
+		for (int y = 2; y <= 5; y++) { // from the ground up, as the old ladder ran
+			helper.setBlock(new BlockPos(14, y, 13), ladder);
+		}
+	}
+
 	/** What the ramp tests' failure messages tell besides the husk (B372): the siege, its sand, the raid, the clock, the husk. */
 	private static String rampState(GameTestHelper helper, Yard yard, Mob climber, ThreatData.Siege siege) {
 		ServerLevel level = yard.level();
@@ -481,6 +495,7 @@ public class DesertRaiderGameTests implements FabricGameTest {
 	public void aHuskComingDownOntoARaisedTerraceIsLetGo(GameTestHelper helper) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
+		innerColumn(helper);
 		Mob climber = raider(helper, yard, Culture.Role.CLIMBER, 14.5, 23.5);
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
 		long[] stood = {-1}; // the first tick the husk stood on the terrace

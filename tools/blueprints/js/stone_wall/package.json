@@ -1,0 +1,11 @@
+{
+  "name": "stone_wall",
+  "private": true,
+  "type": "module",
+  "description": "The Stone Wall (stone_wall, stone_wall_2), rebuilt from scratch for ROADMAP 52.3 (tools/blueprints/briefs/stone_wall.md, REBUILD.md), one kit with ../wall_tower. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates; 'check' asserts the brief's pinned cells on them.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py stone_wall stone_wall --candidate --nbt out/stone-wall.nbt && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py stone_wall stone_wall_2 --candidate --nbt out/stone-wall-2.nbt && python3 selfcheck.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "check": "python3 selfcheck.py"
+  }
+}

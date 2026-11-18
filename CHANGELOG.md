@@ -32,6 +32,13 @@ asks for the steps, `latest.log` and any crash report).
   Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
   drawing they were built from until you refresh them, and "Dig the cellar" on an older Smithy digs the cellar of the
   drawing it was built from, never through its forge.
+- **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
+  village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
+  Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping
+  foot, with arrow slits, a ring of overhanging stone and a crenelated top where 16 archers stand (7 before), and a
+  guardroom with a table and a store with a chest inside; Wall Tower II roofs the top on stone piers. The Palisade Gate
+  is now a small timber gatehouse, a gable roof over three spruce gates (7 x 9 x 2; the way through is 2 high). Pieces
+  already standing keep their old look until refreshed.
 - **The Stone House is rebuilt from scratch** (all four levels): a two-story mason's house of rubble stone with dressed
   quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
   kitchen and a chamber upstairs; II adds a parlor wing, III a back room under a catslide roof, IV a store cellar down a

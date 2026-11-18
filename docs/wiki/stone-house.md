@@ -3,7 +3,7 @@
 Milestone 49, item 49.4: the village's second kind of home, rebuilt from scratch with the rebuild kit
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/stone_house.md`), a blind design, and a critic
 who scored old and new side by side and said SHIP in round 2 (`tools/blueprints/briefs/stone_house_critic.md`).
-Roadmap items: 26.15, 49.4
+Roadmap items: 26.15, 49.4, 49.10b
 
 ## 1. What a player sees
 
@@ -28,6 +28,21 @@ Roadmap items: 26.15, 49.4
   back, a sacking runner from the ladder's foot, and a summer beam across the middle on one post, carrying the hall's floor.
 - Beds: 2, 3, 5 and 5. Every piece is a furniture spot, so a builder with the furniture mods builds the mods' pieces in
   their places (37.2); with the building mods its modded copy dresses the floors and chests (37.12).
+- **In its village's culture** (49.10b): a village's Stone House is built in its village's climate, every level.
+  Plains villages build the rubble house above; desert, savanna and taiga villages build their own look of the same
+  house (the same rooms, beds, job blocks, chests and furniture places, so it works the same):
+  - **Desert:** a cube of coursed sandstone under a flat roof behind a coped parapet, a terracotta frieze, a dark
+    lattice oriel over the door and a low slotted windcatcher; II adds the parlor as a lower mud-brick block fronted by
+    an arcade of two round arches, III the back room as a mud-brick block whose roof is a terrace under a pergola.
+  - **Savanna:** a ground story of red granite and an upper story of packed mud between grey acacia posts, under one
+    square pyramid of golden thatch with a clay pot at its point; II the parlor under a low hip that runs on over a
+    veranda, III the back room under a second low hip.
+  - **Taiga:** a forester's lodge gable-on to the road, mossy fieldstone below and dark spruce logs above under a broad
+    slate gable, a porch on log posts and firewood under the eaves; II carries the roof down over the parlor, III builds
+    a log pen on behind.
+  Snowy villages build the rubble house too: the snowy look went back to the critic three times and waits for the
+  owner's call. The Blueprint Table lists each look beside the house; a look is locked and unlocked with its level.
+  Where a culture's look doesn't fit the plot, the Steward tries the other looks, then the house as drawn.
 - A house standing in an older drawing keeps it until its owner presses **Refresh** on the hall's Repairs page (36.21);
   with this redraw a refresh is close to a whole rebuild.
 
@@ -45,6 +60,14 @@ Roadmap items: 26.15, 49.4
 - `StarterBlueprints.STONE_HOUSE` .. `STONE_HOUSE_4` carry the new sizes. Modded copies: `modded_library.py stone_house
   stone_house_2 stone_house_3 stone_house_4`. Village looks: the styles (`BlueprintStyles`) are applied to the drawing at
   play time, as before; nothing is drawn per style.
+- The culture looks (49.10b) are drawn in `tools/blueprints/js/stone_house_<culture>/` from the brief and the house's
+  plan (its furniture spots cell for cell; `look_spots.py` says SAME BUILDING at every level); `SHIP=1 build.sh` saves
+  them as `structure/looks/<culture>/stone_house[_n]` (`rebuild.py --look`). Critics passed savanna and taiga in round
+  1 and desert in round 3; snowy was sent back three times and stays a candidate
+  (`tools/blueprints/briefs/stone_house_looks_critic.md`). `BlueprintLooks` lists the Stone House's three looks, so it
+  is built by `VillageWaystones.culture` like the Starter Cottage (a culture with no look, plains or snowy, as drawn);
+  `StarterBlueprints.STONE_HOUSE_DESERT`, `_SAVANNA` and `_TAIGA` list each look's levels, Level IV with the cellar.
+  Scene: `rebuild_stone_house_looks`.
 
 ## 3. Switches
 
@@ -71,7 +94,10 @@ keep their drawing until a refresh.
 
 ## 7. Known limits
 
-- The showcase scene `rebuild_stone_house` is filmed on GitHub, not in this session.
+- The showcase scenes `rebuild_stone_house` and `rebuild_stone_house_looks` are filmed on GitHub, not in this session.
+- check.py's whole-repo run flags the pots round the Level IV looks' walls as "standing on air": it reads the file without its
+  4-deep basement, so the earth under them looks empty; `rebuild.py --basement 4` checks them with it and passes (as for
+  the Starter Cottage's Level IV looks).
 - check.py's "upper floor with no stairs or ladder" line for `modded/stone_house_4` (and every modded Level 4) is a known
   false alarm: the modded copy's ladders are Carved Wood's.
 
@@ -81,4 +107,5 @@ keep their drawing until a refresh.
 `DoorJamGameTests` (door 5, 1, 1, doorstep 5, 0, 0), `FurnishedRoomsGameTests.theStoneHouseReadsAsAHome`,
 `BuilderGameTests.buildsStoneHouse`, `buildsStoneHouseIII`, `buildsAStyledStoneHouse`,
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `starterUpgradesKeepMostOfTheirBase`, the basement tests,
-`RefreshGameTests` and `RefreshMatchesFreshBuildGameTests`, `QaChairFacingGameTests`. Scene `rebuild_stone_house`.
+`RefreshGameTests` and `RefreshMatchesFreshBuildGameTests`, `QaChairFacingGameTests`, `StoneHouseLooksGameTests` (49.10b).
+Scenes `rebuild_stone_house` and `rebuild_stone_house_looks`.

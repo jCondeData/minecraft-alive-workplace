@@ -93,7 +93,15 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp",
            # 52.5, the trail marks ("the Carter's Rags"): js/trail (MC_BUILDER=...; npm run build writes candidates, npm
            # run live the five live story/trail_N); their old drawings in caravan.py are no longer saved
-           "trail_1", "trail_2", "trail_3", "trail_4", "trail_5"}
+           "trail_1", "trail_2", "trail_3", "trail_4", "trail_5",
+           # 52.5, the Raiders' Stockade, the Bandit Fort (I-III) and the Caravan Wreck: js/{raiders_stockade,bandit_fort,
+           # caravan_wreck} (MC_BUILDER=...; npm run build writes candidates, npm run live the live drawings, the
+           # stockade's loot table included); their old drawings in caravan.py and bandit_fort.py are no longer saved
+           "raiders_stockade", "bandit_fort", "bandit_fort_2", "bandit_fort_3", "caravan_wreck",
+           # 52.5, the Bandit Camp (the Lookout Camp): js/bandit_camp (MC_BUILDER=...; npm run build writes the candidate,
+           # npm run live the live camp/bandit_camp through its ship.py: the loot chest's table, the undrawn ground left
+           # out); its old drawing in bandits.py is no longer saved
+           "bandit_camp"}
 
 
 
@@ -220,13 +228,16 @@ if __name__ == "__main__":
     # ROADMAP 49.8: the Artisan's House (I-III) comes from the rebuild kit too (tools/blueprints/js/artisans_house/build.sh,
     # LIVE=1 to save the live drawings); its old Python drawing in houses.py and cellars.py is no longer saved
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
-    bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
+    if "bandit_camp" not in REBUILT:  # 52.5: the Bandit Camp comes from the rebuild kit
+        bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
-        draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
+        if name not in REBUILT:  # 52.5: the Bandit Fort comes from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
     if "shift_bell" not in REBUILT:  # 52.5: the Shift Bell comes from the rebuild kit
         shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
-    caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
-    raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
+    for name, draw in (("caravan_wreck", caravan_wreck), ("raiders_stockade", raiders_stockade)):  # ROADMAP 31.19
+        if name not in REBUILT:  # 52.5: the wreck and the stockade come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)
     for i, draw in enumerate(TRAIL, 1):
         if f"trail_{i}" not in REBUILT:  # 52.5: the trail marks come from the rebuild kit
             draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")

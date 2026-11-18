@@ -51,7 +51,7 @@ TENT = "inside a tent: a low space by the bed or the hay"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
-    ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT,
+    ("camp/colony_camp", (2, 2, 5)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",
 }

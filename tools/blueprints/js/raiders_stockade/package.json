@@ -2,9 +2,10 @@
   "name": "raiders-stockade",
   "private": true,
   "type": "module",
-  "description": "The Raiders' Stockade (story/raiders_stockade), rebuilt from scratch (ROADMAP 49, tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate; loot.py then writes the loot chest's LootTable into the saved .nbt (rebuild.py carries no block-entity data).",
+  "description": "The Raiders' Stockade (story/raiders_stockade), rebuilt from scratch (ROADMAP 49, tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate; loot.py then writes the loot chest's LootTable into the saved .nbt (rebuild.py carries no block-entity data). 'live' saves the live structure/story/raiders_stockade.nbt (shipped 52.5, critic SHIP), loot table included.",
   "scripts": {
     "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py raiders_stockade raiders_stockade --candidate && python3 loot.py ../../../../build/rebuild/raiders_stockade/raiders_stockade.nbt",
-    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "live": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py raiders_stockade story/raiders_stockade && python3 loot.py ../../../../src/main/resources/data/aliveworkplace/structure/story/raiders_stockade.nbt"
   }
 }

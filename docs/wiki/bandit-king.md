@@ -9,14 +9,22 @@ Roadmap items: 31.15, 31.16, B659, B738
 ## What a player sees
 
 - **The fort** goes up 110 to 150 blocks from the hall, one stage each dawn, each standing on the one before (same
-  29 x 29 footprint, same corner, same front):
-  1. a palisade of sharpened spruce logs round a yard of trampled earth, a gate standing open under a log lintel with
-     two skulls, a fire ringed with seats, four tents, a horse pen and a cart of plunder; four bandits in the yard;
-  2. two watchtowers on the front corners (stone footings, log posts, a ladder up to a plank platform with a fence
-     parapet, a dark oak roof) and a lean-to stable where the pen was; a pillager on each tower;
-  3. the King's keep at the back: a hall of cobblestone and timber under a dark oak roof, a stone chimney, his war
-     banner (black, a red skull) over the door, a throne between two more banners, a long table, a store lean-to, the
-     treasure chest, and a postern door in the palisade behind it (placed shut, or open when the story says so).
+  29 x 29 footprint, 18 tall, same corner, same front; "Stakes and a stolen keep", rebuilt in 52.5: the men build in
+  raw timber, only the King builds in stone):
+  1. a ring of sharpened spruce stakes in panels between taller posts, the back corners raised with a skull on the
+     tallest, a wall-walk on braced posts round the sides and back with three little roofed fighting stages, and a
+     roofed gatehouse whose gates stand open; inside, a fire in a stone ring with a spit and log benches, three
+     gray canvas tents with red pennants (one furnished with bedrolls), the King's black-skirted pavilion with his
+     standard where his keep will rise, archery butts, a horse trough, a captured cart, a woodpile and barrels; four
+     bandits in the yard;
+  2. two watchtowers on log legs over the front corners (a ladder up to a deck with a parapet, a lantern on a chain,
+     a barrel of arrows, a pointed hat with a red pennant) and a lean-to stable with two stalls on the east wall; a
+     pillager on each tower;
+  3. the King's keep at the back, the only stone in the fort: robbed road-stone with a dark oak jetty and a steep dark
+     gable facing the yard, his black war banner over the door. Inside, three floors: the throne hall (the throne on a
+     dais between two fires, banners, a red runner, a feasting table and the treasure chest), the King's chamber up a
+     stair, and a war loft up a ladder under the roof. Its back has buttresses and the postern, deep-set in a stone
+     porch under a timber gallery (placed shut, or open when the story says so).
 - **The King**: a vindicator named "Grimwald, the Bandit King" (a first name from the bounty captains' list), crowned
   with a golden helmet, in an iron chestplate, leggings and boots, with a diamond axe and 150 health. Players within 32
   blocks, in his dimension, see his red boss bar; it goes away when they walk off, go to another dimension, log out or
@@ -86,7 +94,8 @@ Roadmap items: 31.15, 31.16, B659, B738
 ## Items, blocks, jobs, commands
 
 - Blueprints `aliveworkplace:story/bandit_fort`, `aliveworkplace:story/bandit_fort_2`, `aliveworkplace:story/bandit_fort_3`
-  (drawn in `tools/blueprints/bandit_fort.py`; not in the blueprint library or the village map).
+  (drawn since 52.5 in `tools/blueprints/js/bandit_fort/`, one recipe for the three levels, the old drawings kept in
+  `blueprint_history/story/`; not in the blueprint library or the village map).
 - Loot table `aliveworkplace:chests/bandit_king`; the King's Crown is a named golden helmet
   (`item.aliveworkplace.kings_crown`), not a new item.
 - No new blocks, jobs or commands.

@@ -3,8 +3,10 @@ package io.github.jcondedata.aliveworkplace.threat;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
+import io.github.jcondedata.aliveworkplace.build.Refreshes;
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
@@ -27,6 +29,7 @@ import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.phys.AABB;
@@ -50,6 +53,11 @@ import org.jetbrains.annotations.Nullable;
  * matching its blueprint against the world there (the right turn matches nearly all of it, the others little). A camp
  * whose ground isn't loaded waits in the list (saved, so a restart mid-clearing carries on).
  *
+ * <p>Which drawing it was set down with (52.5): a camp standing in a save may be from an older drawing of its blueprint
+ * (the Bandit Camp was rebuilt in 52.5). The drawing is found by matching too: today's drawing and each older one the
+ * mod ships ({@code blueprint_history}, {@link Refreshes#olderKeys}) are tried, and the one that matches the most of
+ * itself is the camp's. The camp's fire stays at the same spot in every drawing, so all of them share its middle.
+ *
  * <p>Camps from before this fix: the lair's record was dropped but its camp stood. A world saved before B209 lists every
  * village that ever broke up a lair as unswept ({@link Lairs.Data}); the hall's round then looks for bandit camps
  * {@link #SWEEP_FROM} to {@link #SWEEP_TO} blocks out (a lit or unlit campfire on top, with the camp's blueprint round
@@ -71,14 +79,24 @@ public final class CampCleanup {
 	public static int SWEEP_FROM = Lairs.NEAR - 16;
 	public static int SWEEP_TO = Lairs.FAR + 16;
 
+	/** {@link Clearing#drawing}: the blueprint's drawing of today. */
+	static final String TODAY = "";
+
 	/**
 	 * A camp coming down: its structure, its middle in the world and that middle's spot in its blueprint, the game time
-	 * it starts (or started) to come down, whether it is left as ruins instead, its turn once known (-1: not yet), and the
-	 * ground it covered before it was set down (B225; null for a camp made before that: its pad is blended back instead).
+	 * it starts (or started) to come down, whether it is left as ruins instead, its turn once known (-1: not yet), the
+	 * ground it covered before it was set down (B225; null for a camp made before that: its pad is blended back instead),
+	 * and the drawing it was set down with once known ({@link #TODAY}, or an older drawing's key; null: not yet, as for a
+	 * clearing saved before 52.5).
 	 */
-	public record Clearing(ResourceLocation structure, BlockPos middle, BlockPos spot, long began, boolean ruins, int rotation, @Nullable CampGround ground) {
+	public record Clearing(ResourceLocation structure, BlockPos middle, BlockPos spot, long began, boolean ruins, int rotation, @Nullable CampGround ground,
+						   @Nullable String drawing) {
 		Clearing turned(int rotation) {
-			return new Clearing(structure, middle, spot, began, ruins, rotation, ground);
+			return new Clearing(structure, middle, spot, began, ruins, rotation, ground, drawing);
+		}
+
+		Clearing drawn(@Nullable String drawing) {
+			return new Clearing(structure, middle, spot, began, ruins, rotation, ground, drawing);
 		}
 
 		StructurePlaceSettings settings() {
@@ -100,6 +118,9 @@ public final class CampCleanup {
 			if (ground != null) {
 				c.put("ground", ground.write());
 			}
+			if (drawing != null) {
+				c.putString("drawing", drawing);
+			}
 			return c;
 		}
 
@@ -112,7 +133,8 @@ public final class CampCleanup {
 			int rotation = Nbt.getInt(c, "rotation");
 			return new Clearing(structure, BlockPos.of(Nbt.getLong(c, "middle")), BlockPos.of(Nbt.getLong(c, "spot")), Nbt.getLong(c, "began"),
 				Nbt.getBoolean(c, "ruins"), rotation < 0 || rotation > 3 ? -1 : rotation,
-				Nbt.has(c, "ground", Tag.TAG_COMPOUND) ? CampGround.read(Nbt.getCompound(c, "ground")) : null);
+				Nbt.has(c, "ground", Tag.TAG_COMPOUND) ? CampGround.read(Nbt.getCompound(c, "ground")) : null,
+				Nbt.has(c, "drawing", Tag.TAG_STRING) ? Nbt.getString(c, "drawing") : null);
 		}
 	}
 
@@ -136,7 +158,7 @@ public final class CampCleanup {
 		BlockPos spot = structure.equals(Lairs.BANDIT_CAMP) ? Lairs.FIRE
 			: new BlockPos(template.getSize().getX() / 2, spec.flatMap(Culture.Lair::captainAt).map(BlockPos::getY).orElse(1), template.getSize().getZ() / 2);
 		CampGround ground = Lairs.Data.get(level).grounds.remove(lair.pos());
-		queue(level, new Clearing(structure, lair.pos(), spot, level.getGameTime() + DELAY, RUINS, -1, ground));
+		queue(level, new Clearing(structure, lair.pos(), spot, level.getGameTime() + DELAY, RUINS, -1, ground, null));
 	}
 
 	static void queue(ServerLevel level, Clearing clearing) {
@@ -162,15 +184,14 @@ public final class CampCleanup {
 				continue; // (it goes on when its ground is loaded again)
 			}
 			Clearing at = c;
-			if (at.rotation() < 0) {
-				int turn = at.ground() != null ? at.ground().rotation() : turn(level, at, KNOWN_MATCH); // (the ground's record knows it)
-				if (turn < 0) {
+			if (at.rotation() < 0 || at.drawing() == null) {
+				at = find(level, at, KNOWN_MATCH); // (a turn the ground's record knows is kept)
+				if (at == null) {
 					AliveWorkplace.LOG.info("The broken camp at {} ({}) is no longer there to take down", c.middle(), c.structure());
 					data.clearing.remove(c);
 					data.setDirty();
 					continue;
 				}
-				at = at.turned(turn);
 				data.clearing.set(data.clearing.indexOf(c), at);
 				data.setDirty();
 			}
@@ -194,43 +215,85 @@ public final class CampCleanup {
 			&& level.isLoaded(middle.offset(16, 0, -16)) && level.isLoaded(middle.offset(-16, 0, 16));
 	}
 
-	/** The blocks of the camp's blueprint above its ground layer (air left out). */
-	private static List<Blueprint.Entry> standing(ServerLevel level, ResourceLocation structure) {
-		Blueprint blueprint = Ships.blueprint(level, structure);
+	/** The drawing the camp was set down with: today's, or (52.5) the older one {@link Clearing#drawing} names. */
+	@Nullable
+	static Blueprint drawing(ServerLevel level, Clearing c) {
+		if (c.drawing() != null && !c.drawing().equals(TODAY)) {
+			Optional<Blueprint> old = Refreshes.olderDrawing(level.getServer(), c.structure(), c.drawing());
+			if (old.isPresent()) {
+				return old.get();
+			}
+		}
+		return Ships.blueprint(level, c.structure());
+	}
+
+	/** The blocks of the camp's drawing above its ground layer (air left out). */
+	private static List<Blueprint.Entry> standing(ServerLevel level, Clearing c) {
+		Blueprint blueprint = drawing(level, c);
 		return blueprint == null ? List.of() : blueprint.blocks().stream().filter(e -> e.pos().getY() >= 1 && !e.state().isAir()).toList();
 	}
 
-	/** The turn the camp was set down with: the one whose blueprint matches the world best, if at least {@code least} of it does; else -1. */
-	static int turn(ServerLevel level, Clearing c, float least) {
-		List<Blueprint.Entry> blocks = standing(level, c.structure());
-		if (blocks.isEmpty()) {
-			return -1;
-		}
-		int best = -1;
-		int bestCount = 0;
-		for (int r = 0; r < 4; r++) {
-			Clearing turned = c.turned(r);
-			StructurePlaceSettings settings = turned.settings();
-			BlockPos origin = turned.origin();
-			Rotation rotation = Rotation.values()[r];
-			int count = 0;
-			for (Blueprint.Entry e : blocks) {
-				BlockPos p = origin.offset(StructureTemplate.calculateRelativePosition(settings, e.pos()));
-				if (MaterialRules.matches(level.getBlockState(p), e.state().mirror(Mirror.NONE).rotate(rotation))) {
-					count++;
+	/**
+	 * The drawing and turn the camp was set down with: of today's drawing and every older one (52.5), the one that matches
+	 * the most of itself in the world, at its best turn, if at least {@code least} of it does; null if none does. A turn
+	 * already known (the clearing's, or the ground record's) is kept, and then the best drawing is taken however little of
+	 * it stands (today's if none matches at all), as before.
+	 */
+	@Nullable
+	static Clearing find(ServerLevel level, Clearing c, float least) {
+		int known = c.rotation() >= 0 ? c.rotation() : c.ground() != null ? c.ground().rotation() : -1;
+		List<String> drawings = new ArrayList<>();
+		drawings.add(TODAY);
+		List<String> older = new ArrayList<>(Refreshes.olderKeys(level.getServer(), c.structure()));
+		java.util.Collections.reverse(older);
+		drawings.addAll(older);
+		Clearing best = null;
+		float bestShare = 0;
+		for (String key : drawings) {
+			Clearing drawn = c.drawn(key);
+			List<Blueprint.Entry> blocks = standing(level, drawn);
+			if (blocks.isEmpty()) {
+				continue;
+			}
+			for (int r = 0; r < 4; r++) {
+				if (known >= 0 && r != known) {
+					continue;
+				}
+				int count = matching(level, drawn.turned(r), blocks);
+				if (known < 0 && count < Math.max(1, (int) Math.ceil(blocks.size() * least))) {
+					continue;
+				}
+				float share = count / (float) blocks.size();
+				if (share > bestShare) { // (a tie goes to the drawing tried first: today's)
+					best = drawn.turned(r);
+					bestShare = share;
 				}
 			}
-			if (count > bestCount) {
-				best = r;
-				bestCount = count;
+		}
+		if (best == null && known >= 0) {
+			best = c.drawn(TODAY).turned(known); // (the ground's record says it was there: its pad still goes back)
+		}
+		return best;
+	}
+
+	/** How many of {@code blocks} stand in the world where the clearing's turn puts them. */
+	private static int matching(ServerLevel level, Clearing turned, List<Blueprint.Entry> blocks) {
+		StructurePlaceSettings settings = turned.settings();
+		BlockPos origin = turned.origin();
+		Rotation rotation = Rotation.values()[turned.rotation()];
+		int count = 0;
+		for (Blueprint.Entry e : blocks) {
+			BlockPos p = origin.offset(StructureTemplate.calculateRelativePosition(settings, e.pos()));
+			if (MaterialRules.matches(level.getBlockState(p), e.state().mirror(Mirror.NONE).rotate(rotation))) {
+				count++;
 			}
 		}
-		return bestCount >= Math.max(1, (int) Math.ceil(blocks.size() * least)) ? best : -1;
+		return count;
 	}
 
 	/** Takes the camp down as far as the time since it began says, top down; true once it is all gone. */
 	static boolean advance(ServerLevel level, Clearing c, long now) {
-		List<Blueprint.Entry> blocks = standing(level, c.structure());
+		List<Blueprint.Entry> blocks = standing(level, c);
 		if (blocks.isEmpty()) {
 			return true;
 		}
@@ -275,9 +338,8 @@ public final class CampCleanup {
 	 * before that, blended into the land round it. A ruined camp's tents and fire stay, and the ground under them.
 	 */
 	static void ground(ServerLevel level, Clearing c) {
-		StructureTemplate template = level.getStructureManager().get(c.structure()).orElse(null);
-		Blueprint blueprint = Ships.blueprint(level, c.structure());
-		if (template == null || blueprint == null) {
+		Blueprint blueprint = drawing(level, c);
+		if (blueprint == null) {
 			return;
 		}
 		StructurePlaceSettings settings = c.settings();
@@ -298,7 +360,10 @@ public final class CampCleanup {
 		if (c.ground() != null) {
 			c.ground().restore(level, camp, keep);
 		} else {
-			CampGround.blend(level, template.getBoundingBox(settings, origin), camp, keep);
+			net.minecraft.core.Vec3i size = blueprint.size();
+			BoundingBox box = BoundingBox.fromCorners(origin, origin.offset(StructureTemplate.calculateRelativePosition(settings,
+				new BlockPos(size.getX() - 1, size.getY() - 1, size.getZ() - 1)))); // (the drawing's own box)
+			CampGround.blend(level, box, camp, keep);
 		}
 	}
 
@@ -306,7 +371,7 @@ public final class CampCleanup {
 	static void ruin(ServerLevel level, Clearing c) {
 		StructurePlaceSettings settings = c.settings();
 		BlockPos origin = c.origin();
-		for (Blueprint.Entry e : standing(level, c.structure())) {
+		for (Blueprint.Entry e : standing(level, c)) {
 			BlockPos p = origin.offset(StructureTemplate.calculateRelativePosition(settings, e.pos()));
 			BlockState now = level.getBlockState(p);
 			if (now.getBlock() instanceof CampfireBlock && now.getValue(CampfireBlock.LIT)) {
@@ -359,10 +424,9 @@ public final class CampCleanup {
 					all = false; // (someone's still: look again later)
 					continue;
 				}
-				Clearing c = new Clearing(Lairs.BANDIT_CAMP, top.immutable(), Lairs.FIRE, level.getGameTime(), RUINS, -1, null);
-				int turn = turn(level, c, SWEEP_MATCH);
-				if (turn >= 0) {
-					queue(level, c.turned(turn));
+				Clearing c = find(level, new Clearing(Lairs.BANDIT_CAMP, top.immutable(), Lairs.FIRE, level.getGameTime(), RUINS, -1, null, null), SWEEP_MATCH);
+				if (c != null) {
+					queue(level, c);
 					found++;
 				}
 			}

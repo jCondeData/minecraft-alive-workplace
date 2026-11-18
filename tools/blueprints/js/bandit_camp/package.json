@@ -2,9 +2,10 @@
   "name": "bandit_camp",
   "private": true,
   "type": "module",
-  "description": "The Bandit Camp (camp/bandit_camp), the Lookout Camp, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/bandit_camp.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Output goes to build/rebuild/bandit_camp/out; 'build' writes the candidate build/rebuild/bandit_camp/camp/bandit_camp.nbt (the ship step adds the loot chest's LootTable and takes the unused ground-layer cells out).",
+  "description": "The Bandit Camp (camp/bandit_camp), the Lookout Camp, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/bandit_camp.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Output goes to build/rebuild/bandit_camp/out; 'build' writes the candidate build/rebuild/bandit_camp/camp/bandit_camp.nbt, 'live' the live structure/camp/bandit_camp.nbt (shipped 52.5, critic SHIP). Both go through ship.py, which adds the loot chest's LootTable and leaves the undrawn ground-layer cells out of the file.",
   "scripts": {
-    "build": "mkdir -p ../../../../build/rebuild/bandit_camp/camp && node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/bandit_camp/out --data-version 3955 && python3 ../../rebuild.py bandit_camp camp/bandit_camp --candidate --nbt ../../../../build/rebuild/bandit_camp/out/bandit-camp.nbt",
-    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/bandit_camp/out --data-version 3955"
+    "build": "mkdir -p ../../../../build/rebuild/bandit_camp/camp && node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/bandit_camp/out --data-version 3955 && python3 ship.py ../../../../build/rebuild/bandit_camp/out/bandit-camp.nbt --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/bandit_camp/out --data-version 3955",
+    "live": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/bandit_camp/out --data-version 3955 && python3 ship.py ../../../../build/rebuild/bandit_camp/out/bandit-camp.nbt"
   }
 }

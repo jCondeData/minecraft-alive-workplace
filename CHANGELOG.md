@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
+  the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
+  Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
+  plants the vineyard behind it, rows of sweet berries and an arbor hung with glow berries; Winery III digs a vintage
+  vault under the hall, down a ladder from a hatch. Wineries already standing keep the drawing they were built from
+  until you refresh them.
 - **The Butcher's Shop is rebuilt from scratch** (50.4): a white, dark-framed shop with its gable to the street and
   display boards under a slate pentice, a red-brick smoke tower on its side that smokes at the peak with the Butcher's
   smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice

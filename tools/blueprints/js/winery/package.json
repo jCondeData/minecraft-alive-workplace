@@ -1,0 +1,10 @@
+{
+  "name": "winery",
+  "private": true,
+  "type": "module",
+  "description": "The Winery (ROADMAP 49): the Perron Press House, its Vineyard (II) and Vintage Vault (III). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

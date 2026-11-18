@@ -54,6 +54,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.4, the Butcher's Shop: js/butchers_shop (MC_BUILDER=..., sh build.sh writes the candidate; live:
            # rebuild.py butchers_shop butchers_shop --nbt out/butchers-shop.nbt --basement 4 --cellar "$(cat out/cellar.txt)")
            "butchers_shop",
+           # 50.4, the Winery: js/winery (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
+           # winery, winery_2 and winery_3, III with --basement 4 --cellar "$(cat out/cellar.txt)")
+           "winery", "winery_2", "winery_3",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
@@ -220,7 +223,8 @@ if __name__ == "__main__":
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
+        if name not in REBUILT:  # ROADMAP 50.4: the Winery comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
@@ -235,7 +239,8 @@ if __name__ == "__main__":
     # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
     # is the old drawing, kept in blueprint_history/
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

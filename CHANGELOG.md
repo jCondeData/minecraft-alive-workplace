@@ -191,6 +191,9 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
+  visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
+  list, so the afternoon no longer stutters the server (B644).
 - Far sites (a quarry, a field, a tree farm, an orchard, a berry plot or a build marked far outside the village) no
   longer make the server load their chunks when nobody is there. Before, the worker's first moment at work loaded (or
   generated) the far chunks in the middle of a tick, a hitch for everyone online, and a Miner could call a far quarry

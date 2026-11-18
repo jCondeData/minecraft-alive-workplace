@@ -91,6 +91,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 51.6, the Clock Tower ("the Water Clock", Create only): js/clock_tower (npm run cut), then rebuild.py
            # clock_tower clock_tower --nbt out/clock-tower.nbt
            "clock_tower",
+           # 51.6, the Chapel ("the Blossom Court"): js/chapel (npm run cut), then rebuild.py chapel chapel --nbt
+           # build/rebuild/chapel/out/chapel.nbt
+           "chapel",
+           # 51.7, the Market Cross ("the Mercat Drum"): js/market_cross (npm run cut), then rebuild.py market_cross
+           # market_cross --nbt build/rebuild/market_cross/out/market-cross.nbt (decor.py's market_cross() is the old one)
+           "market_cross",
            # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
            # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
            "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",
@@ -106,7 +112,13 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # the village jeweler's and crafter's pieces stay village.py's): js/<family> (MC_BUILDER=..., sh build.sh writes
            # the candidates; LIVE=1 sh build.sh the live ones, the jeweler's III with its Deep Vault)
            "glassblowers_workshop", "jewellers_workshop", "jewellers_workshop_2", "jewellers_workshop_3",
-           "crafters_workshop", "workshop"}
+           "crafters_workshop", "workshop",
+           # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
+           # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
+           # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
+           # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
+           # staffed house)
+           "leaders_hall", "trade_hall"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -289,7 +301,7 @@ if __name__ == "__main__":
         if name not in REBUILT:  # ROADMAP 50.4 and 50.7: winery_3 and jewellers_workshop_3 come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
-    chapel().save(MAIN_STRUCTURES, "chapel")
+    # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
     sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")

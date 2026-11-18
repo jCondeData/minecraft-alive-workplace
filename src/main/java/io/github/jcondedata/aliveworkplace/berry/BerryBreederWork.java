@@ -132,6 +132,10 @@ public class BerryBreederWork extends Behavior<Villager> {
 		if (plot == null) {
 			return;
 		}
+		// A plot in chunks nobody has loaded (far outside the village) waits: looking it over would load them (B667).
+		if (!io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, plot)) {
+			return;
+		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 		if (task == Task.NONE) {
 			if (--lookTimer > 0) {

@@ -547,7 +547,10 @@ claims and trip counts.
   is 140 blocks from the builder's Blueprint Table — keep it within 128."; B378). Farmers', Miners' and other area jobs'
   spots follow the same rule, and their refusal names the worker's own block instead of the table ("That field is 129
   blocks from the Composter the farmer works at — keep it within 128."; B453). A far site in chunks nobody has loaded waits until someone does:
-  nothing loads chunks for it. A world from before keeps its sites, and a config file holding the old default 48 moves to
+  nothing loads chunks for it (B666, B667: every job asks `work/SiteChunks.loaded` for its site's box and 4 blocks round
+  it before it reads a block there; while the answer is no, the Builder, the Miner, the farmer and the Berry Breeder
+  wait with the site, its cursor and its lists untouched, and the Lumberjack and the Orchard Keeper leave the far area
+  out and work round their own block; `FarSiteUnloadedGameTests`, `QaFarReach1028BugTests`, `QaFarReach1028bBugTests`). A world from before keeps its sites, and a config file holding the old default 48 moves to
   128 (format 5); any other number stays.
   Everything that goes from a build to its table uses that same rule (B619): a placed Blueprint's supply report and
   its Book and Quill material list count the chests by the nearest table that has the spot in reach, so a spot 150

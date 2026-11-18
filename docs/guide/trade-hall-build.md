@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 18 wide, 19 deep, 18 high
 Tiers: one
 Houses: a Pokémon Trader at the Shop Counter
 Where to get it: Blueprint Table (with Cobblemon)
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: white terracotta, dark oak logs, deepslate tiles, stone bricks, spruce planks
 categories: Builds, Pokémon
 related: pokemon.md, market-stall-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Shop Counter**: everything one worker needs to live and work in the same place.
+A white counting hall in a dark oak frame under a slate roof, with a round tower on its front corner: the tower's dark band carries one white button, so the trading post reads like a Poké Ball from across the village. Inside, waiting tables stand by the shop windows, the **Shop Counter** faces the door with the ledgers and a clock behind it and a desk in the gabled bay at the back, and the Trader sleeps up a ladder in the tower room. (The village houses of this name are smaller: a white house in an oak frame with the counter and a bed.)
 
 ## Getting the blueprint
 

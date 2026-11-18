@@ -49,7 +49,7 @@ All of them are in the Blueprint Table. An upgrade counts instead of the build i
 Besides the big pieces there are fourteen small decorations, quick to build and easy to stock, each a different kind
 of thing:
 
-- **Market Cross**: a stepped stone plinth with a tall shaft, lanterns hanging from its arms.
+- **Market Cross**: an octagonal stone drum you climb by a stair in its front, a white shaft in the middle of its platform hanging four lanterns and flying the market flag, benches round the drum to sit and wait.
 - **Stag Statue**: a carved stag standing broadside on a mossy crag, pale antlers branching, lanterns at the front.
 - **Flower Planters**: a horseshoe of flower beds stepping up in three tiers round a little paved court and a bench,
   under a spruce pergola hung with lanterns. Every village has this one from the start.

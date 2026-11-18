@@ -40,7 +40,9 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * to the middle of its top. The spec: "a spot is in reach when ... within a long reach of the worker's block outside it:
  * mines ... 128", and Reach's own rule "Up and down never count".
  *
- * <p>(The unloaded-chunks test of this pass, B666, stays on tests/far-reach until that bug is fixed.)
+ * <p>And "A worker whose far site sits in unloaded chunks waits there as today (no chunk loading)": a quarry 120 blocks
+ * out in chunks nobody has loaded, nobody online to keep it loaded; on the miner's first work tick its chunks are
+ * loaded (MinerWork reads the box's blocks with no loaded check, which loads the chunk on the server thread).
  */
 public class QaFarReach1028BugTests {
 	private static final String AREA = "aliveworkplace_test:build_area";
@@ -100,5 +102,116 @@ public class QaFarReach1028BugTests {
 		helper.assertTrue(taken, "the 64-deep quarry 125 blocks out (the 96-deep one there was taken) was refused: "
 			+ seen.stream().map(Component::getString).toList());
 		helper.succeed();
+	}
+
+	// --- a far quarry in unloaded chunks: the miner waits, nothing is loaded ---------------------------------------------
+
+	/** The chunks a box covers. */
+	private static List<ChunkPos> chunks(BoundingBox box) {
+		List<ChunkPos> out = new ArrayList<>();
+		for (int cx = box.minX() >> 4; cx <= box.maxX() >> 4; cx++) {
+			for (int cz = box.minZ() >> 4; cz <= box.maxZ() >> 4; cz++) {
+				out.add(new ChunkPos(cx, cz));
+			}
+		}
+		return out;
+	}
+
+	private static List<ChunkPos> loaded(ServerLevel level, List<ChunkPos> chunks) {
+		return chunks.stream().filter(c -> level.getChunkSource().getChunkNow(c.x, c.z) != null).toList();
+	}
+
+	/**
+	 * A quarry 120 blocks out (outside a village of radius 16, inside the long reach), in chunks nobody has loaded; the
+	 * miner on shift (day 2000) with a pickaxe in the chest by the bench; the order's player offline, so nothing keeps
+	 * the site loaded. For 300 ticks the miner works: the quarry's chunks are never loaded, the quarry stays his.
+	 */
+	//$ gametest_ticks_batch AREA '500' '"qa1028FarUnloaded"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa1028FarUnloaded")
+	public void aFarQuarryInUnloadedChunksWaitsWithoutLoadingThem(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		boolean protection = VillageProtection.ENABLED;
+		VillageProtection.ENABLED = false;
+		int radius = VillageHalls.RADIUS;
+		boolean keep = level.getGameRules().getBoolean(ModGameRules.KEEP_WORK_LOADED);
+		boolean villages = KeepLoaded.VILLAGES;
+		Leftovers.after(helper, () -> {
+			VillageProtection.ENABLED = protection;
+			VillageHalls.RADIUS = radius;
+			VillageHalls.forgetNearest();
+			level.getGameRules().getRule(ModGameRules.KEEP_WORK_LOADED).set(keep, level.getServer());
+			KeepLoaded.VILLAGES = villages;
+		});
+		level.getGameRules().getRule(ModGameRules.KEEP_WORK_LOADED).set(false, level.getServer());
+		KeepLoaded.VILLAGES = false;
+		helper.setBlock(new BlockPos(1, 2, 1), ModBlocks.VILLAGE_HALL);
+		VillageHalls.RADIUS = 16;
+		VillageHalls.forgetNearest();
+		helper.setDayTime(2000);
+		BlockPos benchRel = new BlockPos(3, 2, 3);
+		helper.setBlock(benchRel, ModBlocks.MINERS_BENCH);
+		helper.setBlock(new BlockPos(3, 2, 5), Blocks.CHEST);
+		Container chest = helper.getBlockEntity(new BlockPos(3, 2, 5));
+		chest.setItem(0, new ItemStack(Items.IRON_PICKAXE));
+		BlockPos bench = helper.absolutePos(benchRel);
+
+		// a spot 120 out whose chunks nobody has loaded
+		BoundingBox box = null;
+		for (int angle = 0; angle < 360 && box == null; angle += 15) {
+			double a = Math.toRadians(angle);
+			BlockPos at = bench.offset((int) Math.round(120 * Math.cos(a)), 0, (int) Math.round(120 * Math.sin(a)));
+			BoundingBox candidate = new BoundingBox(at.getX() - 2, at.getY() - 3, at.getZ() - 2, at.getX() + 2, at.getY(), at.getZ() + 2);
+			if (loaded(level, chunks(candidate)).isEmpty()) {
+				box = candidate;
+			}
+		}
+		helper.assertTrue(box != null, "setup: every spot 120 blocks round the bench is in a loaded chunk");
+		BoundingBox far = box;
+		List<ChunkPos> farChunks = chunks(far);
+		helper.assertTrue(!Reach.inSameVillage(level, bench, far.getCenter()) && Reach.inReach(level, bench, far.getCenter(), Miners.MAX_DISTANCE),
+			"setup: the far spot isn't outside the village and inside the long reach");
+
+		Villager miner = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 4));
+		miner.setNoAi(true);
+		Miners.employ(level, miner, bench);
+		QuarrySite site = Miners.start(level, miner, null, far, far.getYSpan());
+		helper.assertTrue(site != null, "setup: the far quarry didn't start");
+		java.util.UUID id = site.id();
+		// the box the quarry was started with: Miners.start keeps a pit 5 blocks above the world's floor, which in the flat
+		// test world (floor -64, the bench at -58) lifts this one's bottom from -61 to -59
+		BoundingBox started = site.box();
+		helper.assertTrue(loaded(level, farChunks).isEmpty(), "starting the far quarry loaded its chunks " + loaded(level, farChunks));
+		Leftovers.after(helper, () -> {
+			QuarrySite left = Miners.activeSite(level, miner);
+			if (left != null) {
+				Miners.cancel(level, left);
+			}
+		});
+		// first 100 ticks with the miner standing still (nothing else may load the far chunks), then 300 ticks at work
+		List<String> problems = new ArrayList<>();
+		int[] ticks = {0};
+		helper.onEachTick(() -> {
+			ticks[0]++;
+			if (ticks[0] == 100) {
+				miner.setNoAi(false);
+			}
+			List<ChunkPos> now = loaded(level, farChunks);
+			QuarrySite active = Miners.activeSite(level, miner);
+			if (problems.isEmpty() && (!now.isEmpty() || active == null)) {
+				problems.add("tick " + ticks[0] + " (" + (ticks[0] < 100 ? "miner still" : "miner at work") + "): far chunks loaded " + now
+					+ ", the quarry " + (active == null ? "gone (finished or dropped)" : "status " + active.status() + ", done " + active.isDone())
+					+ ", miner at " + miner.blockPosition().toShortString() + " " + miner.getBrain().getActiveNonCoreActivity());
+			}
+		});
+		helper.runAfterDelay(400, () -> {
+			helper.assertTrue(problems.isEmpty(), "the far quarry in unloaded chunks: " + problems);
+			helper.assertTrue(miner.isAlive(), "the miner died");
+			QuarrySite after = Miners.activeSite(level, miner);
+			helper.assertTrue(after != null && after.id().equals(id) && after.box().equals(started), "the far quarry isn't his any more: " + after);
+			helper.assertTrue(miner.getBrain().isActive(net.minecraft.world.entity.schedule.Activity.WORK), "setup: the miner wasn't on shift: "
+				+ miner.getBrain().getActiveNonCoreActivity());
+			helper.succeed();
+		});
 	}
 }

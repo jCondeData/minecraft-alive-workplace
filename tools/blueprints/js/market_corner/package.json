@@ -2,7 +2,7 @@
   "name": "market-corner",
   "private": true,
   "type": "module",
-  "description": "House T1, Version B (the Daub House, 36.23): the rebuild kit's example family (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. It goes live in 49.2; until then 'build' writes a candidate.",
+  "description": "The Market Corner (ROADMAP 51.7 rebuild). MC_BUILDER = the minecraft-builder skill folder; build writes a candidate to build/rebuild/market_corner/.",
   "scripts": {
     "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py market_corner market_corner --candidate",
     "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",

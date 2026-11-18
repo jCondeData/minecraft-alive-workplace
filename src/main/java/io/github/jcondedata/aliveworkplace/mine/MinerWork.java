@@ -115,6 +115,15 @@ public class MinerWork extends Behavior<Villager> {
 		if (bench == null) {
 			return;
 		}
+		// A quarry in chunks nobody has loaded (far outside the village, its player away) waits as it is: looking at its
+		// blocks would load them, and would walk the cursor through a pit that isn't there (B666).
+		if (!io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, site.box())) {
+			if (digging != null) {
+				digging = null;
+				digProgress = 0;
+			}
+			return;
+		}
 		BuilderBag bag = ModAttachments.BUILDER_BAG.getOrCreate(villager);
 
 		// 1. Next block that needs digging (or a step of the stairs that needs filling in, or a ladder in the shaft).

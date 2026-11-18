@@ -32,6 +32,11 @@ asks for the steps, `latest.log` and any crash report).
   Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
   drawing they were built from until you refresh them, and "Dig the cellar" on an older Smithy digs the cellar of the
   drawing it was built from, never through its forge.
+- **The Palisade is redrawn from scratch** (52.3): an earthwork now, a cobblestone toe and mud-brick steps up the village
+  side of a rammed-earth bank to a pale stripped-oak walk where 7 archers stand, behind a row of bark-on spruce stakes
+  with pointed heads and an oak rail through them (7 x 5 x 4). Palisade II builds the bank out into a walk three wide
+  (19 archers' places) and plants seven dripstone stakes in a ditch of turned earth outside (7 x 5 x 5). Pieces already
+  standing keep their old look until refreshed.
 - **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
   village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
   Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping

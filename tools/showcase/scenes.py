@@ -1493,6 +1493,12 @@ SCENES = [
            ("02_outside_back", "From the outside: the three spruce gates shut"),
            ("03_outside_west", "From the west: the gatehouse's thin side"),
            ("04_outside_east", "From the east")], furniture=True),
+    S("rebuild_palisade", "Build families", "The rebuilt Palisade from four sides",
+      "the Palisade's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a wall) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Palisade from the village side: the cobble toe and mud-brick steps up the bank to the stripped-oak walk"),
+           ("02_outside_back", "From the outside: the row of bark-on spruce stakes with their pointed heads, the oak rail through them"),
+           ("03_outside_west", "From the west: the earthwork's section, from the steps over the bank to the stakes"),
+           ("04_outside_east", "From the east")], furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",

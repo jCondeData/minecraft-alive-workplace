@@ -1,0 +1,19 @@
+{
+  "name": "glassblowers-workshop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 23
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/glassblowers_workshop/out/glassblowers-workshop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/glassblowers_workshop/out/summary.json",
+  "size": [
+    13,
+    18,
+    15
+  ],
+  "blockCount": 796,
+  "paletteCount": 56,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/glassblowers_workshop/recipe.mjs"
+}

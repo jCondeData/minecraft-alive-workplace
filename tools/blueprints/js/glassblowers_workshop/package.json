@@ -1,0 +1,11 @@
+{
+  "name": "glassblowers-workshop",
+  "private": true,
+  "type": "module",
+  "description": "The Glassblower's Workshop (50.7): a glass cone over the kiln, a timbered glass shop in front (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/glassblowers_workshop.nbt"
+  }
+}

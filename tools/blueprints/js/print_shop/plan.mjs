@@ -137,8 +137,8 @@ export const FURNITURE = [
   { level: 2, room: 'Reading Room', kind: 'chair', part: 'chair', pos: [11, 1, 6], facing: 'east', wood: 'dark_oak' },
   { level: 2, room: 'Reading Room', kind: 'chair', part: 'chair', pos: [13, 1, 5], facing: 'west', wood: 'dark_oak' },
   { level: 2, room: 'Reading Room', kind: 'chair', part: 'chair', pos: [13, 1, 6], facing: 'west', wood: 'dark_oak' },
-  { level: 2, room: 'Reading Room', kind: 'lamp', part: 'hangingLamp', pos: [12, 3, 4], facing: 'north', chain: 3, wood: 'dark_oak' },
-  { level: 2, room: 'Reading Room', kind: 'lamp', part: 'hangingLamp', pos: [12, 3, 7], facing: 'north', chain: 3, wood: 'dark_oak' },
+  { level: 2, room: 'Reading Room', kind: 'lamp', part: 'hangingLamp', pos: [12, 3, 4], facing: 'north', chain: 4, wood: 'dark_oak' },
+  { level: 2, room: 'Reading Room', kind: 'lamp', part: 'hangingLamp', pos: [12, 3, 7], facing: 'north', chain: 4, wood: 'dark_oak' },
 ]
 
 // The shelves of books (Level II), [x, z, y0, y1] columns: 2 high under the east wall's high windows and 3 high

@@ -65,7 +65,8 @@ export const PALETTE = {
   log: 'oak_log',
   stone: [['cobblestone', 6], ['mossy_cobblestone', 2], ['stone', 1], ['andesite', 1]],
   roof: { full: 'dark_oak_planks', stairs: 'dark_oak_stairs', slab: 'dark_oak_slab' },
-  trim: 'dark_oak_slab', // barge boards under the gable overhangs
+  trim: 'dark_oak_stairs', // barge boards under the gable overhangs: upside-down stairs stepping up the rake (a top slab
+  // there read as a table beside each rake stair, B148's chair check)
   beam: 'stripped_spruce_log', // porch posts, tie beams, the breezeway's plates
   floor: 'spruce_planks',
   boards: 'spruce_planks', // the gables and the breezeway's end walls

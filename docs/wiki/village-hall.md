@@ -694,8 +694,8 @@ two broken entries get their own made-up names, a good name stays, and the hall'
 the village by its made-up name).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
-`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
-from the pane without a click, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
+`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry opened with a click and scrolled
+to its end, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
 takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
 blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
 Dara's row, Mason clicked once for the price, then paid).

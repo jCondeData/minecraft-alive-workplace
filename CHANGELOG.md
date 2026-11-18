@@ -16,13 +16,38 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.157.0 — 2026-11-18
+
 ### Added
+- **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
+  of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound
+  log cabin with a mudroom, a spruce cabin under steep gables), with the same rooms and furniture. Plains keep the saltbox;
+  the Blueprint Table lists every look (49.10a).
 - **The Daub House**, a new Level I home (the owner's pick of 36.23's two): mud-brick daub in a dark oak frame under a
   steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Glassblower's Workshop, the Jeweler's Workshop, the Crafter's Workshop and the Workshop are rebuilt from
+  scratch** (50.7). The Glassblower's Workshop is a brick glass cone 18 blocks tall over the Glass Kiln, narrowing in
+  three even courses to a smoking lip, with a timber-framed glass shop in front (a crown-glass bullseye in its gable)
+  and a fuel shed of sand and wood on its side. The Jeweler's Workshop is "the Stepped Gable": a stone shop with a
+  crow-stepped gable and a green copper roof, a glass case with the amethyst out in the street between the Jeweler's
+  timber door and the buyers' iron door; Level II adds a barrel-vaulted strong room behind with fourteen chests behind
+  bars, and Level III the Deep Vault under it. The retired Crafter's Workshop is "the Saw-Tooth Shop", a brick workroom
+  under three glazed saw teeth with a twin-flue forge stack, now with no job block in it. The Create Workshop is "the
+  head-tank works": a water tower whose head tank pours onto the wheel that drives the belt and the press, seen through
+  a glazed gable, and a brick stack over the Armorer's blast furnace. Builds already standing keep the drawing they
+  were built from until you refresh them; the village jeweler's and crafter's houses are unchanged.
+- **The Fletcher's Lodge, the Tailor's Shop and the Print Shop are rebuilt from scratch** (50.6). The Fletcher's Lodge
+  is a log pen under a long roof with a stone chimney, a porch and an entry gable; its Level II makes it a dogtrot, an
+  open breezeway and a second, front-gabled pen with the second fletching table. The Tailor's Shop is a white shop with
+  a jettied gable over a glazed shopfront of colored cloth, the loom and sewing table inside; Level II raises a slender
+  drying tower at the back corner, its loft hung with dyed cloth, up a ladder through two floors. The Print Shop is
+  "the Lantern Press": a tall brick hall with a dark-oak shopfront and a glazed lantern on the ridge that drops a column
+  of daylight onto the press; Level II adds a reading room lined with bookshelves beside it. Builds already standing
+  keep the drawing they were built from until you refresh them; the village tailor's and print shops are unchanged.
 - **The Artisan's House is rebuilt from scratch** (49.8): a potter's house. Its gable faces the street, a white
   plaster floor juts out over a stone workroom, and beside it stands a brick bottle kiln that is the house's chimney.
   Downstairs are the potter's bench, a dining table for four and a kitchen corner. Upstairs are the couple's two beds
@@ -231,6 +256,15 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's mods, a crafter's "short of" line keeps to the thing's own recipe when nothing in the chest leads
+  another way: a chest, hopper or TNT minecart is short of 1 Minecart and a furnace minecart of its furnace's
+  cobblestone and a Minecart, never of Create's Minecart Contraption, and a slimeball is never read down to Create's
+  Wheat Flour. A Minecart Contraption in the chest is still used. With the earlier fixes for the smoker's logs and
+  Chipped's planks, all 47 such lines found across every job-made item now read right (B1289).
+- A Builder helping on another Builder's build always brings the materials it fetched back to that Builder's
+  chests, also when the build ended while the helper was away (its chunk unloaded, or the server restarted in
+  between). Before, such a helper emptied its bag into its own chest, and the other Builder's next build could wait
+  forever for materials you had stocked by his bench (B645).
 - A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
   visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
   list, so the afternoon no longer stutters the server (B644).

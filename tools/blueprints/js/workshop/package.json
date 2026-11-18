@@ -1,0 +1,11 @@
+{
+  "name": "workshop",
+  "private": true,
+  "type": "module",
+  "description": "The Workshop (the head-tank works, ROADMAP 49 / 50.7): the Create-powered Armorer's press works. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate (build/rebuild/workshop/) until the critic says SHIP.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/workshop.nbt"
+  }
+}

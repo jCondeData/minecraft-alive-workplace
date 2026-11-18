@@ -4,19 +4,21 @@
 type: Build
 expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/luxury_workshops/still-4.jpg
-caption: Jeweler's Workshop II: the strong room behind
-Size: 9 wide, 9 deep, 10 high (II: 14 deep)
-Tiers: I, II (a strong room with a vault of ten chests), III (a vault)
+caption: Jeweler's Workshop II: the barrel-vaulted strong room behind
+Size: 11 wide, 10 deep, 13 high (II: 17 deep)
+Tiers: I, II (a strong room with fourteen chests behind bars), III (a deep vault)
 Workstation: a stonecutter, the [Jeweler](jeweler.md)'s bench
 Where to get it: Blueprint Table, or a Journeyman Jeweler for 12 emeralds
-Main materials: deepslate tile stairs, stone bricks, polished andesite, stripped spruce logs, iron trapdoors
+Main materials: stone bricks, waxed weathered cut copper stairs, dark oak planks, deepslate bricks, glass panes
 categories: Builds, Classes
 related: jeweler.md, luxuries.md, winery-build.md, tailors-shop-build.md, print-shop-build.md
 ```
 
-A small shop of cut stone on a dark footing, under a slate roof with iron shutters. The street door is an **iron
-door**: press the stone button beside it, outside or in, to open it. Inside, the stonecutter sits at a bench by the
-window under a lantern, with a counter and an amethyst cluster in a glass case.
+A stone-brick shop with its crow-stepped gable to the street, under a roof of green copper. A glass case juts out into
+the street with an amethyst cluster on a plinth in the middle of it. The buyers' door, on the right, is an **iron
+door**: press the stone button beside it, outside or in, to open it. Inside, one tall room: the stonecutter sits under
+the side window with a lantern hanging over it, and a counter keeps buyers to the front (rebuilt from scratch; a shop
+already standing keeps its old look until refreshed).
 
 ## Getting the blueprint
 
@@ -29,16 +31,16 @@ hand it to the builder. See [The Builder and blueprints](builder.md).
 
 ## Upgrades
 
-**Jeweler's Workshop II** adds a strong room behind, lower and windowless, through a second iron door: a vault of ten
-chests behind iron bars.
+**Jeweler's Workshop II** adds the Strong Room behind: a squat stone barrel vault on buttresses, through a second iron
+door, with fourteen chests behind a barred grille that has a third iron door of its own.
 
-**Jeweler's Workshop III** digs a **vault** under the shop, down a ladder under a hatch in its corner: gold, amethyst and emerald caged behind bars, chests of stones and a sorting table. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
+**Jeweler's Workshop III** digs the **Deep Vault** under the Strong Room, down a ladder under a hatch in the anteroom's floor: nine more chests in deepslate walls under a lantern. The builder digs the room out of the ground himself and leaves the building above as it was; the workers' chests stay where they were.
 
 ## What it does for the village
 
 Its stonecutter is a **Jeweler's** workstation: sneak-right-click a villager by it with a gold nugget (their household
-must be Burgher or better). Villagers can't open iron doors, so the Jeweler comes and goes by a plank door in the east
-wall. Villages sometimes grow a small Jeweler's Workshop of their own, with a Jeweler already living in it.
+must be Burgher or better). Villagers can't open iron doors, so the Jeweler comes and goes by the timber door on the
+left of the glass case. Villages sometimes grow a small Jeweler's Workshop of their own, with a Jeweler already living in it.
 
 ## How it fits with the rest
 

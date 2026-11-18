@@ -300,7 +300,7 @@ public final class StewardWishes {
 		return plotFor(wish).map(request -> request.blueprints().size() == 1
 				? new Plots.Request(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.isPlaza(request.blueprints().get(0))
 					? io.github.jcondedata.aliveworkplace.hall.VillageWaystones.forVillage(level, hall) // 41.1: the village culture's own plaza first
-					: io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(request.blueprints().get(0), hall),
+					: io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(level, request.blueprints().get(0), hall), // 49.10a: by culture where drawn so
 					request.zoneKind(), request.skip(), request.near())
 				: request)
 			.map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)

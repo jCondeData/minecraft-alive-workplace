@@ -222,6 +222,30 @@ def infill(t, p):
     return "supplementaries:daub", None
 
 
+def meal_cells(name, t):
+    """The seat cells (chair, bench and stool spots) and kitchen cells (counter spots, and stoves, furnaces, smokers,
+    sinks...) of a build, as check.crockery_problems counts them, in template cells."""
+    path = os.path.join(SPOTS, name + ".json")
+    depth = basement(name)
+    seats, kitchen = set(), set()
+    if os.path.exists(path):
+        with open(path) as f:
+            for s in json.load(f)["spots"]:
+                x, y, z = s["pos"]
+                cells = {(x + b["at"][0], y + depth + b["at"][1], z + b["at"][2]) for b in s["blocks"]}
+                if s["kind"] in ("chair", "bench", "stool"):
+                    seats |= cells
+                elif s["kind"] == "counter":
+                    kitchen |= cells
+    for p in t.cells:
+        n = t.name(p)
+        if any(k in n.split(":")[-1] for k in ("furnace", "smoker", "stove", "oven", "cooking_pot", "kitchen", "sink")):
+            kitchen.add(p)
+        elif n.endswith("_stairs") and str((t.props(p) or {}).get("half")) == "bottom":
+            seats.add(p)
+    return seats, kitchen
+
+
 def beautify(name, src, out):
     t = Template(src)
     keep, tables = spot_cells(name)
@@ -281,9 +305,14 @@ def beautify(name, src, out):
                         and t.name((q[0], y + 1, q[2])).endswith("air"):
                     put(q, "handcrafted:terracotta_wide_pot")
                     break
-    # Handcrafted: a set of crockery on every table.
+    # Handcrafted: a set of crockery on every table at a meal: one with a seat beside it or in a kitchen (the owner's
+    # rule 3, check.crockery_problems; 50.6: the Print Shop's paper table has no chair, so it gets none).
+    seats, kitchen = meal_cells(name, t)
     for top, facing in tables:
-        if t.inside(top) and t.name(top).endswith("air"):
+        tx, ty, tz = top[0], top[1] - 1, top[2]
+        dining = any((tx + dx, ty + dy, tz + dz) in seats for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)) for dy in (-1, 0))
+        cooking = any(abs(kx - top[0]) <= 4 and abs(kz - top[2]) <= 4 and abs(ky - top[1]) <= 3 for kx, ky, kz in kitchen)
+        if (dining or cooking) and t.inside(top) and t.name(top).endswith("air"):
             put(top, "handcrafted:wood_crockery_combo", {"facing": facing, "waterlogged": "false"})
 
     os.makedirs(out, exist_ok=True)

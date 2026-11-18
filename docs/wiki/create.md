@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7
 
 ## What a player sees
 
@@ -51,9 +51,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
   and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
   keep their old drawing until refreshed); the **Windmill**, a seven-square stone tower with a windmill bearing and
-  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop**, a brick shop whose water
-  wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
-  pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
+  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop** (rebuilt from scratch in
+  50.7, "the head-tank works"), a timber plate shop on a stone dado between two verticals: on the west a stone water
+  tower banded in dark tiles, whose hooped head tank pours one source down the tower's corner onto a water wheel, its
+  axle through the wall into a stack of cogwheels that turns the belt and the mechanical press over its depot; on the
+  east a brick stack with the armorer's blast furnace at its foot and his two store chests beside it. A glazed press
+  gable on the street lets you watch the press come down (standing Workshops keep their old drawing until refreshed). The water is placed last, so the wheels turn as
   soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
 
 - **More Create builds** (39.8). Six more workplaces at the Blueprint Table, again only with Create, each driven by a
@@ -442,7 +445,8 @@ The planned fields of later items, each with its default, are listed in the desi
 
 - Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
   `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (9 x 17 x 9) and
-  `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
+  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`;
+  the windmill in `tools/blueprints/create_builds.py`), unlocked from the start and
   listed only with Create (`mechanic/CreateBuilds`).
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the

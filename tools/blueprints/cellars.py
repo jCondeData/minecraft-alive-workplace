@@ -219,7 +219,8 @@ def jewel_vault(b, x0, z0, x1, z1, ladder):
 
 
 def jewellers_workshop_3():
-    """Upgrade of the Jeweller's Workshop II: a vault under the shop, down a ladder in its north-west corner. 9 x 10 x
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop_3.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Jeweller's Workshop II: a vault under the shop, down a ladder in its north-west corner. 9 x 10 x
     14, 4 below."""
     from workshops import jewellers_workshop_2
     b = jewellers_workshop_2().grow(9, 10, 14, basement=BASEMENT)

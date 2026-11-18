@@ -69,3 +69,5 @@ export * from './trade_hall_frame.mjs' // proudFrame, shaftBand, footSkirt, seat
 export * from './tinker.mjs' // hipCap, skirtRing, doubleChest, lampOn, railSpur (towers with hip caps, workshops)
 export * from './smithy.mjs' // taperedStack, quenchTrough, furnaceMouth, clumped (furnace stacks, quench water, a furnace in a wall, patchy rubble)
 export * from './foundry.mjs' // shaftRun, gearbox, cog, waterWheel, mixerStack, settledWater, roofLantern, bandedTank (Create foundries)
+export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
+export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)

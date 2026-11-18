@@ -250,7 +250,7 @@ public class QaBasementSeals1107bGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			int checked = assertNoFluidInBasement(helper, s);
-			helper.assertBlockPresent(Blocks.BLUE_ICE, ORIGIN.offset(5, -4, 5));
+			helper.assertBlockPresent(Blocks.BLUE_ICE, ORIGIN.offset(11, -4, 10));  // ROADMAP 50.4: the rebuilt freezer's floor
 			long packed = s.blueprint().blocks().stream().filter(e -> e.state().is(Blocks.PACKED_ICE)).count();
 			long packedNow = s.blueprint().blocks().stream().filter(e -> e.state().is(Blocks.PACKED_ICE))
 				.filter(e -> helper.getBlockState(ORIGIN.offset(e.pos())).is(Blocks.PACKED_ICE)).count();

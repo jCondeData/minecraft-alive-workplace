@@ -68,7 +68,9 @@ def barrel_vault(b, x0, z0, x1, z1, ladder):
 
 
 def winery_3():
-    """Upgrade of the Winery II: a barrel vault under the barrel cellar, down a ladder in its north-west corner. 13 x 14 x
+    """The OLD drawing (ROADMAP 50.4: the live winery_3.nbt now comes from the rebuild kit, tools/blueprints/js/winery;
+    this one is kept in blueprint_history/ and no longer saved by generate.py).
+    Upgrade of the Winery II: a barrel vault under the barrel cellar, down a ladder in its north-west corner. 13 x 14 x
     20, 4 below."""
     from workshops import winery_2
     b = winery_2().grow(13, 14, 20, basement=BASEMENT)

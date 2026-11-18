@@ -1,0 +1,10 @@
+{
+  "name": "mega_shrine",
+  "private": true,
+  "type": "module",
+  "description": "The Mega Shrine (mega_shrine), rebuilt from scratch for ROADMAP 52 (tools/blueprints/briefs/mega_shrine.md, REBUILD.md): the Keystone Arch. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/mega_shrine/out --data-version 3955 && python3 ../../rebuild.py mega_shrine mega_shrine --candidate --nbt ../../../../build/rebuild/mega_shrine/out/mega-shrine.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/mega_shrine/out --data-version 3955"
+  }
+}

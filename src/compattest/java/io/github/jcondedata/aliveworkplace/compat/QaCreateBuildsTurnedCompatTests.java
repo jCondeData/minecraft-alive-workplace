@@ -43,6 +43,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	/** 30 tall (ROADMAP 50.3): the rebuilt Brass Foundry is 21 tall, over the huge area's 20. */
+	private static final String TALL_AREA = "aliveworkplace_compat:tall_area";
 
 	/** The Workshop flipped left to right: its belt runs the other way and still drives the press over the depot. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"qa_workshop_mirrored"'
@@ -92,12 +94,12 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	}
 
 	/** The Brass Foundry (39.8) turned a quarter: its gear train still gets the mixer over the basin up to mixing speed (30). */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"qa_brass_foundry_90"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa_brass_foundry_90")
+	//$ gametest_ticks_batch TALL_AREA '30000' '"qa_brass_foundry_90"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "qa_brass_foundry_90")
 	public void aBrassFoundryTurnedAQuarterStillMixes(GameTestHelper helper) {
 		Run run = start(helper, StarterBlueprints.BRASS_FOUNDRY, Rotation.CLOCKWISE_90, Mirror.NONE);
 		helper.succeedWhen(() -> {
-			assertBuiltAndTurning(helper, run, new BlockPos(9, 1, 2), "minecraft:smoker", List.of(new BlockPos(8, 4, 8), new BlockPos(4, 1, 4)));
+			assertBuiltAndTurning(helper, run, new BlockPos(16, 1, 5), "minecraft:smoker", List.of(new BlockPos(8, 4, 8), new BlockPos(4, 1, 4)));
 			float mixer = speed(run, new BlockPos(8, 4, 8));
 			helper.assertTrue(Math.abs(mixer) >= 30, "the mixer turns at " + mixer + " RPM, too slow to mix (30)");
 		});

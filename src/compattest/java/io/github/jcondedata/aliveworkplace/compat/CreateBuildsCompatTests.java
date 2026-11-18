@@ -44,6 +44,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class CreateBuildsCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	/** 30 tall (ROADMAP 50.3): the rebuilt Brass Foundry is 21 tall, over the huge area's 20. */
+	private static final String TALL_AREA = "aliveworkplace_compat:tall_area";
 
 	/** A block that must stand at a template spot when the build is done. */
 	private record Expect(BlockPos spot, String block) {
@@ -90,10 +92,10 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 	}
 
 	/** The Brass Foundry (39.8): the gear train takes the wheel's 8 RPM up to 32, so the mixer over the basin works (from 30). */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"brass_foundry_build"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "brass_foundry_build")
+	//$ gametest_ticks_batch TALL_AREA '30000' '"brass_foundry_build"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "brass_foundry_build")
 	public void aBuilderBuildsTheBrassFoundryAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.BRASS_FOUNDRY, List.of(at(9, 1, 2, "minecraft:smoker"), at(8, 4, 8, "create:mechanical_mixer"),
+		build(helper, StarterBlueprints.BRASS_FOUNDRY, List.of(at(16, 1, 5, "minecraft:smoker"), at(8, 4, 8, "create:mechanical_mixer"),
 			at(8, 2, 8, "create:basin"), at(8, 1, 8, "create:blaze_burner"), at(4, 1, 2, "create:depot"), at(4, 1, 4, "create:belt")),
 			new BlockPos(8, 4, 8), (level, origin) -> {
 				float speed = speed(level, origin.offset(8, 4, 8));

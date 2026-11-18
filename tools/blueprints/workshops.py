@@ -112,7 +112,8 @@ def tinkers_corner(b):
 
 
 def tinkers_workshop():
-    """12 x 11 x 10: a brick workshop gable-on to the street, a hoist with a barrel on its chain over the door, a forge
+    """The OLD drawing (ROADMAP 50.3: the live tinkers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/tinkers_workshop; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 12 x 11 x 10: a brick workshop gable-on to the street, a hoist with a barrel on its chain over the door, a forge
     lean-to under a catslide roof with a big smoking brick chimney; inside the tinkerer's smithing table and its chests,
     an anvil and a redstone lamp kept lit for show."""
     b = Build(12, 11, 10)
@@ -137,7 +138,8 @@ def tinkers_workshop():
 
 
 def tinkers_workshop_2():
-    """12 x 11 x 14: the hall run back to twice the length — a storage loft over the back half (ladder up the east wall),
+    """The OLD drawing (ROADMAP 50.3: the live tinkers_workshop_2.nbt now comes from the rebuild kit, tools/blueprints/js/tinkers_workshop; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 12 x 11 x 14: the hall run back to twice the length — a storage loft over the back half (ladder up the east wall),
     a cart track in through an arch at the back, more windows, and a lightning rod on the ridge."""
     b = Build(12, 11, 14)
     depth = 12
@@ -322,7 +324,8 @@ def smithy_floor(b):
 
 
 def smithy():
-    """13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
+    """The OLD drawing (ROADMAP 50.3: the live smithy.nbt now comes from the rebuild kit, tools/blueprints/js/smithy; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
     quench trough inside, a blast furnace in a brick chimney breast (Armorer, or Miner with a pickaxe), its stack up the
     west wall with a campfire smoking on top, a smithing table (Toolsmith) at the back, and a lean-to on the east side
     over a grindstone (Weaponsmith). Under the hall, down a ladder by the forge, the coal store (ROADMAP 26.15), 4 below."""
@@ -377,7 +380,8 @@ def smithy_store(b):
 
 
 def smithy_2():
-    """13 x 12 x 13: the smithy with a coal and ore store in a stone wing behind, under a lower roof of its own: bins of
+    """The OLD drawing (ROADMAP 50.3: the live smithy_2.nbt now comes from the rebuild kit, tools/blueprints/js/smithy; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 13: the smithy with a coal and ore store in a stone wing behind, under a lower roof of its own: bins of
     coal and raw ore and a second blast furnace (a second armorer, or a miner) with its own brick flue."""
     b = smithy().grow(13, 12, 13)
     smithy_store(b)

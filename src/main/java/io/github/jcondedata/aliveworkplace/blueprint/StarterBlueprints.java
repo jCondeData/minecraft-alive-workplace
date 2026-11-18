@@ -306,19 +306,19 @@ public final class StarterBlueprints {
 	/** An armoury and lock-up dug under the barracks (36.7). */
 	public static final Entry BARRACKS_3 = new Entry(AliveWorkplace.id("barracks_3"), new Vec3i(19, 10, 11), 4);
 
-	/** A brick workshop with a forge and a smoking chimney, and a Tinker's Bench inside. */
-	public static final Entry TINKERS_WORKSHOP = new Entry(AliveWorkplace.id("tinkers_workshop"), new Vec3i(12, 11, 10));
-	/** The hall run back to twice the length: a storage loft, a cart track in, a lightning rod on the ridge. */
-	public static final Entry TINKERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("tinkers_workshop_2"), new Vec3i(12, 11, 14));
+	/** The Tinker's Tower (rebuilt in 50.3): a workshop with a smithing table at its forge, the Tinkerer's job site. */
+	public static final Entry TINKERS_WORKSHOP = new Entry(AliveWorkplace.id("tinkers_workshop"), new Vec3i(13, 11, 13));
+	/** Level II: the tower lifted a story, a stores loft of double chests up a ladder and a lamp room on top. */
+	public static final Entry TINKERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("tinkers_workshop_2"), new Vec3i(13, 16, 13));
 
 	/**
 	 * The workplaces of ROADMAP 27.13 (tools/blueprints/workshops.py), each the building a {@code workplace_*} Steward rule
-	 * builds for its trades. A stone forge under a timber roof, open to the street: a blast furnace (Armorer; Miner with
-	 * a pickaxe), a smithing table (Toolsmith) and a grindstone (Weaponsmith) in a lean-to.
+	 * builds for its trades. Rebuilt in 50.3: a stepped stone forge stack beside a low shop, one forge hall with a blast
+	 * furnace (Armorer; Miner with a pickaxe), a smithing table (Toolsmith) and a grindstone (Weaponsmith), a coal cellar.
 	 */
-	public static final Entry SMITHY = new Entry(AliveWorkplace.id("smithy"), new Vec3i(13, 12, 10), 4);
-	/** A coal and ore store behind, with a second blast furnace. */
-	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(13, 12, 13), 4);
+	public static final Entry SMITHY = new Entry(AliveWorkplace.id("smithy"), new Vec3i(14, 17, 10), 4);
+	/** A second forge stack with a second blast furnace, and a bigger coal and ore store. */
+	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(14, 17, 16), 4);
 	/** A fenced yard of cut stone with a lean-to over a stonecutter (Mason). */
 	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(13, 9, 13));
 	/** A second stonecutter and a hoist. */
@@ -519,7 +519,7 @@ public final class StarterBlueprints {
 	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (a water wheel turning a pair of
 	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
 	 */
-	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(13, 14, 11));
+	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(19, 21, 16));
 	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 14));
 	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
 	/**

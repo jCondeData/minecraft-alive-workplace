@@ -1,0 +1,19 @@
+{
+  "name": "brass-foundry",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 67
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/brass_foundry/out/brass-foundry.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/brass_foundry/out/summary.json",
+  "size": [
+    19,
+    21,
+    16
+  ],
+  "blockCount": 1408,
+  "paletteCount": 79,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/brass_foundry/recipe.mjs"
+}

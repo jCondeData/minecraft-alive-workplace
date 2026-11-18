@@ -1,0 +1,19 @@
+{
+  "name": "smithy-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 41
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/smithy/out/smithy-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/smithy/out/summary.json",
+  "size": [
+    14,
+    21,
+    16
+  ],
+  "blockCount": 1271,
+  "paletteCount": 64,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/smithy/recipe.mjs"
+}

@@ -128,6 +128,8 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
+  andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
 - Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected
   village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
   blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and

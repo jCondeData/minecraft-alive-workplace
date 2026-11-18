@@ -32,10 +32,11 @@
 // Masses (named parts the owner's feedback can point at):
 //   Hall          the main mass: brick walls x 1..9, z 1..9, y 1..4 on a stone-brick plinth (y 0); a 45-degree slate
 //                 roof, ridge along z at x 5 (y 9), overhanging one block all round (x 0..10, z 0..10).
-//   Lantern       the hero: a 5 x 5 brick lantern astride the ridge (x 3..7, z 3..7) glazed in its faces above a brick
-//                 curb, a cap of slate stairs round a 3 x 3 glazed light at y 11. Its inner 3 x 3 is an open shaft
-//                 down to the press, which stands in its middle column (5, 1, 5): the glass at (5, 11, 5) is the only
-//                 block above the press.
+//   Lantern       the hero: a long brick lantern riding the ridge (x 4..6, z 3..7, 3 wide and 5 long), so both slopes
+//                 meet its sides at the same course (y 8) and the ridge runs into the middle of each end; glazed in
+//                 its sides above a brick curb, a cap of slate stairs round a 1 x 3 glazed light at y 11. Inside it is
+//                 an open shaft down to the press, which stands in its middle column (5, 1, 5): the glass at
+//                 (5, 11, 5) is the only block above the press.
 //   Shopfront     the hall's street gable: two display windows and the door between them, a dark-oak fascia at y 4,
 //                 bracket lamps either side of the door, a stone apron along the front (z 0) the sills stand on.
 //   Reading Room  (II) a lower brick range east of the hall (walls x 9..15, z 3..9, the hall's east wall shared),
@@ -67,7 +68,7 @@ export const MASSES = {
     roof: { axis: 'z', across: [0, 10], along: [0, 10], eaveY: 4 },
     tieBeams: [3, 7], // dark-oak tie beams across the room at y 4, either side of the shaft
   },
-  lantern: { x0: 3, z0: 3, x1: 7, z1: 7, top: 11, glazed: [9, 10] }, // panes in its faces y 9..10, a brick curb below
+  lantern: { x0: 4, z0: 3, x1: 6, z1: 7, top: 11, glazed: [9, 10] }, // panes in its sides y 9..10, a brick curb below
   reading: { // Level II
     walls: { x0: 9, x1: 15, z0: 3, z1: 9 }, wallTop: 4,
     roof: { axis: 'z', across: [8, 16], along: [2, 10], eaveY: 4 }, // its west eave lies under the hall's slope
@@ -89,14 +90,15 @@ export const OPENINGS = {
   sideWindows: [
     { cells: [[1, 2, 3], [1, 3, 3]], out: 'west' }, { cells: [[1, 2, 7], [1, 3, 7]], out: 'west' },
     { cells: [[9, 2, 3], [9, 3, 3]], out: 'east', level: 1 }, { cells: [[9, 2, 7], [9, 3, 7]], out: 'east', level: 1 },
-    { cells: [[3, 2, 9], [3, 3, 9]], out: 'south', dress: null }, { cells: [[7, 2, 9], [7, 3, 9]], out: 'south', dress: null }, // the yard side: plain
+    // the yard side dressed like the others: shutters, and a sill on a plinth stone under each
+    { cells: [[3, 2, 9], [3, 3, 9]], out: 'south', sill: true }, { cells: [[7, 2, 9], [7, 3, 9]], out: 'south', sill: true },
   ],
   frontGable: [[5, 6, 1], [5, 7, 1]],
   backGable: [[5, 6, 9], [5, 7, 9]],
   // Level II
   arch: { axis: 'z', line: 9, span: [5, 7], y0: 1, y1: 3 },
   readingWindows: [
-    { cells: [[11, 2, 3], [12, 2, 3], [13, 2, 3], [11, 3, 3], [12, 3, 3], [13, 3, 3]], out: 'north', dress: 'sill' },
+    { cells: [[11, 2, 3], [12, 2, 3], [13, 2, 3], [11, 3, 3], [12, 3, 3], [13, 3, 3]], out: 'north', dress: null },
     // high library windows over the bookcases on the east wall
     { cells: [[15, 3, 5]], out: 'east', dress: 'shutters' }, { cells: [[15, 3, 7]], out: 'east', dress: 'shutters' },
   ],
@@ -114,7 +116,15 @@ export const FURNITURE = [
   { level: 1, room: 'Shop', kind: 'table', part: 'table', pos: [4, 1, 8], facing: 'north', wood: 'dark_oak', colour: 'white' },
   { level: 1, room: 'Shop', kind: 'shelf', part: 'inkShelf', pos: [3, 3, 8], facing: 'north', wood: 'dark_oak', candle: 'black_candle', candles: 1 },
   { level: 1, room: 'Shop', kind: 'shelf', part: 'inkShelf', pos: [6, 2, 8], facing: 'north', wood: 'dark_oak', candle: 'black_candle', candles: 4 },
+  { level: 1, room: 'Shop', kind: 'rug', part: 'rug', cellsAbs: [[4, 1, 4], [5, 1, 4], [6, 1, 4], [4, 1, 5], [6, 1, 5], [4, 1, 6], [5, 1, 6], [6, 1, 6]], colour: 'gray' }, // the press's floor, under its light
   { level: 1, room: 'Shop', kind: 'fixture', part: 'chest', pos: CHEST, facing: 'west', block: 'chest' },
+  // type frames round the press: a case of dark oak with its sloping tray of type on top, two flanking the desk (the
+  // compositor's bay) and one at the end of the counter; broadsheets pinned up on the walls to read
+  { level: 1, room: 'Shop', kind: 'cupboard', part: 'typeFrame', pos: [2, 1, 4], facing: 'east', wood: 'dark_oak' },
+  { level: 1, room: 'Shop', kind: 'cupboard', part: 'typeFrame', pos: [2, 1, 6], facing: 'east', wood: 'dark_oak' },
+  { level: 1, room: 'Shop', kind: 'cupboard', part: 'typeFrame', pos: [8, 1, 4], facing: 'west', wood: 'dark_oak' },
+  { level: 1, room: 'Shop', kind: 'picture', part: 'picture', pos: [5, 3, 8], facing: 'north', wood: 'dark_oak', colour: 'white' },
+  { level: 1, room: 'Shop', kind: 'picture', part: 'picture', pos: [2, 3, 5], facing: 'east', wood: 'dark_oak', colour: 'white' },
   // lamps hung from the tie beams, one over each working corner
   { level: 1, room: 'Shop', kind: 'lamp', part: 'hangingLamp', pos: [3, 3, 3], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Shop', kind: 'lamp', part: 'hangingLamp', pos: [7, 3, 3], facing: 'north', wood: 'dark_oak' },
@@ -132,10 +142,13 @@ export const FURNITURE = [
 ]
 
 // The shelves of books (Level II), [x, z, y0, y1] columns: 2 high under the east wall's high windows and 3 high
-// between them, 3 high along the back wall (25 bookshelves; the test wants 24)
+// between them, 3 high along the back wall, low under the front window and in the shared wall by the arch
+// (37 bookshelves; the test wants 24)
 export const BOOKS = [
   [14, 4, 1, 3], [14, 5, 1, 2], [14, 6, 1, 3], [14, 7, 1, 2], [14, 8, 1, 3],
   [10, 8, 1, 3], [11, 8, 1, 3], [12, 8, 1, 3], [13, 8, 1, 3],
+  [10, 4, 1, 3], [11, 4, 1, 1], [12, 4, 1, 1], [13, 4, 1, 1], // the front: a corner case and low cases under the window
+  [9, 4, 1, 3], [9, 8, 1, 3], // the west: the wall shared with the shop is books either side of the arch
 ]
 
 // The walking line: street -> apron step -> door -> past the counter -> the press (worked from (5, 1, 4)); in II on
@@ -143,4 +156,12 @@ export const BOOKS = [
 export const WALK = [
   [1, 0, -3], [5, 0, -1], [5, 0, 0], [5, 1, 1], [5, 1, 2], [5, 1, 3], [5, 1, 4],
   [6, 1, 5], [7, 1, 6], [8, 1, 6], [9, 1, 6], [10, 1, 6], [10, 1, 5],
+]
+
+// Planters: beds of their own soil let into the stone apron under the display windows (and under the Reading Room's
+// front window, II), flowers in them; never plants on bare ground.
+export const PLANTERS = [
+  { level: 1, cells: [[2, 0], [3, 0]], plants: ['poppy', 'oxeye_daisy'] },
+  { level: 1, cells: [[7, 0], [8, 0]], plants: ['oxeye_daisy', 'poppy'] },
+  { level: 2, cells: [[11, 2], [12, 2], [13, 2]], plants: ['allium', 'oxeye_daisy', 'allium'] },
 ]

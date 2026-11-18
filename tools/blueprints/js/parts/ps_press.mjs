@@ -96,6 +96,13 @@ export const psParts = {
     c.set(x, y + 1, z, f.candle, { candles: String(f.candles ?? 1), lit: 'true', waterlogged: 'false' })
     c.spot('desk', f.pos, f.facing, [[0, 0, 0]], f.wood)
   },
+  typeFrame(c, f) { // a compositor's frame: a case (f.wood planks) with a closed trapdoor tray on it, the reader facing f.facing
+    const [x, y, z] = f.pos
+    c.free([x, y, z], [x, y + 1, z])
+    c.set(x, y, z, `${f.wood}_planks`)
+    c.set(x, y + 1, z, `${f.wood}_trapdoor`, { facing: OPP[f.facing], half: 'bottom', open: 'false', powered: 'false', waterlogged: 'false' })
+    c.spot(f.kind ?? 'cupboard', f.pos, f.facing, [[0, 0, 0], [0, 1, 0]], f.wood)
+  },
   inkShelf(c, f) { // a top slab on the wall with f.candle on it (ink, not crockery)
     const [x, y, z] = f.pos
     c.free([x, y, z], [x, y + 1, z])

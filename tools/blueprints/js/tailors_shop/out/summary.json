@@ -4,7 +4,7 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 53
+    "updatedBlocks": 70
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/out/tailors-shop-2.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/out/summary.json",
@@ -13,7 +13,7 @@
     17,
     13
   ],
-  "blockCount": 772,
-  "paletteCount": 71,
+  "blockCount": 794,
+  "paletteCount": 67,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tailors_shop/recipe.mjs"
 }

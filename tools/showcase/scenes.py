@@ -1493,6 +1493,12 @@ SCENES = [
            ("02_outside_back", "From the outside: the three spruce gates shut"),
            ("03_outside_west", "From the west: the gatehouse's thin side"),
            ("04_outside_east", "From the east")], furniture=True),
+    S("rebuild_palisade", "Build families", "The rebuilt Palisade from four sides",
+      "the Palisade's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a wall) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Palisade from the village side: the cobble toe and mud-brick steps up the bank to the stripped-oak walk"),
+           ("02_outside_back", "From the outside: the row of bark-on spruce stakes with their pointed heads, the oak rail through them"),
+           ("03_outside_west", "From the west: the earthwork's section, from the steps over the bank to the stakes"),
+           ("04_outside_east", "From the east")], furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",
@@ -1587,6 +1593,20 @@ SCENES = [
            ("02_outside_back", "From the back: the gate gable rising over the hall roof, the chimney"),
            ("03_outside_west", "From the west: the cloister's lean-to along the sparring court"),
            ("10_room_1", "Inside at eye level: the cloister bench by the court, the lecture room's reading table and the Tutor's desk")], furniture=True),
+    # ROADMAP 50.4: the Butcher's Shop rebuilt from scratch (REBUILD.md)
+    S("rebuild_butchers_shop", "Build families", "The Butcher's Shop, rebuilt: from four sides and at eye level inside",
+      "the Butcher's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Butcher's Shop from the front: the white shop's gable to the street, its display boards under the pentice"),
+           ("04_outside_east", "From the east: the red-brick smoke tower under its slate cap, smoking at the peak"),
+           ("03_outside_west", "From the west: the shop's long side, white panels in its dark oak frame"),
+           ("10_room_1", "Inside at eye level: the shop, its counter and the butcher's half behind")], furniture=True),
+    # ROADMAP 50.4: the Winery rebuilt from scratch (REBUILD.md)
+    S("rebuild_winery", "Build families", "The Winery, rebuilt: from four sides and at eye level inside",
+      "the Winery's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Winery from the front: the double stone perron up to the press-floor door, the Cask Hall's door under the landing"),
+           ("04_outside_east", "From the east: the stone Tasting Room under its tiled lean-to"),
+           ("03_outside_west", "From the west: the stone Cask Hall under the white timber-framed press floor"),
+           ("10_room_1", "Inside at eye level: the first furnished room, its furniture in view")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

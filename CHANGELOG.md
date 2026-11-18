@@ -23,6 +23,17 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
+  the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
+  Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
+  plants the vineyard behind it, rows of sweet berries and an arbor hung with glow berries; Winery III digs a vintage
+  vault under the hall, down a ladder from a hatch. Wineries already standing keep the drawing they were built from
+  until you refresh them.
+- **The Butcher's Shop is rebuilt from scratch** (50.4): a white, dark-framed shop with its gable to the street and
+  display boards under a slate pentice, a red-brick smoke tower on its side that smokes at the peak with the Butcher's
+  smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
+  floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
+  you refresh them, and are never offered a dig of the new freezer.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The
@@ -32,6 +43,11 @@ asks for the steps, `latest.log` and any crash report).
   Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
   drawing they were built from until you refresh them, and "Dig the cellar" on an older Smithy digs the cellar of the
   drawing it was built from, never through its forge.
+- **The Palisade is redrawn from scratch** (52.3): an earthwork now, a cobblestone toe and mud-brick steps up the village
+  side of a rammed-earth bank to a pale stripped-oak walk where 7 archers stand, behind a row of bark-on spruce stakes
+  with pointed heads and an oak rail through them (7 x 5 x 4). Palisade II builds the bank out into a walk three wide
+  (19 archers' places) and plants seven dripstone stakes in a ditch of turned earth outside (7 x 5 x 5). Pieces already
+  standing keep their old look until refreshed.
 - **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
   village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
   Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping
@@ -107,9 +123,23 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
+  and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
+  bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
+  Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
+  crockery the new drawing moved (one with something in it stays) (B1383).
+- A Blueprint placed far from the Blueprint Table inside a big village (150 blocks off with `villageHallRadius` 160,
+  say), which the Builder does take, no longer says "No Blueprint Table within 128 blocks of this spot" with every
+  material listed as still to bring: its supply report and its Book and Quill material list now find the table by the
+  Builder's own rule (anywhere in the table's village, or within `maxSiteDistance` outside it). A yes to a repair or a
+  refresh likewise reaches a free Builder anywhere in the village, not only one near the building (B619).
 - Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
   the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
   passing that wall's far side on the outside (B726).
+- A helper on a build far from the builder's chests does its share of a tall house. The builder carries nearly the whole
+  house over on its first trip, and the helper used to be handed three or four blocks' worth at a time and walk down to
+  the chests for the little left there, so it laid under a third of the Stone House; now it is handed its share at
+  once, lays about half, and the two finish the walls and roof a fifth sooner (B1381).
 - With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
   mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
   (B1378).

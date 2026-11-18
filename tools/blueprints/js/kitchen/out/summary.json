@@ -1,0 +1,19 @@
+{
+  "name": "kitchen",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 29
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/kitchen/out/kitchen.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/kitchen/out/summary.json",
+  "size": [
+    16,
+    17,
+    15
+  ],
+  "blockCount": 991,
+  "paletteCount": 67,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/kitchen/recipe.mjs"
+}

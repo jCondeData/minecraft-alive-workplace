@@ -1224,8 +1224,9 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!wantedEmpty && (world.canBeReplaced() || skipped)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
-			if (isProtected(level, pos, world, bench)) {
-				return Action.NONE;
+			if (isProtected(level, pos, world, bench)
+				&& !(site.refreshFrom() != null && Refreshes.leftoverPiece(level, site.furniture(), site.placement(), pos, world))) {
+				return Action.NONE; // (B1383: a refresh takes away an empty furniture piece the build put there)
 			}
 			if (wantedEmpty && someonesBed(level, pos, world)) {
 				return Action.NONE; // 36.14: a bed a villager sleeps in stays through an upgrade over the room it stands in
@@ -1692,7 +1693,8 @@ public class BuilderWork extends Behavior<Villager> {
 		// B181: the lead of a crew, short of what a helper working close by carries spare of, has it passed over rather
 		// than walk to the chests: the crew had laid everything else of the stage, and stood about while the lead walked
 		// down from the roof and back for one slab (180 ticks, an eighth of a crew of four's build).
-		if (!helping && villager.distanceToSqr(Vec3.atCenterOf(source)) > PASS_DISTANCE * PASS_DISTANCE
+		// B1381: so does a helper whose chests are far from the site.
+		if ((!helping || farFromChests(plan, source)) && villager.distanceToSqr(Vec3.atCenterOf(source)) > PASS_DISTANCE * PASS_DISTANCE
 			&& takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed, true)) {
 			return;
 		}
@@ -1706,7 +1708,8 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/**
 	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
-	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
+	 * first. Helpers take for a short stretch ({@link #helperShare}), so they never sit on the lead's materials; at chests
+	 * far from the site, for the long stretch like the lead (B1381).
 	 */
 	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
 	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
@@ -1759,7 +1762,9 @@ public class BuilderWork extends Behavior<Villager> {
 		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
 		// builder walks there less often (each trip was 30 s and more without placing a block).
 		boolean far = farFromChests(plan, source);
-		for (BuildPlan.Step s : helping || crew ? helperShare(level, site, plan) : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
+		// B1381: a helper at chests far from the site takes for the long stretch too, not for 32 steps of what the lead
+		// left there: it walked down the Stone House and back up for 5 to 17 items a trip.
+		for (BuildPlan.Step s : crew || helping && !far ? helperShare(level, site, plan) : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -1841,6 +1846,44 @@ public class BuilderWork extends Behavior<Villager> {
 			any |= rest.getCount() < removed;
 		}
 		return any;
+	}
+
+	/**
+	 * B1381: a helper's share of what the crew carries for a site far from its chests: of the long stretch ahead
+	 * ({@link #FAR_LOOKAHEAD}), the steps with work dealt round the lead and its helpers like cards (the lead first, the
+	 * helpers in the order of their ids). Null for a builder on its own, a helper the site hasn't counted yet, and in the
+	 * build's last stretch (what is left then is the lead's, {@link #stockUpFirst}). The lead stocks up for the whole
+	 * stretch before a helper has joined (688 of the Stone House's 761 items on its first trip: 755 blocks, 16 tall, its
+	 * chests 17 blocks off), and the helper took from it what the block it was on needed and three more: 67 passes, most
+	 * after a walk to the lead, and three or four walks down to the chests and back up for the 5 to 17 items left there.
+	 * Half its time went on that, and it laid 30% of the house. Handed its share at the first pass, it lays 48%, and the
+	 * structure is up in 1,661 ticks, not 2,145.
+	 */
+	@Nullable
+	private Map<Item, Integer> farShare(ServerLevel level, BuildSite site, BuildPlan plan) {
+		List<java.util.UUID> seats = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
+		if (seats.isEmpty() || helping && !seats.contains(self)) {
+			return null;
+		}
+		List<BuildPlan.Step> stretch = ahead(site, plan, FAR_LOOKAHEAD);
+		if (stretch.size() < LOOKAHEAD) {
+			return null;
+		}
+		seats.sort(null);
+		int seat = helping ? 1 + seats.indexOf(self) : 0;
+		int dealt = 0;
+		Map<Item, Integer> share = new LinkedHashMap<>();
+		for (BuildPlan.Step s : stretch) {
+			if (s.requirements().isEmpty() || MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+				continue;
+			}
+			if (dealt++ % (seats.size() + 1) == seat) {
+				for (MaterialRules.Requirement r : s.requirements()) {
+					share.merge(r.item(), r.count(), Integer::sum);
+				}
+			}
+		}
+		return share;
 	}
 
 	/**
@@ -2087,6 +2130,22 @@ public class BuilderWork extends Behavior<Villager> {
 			if (take > 0) {
 				mateBag.remove(item, take);
 				bag.addAll(item, take);
+				// B1381: far from the chests, a helper takes the rest of its share from the lead with it
+				Map<Item, Integer> share = helping && !this.crew && id.equals(site.builder()) && site.bench() != null
+					&& farFromChests(plan, site.bench()) ? farShare(level, site, plan) : null;
+				if (share != null) {
+					for (Map.Entry<Item, Integer> e : share.entrySet()) {
+						int keeps = 0;
+						for (MaterialRules.Requirement r : mateStep != null ? mateStep.requirements() : List.<MaterialRules.Requirement>of()) {
+							keeps += r.item() == e.getKey() ? r.count() : 0;
+						}
+						int more = Math.min(Math.min(e.getValue() - bag.count(e.getKey()), mateBag.count(e.getKey()) - keeps), bag.spaceFor(e.getKey()));
+						if (more > 0) {
+							mateBag.remove(e.getKey(), more);
+							bag.addAll(e.getKey(), more);
+						}
+					}
+				}
 				site.supplied();
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
 				if (close) {

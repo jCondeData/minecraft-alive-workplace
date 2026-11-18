@@ -30,12 +30,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -209,7 +207,39 @@ public final class Refreshes {
 		if (was.isEmpty()) {
 			return BuildPlan.repair(current, placement, level, BuildSiteManager.get(level).gaveUp(placement));
 		}
-		return BuildPlan.refresh(current, was.get(), placement, level, (pos, state) -> kept(level, pos, state));
+		return BuildPlan.refresh(current, was.get(), placement, level,
+			(pos, state) -> kept(level, pos, state) && !leftoverPiece(level, built, placement, pos, state));
+	}
+
+	/**
+	 * B1383: whether {@code world} at {@code pos} is a furniture mod's piece that {@code built} (the build's furniture, as
+	 * built) put there and that holds nothing: a refresh takes it away like any other piece of the older drawing (B642),
+	 * though it has a block entity (a Handcrafted shelf, nightstand or crockery set). One with something in it stays, as a
+	 * container does; never a bed someone sleeps in or a job block.
+	 */
+	public static boolean leftoverPiece(ServerLevel level, @Nullable io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice built,
+										BlueprintData.Placement placement, BlockPos pos, BlockState world) {
+		if (built == null || built.spots().isEmpty() || BuiltInRegistries.BLOCK.getKey(world.getBlock()).getNamespace().equals("minecraft")
+			|| world.getBlock() instanceof BedBlock || PoiTypes.forState(world).isPresent()) {
+			return false;
+		}
+		boolean placed = false;
+		for (io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.Placed piece : built.spots().values()) {
+			for (Map.Entry<BlockPos, BlockState> cell : piece.cells().entrySet()) {
+				if (cell.getValue().getBlock() == world.getBlock() && pos.equals(placement.origin().offset(
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(piece.pos().offset(cell.getKey()),
+						placement.mirror(), placement.rotation(), BlockPos.ZERO)))) {
+					placed = true;
+				}
+			}
+		}
+		if (!placed) {
+			return false;
+		}
+		if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container && !container.isEmpty()) {
+			return false;
+		}
+		return !io.github.jcondedata.aliveworkplace.platform.Platform.get().items().hasMatching(level, pos, stack -> !stack.isEmpty());
 	}
 
 	/**
@@ -531,20 +561,16 @@ public final class Refreshes {
 		}
 		BuildSiteManager.get(level).setRefreshAsked(f.get().placement(), true);
 		BlockPos origin = Builders.spot(level, f.get().structure(), f.get().placement()); // B615: measured as placing measures
-		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
-				&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement())));
-		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
+		// B619: every builder whose bench reaches it, wherever in the village (nearest first)
+		List<Villager> builders = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> !ModAttachments.BUILDER_JOB.has(v)
+			&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner()));
 		for (Villager v : builders) {
 			if (start(level, v, f.get()) != null) {
 				return said(player, f.get(), Outcome.STARTED);
 			}
 		}
 		// B1110: every builder busy: a helper who looks after it is taken off another build's crew (which keeps its lead)
-		List<Villager> crews = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement()));
+		List<Villager> crews = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> Upkeep.looksAfter(level, v, f.get().owner()));
 		Optional<Builders.Split> split = Builders.splitOff(level, crews, origin);
 		if (split.isPresent()) {
 			if (start(level, split.get().builder(), f.get()) != null) {

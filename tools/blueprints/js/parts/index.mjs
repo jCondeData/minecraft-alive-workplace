@@ -69,5 +69,8 @@ export * from './trade_hall_frame.mjs' // proudFrame, shaftBand, footSkirt, seat
 export * from './tinker.mjs' // hipCap, skirtRing, doubleChest, lampOn, railSpur (towers with hip caps, workshops)
 export * from './smithy.mjs' // taperedStack, quenchTrough, furnaceMouth, clumped (furnace stacks, quench water, a furnace in a wall, patchy rubble)
 export * from './foundry.mjs' // shaftRun, gearbox, cog, waterWheel, mixerStack, settledWater, roofLantern, bandedTank (Create foundries)
+export * from './butcher.mjs' // smokeTower, lowPyramid, freezer, meatRail, choppingBlock, stockPen, shelter (the Butcher's Shop, 49: a smoke tower, an ice-lined freezer, hooks, a pen)
+export * from './kitchen_hall.mjs' // ledgeRing, louvredHip, hipRolls, tieBeams, pilasters, produce (great kitchens: a hipped stone kitchen with a smoke louvre, skirt and corbel courses, tie beams, a larder's produce)
+export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruitingVines (wineries: a double perron, log casks on their sides, vineyard rows, glow berries on a beam)
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)

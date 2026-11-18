@@ -66,6 +66,8 @@ public class CellarGameTests implements FabricGameTest {
 	private static final int GROUND = 6;
 	/** 50.3: the Smithy's drawing before its rebuild, as blueprint_history ships it. */
 	private static final String OLD_SMITHY = "v0.145.0";
+	/** 50.4: the Butcher's Shop's drawing before its rebuild, as blueprint_history ships it. */
+	private static final String OLD_BUTCHERS_SHOP = "v0.145.0";
 	private static final BlockPos BENCH = new BlockPos(2, GROUND + 1, 2);
 	private static final BlockPos CHEST = new BlockPos(2, GROUND + 1, 4);
 	private static final BlockPos VILLAGER = new BlockPos(3, GROUND + 1, 3);
@@ -444,6 +446,48 @@ public class CellarGameTests implements FabricGameTest {
 			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
 			helper.assertTrue(!Cellars.needsDigging(level, id, placement), "the old Smithy's dug cellar still needs digging");
 		});
+	}
+
+	/**
+	 * 50.4: a Butcher's Shop of the drawing before its rebuild (0.145.0's), standing finished with its freezer (a
+	 * Butcher's Shop always went up with it, 26.15). The rebuilt shop's freezer lies elsewhere, under earth there, but
+	 * the shop was built from the old drawing, whose freezer is dug: no "Dig the cellar" for it, from its builder or
+	 * the hall's advice.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '200' '"cellar_old_butcher"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 200, batch = "cellar_old_butcher")
+	public void anOldDrawingsButchersShopIsNotOfferedTheNewFreezer(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ground(helper, 30);
+		BlockPos origin = new BlockPos(9, GROUND + 1, 9);
+		ResourceLocation id = StarterBlueprints.BUTCHERS_SHOP.id();
+		BlueprintData.Placement placement = placement(helper, origin);
+		helper.assertTrue(Refreshes.olderDrawing(level.getServer(), id, OLD_BUTCHERS_SHOP).isPresent(), "0.145.0's Butcher's Shop isn't shipped in blueprint_history");
+		Blueprint old = Refreshes.drawing(level, id, OLD_BUTCHERS_SHOP, BuildSiteManager.get(level).furniture(placement)).orElseThrow();
+		Blueprint now = BlueprintLibrary.get(level, id).orElseThrow();
+		helper.assertTrue(old.basement() == 4, "precondition: the old Butcher's Shop's freezer is 4 deep");
+		// the old shop as it was built, its freezer dug; every other cell of the ground stays earth
+		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+		for (Blueprint.Entry e : old.blocks()) {
+			BlockPos world = helper.absolutePos(origin).offset(e.pos());
+			level.removeBlockEntity(world);
+			level.setBlock(world, e.state(), flags);
+		}
+		// the new drawing's freezer: what today's drawing would call an undug cellar there
+		long buried = now.blocks().stream().filter(e -> e.pos().getY() < 0 && e.state().isAir())
+			.filter(e -> !level.getBlockState(helper.absolutePos(origin).offset(e.pos())).isAir()).count();
+		helper.assertTrue(buried > 0, "precondition: the new freezer lies where the old shop left earth");
+		BuildSiteManager.get(level).recordFinished(id, placement, UUID.randomUUID());
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
+		helper.assertFalse(Cellars.needsDigging(level, id, placement), "the old Butcher's Shop with its freezer is offered a dig of the new freezer ("
+			+ buried + " of its cells under earth)");
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		Builders.employ(level, villager, helper.absolutePos(BENCH));
+		helper.assertTrue(Cellars.offer(level, villager).isEmpty(), "the builder offers to dig the old Butcher's Shop's freezer");
+		helper.assertTrue(Cellars.toDig(level, helper.absolutePos(origin), 64).isEmpty(), "the hall's advice would list a freezer to dig");
+		helper.succeed();
 	}
 
 	// --- helpers ------------------------------------------------------------------------------------------------------

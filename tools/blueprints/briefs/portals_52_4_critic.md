@@ -98,3 +98,28 @@ Beats OLD on two scores (silhouette, detail), so **BACK**. Notes, most important
 - **Mega Shrine:** the trainer's route (corner slab, (0,0,1) stair, (1,1,1) stair, (2,2,1) stair, (3,2,1) top) is
   climbable by the pathfinder by this script, but it is a three-turn stair; if it fails in game, the show waits its 600
   ticks. Note 1 removes the risk.
+
+## mega_shrine, round 2 (lane-d-1118-1008): SHIP
+
+Sheet re-rendered with the round-1 fixes (`mega_shrine_sheet.png`, rows front, low, back, left, right, top; the
+renderer does not draw `mega_showdown:pedestal`, confirmed at (3,3,3) from the block list). Candidate
+`build/rebuild/mega_shrine/mega_shrine.nbt` (7x6x7, 135 blocks): no CHECK line, holes.py TOTAL 0.
+
+Round-1 notes: 1 met (stairs at (x,0,0), (x,1,1), (x,2,2) for x 2-4: a straight flight to the trainer's cell);
+2 met (two rings at z 3 and z 4, (3,3..5,2) air); 3 met (the front steps back in three stair rows, posts with soul
+lanterns at (1|5,2,1)).
+
+| Score | OLD | NEW | Evidence |
+|---|---|---|---|
+| Silhouette | 2 | 3 | Front/back: OLD a low square tray with stub posts and floating amethyst; NEW's stepped round arch over the pedestal says "stage" from 20 blocks. Left/right: a tall, blank two-deep brick wedge, weak on two sides. |
+| Depth | 3 | 3 | Low: three stair rows, posts and a recess under the arch; left/right and back: the arch's outer faces are flat brick. |
+| Interior (the stage's use) | 3 | 4 | Low/front: a straight flight to the trainer's cell before the pedestal, the arch and two hanging soul lanterns frame it. |
+| Detail | 2 | 4 | Low/back: every lamp hangs or stands on a post, a meteorite keystone over the pedestal, amethyst on amethyst; OLD has floor lanterns (3 baselined owner-rule problems). |
+
+Brief check: nothing missed (plot, pedestal on the chiseled meteorid, trainer's stand and flight, front open to the
+crowd spot, all seven required ids, no furniture spots).
+
+Advisory, not holding the ship: (1) left/right: stair returns or pilasters on the arch legs' outer faces (x 0 and 6,
+y 2-4); (2) back: the two back lanterns stand on one-block wall stubs at the ground, raise them to two or hang them.
+Ship step: remove `mega_shrine` from `owner_rules_baseline.json` and confirm check.py counts the post lanterns as on
+posts; check the filmed `mega_shrine` scene's camera clears the keystone.

@@ -73,6 +73,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
            "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 49.9, the Ranch: js/ranch (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
+           # ranch and ranch_2)
+           "ranch", "ranch_2",
            # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
            # build.sh the live weavers_cottage and weavers_cottage_2)
            "weavers_cottage", "weavers_cottage_2",
@@ -166,8 +169,9 @@ if __name__ == "__main__":
     inn_2().save(MAIN_STRUCTURES, "inn_2")
     # ROADMAP 51.4: the Schoolhouse and the Library come from the rebuild kit (REBUILT); their old drawings are kept in
     # blueprint_history/
-    ranch().save(MAIN_STRUCTURES, "ranch")
-    ranch_2().save(MAIN_STRUCTURES, "ranch_2")
+    for name, draw in (("ranch", ranch), ("ranch_2", ranch_2)):
+        if name not in REBUILT:  # 49.9: the Ranch comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
     apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
     flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")

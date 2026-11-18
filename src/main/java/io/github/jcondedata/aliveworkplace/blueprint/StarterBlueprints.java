@@ -250,10 +250,14 @@ public final class StarterBlueprints {
 	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 18, 22));
 	/** Library III with an archive of shelves and ledgers dug under it (26.15). */
 	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 18, 22), 4);
-	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
-	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
-	/** The paddock doubled, a stable wing and a brick silo. */
-	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 13, 13));
+	/**
+	 * The Ranch (the Rancher's, a smoker; rebuilt from scratch, ROADMAP 49.9, {@code tools/blueprints/js/ranch}): a monitor
+	 * horse barn, a tall center over the aisle and hay loft between two lean-to stall sheds, a cupola on the ridge, behind a
+	 * ranch gate and a fenced yard with a trough.
+	 */
+	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 16, 13));
+	/** A feed and bunk wing on the east, and a fenced paddock behind with a man-gap, a double gate and a run-in shelter. */
+	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(21, 16, 21));
 	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
 	/** The meadow runs on with four more hives. */

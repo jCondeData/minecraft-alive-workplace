@@ -1560,6 +1560,15 @@ SCENES = [
            ("02_outside_back", "From the back: the lean-to fuel shed stacked with logs against the kiln, the back gable"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.9: the Ranch rebuilt from scratch (a monitor horse barn: a tall center over the aisle and the hay loft
+    # between two lean-to stall sheds, a cupola, a hay hood with a hoist, the ranch gate and yard in front), its first
+    # level built as a server with the furniture mods builds it, from four sides and at eye level in the aisle and loft
+    S("rebuild_ranch", "Build families", "The Ranch, rebuilt from scratch, furnished: from four sides and every room",
+      "the Ranch's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the stable aisle with the Rancher's smoker and tack chests, the hay loft up the ladder) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ranch from the front: the ranch gate with its banner over the way in, the yard and its trough, the big barn doors under the hay hood and hoist"),
+           ("02_outside_back", "From the back: the stone flue up the back gable, the two lean-to stall sheds either side of the tall centre"),
+           ("10_room_1", "The stable aisle at eye level: the stall gates either side, the smoker and the tack chests at its end"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 49.8: the Weaver's Cottage rebuilt from scratch (a two-story stone range with the long weaver's window, a
     # wool loft, a sheep fold on its east gable with a hoist over it), its first level built as a server with the
     # furniture mods builds it, from four sides and at eye level in the workroom and the loft

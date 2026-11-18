@@ -29,6 +29,12 @@ asks for the steps, `latest.log` and any crash report).
   under the street windows and a sitting room. Level II adds the journeyman's room at the back with the third bed, and
   a yard for drying pots. Level III digs a clay cellar under the workroom, down a ladder through a hatch. Houses already
   standing keep their look until you press Refresh on the Village Hall's Repairs page.
+- **The Ranch is rebuilt from scratch** (49.9): a horse barn with a tall center over the stable aisle and the hay loft,
+  two low stall sheds on its sides, a cupola on the ridge and a hay hood with a hoist over the big doors. In front, a
+  ranch gate with the ranch's banner leads into a yard with a trough, with no fence gate in the way, so the Rancher walks
+  straight down the aisle to his smoker and tack chests. Level II adds a feed and bunk wing and a big paddock behind,
+  with a gap a villager can walk through and a horse can't. Ranches already standing keep their look until you press
+  Refresh on the hall's Repairs page.
 - **The Weaver's Cottage is rebuilt from scratch** (49.8): a hill weaver's stone house with the loom behind a long
   mullioned window and a second band of lights over it for the wool loft, up a stair inside. The sheep fold leans on its
   gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold

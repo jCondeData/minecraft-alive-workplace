@@ -10,7 +10,7 @@ import { SIZE, PALETTE, MASSES, JOB, OPENINGS, FURNITURE, OUTSIDE } from './plan
 import {
   Canvas, mix, plinth, floor, wallPanel, window, door, doorway, gableRoof, gableWall, bargeTrim, chimney, hood,
   stringCourse, quoins, quoinsLS, plinthCourse, faceCells, corbelRing, pyramidRoof, ladderShaft, lampPost, mapWall,
-  furnitureParts, pigeonholes, tieBeams, pillarBox, spireTip,
+  furnitureParts, pigeonholes, hallBeams, pillarBox, spireTip,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -62,7 +62,7 @@ export function draw() {
   const main = gableRoof(c, H.roof, P.roof, (x, y, z) => !inTower(x, z))
   for (const x of [W.x0, W.x1])
     gableWall(c, 'x', x, H.roof.across, H.wallTop + 1, main.under, u => (u > W.z0 && u < W.z1 ? P.brick : null))
-  tieBeams(c, H.tieBeams.xs, H.tieBeams.z0, H.tieBeams.z1, H.tieBeams.y, P.beam)
+  hallBeams(c, H.tieBeams.xs, H.tieBeams.z0, H.tieBeams.z1, H.tieBeams.y, P.beam)
 
   // --- Pass 2: openings -----------------------------------------------------------------------------------------
   const fd = OPENINGS.frontDoor

@@ -1,0 +1,10 @@
+{
+  "name": "graveyard",
+  "private": true,
+  "type": "module",
+  "description": "The Graveyard (graveyard, graveyard_2), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/graveyard.md, REBUILD.md): the Lantern Yard. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py graveyard graveyard --candidate --nbt out/graveyard.nbt && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py graveyard graveyard_2 --candidate --nbt out/graveyard-2.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

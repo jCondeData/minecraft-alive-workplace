@@ -9,9 +9,9 @@ export function pigeonholes(c, cells, y0, y1, facing, block) {
   for (const [x, z] of cells) for (let y = y0; y <= y1; y++) { c.free([x, y, z]); c.set(x, y, z, block, props) }
 }
 
-/** tieBeams: exposed beams (`log`) across a hall at y, one along z (z0..z1) at each x of `xs`, their ends in the
+/** hallBeams: exposed beams (`log`) across a hall at y, one along z (z0..z1) at each x of `xs`, their ends in the
  *  walls or roof: the lamps hang from them. */
-export function tieBeams(c, xs, z0, z1, y, log) {
+export function hallBeams(c, xs, z0, z1, y, log) {
   for (const x of xs) for (let z = z0; z <= z1; z++) c.set(x, y, z, log, { axis: 'z' })
 }
 

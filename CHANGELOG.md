@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
+  every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
+  one great pyramid of golden thatch, a forester's lodge of mossy fieldstone and spruce logs gable-on to the road), with
+  the same rooms and furniture. Plains and snowy villages keep the rubble house; the Blueprint Table lists every look
+  (49.10b).
+- **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
+  of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound
+  log cabin with a mudroom, a spruce cabin under steep gables), with the same rooms and furniture. Plains keep the saltbox;
+  the Blueprint Table lists every look (49.10a).
 - **The Daub House**, a new Level I home (the owner's pick of 36.23's two): mud-brick daub in a dark oak frame under a
   steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the

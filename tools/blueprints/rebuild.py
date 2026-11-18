@@ -12,7 +12,8 @@ and the furniture spots.
     python3 tools/blueprints/rebuild.py <family> <id>                 # the live structure/<id>.nbt, once the critic says SHIP
 
 --nbt <path> picks the recipe's output when out/ holds more than one .nbt (default: the newest). --basement <n> and
---cellar x0,z0,x1,z1: a drawing with a cellar (its .nbt holds n layers under the ground at the bottom).
+--cellar x0,z0,x1,z1: a drawing with a cellar (its .nbt holds n layers under the ground at the bottom). --look
+<culture>: a biome look, shipped as structure/looks/<culture>/<id>.nbt (49.10a; BlueprintLooks).
 """
 import argparse
 import glob
@@ -62,6 +63,7 @@ def main(argv=None):
     a.add_argument("--nbt")
     a.add_argument("--basement", type=int, default=0, help="layers of cellar at the bottom of the recipe's .nbt")
     a.add_argument("--cellar", action="append", default=[], help="x0,z0,x1,z1: a cellar's inside, dug out")
+    a.add_argument("--look", help="a biome look (49.10a): saved live as looks/<look>/<id>, with its furniture beside it")
     args = a.parse_args(argv)
     recipe = os.path.join(HERE, "js", args.family)
     nbt = args.nbt or max(glob.glob(os.path.join(recipe, "out", "*.nbt")), key=os.path.getmtime, default=None)
@@ -70,7 +72,8 @@ def main(argv=None):
     cellars = [tuple(int(v) for v in c.split(",")) for c in args.cellar]
     b = load_recipe(nbt, os.path.join(recipe, "furniture.json"), args.basement, cellars)
     folder = os.path.join(CANDIDATES, args.family) if args.candidate else MAIN_STRUCTURES
-    b.save(folder, args.id)
+    name = f"looks/{args.look}/{args.id}" if args.look and not args.candidate else args.id
+    b.save(folder, name)
     if args.candidate:  # outside structure/, so save() wrote no spots file: keep them beside the candidate
         with open(os.path.join(folder, args.id + ".furniture.json"), "w") as f:
             json.dump({"spots": getattr(b, "spots", []) + furniture.detect(b)}, f, indent=1, default=list)  # with the beds, tables and chairs found in the drawing

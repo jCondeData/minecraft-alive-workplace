@@ -4,7 +4,7 @@ Milestone 49, item 49.3: every village's first home, rebuilt from scratch with t
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/starter_cottage.md`), two blind designs (it is
 a flagship), and critics who scored old and new side by side; both designs said SHIP in round 2
 (`tools/blueprints/briefs/starter_cottage_critic.md`) and the owner picked Version B, the saltbox and its cross-wing.
-Roadmap items: 26.15, 37.4, 49.3
+Roadmap items: 26.15, 37.4, 49.3, 49.10a
 
 ## 1. What a player sees
 
@@ -32,6 +32,19 @@ Roadmap items: 26.15, 37.4, 49.3
 - Beds: 1, 3, 3 and 3. Jobs at Level I: exactly a Fisherman (the barrel) and a Carpenter (the crafting table). Every
   piece is a furniture spot, so a builder with the furniture mods builds the mods' pieces in their places (37.2); with
   the building mods its modded copy dresses the walls, floors and chests (37.12).
+- **In every village culture** (49.10a): a village's Starter Cottage is built in its village's climate, every level.
+  Plains villages build the saltbox above; the others build their own look of the same house (the same rooms, beds, job
+  blocks, chests and furniture places, so it works the same):
+  - **Desert:** a mud-brick block under a flat roof behind a parapet, beam ends out of the walls, the door in a shaded
+    arcaded loggia; II stacks a two-story wing with a roof flue, III a low kitchen block whose roof is a terrace.
+  - **Savanna:** the veranda house under one golden thatched hip with deep eaves; the wing a mud tower with a flat roof
+    terrace and acacia beam ends.
+  - **Snowy:** a log cabin on a stone course under a steep slate roof that sheds snow, a closed mudroom before the door,
+    a heavy stone chimney; II a steep cross-wing, III a stone lean-to kitchen.
+  - **Taiga:** a spruce cabin on a raised stone course, two steep staggered gables to the road, firewood stacked under
+    the eaves.
+  The Blueprint Table lists each look beside the cottage; a look is locked and unlocked with its level. Where a
+  culture's look doesn't fit the plot, the Steward tries the other looks, then the cottage as drawn.
 - A cottage standing in an older drawing keeps it until its owner presses **Refresh** on the hall's Repairs page
   (36.21). With this redraw a refresh is close to a whole rebuild, and what a refresh never moves stays where the old
   drawing had it: chests, barrels, furnaces and smokers, and a bed someone sleeps in.
@@ -50,7 +63,14 @@ Roadmap items: 26.15, 37.4, 49.3
   slab beside a roof stair reads as a table with a chair facing away (`QaChairFacingGameTests`).
 - `StarterBlueprints.STARTER_COTTAGE` .. `STARTER_COTTAGE_4` carry the new sizes, and so do the two loot tables that carry
   Level I's (`settlers_wagon`, `village_builders_workshop`). Modded copies: `modded_library.py starter_cottage
-  starter_cottage_2 starter_cottage_3 starter_cottage_4`. Village looks: the styles (`BlueprintStyles`) are applied to the
+  starter_cottage_2 starter_cottage_3 starter_cottage_4`.
+- The culture looks (49.10a) are drawn in `tools/blueprints/js/starter_cottage_<culture>/` from the brief and B's plan
+  (its furniture spots imported cell for cell), with the climate parts `parts/climate.mjs` and `parts/climate_roofs.mjs`;
+  `SHIP=1 build.sh` saves them as `structure/looks/<culture>/starter_cottage[_n]` (`rebuild.py --look`). A fresh critic
+  sent all four back once and passed them in round 2 (`tools/blueprints/briefs/starter_cottage_looks_critic.md`).
+  `BlueprintLooks` builds a family whose looks are all cultures by `VillageWaystones.culture` (plains as drawn, the other
+  looks as fallbacks), not by the hall hash the Pokemon Center's looks use; `BlueprintUnlocks` counts a look as its base
+  build. Scene: `rebuild_starter_cottage_looks`. Village looks: the styles (`BlueprintStyles`) are applied to the
   drawing at play time, as before; nothing is drawn per style.
 
 ## 3. Switches

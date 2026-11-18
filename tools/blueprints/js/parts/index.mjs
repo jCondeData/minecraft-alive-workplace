@@ -21,6 +21,7 @@
 //   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 //   tents     discEdge, coneTent, waymark                     (a stepped hide tipi with its poles; a cairn with a cap)
+//   climate_desert windcatcher, screenOriel, archBay                 (desert stone houses)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -34,6 +35,7 @@ export * from './railings.mjs'
 export * from './furniture.mjs'
 export * from './water.mjs'
 export * from './cellars.mjs'
+export * from './climate.mjs' // flatDeck, parapet, vigas, logCourse, mudroom (biome looks: desert and snowy homes)
 export * from './bridges.mjs'
 export * from './garden.mjs'
 export * from './seats.mjs' // benchRun, raisedBed (outdoor seats and the beds behind them)
@@ -99,4 +101,7 @@ export * from './glass_cone.mjs' // coneStage, glassCone, bullseye, kilnSiege, e
 export * from './jw_vault.mjs' // jwBarrelVault, jwButtress, jwButton, jwVitrine (the Jeweler's Workshop, 50.7: a stone barrel vault from its section, stepped buttresses, a stone button, a glass case out in the street)
 export * from './crafters_sawtooth.mjs' // sawHeights, sawtoothRoof, clerestory, sawTrim, twinFlue, proudPosts, wallShelf (the Crafter's Workshop, 50.7: a north-light saw-tooth roof, its glazed faces, a twin-flue stack, a wall shelf)
 export * from './workshop_press.mjs' // pressOverDepot, spoutTank, weatheredSkirt (the Workshop, 50.7: Create's press over its depot, a head tank with its spout box, a weathered plinth skirt)
+export * from './climate_desert.mjs' // windcatcher, screenOriel, archBay (desert stone houses: a slotted windcatcher tower, a lattice oriel, a round-headed bay)
+export * from './climate_roofs.mjs' // hipRoof, flatRoof (hot climates: a low hipped roof with deep eaves; a flat mud roof with parapet and toron)
 export * from './market_cross.mjs' // edgeRing8, vertexCells, mercatDrum, crossShaft (market crosses: an outline joined round an octagon, its vertex cells, an octagonal mercat drum with pilasters and a parapet, a cross shaft with a lamp-hung capital and a flag; the Market Cross, 49)
+export * from './cold_homes.mjs' // snowLoad, snowSkirt, stormPorch, frontDormer, pentPorch, beamEnds (cold homes, 49.10b: a stepped slate roof with snow on every tread, a drift skirt, a closed storm porch, a steep front dormer, a lodge's front pent on posts, log ends)

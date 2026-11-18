@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.devclient;
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
@@ -48,7 +49,9 @@ final class RebuildScene {
 		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "palisade", "butchers_shop", "winery", "farmstead",
 		"library", "schoolhouse", "school", "watermill", "manor", "weavers_cottage", "post_office", "graveyard", "ferry_house", "clock_tower",
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "chapel", "market_cross",
-		"leaders_hall", "trade_hall");
+		"leaders_hall", "trade_hall", "starter_cottage_looks");
+	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */
+	static final String LOOKS_SUFFIX = "_looks";
 	private static final BlockPos AT = new BlockPos(0, -60, 0);
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
@@ -118,6 +121,10 @@ final class RebuildScene {
 	}
 
 	private void place(ServerLevel level) {
+		if (family.endsWith(LOOKS_SUFFIX)) {
+			placeLooks(level, AliveWorkplace.id(family.substring(0, family.length() - LOOKS_SUFFIX.length())));
+			return;
+		}
 		Blueprint base = BlueprintLibrary.get(level, blueprint).orElse(null);
 		if (base == null) {
 			wrong.add("no blueprint " + blueprint + " for the family " + family);
@@ -166,6 +173,74 @@ final class RebuildScene {
 			rooms.size(), filmed, perMod);
 		summary = family + " (" + blueprint.getPath() + "): " + spots.size() + " furniture spots placed in " + rooms.size()
 			+ " rooms, each filmed at eye level; pieces per mod " + perMod;
+	}
+
+	/**
+	 * SCENE=rebuild_&lt;family&gt;_looks (49.10a): the family's first level as drawn (plains) and in each village culture's
+	 * look ({@link BlueprintLooks#CULTURES}), furnished, side by side in that order; filmed as a row from the front, then
+	 * each from its front corner. Passes when every look is there and every furniture spot holds its piece.
+	 */
+	private void placeLooks(ServerLevel level, ResourceLocation family) {
+		List<ResourceLocation> ids = new ArrayList<>();
+		ids.add(family);
+		BlueprintLooks.CULTURES.forEach(c -> ids.add(BlueprintLooks.look(family, c)));
+		List<Blueprint> drawn = new ArrayList<>();
+		int width = 0;
+		int depth = 0;
+		int height = 0;
+		for (ResourceLocation id : ids) {
+			Blueprint b = BlueprintLibrary.get(level, id).orElse(null);
+			if (b == null) {
+				wrong.add("no blueprint " + id);
+				return;
+			}
+			drawn.add(b);
+			width = Math.max(width, b.size().getX());
+			depth = Math.max(depth, b.size().getZ());
+			height = Math.max(height, b.size().getY());
+		}
+		int step = width + 6;
+		int rowX = step * ids.size();
+		for (BlockPos p : BlockPos.betweenClosed(AT.offset(-16, -1, -16), AT.offset(rowX + 16, height + 4, depth + 16))) {
+			BlockState want = p.getY() == AT.getY() - 1 ? Blocks.GRASS_BLOCK.defaultBlockState() : Blocks.AIR.defaultBlockState();
+			if (level.getBlockState(p) != want) {
+				level.setBlock(p, want, 2 | 16);
+			}
+		}
+		int pieces = 0;
+		for (int i = 0; i < ids.size(); i++) {
+			ResourceLocation id = ids.get(i);
+			BlockPos at = AT.offset(i * step, 0, 0);
+			FurnitureChoice choice = FurnitureChoice.forNewBuild(id);
+			for (Blueprint.Entry e : choice.apply(drawn.get(i), id).blocks()) {
+				level.setBlock(at.offset(e.pos()), e.state(), 2 | 16);
+			}
+			for (FurnitureChoice.Placed piece : choice.spots().values()) {
+				pieces++;
+				for (Map.Entry<BlockPos, BlockState> cell : piece.cells().entrySet()) {
+					BlockState there = level.getBlockState(at.offset(piece.pos()).offset(cell.getKey()));
+					if (!there.is(cell.getValue().getBlock()) && !cell.getValue().isAir()) {
+						wrong.add(id.getPath() + ": " + piece.kind() + " at " + piece.pos().offset(cell.getKey()).toShortString() + " is "
+							+ BuiltInRegistries.BLOCK.getKey(there.getBlock()));
+					}
+				}
+			}
+		}
+		double mid = height / 2.0;
+		double cz = depth / 2.0;
+		double rowMid = (step * (ids.size() - 1) + width) / 2.0;
+		views.add(new View("01_row_front", new Vec3(rowMid, height * 0.8 + 6, -rowX * 0.55), new Vec3(rowMid, mid, cz), 70));
+		views.add(new View("02_row_back", new Vec3(rowMid, height * 0.8 + 6, depth + rowX * 0.55), new Vec3(rowMid, mid, cz), 70));
+		double back = Math.max(width, depth) * 0.9 + 6;
+		for (int i = 0; i < ids.size(); i++) {
+			double cx = i * step + width / 2.0;
+			String name = i == 0 ? "plains" : BlueprintLooks.CULTURES.get(i - 1);
+			views.add(new View(String.format("%02d_%s", 10 + i, name), new Vec3(cx - back * 0.45, height * 0.45 + 2, cz - back * 0.85),
+				new Vec3(cx, mid, cz), 70));
+		}
+		AliveWorkplace.LOG.info("REBUILD_SCENE {}: {} looks, {} furniture pieces", this.family, ids.size(), pieces);
+		summary = this.family + ": " + family.getPath() + " as drawn and in " + String.join(", ", BlueprintLooks.CULTURES) + ", "
+			+ pieces + " furniture pieces placed";
 	}
 
 	/** Four outside views, a quarter turn apart, far enough back to take in the whole blueprint. */

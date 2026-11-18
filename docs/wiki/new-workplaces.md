@@ -24,8 +24,10 @@ job block: "1 job here has no workplace of its trade".
   bay facing a walled yard with a jib crane, the Mason's chest and desk in the lodge behind (rebuilt from scratch in
   50.2). Its II adds a second stonecutter and a tall tracing house on the east end, where the master draws templates
   upstairs.
-- **Fletcher's Lodge**: a log cabin with a log pile, a straw target and a fletching table. Its II has a second
-  fletching table.
+- **Fletcher's Lodge** (rebuilt from scratch in 50.6): a log pen under a long roof with a stone chimney, a porch and an
+  entry gable, a fletching table and a chest inside; 9 x 11 x 10. Its II (16 wide) is a dogtrot: an open breezeway and
+  a second, front-gabled pen with a second fletching table. Lodges already standing keep their old drawing until
+  refreshed.
 - **Map Room**: a narrow tower house with a cartography table and a lookout at the top (no upgrade).
 - **Farmstead**: a farmhouse with one bed and a composter beside a 9x5 field round a water channel, with a scarecrow.
   Farmstead II adds a barn and a second field.

@@ -90,8 +90,11 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 52.5, the story and legend sites: js/{founder_statue,shift_bell,prisoner_cage,castaway_camp,traveller_camp}
            # (MC_BUILDER=...), then rebuild.py <family> legend/<family> (story/shift_bell) --nbt <out .nbt>; the
            # Traveler's Camp's map frame afterwards: python3 tools/blueprints/js/traveller_camp/frames.py <live .nbt>
-           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp"}
-
+           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp",
+           # 50.6, the Fletcher's Lodge, the Tailor's Shop and the Print Shop (the buildables only; the village tailor's and
+           # print shops stay village.py's): js/<family> (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh
+           # the live ones)
+           "fletchers_lodge", "fletchers_lodge_2", "tailors_shop", "tailors_shop_2", "print_shop", "print_shop_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -245,17 +248,19 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 50.3: the Tinker's Workshop and the Smithy come from the rebuild kit (REBUILT)
     for name, draw in (("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 50.6: the Fletcher's Lodge comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
         if name not in REBUILT:  # 49.8: the Weaver's Cottage comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
-        if name not in REBUILT:  # ROADMAP 50.4: the Winery comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 50.4 and 50.6: the Winery and the Tailor's Shop come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
+        if name not in REBUILT:  # ROADMAP 50.6: the Print Shop comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
     quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     crafters_workshop().save(MAIN_STRUCTURES, "crafters_workshop")  # ROADMAP 37.14: the Crafter's workroom and store
     glassblowers_workshop().save(MAIN_STRUCTURES, "glassblowers_workshop")  # ROADMAP 46.6: the Glassblower's glasshouse

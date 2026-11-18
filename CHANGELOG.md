@@ -23,6 +23,14 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Fletcher's Lodge, the Tailor's Shop and the Print Shop are rebuilt from scratch** (50.6). The Fletcher's Lodge
+  is a log pen under a long roof with a stone chimney, a porch and an entry gable; its Level II makes it a dogtrot, an
+  open breezeway and a second, front-gabled pen with the second fletching table. The Tailor's Shop is a white shop with
+  a jettied gable over a glazed shopfront of colored cloth, the loom and sewing table inside; Level II raises a slender
+  drying tower at the back corner, its loft hung with dyed cloth, up a ladder through two floors. The Print Shop is
+  "the Lantern Press": a tall brick hall with a dark-oak shopfront and a glazed lantern on the ridge that drops a column
+  of daylight onto the press; Level II adds a reading room lined with bookshelves beside it. Builds already standing
+  keep the drawing they were built from until you refresh them; the village tailor's and print shops are unchanged.
 - **The Artisan's House is rebuilt from scratch** (49.8): a potter's house. Its gable faces the street, a white
   plaster floor juts out over a stone workroom, and beside it stands a brick bottle kiln that is the house's chimney.
   Downstairs are the potter's bench, a dining table for four and a kitchen corner. Upstairs are the couple's two beds

@@ -49,12 +49,10 @@ NEAR_OK = ("_door", "ladder", "_bed", "lantern", "fence_gate", "scaffolding", "j
 LOG_NOTCH = "a log-cabin corner: the crossing logs stick out on every other course"
 TENT = "inside a tent: a low space by the bed or the hay"
 FOUNTAIN = "the garden fountain's top under the house's back eave, not a roof"
-EMBRASURE = "an embrasure between the hoarding's posts"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
     ("manor_2", (9, 4, 17)): FOUNTAIN, ("manor_3", (9, 4, 17)): FOUNTAIN, ("manor_4", (9, 4, 17)): FOUNTAIN,
-    ("stone_wall_2", (1, 5, 2)): EMBRASURE, ("stone_wall_2", (5, 5, 2)): EMBRASURE,
     ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",

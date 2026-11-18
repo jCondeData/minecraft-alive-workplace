@@ -58,3 +58,5 @@ export * from './leaders_hall_arena.mjs' // piers, dais, standard (challenge hal
 export * from './guildhall_arcade.mjs' // arcadeRun, jettyCorbels (guildhalls: an open arcade under a jettied hall)
 export * from './map_room_tower.mjs' // corbelRing, compassRose, lookoutRail, ladderShaft, batter (towers: a jettied lookout on corbels, a floor compass rose, a ladder shaft, a splayed foot)
 export * from './trade_hall_ball.mjs' // roundShaft, ballCap, steppedCap (the Ball Tower trade hall: a chamfered tower and the ball on it)
+export * from './palisade_kit.mjs' // extrude, stakeBed, fenceGates, gateGable, stockade, watchHat, setBackPanels, ringFacing (wall kits: an overlapping segment's section, stake ditches, gateways, lookouts)
+export * from './ramparts.mjs' // crenels, wallFlight, newel, hoarding, arrowLoop, corbelLine, hipCap, crossGableCrown, batteredFoot (the stone wall kit, 52.3: merlons, steps up a wall's face, timber hoardings with murder holes, loops, a pyramid cap)

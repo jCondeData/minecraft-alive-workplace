@@ -62,6 +62,15 @@ If a piece's builder dies (in a raid, say), its site stays open with everything 
 next round hands it to the next free builder, who finishes it where it stands; new pieces wait until it has someone
 (B488: the half-built tower was forgotten and a second one went up on its roof).
 
+**What the pieces look like (52.3, rebuilt).** The **Stone Wall** is a cobblestone footing and stone-brick curtain
+with a flight of steps up its village side to a pale andesite walk behind square merlons (7 x 6 x 3); **Stone Wall II**
+roofs the walk with dark oak hoardings, a gallery with murder holes out over the foot (7 x 9 x 4). The **Wall Tower**
+stands on a sloping foot with andesite quoins, arrow slits and a ring of overhanging stone under a crenelated top of
+16 battle stations, a furnished guardroom and store inside (5 x 10 x 5); **Wall Tower II** roofs the top on stone piers
+with a lantern on every side (5 x 12 x 5). The **Palisade Gate** is a small timber gatehouse: log jambs on stone feet,
+a pale lintel over three spruce gates (the way through 2 high), a steep gable roof with lanterns under it (7 x 9 x 2).
+Pieces already standing keep their old look until refreshed.
+
 ## Switches
 
 | Key | Default | What it does |

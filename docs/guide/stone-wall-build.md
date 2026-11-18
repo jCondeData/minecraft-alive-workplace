@@ -5,12 +5,14 @@ type: Build
 Size: 7 long, 3 deep, 6 high (II: 4 deep, 9 high)
 Tiers: I, II (timber hoardings)
 Where to get it: Blueprint Table
-Main materials: stone bricks, cobblestone, stone brick slabs, ladders
+Main materials: cobblestone, stone bricks, polished andesite, stone brick stairs (II: dark oak stairs and slabs, spruce)
 categories: Builds, Defense
 related: wall-tower-build.md, gatehouse-build.md, defence.md
 ```
 
-A seven-block stretch of stone wall with battlements on top and a ladder up the inside. Place one after another to ring your village.
+A seven-block stretch of stone wall on a cobblestone footing, with a flight of stone steps climbing its village side to a
+pale andesite walk behind square merlons, and a lantern on a post at the foot of the steps. Place one after another to
+ring your village.
 
 ## Getting the blueprint
 
@@ -24,7 +26,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Stone Wall, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Stone Wall II** puts timber hoardings over the battlements: a roofed walkway with murder holes.
+- **Stone Wall II** puts timber hoardings over the battlements: a dark oak gable roof over the walk, with eaves over
+  both faces, a timber gallery out over the wall's foot with murder holes, and lanterns under the ridge.
 
 ## What it does for the village
 

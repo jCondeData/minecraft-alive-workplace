@@ -23,6 +23,13 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
+  village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
+  Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping
+  foot, with arrow slits, a ring of overhanging stone and a crenelated top where 16 archers stand (7 before), and a
+  guardroom with a table and a store with a chest inside; Wall Tower II roofs the top on stone piers. The Palisade Gate
+  is now a small timber gatehouse, a gable roof over three spruce gates (7 x 9 x 2; the way through is 2 high). Pieces
+  already standing keep their old look until refreshed.
 - **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
   jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
   crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.

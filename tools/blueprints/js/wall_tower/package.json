@@ -1,0 +1,11 @@
+{
+  "name": "wall_tower",
+  "private": true,
+  "type": "module",
+  "description": "The Wall Tower (wall_tower, wall_tower_2), rebuilt from scratch for ROADMAP 52.3 (tools/blueprints/briefs/wall_tower.md, REBUILD.md), one kit with ../stone_wall. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates; 'check' asserts the brief's pinned cells on them.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py wall_tower wall_tower --candidate --nbt out/wall-tower.nbt && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py wall_tower wall_tower_2 --candidate --nbt out/wall-tower-2.nbt && python3 selfcheck.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "check": "python3 selfcheck.py"
+  }
+}

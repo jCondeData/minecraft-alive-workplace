@@ -1,0 +1,10 @@
+{
+  "name": "palisade",
+  "private": true,
+  "type": "module",
+  "description": "The Palisade (palisade, palisade_2), rebuilt from scratch for ROADMAP 52.3 (tools/blueprints/briefs/palisade.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates; 'check' asserts the briefs' pins on the kit's three candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py palisade palisade --candidate --nbt out/palisade.nbt && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py palisade palisade_2 --candidate --nbt out/palisade-2.nbt",
+    "check": "python3 selfcheck.py"
+  }
+}

@@ -137,6 +137,8 @@ export function drawLevel(level) {
     for (const x of FR.back.posts) post(x, FR.back.z, 1, under[x] - 1)
     for (let x = H.x0 + 1; x < H.x1; x++) c.set(x, H.beamY, FR.back.z, ...beam('x'))
   }
+  // the field side's frame: posts between the windows, in the wall plane under the plate
+  for (const z of FR.east.posts) post(FR.east.x, z, 1, under[FR.east.x] - 2)
   // the gallery's frame: a beam under each eave on posts set off the walking line
   for (let z = 0; z <= H.z1 + 1; z++) c.set(G.x, under[G.x] - 1, z, ...beam('z'))
   if (two) for (let z = B.z0; z <= B.z1; z++) c.set(G.x, ub[G.x] - 1, z, ...beam('z'))

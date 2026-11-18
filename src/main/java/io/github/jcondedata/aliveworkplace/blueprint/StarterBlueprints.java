@@ -250,10 +250,14 @@ public final class StarterBlueprints {
 	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 18, 22));
 	/** Library III with an archive of shelves and ledgers dug under it (26.15). */
 	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 18, 22), 4);
-	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
-	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
-	/** The paddock doubled, a stable wing and a brick silo. */
-	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(20, 13, 13));
+	/**
+	 * The Ranch (the Rancher's, a smoker; rebuilt from scratch, ROADMAP 49.9, {@code tools/blueprints/js/ranch}): a monitor
+	 * horse barn, a tall center over the aisle and hay loft between two lean-to stall sheds, a cupola on the ridge, behind a
+	 * ranch gate and a fenced yard with a trough.
+	 */
+	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 16, 13));
+	/** A feed and bunk wing on the east, and a fenced paddock behind with a man-gap, a double gate and a run-in shelter. */
+	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(21, 16, 21));
 	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
 	/** The meadow runs on with four more hives. */
@@ -389,13 +393,15 @@ public final class StarterBlueprints {
 	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
 	 * Steward rule builds for its trade. A farmhouse with one bed beside a 9 x 5 field of farmland round a water channel,
-	 * a scarecrow, and the composter (Farmer) with a chest for the harvest.
+	 * a scarecrow, and the composter (Farmer) with a chest for the harvest. The Farmstead was rebuilt from scratch (ROADMAP
+	 * 49.9, {@code tools/blueprints/js/farmstead}): a limewashed house under one catslide roof that sweeps down over a
+	 * gallery along the field, where the composter and the harvest chest stand.
 	 */
-	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 12, 13));
-	/** A barn behind the house and a second field behind the first, with a second composter. */
-	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 12, 22));
-	/** A root cellar dug under the farmhouse (36.7). */
-	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 12, 22), 4);
+	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 13, 12));
+	/** The same roof carried on over a cross passage into a red barn (the second Farmer's chamber, stalls, a hay loft) and a second field. */
+	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 15, 22));
+	/** A root cellar dug under the farmhouse (36.7), down a ladder under a hatch inside the door. */
+	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 15, 22), 4);
 	/**
 	 * A shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman). Its plot must be on a shore:
 	 * water within 4 blocks of its front, no more than 3 deep under the jetty (city/Plots).

@@ -4,7 +4,7 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 52.4, 41.1, 41.2, 41.3, B996, B1244, B1310, B1188
+Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310, B1188
 
 ## What a player sees
 

@@ -430,10 +430,11 @@ public final class StarterBlueprints {
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
-	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
-	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
-	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
-	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 11, 11));
+	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done (52.4,
+	 *  rebuilt from scratch, tools/blueprints/js/nether_gate). */
+	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(13, 16, 9));
+	/** A gatehouse roof over the portal, a storehouse and a nether wart garden (52.4, rebuilt). */
+	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 16, 14));
 
 	/** An open timber shed with compost bays and the Compost Bin, a fenced yard in front. */
 	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(11, 8, 10));
@@ -510,8 +511,8 @@ public final class StarterBlueprints {
 		HAY_CART, NOTICE_BOARD, LANTERN_PERGOLA, FIRE_PIT, SUNDIAL, TOPIARY_GARDEN, MARKET_CORNER, FOOTBRIDGE);
 
 	/**
-	 * The Mega Shrine (ROADMAP 38.7; tools/blueprints/decor.py, mega_shrine): Mega Showdown's pedestal on a dais of Mega
-	 * meteorite bricks. A decoration (beauty 2) where the village's festival show is held (trainer/MegaShrines).
+	 * The Mega Shrine (ROADMAP 38.7; rebuilt from scratch in 52.4, tools/blueprints/js/mega_shrine): Mega Showdown's
+	 * pedestal on a dais of Mega meteorite bricks under a keystone arch. A decoration (beauty 2) where the village's festival show is held (trainer/MegaShrines).
 	 */
 	public static final Entry MEGA_SHRINE = new Entry(AliveWorkplace.id("mega_shrine"), new Vec3i(7, 6, 7));
 	/** Built of Mega Showdown's blocks: in the Blueprint Table (and the creative tab) only while they exist (trainer/MegaShrines#blocksExist). */

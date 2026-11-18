@@ -94,7 +94,7 @@ public final class LegendSites {
 	public static Site site(String name) {
 		return switch (name) {
 			case "ruined_portal" -> new Site(name, tag(name), AliveWorkplace.id("legend/traveller_camp"), new BlockPos(4, 1, 5));
-			case "outpost" -> new Site(name, tag(name), AliveWorkplace.id("legend/prisoner_cage"), new BlockPos(2, 1, 2));
+			case "outpost" -> new Site(name, tag(name), AliveWorkplace.id("legend/prisoner_cage"), new BlockPos(2, 3, 3)); // 52.5: the cage on the cart
 			case "shipwreck" -> new Site(name, tag(name), AliveWorkplace.id("legend/castaway_camp"), new BlockPos(4, 1, 4));
 			default -> throw new IllegalArgumentException("unknown legend site " + name);
 		};

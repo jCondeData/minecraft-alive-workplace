@@ -86,6 +86,12 @@ ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not 
 ALLOW.update({(n, (2, 2, 6)): "the Guildhall's open market arcade under the closed hall, not a walled room"
               for n in ("guildhall", "guildhall_2", "guildhall_3")})
 
+# The Prisoner Cage (49 rebuild) is a cage wagon on purpose: its bed rides on four wheels at wheel-top height, open
+# underneath between them but for the axles; the air under the bed is under a cart, not a room ("prisoner_cage" is how
+# a rebuild candidate is named, "legend/prisoner_cage" the shipped one)
+ALLOW.update({(n, (2, 1, 2)): "the open underside of the cage wagon's bed between its wheels, not a room"
+              for n in ("prisoner_cage", "legend/prisoner_cage")})
+
 
 def load(path, props=False):
     """(size, cells): cells maps (x, y, z) to a block id, or to None for a structure void (left out of the file).

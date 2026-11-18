@@ -17,9 +17,11 @@ CAMP_GROUND = Mix((5, "coarse_dirt"), (3, "dirt_path"), (2, "dirt"), (1, "gravel
 CAGE_FLOOR = Mix((6, "cobblestone"), (3, "mossy_cobblestone"), (1, "gravel"), seed=9)
 BEACH = Mix((6, "sand"), (2, "gravel"), (1, "coarse_dirt"), seed=17)
 
-# Where each one's Legend stands (the Java side reads the same spots: LegendSites).
+# Where each one's Legend stands (the Java side reads the same spots: LegendSites). 52.5: the live camps come from the
+# rebuild kit (tools/blueprints/js/<family>/, generate.py's REBUILT); the drawings below are the old ones, kept for
+# reference. The prisoner now stands in the cage on its cart, (2, 3, 3).
 TRAVELLER_SPOT = (4, 1, 5)
-PRISONER_SPOT = (2, 1, 2)
+PRISONER_SPOT = (2, 3, 3)
 CASTAWAY_SPOT = (4, 1, 4)
 
 

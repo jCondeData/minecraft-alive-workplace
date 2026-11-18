@@ -77,7 +77,15 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
            # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
            # village pieces keep their own looks (village.py's staffed house)
-           "post_office", "graveyard", "graveyard_2"}
+           "post_office", "graveyard", "graveyard_2",
+           # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
+           # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
+           "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",
+           # 52.5, the story and legend sites: js/{founder_statue,shift_bell,prisoner_cage,castaway_camp,traveller_camp}
+           # (MC_BUILDER=...), then rebuild.py <family> legend/<family> (story/shift_bell) --nbt <out .nbt>; the
+           # Traveler's Camp's map frame afterwards: python3 tools/blueprints/js/traveller_camp/frames.py <live .nbt>
+           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp"}
+
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -194,8 +202,7 @@ if __name__ == "__main__":
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
-    mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
-    save_waystone_plazas()  # ROADMAP 41.1: proposed only with Waystones
+    # ROADMAP 38.7 mega_shrine and 41.1 waystone_plaza (all five looks) come from the rebuild kit since 52.4
     # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then
     # rebuild.py stone_house <id>); its old Python drawing in houses.py and basements.py is no longer saved
     # ROADMAP 49.5: the Townhouse (I-IV) comes from the rebuild kit too (tools/blueprints/js/townhouse/build.sh, then
@@ -208,7 +215,8 @@ if __name__ == "__main__":
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
         draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
-    shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
+    if "shift_bell" not in REBUILT:  # 52.5: the Shift Bell comes from the rebuild kit
+        shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
     caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
     raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
     for i, draw in enumerate(TRAIL, 1):
@@ -223,7 +231,8 @@ if __name__ == "__main__":
     royal_hall_2().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall_2")
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
-        draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
+        if name not in REBUILT:  # 52.5: all but the Hermit's Hut come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
                        ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):
@@ -255,8 +264,7 @@ if __name__ == "__main__":
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
         if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
-    nether_gate().save(MAIN_STRUCTURES, "nether_gate")
-    nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
+    # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     chapel().save(MAIN_STRUCTURES, "chapel")
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")

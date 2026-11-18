@@ -4,16 +4,16 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 29
+    "updatedBlocks": 33
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/out/fishers-hut-2.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/out/summary.json",
   "size": [
     13,
-    11,
+    12,
     19
   ],
-  "blockCount": 488,
-  "paletteCount": 58,
+  "blockCount": 648,
+  "paletteCount": 57,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/recipe.mjs"
 }

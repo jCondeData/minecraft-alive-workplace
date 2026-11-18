@@ -1,0 +1,11 @@
+{
+  "name": "library",
+  "private": true,
+  "type": "module",
+  "description": "Library (the Lamplit Nave, ROADMAP 49). MC_BUILDER = the minecraft-builder skill's folder. build.sh writes the four levels as candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/library.nbt"
+  }
+}

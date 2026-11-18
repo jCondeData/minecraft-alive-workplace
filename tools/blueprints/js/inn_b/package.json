@@ -1,0 +1,10 @@
+{
+  "name": "inn-b",
+  "private": true,
+  "type": "module",
+  "description": "The Inn, Version B (the Arcade Inn, ROADMAP 49): three levels. MC_BUILDER = the minecraft-builder skill folder. 'build' writes the candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -37,8 +37,8 @@
 //   Cross-wing Level II: x 7..11, z 1..10, two storeys (ground y 1..3 rubble, floor beam y 4, upper y 5..7 timber,
 //              plate y 8), its own gable roof (ridge along z, y 11) and a pentice over the front ground window.
 //   Kitchen    Level III: a stone lean-to x 12..16, z 4..9, roof rising from y 2 (x 17) to y 7 under the wing's eave,
-//              its own oak door on the front, a doorway knocked through the wing's east wall, a flue in its east wall (x 16).
-//   Cellar     Level IV: a stone room under the hall (walls x 1..7, z 2..10, floor 4 below ground), a ladder down
+//              its own oak door on the front (x 13), a doorway knocked through the wing's east wall, a flue in its east wall (x 16).
+//   Cellar     Level IV: a stone room under the hall (walls x 1..7, z 2..8, floor 4 below ground), a ladder down
 //              through a hatch in the hall floor, a lantern.
 
 export const SIZE = { 1: [9, 11, 12], 2: [13, 12, 12], 3: [18, 12, 12], 4: [18, 12, 12] }
@@ -47,7 +47,7 @@ export const BASEMENT = 4 // Level IV's cellar depth (StarterBlueprints.Entry ba
 // Palette (60/30/10): birch-plank infill (the walls' light 60) / spruce frame, floors and shingle roof (the 30) /
 // cobble rubble for the plinth, the chimney, the wing's ground storey and the kitchen (the 10, darkest low down).
 // Why: the village's own woods, nothing a first settler can't cut; pale panels between dark posts draw the bays, the
-// brown shingle roof sits over them without merging, the cobble roots it. Dark oak slabs trim the verges.
+// brown shingle roof sits over them without merging, the cobble roots it. Dark oak stairs, upside-down, trim the verges.
 export const PALETTE = {
   stone: [['cobblestone', 6], ['stone', 2], ['andesite', 1], ['mossy_cobblestone', 2]],
   frame: 'spruce_log',
@@ -58,7 +58,7 @@ export const PALETTE = {
   cellarFloor: 'cobblestone',
   wood: 'spruce', // trapdoors, fences, chairs, furniture
   door: 'oak', // the brief names oak doors (Level I's and the kitchen's own)
-  trim: 'dark_oak_slab',
+  trim: 'dark_oak_stairs', // upside-down under the verges (top slabs there read as a table with a chair facing away: QaChairFacing)
   glass: 'glass_pane',
 }
 
@@ -84,7 +84,9 @@ export const MASSES = {
     roof: { axis: 'z', across: [12, 17], ridge: 12, along: [3, 10], ridgeY: 7 },
     flue: { x: 16, z: 6, top: 5 },
   },
-  cellar: { x0: 1, z0: 2, x1: 7, z1: 10, depth: 4 },
+  // z 2..8, not to the back wall: inside the cellar every older Level IV dug (x 1..9, z 2..8), so a refresh from one
+  // finds the ground already dug (QaReleaseRefresh1028); the beam spans the room wall to wall
+  cellar: { x0: 1, z0: 2, x1: 7, z1: 8, depth: 4, beam: { y: -1, z: 6 } },
 }
 
 export const ROOMS = [
@@ -93,7 +95,7 @@ export const ROOMS = [
   { level: 2, name: 'Parlour', use: "the wing's ground floor: a second table, the stair up", box: [8, 1, 2, 10, 3, 9] },
   { level: 2, name: 'Chamber', use: "the wing's upper floor: two beds under the hero gable", box: [8, 5, 2, 10, 7, 9] },
   { level: 3, name: 'Kitchen', use: 'smoker, counters, shelf; its own door to the yard', box: [12, 1, 5, 15, 5, 8] },
-  { level: 4, name: 'Cellar', use: 'stores under the hall: chests, kelp, hay', box: [2, -3, 3, 6, -1, 9] },
+  { level: 4, name: 'Cellar', use: 'stores under the hall: chests, kelp, hay', box: [2, -3, 3, 6, -1, 7] },
 ]
 
 export const OPENINGS = {
@@ -105,7 +107,8 @@ export const OPENINGS = {
       { name: 'hall front east', cells: [[6, 2, 2], [6, 3, 2]], out: 'north', dress: 'shutters', sill: 'potted_poppy' },
       { name: 'hall east', cells: [[7, 2, 4], [7, 3, 4]], out: 'east', dress: null },
       { name: 'outshot east', cells: [[7, 2, 8], [7, 3, 8]], out: 'east', dress: null },
-      { name: 'bed nook west', cells: [[1, 2, 9], [1, 3, 9]], out: 'west', dress: 'shutters' },
+      // a sill and a pot, not shutters: the shutter by the back eave took the verge's last stair (the critic's "slab pair")
+      { name: 'bed nook west', cells: [[1, 2, 9], [1, 3, 9]], out: 'west', dress: null, sill: 'potted_azure_bluet' },
       { name: 'outshot back west', cells: [[2, 2, 10]], out: 'south', dress: 'sill', sill: 'potted_fern' },
       { name: 'outshot back east', cells: [[6, 2, 10]], out: 'south', dress: 'sill', sill: 'potted_red_tulip' },
       { name: 'west gable lights', cells: [[1, 5, 4], [1, 6, 4]], out: 'west', dress: null },
@@ -116,6 +119,9 @@ export const OPENINGS = {
     2: [
       { name: 'parlour front', cells: [[9, 2, 1], [9, 3, 1]], out: 'north', dress: 'shutters', sill: 'potted_oxeye_daisy' },
       { name: 'parlour east', cells: [[11, 2, 2], [11, 3, 2]], out: 'east', dress: null },
+      // the wing's stone east wall gets a second window (the critic: "II's bare stone east ground wall"); Level III's
+      // kitchen leans on this wall, so III closes it again with stone
+      { name: 'parlour east back', cells: [[11, 2, 7], [11, 3, 7]], out: 'east', dress: 'shutters' }, // no pot: II's upgrade fits one chest
       { name: 'chamber front', cells: [[9, 6, 1], [9, 7, 1]], out: 'north', dress: 'shutters' },
       { name: 'chamber gable', cells: [[9, 9, 1]], out: 'north', dress: null },
       { name: 'chamber back', cells: [[9, 6, 10], [9, 7, 10]], out: 'south', dress: 'shutters' },
@@ -131,7 +137,9 @@ export const OPENINGS = {
   },
   hallToWing: { at: [7, 1, 7], height: 2 }, // Level II: through the hall's east wall into the parlour
   wingToKitchen: { at: [11, 1, 5], height: 2 }, // Level III: knocked through the wing's east (outside) wall
-  kitchenDoor: { at: [14, 1, 4], facing: 'south', step: [14, 0, 3] },
+  // x 13, not 14: every older Level III (blueprint_history) keeps a barrel at (14, 1, 4), and a refresh never moves a
+  // container, so a door there could never go in (as the Stone House found, 49.4)
+  kitchenDoor: { at: [13, 1, 4], facing: 'south', step: [13, 0, 3] },
   wingStair: { flight: [[10, 1, 6], [10, 2, 7], [10, 3, 8], [10, 4, 9]], rises: 'south', well: [[10, 4, 6], [10, 4, 7], [10, 4, 8]] },
   cellarLadder: { x: 6, z: 7, facing: 'west' }, // against the cellar's east wall, under a hatch in the hall floor
 }
@@ -146,21 +154,28 @@ export const FURNITURE = {
     { room: 'Hall', kind: 'chair', part: 'chair', pos: [6, 1, 3], facing: 'south', wood: 'spruce' },
     { room: 'Hall', kind: 'table', part: 'table', pos: [6, 1, 4], facing: 'north', wood: 'spruce', colour: 'white' },
     { room: 'Hall', kind: 'chair', part: 'chair', pos: [6, 1, 5], facing: 'north', wood: 'spruce' },
-    { room: 'Hall', kind: 'blinds', part: 'blinds', pos: [6, 3, 4], facing: 'west', wood: 'spruce' },
     { room: 'Hall', kind: 'couch', part: 'couch', pos: [3, 1, 6], facing: 'west', length: 2, arms: true, wood: 'spruce' },
-    { room: 'Hall', kind: 'rug', part: 'rug', cellsAbs: [[2, 1, 5], [2, 1, 6]], colour: 'red' },
+    // the stove stands before the hearth (every older drawing keeps a furnace at 2, 1, 5, and a refresh never moves it)
+    { room: 'Hall', kind: 'fixture', part: 'stove', pos: [2, 1, 5], facing: 'east', block: 'furnace' },
+    { room: 'Hall', kind: 'rug', part: 'rug', cellsAbs: [[2, 1, 6]], colour: 'red' },
     { room: 'Hall', kind: 'clock', part: 'clock', pos: [2, 1, 3], facing: 'east', wood: 'spruce' },
     { room: 'Hall', kind: 'picture', part: 'picture', pos: [5, 3, 3], facing: 'south', wood: 'spruce', colour: 'cyan' },
     { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [4, 5, 5], facing: 'north', chain: 2, wood: 'spruce' },
     // Outshot: the bed nook (west), the work corner (east): barrel and bench, chest, counter and stove, a shelf
     { room: 'Outshot', kind: 'bed', part: 'bed', pos: [2, 1, 8], facing: 'south', colour: 'red' },
     { room: 'Outshot', kind: 'nightstand', part: 'nightstand', pos: [3, 1, 9], facing: 'north', wood: 'spruce' },
+    // the blinds hang in the bed nook's window, over the bed's head: not in the hall's east window over the table, whose
+    // carpet cell a one-block modded table leaves empty (the furnishing then sets a modded piece over it down onto the
+    // table), nor in the front windows over a chair (too little headroom) or the clock (its top cell goes the same way)
+    { room: 'Outshot', kind: 'blinds', part: 'blinds', pos: [2, 3, 9], facing: 'east', wood: 'spruce' },
     { room: 'Outshot', kind: 'fixture', part: 'pantry', pos: [5, 1, 8], facing: 'up', block: 'barrel' }, // Fisherman
     { room: 'Outshot', kind: 'fixture', part: 'worktop', pos: [6, 1, 8], facing: 'north', block: 'crafting_table' }, // Carpenter
     { room: 'Outshot', kind: 'fixture', part: 'pantry', pos: [4, 1, 9], facing: 'north', block: 'chest' },
     { room: 'Outshot', kind: 'counter', part: 'counter', pos: [5, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
-    { room: 'Outshot', kind: 'crockery', part: 'plates', pos: [5, 3, 9], facing: 'north', wood: 'spruce', block: 'flower_pot' },
-    { room: 'Outshot', kind: 'fixture', part: 'stove', pos: [6, 1, 9], facing: 'north', block: 'furnace' },
+    // a plain pot on the counter, not a crockery spot: the Outshot's crockery is the shelf's (6, 4, 7), on a cell no
+    // modded piece empties under it
+    { room: 'Outshot', kind: 'fixture', part: 'pot', pos: [5, 3, 9], block: 'flower_pot' },
+    { room: 'Outshot', kind: 'counter', part: 'counter', pos: [6, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
     { room: 'Outshot', kind: 'shelf', part: 'shelf', pos: [6, 3, 7], facing: 'west', wood: 'spruce', crockery: 'potted_brown_mushroom' },
     { room: 'Outshot', kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 8], facing: 'north', chain: 0, wood: 'spruce' },
   ],
@@ -177,8 +192,9 @@ export const FURNITURE = {
     { room: 'Chamber', kind: 'bed', part: 'bed', pos: [10, 5, 3], facing: 'north', colour: 'light_blue' },
     { room: 'Chamber', kind: 'nightstand', part: 'nightstand', pos: [9, 5, 2], facing: 'south', wood: 'spruce' },
     { room: 'Chamber', kind: 'cupboard', part: 'cupboard', pos: [10, 5, 4], facing: 'west', wood: 'spruce' },
-    { room: 'Chamber', kind: 'picture', part: 'picture', pos: [10, 7, 4], facing: 'west', wood: 'spruce', colour: 'light_blue' },
-    { room: 'Chamber', kind: 'rug', part: 'rug', cellsAbs: [[9, 5, 3], [9, 5, 4]], colour: 'light_gray' },
+    // (the parlour's colours, green and white: what II's upgrade still needs fits one chest, 27 stacks)
+    { room: 'Chamber', kind: 'picture', part: 'picture', pos: [10, 7, 4], facing: 'west', wood: 'spruce', colour: 'green' },
+    { room: 'Chamber', kind: 'rug', part: 'rug', cellsAbs: [[9, 5, 3], [9, 5, 4]], colour: 'white' },
     { room: 'Chamber', kind: 'lamp', part: 'hangingLamp', pos: [9, 7, 3], facing: 'north', chain: 3, wood: 'spruce' },
     { room: 'Chamber', kind: 'lamp', part: 'hangingLamp', pos: [8, 7, 8], facing: 'north', chain: 2, wood: 'spruce' },
   ],
@@ -194,9 +210,12 @@ export const FURNITURE = {
     { room: 'Kitchen', kind: 'lamp', part: 'hangingLamp', pos: [13, 4, 6], facing: 'north', chain: 1, wood: 'spruce' },
   ],
   4: [
-    // Cellar: chests along the back, kelp and hay stacked at the front, a lantern from the hall's floor
-    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [3, -3, 9], facing: 'north', block: 'chest' },
-    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [4, -3, 9], facing: 'north', block: 'chest' },
+    // Cellar: chests along the back with shelves beside them, kelp and hay stacked at the front, pumpkins and a melon
+    // in the east corner, a summer beam across the ceiling (MASSES.cellar.beam), a lantern from the hall's floor
+    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [3, -3, 7], facing: 'north', block: 'chest' },
+    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [4, -3, 7], facing: 'north', block: 'chest' },
+    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [2, -2, 4], facing: 'east', wood: 'spruce' },
+    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [2, -2, 5], facing: 'east', wood: 'spruce' },
     { room: 'Cellar', kind: 'lamp', part: 'hangingLamp', pos: [4, -1, 5], facing: 'north', chain: 0, wood: 'spruce' },
   ],
 }
@@ -207,7 +226,7 @@ export const WALK = {
   1: [[4, 0, 0], [4, 0, 1], [4, 1, 2], [4, 1, 3], [4, 1, 4], [4, 1, 5], [4, 1, 6], [4, 1, 7], [4, 1, 8], [3, 1, 8]],
   2: [[5, 1, 7], [6, 1, 7], [7, 1, 7], [8, 1, 7], [9, 1, 6], [9, 1, 5], [10, 1, 5], [10, 1, 6], [10, 2, 7], [10, 3, 8],
     [10, 4, 9], [9, 5, 9], [8, 5, 9], [8, 5, 8], [8, 5, 5], [8, 5, 4]],
-  3: [[14, 0, 2], [14, 0, 3], [14, 1, 4], [14, 1, 5], [13, 1, 5], [12, 1, 5], [11, 1, 5], [10, 1, 5]],
+  3: [[13, 0, 2], [13, 0, 3], [13, 1, 4], [13, 1, 5], [12, 1, 5], [11, 1, 5], [10, 1, 5]],
   4: [[6, 1, 7], [6, 0, 7], [6, -3, 7], [5, -3, 7], [4, -3, 6]],
 }
 
@@ -219,5 +238,6 @@ export const OUTSIDE = {
   doorHood: { posts: [3, 5], z: 0, y: 4 }, // a gabled hood on two spruce posts over the path, under the eave's lantern
   doorLamp: [4, 3, 1], // hangs from the front eave over the step
   kitchenLamp: [15, 1, 3],
-  cellarStores: { kelp: [[2, -3, 3], [2, -2, 3], [3, -3, 3], [2, -3, 4]], hay: [[2, -3, 9], [2, -2, 9], [2, -3, 8]] },
+  cellarStores: { kelp: [[2, -3, 3], [2, -2, 3], [3, -3, 3], [3, -2, 3]], hay: [[2, -3, 7], [2, -2, 7]],
+    pumpkin: [[5, -3, 3], [6, -3, 3]], melon: [[6, -3, 4]] },
 }

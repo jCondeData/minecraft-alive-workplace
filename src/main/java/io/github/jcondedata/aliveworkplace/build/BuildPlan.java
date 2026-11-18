@@ -416,7 +416,8 @@ public final class BuildPlan {
 	 * every block {@code old} put that {@code current} no longer has or has otherwise and that still stands as {@code old}
 	 * drew it, except those {@code kept} says stay (a chest, a bed someone sleeps in, a job block); what stands otherwise
 	 * was put there or changed by a player and stays. Then, as a repair: the pieces {@code current} has that {@code old}
-	 * didn't, where the spot is open or was just cleared.
+	 * didn't, where the spot is open or was just cleared; under the ground (a basement grown in the redraw) also where
+	 * {@code old} drew nothing, the ground there dug as a fresh build digs it.
 	 */
 	static BuildPlan refresh(Blueprint current, Blueprint old, BlueprintData.Placement placement, Level level,
 							 java.util.function.BiPredicate<BlockPos, BlockState> kept) {
@@ -437,6 +438,31 @@ public final class BuildPlan {
 			clear.add(new Step(e.getKey(), wanted, null, null, null));
 			if (!wanted.isAir()) {
 				changed.add(e.getKey());
+			}
+		}
+		// 49.8: what the new drawing has under the ground where the old one drew nothing (the rebuilt Artisan's House III's
+		// cellar runs a row further, under its kiln). Above the ground such a spot is open unless a player built there, and
+		// the pieces go in as a repair's do; under it the spot is the ground itself (or the old house's footing), never
+		// open, so the new room stayed undug and its walls and floor unbuilt. It is dug and built as a fresh build's is,
+		// except what {@code kept} says stays.
+		if (current.basement() > 0) {
+			int ground = now.bounds.minY() + current.basement();
+			for (Map.Entry<BlockPos, BlockState> e : now.targets.entrySet()) {
+				if (e.getKey().getY() >= ground || was.targets.containsKey(e.getKey()) || level.isOutsideBuildHeight(e.getKey())) {
+					continue;
+				}
+				BlockState wanted = e.getValue();
+				BlockState world = level.getBlockState(e.getKey());
+				if (wanted.isAir() ? world.isAir() : MaterialRules.matches(world, wanted) || world.canBeReplaced()) {
+					continue; // as drawn already, or open: put in with the other new pieces
+				}
+				if (kept.test(e.getKey(), world)) {
+					continue;
+				}
+				clear.add(new Step(e.getKey(), wanted, null, null, null));
+				if (!wanted.isAir()) {
+					changed.add(e.getKey());
+				}
 			}
 		}
 		clear.sort(order(now.bounds, true));

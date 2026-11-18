@@ -1507,6 +1507,15 @@ SCENES = [
            ("04_outside_east", "From the east: the low stone kitchen under its own roof"),
            ("10_room_1", "The hall at eye level: the table by the hearth, the kitchen counters with the plates, the lamp on its side table"),
            ("11_room_2", "The loft at eye level: four beds, the railing joined at its corners")], furniture=True),
+    # ROADMAP 49.3: the Starter Cottage rebuilt from scratch (the owner's pick of two: a one-room saltbox, its long back
+    # slope over the bed nook and the work corner, the stack up the west gable), its first level built as a server with
+    # the furniture mods builds it, from four sides and at eye level in the room
+    S("rebuild_starter_cottage", "Build families", "The Starter Cottage, rebuilt from scratch, furnished: from four sides and the room",
+      "the Starter Cottage's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and its one room (the hall with the hearth and the table for two, the bed nook and the work corner under the back slope) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Starter Cottage from the front: the tall front under the short slope, the gabled hood over the door, flower beds either side of the path"),
+           ("02_outside_back", "From the back: the long catslide roof down over the low back wall"),
+           ("03_outside_west", "From the west: the stone stack up the gable, the campfire on top"),
+           ("10_room_1", "The room at eye level: the table for two under the front window, the hearth and the couch, the bed nook and the work corner")], furniture=True),
     # ROADMAP 49.4: the Stone House rebuilt from scratch (the mason's house: rubble walls, dressed quoins, the end stack),
     # its first level built as a server with the furniture mods builds it, from four sides and at eye level downstairs and up
     S("rebuild_stone_house", "Build families", "The Stone House, rebuilt from scratch, furnished: from four sides, the hall and the chamber",
@@ -1524,6 +1533,15 @@ SCENES = [
            ("02_outside_back", "From the back: the chimney stack up the back gable, the kitchen hearth set in its foot"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room up at eye level")], furniture=True),
+    # ROADMAP 49.7: the Noble's Manor rebuilt from scratch (a brick hall and cross-wing house: the porch tower and its
+    # pyramid roof on the hall's front, the crow-gabled west wing of parlour, kitchen and chambers, a grand stair to the
+    # Long Gallery), its first level built as a server with the furniture mods builds it, from four sides and every room
+    S("rebuild_manor", "Build families", "The Noble's Manor, rebuilt from scratch, furnished: from four sides and every room",
+      "the Manor's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the porch, the hall, the parlour, the kitchen, the Long Gallery, the study and both chambers) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Manor from the front: the porch tower under its pyramid roof, the crow-stepped gable of the west wing with the parlour's stone bay"),
+           ("02_outside_back", "From the back: the hall's chimney stack, the garden door and the rain butt on the terrace"),
+           ("10_room_1", "A ground-floor room at eye level"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 49.6: the Terrace rebuilt from scratch (the Crow-Step Row: narrow brick houses side by side, each under its
     # own steep roof between crow-stepped gables, a chimney in each back gable), its first level built as a server with
     # the furniture mods builds it, from four sides and at eye level in every room
@@ -1533,6 +1551,24 @@ SCENES = [
            ("02_outside_back", "From the back: the stepped back gables, a chimney in each one's apex"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.8: the Artisan's House rebuilt from scratch (the Kiln House: a potter's jettied house gable-end to the
+    # street beside a brick bottle kiln that is its chimney), its first level built as a server with the furniture mods
+    # builds it, from four sides and at eye level in every room
+    S("rebuild_artisans_house", "Build families", "The Artisan's House, rebuilt from scratch, furnished: from four sides and every room",
+      "the Artisan's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the workroom and the hall with its kitchen downstairs, the bedroom and the sitting room up the stair) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Artisan's House from the front: the plaster floor jettied over the stone workroom, window boxes, the steep dark gable, the kiln beside it"),
+           ("02_outside_back", "From the back: the lean-to fuel shed stacked with logs against the kiln, the back gable"),
+           ("10_room_1", "The ground floor at eye level"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.8: the Weaver's Cottage rebuilt from scratch (a two-story stone range with the long weaver's window, a
+    # wool loft, a sheep fold on its east gable with a hoist over it), its first level built as a server with the
+    # furniture mods builds it, from four sides and at eye level in the workroom and the loft
+    S("rebuild_weavers_cottage", "Build families", "The Weaver's Cottage, rebuilt from scratch, furnished: from four sides and every room",
+      "the Weaver's Cottage's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the workroom with the loom, the wool loft up the stair) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Weaver's Cottage from the front: the long mullioned weaver's window and the loft's band of lights over it, the stone porch, the fold beside it"),
+           ("04_outside_east", "From the east: the sheep fold on the gable, its lean-to over the fold door, the hoist beam over the glazed taking-in hatch"),
+           ("10_room_1", "The workroom at eye level: the loom in the window, the hearth, the carding table"),
+           ("11_room_2", "The wool loft at eye level")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",

@@ -238,6 +238,6 @@ def artisans_house_3():
     return b
 
 
+# (artisans_house_3 is drawn by the rebuild kit since ROADMAP 49.8: tools/blueprints/js/artisans_house/)
 LEVEL_3 = (("inn_3", inn_3), ("winery_3", winery_3), ("farmstead_3", farmstead_3), ("guildhall_3", guildhall_3),
-           ("barracks_3", barracks_3), ("research_lab_3", research_lab_3), ("jewellers_workshop_3", jewellers_workshop_3),
-           ("artisans_house_3", artisans_house_3))
+           ("barracks_3", barracks_3), ("research_lab_3", research_lab_3), ("jewellers_workshop_3", jewellers_workshop_3))

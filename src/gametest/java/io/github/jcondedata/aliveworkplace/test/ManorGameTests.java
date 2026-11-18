@@ -55,8 +55,9 @@ public class ManorGameTests implements FabricGameTest {
 	private static final BlockPos HALL = new BlockPos(19, 2, 19);
 	/** Where the Manor's origin is recorded in these tests. */
 	private static final BlockPos ORIGIN = new BlockPos(2, 2, 2);
-	/** A bed in the Manor's west bedroom (houses.py: the foot at x 3, y 6, z 10), from the origin. */
-	private static final BlockPos BED = ORIGIN.offset(3, 6, 10);
+	/** A bed in the Manor's Great chamber (tools/blueprints/js/manor: the head at x 3, y 6, z 8; the old drawing's cell
+	 *  (3, 6, 10) is now the chest at its foot), from the origin. */
+	private static final BlockPos BED = ORIGIN.offset(3, 6, 8);
 
 	private static ResourceLocation ours(String path) {
 		return AliveWorkplace.id(path);
@@ -232,15 +233,15 @@ public class ManorGameTests implements FabricGameTest {
 		BlockPos middle2 = origin.offset(StarterBlueprints.MANOR_2.size().getX() / 2, 1, StarterBlueprints.MANOR_2.size().getZ() / 2);
 		helper.assertTrue(Festivals.square(level, pos).equals(middle2), "Manor II (no ballroom): its middle, not " + Festivals.square(level, pos));
 		sites.recordFinished(StarterBlueprints.MANOR_3.id(), placement, UUID.randomUUID());
-		BlockPos ballroom = origin.offset(20, 1, 11);
+		BlockPos ballroom = origin.offset(23, 1, 8);
 		helper.assertTrue(Festivals.square(level, pos).equals(ballroom), "Manor III: the ballroom's middle " + ballroom + ", not " + Festivals.square(level, pos));
 		sites.recordFinished(BlueprintStyles.styled(StarterBlueprints.MANOR_3.id(), "cherry"), placement, UUID.randomUUID());
 		helper.assertTrue(Festivals.square(level, pos).equals(ballroom), "a cherry Manor III: the ballroom too");
-		// The ballroom is inside the wing (x 17-23, z 8-14 of Manor III), whatever way it's turned
+		// The ballroom is inside the east wing (x 20-26, z 2-14 of Manor III), whatever way it's turned
 		sites.forgetFinished(placement);
 		sites.recordFinished(StarterBlueprints.MANOR.id(), placement, UUID.randomUUID());
 		sites.recordFinished(StarterBlueprints.MANOR_3.id(), turned, UUID.randomUUID());
-		BlockPos turnedBallroom = helper.absolutePos(new BlockPos(26, 2, 2)).offset(-11, 1, 20);
+		BlockPos turnedBallroom = helper.absolutePos(new BlockPos(26, 2, 2)).offset(-8, 1, 23);
 		helper.assertTrue(Festivals.square(level, pos).equals(turnedBallroom),
 			"a Manor I and a turned Manor III: the ballroom wins, at " + turnedBallroom + ", not " + Festivals.square(level, pos));
 		helper.assertTrue(BlueprintLibrary.get(level, StarterBlueprints.MANOR_3.id()).isPresent(), "Manor III is in the library");

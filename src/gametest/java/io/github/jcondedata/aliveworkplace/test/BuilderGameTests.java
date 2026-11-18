@@ -201,8 +201,9 @@ public class BuilderGameTests implements FreshPlanning {
 		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
+			// (49.3: the rebuilt cottage's bed in the outshot, II's in the wing's chamber)
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(2, 1, 8));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(8, 5, 3));
 			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + " blocks: the ground floor should have been kept");
 		});
 	}
@@ -281,9 +282,10 @@ public class BuilderGameTests implements FreshPlanning {
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.STARTER_COTTAGE_2.id(), placement, java.util.UUID.randomUUID());
 		helper.assertTrue(io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades.upgradeOf(StarterBlueprints.STARTER_COTTAGE_2.id())
 			.equals(StarterBlueprints.STARTER_COTTAGE_3.id()), "starter_cottage_3 should upgrade starter_cottage_2");
-		// Where the wing goes: a mound of dirt and a stray block of cobblestone.
-		for (int x = 13; x <= 15; x++) {
-			for (int z = 8; z <= 10; z++) {
+		// Where the wing goes: a mound of dirt and a stray block of cobblestone (49.3: the rebuilt cottage's kitchen, x 13..15,
+		// z 5..7 of the drawing, clear of the wing II already has).
+		for (int x = 16; x <= 18; x++) {
+			for (int z = 11; z <= 13; z++) {
 				helper.setBlock(new BlockPos(x, 2, z), Blocks.DIRT);
 				helper.setBlock(new BlockPos(x, 3, z), Blocks.GRASS_BLOCK);
 			}
@@ -315,13 +317,13 @@ public class BuilderGameTests implements FreshPlanning {
 		int total = s.plan().steps(BuildPlan.Stage.STRUCTURE).size() + s.plan().steps(BuildPlan.Stage.DECORATION).size();
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(12, 1, 2)); // where the mound was
-			helper.assertBlockPresent(Blocks.AIR, originRel.offset(9, 1, 4)); // the doorway through
-			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(14, 1, 6));
-			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(13, 1, 3)); // the wing's own door
-			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(16, 2, 2));
-			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(7, 1, 6));
-			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(2, 6, 7));
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(14, 1, 6)); // where the mound was
+			helper.assertBlockPresent(Blocks.AIR, originRel.offset(11, 1, 5)); // the doorway through
+			helper.assertBlockPresent(Blocks.SMOKER, originRel.offset(15, 1, 6));
+			helper.assertBlockPresent(Blocks.OAK_DOOR, originRel.offset(13, 1, 4)); // the wing's own door
+			helper.assertBlockPresent(Blocks.LANTERN, originRel.offset(15, 2, 3));
+			helper.assertBlockPresent(Blocks.RED_BED, originRel.offset(2, 1, 8));
+			helper.assertBlockPresent(Blocks.LIGHT_BLUE_BED, originRel.offset(8, 5, 3));
 			helper.assertTrue(s.site().placed() < total * 0.4, "placed " + s.site().placed() + " of " + total + " blocks: the cottage should have been kept");
 		});
 	}
@@ -959,6 +961,20 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE);
 	}
 
+	/** The whole Starter Cottage II from bare ground (49.3: the rebuilt cottage, its cross-wing and chamber). */
+	//$ gametest_ticks_batch BIG_AREA '20000' '"starter_cottage_2_whole"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "starter_cottage_2_whole")
+	public void buildsStarterCottageII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE_2);
+	}
+
+	/** The whole Starter Cottage III from bare ground (49.3; 18 wide, so it starts further west). */
+	//$ gametest_ticks_batch BIG_AREA '30000' '"starter_cottage_3_whole"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "starter_cottage_3_whole")
+	public void buildsStarterCottageIII(GameTestHelper helper) {
+		buildStarter(helper, StarterBlueprints.STARTER_COTTAGE_3, new BlockPos(3, 2, 9));
+	}
+
 	//$ gametest_ticks_batch BIG_AREA '6000' '"starter_builds"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 6000, batch = "starter_builds")
 	public void buildsMarketStall(GameTestHelper helper) {
@@ -1115,23 +1131,24 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.TOWNHOUSE_3, new BlockPos(9, 2, 8));
 	}
 
-	/** The Noble's Manor (34.16) from bare ground, in the huge area (19 wide, the forecourt in front). */
+	/** The Noble's Manor (34.16, rebuilt in 49.7) from bare ground, in the huge area (21 x 17, the porch tower's step in front). */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"starter_builds_manor"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "starter_builds_manor")
 	public void buildsManor(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR, new BlockPos(1, 2, 5));
 	}
 
-	/** The Manor II (34.16) from bare ground: the walled garden with its fountain makes it 24 deep. */
+	/** The Manor II (34.16) from bare ground: the walled knot garden makes it 25 deep. */
 	//$ gametest_ticks_batch HUGE_AREA '80000' '"starter_builds_manor_2"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 80000, batch = "starter_builds_manor_2")
 	public void buildsManorII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR_2, new BlockPos(1, 2, 5));
 	}
 
-	/** The Manor III (34.16) from bare ground: the gatehouse and the ballroom wing make it 26 x 24. */
-	//$ gametest_ticks_batch HUGE_AREA '100000' '"starter_builds_manor_3"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 100000, batch = "starter_builds_manor_3")
+	/** The Manor III (34.16) from bare ground: the ballroom wing makes it 29 x 25. 49.7: the rebuilt drawing has 3,404 blocks
+	 * against the old 2,299 and reached 96 % at 100,000 ticks, so the limit grows with it (150,000). */
+	//$ gametest_ticks_batch HUGE_AREA '150000' '"starter_builds_manor_3"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 150000, batch = "starter_builds_manor_3")
 	public void buildsManorIII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR_3, new BlockPos(1, 2, 5));
 	}

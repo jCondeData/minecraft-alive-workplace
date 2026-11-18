@@ -1,0 +1,10 @@
+{
+  "name": "tailors-shop",
+  "private": true,
+  "type": "module",
+  "description": "The Tailor's Shop (ROADMAP 49): the white shop with the jettied gable and, in II, the Dyer's Tower. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

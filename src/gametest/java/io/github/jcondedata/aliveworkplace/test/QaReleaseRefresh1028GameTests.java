@@ -159,7 +159,8 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 			helper.assertTrue(key.equals(site.refreshFrom()), id + " was built from 0.151.0's drawing " + key + " but is refreshed from " + site.refreshFrom());
 			BuildPlan plan = site.plan(level);
 			Map<BlockPos, BlockState> now = BuildPlan.create(current, placement).targets();
-			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+			// (FOUNDATION too, as the Builder does: 49.8's Artisan's House III sets its kiln's footing under the ground)
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					level.setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 					// (as the Builder puts a two-block block: both halves at once, a bed's other half and a door's top with its

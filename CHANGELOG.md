@@ -179,6 +179,9 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- **Refresh to the latest look** now digs and builds what a redrawn build has under the ground where its older drawing
+  had nothing: an Artisan's House III refreshed to the Kiln House kept solid ground where the cellar now runs under the
+  kiln, its new walls and floor unbuilt. Chests, beds in use and job blocks there stay, as everywhere in a refresh.
 - With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
   andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
 - Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected

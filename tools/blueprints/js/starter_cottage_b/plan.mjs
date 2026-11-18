@@ -154,7 +154,6 @@ export const FURNITURE = {
     { room: 'Hall', kind: 'chair', part: 'chair', pos: [6, 1, 3], facing: 'south', wood: 'spruce' },
     { room: 'Hall', kind: 'table', part: 'table', pos: [6, 1, 4], facing: 'north', wood: 'spruce', colour: 'white' },
     { room: 'Hall', kind: 'chair', part: 'chair', pos: [6, 1, 5], facing: 'north', wood: 'spruce' },
-    { room: 'Hall', kind: 'blinds', part: 'blinds', pos: [6, 3, 4], facing: 'west', wood: 'spruce' },
     { room: 'Hall', kind: 'couch', part: 'couch', pos: [3, 1, 6], facing: 'west', length: 2, arms: true, wood: 'spruce' },
     // the stove stands before the hearth (every older drawing keeps a furnace at 2, 1, 5, and a refresh never moves it)
     { room: 'Hall', kind: 'fixture', part: 'stove', pos: [2, 1, 5], facing: 'east', block: 'furnace' },
@@ -165,11 +164,17 @@ export const FURNITURE = {
     // Outshot: the bed nook (west), the work corner (east): barrel and bench, chest, counter and stove, a shelf
     { room: 'Outshot', kind: 'bed', part: 'bed', pos: [2, 1, 8], facing: 'south', colour: 'red' },
     { room: 'Outshot', kind: 'nightstand', part: 'nightstand', pos: [3, 1, 9], facing: 'north', wood: 'spruce' },
+    // the blinds hang in the bed nook's window, over the bed's head: not in the hall's east window over the table, whose
+    // carpet cell a one-block modded table leaves empty (the furnishing then sets a modded piece over it down onto the
+    // table), nor in the front windows over a chair (too little headroom) or the clock (its top cell goes the same way)
+    { room: 'Outshot', kind: 'blinds', part: 'blinds', pos: [2, 3, 9], facing: 'east', wood: 'spruce' },
     { room: 'Outshot', kind: 'fixture', part: 'pantry', pos: [5, 1, 8], facing: 'up', block: 'barrel' }, // Fisherman
     { room: 'Outshot', kind: 'fixture', part: 'worktop', pos: [6, 1, 8], facing: 'north', block: 'crafting_table' }, // Carpenter
     { room: 'Outshot', kind: 'fixture', part: 'pantry', pos: [4, 1, 9], facing: 'north', block: 'chest' },
     { room: 'Outshot', kind: 'counter', part: 'counter', pos: [5, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
-    { room: 'Outshot', kind: 'crockery', part: 'plates', pos: [5, 3, 9], facing: 'north', wood: 'spruce', block: 'flower_pot' },
+    // a plain pot on the counter, not a crockery spot: the Outshot's crockery is the shelf's (6, 4, 7), on a cell no
+    // modded piece empties under it
+    { room: 'Outshot', kind: 'fixture', part: 'pot', pos: [5, 3, 9], block: 'flower_pot' },
     { room: 'Outshot', kind: 'counter', part: 'counter', pos: [6, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
     { room: 'Outshot', kind: 'shelf', part: 'shelf', pos: [6, 3, 7], facing: 'west', wood: 'spruce', crockery: 'potted_brown_mushroom' },
     { room: 'Outshot', kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 8], facing: 'north', chain: 0, wood: 'spruce' },

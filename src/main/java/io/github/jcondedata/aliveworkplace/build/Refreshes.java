@@ -30,12 +30,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -563,20 +561,16 @@ public final class Refreshes {
 		}
 		BuildSiteManager.get(level).setRefreshAsked(f.get().placement(), true);
 		BlockPos origin = Builders.spot(level, f.get().structure(), f.get().placement()); // B615: measured as placing measures
-		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
-				&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement())));
-		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
+		// B619: every builder whose bench reaches it, wherever in the village (nearest first)
+		List<Villager> builders = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> !ModAttachments.BUILDER_JOB.has(v)
+			&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner()));
 		for (Villager v : builders) {
 			if (start(level, v, f.get()) != null) {
 				return said(player, f.get(), Outcome.STARTED);
 			}
 		}
 		// B1110: every builder busy: a helper who looks after it is taken off another build's crew (which keeps its lead)
-		List<Villager> crews = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement()));
+		List<Villager> crews = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> Upkeep.looksAfter(level, v, f.get().owner()));
 		Optional<Builders.Split> split = Builders.splitOff(level, crews, origin);
 		if (split.isPresent()) {
 			if (start(level, split.get().builder(), f.get()) != null) {

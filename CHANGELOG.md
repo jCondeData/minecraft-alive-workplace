@@ -100,6 +100,11 @@ asks for the steps, `latest.log` and any crash report).
   bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
   Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
   crockery the new drawing moved (one with something in it stays) (B1383).
+- A Blueprint placed far from the Blueprint Table inside a big village (150 blocks off with `villageHallRadius` 160,
+  say), which the Builder does take, no longer says "No Blueprint Table within 128 blocks of this spot" with every
+  material listed as still to bring: its supply report and its Book and Quill material list now find the table by the
+  Builder's own rule (anywhere in the table's village, or within `maxSiteDistance` outside it). A yes to a repair or a
+  refresh likewise reaches a free Builder anywhere in the village, not only one near the building (B619).
 - Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
   the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
   passing that wall's far side on the outside (B726).

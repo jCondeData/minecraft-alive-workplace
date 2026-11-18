@@ -145,6 +145,28 @@ final class Leftovers {
 	}
 
 	/**
+	 * B619: takes away every Blueprint Table and Builder's Bench earlier batches left within {@code range} blocks across
+	 * of {@code spot} (absolute). A build's supplies are counted at the nearest table that has it in reach, anywhere in
+	 * the village, so a test that says which table that is can't have another test's standing nearer. Call it before the
+	 * test places its own. Only for tests alone in their batch.
+	 */
+	static void benches(GameTestHelper helper, net.minecraft.core.BlockPos spot, int range) {
+		net.minecraft.server.level.ServerLevel level = helper.getLevel();
+		java.util.function.Predicate<net.minecraft.core.Holder<net.minecraft.world.entity.ai.village.poi.PoiType>> bench =
+			h -> h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BLUEPRINT_TABLE_POI)
+				|| h.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.BUILDERS_BENCH_POI);
+		java.util.List<net.minecraft.core.BlockPos> found = level.getPoiManager()
+			.getInSquare(bench, spot, range, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.map(net.minecraft.world.entity.ai.village.poi.PoiRecord::getPos).toList();
+		for (net.minecraft.core.BlockPos pos : found) {
+			level.removeBlock(pos, false);
+			if (level.getPoiManager().getType(pos).filter(bench).isPresent()) { // a point with no block under it
+				level.getPoiManager().remove(pos);
+			}
+		}
+	}
+
+	/**
 	 * Empties the village round {@code hall} (absolute) of what earlier batches left in it: every entity but players, every
 	 * bed, every Storehouse whose village reaches the test area, and every kitchen (smoker, Kitchen Stove) whose chests are
 	 * the hall's store. The village reaches {@code VillageHalls.RADIUS} (64) across, past {@link #clear}'s 48, and its

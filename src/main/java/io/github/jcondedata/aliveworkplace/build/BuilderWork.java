@@ -1224,8 +1224,9 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!wantedEmpty && (world.canBeReplaced() || skipped)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
-			if (isProtected(level, pos, world, bench)) {
-				return Action.NONE;
+			if (isProtected(level, pos, world, bench)
+				&& !(site.refreshFrom() != null && Refreshes.leftoverPiece(level, site.furniture(), site.placement(), pos, world))) {
+				return Action.NONE; // (B1383: a refresh takes away an empty furniture piece the build put there)
 			}
 			if (wantedEmpty && someonesBed(level, pos, world)) {
 				return Action.NONE; // 36.14: a bed a villager sleeps in stays through an upgrade over the room it stands in

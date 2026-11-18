@@ -151,14 +151,26 @@ class Template:
         return any(self.solid((x, yy, z)) for yy in range(y + 2, min(self.size[1], y + reach)))
 
 
+def basement(name):
+    """How deep the build's basement is (StarterBlueprints.Entry's last argument; 0: none)."""
+    with open(STARTER) as f:
+        source = f.read()
+    m = re.search(r'id\("' + re.escape(name) + r'"\), new Vec3i\([0-9, ]+\), (\d+)\)', source) \
+        or re.search(r'workplace\("' + re.escape(name) + r'", \d+, \d+, \d+, (\d+)\)', source)
+    return int(m.group(1)) if m else 0
+
+
 def spot_cells(name):
-    """Every cell of the build's furniture spots (37.2): left exactly as drawn, so its spots file still matches."""
+    """Every cell of the build's furniture spots (37.2): left exactly as drawn, so its spots file still matches.
+    Cells are the template's: a spots file has the game's positions (a basement below y = 0, B1383), shifted up here."""
     path = os.path.join(SPOTS, name + ".json")
     cells, tables = set(), []
+    depth = basement(name)
     if os.path.exists(path):
         with open(path) as f:
             for s in json.load(f)["spots"]:
                 x, y, z = s["pos"]
+                y += depth
                 top = 0
                 for b in s["blocks"]:
                     ax, ay, az = b["at"]

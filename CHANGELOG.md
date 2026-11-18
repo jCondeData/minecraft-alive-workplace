@@ -95,6 +95,11 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
+  and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
+  bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
+  Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
+  crockery the new drawing moved (one with something in it stays) (B1383).
 - Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
   the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
   passing that wall's far side on the outside (B726).

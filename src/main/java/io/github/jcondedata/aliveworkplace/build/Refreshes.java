@@ -209,7 +209,39 @@ public final class Refreshes {
 		if (was.isEmpty()) {
 			return BuildPlan.repair(current, placement, level, BuildSiteManager.get(level).gaveUp(placement));
 		}
-		return BuildPlan.refresh(current, was.get(), placement, level, (pos, state) -> kept(level, pos, state));
+		return BuildPlan.refresh(current, was.get(), placement, level,
+			(pos, state) -> kept(level, pos, state) && !leftoverPiece(level, built, placement, pos, state));
+	}
+
+	/**
+	 * B1383: whether {@code world} at {@code pos} is a furniture mod's piece that {@code built} (the build's furniture, as
+	 * built) put there and that holds nothing: a refresh takes it away like any other piece of the older drawing (B642),
+	 * though it has a block entity (a Handcrafted shelf, nightstand or crockery set). One with something in it stays, as a
+	 * container does; never a bed someone sleeps in or a job block.
+	 */
+	public static boolean leftoverPiece(ServerLevel level, @Nullable io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice built,
+										BlueprintData.Placement placement, BlockPos pos, BlockState world) {
+		if (built == null || built.spots().isEmpty() || BuiltInRegistries.BLOCK.getKey(world.getBlock()).getNamespace().equals("minecraft")
+			|| world.getBlock() instanceof BedBlock || PoiTypes.forState(world).isPresent()) {
+			return false;
+		}
+		boolean placed = false;
+		for (io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.Placed piece : built.spots().values()) {
+			for (Map.Entry<BlockPos, BlockState> cell : piece.cells().entrySet()) {
+				if (cell.getValue().getBlock() == world.getBlock() && pos.equals(placement.origin().offset(
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(piece.pos().offset(cell.getKey()),
+						placement.mirror(), placement.rotation(), BlockPos.ZERO)))) {
+					placed = true;
+				}
+			}
+		}
+		if (!placed) {
+			return false;
+		}
+		if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container && !container.isEmpty()) {
+			return false;
+		}
+		return !io.github.jcondedata.aliveworkplace.platform.Platform.get().items().hasMatching(level, pos, stack -> !stack.isEmpty());
 	}
 
 	/**

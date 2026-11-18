@@ -234,18 +234,18 @@ public final class StarterBlueprints {
 	/** An ale and wine cellar dug under the inn (36.7). */
 	public static final Entry INN_3 = new Entry(AliveWorkplace.id("inn_3"), new Vec3i(19, 16, 13), 4);
 
-	/** A one-room school with a Teacher's Desk and the school bell under the porch. */
-	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 14, 12));
-	/** A fenced schoolyard with a sandpit. */
-	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(16, 14, 12));
-	/** A stone library with a Scholar's Desk and shelves of books. */
+	/** A bell-cote schoolroom open to the roof timbers, bench rows facing the lectern and blackboard (rebuilt 51.4). */
+	public static final Entry SCHOOLHOUSE = new Entry(AliveWorkplace.id("schoolhouse"), new Vec3i(11, 16, 13));
+	/** An infants' reading wing and a fenced schoolyard. */
+	public static final Entry SCHOOLHOUSE_2 = new Entry(AliveWorkplace.id("schoolhouse_2"), new Vec3i(17, 16, 13));
+	/** The Lamplit Nave: a buttressed stone library with a rose-windowed gable, a lectern and shelves of books (rebuilt 51.4). */
 	public static final Entry LIBRARY = new Entry(AliveWorkplace.id("library"), new Vec3i(13, 15, 12));
-	/** A study tower with a second Scholar's Desk. */
+	/** An aisle wing with a second lectern. */
 	public static final Entry LIBRARY_2 = new Entry(AliveWorkplace.id("library_2"), new Vec3i(18, 15, 12));
-	/** An enchanting room behind the hall: an Enchanting Table ringed by fifteen bookshelves and a lectern for a librarian. */
-	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 15, 20));
-	/** Library III with an archive of shelves and ledgers under the reading room, down a stair (26.15). */
-	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 15, 20), 4);
+	/** A spired tower holding the enchanting room: an Enchanting Table ringed by bookshelves and a third lectern. */
+	public static final Entry LIBRARY_3 = new Entry(AliveWorkplace.id("library_3"), new Vec3i(18, 18, 22));
+	/** Library III with an archive of shelves and ledgers dug under it (26.15). */
+	public static final Entry LIBRARY_4 = new Entry(AliveWorkplace.id("library_4"), new Vec3i(18, 18, 22), 4);
 	/** A barn (a hayloft gable over two stable aisles) with a Feed Trough, and a fenced paddock. */
 	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 10, 13));
 	/** The paddock doubled, a stable wing and a brick silo. */
@@ -557,8 +557,9 @@ public final class StarterBlueprints {
 	/** Built of Create's blocks for trains: listed only with Create and {@code villageTrains} on (city/CaravanTrains). */
 	public static final List<Entry> TRAINS_ONLY = List.of(TRAIN_STATION);
 
-	/** Walls and gates: a wooden palisade with a walkway. */
-	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 6, 2));
+	/** Walls and gates: a wooden palisade with a walkway: an earth bank faced in mud brick, a flight up its village
+	 *  side to a stripped-oak walk of seven stations behind a row of pointed spruce stakes (52.3, rebuilt). */
+	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 5, 4));
 	/** A gate in the palisade (shut at night): a gabled timber gatehouse on stone feet, three spruce gates under its
 	 *  lintel, a walk over the way (52.3, rebuilt). */
 	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 9, 2));
@@ -571,8 +572,9 @@ public final class StarterBlueprints {
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
 	/** A stone gatehouse (its gates shut at night). */
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
-	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes. */
-	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 6, 4));
+	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes (52.3, rebuilt: the bank built
+	 *  out into a walk three wide, 19 stations, seven dripstone stakes in a ditch of turned earth outside). */
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 5, 5));
 	/** Timber hoardings over the battlements: a roofed walkway with murder holes (52.3, rebuilt). */
 	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
 	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */
@@ -605,8 +607,8 @@ public final class StarterBlueprints {
 	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
 	/** A market hall: an upper storey on a stone arcade, a cupola on the ridge. */
 	public static final Entry TRADE_HALL = workplace("trade_hall", 11, 17, 11);
-	/** A U of brick round a courtyard with the tutor's post in it. */
-	public static final Entry SCHOOL = workplace("school", 17, 11, 13);
+	/** The Half Court: a gatehouse onto a sparring ring round the tutor's post, a cloister and the Tutor's hall behind (rebuilt 51.4). */
+	public static final Entry SCHOOL = workplace("school", 17, 12, 18);
 
 	/**
 	 * A pit the Miner works like a farm (36.12, {@code mine/QuarryBuilds}): a curbed, fenced rim round the ground it digs,

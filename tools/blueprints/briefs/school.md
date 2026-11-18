@@ -99,6 +99,8 @@ the designer draws only the look (`village_looks.py` `DESIGNS["school"]`, today 
 Pinned coordinates (the ship step moves them to the new drawing, keeping what each checks, dropping none):
 - `WorkplacesGameTests.workplaceBuilt_school` (`HOUSE` (12, 2, 10), `WORKER` (18, 2, 7), `BENCH`, `CHESTS`): built from
   its supply report; the Tutor (no job site) let go must hold the one Training Post as his `JOB_SITE`, still a Tutor.
+  It must reach DONE within the test's 12,000 ticks: at most about 900 placed blocks, and no overhang, barge or eave
+  over another roof (a 1,410-block design timed out there, its builder stuck on a barge stair above a lower roof).
 - `VillageGameTests.everyVillageTypeCanGrowTheOtherHouses`, `everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`,
   `noVillageHouseHasATrapdoorInItsFrontWalkRow` (the village variant's cells above; the buildable's front walk row).
 

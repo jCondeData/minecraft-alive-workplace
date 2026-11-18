@@ -108,7 +108,8 @@ export const FURNITURE = [
   { level: 2, kind: 'chair', part: 'chair', pos: [13, 1, 4], facing: 'north', wood: 'dark_oak' },
   { level: 2, kind: 'lamp', part: 'hangingLamp', pos: [14, 4, 5], facing: 'north', chain: 4, wood: 'dark_oak' },
   { level: 2, kind: 'hanging_pot', part: 'hangingPot', pos: [16, 8, 5], plant: 'potted_lily_of_the_valley', wood: 'dark_oak' },
-  { level: 2, kind: 'picture', part: 'picture', pos: [12, 3, 7], facing: 'north', colour: 'blue', wood: 'dark_oak' },
+  // on the back wall's band beside the lectern (x 12 there is the nave window's sill stair, no wall to hang on)
+  { level: 2, kind: 'picture', part: 'picture', pos: [13, 3, 7], facing: 'north', colour: 'blue', wood: 'dark_oak' },
   // Enchanting tower: lamps on the tie beams, the chandelier over the table, pots, a banner
   { level: 3, kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 13], facing: 'north', chain: 1, wood: 'dark_oak' },
   { level: 3, kind: 'lamp', part: 'hangingLamp', pos: [9, 4, 13], facing: 'north', chain: 1, wood: 'dark_oak' },

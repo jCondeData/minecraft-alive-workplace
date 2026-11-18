@@ -19,9 +19,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -236,12 +234,9 @@ public final class RepairAsks {
 
 	/** After a yes: the nearest free builder who looks after {@code f} looks at once (instead of at their next round). True if its repair started. */
 	private static boolean startNow(ServerLevel level, BuildSiteManager.Finished f) {
-		BlockPos origin = Builders.spot(level, f.structure(), f.placement()); // B615: measured as placing measures
-		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
-				&& Upkeep.looksAfter(level, v, f.owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.structure(), f.placement())));
-		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
+		// B619: every builder whose bench reaches it, wherever in the village (nearest first; B615: measured as placing measures)
+		List<Villager> builders = Builders.reaching(level, f.structure(), f.placement(),
+			v -> !ModAttachments.BUILDER_JOB.has(v) && Upkeep.looksAfter(level, v, f.owner()));
 		for (Villager v : builders) {
 			if (Builders.activeSite(level, v) == null && !ModAttachments.BUILDER_JOB.has(v)) {
 				Upkeep.look(level, v);
@@ -261,9 +256,7 @@ public final class RepairAsks {
 	@Nullable
 	private static Builders.Split splitFor(ServerLevel level, BuildSiteManager.Finished f) {
 		BlockPos origin = Builders.spot(level, f.structure(), f.placement());
-		List<Villager> builders = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.structure(), f.placement()));
+		List<Villager> builders = Builders.reaching(level, f.structure(), f.placement(), v -> Upkeep.looksAfter(level, v, f.owner()));
 		Builders.Split split = Builders.splitOff(level, builders, origin).orElse(null);
 		if (split != null && Upkeep.repairNow(level, split.builder(), f) == null) {
 			split.undo(level);

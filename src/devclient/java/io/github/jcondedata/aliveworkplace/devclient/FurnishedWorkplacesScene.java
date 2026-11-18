@@ -47,7 +47,9 @@ final class FurnishedWorkplacesScene {
 	private static final List<View> VIEWS = List.of(
 		new View("01_shop_counter", new Vec3(5.5, 2.9, 3.2), new Vec3(5.5, 2.2, 7), SHOP),
 		new View("02_library_desks", new Vec3(6.5, 3.6, 3.4), new Vec3(6, 1.5, 7), LIBRARY),
-		new View("03_schoolroom", new Vec3(5.5, 3.2, 3.2), new Vec3(5.5, 1.5, 8), SCHOOL),
+		// 51.4: the rebuilt schoolroom's front wall is at z 3, so the camera stands just inside it, in the aisle between
+		// the bench rows, looking down the room to the lectern and the blackboard on the back wall (z 11)
+		new View("03_schoolroom", new Vec3(5.5, 3.2, 4.5), new Vec3(5.5, 1.5, 10), SCHOOL),
 		// B194: the camera's feet on the clinic's floor (y 1; its eye 1.62 above, under the tie beams at y 4), with night
 		// vision for the shot. At feet 2.7 the eye sat in the beam log at (7, 4, 3): a black still on GitHub. The aim is
 		// worked out from the feet, so the target sits 1.6 lower than the bench it frames.

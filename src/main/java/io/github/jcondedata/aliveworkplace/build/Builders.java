@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.AABB;
 import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +69,33 @@ public final class Builders {
 	/** True if the build of {@code structure} at {@code placement} is in reach of the bench at {@code bench} (the one rule placing uses). */
 	public static boolean inReach(ServerLevel level, BlockPos bench, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
 		return Reach.inReach(level, bench, spot(level, structure, placement), MAX_SITE_DISTANCE);
+	}
+
+	/**
+	 * The Blueprint Table or Builder's Bench a build of {@code structure} at {@code placement} would be built from: the
+	 * nearest one that has it in reach ({@link #inReach}). B619: the Blueprint's supply report and material list looked
+	 * only {@code maxSiteDistance} round the spot, and found no table for a build its builder takes across the village.
+	 */
+	public static Optional<BlockPos> benchFor(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return Reach.workBlocks(level, h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI),
+			spot(level, structure, placement), MAX_SITE_DISTANCE).findFirst();
+	}
+
+	/**
+	 * The living Builders among those passing {@code filter} whose bench has the build in reach ({@link #inReach}),
+	 * nearest it first. B619: they were looked for in a box of twice {@code maxSiteDistance} round the build, which a
+	 * Builder across a big village is outside of; the box is as wide as a bench in reach can be away ({@link Reach#span}),
+	 * plus {@code maxSiteDistance} for a Builder away from their bench.
+	 */
+	public static List<Villager> reaching(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement,
+			java.util.function.Predicate<Villager> filter) {
+		BlockPos spot = spot(level, structure, placement);
+		List<Villager> builders = new java.util.ArrayList<>(level.getEntities(EntityType.VILLAGER,
+			new AABB(spot).inflate(Reach.span(level, spot, MAX_SITE_DISTANCE) + MAX_SITE_DISTANCE),
+			v -> v.isAlive() && isBuilder(v) && benchPos(v).isPresent() && filter.test(v)
+				&& Reach.inReach(level, benchPos(v).get(), spot, MAX_SITE_DISTANCE)));
+		builders.sort(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(spot.getX(), spot.getY(), spot.getZ())));
+		return builders;
 	}
 
 	/** How many blueprints a builder accepts on top of the one they are building. */

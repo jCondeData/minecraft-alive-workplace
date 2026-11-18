@@ -1,3 +1,4 @@
 {"spots": [
-  {"kind": "bed", "pos": [1, 1, 4], "facing": "south", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=south,occupied=false,part=foot]"}, {"at": [0, 0, 1], "state": "minecraft:brown_bed[facing=south,occupied=false,part=head]"}], "support": ["floor"]}
+  {"kind": "bed", "pos": [4, 1, 1], "facing": "west", "wood": "spruce", "colour": "brown", "blocks": [{"at": [0, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=foot]"}, {"at": [-1, 0, 0], "state": "minecraft:brown_bed[facing=west,occupied=false,part=head]"}], "support": ["floor", "wall"]},
+  {"kind": "lamp", "pos": [4, 3, 2], "facing": "south", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}, {"at": [0, 1, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 2, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}], "support": ["wall", "ceiling"]}
 ]}

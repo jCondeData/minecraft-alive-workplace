@@ -37,6 +37,15 @@ asks for the steps, `latest.log` and any crash report).
   keystone arch: the pedestal stands under a chiseled meteorite keystone, a straight flight climbs the front to the
   trainer's stand and twin flights climb the back. Builds already standing keep the drawing they were built from until
   you refresh them.
+- **The Founder's Statue, the Shift Bell and the three camps of found Legends are rebuilt from scratch** (52.5). The
+  Founder now stands in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his
+  hand on the first stone, on a stepped stone plinth with a copper plaque. The Shift Bell is a little deepslate belfry
+  on the smith's own anvil, lit by four lanterns and capped with a copper roof and spire. By a ruined portal the
+  traveler waits in the door of a banded tipi beside a fire ring, a map on a barrel and a lodestone cairn; at an
+  outpost the prisoner is caged on a bogged-down wagon beside the pillagers' tent and black standard (break a bar to
+  free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
+  broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
+  they are.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II

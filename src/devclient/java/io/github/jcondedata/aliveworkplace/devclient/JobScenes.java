@@ -4175,8 +4175,8 @@ final class JobScenes {
 				return false;
 			};
 		}, null));
-		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised",
-			6000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
+		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: the Founder in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his hand on the first stone, on a stepped stone plinth with a copper plaque",
+			7000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
 			// ROADMAP 29.23: the Village Hall, the Founder (a burgundy mantle, a gold chain of office) by it, and a builder
 			// at a Blueprint Table with barrels holding the statue's materials. The hall's round hands the builder the
 			// Founder's statue on open ground near the hall, and the GIF shows it going up.

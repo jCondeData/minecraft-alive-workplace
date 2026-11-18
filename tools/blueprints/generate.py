@@ -74,7 +74,11 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
            # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
            # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
-           "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine"}
+           "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",
+           # 52.5, the story and legend sites: js/{founder_statue,shift_bell,prisoner_cage,castaway_camp,traveller_camp}
+           # (MC_BUILDER=...), then rebuild.py <family> legend/<family> (story/shift_bell) --nbt <out .nbt>; the
+           # Traveler's Camp's map frame afterwards: python3 tools/blueprints/js/traveller_camp/frames.py <live .nbt>
+           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp"}
 
 
 
@@ -204,7 +208,8 @@ if __name__ == "__main__":
     bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
         draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
-    shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
+    if "shift_bell" not in REBUILT:  # 52.5: the Shift Bell comes from the rebuild kit
+        shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
     caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
     raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
     for i, draw in enumerate(TRAIL, 1):
@@ -219,7 +224,8 @@ if __name__ == "__main__":
     royal_hall_2().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall_2")
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
-        draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
+        if name not in REBUILT:  # 52.5: all but the Hermit's Hut come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "legend"), name)
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
                        ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):

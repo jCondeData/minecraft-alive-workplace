@@ -883,7 +883,7 @@ SCENES = [
         "the Beastmaster tamed a war dog for the guard with bones from the chest and fitted it with wolf armor from the scutes; the dog followed its guard and fought the zombies beside them", 90),
     # The Founder (ROADMAP 29.23): the village's builder raises the Founder's statue by the hall from the barrels
     job("legend_founder", "Legends", "The Founder's statue going up",
-        "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised", 360),
+        "the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: the Founder in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his hand on the first stone, on a stepped stone plinth with a copper plaque", 360),
     job("legend_strike", "Legends", "A Legend on strike", "a Legend on strike left her stonecutter and picketed by the Village Hall under a red line", 120),
     # Strange moods (ROADMAP 29.10): a Master cleric claims her brewing stand under a purple line, the chest by it fills,
     # and she makes a named Masterwork, hung in an item frame, and becomes a Legend
@@ -1518,6 +1518,13 @@ SCENES = [
            ("02_outside_back", "From the back: the twin flights up to the landing behind the pedestal"),
            ("03_outside_west", "From the west: the arch's two-deep side and the stepped dais"),
            ("04_outside_east", "From the east")], furniture=True, mega=True),
+    # 52.5: the Founder's Statue (legend/founder_statue, REBUILD_BLUEPRINT: its id has a folder); no rooms, so the four sides
+    S("rebuild_founder_statue", "Build families", "The Founder's Statue, rebuilt: from four sides",
+      "the Founder's Statue's blueprint stands on a cleared lawn: the Founder in weathering copper under a broad-brimmed hat, his lantern on a staff above him and his hand on the first stone, on a stepped stone plinth",
+      40, [("01_outside_front", "The Lantern-Bearer from the front: the copper plaque in the plinth's front step"),
+           ("02_outside_back", "From the back: the cloak and the azaleas on the back corners"),
+           ("03_outside_west", "From the west"),
+           ("04_outside_east", "From the east")], env={"REBUILD_BLUEPRINT": "legend/founder_statue"}, furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",

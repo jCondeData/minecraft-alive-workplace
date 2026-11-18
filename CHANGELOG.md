@@ -79,6 +79,9 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
+  the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
+  passing that wall's far side on the outside (B726).
 - With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
   mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
   (B1378).

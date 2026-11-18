@@ -60,7 +60,8 @@ public class FurnishedWorkplacesCompatTests implements FabricGameTest {
 
 	private static Map<Kind, String> expected() {
 		Map<Kind, String> out = new EnumMap<>(Kind.class);
-		for (Kind kind : List.of(Kind.COUNTER, Kind.DESK, Kind.CHAIR, Kind.BENCH, Kind.TABLE, Kind.SHELF, Kind.CROCKERY)) {
+		// ROADMAP 50.6: the rebuilt Print Shop has cupboards, and Handcrafted has a cupboard (furnishings/handcrafted.json)
+		for (Kind kind : List.of(Kind.COUNTER, Kind.DESK, Kind.CHAIR, Kind.BENCH, Kind.TABLE, Kind.SHELF, Kind.CROCKERY, Kind.CUPBOARD)) {
 			out.put(kind, "handcrafted");
 		}
 		for (Kind kind : List.of(Kind.PICTURE, Kind.TRELLIS, Kind.HANGING_POT, Kind.LAMP, Kind.BLINDS)) {

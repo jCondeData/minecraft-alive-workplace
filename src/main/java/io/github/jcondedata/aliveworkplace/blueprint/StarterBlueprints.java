@@ -394,10 +394,10 @@ public final class StarterBlueprints {
 	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(13, 9, 13));
 	/** A second stonecutter and a hoist. */
 	public static final Entry MASONS_YARD_2 = new Entry(AliveWorkplace.id("masons_yard_2"), new Vec3i(18, 15, 13));
-	/** A log cabin with a log pile and a straw target, a fletching table inside (Fletcher; Lumberjack with an axe). */
-	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(11, 11, 10));
-	/** A drying-rack wing with a second fletching table. */
-	public static final Entry FLETCHERS_LODGE_2 = new Entry(AliveWorkplace.id("fletchers_lodge_2"), new Vec3i(13, 11, 10));
+	/** A log pen under a long roof with a stone chimney and a porch, a fletching table inside (Fletcher; Lumberjack with an axe); rebuilt in ROADMAP 50.6. */
+	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(9, 11, 10)); // ROADMAP 50.6: rebuilt
+	/** A dogtrot: an open breezeway and a second, front-gabled pen with a second fletching table. */
+	public static final Entry FLETCHERS_LODGE_2 = new Entry(AliveWorkplace.id("fletchers_lodge_2"), new Vec3i(16, 11, 10));
 	/** A narrow tower house with a cartography table (Cartographer) and a lookout at the top; it has no upgrade. */
 	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
 
@@ -412,26 +412,29 @@ public final class StarterBlueprints {
 	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(17, 17, 22));
 	/** A vintage vault dug under the Cask Hall, down a ladder from a hatch (36.7). */
 	public static final Entry WINERY_3 = new Entry(AliveWorkplace.id("winery_3"), new Vec3i(17, 17, 22), 4);
-	/** A timber shop with a bay window of dress forms, the loom (Tailor), bolts of coloured wool, a fitting room behind. */
-	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
-	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
-	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(11, 15, 12));
+	/** A white shop with a jettied gable over a glazed shopfront of cloth, the loom (Tailor) and sewing table inside (rebuilt in ROADMAP 50.6). */
+	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(12, 13, 12)); // ROADMAP 50.6: rebuilt
+	/** A slender drying tower at the back corner, its loft hung with dyed cloth, up a ladder through two floors. */
+	public static final Entry TAILORS_SHOP_2 = new Entry(AliveWorkplace.id("tailors_shop_2"), new Vec3i(15, 17, 13));
 	/**
-	 * The luxury workshops of ROADMAP 34.14. A brick shop in a spruce frame: the cartography table as the press (Printer)
-	 * under a skylight, a counter for buyers, paper and ink on shelves. No lectern: that would make a librarian.
+	 * The luxury workshops of ROADMAP 34.14 (rebuilt from scratch in 50.6, tools/blueprints/js/print_shop). "The Lantern
+	 * Press": a tall brick hall, gable to the street, a dark-oak shopfront, the cartography table as the press (Printer) in
+	 * the column of light under a glazed lantern on the ridge, a counter for buyers. No lectern: that would make a librarian.
 	 */
-	public static final Entry PRINT_SHOP = new Entry(AliveWorkplace.id("print_shop"), new Vec3i(11, 11, 9));
-	/** A lower wing behind: the bindery and a reading room lined with bookshelves. */
-	public static final Entry PRINT_SHOP_2 = new Entry(AliveWorkplace.id("print_shop_2"), new Vec3i(11, 11, 16));
+	public static final Entry PRINT_SHOP = new Entry(AliveWorkplace.id("print_shop"), new Vec3i(11, 12, 11)); // ROADMAP 50.6: rebuilt
+	/** A lower reading room beside it, lined with bookshelves, its gable set back from the street. */
+	public static final Entry PRINT_SHOP_2 = new Entry(AliveWorkplace.id("print_shop_2"), new Vec3i(17, 12, 11));
 	/**
-	 * A small shop of cut stone with an iron door: the stonecutter (Jeweller) at a bench under a lantern, an amethyst
-	 * cluster in a glass case; a plank door in the east wall for the jeweller, who can't open an iron one.
+	 * "The Stepped Gable" (rebuilt from scratch in ROADMAP 50.7, tools/blueprints/js/jewellers_workshop): a stone-brick
+	 * shop gable-end to the street under a copper roof, its front a crow-stepped gable over a glass case with the amethyst
+	 * in it; the stonecutter (Jeweller) at the bench under a lantern, reached by his timber door; buyers come in by the
+	 * iron door.
 	 */
-	public static final Entry JEWELLERS_WORKSHOP = new Entry(AliveWorkplace.id("jewellers_workshop"), new Vec3i(9, 10, 9));
-	/** A strong room behind: a vault of ten chests behind iron bars. */
-	public static final Entry JEWELLERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("jewellers_workshop_2"), new Vec3i(9, 10, 14));
-	/** A vault dug under the shop (36.7). */
-	public static final Entry JEWELLERS_WORKSHOP_3 = new Entry(AliveWorkplace.id("jewellers_workshop_3"), new Vec3i(9, 10, 14), 4);
+	public static final Entry JEWELLERS_WORKSHOP = new Entry(AliveWorkplace.id("jewellers_workshop"), new Vec3i(11, 13, 10)); // ROADMAP 50.7: rebuilt
+	/** The Strong Room behind: a stone barrel vault, fourteen chests behind a barred grille with its own iron door. */
+	public static final Entry JEWELLERS_WORKSHOP_2 = new Entry(AliveWorkplace.id("jewellers_workshop_2"), new Vec3i(11, 13, 17));
+	/** The Deep Vault dug under the Strong Room, down a ladder from a hatch (36.7). */
+	public static final Entry JEWELLERS_WORKSHOP_3 = new Entry(AliveWorkplace.id("jewellers_workshop_3"), new Vec3i(11, 13, 17), 4);
 
 	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
@@ -475,16 +478,18 @@ public final class StarterBlueprints {
 	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
 	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
 	/**
-	 * The Crafter's Workshop (ROADMAP 37.14): birch boards in a spruce frame under a dark oak roof, the Crafter's Workbench
-	 * facing the door between two chests, and an open store lean-to of logs, planks and slabs against the east wall.
+	 * The Crafter's Workshop (ROADMAP 37.14; rebuilt from scratch in 50.7, tools/blueprints/js/crafters_workshop): "the
+	 * Saw-Tooth Shop", a brick workroom under three glazed saw teeth with a twin-flue forge stack and a porch. The job is
+	 * retired (37.16a), so it has no job block of any job: a plain building of the workshop quarter.
 	 */
 	public static final Entry CRAFTERS_WORKSHOP = new Entry(AliveWorkplace.id("crafters_workshop"), new Vec3i(13, 11, 11));
 
 	/**
-	 * The Glassblower's (ROADMAP 46.6): a brick glasshouse in a spruce frame with colored panes in its front windows, the
-	 * Glass Kiln facing the door between two chests, and a brick kiln house with a smoking chimney against the east wall.
+	 * The Glassblower's (ROADMAP 46.6; rebuilt from scratch in 50.7, tools/blueprints/js/glassblowers_workshop): a brick
+	 * glass cone over the Glass Kiln, smoking at its top, behind a timber-framed glass shop with his chests and a bullseye
+	 * window in its gable, and a fuel shed of sand and wood on its flank.
 	 */
-	public static final Entry GLASSBLOWERS_WORKSHOP = new Entry(AliveWorkplace.id("glassblowers_workshop"), new Vec3i(13, 12, 11));
+	public static final Entry GLASSBLOWERS_WORKSHOP = new Entry(AliveWorkplace.id("glassblowers_workshop"), new Vec3i(13, 18, 15)); // ROADMAP 50.7: rebuilt
 	/**
 	 * A white, dark-framed Butcher's Shop with its gable to the street and a red-brick smoke tower on its east side (the
 	 * smoker in the tower's foot, a woodpile against it), and under its back half an ice-lined freezer down a
@@ -592,7 +597,12 @@ public final class StarterBlueprints {
 	 */
 	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(17, 16, 17)); // ROADMAP 50.5: rebuilt
 	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
-	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
+	/**
+	 * The Workshop, rebuilt from scratch in ROADMAP 50.7 (tools/blueprints/js/workshop): "the head-tank works", a timber
+	 * plate shop with a water tower whose head tank pours onto the wheel, a glazed press gable over the press and the
+	 * belt, and the Armorer's blast furnace in a brick stack.
+	 */
+	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(15, 18, 13)); // ROADMAP 50.7: rebuilt
 	/** The three Create-powered builds of 39.4. */
 	public static final List<Entry> FIRST_CREATE_BUILDS = List.of(WATERMILL, WINDMILL, WORKSHOP);
 	/**

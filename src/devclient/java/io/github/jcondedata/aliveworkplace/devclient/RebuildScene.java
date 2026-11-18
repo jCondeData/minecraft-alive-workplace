@@ -48,7 +48,8 @@ final class RebuildScene {
 		"townhouse", "artisans_house", "terrace", "masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen", "smithy",
 		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "palisade", "butchers_shop", "winery", "farmstead",
 		"library", "schoolhouse", "school", "watermill", "manor", "weavers_cottage", "post_office", "graveyard", "ferry_house", "clock_tower",
-		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "chapel", "market_cross",
+		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "fletchers_lodge", "tailors_shop", "print_shop",
+		"glassblowers_workshop", "jewellers_workshop", "crafters_workshop", "workshop", "chapel", "market_cross",
 		"leaders_hall", "trade_hall", "starter_cottage_looks", "stone_house_looks");
 	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */
 	static final String LOOKS_SUFFIX = "_looks";

@@ -141,8 +141,17 @@ public class ShutTrapdoorGameTests implements net.fabricmc.fabric.api.gametest.v
 		BlockPos at = new BlockPos(8, 2, 8); // the blueprint's y = 0 on top of the floor, as a builder builds it
 		BlockPos origin = helper.absolutePos(at);
 		template.placeInWorld(level, origin, origin, new StructurePlaceSettings(), net.minecraft.util.RandomSource.create(156L), 2);
-		BlockPos table = helper.absolutePos(at.offset(3, 1, 5));
-		helper.assertTrue(level.getBlockState(table).is(Blocks.CARTOGRAPHY_TABLE), "no cartography table at blueprint (3, 1, 5)");
+		BlockPos table = helper.absolutePos(at.offset(5, 1, 5));
+		helper.assertTrue(level.getBlockState(table).is(Blocks.CARTOGRAPHY_TABLE), "no cartography table at blueprint (5, 1, 5)");
+		// ROADMAP 50.6: the rebuilt Print Shop has flower beds on the ground under its windows, not the old drawing's
+		// flower box, so the box the player met is put back where it hung (shut top trapdoors at (2, 1, 0) and (3, 1, 0),
+		// flower pots on them, the beds under it cleared), exactly as the old drawing had it
+		for (int x = 2; x <= 3; x++) {
+			helper.setBlock(at.offset(x, 0, 0), Blocks.AIR);
+			helper.setBlock(at.offset(x, 1, 0), Blocks.SPRUCE_TRAPDOOR.defaultBlockState().setValue(TrapDoorBlock.FACING, net.minecraft.core.Direction.SOUTH)
+				.setValue(TrapDoorBlock.HALF, Half.TOP));
+			helper.setBlock(at.offset(x, 2, 0), x == 2 ? Blocks.POTTED_CORNFLOWER : Blocks.POTTED_DANDELION);
+		}
 		helper.assertTrue(level.getBlockState(helper.absolutePos(at.offset(2, 1, 0))).getBlock() instanceof TrapDoorBlock,
 			"no flower box at blueprint (2, 1, 0)");
 		// blueprint (1, 0, 0): in front of the wall at the flower box's end; the door is at (5, 1, 1), up the step (5, 0, 0)

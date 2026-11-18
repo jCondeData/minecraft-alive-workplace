@@ -4,19 +4,19 @@
 type: Build
 expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/luxury_workshops/still-2.jpg
-caption: Tailor's Shop II: the cutting room and the drying loft
-Size: 11 wide, 12 deep, 11 high (II: 15 high)
-Tiers: I, II (a cutting room and a drying loft above)
+caption: Tailor's Shop II: the drying tower over the shop
+Size: 12 wide, 12 deep, 13 high (II: 15 wide, 13 deep, 17 high)
+Tiers: I, II (a drying tower at the back corner)
 Workstation: a loom, the [Tailor](tailor.md)'s
 Where to get it: Blueprint Table, or a Journeyman Tailor for 12 emeralds
-Main materials: spruce stairs, dark oak logs, white concrete, spruce planks, stone bricks
+Main materials: deepslate tile stairs, dark oak logs, white concrete, spruce planks, cobbled deepslate, glass panes
 categories: Builds, Classes
 related: tailor.md, luxuries.md, winery-build.md, print-shop-build.md, jewelers-workshop-build.md
 ```
 
-A timber shop of dark oak and white plaster under a spruce roof. The door sits between two banners, and a bay window
-beside it shows two dress forms and a bolt of cloth. Inside: the loom, a counter, bolts of wool in seven colors, and a
-fitting room in a lower wing behind.
+A plain white shop between dark oak posts, with a jettied gable over a glazed shopfront: bolts of colored cloth on show
+behind the glass. Inside: the loom and a sewing table with the chests of wool beside them, and a pressing stove whose
+stack rises at the back (rebuilt from scratch; a shop already standing keeps its old look until refreshed).
 
 ## Getting the blueprint
 
@@ -29,8 +29,8 @@ hand it to the builder. See [The Builder and blueprints](builder.md).
 
 ## Upgrades
 
-**Tailor's Shop II** adds a cutting room story above (a cutting table, bolts of cloth on racks) and a drying loft in the
-roof, open at the front behind a rail, with dyed wool hung from the rafters. A ladder runs up through both floors.
+**Tailor's Shop II** raises a slender drying tower at the back corner, its loft hung with dyed cloth in every color,
+up a ladder through two floors.
 
 ## What it does for the village
 

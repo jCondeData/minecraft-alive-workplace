@@ -21,7 +21,7 @@ workers' chests and job blocks stay where they were.
 | Guildhall III | a strongroom: gold, emerald and lapis and the guild's chests caged behind iron bars, ledgers in chests two high, a counting table | ladder by the hall's west wall |
 | Barracks III | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the east wall |
 | Research Lab III | a lower lab: bookshelves, a stone bench of specimens (amethyst, tinted jars, bone, potted cactus and fungus), chests of samples, a work table with candles | ladder by the lab's front wall |
-| Jeweler's Workshop III | a vault: gold, amethyst, raw gold and emerald caged behind bars with chests of cut stones on them, chests of rough stones, a sorting table | ladder in the shop's north-west corner |
+| Jeweler's Workshop III | the Deep Vault under the Strong Room (rebuilt in 50.7): deepslate walls, double chests down both sides and a strongbox against the back, a lantern hung from its middle | ladder under a dark oak hatch in the anteroom's floor |
 | Artisan's House III | a clay cellar (rebuilt in 49.8): chests along the front wall with barrels on them, casks of slip, clay stock, a sorting table | ladder under a hatch in the workroom floor |
 
 **Dig the cellar.** A finished building whose blueprint now has a cellar, but whose cellar is still mostly ground

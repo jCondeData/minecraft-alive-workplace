@@ -4,7 +4,7 @@ Milestone 46, item 46.6 (owner, 2026-11-09; each job crafts its own kind of thin
 own Glass Kiln: he fires glass from sand (a coal or charcoal for every eight) and makes the panes, stained glass with the
 Florist's dyes, tinted glass and bottles builders wait for. He replaces the stand-in 46.1 left in place: the Mason fired
 the glass until now.
-Roadmap items: 46.6, B1156, B1196, B1197
+Roadmap items: 46.6, B1156, B1196, B1197, 50.7
 
 ## 1. What a player sees
 
@@ -33,10 +33,12 @@ Roadmap items: 46.6, B1156, B1196, B1197
 - His Glass Kiln broken mid-job loses nothing: put back, the panes still come. A nitwit or a child never takes a kiln.
 - With no Glassblower nearby: "Hire a Glassblower to make Glass Panes" (it said "Hire a Mason" before). The Storehouse's
   board says "Made by: the Glassblower (name)" or "Hire a Glassblower to make it".
-- The **Glassblower's Workshop** in the Blueprint Table (13 x 12 x 11, one tier): a brick glasshouse in a spruce frame
-  under a dark oak roof, light blue and yellow stained panes in its front windows, the Glass Kiln facing the door between
-  two chests, a bed, shelves of pots, and a brick kiln house with a smoking chimney and a heap of sand against the east
-  wall. The Steward plans it when the village has eight villagers and no Glassblower, or a Glassblower lost his kiln.
+- The **Glassblower's Workshop** in the Blueprint Table (13 x 18 x 15, one tier; rebuilt from scratch in 50.7): a
+  brick glass cone 18 blocks tall, narrowing in three even courses to a lip that smokes, over the Glass Kiln in its brick
+  siege, the hot shop round it stocked with sand, coal and finished glass. In front, a timber-framed glass shop under a
+  slate gable (light blue transoms, a crown-glass bullseye in the gable), his chests, a cutting table and a bench of
+  vases; on the west flank a fuel shed of sand and split wood with a door into the cone. A shop already standing keeps
+  its old look until refreshed. The Steward plans it when the village has eight villagers and no Glassblower, or a Glassblower lost his kiln.
 - He trades too: sand and coal bought, glass, panes, bottles, stained and tinted glass and a spyglass sold.
 
 ## 2. How it works
@@ -65,7 +67,8 @@ Roadmap items: 46.6, B1156, B1196, B1197
   He helps instead (`MasonWork.helps`): with a Glassblower at work by a builder whose glass lacks sand, the Mason crushes
   it from gravel or cobblestone into the builder's chests (`CrafterWork.makingsFor` reads a Glassblower's lack with the
   kiln's recipes).
-- The blueprint is drawn in `tools/blueprints/workplaces.py` (`glassblowers_workshop`), with its modded-library copy;
+- The blueprint is drawn in `tools/blueprints/js/glassblowers_workshop` since 50.7 (the rebuild kit; the old drawing in
+  `tools/blueprints/workplaces.py` is kept in `blueprint_history`), with its modded-library copy;
   Steward rules `steward_rules/glassblowers_workshop.json` and `workplace_glassblowers_workshop.json`, renewal list
   `steward_renewal/glassblower.json`; on the Village Map it is a workshop.
 - Art: `tools/textures/art/workstations_3.py` (`glass_kiln`) and `villagers_2.py` (`glassblower`).

@@ -420,10 +420,11 @@ public final class StarterBlueprints {
 	 */
 	public static final Entry GLASSBLOWERS_WORKSHOP = new Entry(AliveWorkplace.id("glassblowers_workshop"), new Vec3i(13, 12, 11));
 	/**
-	 * A brick-and-plaster Butcher's Shop under a red-and-white awning, the smoker in its chimney breast, a pen behind, and
-	 * under it an ice-lined freezer down a ladder behind the counter (26.15): one tier, a cellar from the first.
+	 * A white, dark-framed Butcher's Shop with its gable to the street and a red-brick smoke tower on its east side (the
+	 * smoker in the tower's foot, a woodpile against it), and under its back half an ice-lined freezer down a
+	 * ladder (26.15; rebuilt from scratch in 50.4, tools/blueprints/js/butchers_shop): one tier, a cellar from the first.
 	 */
-	public static final Entry BUTCHERS_SHOP = new Entry(AliveWorkplace.id("butchers_shop"), new Vec3i(13, 11, 13), 4);
+	public static final Entry BUTCHERS_SHOP = new Entry(AliveWorkplace.id("butchers_shop"), new Vec3i(21, 13, 16), 4);
 
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);

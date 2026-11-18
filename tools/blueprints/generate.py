@@ -33,7 +33,7 @@ from realm import *
 from village_hall import village_hall, village_hall_2, village_hall_3
 from wonders import WONDERS, save_wonder
 from styles import styled
-from basements import LEVEL_4, butchers_shop, cutaway
+from basements import LEVEL_4, cutaway
 from cellars import LEVEL_3
 from create_builds import *
 from quarry import quarry
@@ -51,6 +51,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # --nbt out/<id>.nbt --basement 4 --cellar "$(cat out/cellar.txt)"), js/tinkers_workshop (LEVEL=1|2) and
            # js/brass_foundry (Create only), then rebuild.py <family> <id>
            "smithy", "smithy_2", "tinkers_workshop", "tinkers_workshop_2", "brass_foundry",
+           # 50.4, the Butcher's Shop: js/butchers_shop (MC_BUILDER=..., sh build.sh writes the candidate; live:
+           # rebuild.py butchers_shop butchers_shop --nbt out/butchers-shop.nbt --basement 4 --cellar "$(cat out/cellar.txt)")
+           "butchers_shop",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
@@ -229,7 +232,8 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
         draw().save(MAIN_STRUCTURES, name)
-    butchers_shop().save(MAIN_STRUCTURES, "butchers_shop")  # ROADMAP 26.15: with its freezer
+    # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
+    # is the old drawing, kept in blueprint_history/
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
         draw().save(MAIN_STRUCTURES, name)
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")

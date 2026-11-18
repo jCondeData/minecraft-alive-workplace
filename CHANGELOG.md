@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Butcher's Shop is rebuilt from scratch** (50.4): a white, dark-framed shop with its gable to the street and
+  display boards under a slate pentice, a red-brick smoke tower on its side that smokes at the peak with the Butcher's
+  smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
+  floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
+  you refresh them, and are never offered a dig of the new freezer.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The

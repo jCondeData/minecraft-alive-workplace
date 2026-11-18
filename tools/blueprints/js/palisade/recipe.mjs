@@ -23,11 +23,10 @@ export function draw(level = 1) {
     [M.walk.z, M.walk.y, P.walk, { axis: 'x' }], // split logs laid along the wall: the walk, seven stations
   ]
   for (let y = M.stakes.y0; y <= M.stakes.y1; y++) section.push([M.stakes.z, y, P.stake, { axis: 'y' }])
-  // --- Pass 2: depth and detail: the flight up the inside face, the wale through the stakes, the shod points --------
+  // --- Pass 2: depth and detail: the flight up the inside face, the wale through the stakes --------
   section.push([M.toe.z, M.toe.y, P.toe, stair(M.toe.facing)])
   section.push([M.revetment.z, M.revetment.y, P.revetment, stair(M.revetment.facing)])
   section.push([M.wale.z, M.wale.y, P.wale, { facing: M.wale.facing, half: 'top', shape: 'straight', waterlogged: 'false' }])
-  section.push([M.points.z, M.points.y, P.point, { waterlogged: 'false' }])
   extrude(c, x0, x1, section)
 
   if (level >= 2) {

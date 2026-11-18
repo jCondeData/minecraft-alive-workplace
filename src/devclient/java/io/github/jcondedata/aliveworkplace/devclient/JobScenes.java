@@ -1559,7 +1559,7 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
 				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
-				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(6, 10, 1),
+				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(7, 15, 3),
 				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			for (int row = 0; row < 2; row++) {
@@ -4175,8 +4175,8 @@ final class JobScenes {
 				return false;
 			};
 		}, null));
-		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised",
-			6000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
+		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: the Founder in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his hand on the first stone, on a stepped stone plinth with a copper plaque",
+			7000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
 			// ROADMAP 29.23: the Village Hall, the Founder (a burgundy mantle, a gold chain of office) by it, and a builder
 			// at a Blueprint Table with barrels holding the statue's materials. The hall's round hands the builder the
 			// Founder's statue on open ground near the hall, and the GIF shows it going up.

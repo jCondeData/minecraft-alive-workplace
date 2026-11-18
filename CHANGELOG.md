@@ -68,6 +68,24 @@ asks for the steps, `latest.log` and any crash report).
   meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
   chests with his composter in the yard. Watermills already standing keep the drawing they were built from until you
   refresh them.
+- **The Nether Gate, the Waystone Plaza and the Mega Shrine are rebuilt from scratch** (52.4). The Nether Gate is a
+  ceremonial gate: the obsidian frame stands between blackstone piers under a steep, flared crimson roof, up a two-step
+  dais with soul fire either side, and a timbered Provisioning Lodge beside it holds the netherworker's cartography table and
+  his stores; Nether Gate II adds a tall Haul House behind the lodge and a walled nether wart terrace behind
+  the gate. The Waystone Plaza (all five village looks) is a wayshrine: a low hipped roof on four posts, open over the
+  stone, with benches under it for travelers waiting on three sides and the front open to the road. The Mega Shrine is a
+  keystone arch: the pedestal stands under a chiseled meteorite keystone, a straight flight climbs the front to the
+  trainer's stand and twin flights climb the back. Builds already standing keep the drawing they were built from until
+  you refresh them.
+- **The Founder's Statue, the Shift Bell and the three camps of found Legends are rebuilt from scratch** (52.5). The
+  Founder now stands in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his
+  hand on the first stone, on a stepped stone plinth with a copper plaque. The Shift Bell is a little deepslate belfry
+  on the smith's own anvil, lit by four lanterns and capped with a copper roof and spire. By a ruined portal the
+  traveler waits in the door of a banded tipi beside a fire ring, a map on a barrel and a lodestone cairn; at an
+  outpost the prisoner is caged on a bogged-down wagon beside the pillagers' tent and black standard (break a bar to
+  free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
+  broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
+  they are.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
@@ -114,6 +132,11 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Clock Tower is rebuilt from scratch** (51.6, with Create). A slender stone tower carries a timber clock room
+  with a cuckoo clock on every side under a flared copper spire (15 x 15, 26 high). Water pours from a stone spout
+  down the tower's front corner and turns the wheel by the door, and through a slit in the wall you can watch the drive
+  climb to the four clocks; the Cartographer's map room is at its foot. Clock Towers already standing keep their look
+  until you refresh them.
 - **The Post Office and the Graveyard are rebuilt from scratch** (51.6). The Post Office is a brick tower with a
   steep slate spire and a weathervane, standing forward of a long counter hall: you come in at the tower's foot and
   walk straight to the Mailbox in the middle of the counter, with a writing table, a bench by the stove and the
@@ -179,6 +202,13 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
+  the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
+  time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while
+  the belt never came back. With no belt connector in the store he now waits and says so.
+- Archers on a Palisade's walk can see out and shoot again: the fence rail along the stake tops stood right in front
+  of their eyes, so they never saw a raider. The stakes now end one block over the walk; walls already built keep
+  their fence rail until the Palisade is rebuilt.
 - **Refresh to the latest look** now digs and builds what a redrawn build has under the ground where its older drawing
   had nothing: an Artisan's House III refreshed to the Kiln House kept solid ground where the cellar now runs under the
   kiln, its new walls and floor unbuilt. Chests, beds in use and job blocks there stay, as everywhere in a refresh.

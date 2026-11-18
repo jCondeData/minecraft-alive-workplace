@@ -248,7 +248,9 @@ From 49.2 on, every blueprint the mod ships is being redrawn from scratch with t
 (`tools/blueprints/REBUILD.md`): a brief written from what the building must do, a designer who never sees the old
 building, and a critic who ships the new one only when it is clearly better. Ids never change, so standing buildings
 and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
-family from four sides and at eye level in every room.
+family from four sides and at eye level in every room. Rebuilt so far include the Nether Gate (13 by 16 by 9; II, 15 by
+16 by 14: an obsidian frame between blackstone piers under a flared crimson roof, with a lodge for the netherworker's cartography table),
+the Waystone Plaza and the Mega Shrine (52.4).
 
 **51.4: the Library and the Schoolhouse** (the School followed in round 3, below). Recipes
 `tools/blueprints/js/{library,schoolhouse}/`
@@ -294,3 +296,14 @@ drawing has no floor under, so they are plain stair benches rather than furnitur
 `GRAVEYARD_2` and `Graveyards.SIZE` are 13 x 16 x 13. The old drawings (and modded copies) are in `blueprint_history/`
 as v0.145.0; the village houses `<style>_post_office` keep their own looks (`village.py`'s staffed house). Scenes
 `rebuild_post_office`, `rebuild_graveyard`.
+
+**51.6: the Clock Tower** (critic SHIP, round 1). Recipe `tools/blueprints/js/clock_tower/` (`npm run cut`), then
+`rebuild.py clock_tower clock_tower --nbt out/clock-tower.nbt`. `clock_tower` ("the Water Clock", Create only) is now
+15 x 26 x 15 (was 11 x 19 x 9), 896 blocks: a stone shaft x 4..10, z 4..10, a jettied clock chamber (y 13..17) with a
+cuckoo clock on every face, a bell-cast copper spire to y 25. The builder pours one water source into the spout pier's
+cup (4, 7, 3); it falls past the water wheel (5, 2, 3), whose drive goes through a gearbox (5, 2, 5), up the corner
+shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to the four clocks (the north one at
+(7, 15, 3)). The cartography table is at (7, 1, 9). It leaves `owner_rules_baseline.json`; its 12 furniture spots are in
+`blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
+`aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
+`rebuild_clock_tower`.

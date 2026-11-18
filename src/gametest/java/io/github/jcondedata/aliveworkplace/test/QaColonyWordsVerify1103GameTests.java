@@ -197,9 +197,13 @@ public class QaColonyWordsVerify1103GameTests implements FabricGameTest {
 	}
 
 	private static boolean statueBlock(ServerLevel level, BlockPos p) {
+		// 52.5: the rebuilt statue's block kinds (tools/blueprints/js/founder_statue)
 		var s = level.getBlockState(p);
-		return s.is(Blocks.WAXED_CUT_COPPER) || s.is(Blocks.CHISELED_STONE_BRICKS) || s.is(Blocks.STONE_BRICKS) || s.is(Blocks.CRACKED_STONE_BRICKS)
-			|| s.is(Blocks.STONE_BRICK_STAIRS) || s.is(Blocks.STONE_BRICK_SLAB) || s.is(Blocks.STONE_BRICK_WALL) || s.is(Blocks.ANDESITE) || s.is(Blocks.ANDESITE_WALL)
-			|| s.is(Blocks.POLISHED_ANDESITE) || s.is(Blocks.POLISHED_ANDESITE_STAIRS) || s.is(Blocks.LANTERN) || s.is(Blocks.STONE_BUTTON) || s.is(Blocks.STONE_SLAB);
+		return s.is(Blocks.WAXED_CUT_COPPER) || s.is(Blocks.WAXED_CUT_COPPER_STAIRS) || s.is(Blocks.WAXED_EXPOSED_CUT_COPPER)
+			|| s.is(Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS) || s.is(Blocks.WAXED_WEATHERED_CUT_COPPER) || s.is(Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS)
+			|| s.is(Blocks.WAXED_OXIDIZED_CUT_COPPER) || s.is(Blocks.WAXED_OXIDIZED_COPPER_TRAPDOOR) || s.is(Blocks.WAXED_CHISELED_COPPER)
+			|| s.is(Blocks.WAXED_COPPER_BLOCK) || s.is(Blocks.CHISELED_STONE_BRICKS) || s.is(Blocks.STONE_BRICKS) || s.is(Blocks.STONE_BRICK_STAIRS)
+			|| s.is(Blocks.STONE_BRICK_WALL) || s.is(Blocks.MOSSY_COBBLESTONE) || s.is(Blocks.MOSS_BLOCK) || s.is(Blocks.FLOWERING_AZALEA)
+			|| s.is(Blocks.LANTERN) || s.is(Blocks.CHAIN);
 	}
 }

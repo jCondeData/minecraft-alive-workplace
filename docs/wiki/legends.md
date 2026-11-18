@@ -66,7 +66,11 @@ dead with no grave (or turned into a witch by lightning) they fall 7 days later 
   every 5 seconds for each player; only villages whose hall is loaded, with someone near it, are looked at, B1222 (a nearer far hall is skipped and the
   next loaded one gets the Legend; `QaFarLegendSite1114dGameTests`); the sites are the structure tags `#aliveworkplace:legend_sites/ruined_portal`,
   `/outpost` and `/shipwreck`, so packs can add their own variants). A small camp is set down with the Legend in it;
-  each structure is used once. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
+  each structure is used once. The camps (redrawn in 52.5): by the portal, a wanderer's banded tipi with its poles
+  crossing out of the smoke hole, the traveler in its door flap, a fire ring, a barrel with a map on it and a lodestone
+  cairn; at the outpost, a barred cage on a bogged-down wagon with the pillagers' tent, cook fire and black standard
+  beside it; on the beach, the wreck's boat turned keel-up as a shelter, the broken mast stood up as a signal pole
+  with a red pennant, salvaged chest and barrel and a fire ring. A traveler by a portal is freed by talking to them, a prisoner caged at an outpost by
   breaking the cage's bars, and a castaway on the beach near a wreck by handing them a cooked meal. Freed, they thank
   you, walk off, and come to the village's hall the next morning as a guest; if the slot was filled meanwhile, they
   don't come, and can be found again later.
@@ -232,7 +236,9 @@ Two Legends gain a power each with 1.7's colonies and trade:
   three or more of; never a guard, a Legend or a child) and waits half as long between colonies (4 days of 7, rounded; on a server with no wait, still none).
   An order given while he lives there carries his blessing: the colony's chronicle reads "Founded on day 12 with the
   Founder's blessing, by settlers from Thornholm", the mother's "…, with the Founder's blessing", and his statue (M29's
-  build) goes up beside the colony's camp when the settlers arrive.
+  build) goes up beside the colony's camp when the settlers arrive. The statue (redrawn in 52.5): the Founder in
+  weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his hand on the first
+  stone, on a stepped stone plinth with a copper plaque.
 - **The Merchant Prince** (`trade_reach`: `spread` 50): his village's Prices tab compares every village within caravan
   range, not only its partners; its caravans take goods for sale only to whichever partner pays most for
   them; and its board sells at 105% of what it pays instead of 110% (after Common Coin's points). His prices are 33.2's.

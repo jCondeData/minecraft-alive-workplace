@@ -481,7 +481,8 @@ CLOCK_FRAME = "dark_oak_log"
 
 
 def clock_tower():
-    """11 x 19 x 9 (ROADMAP 39.8): the Clock Tower. A seven-square tower: a stone-brick shaft two storeys high, then a
+    """The OLD drawing (ROADMAP 51.6: the live clock_tower.nbt now comes from the rebuild kit, tools/blueprints/js/clock_tower;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 19 x 9 (ROADMAP 39.8): the Clock Tower. A seven-square tower: a stone-brick shaft two storeys high, then a
     plastered belfry storey framed in dark oak, under a dark oak hip roof; a cuckoo clock set in the front of the
     belfry under a little stair hood. The water wheel at its foot on the west side (header tank and mill race as the
     Watermill's) turns the clock: its shaft through the wall, gearboxes, a shaft straight up the middle of the tower and

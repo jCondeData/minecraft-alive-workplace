@@ -449,10 +449,11 @@ public final class StarterBlueprints {
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);
 
-	/** An obsidian portal frame in a blackstone arch, with the Nether Brazier: the builder lights it when done. */
-	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(11, 9, 7));
-	/** A gatehouse roof over the portal, a storehouse and a nether wart garden. */
-	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 11, 11));
+	/** An obsidian portal frame in a blackstone arch, with the netherworker's cartography table: the builder lights it when done (52.4,
+	 *  rebuilt from scratch, tools/blueprints/js/nether_gate). */
+	public static final Entry NETHER_GATE = new Entry(AliveWorkplace.id("nether_gate"), new Vec3i(13, 16, 9));
+	/** A gatehouse roof over the portal, a storehouse and a nether wart garden (52.4, rebuilt). */
+	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 16, 14));
 
 	/** An open timber shed with compost bays and the Compost Bin, a fenced yard in front. */
 	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(11, 8, 10));
@@ -529,8 +530,8 @@ public final class StarterBlueprints {
 		HAY_CART, NOTICE_BOARD, LANTERN_PERGOLA, FIRE_PIT, SUNDIAL, TOPIARY_GARDEN, MARKET_CORNER, FOOTBRIDGE);
 
 	/**
-	 * The Mega Shrine (ROADMAP 38.7; tools/blueprints/decor.py, mega_shrine): Mega Showdown's pedestal on a dais of Mega
-	 * meteorite bricks. A decoration (beauty 2) where the village's festival show is held (trainer/MegaShrines).
+	 * The Mega Shrine (ROADMAP 38.7; rebuilt from scratch in 52.4, tools/blueprints/js/mega_shrine): Mega Showdown's
+	 * pedestal on a dais of Mega meteorite bricks under a keystone arch. A decoration (beauty 2) where the village's festival show is held (trainer/MegaShrines).
 	 */
 	public static final Entry MEGA_SHRINE = new Entry(AliveWorkplace.id("mega_shrine"), new Vec3i(7, 6, 7));
 	/** Built of Mega Showdown's blocks: in the Blueprint Table (and the creative tab) only while they exist (trainer/MegaShrines#blocksExist). */
@@ -561,7 +562,8 @@ public final class StarterBlueprints {
 	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
 	 */
 	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
-	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(11, 19, 9));
+	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
+	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
 	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
 	/** The builds of 39.8, in the order the Table shows them. */
 	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
@@ -578,7 +580,7 @@ public final class StarterBlueprints {
 
 	/** Walls and gates: a wooden palisade with a walkway: an earth bank faced in mud brick, a flight up its village
 	 *  side to a stripped-oak walk of seven stations behind a row of pointed spruce stakes (52.3, rebuilt). */
-	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 5, 4));
+	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 4, 4));
 	/** A gate in the palisade (shut at night): a gabled timber gatehouse on stone feet, three spruce gates under its
 	 *  lintel, a walk over the way (52.3, rebuilt). */
 	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 9, 2));
@@ -593,7 +595,7 @@ public final class StarterBlueprints {
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
 	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes (52.3, rebuilt: the bank built
 	 *  out into a walk three wide, 19 stations, seven dripstone stakes in a ditch of turned earth outside). */
-	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 5, 5));
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 4, 5));
 	/** Timber hoardings over the battlements: a roofed walkway with murder holes (52.3, rebuilt). */
 	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
 	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */

@@ -20,6 +20,7 @@
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
 //   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
+//   tents     discEdge, coneTent, waymark                     (a stepped hide tipi with its poles; a cairn with a cap)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -42,7 +43,7 @@ export * from './fires.mjs'
 export * from './planters.mjs'
 export * from './sundials.mjs'
 export * from './pavilions.mjs' // octLevel, tentRoof, faceRun, sideBench (gazebos and round pavilions)
-export * from './statues.mjs' // profileFigure, legs, antlerPair (animal statues: a side profile swept, legs, antlers)
+export * from './statues.mjs' // profileFigure, legs, antlerPair, brimHat (statues: a profile swept, legs, antlers, a figure's broad-brimmed hat)
 export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafColumn (clipped leaves: hedges, arches, standards)
 export * from './carpenter.mjs'
 export * from './mason.mjs'
@@ -75,7 +76,7 @@ export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruiting
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
 export * from './post_office_tower.mjs' // pigeonholes, hallBeams, pillarBox, spireTip (post offices: a sorting wall, a hall's tie beams, a street post box, a slender spire tip)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)
-export * from './shore.mjs' // upturnedHull, transom, pier, dryingRack (shore buildings: an upturned boat for a roof, a pier on piles, a fish-drying rack)
+export * from './shore.mjs' // upturnedHull, transom, pier, dryingRack, beachedBoat, boatMast, raggedCloth (shore buildings: an upturned boat for a roof, a pier on piles, a fish-drying rack; the Castaway Camp's boat on its stems, a mast and yard, a torn sail)
 export * from './landing.mjs' // platformCanopy, mast (ferry and station platforms: a lean-to canopy with brackets and a valance, a signal mast; the Ferry House, 49)
 export * from './watermill_lucam.mjs' // raisedPond, overshotWheel, driveToMillstone, hurst, lucam, sluiceGate (watermills: a raised mill pond, a launder over an overshot wheel into a closed pit, the millstone on its hurst, a gable's sack-hoist hood)
 export * from './weavers.mjs' // lightBand, mouldedCourse, takingInDoor, tenterFrame, dyeRows, leanTo (weavers' houses: the long mullioned window, a moulded course, a taking-in door with its hoist, a tenter frame of dyed cloth, rows of dye flowers, a fold's open lean-to)
@@ -83,6 +84,12 @@ export * from './kilns.mjs' // inDisc, bottleKiln (a round course test; a potter
 export * from './chapel_court.mjs' // copedGable, courtWall, louvres, pew, choirStall (chapels: a coped parapet gable on a roof's profile, a coped wall with piers, belfry louvres, pews with an aisle arm, choir stalls)
 export * from './graveyard_lychgate.mjs' // yardWall, lychgate, parapetGable, lanternTower, pewRun, columnarYew (churchyards: a coped wall with piers, a roofed lychgate, a stone parapet gable, a lantern of the dead, pews, an Irish yew)
 export * from './clock_tower_drive.mjs' // fallRace, dialFace, bellcastSpire, kineticTrain (clock towers: a spout race down a tower's corner past a wheel, a clock face in its dial surround, a bell-cast spire, a Create drive from a list)
+export * from './bells.mjs' // facedDais, flaredHead, bellChamber (bells and stone lanterns: a dais stepped on every face, a head flared out on corbels, an open bell chamber; the Shift Bell, 49)
+export * from './wagons.mjs' // cartWheel, cartBed, barCage, cageLid, shafts, ridgeTent, warStandard (cage wagons and raiders' camps: a disc wheel, a barred cage between posts, a stepped canvas tent, a standard)
+export * from './tents.mjs' // discEdge, coneTent, waymark (the Traveler's Camp, 49: a stepped hide tipi, its poles out of the smoke hole; a wayfarer's cairn)
+export * from './trail_marks.mjs' // trailGround, wheelRuts, ragPost, burstBarrel, arrowStuds, coverHoop (trail marks: a drawn ground layer, wheel ruts, a post with rags tied on, a burst barrel, arrows stuck in a crate, a cover thrown over its hoop)
+export * from './bandit_fort_stronghold.mjs' // stakeWall, poleTent, legTower, stepLeanTo, jettyBand (the Bandit Fort, 49: a ragged stake wall with its fire-step, an A-frame tent on a ridge pole, a watchtower on legs, a stepped lean-to, a keep's jettied timber band)
+export * from './stockade_lockup.mjs' // serratedStakes, leverDoor, stiltLookout, innerWale (raiders' stockades: a serrated stake ring, a lever-worked iron door that really opens, a lookout on four posts, a lashing rail)
 export * from './farm_fields.mjs' // fieldPlot, kerbFence, scarecrow, composter, eaveBrackets (farms: watered farmland with its crops, a fenced kerb, a scarecrow, the Farmer's composter, brackets under a long eave; the Farmstead, 49)
 export * from './ranch.mjs' // ranchGate, horseTrough, stallFront, cupola, hayHood, paddockFence (the Ranch, 49: a ranch gate over the way in, a ground-level trough, box-stall fronts, a ridge cupola, a hay hood with its hoist, a paddock fence with a man-gap)
 export * from './fl_cabin.mjs' // logPen, porchGable (log cabins: a pen of notched round logs, a little gable on posts over a porch's mouth; the Fletcher's Lodge, 49)

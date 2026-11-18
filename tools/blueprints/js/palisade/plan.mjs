@@ -40,6 +40,12 @@
 // the upgrade is clicked by a player onto one finished segment (the Steward never builds it), and only two upgrades
 // put on overlapping segments would meet; there the later site builds its bank over the other's stair, nothing lost.
 //
+// B1382 (2026-11-18): the fence points are gone. A fence's collider is a block and a half tall, so the points stood a
+// rail from 4 to 5.5 right in front of an archer's eyes (4.62 on the walk): no station on the walk saw a single raider
+// and every arrow hit the rail. Any comb on the stake line would do the same (a segment's columns must agree, so it
+// can't skip the station's own column, and dripstone tips cost cave stone by the hundred round a village). The stake
+// line now ends at y 3, one block over the walk: an archer shoots over it at anything from about six blocks out.
+//
 // Masses (named parts):
 //   Toe       cobblestone stairs along the inside foot (z 0, y 0), rising toward the wall: the first step.
 //   Revetment a mud-brick stair on a cobble foot (z 1, y 0..1): the second step, the bank's faced front.
@@ -48,8 +54,6 @@
 //   Stakes    bark-on spruce logs upright, z 3, y 0..3: the palisade, waist-high (one block) over the walk.
 //   Wale      an oak stair hung upside down in the stake line (z 3, y 2), its foot on the inner side: a pale rail lip
 //             proud over a half-block recess, the outer face's shadow line (a stake over it: no station).
-//   Points    a spruce fence post on every stake (z 3, y 4): the stakes' sharpened heads, the comb outline from across
-//             the fields (a fence's top isn't sturdy: no station).
 //   Level II (Palisade II) adds, keeping 84 % of Level I (the flight at x 3 untouched):
 //   Fighting step  the bank built out over the toe and the revetment (z 0..1) on every column but x 3: a cobble foot,
 //                  packed mud, and spruce top slabs at y 2: a walk three wide, twelve more stations. x 3 keeps Level I's
@@ -57,13 +61,13 @@
 //   Stake ditch    turned earth outside the stakes (coarse dirt, z 4, y 0), a pointed dripstone stake standing in it
 //                  on every column, points up.
 //
-// Heights: a raider's ladder or ramp meets the stakes' top at 4 and the points at 5 (the brief: at most 8). Depth:
+// Heights: a raider's ladder or ramp meets the stakes' top at 4 (the brief: at most 8). Depth:
 // Level I 4 (z 0..3; the witches' spawn cells at z 4 stay free), Level II 5 (stakes at z 4, never past the tower's 5).
 
-export const SIZE = { 1: [7, 5, 4], 2: [7, 5, 5] } // w, h, d
+export const SIZE = { 1: [7, 4, 4], 2: [7, 4, 5] } // w, h, d
 
 // Palette (60/30/10): wood (dark bark spruce stakes; pale stripped oak walk and wale, the kit's frame) / earth (mud
-// bricks, packed mud, a cobble foot and toe) / accents: the fence points, Level II's dripstone teeth. Why: dark
+// bricks, packed mud, a cobble foot and toe) / accents: Level II's dripstone teeth. Why: dark
 // stakes over a tan earthen bank read as dug and raised by hand, not bought; the stone kit that replaces it later is
 // grey, so a Town's upgrade shows. Single blocks only, never a mix: a mix varies by x, and copies must agree where they
 // overlap.
@@ -75,7 +79,6 @@ export const PALETTE = {
   walk: 'stripped_oak_log',
   wale: 'oak_stairs',
   stake: 'spruce_log',
-  point: 'spruce_fence',
   fightingStep: 'spruce_slab',
   ditch: 'coarse_dirt',
   spike: 'pointed_dripstone',
@@ -89,7 +92,6 @@ export const MASSES = {
   walk: { z: 2, y: 2 },
   stakes: { z: 3, y0: 0, y1: 3 },
   wale: { z: 3, y: 2, facing: 'north' }, // half top, its full side inward
-  points: { z: 3, y: 4 },
   fightingStep: { zs: [0, 1], y: 2, xs: [0, 1, 2, 4, 5, 6] }, // Level II; x 3 keeps the flight
   ditch: { z: 4, y: 0, xs: [0, 1, 2, 3, 4, 5, 6] }, // Level II; spikes at y 1
 }

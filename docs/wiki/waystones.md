@@ -11,9 +11,10 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310, B1188
 - **A waystone by every Village Hall** (41.1). With Waystones installed, the Steward of a village with a hall proposes
   the **Waystone Plaza** once ("Travelers could find the village by a waystone"), in a Civic zone, nearest the hall
   first. It is a normal build: approved, the village's builder builds it from the store, the waystone included (one of
-  Waystones' own waystone blocks, 1 per plaza). The plaza is 7 by 5 by 7: paving in the village's stone, a two-step
-  dais with the waystone on top, a lamp post on each corner, a bench on each side facing the stone and two potted
-  plants. It is drawn in each village culture's style, the one the hall's biome grows a vanilla village of: plains
+  Waystones' own waystone blocks, 1 per plaza). The plaza is 7 by 5 by 7, a wayshrine (rebuilt from scratch in 52.4):
+  a low hipped roof on four posts, cut open over the waystone so the sky reaches it, lanterns hung from its corners,
+  benches facing the stone on three sides and flower beds in the corners, the front open to the road, and an open walk
+  all round the stone. It is drawn in each village culture's style, the one the hall's biome grows a vanilla village of: plains
   (cobbles and stone, the plain `waystone`), desert (sandstone, `sandy_waystone`), savanna (packed mud, terracotta and
   mud bricks, `mud_bricks_waystone`), snowy (stone bricks, diorite and polished deepslate, `deepslate_waystone`) and
   taiga (mossy cobbles and mossy stone bricks, `mossy_waystone`). Another culture's plaza is tried only where the

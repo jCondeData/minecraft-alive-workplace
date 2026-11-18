@@ -1,0 +1,4 @@
+{"spots": [
+  {"kind":"bed","pos":[4,1,1],"facing":"west","cells":[[0,0,0],[-1,0,0]],"wood":null,"colour":"brown"},
+  {"kind":"lamp","pos":[4,3,2],"facing":"south","cells":[[0,0,0],[0,1,0],[0,2,0]],"wood":"spruce","colour":null}
+]}

@@ -1,0 +1,10 @@
+{
+  "name": "trail",
+  "private": true,
+  "type": "module",
+  "description": "The Trail Marks (story/trail_1 .. story/trail_5), the Carter's Rags, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/trail.md, REBUILD.md). One recipe draws all five (MARK=1..5). MC_BUILDER = the minecraft-builder skill's folder. Output goes to build/rebuild/trail/out; until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "mkdir -p ../../../../build/rebuild/trail/story && for n in 1 2 3 4 5; do MARK=$n node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/trail/out --data-version 3955 && python3 ../../rebuild.py trail story/trail_$n --candidate --nbt ../../../../build/rebuild/trail/out/trail-$n.nbt || exit 1; done",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/trail/out --data-version 3955"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "bandit-fort",
+  "private": true,
+  "type": "module",
+  "description": "The Bandit Fort (story/bandit_fort, _2, _3; ROADMAP 49): three whole levels from one recipe (LEVEL=1..3). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "for l in 1 2 3; do LEVEL=$l node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 || exit 1; done && python3 ../../rebuild.py bandit_fort story/bandit_fort --nbt out/bandit-fort.nbt --candidate && python3 ../../rebuild.py bandit_fort story/bandit_fort_2 --nbt out/bandit-fort-2.nbt --candidate && python3 ../../rebuild.py bandit_fort story/bandit_fort_3 --nbt out/bandit-fort-3.nbt --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

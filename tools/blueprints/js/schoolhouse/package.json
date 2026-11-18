@@ -1,0 +1,7 @@
+{
+  "name": "schoolhouse",
+  "private": true,
+  "type": "module",
+  "description": "Schoolhouse (the Lantern Schoolroom, ROADMAP 49): a candidate for the critic. LEVEL=1|2 picks the level; build.sh builds and saves both. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": { "build": "sh build.sh" }
+}

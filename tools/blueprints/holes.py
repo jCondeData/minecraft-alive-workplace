@@ -78,6 +78,10 @@ ALLOW.update({(n, (2, 4, 7)): "the Well House's open pavilion round the well, no
 # The Gazebo (49 rebuild) is an open pavilion on purpose: eight posts under a tent roof, railings and benches in three
 # bays, flower urns in four, the front bay its way in; the air under the roof is a sheltered seat, not a walled room
 ALLOW.update({(n, (2, 2, 3)): "the Gazebo's open bays under its roof, not a walled room" for n in ("gazebo", "modded/gazebo")})
+# The School (49 rebuild) is a court with two open cloisters on purpose: a colonnade of posts faces the sparring ring
+# so spectators on the benches (west) and at the straw targets (east) watch the lesson; each walk is a loggia, not a room
+ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not a walled room"
+              for n in ("school", "modded/school") for p in ((4, 2, 7), (12, 1, 5))})
 
 
 def load(path, props=False):

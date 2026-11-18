@@ -14,7 +14,7 @@ import { SIZE, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, BRACKET_LAMPS, OU
 import {
   Canvas, LiftedCanvas, mix, stair, slab, plinth, floor, wallPanel, door, hood, gableRoof, crowGable, pyramidRoof,
   chimney, hearthFire, flight, stairwell, railingRun, lampPost, cellar, hatchLadder, plantFlower, clip, leafColumn,
-  benchRun, masonButtress, quoins, plinthCourse, moulding, faceCells, mullionWindow, kneeler, bayWindow,
+  benchRun, masonButtress, quoins, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow,
   furnitureParts,
 } from '../parts/index.mjs'
 
@@ -161,10 +161,10 @@ function levelOne(c) {
     // no moulding in the narrow slots between the porch tower and the wings (x 8..10, 16..18 in front of the hall)
     const slot = (x, z) => z <= 4 && ((x >= 8 && x <= 10) || (x >= 16 && x <= 18))
     plinthCourse(c, cells, 0, stone, (x, z) => bay(x, z) || (x === 13 && z === 0) || stackCells.has(`${x},${z}`))
-    moulding(c, cells, 5, P.dressStairs, toward, (x, z) => bay(x, z) || stackCells.has(`${x},${z}`) || (slot(x, z) && z < 4))
+    courseOut(c, cells, 5, P.dressStairs, toward, (x, z) => bay(x, z) || stackCells.has(`${x},${z}`) || (slot(x, z) && z < 4))
   }
   // the tower's cornice under the pyramid's eave
-  moulding(c, faceCells('x', 1, 11, 15, 'north'), 10, P.dressStairs, 'south')
+  courseOut(c, faceCells('x', 1, 11, 15, 'north'), 10, P.dressStairs, 'south')
   hood(c, 13, 4, 0, P.roof)
   for (const z of [1, 15]) {
     kneeler(c, [0, 9, z], P.dress, P.dressStairs, 'east')
@@ -278,7 +278,7 @@ function levelThree(c) {
     const cells = faceCells(axis, line, u0, u1, out)
     plinthCourse(c, cells, 0, stone, (x, z) => x <= 19 && z >= 15)
     // no string course across the front and the east side: the tall windows run unbroken through the floor line
-    if (line === 15) moulding(c, cells, 5, P.dressStairs, toward, (x, z) => x <= 19)
+    if (line === 15) courseOut(c, cells, 5, P.dressStairs, toward, (x, z) => x <= 19)
   }
   for (const z of B.buttresses) masonButtress(c, 28, z, 0, 6, P.dress, P.dressStairs, 'west')
   for (const z of [1, 15]) {

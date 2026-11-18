@@ -15,7 +15,7 @@ related: decorations.md, builder.md, street-lamp-build.md, moods.md
 ```
 
 A dark oak bench on a stone plinth, its back the rim of a raised stone bed where a cherry tree grows; the tree's
-wide pink crown shades the seat and a lantern hangs from its forward limb over the sitter's head (redrawn in 52.2). Tuck
+wide pink crown shades the seat and a lantern hangs from its forward limb over the sitter's head. Tuck
 one along a path or by the square and the village feels like a place people live.
 
 ## Building it

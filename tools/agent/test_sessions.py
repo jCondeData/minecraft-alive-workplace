@@ -61,7 +61,7 @@ def check(name, cond, detail=""):
     if not cond:
         failures.append(name)
         if detail:
-            print("     " + detail.strip().replace("\n", "\n     "))
+            print("     " + str(detail).strip().replace("\n", "\n     "))
 
 
 def main():
@@ -382,6 +382,33 @@ def run(tmp):
     tagged = sessions_mod.parse("## Bugs\n- [ ] **B9** [lane: c] showcase selftest red\n- [ ] **B10** (lane: d) x\n")
     check("a bug tagged [lane: c] or (lane: d) goes back to that lane",
           [sessions_mod.mark(i, "lane") for i in tagged] == ["lane: c", "lane: d"], tagged)
+
+    # The owner's replies: plain wording, "approve all", picks, and never a silent failure (2026-11-17: "approve all"
+    # and "pick B" were not understood).
+    ops, bad = sessions_mod.parse_reply("49.3 Starter Cottage: pick B\n50.1 Builder's Workshop: pick B\nApprove every pending item")
+    check("reply: two picks and approve-all are read from plain wording",
+          [o["kind"] for o in ops] == ["pick", "pick", "approve_all"] and not bad, (ops, bad))
+    ops, bad = sessions_mod.parse_reply("yes, approve all bugs except B7")
+    check("reply: approve all bugs except an id", ops == [{"kind": "approve_all", "ids": ["B7"], "words": "bugs"}] and not bad, ops)
+    ops, bad = sessions_mod.parse_reply("hello there")
+    check("reply: words it can't read are reported, not dropped", not ops and len(bad) == 1, bad)
+    text = ("## Bugs\n- [x] **B1** (review: pending 2026-11-10) fixed\n- [x] **B2** (review: pending 2026-11-10) fixed\n"
+            "- [ ] **B3** not built\n\n## Milestone 49: x\n- [ ] **49.3** Cottage\n- [x] **49.2** (review: pending 2026-11-17) y\n")
+    ops, bad = sessions_mod.parse_reply("approve all except B2; pick 49.3 B; approve B3; approve B99")
+    new, res = sessions_mod.apply_reply(text, ops)
+    results = {r[0]["ids"][0] + r[0]["kind"]: r[1] for r in res}
+    check("reply: approve all skips the excepted id and approves the rest",
+          "(approved " in new.split("\n")[1] and "(review: pending" in new.split("\n")[2]
+          and "(approved " in new and "(picked: B, " in new, new)
+    check("reply: an unbuilt item and a missing item fail loudly, the rest still go through",
+          results.get("B3approve") is False and results.get("B99approve") is False and results.get("49.3pick") is True, res)
+    check("reply: what it says it recorded is on main afterwards (verify finds nothing wrong)",
+          sessions_mod.verify_reply(new, [r for r in res if r[1]]) == [], res)
+    check("reply: approving what is already approved says so", any("already approved" in r[2]
+          for r in sessions_mod.apply_reply(new, [{"kind": "approve", "ids": ["B1"], "words": ""}])[1]), new)
+    r = S(C, "reply 'hello there' --as chat2", ok=None)
+    check("reply: an unreadable reply exits 1 and says nothing was recorded",
+          r.returncode == 1 and "NOTHING RECORDED" in r.stdout, r.stdout)
 
     # Nothing left behind: no stray worktrees.
     check("no stray worktrees", len(sh("git worktree list", C).stdout.strip().splitlines()) == 1)

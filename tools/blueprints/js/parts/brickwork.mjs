@@ -21,10 +21,10 @@ export function plinthCourse(c, cells, y, stone, skip = () => false) {
   for (const [x, z] of cells) if (!skip(x, z)) c.set(x, y, z, stone)
 }
 
-/** stringCourse out: a moulding one block out from a wall face at y, upside-down stairs with their backs to the wall
+/** courseOut: a moulding one block out from a wall face at y, upside-down stairs with their backs to the wall
  *  (`toward`: the way the wall lies), so the floor line reads outside and upper sills have something to stand on.
  *  cells: [x, z] outside the wall. */
-export function moulding(c, cells, y, stairs, toward, skip = () => false) {
+export function courseOut(c, cells, y, stairs, toward, skip = () => false) {
   for (const [x, z] of cells) if (!skip(x, z)) stair(c, x, y, z, stairs, toward, 'top')
 }
 

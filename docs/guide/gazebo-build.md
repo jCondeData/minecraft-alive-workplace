@@ -14,7 +14,7 @@ categories: Builds, Village life
 related: decorations.md, builder.md, fountain-build.md, bandstand-build.md
 ```
 
-An open octagonal gazebo on a stepped stone dais (redrawn in 52.2): eight white birch posts with arched brackets,
+An open octagonal gazebo on a stepped stone dais: eight white birch posts with arched brackets,
 railings and benches in the side and back bays, flower urns, a flared slate tent roof with a dark eave and an open
 cupola with a lantern on top, and flowers in the plot's corners. A lovely spot in a park or by the water.
 

@@ -1,0 +1,11 @@
+{
+  "name": "storehouse-a",
+  "private": true,
+  "type": "module",
+  "description": "Storehouse, Version A (the Hoist House, ROADMAP 49). MC_BUILDER = the minecraft-builder skill's folder. build.sh writes the three levels as candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/storehouse-a.nbt"
+  }
+}

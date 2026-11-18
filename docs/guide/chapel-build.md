@@ -2,17 +2,17 @@
 
 ```infobox
 type: Build
-Size: 11 wide, 16 deep, 16 high
+Size: 13 wide, 17 deep, 16 high
 Tiers: one
 Houses: the village's weddings
 Where to get it: Blueprint Table
 Beauty: 4
-Main materials: stone bricks, deepslate tiles and stairs, polished andesite, glass panes
+Main materials: polished diorite, stone bricks, deepslate tile stairs, polished andesite, glass panes
 categories: Builds
 related: village-life.md, graveyard-build.md, village-hall.md
 ```
 
-A stone chapel with a bell tower and a slate spire, tall windows down both sides: the finest of the decorations, and where the village's couples marry.
+The Blossom Court: a limewashed bell tower with twin belfry openings and a slate spire stands at the front, lamp posts either side of its door, and behind it one long white nave runs under a single slate roof, stepped stone buttresses between its tall windows. Inside, dark oak pews line the aisle to a stone vow arch wreathed in flowering azalea, where couples stand to marry, and the altar under the rose window. The finest of the decorations, and where the village's couples marry. Chapels built before it was redrawn keep their old look until you refresh them.
 
 ## Getting the blueprint
 

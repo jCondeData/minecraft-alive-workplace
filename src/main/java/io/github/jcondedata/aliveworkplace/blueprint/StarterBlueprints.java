@@ -479,8 +479,9 @@ public final class StarterBlueprints {
 	/** An open octagonal gazebo on a stepped stone dais: eight white posts, railings and benches, a flared slate tent
 	 *  roof with an open cupola, flowers in the corners (52.2). */
 	public static final Entry GAZEBO = new Entry(AliveWorkplace.id("gazebo"), new Vec3i(11, 14, 11));
-	/** A stone chapel with a bell tower and a slate spire: where the village's couples marry. */
-	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(11, 16, 16));
+	/** The Blossom Court: a stone chapel with a central bell tower over a long buttressed nave, where the village's
+	 *  couples marry (rebuilt 51.6). */
+	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(13, 16, 17));
 	/** A paved square with a fountain, kiosks, benches and the village bell. */
 	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
 	/*

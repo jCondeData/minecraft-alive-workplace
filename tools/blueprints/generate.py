@@ -84,6 +84,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 51.6, the Clock Tower ("the Water Clock", Create only): js/clock_tower (npm run cut), then rebuild.py
            # clock_tower clock_tower --nbt out/clock-tower.nbt
            "clock_tower",
+           # 51.6, the Chapel ("the Blossom Court"): js/chapel (npm run cut), then rebuild.py chapel chapel --nbt
+           # build/rebuild/chapel/out/chapel.nbt
+           "chapel",
            # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
            # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
            "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",
@@ -271,7 +274,7 @@ if __name__ == "__main__":
         if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
-    chapel().save(MAIN_STRUCTURES, "chapel")
+    # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
     sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")

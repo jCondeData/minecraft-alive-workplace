@@ -307,3 +307,11 @@ shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to t
 `blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
 `aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
 `rebuild_clock_tower`.
+
+**51.6: the Chapel** (critic SHIP, round 3). Recipe `tools/blueprints/js/chapel/` (`npm run cut`), then
+`rebuild.py chapel chapel --nbt build/rebuild/chapel/out/chapel.nbt`. `chapel` ("the Blossom Court") is now 13 x 16 x 17
+(was 11 x 16 x 16), 879 blocks: a gate tower x 4..8, z 1..5 (belfry y 11..12, slate spire to y 15), a nave x 2..10,
+z 5..15 under one slate roof (ridge y 10), stepped buttresses at z 8 and z 11. The middle the code reads for weddings
+(`Couples.venue`, the plot's middle) is (6, 1, 8), the rose under the vow arch, open and reachable. It leaves
+`owner_rules_baseline.json`; its 25 furniture spots are in `blueprint_furniture/chapel.json`; the old drawing is in
+`blueprint_history/chapel/` as v0.145.0. Scene `rebuild_chapel`.

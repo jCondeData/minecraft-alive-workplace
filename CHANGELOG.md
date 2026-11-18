@@ -121,6 +121,11 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Chapel is rebuilt from scratch** (51.6, "the Blossom Court"). A limewashed bell tower with twin belfry
+  openings and a slate spire stands at the front, lamp posts either side of its door, and behind it one long white nave
+  runs under a single slate roof, stepped stone buttresses down both sides (13 x 17, 16 high). Inside, dark oak pews
+  line an andesite aisle to a stone vow arch wreathed in flowering azalea, where couples stand to marry, and the altar
+  under the rose window. Chapels already standing keep their look until you refresh them.
 - **The Clock Tower is rebuilt from scratch** (51.6, with Create). A slender stone tower carries a timber clock room
   with a cuckoo clock on every side under a flared copper spire (15 x 15, 26 high). Water pours from a stone spout
   down the tower's front corner and turns the wheel by the door, and through a slit in the wall you can watch the drive

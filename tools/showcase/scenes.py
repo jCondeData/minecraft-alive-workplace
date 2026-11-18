@@ -1669,6 +1669,13 @@ SCENES = [
            ("02_outside_back", "From the back: the chapel's stone gable with its tall lancet, a yew either side"),
            ("03_outside_west", "From the west: the lantern tower rising over the chapel roof"),
            ("10_room_1", "The chapel at eye level: pews along both walls, the bier under the lamp, the Undertaker's brewing stand at the altar between candles")], furniture=True),
+    # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
+    S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
+      "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Chapel from the front: the limewashed bell tower with its twin belfry openings and slate spire, lamp posts at the door, blossom bushes on the lawn"),
+           ("02_outside_back", "From the back: the nave's gable with the rose window under the roof's overhang"),
+           ("04_outside_east", "From the east: the long nave under one slate roof, stepped buttresses between the tall side lights"),
+           ("10_room_1", "Inside at eye level: dark oak pews along the aisle to the vow arch wreathed in azalea and the altar under the rose window")], furniture=True),
     # ROADMAP 51.6: the Clock Tower rebuilt from scratch ("the Water Clock", Create only)
     S("rebuild_clock_tower", "Build families", "The Clock Tower, rebuilt: from four sides and at eye level inside",
       "the Clock Tower's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",

@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1289, B1290, B1293, B1301, B1311, B1334, B1349, B1378
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1289, B1290, B1293, B1301, B1311, B1334, B1349, B1378, 50.7
 
 ## 1. What a player sees
 
@@ -111,7 +111,12 @@ The Crafter is gone for new villagers: the Crafter's Workbench can't be crafted,
 and no villager takes one. A Crafter on an existing world becomes jobless the first moment it's loaded (what it carried
 drops at its feet) and soon takes another job. A Crafter's Workbench already placed stays a block. The Crafter's
 Workshop (37.16) left with it (37.16a): the Blueprint Table no longer offers it, the Steward no longer plans it and
-villages no longer grow it; workshops already built or grown stay as plain buildings.
+villages no longer grow it; workshops already built or grown stay as plain buildings. Its blueprint was rebuilt from
+scratch in 50.7 as "the Saw-Tooth Shop", a plain building of the workshop quarter with no job block in it: a brick
+workroom under three saw teeth glazed on their steep faces, a twin-flue forge stack up the west side, stone piers at the
+corners and a porch along the front; inside, two furnaces in the forge breast, an anvil, benches round the walls, a work
+table with the timber stock beside it, and two chests. A workshop already standing keeps its old look until refreshed
+from the Village Hall's Repairs page.
 
 ## 2. How it works
 
@@ -195,7 +200,8 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
 - Block: `aliveworkplace:crafters_workbench` stays registered (no recipe, not in the creative tab); job
   `aliveworkplace:crafter` stays registered so old saves load; nobody takes it.
 - Blueprint `aliveworkplace:crafters_workshop` and the village pieces `aliveworkplace:village/<style>_crafters_workshop`
-  still load by id; not offered, planned or grown.
+  still load by id; not offered, planned or grown. The blueprint is drawn in `tools/blueprints/js/crafters_workshop`
+  since 50.7 (no Crafter's Workbench, no job block of any job); the village pieces keep their own looks.
 - Data: `data/<namespace>/crafter_benches/*.json` still read (CobbleFurnies' Furni Crafter's recipe type), used by
   `Crafting.chain(level, target, count, usable, types)`.
 - Text: `message.aliveworkplace.job_chain.*` (the step, the lack line, "Can't be made yet", "Nobody here makes").

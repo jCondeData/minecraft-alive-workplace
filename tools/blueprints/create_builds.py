@@ -144,7 +144,8 @@ def windmill():
 
 
 def workshop():
-    """14 x 10 x 9: the Workshop. A nine-wide brick-and-spruce shop under a spruce gable with a water wheel on its west
+    """The OLD drawing (ROADMAP 50.7: the live workshop.nbt now comes from the rebuild kit, tools/blueprints/js/workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 10 x 9: the Workshop. A nine-wide brick-and-spruce shop under a spruce gable with a water wheel on its west
     wall (header tank and mill race as the Watermill's). Inside, the wheel's shaft drives a belt running to the front,
     which ends at a depot under a mechanical press (the armorer's machine, 39.3); the press is driven from the belt's
     far pulley by a column of cogwheels. The armorer's blast furnace and the store chest by the back wall."""

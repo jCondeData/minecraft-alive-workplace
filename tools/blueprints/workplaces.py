@@ -1043,7 +1043,8 @@ CR_ROOF = DARK_OAK
 
 
 def crafters_workshop():
-    """13 x 11 x 11: the Crafter's workroom and its store."""
+    """The OLD drawing (ROADMAP 50.7: the live crafters_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/crafters_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 11: the Crafter's workroom and its store."""
     b = Build(13, 11, 11)
     plinth(b, 1, 3, 9, 8, STONE_MIX)
     box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")
@@ -1124,7 +1125,8 @@ GB_ROOF = DARK_OAK
 
 
 def glassblowers_workshop():
-    """13 x 12 x 11: the Glassblower's glasshouse, its kiln house and chimney."""
+    """The OLD drawing (ROADMAP 50.7: the live glassblowers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/glassblowers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 11: the Glassblower's glasshouse, its kiln house and chimney."""
     b = Build(13, 12, 11)
     plinth(b, 1, 3, 9, 8, STONE_MIX)
     box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")

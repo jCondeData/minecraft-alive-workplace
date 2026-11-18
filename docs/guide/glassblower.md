@@ -22,8 +22,9 @@ stained glass, tinted glass and bottles they wait for.
 Craft a **Glass Kiln** (eight bricks round a furnace with an iron ingot on top) and put it in your village. A villager
 without a job takes it by themselves. A plain furnace is never a Glassblower's: villagers leave your furnaces alone.
 
-The Blueprint Table has a **Glassblower's Workshop**: a brick glasshouse with colored panes in its front windows, the
-Glass Kiln inside between two chests, and a kiln house with a smoking chimney. A village's Steward plans one once it has
+The Blueprint Table has a **Glassblower's Workshop**: a tall brick glass cone over the Glass Kiln, smoking at its top,
+behind a timber-framed glass shop with his chests and a round bullseye window in its gable, and a fuel shed of sand and
+wood on its side. A village's Steward plans one once it has
 eight villagers and no Glassblower.
 
 ## What he makes

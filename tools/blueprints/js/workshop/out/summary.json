@@ -1,0 +1,19 @@
+{
+  "name": "workshop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 49
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/workshop/out/workshop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/workshop/out/summary.json",
+  "size": [
+    15,
+    18,
+    13
+  ],
+  "blockCount": 1073,
+  "paletteCount": 74,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/workshop/recipe.mjs"
+}

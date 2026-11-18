@@ -11,7 +11,7 @@ import { SIZE, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import { MASSES as B_MASSES, OPENINGS as B_OPENINGS, OUTSIDE as B_OUTSIDE, BASEMENT } from '../starter_cottage_b/plan.mjs'
 import {
   Canvas, LiftedCanvas, cellar, hatchLadder, mix, plinth, floor, wallPanel, window, door, doorway, chimney, flight, stairwell, railingRun, slab,
-  flatRoof, parapet, vigas, lampPost, furnitureParts, DIRS,
+  flatDeck, parapet, vigas, lampPost, furnitureParts, DIRS,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -48,13 +48,13 @@ function levelOne(c) {
   plinth(c, W.x0, L.z0, W.x1, W.z1 + 1, P.plinth)
   floor(c, R.x0, R.z0, R.x1, R.z1, 0, P.floor)
   box(c, W, 1, H.deckY + 1, [H.friezeY])
-  flatRoof(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, H.deckY, P.deck)
+  flatDeck(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, H.deckY, P.deck)
   c.clear(W.x0, H.deckY + 1, 8) // the scupper: a gap in the parapet, its spout below
   // the loggia: columns two deep, a slab lintel in each bay, its roof a step below the house's, a lip on its edge
   for (const x of L.columns) for (let y = 1; y < L.roofY; y++) c.set(x, y, L.z0, P.column)
   for (const z of [L.z1]) for (const x of [L.x0, L.x1]) for (let y = 1; y < L.roofY; y++) c.set(x, y, z, P.column)
   for (let x = L.x0 + 1; x < L.x1; x++) if (!L.columns.includes(x)) slab(c, x, L.roofY - 1, L.z0, P.lip, 'top')
-  flatRoof(c, L.x0, L.z0, L.x1, L.z1, L.roofY, P.deck)
+  flatDeck(c, L.x0, L.z0, L.x1, L.z1, L.roofY, P.deck)
   // the hearth's back in the west wall and its flue outside, stepped breast
   const F = MASSES.flue
   wallPanel(c, [W.x0, F.z - 1], [W.x0, F.z + 1], 1, 3, P.stack)
@@ -89,7 +89,7 @@ function levelTwo(c) {
   floor(c, R.x0, R.z0, R.x1, R.z1, 0, P.floor)
   box(c, W, 1, K.deckY + 1, [K.deckY - 1])
   for (let x = W.x0 + 1; x < W.x1; x++) for (let z = W.z0 + 1; z < W.z1; z++) c.set(x, K.floorY, z, P.floor)
-  flatRoof(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, K.deckY, P.deck)
+  flatDeck(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, K.deckY, P.deck)
   // the hall's windows into the wing are closed again (mud brick), the front loggia's east column kept
   for (const [x, y, z] of [[7, 2, 4], [7, 2, 8]]) c.set(x, y, z, wall)
   // the flue in the east wall: up through the deck, the campfire on top, reached from the wing's roof
@@ -125,7 +125,7 @@ function levelThree(c) {
     wallPanel(c, a, b, K.friezeY, K.friezeY, P.frieze)
   }
   for (const z of [W.z0, W.z1]) for (let y = 1; y <= K.deckY + 2; y++) c.set(W.x1, y, z, y > K.deckY + 1 ? P.pier : P.column)
-  flatRoof(c, R.x0, R.z0, R.x1, R.z1, K.deckY, P.deck)
+  flatDeck(c, R.x0, R.z0, R.x1, R.z1, K.deckY, P.deck)
   // the flue behind the smoker, up through the parapet, smoking
   chimney(c, K.flue.x, K.flue.z, 0, K.flue.top, P.stack)
 

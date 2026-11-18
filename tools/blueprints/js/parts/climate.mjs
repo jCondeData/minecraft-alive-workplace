@@ -1,14 +1,14 @@
 // Climate parts: the pieces a biome look draws its house with (ROADMAP 49.10a, the Starter Cottage's desert and snowy
 // looks). Every block comes from the palette passed in; nothing here is hard-coded.
-//   flatRoof   a flat roof deck over a box (desert)
+//   flatDeck   a flat roof deck over a box (desert)
 //   parapet    the low wall round a flat roof, with piers at the corners (desert)
 //   vigas      roof beams whose ends stick out of a wall under a flat roof (desert)
 //   logCourse  a log wall course whose logs lie along the wall (snowy log cabin)
 //   mudroom    a little closed entry porch before a door, its own steep gable roof (snowy)
 import { stair, slab } from './canvas.mjs'
 
-/** flatRoof: a deck of `id` over x0..x1, z0..z1 at y. */
-export function flatRoof(c, x0, z0, x1, z1, y, id) { c.fill(x0, y, z0, x1, y, z1, id) }
+/** flatDeck: a deck of `id` over x0..x1, z0..z1 at y. */
+export function flatDeck(c, x0, z0, x1, z1, y, id) { c.fill(x0, y, z0, x1, y, z1, id) }
 
 /** parapet: a ring of `wall` (a wall block, which joins itself at the corners) round x0..x1, z0..z1 at y, with `pier`
  *  blocks at the four corners `pierH` tall; `gaps` [[x, z]] are left open (scuppers). */

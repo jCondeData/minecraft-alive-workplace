@@ -34,7 +34,7 @@ export * from './railings.mjs'
 export * from './furniture.mjs'
 export * from './water.mjs'
 export * from './cellars.mjs'
-export * from './climate.mjs' // flatRoof, parapet, vigas, logCourse, mudroom (biome looks: desert and snowy homes)
+export * from './climate.mjs' // flatDeck, parapet, vigas, logCourse, mudroom (biome looks: desert and snowy homes)
 export * from './bridges.mjs'
 export * from './garden.mjs'
 export * from './seats.mjs' // benchRun, raisedBed (outdoor seats and the beds behind them)

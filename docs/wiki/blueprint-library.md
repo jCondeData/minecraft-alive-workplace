@@ -341,7 +341,9 @@ x 5 and `gatehouse_2` 11 x 16 x 10 (was 9 high; every gate and portcullis cell i
 x 9, `_2` 13 x 16 x 9, `_3` and `_4` 19 x 16 x 9 (IV + 4 below; was 7 x 14 x 7 to 14 x 23 x 7). Two changes at the ship
 step: the Lookout Tower's two job blocks, drawn as Guard Posts, are grindstones (the Guard Post has no recipe, so no
 builder could be stocked with one), and the Barracks' straw targets are `hay_block` (the recipe had a block id that
-doesn't exist). The Fire Station's standing spot in `answeringHouseBuilt_fire_station` moves to (4, 1, 5), two from the
+doesn't exist). The Barracks' bunks stand at z 8 and 9 (drawn at z 7 and 9): a refresh keeps a job block, and the
+old Barracks' grindstone at (3, 1, 7) sat under the first bunk's foot, so a refreshed Barracks III lost that bunk
+(`qaReleaseRefresh_barracks_3`). The Fire Station's standing spot in `answeringHouseBuilt_fire_station` moves to (4, 1, 5), two from the
 grindstone (2, 1, 5). The fire station and gatehouses leave `owner_rules_baseline.json`. The old drawings and their
 modded copies are in `blueprint_history/`; the Guard House's village pieces (`village/<style>_guard_house`) keep their
 own looks (`village_looks.py` not redrawn). Scenes `rebuild_barracks`, `rebuild_guard_house`, `rebuild_fire_station`,

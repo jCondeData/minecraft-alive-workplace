@@ -12,9 +12,16 @@
 //      head of the hall where the Master sits.
 //
 // Story: the guild raised its hall over the market square. Stone where carts and weather hit it, white plaster and
-// dark oak above, slate tiles. II: the guild grows rich and adds a taller cross-wing at the east (a counting house
-// below, a chapter library above, joined to the hall), its steep gable to the street outranking the hall's ridge.
+// dark oak above, slate tiles. II: the guild grows rich and raises a three-storey cross-wing at the east, jettied
+// twice so each storey leans further over the street than the one below (a counting house in stone, the records
+// room, and at the top the Master's chamber with the guild's coffers), its steep gable standing six blocks over the
+// hall's ridge: a mass of its own, the rich new house of an old guild, not the hall made longer.
 // III: a strongroom dug under the arcade, down a ladder under a hatch in the undercroft floor.
+//
+// Round 3 (critic, halls_51_5_critic.md): no barrel anywhere (a barrel is the fisherman's job block): the market
+// stalls and the counting house keep their stock in empty chests set against a pier or wall; the wing grows a storey
+// and a second jetty; the charter wall outside is plaster and posts round two windows on flowered sills (no blank dark panel);
+// the hall gets its guild chest and a red runner under the charter, a clerk's table at the west end, banners.
 //
 // Coordinates: x across the front (west 0 -> east), y up (0 = the clicked block's layer), z from the front (0) back.
 // Masses:
@@ -23,13 +30,15 @@
 //             along x (ridge z 6, y 16), gable overhang x 0 and 16.
 //   Gablet    a small cross gable over the entrance (x 4..12, z 0..5), its window lighting the hall.
 //   Louvre    a lantern louvre on the ridge at x 8.
-//   Wing (II) x 16..24: stone counting house y 1..4, jettied chapter room y 6..9, steep gable to the front (ridge y 17).
+//   Wing (II) x 16..24: stone counting house y 1..4 (front z 2), records room y 6..9 jettied to z 1, the Master's
+//             chamber y 11..14 jettied again to z 0, beam ring y 15, steep gable to the front (ridge y 22), a steep
+//             cross gable on its east side; a stair up the back wall (z 10) from the records room to the chamber.
 //   Strongroom (III) under the arcade: walls x 1..15, z 2..11, floor y -4.
 
 export const LEVELS = {
   guildhall: { size: [17, 22, 13], wing: false, cellar: false, base: 0 },
-  guildhall_2: { size: [25, 22, 13], wing: true, cellar: false, base: 0 },
-  guildhall_3: { size: [25, 22, 13], wing: true, cellar: true, base: 4 },
+  guildhall_2: { size: [25, 24, 13], wing: true, cellar: false, base: 0 },
+  guildhall_3: { size: [25, 24, 13], wing: true, cellar: true, base: 4 },
 }
 
 // Palette 60/30/10: stone and white plaster (walls) / dark oak frame and slate roof / red cloth, lanterns, spruce.
@@ -65,9 +74,15 @@ export const HALL = { x0: 1, x1: 15, z0: 1, z1: 11, floorY: 5, wallTop: 9, beamY
   // round 2: a rear gablet over the charter wall breaks the long back slope (its window lights the charter)
   rearGablet: { axis: 'z', across: [4, 12], along: [7, 12], eaveY: 10, steep: false },
   ties: [4, 8, 12] }
-export const WING = { x0: 16, x1: 24, z0: 1, z1: 11, roof: { axis: 'z', across: [16, 24], along: [0, 12], eaveY: 10, steep: true },
+// round 3: the wing rises a storey (floor y 10, walls 11..14, jettied to z 0) under a roof whose eave is y 15
+export const WING = { x0: 16, x1: 24, z0: 1, z1: 11, top: { z0: 0, floorY: 10, wallTop: 14, beamY: 15 },
+  frontPosts: [16, 20, 24], topFront: [16, 18, 22, 24], topBack: [16, 20, 24], topSide: [2, 6, 10],
+  roof: { axis: 'z', across: [16, 24], along: [0, 12], eaveY: 15, steep: true },
   // round 2: a steep cross gable on the wing's east side, so its end to the lane is a gable, not a bare slope
-  eastGable: { axis: 'x', across: [3, 9], along: [21, 24], eaveY: 10, steep: true } }
+  eastGable: { axis: 'x', across: [3, 9], along: [21, 24], eaveY: 15, steep: true },
+  // round 3: the stair from the records room up to the Master's chamber, rising east along the back wall
+  flight: [[18, 6, 10], [19, 7, 10], [20, 8, 10], [21, 9, 10], [22, 10, 10]], well: [[20, 10, 10], [21, 10, 10]],
+  rail: [[19, 11, 10], [19, 11, 9], [20, 11, 9], [21, 11, 9]] }
 export const CELLAR = { x0: 1, z0: 2, x1: 15, z1: 11, depth: 4, hatch: [13, 10] }
 
 export const OPENINGS = {
@@ -86,15 +101,22 @@ export const OPENINGS = {
     { cells: [[15, 12, 6], [15, 13, 6]], out: 'east', level: 1 },
     { cells: [[7, 11, 11], [8, 11, 11], [9, 11, 11], [8, 12, 11]], out: 'south' }, // the rear gablet
     { cells: [[1, 7, 9], [1, 8, 9]], out: 'west' }, // the master's end, west
+    // round 3: the charter wall, two windows on sills with flowers either side of the frames (they light the charter)
+    { cells: [[6, 7, 11], [6, 8, 11]], out: 'south', dress: 'sill', pots: ['potted_poppy'] },
+    { cells: [[10, 7, 11], [10, 8, 11]], out: 'south', dress: 'sill', pots: ['potted_red_tulip'] },
   ],
   wingWindows: [
     { cells: [[18, 2, 2], [18, 3, 2]], out: 'north' }, { cells: [[22, 2, 2], [22, 3, 2]], out: 'north' },
     { cells: [[24, 2, 5], [24, 3, 5], [24, 2, 7], [24, 3, 7]], out: 'east' },
     { cells: [[18, 7, 1], [18, 8, 1]], out: 'north' }, { cells: [[22, 7, 1], [22, 8, 1]], out: 'north' },
-    { cells: [[19, 11, 1], [20, 11, 1], [21, 11, 1], [20, 12, 1], [20, 13, 1], [20, 14, 1]], out: 'north' },
     { cells: [[24, 7, 4], [24, 8, 4], [24, 7, 8], [24, 8, 8]], out: 'east' },
     { cells: [[19, 7, 11], [19, 8, 11], [21, 7, 11], [21, 8, 11]], out: 'south' },
-    { cells: [[24, 12, 6], [24, 13, 6]], out: 'east' }, // the east cross gable
+    // round 3: the Master's chamber (a three-light window over the street), its gables, the east cross gable
+    { cells: [[19, 12, 0], [20, 12, 0], [21, 12, 0], [19, 13, 0], [20, 13, 0], [21, 13, 0]], out: 'north' },
+    { cells: [[24, 12, 4], [24, 13, 4], [24, 12, 8], [24, 13, 8]], out: 'east' },
+    { cells: [[18, 12, 11], [18, 13, 11], [22, 12, 11], [22, 13, 11]], out: 'south' },
+    { cells: [[20, 16, 0], [20, 17, 0]], out: 'north' }, { cells: [[20, 16, 11], [20, 17, 11]], out: 'south' },
+    { cells: [[24, 16, 6], [24, 17, 6]], out: 'east' }, // the east cross gable
     { cells: [[19, 2, 11], [19, 3, 11], [21, 2, 11], [21, 3, 11]], out: 'south' }, // the counting house, back
   ],
   wingDoor: [20, 1, 2], wingGround: [16, 1, 8], wingUpper: [[15, 6, 6], [16, 6, 6]],
@@ -106,6 +128,7 @@ export const FRAMES = [
   { at: [7, 7, 10], facing: 'north' }, { at: [8, 7, 10], facing: 'north' }, { at: [9, 7, 10], facing: 'north' },
   { at: [10, 2, 10], facing: 'north' },
   { at: [23, 7, 6], facing: 'west', wing: true }, { at: [20, 2, 10], facing: 'north', wing: true },
+  { at: [17, 12, 6], facing: 'east', wing: true }, // round 3: over the Master's table
   { at: [8, -2, 10], facing: 'north', cellar: true },
 ]
 
@@ -115,8 +138,22 @@ export const FURNITURE = [
   ...[6, 7, 8, 9, 10].map(x => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [x, 6, 5], facing: 'south', wood: 'spruce' })),
   ...[6, 7, 8, 9, 10].map(x => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [x, 6, 7], facing: 'north', wood: 'spruce' })),
   { room: 'Hall', kind: 'chair', part: 'armchair', pos: [11, 6, 6], facing: 'west', wood: 'dark_oak', colour: 'red' },
-  { room: 'Hall', kind: 'picture', part: 'picture', pos: [6, 8, 10], facing: 'north', wood: 'spruce', colour: 'red' },
-  { room: 'Hall', kind: 'picture', part: 'picture', pos: [10, 8, 10], facing: 'north', wood: 'spruce', colour: 'red' },
+  // round 3: banners beside the two charter windows, and on the east wall behind the Master's chair
+  { room: 'Hall', kind: 'picture', part: 'picture', pos: [5, 8, 10], facing: 'north', wood: 'spruce', colour: 'red' },
+  { room: 'Hall', kind: 'picture', part: 'picture', pos: [11, 8, 10], facing: 'north', wood: 'spruce', colour: 'red' },
+  { room: 'Hall', kind: 'picture', part: 'picture', pos: [14, 8, 3], facing: 'west', wood: 'spruce', colour: 'red' },
+  { room: 'Hall', kind: 'picture', part: 'picture', pos: [14, 8, 9], facing: 'west', wood: 'spruce', colour: 'red' },
+  // round 3: the meeting room by the charter: the guild chest (empty, against the wall) under the middle frame, low
+  // bookcases under the outer two, a candle on its stand by the east window, a red runner up to it from the table
+  { room: 'Hall', kind: 'chest', part: 'chest', pos: [8, 6, 10], facing: 'north' },
+  { room: 'Hall', kind: 'bookcase', part: 'bookcase', pos: [7, 6, 10], facing: 'north', wood: 'spruce' },
+  { room: 'Hall', kind: 'bookcase', part: 'bookcase', pos: [9, 6, 10], facing: 'north', wood: 'spruce' },
+  { room: 'Hall', kind: 'lamp', part: 'tableLamp', pos: [10, 6, 10], facing: 'north', wood: 'spruce' },
+  { room: 'Hall', kind: 'rug', part: 'rug', cellsAbs: [[7, 6, 8], [8, 6, 8], [9, 6, 8], [7, 6, 9], [8, 6, 9], [9, 6, 9]], colour: 'red' },
+  // round 3: the clerk's table at the west end, where the minutes are written (two seats each side)
+  ...[3, 4].map(z => ({ room: 'Hall', kind: 'table', part: 'table', pos: [3, 6, z], facing: 'north', wood: 'spruce', colour: 'green' })),
+  ...[3, 4].map(z => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [2, 6, z], facing: 'east', wood: 'spruce' })),
+  ...[3, 4].map(z => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [4, 6, z], facing: 'west', wood: 'spruce' })),
   { room: 'Hall', kind: 'cupboard', part: 'cupboard', pos: [12, 6, 10], facing: 'north', wood: 'spruce' },
   { room: 'Hall', kind: 'cupboard', part: 'cupboard', pos: [13, 6, 10], facing: 'north', wood: 'spruce' },
   { room: 'Hall', kind: 'clock', part: 'clock', pos: [14, 6, 10], facing: 'north', wood: 'spruce' },
@@ -137,28 +174,41 @@ export const FURNITURE = [
   { room: 'Chapter room', kind: 'picture', part: 'picture', pos: [23, 8, 6], facing: 'west', wood: 'spruce', colour: 'red', wing: true },
   { room: 'Chapter room', kind: 'lamp', part: 'hangingLamp', pos: [20, 9, 6], facing: 'north', wood: 'spruce', wing: true },
   // round 2: the counting house (a tally table under its lamp, the strongbox chests, the clerk's lit desk) and the
-  // records room above (shelves round the walls, a reading table, a lit writing desk, a lectern for the rolls)
+  // records room above (shelves round the walls, a reading table, a lit writing desk; no lectern: a job block)
   ...[19, 20, 21].map(x => ({ room: 'Counting house', kind: 'table', part: 'table', pos: [x, 1, 6], facing: 'north', wood: 'spruce', colour: 'green', wing: true })),
   ...[19, 20, 21].map(x => ({ room: 'Counting house', kind: 'chair', part: 'chair', pos: [x, 1, 7], facing: 'north', wood: 'spruce', wing: true })),
   { room: 'Counting house', kind: 'chair', part: 'armchair', pos: [20, 1, 5], facing: 'south', wood: 'dark_oak', colour: 'green', wing: true },
   { room: 'Counting house', kind: 'chest', part: 'chest', pos: [23, 1, 6], facing: 'west', wing: true },
-  { room: 'Counting house', kind: 'chest', part: 'pantry', pos: [23, 1, 7], facing: 'west', block: 'barrel', wing: true },
+  { room: 'Counting house', kind: 'chest', part: 'chest', pos: [23, 1, 7], facing: 'west', wing: true }, // round 3: was a barrel
   { room: 'Counting house', kind: 'desk', part: 'desk', pos: [23, 1, 9], facing: 'west', wood: 'spruce', wing: true },
   { room: 'Counting house', kind: 'lamp', part: 'tableLamp', pos: [17, 1, 3], facing: 'south', wood: 'spruce', wing: true },
   { room: 'Counting house', kind: 'cupboard', part: 'cupboard', pos: [17, 1, 10], facing: 'north', wood: 'spruce', wing: true },
-  ...[18, 20, 22].map(x => ({ room: 'Chapter room', kind: 'cupboard', part: 'cupboard', pos: [x, 6, 10], facing: 'north', wood: 'spruce', wing: true })),
+  // round 3: the back wall is the stair now; its shelves go to the west wall
+  ...[3, 4].map(z => ({ room: 'Chapter room', kind: 'cupboard', part: 'cupboard', pos: [17, 6, z], facing: 'east', wood: 'spruce', wing: true })),
   ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'table', part: 'table', pos: [x, 6, 6], facing: 'north', wood: 'spruce', colour: 'red', wing: true })),
   ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'chair', part: 'chair', pos: [x, 6, 5], facing: 'south', wood: 'spruce', wing: true })),
   ...[19, 20].map(x => ({ room: 'Chapter room', kind: 'chair', part: 'chair', pos: [x, 6, 7], facing: 'north', wood: 'spruce', wing: true })),
-  { room: 'Chapter room', kind: 'desk', part: 'desk', pos: [17, 6, 10], facing: 'north', wood: 'spruce', wing: true },
+  { room: 'Chapter room', kind: 'desk', part: 'desk', pos: [17, 6, 8], facing: 'east', wood: 'spruce', wing: true },
   { room: 'Chapter room', kind: 'lamp', part: 'tableLamp', pos: [17, 6, 2], facing: 'south', wood: 'spruce', wing: true },
-  // the hall table's lamp, at its foot; the arcade's two market counters with their stock barrels behind
+  // the hall table's lamp, at its foot; the arcade's two market counters, each with its stock chest (empty) set
+  // against the arcade pier beside it (round 3: chests, not barrels, which would make a villager a fisherman)
   { room: 'Hall', kind: 'lamp', part: 'tableLamp', pos: [5, 6, 6], facing: 'east', wood: 'spruce' },
   ...[4, 5, 6].map(z => ({ room: 'Arcade', kind: 'counter', part: 'counter', pos: [3, 1, z], facing: 'east', wood: 'spruce', top: 'spruce_slab', topSlab: true })),
   ...[5, 6, 7].map(z => ({ room: 'Arcade', kind: 'counter', part: 'counter', pos: [13, 1, z], facing: 'west', wood: 'spruce', top: 'spruce_slab', topSlab: true })),
-  { room: 'Arcade', kind: 'chest', part: 'pantry', pos: [2, 1, 4], facing: 'east', block: 'barrel' },
-  { room: 'Arcade', kind: 'chest', part: 'pantry', pos: [14, 1, 7], facing: 'west', block: 'barrel' },
+  { room: 'Arcade', kind: 'chest', part: 'chest', pos: [2, 1, 6], facing: 'east' },
+  { room: 'Arcade', kind: 'chest', part: 'chest', pos: [14, 1, 6], facing: 'west' },
+  // round 3: the Master's chamber at the top of the wing: his table under the charter frame, the guild's coffers
+  // (empty chests against the east wall), shelves of rolls, two lamps from the tie beam
+  ...[19, 20, 21].map(x => ({ room: "Master's chamber", kind: 'table', part: 'table', pos: [x, 11, 6], facing: 'north', wood: 'spruce', colour: 'red', wing: true })),
+  { room: "Master's chamber", kind: 'chair', part: 'armchair', pos: [20, 11, 5], facing: 'south', wood: 'dark_oak', colour: 'red', wing: true },
+  ...[19, 21].map(x => ({ room: "Master's chamber", kind: 'chair', part: 'chair', pos: [x, 11, 7], facing: 'north', wood: 'spruce', wing: true })),
+  ...[3, 4].map(z => ({ room: "Master's chamber", kind: 'chest', part: 'chest', pos: [23, 11, z], facing: 'west', wing: true })),
+  ...[3, 4, 8, 9].map(z => ({ room: "Master's chamber", kind: 'cupboard', part: 'cupboard', pos: [17, 11, z], facing: 'east', wood: 'spruce', wing: true })),
+  ...[3, 8].map(z => ({ room: "Master's chamber", kind: 'lamp', part: 'hangingLamp', pos: [20, 14, z], facing: 'north', wood: 'spruce', wing: true })),
+  { room: "Master's chamber", kind: 'picture', part: 'picture', pos: [23, 13, 6], facing: 'west', wood: 'spruce', colour: 'red', wing: true },
 ]
 
 // The walking line: in under the great arch, across the arcade, up the back stair, along the hall to the charter.
-export const WALK = [[8, 0, 0], [8, 1, 2], [8, 1, 6], [7, 1, 9], [6, 1, 10], [3, 4, 10], [2, 5, 10], [2, 6, 8], [5, 6, 8], [8, 6, 8]]
+export const WALK = [[8, 0, 0], [8, 1, 2], [8, 1, 6], [10, 1, 8], [10, 1, 10], [9, 1, 10], [7, 1, 10], [3, 5, 10], [2, 6, 10], [2, 6, 8], [5, 6, 8], [8, 6, 9]]
+// II: on through the hall's east door into the records room, up the back stair to the Master's chamber
+export const WALK_II = [[14, 6, 6], [16, 6, 6], [18, 6, 9], [18, 6, 10], [22, 10, 10], [23, 11, 9], [20, 11, 8]]

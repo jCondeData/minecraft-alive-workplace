@@ -1,0 +1,3 @@
+Village Hall rebuilt from scratch, two versions drawn blind from the same brief, both passed a fresh critic (A: Bell Porch, beats today's hall on all four scores; B: Moot House, wins three, ties detail). Pick A (brick hall with pews and the bell under a stone porch; Level III turns the porch into a clock-and-belfry tower) or B (a stone octagon where the village sits round the wall facing each other; Level III adds a copper-spired belfry tower). Not tested in game yet (build time, walk-in, eye-level shots): that comes when your pick ships.
+
+(from lane-c-1118-0052, 2026-11-18 02:23Z; not yet sent)

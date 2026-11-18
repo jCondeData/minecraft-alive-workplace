@@ -10,13 +10,14 @@ Roadmap items: 34.13, 34.14
 
 Four new buildings in the Blueprint Table, each with a II:
 
-- **Winery.** A stone press house over a half-sunk cellar. Earth is banked up the cellar's sides and back, so only a
-  course of rough stone and two barred slits show. A stone stair climbs along the front to the press room; the cellar
-  door is at the ground, in the passage under the stair's landing. Up in the press room the cauldron vat stands by the
-  door, with a press on a chain and a hatch down. In the cellar: racks of casks (spruce logs laid so their ends show)
-  and two big chests. There is no barrel anywhere.
-- **Winery II.** A back door onto a tasting porch (a table, stools, a cask) under a lean-to roof, then two terraces of
-  sweet berry rows stepping down to a pergola hung with glow berries, a lamp at each foot of the garden.
+- **Winery** (rebuilt from scratch in 50.4, `tools/blueprints/js/winery`). A gravity-flow press house: the fruit goes
+  up, the wine comes down. A double stone perron climbs the front to a landing and the door of the press floor, a white
+  timber-framed story in a dark oak frame under a rose granite roof, where the cauldron vat stands on the door's axis by
+  a work counter and the chest of bottles. Under it, the stone Cask Hall (its door in the passage under the landing):
+  racks of casks (spruce logs on their sides) along the walls, two big chests against the front wall, a stair up to the
+  press floor. A stone Tasting Room leans on the east side, a table for two under its lamp. There is no barrel anywhere.
+- **Winery II.** The vineyard behind it, through the back door: rows of sweet berries in a raised bed beside
+  an arbor of spruce posts hung with glow berries.
 - **Tailor's Shop.** A timber shop, dark oak and white plaster under a spruce roof. The door is between two banners;
   beside it a bay window shows two dress forms and a bolt of cloth. Inside: the loom, a counter, bolts of wool in seven
   colors, and a fitting room in a lower wing behind.
@@ -50,9 +51,9 @@ building.
 
 ## How it works
 
-**The blueprints.** Drawn in `tools/blueprints/workshops.py` to `tools/blueprints/STYLE.md`. Sizes (wide x tall x
-deep): Winery 13 x 14 x 12, Winery II 13 x 14 x 20, Tailor's Shop 11 x 11 x 12, Tailor's Shop II 11 x 15 x 12. Each II
-keeps its first tier (95% of the Winery's blocks, 79% of the Tailor's Shop's), so a builder upgrading one only builds
+**The blueprints.** Drawn in `tools/blueprints/workshops.py` (the Winery since 50.4 in `tools/blueprints/js/winery`) to `tools/blueprints/STYLE.md`. Sizes (wide x tall x
+deep): Winery 17 x 17 x 15, Winery II 17 x 17 x 22 (50.4), Tailor's Shop 11 x 11 x 12, Tailor's Shop II 11 x 15 x 12. Each II
+keeps its first tier (all of the Winery's blocks, 79% of the Tailor's Shop's), so a builder upgrading one only builds
 what is new. Print Shop 11 x 11 x 9, Print Shop II 11 x 11 x 16, Jeweler's Workshop 9 x 10 x 9, Jeweler's Workshop II
 9 x 10 x 14 (both II are the first tier grown backwards, so nearly all of it is kept).
 Each building has exactly one job block: the Winery its cauldron, the Tailor's Shop its loom, the Print Shop its
@@ -62,10 +63,9 @@ cartography table, the Jeweler's Workshop its stonecutter.
 Workshop has two doors: the iron one on the street for players (press the button), and a plank door in the east wall,
 which is how the Jeweler reaches the stonecutter.
 
-**Half-sunk.** A blueprint can't dig below the block it is placed on, so the cellar is the ground story and the earth
-comes up to it: a bank of dirt and grass two blocks high against the walls and one high outside that. Winery II's
-garden is the same idea made bigger: the porch stands on a platform as high as the press room's floor, and the two
-terraces step down from it.
+**Casks below the vat.** A blueprint can't dig below the block it is placed on, so the cellar is the ground story:
+since 50.4 the stone Cask Hall, with the vat one story up on the press floor (the old drawing banked earth up a
+half-sunk cellar instead). The casks and chests under the vat are what the Winery's tests count.
 
 **The Journeyman's blueprint.** A villager's level shows two of that level's listed trades, picked at random, and the
 four jobs already have two at Journeyman (their makings bought, their Journeyman luxury sold). So the

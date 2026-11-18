@@ -29,6 +29,22 @@ asks for the steps, `latest.log` and any crash report).
   two-story wing to the road with two more beds upstairs, Level III leans a stone kitchen with its own door on the wing,
   and Level IV digs a store cellar under the hall. Cottages already standing keep their look until you press Refresh on
   the Village Hall's Repairs page.
+- **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
+  terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
+  meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
+  chests with his composter in the yard. Watermills already standing keep the drawing they were built from until you
+  refresh them.
+- **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
+  the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
+  Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
+  plants the vineyard behind it, rows of sweet berries and an arbor hung with glow berries; Winery III digs a vintage
+  vault under the hall, down a ladder from a hatch. Wineries already standing keep the drawing they were built from
+  until you refresh them.
+- **The Butcher's Shop is rebuilt from scratch** (50.4): a white, dark-framed shop with its gable to the street and
+  display boards under a slate pentice, a red-brick smoke tower on its side that smokes at the peak with the Butcher's
+  smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
+  floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
+  you refresh them, and are never offered a dig of the new freezer.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The
@@ -38,6 +54,11 @@ asks for the steps, `latest.log` and any crash report).
   Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
   drawing they were built from until you refresh them, and "Dig the cellar" on an older Smithy digs the cellar of the
   drawing it was built from, never through its forge.
+- **The Palisade is redrawn from scratch** (52.3): an earthwork now, a cobblestone toe and mud-brick steps up the village
+  side of a rammed-earth bank to a pale stripped-oak walk where 7 archers stand, behind a row of bark-on spruce stakes
+  with pointed heads and an oak rail through them (7 x 5 x 4). Palisade II builds the bank out into a walk three wide
+  (19 archers' places) and plants seven dripstone stakes in a ditch of turned earth outside (7 x 5 x 5). Pieces already
+  standing keep their old look until refreshed.
 - **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
   village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
   Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping
@@ -59,6 +80,18 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The School is rebuilt from scratch** (51.4, with Cobblemon). A timber-framed gatehouse with a round moon window
+  opens onto a paved court, where a sparring ring with straw targets circles the Move Tutor's Training Post; spectators
+  sit under a cloister on the west, and behind the court the Tutor's hall holds a lecture room with a reading table, a
+  desk by the hearth, and his quarters behind a bookshelf screen (17 x 12 x 18). Villages keep their own Tutor's
+  house. Schools already standing keep the drawing they were built from until you refresh them.
+- **The Library and the Schoolhouse are rebuilt from scratch** (51.4). The Library is a tall buttressed
+  stone nave with a rose window over a gabled porch, shelves under its windows, reading desks under hanging lanterns
+  and the lectern closing a blue runner; Level II adds a reading aisle through a wide arch, Level III a spired tower
+  holding the enchanting room, its table ringed by 26 shelves within reach of all three lecterns (18 x 18 x 22), and
+  Level IV an archive dug under it. The Schoolhouse is a whitewashed schoolroom open to its roof timbers under a copper bell-cote, bench rows facing the
+  lectern and blackboard (11 x 16 x 13); Level II adds the little ones' reading room and a fenced schoolyard. Buildings
+  already standing keep the drawing they were built from until you refresh them.
 - **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
   jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
   crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.
@@ -101,6 +134,16 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
+  and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
+  bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
+  Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
+  crockery the new drawing moved (one with something in it stays) (B1383).
+- A Blueprint placed far from the Blueprint Table inside a big village (150 blocks off with `villageHallRadius` 160,
+  say), which the Builder does take, no longer says "No Blueprint Table within 128 blocks of this spot" with every
+  material listed as still to bring: its supply report and its Book and Quill material list now find the table by the
+  Builder's own rule (anywhere in the table's village, or within `maxSiteDistance` outside it). A yes to a repair or a
+  refresh likewise reaches a free Builder anywhere in the village, not only one near the building (B619).
 - Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
   the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
   passing that wall's far side on the outside (B726).

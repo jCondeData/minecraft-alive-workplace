@@ -150,9 +150,10 @@ public class BasementGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			assertBasementEmpty(helper, s);
-			helper.assertBlockPresent(Blocks.SMOKER, origin.offset(8, 1, 5));
-			helper.assertBlockPresent(Blocks.BLUE_ICE, origin.offset(5, -4, 5));
-			helper.assertBlockPresent(Blocks.LADDER, origin.offset(3, -1, 3));
+			// ROADMAP 50.4: the rebuilt shop's smoker, the middle of its freezer's blue-ice floor and the top rung of its way down
+			helper.assertBlockPresent(Blocks.SMOKER, origin.offset(18, 1, 8));
+			helper.assertBlockPresent(Blocks.BLUE_ICE, origin.offset(11, -4, 10));
+			helper.assertBlockPresent(Blocks.LADDER, origin.offset(9, -1, 12));
 			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
 		});
 	}

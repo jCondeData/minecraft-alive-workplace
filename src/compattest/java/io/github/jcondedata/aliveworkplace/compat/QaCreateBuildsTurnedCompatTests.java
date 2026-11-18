@@ -69,8 +69,8 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa_watermill_mirrored")
 	public void aFlippedWatermillIsBuiltAndItTurns(GameTestHelper helper) {
 		Run run = start(helper, StarterBlueprints.WATERMILL, Rotation.NONE, Mirror.FRONT_BACK);
-		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(7, 1, 2), "minecraft:composter",
-			List.of(new BlockPos(4, 2, 4))));
+		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(15, 0, 3), "minecraft:composter",
+			List.of(new BlockPos(5, 3, 9)))); // ROADMAP 50.5: the rebuilt Watermill's composter and millstone
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 				CreateBuilds.ENABLED = was; // the build is over: the switch back as the other tests expect it
 			}
 			helper.assertTrue(switched[0], "the switch never went off mid-build (stage " + run.site.stage() + ")");
-			assertBuiltAndTurning(helper, run, new BlockPos(7, 1, 2), "minecraft:composter", List.of(new BlockPos(4, 2, 4)));
+			assertBuiltAndTurning(helper, run, new BlockPos(15, 0, 3), "minecraft:composter", List.of(new BlockPos(5, 3, 9)));
 		});
 	}
 

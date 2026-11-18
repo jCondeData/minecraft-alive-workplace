@@ -33,7 +33,7 @@ from realm import *
 from village_hall import village_hall, village_hall_2, village_hall_3
 from wonders import WONDERS, save_wonder
 from styles import styled
-from basements import LEVEL_4, butchers_shop, cutaway
+from basements import LEVEL_4, cutaway
 from cellars import LEVEL_3
 from create_builds import *
 from quarry import quarry
@@ -51,12 +51,27 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # --nbt out/<id>.nbt --basement 4 --cellar "$(cat out/cellar.txt)"), js/tinkers_workshop (LEVEL=1|2) and
            # js/brass_foundry (Create only), then rebuild.py <family> <id>
            "smithy", "smithy_2", "tinkers_workshop", "tinkers_workshop_2", "brass_foundry",
+           # 50.4, the Butcher's Shop: js/butchers_shop (MC_BUILDER=..., sh build.sh writes the candidate; live:
+           # rebuild.py butchers_shop butchers_shop --nbt out/butchers-shop.nbt --basement 4 --cellar "$(cat out/cellar.txt)")
+           "butchers_shop",
+           # 50.4, the Winery: js/winery (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
+           # winery, winery_2 and winery_3, III with --basement 4 --cellar "$(cat out/cellar.txt)")
+           "winery", "winery_2", "winery_3",
+           # 50.5, the Watermill (Create only): js/watermill (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh
+           # build.sh the live one)
+           "watermill",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
            "camp_kitchen", "camp_kitchen_2",
-           # 52.3, the walls (the palisade, palisade_2 and palisade_tower follow)
-           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate"}
+           # 52.3, the walls (the palisade_tower follows)
+           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate", "palisade", "palisade_2",
+           # 51.4, the Library (four levels) and the Schoolhouse: tools/blueprints/js/{library,schoolhouse}/
+           # (MC_BUILDER=<minecraft-builder skill>; library and schoolhouse: build.sh with LEVEL=1..4, library_4 with
+           # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School
+           # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
+           # their own looks (village.py's staffed house)
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -140,11 +155,8 @@ if __name__ == "__main__":
     # rebuild.py terrace <id>); its old Python drawing in starter.py is no longer saved
     inn().save(MAIN_STRUCTURES, "inn")
     inn_2().save(MAIN_STRUCTURES, "inn_2")
-    school_building().save(MAIN_STRUCTURES, "schoolhouse")
-    school_building_2().save(MAIN_STRUCTURES, "schoolhouse_2")
-    library().save(MAIN_STRUCTURES, "library")
-    library_2().save(MAIN_STRUCTURES, "library_2")
-    library_3().save(MAIN_STRUCTURES, "library_3")
+    # ROADMAP 51.4: the Schoolhouse and the Library come from the rebuild kit (REBUILT); their old drawings are kept in
+    # blueprint_history/
     ranch().save(MAIN_STRUCTURES, "ranch")
     ranch_2().save(MAIN_STRUCTURES, "ranch_2")
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
@@ -169,7 +181,7 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2 and 50.3: drawn by the rebuild kit
+            continue  # ROADMAP 50.2, 50.3 and 50.5: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
@@ -207,7 +219,7 @@ if __name__ == "__main__":
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
                        ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):
-        if name not in REBUILT:  # 52.3: the stone wall, the wall tower and the palisade gate are rebuilt
+        if name not in REBUILT:  # 52.3: the stone wall, the wall tower, the palisade gate and the palisade are rebuilt
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 50.3: the Tinker's Workshop and the Smithy come from the rebuild kit (REBUILT)
     for name, draw in (("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
@@ -216,7 +228,8 @@ if __name__ == "__main__":
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
+        if name not in REBUILT:  # ROADMAP 50.4: the Winery comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
@@ -227,10 +240,13 @@ if __name__ == "__main__":
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
-        draw().save(MAIN_STRUCTURES, name)
-    butchers_shop().save(MAIN_STRUCTURES, "butchers_shop")  # ROADMAP 26.15: with its freezer
+        if name not in REBUILT:  # ROADMAP 51.4: library_4 comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
+    # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
+    # is the old drawing, kept in blueprint_history/
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     nether_gate().save(MAIN_STRUCTURES, "nether_gate")
     nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
     chapel().save(MAIN_STRUCTURES, "chapel")

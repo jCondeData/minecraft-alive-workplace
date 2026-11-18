@@ -405,7 +405,9 @@ BUTCHER_ROOF = DARK_OAK
 
 
 def butchers_shop():
-    """13 x 11 x 13: the Butcher's Shop, its freezer 4 below."""
+    """The OLD drawing (ROADMAP 50.4: the live butchers_shop.nbt now comes from the rebuild kit,
+    tools/blueprints/js/butchers_shop; this one is kept in blueprint_history/ and no longer saved by generate.py).
+    13 x 11 x 13: the Butcher's Shop, its freezer 4 below."""
     b = Build(13, 11, 13, basement=BASEMENT)
     plinth(b, 1, 2, 9, 8, STONE_MIX, floor="smooth_stone")
     walls(b, 1, 2, 9, 8, 1, 1, "bricks")

@@ -50,6 +50,15 @@
    ],
    "facing": "north",
    "wing": true
+  },
+  {
+   "at": [
+    17,
+    12,
+    6
+   ],
+   "facing": "east",
+   "wing": true
   }
  ]
 }

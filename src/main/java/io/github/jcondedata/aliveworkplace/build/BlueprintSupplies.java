@@ -9,7 +9,6 @@ import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.mc.Rules;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
-import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,7 +17,6 @@ import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -59,9 +57,7 @@ public final class BlueprintSupplies {
 		if (blueprint.isEmpty() || blueprint.get().blocks().size() > MAX_STEPS) {
 			return Optional.empty();
 		}
-		BlockPos anchor = BlueprintItem.anchorWorld(placement, blueprint.get().size());
-		Optional<BlockPos> bench = level.getPoiManager().findClosest(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI), anchor,
-			Builders.MAX_SITE_DISTANCE, PoiManager.Occupancy.ANY);
+		Optional<BlockPos> bench = Builders.benchFor(level, data.structure(), placement); // B619: the builder's own rule
 		if (bench.isEmpty()) {
 			return Optional.of(new SupplyReport(Optional.empty(), 0, List.of()));
 		}
@@ -150,8 +146,7 @@ public final class BlueprintSupplies {
 		boolean here = data.placement().isPresent() && data.placement().get().dimension().equals(Ids.of(level.dimension()));
 		if (here) {
 			BlueprintData.Placement placement = data.placement().get();
-			bench = level.getPoiManager().findClosest(h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI),
-				BlueprintItem.anchorWorld(placement, blueprint.get().size()), Builders.MAX_SITE_DISTANCE, PoiManager.Occupancy.ANY);
+			bench = Builders.benchFor(level, data.structure(), placement); // B619: the builder's own rule
 		}
 		if (bench.isPresent()) {
 			BuildPlan plan = BuildPlan.create(blueprint.get(), data.placement().get(), level, Rules.number(level, ModGameRules.FOUNDATION_DEPTH));

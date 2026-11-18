@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 import { SIZE, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE, JOB } from './plan.mjs'
 import {
   Canvas, mix, plinth, floor, post, beamRing, wallPanel, window, door, doorway, gableRoof, gableWall, catslideRoof,
-  bargeTrim, flowerBed, lampPost, furnitureParts, stair, sparringRing, moonWindow, strawTarget,
+  bargeTrim, flowerBed, lampPost, furnitureParts, stair, slab, chimney, sparringRing, moonWindow, strawTarget,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -18,137 +18,119 @@ export function draw() {
   const P = PALETTE
   const stone = mix(P.stone, 11)
   const paving = mix(P.paving, 5)
-  const G = MASSES.gate, CT = MASSES.court, H = MASSES.hall
+  const G = MASSES.gate, CT = MASSES.court, K = MASSES.cloister, Y = MASSES.yardWall, H = MASSES.hall
   const hw = H.walls, hr = H.room
   const empty = (x, y, z) => !c.get(x, y, z)
 
   // --- Pass 1: block-out and structure -------------------------------------------------------------------------
-  // Hall: a stone plinth, white panels between dark posts, a beam ring, a knee wall under the eaves
+  // Hall: a stone plinth, white panels between dark posts, a beam ring on top of the walls
   plinth(c, hw.x0, hw.z0, hw.x1, hw.z1, stone)
   floor(c, hr.x0, hr.z0, hr.x1, hr.z1, 0, P.floor)
-  wallPanel(c, [hw.x0, hw.z0], [hw.x1, hw.z0], 1, H.wallTop, P.infill)
-  wallPanel(c, [hw.x0, hw.z1], [hw.x1, hw.z1], 1, H.wallTop, P.infill)
-  wallPanel(c, [hw.x0, hw.z0], [hw.x0, hw.z1], 1, H.wallTop, P.infill)
-  wallPanel(c, [hw.x1, hw.z0], [hw.x1, hw.z1], 1, H.wallTop, P.infill)
+  for (const [a, b] of [[[hw.x0, hw.z0], [hw.x1, hw.z0]], [[hw.x0, hw.z1], [hw.x1, hw.z1]], [[hw.x0, hw.z0], [hw.x0, hw.z1]], [[hw.x1, hw.z0], [hw.x1, hw.z1]]])
+    wallPanel(c, a, b, 1, H.wallTop, P.infill)
   for (const x of H.frontPosts) post(c, x, hw.z0, 1, H.wallTop, P.frame)
+  for (const x of H.backPosts) post(c, x, hw.z1, 1, H.wallTop, P.frame)
+  for (const x of [hw.x0, hw.x1]) for (const z of H.sidePosts) post(c, x, z, 1, H.wallTop, P.frame)
   beamRing(c, hw.x0, hw.z0, hw.x1, hw.z1, H.beamY, P.frame)
-  wallPanel(c, [hw.x0 + 1, hw.z0], [hw.x1 - 1, hw.z0], H.knee, H.knee, P.infill)
-  wallPanel(c, [hw.x0 + 1, hw.z1], [hw.x1 - 1, hw.z1], H.knee, H.knee, P.infill)
 
-  // Gate: two stone piers, a dark lintel and a ceiling over the passage, a timber storey under the steep roof
+  // Gate: two stone piers, a dark lintel and a board ceiling over the passage, a timber storey on a beam ring
   for (const [a, b] of G.piers) c.fill(a, 0, G.z0, b, G.pierTop, G.z1, stone)
   floor(c, G.passage[0], G.z0, G.passage[1], G.z1, 0, paving)
   for (const z of [G.z0, G.z1]) for (let x = G.passage[0]; x <= G.passage[1]; x++) c.set(x, G.pierTop, z, P.frame, { axis: 'x' })
   floor(c, G.passage[0], G.z0 + 1, G.passage[1], G.z1 - 1, G.pierTop, P.ceiling)
-  beamRing(c, G.piers[0][0], G.z0, G.piers[1][1], G.z1, G.pierTop + 1, P.frame)
+  const gx0 = G.piers[0][0], gx1 = G.piers[1][1]
+  beamRing(c, gx0, G.z0, gx1, G.z1, G.pierTop + 1, P.frame) // the loft inside stays shut on the passage's ceiling
 
-  // Court: paving with the sparring ring inlaid round the post
-  sparringRing(c, { ...CT.ring, y: 0, x0: CT.x0, x1: CT.x1, z0: CT.z0, z1: CT.z1 }, { inner: P.ring.inner, border: P.ring.border, paving })
+  // Court: paving, the sparring ring inlaid round the post
+  floor(c, CT.x0, CT.z0, CT.x1, CT.z0, 0, paving)
+  sparringRing(c, { ...CT.ring, y: 0, x0: CT.x0, x1: CT.x1, z0: CT.ring.z0, z1: CT.z1 }, { inner: P.ring.inner, border: P.ring.border, paving })
 
-  // Cloisters: a white outer wall on a plinth, framed; a colonnade of posts on the court side; boards underfoot
-  for (const k of MASSES.cloisters) {
-    const r = k.roof
-    const under = {}; for (let u = r.across[0]; u <= r.across[1]; u++) under[u] = r.ridgeY - Math.abs(u - r.ridge)
-    plinth(c, k.wall, k.z0, k.wall, k.z1, stone)
-    floor(c, Math.min(...k.walk), k.z0 + 1, Math.max(...k.walk), k.z1, 0, P.floor)
-    floor(c, k.colonnade, k.z0, k.colonnade, k.z1, 0, stone)
-    wallPanel(c, [k.wall, k.z0], [k.wall, k.z1], 1, under[k.wall] - 1, P.infill)
-    for (const z of [4, 6, 8, 10]) post(c, k.colonnade, z, 1, 3, P.frame)
-    // a board ceiling over the walk at y 4 (the attic above it shut): the loggia stays three deep, a room open on one side
-    floor(c, Math.min(...k.walk), k.z0 + 1, Math.max(...k.walk), k.z1, 4, P.ceiling)
-    // the front end wall under the lean-to, its corner on the colonnade's first post
-    const ends = k.side === 'west' ? [k.wall + 1, k.colonnade - 1] : [k.colonnade + 1, k.wall - 1]
-    plinth(c, ends[0], k.z0, ends[1], k.z0, stone)
-    for (let x = ends[0]; x <= ends[1]; x++) for (let y = 1; y < under[x]; y++) c.set(x, y, k.z0, P.infill)
+  // Cloister: a framed white outer wall on a plinth, the front end wall, a colonnade of posts on the court side
+  const kr = K.roof
+  const kUnder = {}; for (let u = kr.across[0]; u <= kr.across[1]; u++) kUnder[u] = kr.ridgeY - Math.abs(u - kr.ridge)
+  plinth(c, K.wall, K.z0, K.wall, K.z1, stone)
+  plinth(c, K.wall, K.z0, K.colonnade, K.z0, stone)
+  floor(c, K.walk[0], K.z0 + 1, K.walk[1], K.z1, 0, P.floor)
+  floor(c, K.colonnade, K.z0 + 1, K.colonnade, K.z1, 0, stone)
+  wallPanel(c, [K.wall, K.z0], [K.wall, K.z1], 1, kUnder[K.wall] - 1, P.infill)
+  for (const z of K.wallPosts) post(c, K.wall, z, 1, kUnder[K.wall] - 1, P.frame)
+  for (let x = K.walk[0]; x <= K.walk[1]; x++) for (let y = 1; y < kUnder[x]; y++) c.set(x, y, K.z0, P.infill)
+  for (const z of K.posts) post(c, K.colonnade, z, 1, kUnder[K.colonnade] - 1, P.frame)
+
+  // Yard wall: a two-high stone wall with a slab coping, lantern piers at its two front corners
+  const yw = []
+  for (let x = Y.front[0]; x <= Y.front[1]; x++) yw.push([x, Y.z0])
+  for (let z = Y.z0 + 1; z <= Y.z1; z++) yw.push([Y.x, z])
+  for (const [x, z] of yw) {
+    for (let y = 0; y <= Y.top; y++) c.set(x, y, z, stone)
+    slab(c, x, Y.top + 1, z, P.coping, 'bottom')
   }
+  for (const [x, z] of Y.piers) { c.set(x, Y.top + 1, z, stone); lampPost(c, x, Y.top + 2, z, `${P.wood}_fence`, 1) }
+  // the paved practice strip inside it
+  floor(c, Y.front[0], Y.z0 + 1, Y.x - 1, Y.z1, 0, paving)
 
   // --- Pass 2: roofs ------------------------------------------------------------------------------------------------
-  // the gate's steep hero roof first, then the hall's broad one, the cloisters' lean-tos only where nothing is drawn
+  // the gate's hero roof first, then the cloister's lean-to, then the hall's broad roof where nothing else stands (its
+  // front eave stops at the cloister: the lean-to runs to the hall's wall, never under its eave)
   const gate = gableRoof(c, G.roof, P.roof)
-  const hall = gableRoof(c, H.roof, P.roof, empty)
-  for (const k of MASSES.cloisters) catslideRoof(c, k.roof, P.roof, empty)
+  catslideRoof(c, kr, P.roof, empty)
+  const hallKeep = (x, y, z) => empty(x, y, z) && !(z === hw.z0 - 1 && x <= K.colonnade)
+  const hall = gableRoof(c, H.roof, P.roof, hallKeep)
 
-  // the gate's gables: a tie beam, studs either side of the moon window, white panels
-  const gx0 = G.piers[0][0], gx1 = G.piers[1][1]
+  // the gate's gables: studs either side of the moon window, white panels; the side walls of its timber storey
   for (const z of [G.z0, G.z1]) {
-    gableWall(c, 'z', z, [gx0, gx1], G.pierTop + 2, gate.under, (u, y) => {
-      if (u === 6 || u === 10) return [P.frame, { axis: 'y' }]
-      return P.infill
-    })
+    gableWall(c, 'z', z, [gx0, gx1], G.pierTop + 2, gate.under, (u) => (u === 6 || u === 10 ? [P.frame, { axis: 'y' }] : P.infill))
+    moonWindow(c, 'z', z, G.moon[0], G.moon[1], { glass: P.glass, frame: P.frame })
   }
-  for (const x of [gx0, gx1]) for (let z = G.z0 + 1; z < G.z1; z++) c.set(x, G.pierTop + 1, z, P.frame, { axis: 'z' })
-  // gate's attic floor over the piers (closes the timber storey)
-  floor(c, gx0 + 1, G.z0 + 1, gx1 - 1, G.z1 - 1, G.pierTop + 1, P.ceiling)
-  moonWindow(c, 'z', G.z0, G.moon[0], G.moon[1], { glass: P.glass, frame: P.frame })
-  c.set(8, 10, G.z1, P.glass)
-  for (const x of [gx0, gx1]) for (let z = G.z0 + 1; z < G.z1; z++) for (let y = G.pierTop + 2; y < G.roof.eaveY + 1; y++) c.set(x, y, z, P.infill)
+  for (const x of [gx0, gx1]) for (let z = G.z0 + 1; z < G.z1; z++) for (let y = G.pierTop + 2; y < gate.under[x]; y++) c.set(x, y, z, P.infill)
 
   // the hall's gables: a stud each side of the gable window
   for (const x of [hw.x0, hw.x1]) {
-    gableWall(c, 'x', x, [hw.z0, hw.z1], H.knee, hall.under, (u, y) => {
-      if (y === H.knee) return [P.frame, { axis: 'z' }]
-      if (u === 14 || u === 16) return [P.frame, { axis: 'y' }]
-      return P.infill
-    })
+    gableWall(c, 'x', x, [hw.z0, hw.z1], H.beamY + 1, hall.under, (u) => (H.gableStuds.includes(u) ? [P.frame, { axis: 'y' }] : P.infill))
   }
-  // where the cloister roofs meet the hall's front slope, tiles under the eave so no quarter gap shows
-  for (const k of MASSES.cloisters) for (let u = k.roof.across[0]; u <= k.roof.across[1]; u++) {
-    const y = k.roof.ridgeY - Math.abs(u - k.roof.ridge)
-    for (let yy = H.roof.eaveY; yy <= y; yy++) if (empty(u, yy, 11)) c.set(u, yy, 11, P.roof.full)
-  }
+  // the cloister's back end, above the hall's beam: close the triangle under the lean-to against the hall's slope
+  for (let x = K.wall + 1; x < K.colonnade; x++) for (let y = H.beamY + 1; y < kUnder[x]; y++) if (empty(x, y, K.z1)) c.set(x, y, K.z1, P.infill)
 
   // --- Pass 3: openings ---------------------------------------------------------------------------------------------
-  const gw = OPENINGS.gateway
-  for (const [x, y, z] of gw.steps) stair(c, x, y, z, 'stone_brick_stairs', 'south')
+  for (const [x, y, z] of OPENINGS.gateway.steps) stair(c, x, y, z, 'stone_brick_stairs', 'south')
   const hd = OPENINGS.hallDoor
   door(c, hd.at, hd.facing, hd.out, { wood: P.wood })
   c.set(hd.at[0], 0, hd.at[2], 'polished_andesite') // a threshold
-  for (const w of OPENINGS.windows) window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood, pots: ['potted_red_tulip', 'potted_oxeye_daisy'] })
+  for (const w of OPENINGS.windows) window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood, pots: w.pots ? ['potted_red_tulip', 'potted_oxeye_daisy'] : [] })
 
   // --- Pass 4: depth and detail -------------------------------------------------------------------------------------
-  // the shelf screen between the lecture room and the quarters: books low, boards above, a tie beam on top
+  // the bookshelf screen between the lecture room and the quarters, a tie beam over it
   const sc = H.screen
-  for (let z = sc.z0; z <= sc.z1; z++) {
-    c.set(sc.x, 1, z, 'bookshelf'); c.set(sc.x, 2, z, 'bookshelf'); c.set(sc.x, 3, z, `${P.wood}_planks`)
-  }
+  for (let z = sc.z0; z <= sc.z1; z++) { c.set(sc.x, 1, z, 'bookshelf'); c.set(sc.x, 2, z, 'bookshelf'); c.set(sc.x, 3, z, `${P.wood}_planks`) }
   for (let z = hw.z0 + 1; z < hw.z1; z++) c.set(sc.x, H.beamY, z, P.frame, { axis: 'z' })
   doorway(c, OPENINGS.screenDoorway.at, OPENINGS.screenDoorway.height)
-  // barge boards under the overhanging rakes: the gate front and back (steep: slabs), the hall's gables (stairs)
+  // barge boards under the overhanging rakes: the gate front and back, the hall's two gables (its front corner over the
+  // cloister left out: the lean-to owns that cell)
   bargeTrim(c, 'z', G.roof.along[0], G.roof.across, gate.under, `${P.wood}_stairs`)
   bargeTrim(c, 'z', G.roof.along[1], G.roof.across, gate.under, `${P.wood}_stairs`)
   bargeTrim(c, 'x', H.roof.along[0], H.roof.across, hall.under, `${P.wood}_stairs`)
   bargeTrim(c, 'x', H.roof.along[1], H.roof.across, hall.under, `${P.wood}_stairs`)
-  // the outer frame, a block proud of the white panels on a stone kerb: posts and a beam on the west and east (the
-  // cloisters' posts up to their eaves, the hall's to its beam) and along the back; a chimney up the back's middle
-  for (const [x] of [[0], [16]]) {
-    for (let z = 4; z <= 19; z++) c.set(x, 0, z, stone)
-    for (const z of [4, 8]) post(c, x, z, 1, 5, P.frame)
-    for (const z of [12, 15, 18]) post(c, x, z, 1, H.wallTop, P.frame)
-    for (let z = 12; z <= 18; z++) if (empty(x, H.beamY, z)) c.set(x, H.beamY, z, P.frame, { axis: 'z' })
-  }
-  for (let x = 1; x <= 15; x++) c.set(x, 0, 19, stone)
-  for (const x of [1, 4, 12, 15]) post(c, x, 19, 1, H.wallTop, P.frame)
-  for (let x = 1; x <= 15; x++) if (x < 7 || x > 9) c.set(x, H.beamY, 19, P.frame, { axis: 'x' })
-  c.fill(7, 1, 19, 9, 3, 19, stone)
-  stair(c, 7, 4, 19, 'stone_brick_stairs', 'east'); stair(c, 9, 4, 19, 'stone_brick_stairs', 'west')
-  for (let y = 1; y <= hall.ridgeY + 1; y++) c.set(8, y, 19, stone)
-  c.set(8, hall.ridgeY + 2, 19, 'campfire', { facing: 'north', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
+  c.clear(H.roof.along[0], hall.under[hw.z0 - 1] - 1, hw.z0 - 1)
+  // the hearth's stone back in the wall and the chimney stack outside it, up past the ridge
+  const ch = H.chimney
+  for (let y = 1; y <= H.wallTop; y++) c.set(ch.x, y, hw.z1, stone)
+  chimney(c, ch.x, ch.z, 0, hall.ridgeY + 1, stone)
   // red cloth hung on the gate piers either side of the passage, facing the road
   c.set(6, 3, 0, `${P.accent}_wall_banner`, { facing: 'north' })
   c.set(10, 3, 0, `${P.accent}_wall_banner`, { facing: 'north' })
 
   // --- Pass 5: interior (the plan's furniture and the post) -----------------------------------------------------------
-  const extra = {
-    target: (cv, f) => strawTarget(cv, f.pos, { bale: 'hay_block', face: 'target' }),
-  }
+  const extra = { target: (cv, f) => strawTarget(cv, f.pos, { bale: 'hay_block', face: 'target' }) }
   for (const f of FURNITURE) (extra[f.part] ?? furnitureParts[f.part])(c, f)
   c.set(...JOB.at, JOB.block, { facing: JOB.facing })
 
   // --- Pass 6: ground and light ---------------------------------------------------------------------------------------
   for (const b of OUTSIDE.flowerBeds) flowerBed(c, b.x0, b.x1, b.z, b.plants)
-  for (const [x, y, z] of OUTSIDE.lampPosts) lampPost(c, x, y, z, `${P.wood}_fence`, 2)
-  c.set(8, 4, 2, 'lantern', { hanging: 'true', waterlogged: 'false' }) // in the gate passage, under its ceiling
-  c.set(8, 4, 11, 'lantern', { hanging: 'true', waterlogged: 'false' }) // over the hall door, under the eave
+  const [px, pz] = OUTSIDE.corner
+  for (let y = 0; y <= Y.top + 1; y++) c.set(px, y, pz, stone)
+  lampPost(c, px, Y.top + 2, pz, `${P.wood}_fence`, 1)
+  c.set(8, 3, 2, 'lantern', { hanging: 'true', waterlogged: 'false' }) // in the gate passage, under its ceiling
+  c.set(8, 3, 11, 'lantern', { hanging: 'true', waterlogged: 'false' }) // over the hall door, under the eave
   return c
 }
 

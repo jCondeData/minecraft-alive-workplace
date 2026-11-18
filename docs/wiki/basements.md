@@ -28,11 +28,12 @@ floor above, and has a ladder or a stone stair down from inside.
 
 Cellars from Level 1:
 
-- **Butcher's Shop** (new). A brick-and-plaster shop under a dark oak roof with a red-and-white awning, sides of meat
-  hanging in the shop windows, a stone counter, the smoker (the Butcher's) in a brick chimney breast, a fenced pen
-  behind. Under it the **freezer**: walls of packed ice, a blue-ice path down the floor, sides of meat and bones on
-  chains along the walls, chests of frozen stock, snow heaped in a corner. The ice never melts (packed and blue ice
-  don't).
+- **Butcher's Shop**. A white, dark-framed shop with its steep gable to the street, wide display boards under its
+  front windows and a slate pentice over them; a red-brick smoke tower on its east side under a slate pyramid cap,
+  smoking at the peak, with the smoker (the Butcher's) in its foot and a woodpile against it. Under the shop's back
+  half the **freezer**, down a ladder through a hatch: walls of packed ice on stone piers, a blue-ice panel in the
+  floor, hooks, snow and ice stacked, two chests within the smoker's reach and two hanging lanterns. The ice never melts (packed and blue ice don't). Rebuilt from scratch in 50.4; a shop already standing
+  keeps the drawing it was built from, freezer and all, and is never offered a dig of the new freezer.
 - **Smithy** (and Smithy II): a **coal store** down a stair from the forge hall: bins of coal and ore, lanterns and a cart run.
 - **Kitchen** (the Steward's workplace): a **cold larder** down a ladder inside the door: a stone counter under sides of
   meat and pumpkins, a shelf of jars, chests of flour and salt.
@@ -69,7 +70,7 @@ Cellars from Level 1:
 - "Dig the cellar" digs the cellar of the drawing a building was built from (50.3): a Smithy of the drawing before
   its rebuild gets its old cellar, never the new drawing's (whose stair would come up through the old forge).
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
-  never hands a villager a job. The Butcher's Shop has the smoker upstairs.
+  never hands a villager a job. The Butcher's Shop has the smoker upstairs, in its smoke tower.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up
   unlocks the next tiers at the Table). The Townhouse IV and Manor IV are sold by builders only, like their other
   tiers. The Butcher's Shop is a one-tier build in the Blueprint Table, unlocked by a builder's level-up.

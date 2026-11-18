@@ -131,8 +131,9 @@ public class RefreshFurnishedCompatTests implements FabricGameTest {
 				if (isTable(wanted, now.getOrDefault(pos.above(), Blocks.AIR.defaultBlockState()))) {
 					freshTables++;
 				}
-				if (world.getBlock() instanceof net.minecraft.world.level.block.ChestBlock) {
-					continue;
+				if (world.getBlock() instanceof net.minecraft.world.level.block.ChestBlock
+					|| net.minecraft.world.entity.ai.village.poi.PoiTypes.forState(world).map(h -> h.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE)).orElse(false)) {
+					continue; // B642: chests and job blocks stay (B1383: the rebuilt Stone House has others where the old one's barrel and smoker stood)
 				}
 				boolean ok = wanted.isAir() ? world.isAir() || world.canBeReplaced() && world.getFluidState().isEmpty() : MaterialRules.matches(world, wanted);
 				if (!ok) {

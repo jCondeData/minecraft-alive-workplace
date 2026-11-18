@@ -43,7 +43,8 @@ def _wheel(b, x, y, z):
 
 
 def watermill():
-    """11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
+    """The OLD drawing (ROADMAP 50.5: the live watermill.nbt now comes from the rebuild kit, tools/blueprints/js/watermill; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
     on the west wall turned by water falling from a header tank into a walled mill race. The wheel's shaft runs
     through the wall into a gearbox on the floor with the millstone over it (the farmer's machine, 39.3); the farmer's
     composter and the store chest beside it, hay by the back wall."""

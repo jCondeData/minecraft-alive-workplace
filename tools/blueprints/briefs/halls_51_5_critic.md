@@ -70,3 +70,30 @@ house, records room), added a rear gablet, an east cross gable on II, window box
 (2) give II a mass of its own (a taller wing, a tower or a projecting entrance bay), not I made longer; (3) the
 back gable above the plinth is a blank dark-wood panel: framed windows; (4) the hall's upper floor (cut9) is bare:
 furnish the meeting room by the charter frames; (5) film eye-level shots.
+
+**Guildhall round 3 (designer).** (1) No barrel or job block anywhere (checked on every level's palette: no barrel,
+lectern, loom, composter, cartography table or other workstation, no bed; the bell stays): the two market stalls keep
+their stock in empty chests set against the arcade pier beside each counter (I (2,1,6) and (14,1,6)), the counting
+house's barrel (23,1,7) is an empty chest against the wing's east wall; the plan's stray "lectern" note is gone. The
+west chest moved the arcade's reported opening one up, so holes.py's ALLOW line is now (2,2,6) (the arcade itself has
+not moved). (2) II's wing is a mass of its own: it rises a third storey, jettied a second time over the street (z 0)
+on its own corbels, a three-light window in the Master's chamber, a steep front gable with collar, king post and a
+lightning-rod finial at y 23 (ridge y 22, six over the hall's ridge), the east cross gable lifted with it; II is now
+25x24x13 (III the same, plus 4 below). A stair up the wing's back wall climbs from the records room to the chamber.
+(3) The back charter wall is plaster and posts with a dark mid-rail and two framed windows on flowered sills either
+side of the frames (they light the charter); no board panel left. (4) The hall's upper floor by the charter: the
+guild's chest (empty, against the wall) under the middle frame, low bookcases under the other two, a candle stand,
+a red runner from the table to the charter, banners beside the windows and behind the Master's chair, and a clerk's
+table with four seats at the west end; the new Master's chamber has his table and armchair under a fourth charter
+frame, two coffers (empty chests), shelves and lamps. (5) Eye-level shots: not filmed (no client in this run).
+Checks: `rebuild.py --candidate` printed no CHECK line, holes.py 0 (3 allowed), II keeps 97.6% of I's blocks, III
+differs from II only by the hatch at (13,0,10). Not tested: the GameTests.
+
+**Guildhall round 3: BACK a third time; goes to the owner as it stands** (critic lane-c-1118-0953; OLD 4/3/3/3,
+NEW 3/4/4/3; nothing missed in the brief: no job block or bed on any level, 4/7/8 empty frames on solid blocks, II keeps
+97.6% of I, III changes only the hatch). Remaining notes for the ship step: (1) the wing's rear slope ends as a ragged
+half-gable on the hall's ridge (II back, right, top): a full rear gable or a hip into the hall roof; (2) Level I reads
+as a plain gable box (I front, top): raise the front dormer into a cross gable over the arcade's middle bays; (3) the
+stone ground floor's back has no opening (I and II back): windows between the buttresses; (4) no entrance reads from
+the front (I and II front): a door on the arcade's back wall with lanterns, windows on the wing's blind front wall;
+(5) the cellar strongroom is bare (III cut -1): chests on both long walls, a table with a lantern.

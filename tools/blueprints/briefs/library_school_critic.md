@@ -76,3 +76,16 @@ y <= 3 cutaways).
 scored round 3: the lane runs REBUILD.md's critic prompt with `briefs/school.md` and `briefs/school_sheet.png` (eye-level
 shots: not filmed) and records the verdict here. Round 2 was SHIP, so this is the first return of two. Then the ship
 step (the declared size changes to 17 x 12 x 18; the GameTest decides whether 903 blocks fit 12,000 ticks).
+
+## School round 3: critic (lane-c-1118-0953): SHIP
+
+Blind critic on `school_sheet.png` (no eye-level shots). OLD / NEW: silhouette 3 / 4 (OLD's back is a long box under
+one roof; NEW's gate gable rises over the hall roof from the back, the right side with the low yard wall is its thinnest);
+depth 3 / 4 (timber storey on stone piers over the passage, barge boards and eaves on every side of the hall; the east
+yard wall is flat); interior 2 / 4 (OLD a bare plank U round a porch; NEW the post in a sky-lit ring, targets, cloister
+bench, reading table for four, desk, hearth, quarters behind a screen, all lit; the hall is a 3-deep strip with posts
+standing in it); detail 3 / 4 (banners on the gate piers, window boxes, lantern piers, a smoking chimney; palette held).
+NEW beats OLD by one on all four, loses on none. Brief check: 903 blocks, one Training Post (8,1,8) and no other job
+block, one bed, one chest, the gate passage clear, no trapdoor in the front rows, no roof over another roof, holes.py 0.
+Risks the ship step settles: 903 blocks against "about 900" (the GameTest decides); check.py's bed-by-door rule for
+the bed foot (13,1,14) diagonal to the screen door (12,1,13); eye-level shots in the client.

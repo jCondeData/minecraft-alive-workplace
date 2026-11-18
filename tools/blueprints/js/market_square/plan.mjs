@@ -51,8 +51,8 @@
 //   Lamps       two lamp standards at the way in (2, 1, 1) and (10, 1, 1).
 //   Bunting     red and yellow wall banners hung from the jetty sill's front (z 5).
 //
-// Rooms: the Market Court (the hall, x 2..10, z 8..10, y 5..7): the reeve's table with three chairs facing the
-// balcony door, two cupboards (the standard weights) either side of the west window, a desk and a table lamp by
+// Rooms: the Market Court (the hall, x 2..10, z 8..10, y 5..7): the reeve's tables, two either side of the aisle from
+// the balcony door (kept clear two cells in, furniture.py's door rule), four chairs facing the door, two cupboards (the standard weights) either side of the west window, a desk and a table lamp by
 // the east door, a runner rug along the front aisle, two lamps hung from the tie beams, two cloths on the back posts.
 // Openings: the balcony door (6, 5, 7), the east door (11, 5, 9); windows in every bay but the middle front.
 // Walking line: road (6, 0, -1) -> the slab step (6, 0, 0) -> across the square to the middle (6, 1, 6) -> under the
@@ -127,8 +127,8 @@ export const OPENINGS = {
 // Every furniture piece of the Market Court (furniture.mjs parts; furniture.py kinds)
 const W = PALETTE.wood
 export const FURNITURE = [
-  ...[5, 6, 7].map(x => ({ room: 'court', part: 'table', pos: [x, 5, 9], facing: 'north', wood: W, colour: 'green' })),
-  ...[5, 6, 7].map(x => ({ room: 'court', part: 'chair', pos: [x, 5, 10], facing: 'north', wood: W })),
+  ...[4, 5, 7, 8].map(x => ({ room: 'court', part: 'table', pos: [x, 5, 9], facing: 'north', wood: W, colour: 'green' })),
+  ...[4, 5, 7, 8].map(x => ({ room: 'court', part: 'chair', pos: [x, 5, 10], facing: 'north', wood: W })),
   { room: 'court', part: 'cupboard', pos: [2, 5, 8], facing: 'east', wood: W },
   { room: 'court', part: 'cupboard', pos: [2, 5, 10], facing: 'east', wood: W },
   { room: 'court', part: 'desk', pos: [10, 5, 10], facing: 'west', wood: W },

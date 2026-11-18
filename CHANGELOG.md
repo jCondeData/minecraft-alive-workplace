@@ -139,6 +139,19 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Market Square is rebuilt from scratch** (51.7, "the Market House", 13 x 13, 16 high). The square is paved
+  round a rosette in its middle, with flowering azaleas in its front corners, and across its back a timber-framed
+  Market Court stands on an open stone undercroft under a steep brick-tile roof, a cross gable and a lantern cupola. A
+  balcony looks out over the middle of the square, an outside stair climbs the east side to the court's door, and a
+  striped stall sells produce on the west. Traders gather on the square and under the undercroft's arches; upstairs
+  the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
+  market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
+  already standing keep their look until you refresh them.
+- **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
+  of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
+  canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying
+  two banners. Pots, a cake, melons, pumpkins and hay sit on the counters, with lanterns hung over the aisle. Market
+  Corners already standing keep their look until you refresh them.
 - **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
   with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
   lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow

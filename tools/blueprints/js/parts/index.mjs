@@ -16,6 +16,7 @@
 //   planters  plantFlower, tieredBed, boxBoards, beamRun, kneeBrace, hangingLantern   (planters, pergolas)
 //   furniture furnitureParts (every room piece, kitchens included; couch and blinds)
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
+//   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -43,3 +44,4 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './camps.mjs' // campPot, grainBed (the Camp Cook's pot and a raised, watered grain bed)

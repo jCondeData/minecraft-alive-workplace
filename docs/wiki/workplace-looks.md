@@ -61,10 +61,10 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 - With Cobblemon: the **Trainer's House** a long dojo with a veranda and banners; the **Leader's Hall** a portico of
   columns; the **Ball Workshop** a round drying tower with a copper spire; the **Trade Hall** a market hall on an arcade
   with a cupola; the **School** a hall with a clock tower; the **Fossil Lab** a stone lab under a glass skylight with a
-  bone skeleton on show; the **Pokémon Center** a white house under a red hipped roof; the **Camp Kitchen** an A-frame
-  and a fire pit with a spit; the **Berry Nursery** a cottage thatched with hay and watered berry beds; the
-  **Daycare** a cottage with a round window and a playground; the **Gem Grotto** a mound of stone and moss with
-  amethyst growing out of it.
+  bone skeleton on show; the **Pokémon Center** a white house under a red hipped roof; the **Camp Kitchen** a square
+  timber cookhouse under a bell-cast pyramid roof with a louvre over the pot and a lean-to of grain bales; the **Berry
+  Nursery** a cottage thatched with hay and watered berry beds; the **Daycare** a cottage with a round window and a
+  playground; the **Gem Grotto** a mound of stone and moss with amethyst growing out of it.
 
 Two buildable ones from the Blueprint Table changed too: the **Weaver's Cottage** is a stone workroom with an open
 drying loft on top, dyed cloth hung in its bays, under a low hipped roof (the sheep pen and dye garden are as before);

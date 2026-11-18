@@ -129,10 +129,11 @@ public final class StarterBlueprints {
 	 * The Pokémon jobs' builds (ROADMAP 28.13; tools/blueprints/pokemon_jobs.py), with Cobblemon only, each with its job
 	 * block in place and sold by its job's Journeyman. A new one: an Entry here, in COBBLEMON_ONLY and JOB_BUILDS.
 	 */
-	/** An open timber shelter round a Campfire Pot (the Camp Cook's), benches and a grain store. */
-	public static final Entry CAMP_KITCHEN = new Entry(AliveWorkplace.id("camp_kitchen"), new Vec3i(13, 10, 11));
-	/** A Hearty Grain plot behind and a smokehouse with a smoker. */
-	public static final Entry CAMP_KITCHEN_2 = new Entry(AliveWorkplace.id("camp_kitchen_2"), new Vec3i(21, 10, 19));
+	/** A square timber cookhouse under a bell-cast pyramid roof, the Campfire Pot (the Camp Cook's) alone on its hearth
+	 *  under the louvre, chests at the back, a lean-to of Hearty Grain bales (52.2, rebuilt). */
+	public static final Entry CAMP_KITCHEN = new Entry(AliveWorkplace.id("camp_kitchen"), new Vec3i(13, 15, 12));
+	/** A stone smokehouse with a smoker and a raised, watered Hearty Grain bed behind. */
+	public static final Entry CAMP_KITCHEN_2 = new Entry(AliveWorkplace.id("camp_kitchen_2"), new Vec3i(20, 15, 21));
 	/** Fenced farmland beds in pairs round a composter (the Berry Breeder's) and a potting bench. */
 	public static final Entry BERRY_NURSERY = new Entry(AliveWorkplace.id("berry_nursery"), new Vec3i(13, 6, 11));
 	/** A greenhouse behind with four more beds. */

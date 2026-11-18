@@ -42,6 +42,13 @@ asks for the steps, `latest.log` and any crash report).
   slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
   tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
   Builds already standing keep their old look until refreshed.
+- **The Camp Kitchen is redrawn from scratch** (52.2): a square timber cookhouse of spruce logs and birch boards on a
+  stone terrace, under a steep bell-cast deepslate roof that climbs to a copper louvre right over the Campfire Pot,
+  which stands alone on a brick hearth with a bench facing it, the dresser and two chests behind, shutters, lanterns
+  hung by the door and a lean-to of Hearty Grain bales (13 x 15 x 12). Camp Kitchen II adds a stone smokehouse with
+  its own chimney, a smoker and a smoking rack, and a raised, watered Hearty Grain bed behind (20 x 15 x 21). The
+  Camp Kitchens villages grow take the same look in each village's materials. Builds already standing keep their old
+  look until refreshed.
 
 ### Fixed
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to

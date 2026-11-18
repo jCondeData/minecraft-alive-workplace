@@ -3,7 +3,7 @@
 A seasoned Builder who runs a village from its City Plan: he decides what the village needs next, finds the plot and
 has the builders build it. Part of 1.1 (Villages that build themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747, B723, B1221
+Roadmap items: 27.1, 27.1a, 27.2, 27.3, 27.5, 27.6, 27.7, 27.8, 27.9, 27.10, 27.11, 27.12, 27.19, 27.20, 27.21, 27.22, B328, B468, B469, B471, B472, B503, 36.20, B747, B723, B1221, B821
 
 ## What a player sees
 
@@ -110,6 +110,11 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
 - On the hall: `plan` (zones, roads, the wall line and the Steward's mode; an older hall loads with an empty plan),
   `steward` (today's wishes and the day they were ranked; empty), `steward_desk` (proposals, declines and open
   builds; empty), the renewal in progress, and `stewardPlaceChecked`.
+- One damaged entry of `steward` (a ranked wish, a rule's use) or `steward_desk` (a proposal or its job, a declined
+  rule, a renewal under way) is left out with a warning in the log, and the rest of the record loads (B821; before,
+  the whole record was lost without a word: declined rules came back, renewals under way were forgotten and proposal
+  ids restarted at 1). Proof: QA's `QaStewardSavesOneBadEntry1102BugTests` (2: one empty wish, rule use, proposal or
+  renewal each keeps the record's good fields; one empty person in the Book of Families keeps the other two).
 - On the Steward: the attachment `steward_round_day` (the day of his last finished round).
 - Per dimension: `aliveworkplace_player_built`, the ledger of where players placed or broke blocks inside a hall's
   area. Older worlds start with an empty ledger.

@@ -75,6 +75,9 @@ asks for the steps, `latest.log` and any crash report).
   the village's wall: the wall reads as finished again and counts as one building for the rank, not one more per
   upgraded segment, and a Town's stone still replaces an upgraded palisade (B1380).
 - A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
+- Steward: one damaged entry in his saved record or desk (a hand-edited file, or one a crash cut short) no longer
+  empties the whole record: declined rules no longer come back, renewals of old houses under way are no longer
+  forgotten and proposal numbers no longer restart at 1. Only the bad entry is left out, with a warning in the log (B821).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
   takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and

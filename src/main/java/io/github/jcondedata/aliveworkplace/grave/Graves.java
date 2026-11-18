@@ -68,19 +68,45 @@ public final class Graves {
 		return spot;
 	}
 
-	/** Where the grave goes: the nearest open spot on solid ground within 3 blocks. */
+	/**
+	 * Where the grave goes: the nearest open spot on solid ground within 3 blocks, outside every unfinished build if one
+	 * is free (B1381: builders never break a grave, so a grave on a spot a house still plans left it a block short).
+	 */
 	@Nullable
 	static BlockPos spot(ServerLevel level, BlockPos at) {
+		List<net.minecraft.world.level.levelgen.structure.BoundingBox> builds = unfinishedBuilds(level, at);
+		BlockPos inside = null;
 		for (int r = 0; r <= 3; r++) {
 			for (BlockPos p : BlockPos.betweenClosed(at.offset(-r, -r, -r), at.offset(r, r, r))) {
 				BlockState state = level.getBlockState(p);
 				if ((state.isAir() || state.canBeReplaced()) && level.getFluidState(p).isEmpty()
 					&& level.getBlockState(p.below()).isFaceSturdy(level, p.below(), Direction.UP)) {
-					return p.immutable();
+					if (builds.stream().noneMatch(b -> b.isInside(p))) {
+						return p.immutable();
+					}
+					if (inside == null) {
+						inside = p.immutable();
+					}
 				}
 			}
 		}
-		return null;
+		return inside;
+	}
+
+	/** The boxes of the builds still going up near {@code at}. */
+	private static List<net.minecraft.world.level.levelgen.structure.BoundingBox> unfinishedBuilds(ServerLevel level, BlockPos at) {
+		List<net.minecraft.world.level.levelgen.structure.BoundingBox> boxes = new java.util.ArrayList<>();
+		ResourceLocation dimension = level.dimension().location();
+		for (io.github.jcondedata.aliveworkplace.build.BuildSite site : io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).all()) {
+			if (site.isDone() || !dimension.equals(site.placement().dimension())) {
+				continue;
+			}
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
+				.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(site.placement(), b.size()))
+				.filter(box -> box.inflatedBy(4).isInside(at))
+				.ifPresent(boxes::add);
+		}
+		return boxes;
 	}
 
 	/** "Here lies Mira, Journeyman Builder. An Undertaker can bring them back…" */

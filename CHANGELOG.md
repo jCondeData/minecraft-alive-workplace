@@ -79,6 +79,10 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- A helper on a build far from the builder's chests does its share of a tall house. The builder carries nearly the whole
+  house over on its first trip, and the helper used to be handed three or four blocks' worth at a time and walk down to
+  the chests for the little left there, so it laid under a third of the Stone House; now it is handed its share at
+  once, lays about half, and the two finish the walls and roof a fifth sooner (B1381).
 - With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
   mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
   (B1378).

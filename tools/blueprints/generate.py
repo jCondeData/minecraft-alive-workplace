@@ -96,8 +96,13 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 52.5, the story and legend sites: js/{founder_statue,shift_bell,prisoner_cage,castaway_camp,traveller_camp}
            # (MC_BUILDER=...), then rebuild.py <family> legend/<family> (story/shift_bell) --nbt <out .nbt>; the
            # Traveler's Camp's map frame afterwards: python3 tools/blueprints/js/traveller_camp/frames.py <live .nbt>
-           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp"}
-
+           "founder_statue", "shift_bell", "prisoner_cage", "castaway_camp", "traveller_camp",
+           # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
+           # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
+           # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
+           # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
+           # staffed house)
+           "leaders_hall", "trade_hall"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

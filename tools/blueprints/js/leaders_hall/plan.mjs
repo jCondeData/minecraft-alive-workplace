@@ -21,6 +21,7 @@
 //   Nave     the hall: walls x 2..12, z 3..15, y 1..7 (a dark beam at y 6), 45-degree deepslate-tile roof over
 //            x 1..13 (a block of eave each side), ridge y 13, along z 2..16 (a block of overhang at each gable).
 //   Piers    polished deepslate piers a block proud of the long walls at z 3, 6, 9, 12, 15 (four bays a side), capped.
+//            Carried round the flat back wall at x 4, 7, 10 (z 16).
 //   Porch    the gate-porch: x 5..9, z 0..2, on two dark posts, its own small gable (ridge y 7) under the nave's front
 //            gable; three-wide steps at z 0, a lantern under its ridge.
 //   Ring     a sparring ring set into the nave floor, centred (7, 8), radius 2, a red border.
@@ -52,7 +53,7 @@ export const MASSES = {
     walls: { x0: 2, x1: 12, z0: 3, z1: 15 }, room: { x0: 3, x1: 11, z0: 4, z1: 14 },
     wallTop: 7, beamY: 6,
     roof: { axis: 'z', across: [1, 13], along: [2, 16], eaveY: 7, steep: false },
-    piers: { at: [3, 6, 9, 12, 15], y1: 5 },
+    piers: { at: [3, 6, 9, 12, 15], back: [4, 7, 10], y1: 5 },
   },
   porch: { x0: 5, x1: 9, z0: 0, z1: 2, postTop: 3, beamY: 4, roof: { axis: 'z', across: [4, 10], along: [0, 2], eaveY: 4, steep: false } },
   ring: { cx: 7, cz: 8, r: 2, x0: 3, x1: 11, z0: 4, z1: 11 },
@@ -85,10 +86,12 @@ export const FURNITURE = [
   // Hall: benches facing the ring down both long walls, lanterns from the roof
   ...[5, 6, 7, 9, 10].map(z => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [3, 1, z], facing: 'east', wood: 'dark_oak' })),
   ...[5, 6, 7, 9, 10].map(z => ({ room: 'Hall', kind: 'chair', part: 'chair', pos: [11, 1, z], facing: 'west', wood: 'dark_oak' })),
-  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [7, 9, 6], facing: 'north', chain: 3, wood: 'dark_oak' },
-  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [7, 9, 10], facing: 'north', chain: 3, wood: 'dark_oak' },
-  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [4, 7, 8], facing: 'north', chain: 2, wood: 'dark_oak' },
-  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [10, 7, 8], facing: 'north', chain: 2, wood: 'dark_oak' },
+  // the lanterns hang on long chains from the roof to y 4, over the room (so the benches are lit above 7, check.py's
+  // dark-room rule, and the eye-level shot counts them with the hall's furniture, RebuildScene's rooms)
+  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [7, 4, 6], facing: 'north', chain: 8, wood: 'dark_oak' },
+  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [7, 4, 10], facing: 'north', chain: 8, wood: 'dark_oak' },
+  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [4, 4, 8], facing: 'north', chain: 5, wood: 'dark_oak' },
+  { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [10, 4, 8], facing: 'north', chain: 5, wood: 'dark_oak' },
   { room: 'Hall', kind: 'picture', part: 'picture', pos: [3, 4, 8], facing: 'east', wood: 'dark_oak', colour: 'red' },
   { room: 'Hall', kind: 'picture', part: 'picture', pos: [11, 4, 8], facing: 'west', wood: 'dark_oak', colour: 'red' },
   // Dais: the Leader's seat behind her post, her banners, a red carpet she stands on, two lamp posts

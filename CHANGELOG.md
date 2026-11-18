@@ -53,6 +53,13 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Library and the Schoolhouse are rebuilt from scratch** (51.4). The Library is a tall buttressed
+  stone nave with a rose window over a gabled porch, shelves under its windows, reading desks under hanging lanterns
+  and the lectern closing a blue runner; Level II adds a reading aisle through a wide arch, Level III a spired tower
+  holding the enchanting room, its table ringed by 26 shelves within reach of all three lecterns (18 x 18 x 22), and
+  Level IV an archive dug under it. The Schoolhouse is a whitewashed schoolroom open to its roof timbers under a copper bell-cote, bench rows facing the
+  lectern and blackboard (11 x 16 x 13); Level II adds the little ones' reading room and a fenced schoolyard. Buildings
+  already standing keep the drawing they were built from until you refresh them.
 - **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
   jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
   crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.

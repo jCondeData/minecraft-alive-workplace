@@ -56,7 +56,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "builders_workshop",
            "camp_kitchen", "camp_kitchen_2",
            # 52.3, the walls (the palisade, palisade_2 and palisade_tower follow)
-           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate"}
+           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate",
+           # 51.4, the Library (four levels) and the Schoolhouse: tools/blueprints/js/{library,schoolhouse}/
+           # (MC_BUILDER=<minecraft-builder skill>; library and schoolhouse: build.sh with LEVEL=1..4, library_4 with
+           # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School's
+           # rebuild (js/school) is not live yet: it builds past workplaceBuilt_school's 12,000 ticks (ROADMAP Notes)
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -141,11 +146,8 @@ if __name__ == "__main__":
     # rebuild.py terrace <id>); its old Python drawing in starter.py is no longer saved
     inn().save(MAIN_STRUCTURES, "inn")
     inn_2().save(MAIN_STRUCTURES, "inn_2")
-    school_building().save(MAIN_STRUCTURES, "schoolhouse")
-    school_building_2().save(MAIN_STRUCTURES, "schoolhouse_2")
-    library().save(MAIN_STRUCTURES, "library")
-    library_2().save(MAIN_STRUCTURES, "library_2")
-    library_3().save(MAIN_STRUCTURES, "library_3")
+    # ROADMAP 51.4: the Schoolhouse and the Library come from the rebuild kit (REBUILT); their old drawings are kept in
+    # blueprint_history/
     ranch().save(MAIN_STRUCTURES, "ranch")
     ranch_2().save(MAIN_STRUCTURES, "ranch_2")
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
@@ -228,7 +230,8 @@ if __name__ == "__main__":
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 51.4: library_4 comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     butchers_shop().save(MAIN_STRUCTURES, "butchers_shop")  # ROADMAP 26.15: with its freezer
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
         draw().save(MAIN_STRUCTURES, name)

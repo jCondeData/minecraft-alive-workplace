@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 52.4
 
 ## 1. What a player sees
 
@@ -307,3 +307,26 @@ shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to t
 `blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
 `aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
 `rebuild_clock_tower`.
+
+**51.6: the Chapel** (critic SHIP, round 3). Recipe `tools/blueprints/js/chapel/` (`npm run cut`), then
+`rebuild.py chapel chapel --nbt build/rebuild/chapel/out/chapel.nbt`. `chapel` ("the Blossom Court") is now 13 x 16 x 17
+(was 11 x 16 x 16), 879 blocks: a gate tower x 4..8, z 1..5 (belfry y 11..12, slate spire to y 15), a nave x 2..10,
+z 5..15 under one slate roof (ridge y 10), stepped buttresses at z 8 and z 11. The middle the code reads for weddings
+(`Couples.venue`, the plot's middle) is (6, 1, 8), the rose under the vow arch, open and reachable. It leaves
+`owner_rules_baseline.json`; its 25 furniture spots are in `blueprint_furniture/chapel.json`; the old drawing is in
+`blueprint_history/chapel/` as v0.145.0. Scene `rebuild_chapel`.
+
+**51.5: the Leader's Hall and the Trade Hall** (critic SHIP: the Leader's Hall in round 1, "the Challenge Hall"; the
+Trade Hall in round 3, "the Ball Tower"; scorecards in `tools/blueprints/briefs/halls_51_5_critic.md`, briefs
+`leaders_hall.md` and `trade_hall.md`). Recipes `tools/blueprints/js/{leaders_hall,trade_hall}/` (`node
+"$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955`), then `rebuild.py <family> <family>`.
+`leaders_hall` is 15 x 15 x 17, 1,026 blocks, the Training Post on the dais at (7, 2, 13); `trade_hall` is 18 x 18 x 19,
+1,427 blocks, the Shop Counter at (6, 1, 8) and the Trader's bed in the tower room at (13, 7, 3), its head to the front wall, up a ladder. Ship-step
+changes: the Leader's Hall's piers are carried round its back wall (the critic's polish); its hall lanterns hang on
+long chains to y 4 and the Trade Hall's tower lantern to y 10, so each lamp counts with its room's furniture in the
+eye-level shots; the Trade Hall gets two more lanterns (the ledger shelves and the bay desk), as `check.py`'s
+dark-room rule asked once the drawings went live. The critic's other polish (a straight gable trim on the Leader's
+Hall; a second tower window, the loft and the back gable on the Trade Hall) waits for a run that can render it. The old
+drawings (and their modded copies) are in `blueprint_history/` as v0.145.0; the village houses `<style>_leaders_hall`
+and `<style>_trade_hall` keep their own looks (`village.py`'s staffed house). Scenes `rebuild_leaders_hall`,
+`rebuild_trade_hall`.

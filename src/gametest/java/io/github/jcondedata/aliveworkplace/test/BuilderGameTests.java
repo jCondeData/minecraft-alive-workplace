@@ -1347,7 +1347,7 @@ public class BuilderGameTests implements FreshPlanning {
 		helper.succeed();
 	}
 
-	/** The Chapel (16 deep, its spire 16 high): further back and to the east, clear of the bench and the barrels. */
+	/** The Chapel (13 wide, 17 deep, its tower 16 high): further back and to the east, clear of the bench and the barrels. */
 	//$ gametest_ticks_batch BIG_AREA '40000' '"starter_builds_9"'
 	@GameTest(template = BIG_AREA, timeoutTicks = 40000, batch = "starter_builds_9")
 	public void buildsChapel(GameTestHelper helper) {

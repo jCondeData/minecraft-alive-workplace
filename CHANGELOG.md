@@ -97,6 +97,13 @@ asks for the steps, `latest.log` and any crash report).
   smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
   floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
   you refresh them, and are never offered a dig of the new freezer.
+- **The Leader's Hall and the Trade Hall are rebuilt from scratch** (51.5, with Cobblemon). The Leader's Hall is a tall
+  stone hall behind a gate-porch, dark piers down its walls and round its back: the challenger walks past benches either
+  side of a sparring ring set into the floor and up to the dais, where the Training Post stands before the Leader's
+  seat (15 x 15 x 17). The Trade Hall is a white counting hall in a proud dark oak frame with a round corner tower whose
+  dark band and white button make it a Poké Ball from afar: the Shop Counter faces the door, a desk sits in the gabled
+  ledger bay at the back and the Trader sleeps up a ladder in the tower (18 x 18 x 19). Buildings already standing keep
+  the drawing they were built from until you refresh them.
 - **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
   stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
   trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The
@@ -132,6 +139,15 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
+  with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
+  lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow
+  in the plinth's corners. Market Crosses already standing keep their look until you refresh them.
+- **The Chapel is rebuilt from scratch** (51.6, "the Blossom Court"). A limewashed bell tower with twin belfry
+  openings and a slate spire stands at the front, lamp posts either side of its door, and behind it one long white nave
+  runs under a single slate roof, stepped stone buttresses down both sides (13 x 17, 16 high). Inside, dark oak pews
+  line an andesite aisle to a stone vow arch wreathed in flowering azalea, where couples stand to marry, and the altar
+  under the rose window. Chapels already standing keep their look until you refresh them.
 - **The Clock Tower is rebuilt from scratch** (51.6, with Create). A slender stone tower carries a timber clock room
   with a cuckoo clock on every side under a flared copper spire (15 x 15, 26 high). Water pours from a stone spout
   down the tower's front corner and turns the wheel by the door, and through a slit in the wall you can watch the drive
@@ -202,6 +218,15 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
+  visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
+  list, so the afternoon no longer stutters the server (B644).
+- Far sites (a quarry, a field, a tree farm, an orchard, a berry plot or a build marked far outside the village) no
+  longer make the server load their chunks when nobody is there. Before, the worker's first moment at work loaded (or
+  generated) the far chunks in the middle of a tick, a hitch for everyone online, and a Miner could call a far quarry
+  finished from his bench without digging it. Now the site waits exactly as it was until its chunks are loaded again
+  (you come back, or `workplaceKeepWorkLoaded` keeps your build or quarry running), and the worker carries on from
+  there. Meanwhile a Lumberjack and an Orchard Keeper go on with the trees and fruit round their own block (B666, B667).
 - With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
   the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
   time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while

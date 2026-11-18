@@ -10,7 +10,7 @@ Roadmap items: 26.14, 36.4, B186, 52.1, 52.2
 
 | Build | Size (w x h x d) | Beauty | What it is |
 |---|---|---|---|
-| Market Cross | 5 x 8 x 5 | 2 | a stepped stone plinth, a shaft of stone brick wall to a chiseled head, dark oak arms with a lantern hanging from each, one on top |
+| Market Cross | 9 x 8 x 9 | 2 | rebuilt in 51.7 ("the Mercat Drum"): an octagonal stone drum on a one-step plinth with a stair cut into its front, a parapet round its platform, a white quartz shaft rising to a head that hangs four lanterns over the square and flies the market flag, benches against the drum on three sides, flowering azaleas in the plinth's corners |
 | Stag Statue | 9 x 8 x 7 | 2 | redrawn in 52.2: a carved spruce stag standing broadside on a low mossy crag, dark oak mane and legs, pale birch antlers branching, a cut-stone step at the front to stand and look, ferns and flowers, lanterns on rubble posts |
 | Flower Planters | 9 x 6 x 8 | 1 | redrawn in 52.2: a horseshoe of flower beds in their own soil stepping up in three tiers (planter boxes at the gate, stone beds down the sides, the tallest bed of lilacs, peonies and roses at the back) round a paved court and a bench, under a spruce pergola with lanterns hung from its beams |
 | Signpost | 3 x 5 x 3 | 1 | a spruce post on a cobbled foot, four fingerboards at two heights that name what lies each way (36.4), a lantern on top |

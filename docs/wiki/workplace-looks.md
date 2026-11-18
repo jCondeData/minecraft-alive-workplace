@@ -94,7 +94,8 @@ keeps its 9 x 10 plot (the shore rule measures from its front).
   materials) and furnished by `village.py` as before: the street jigsaw, the door at the same spot, the job's room, the
   bed and the villager (or the spawn jigsaw) where they were, so `VillageHouses` and the village pools are unchanged.
   Their footprints grew (up to 13 x 17 x 13); the four luxury houses stay at most 10 wide.
-- The Weaver's Cottage (`countryside.py`) and the Inn (`starter.py`) keep their sizes, rooms and job blocks.
+- The Weaver's Cottage (`countryside.py`) and the Inn (`starter.py`) keep their sizes, rooms and job blocks. (The
+  Weaver's Cottage was rebuilt from scratch since, in 49.8: [The Weaver's Cottage](weavers-cottage.md).)
 
 ## 3. Switches
 

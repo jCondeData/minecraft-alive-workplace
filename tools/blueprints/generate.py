@@ -71,7 +71,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School
            # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
            # their own looks (village.py's staffed house)
-           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school"}
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school",
+           # 49.8, the Weaver's Cottage: js/weavers_cottage (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh
+           # build.sh the live weavers_cottage and weavers_cottage_2)
+           "weavers_cottage", "weavers_cottage_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -226,7 +229,8 @@ if __name__ == "__main__":
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # 49.8: the Weaver's Cottage comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("winery", winery), ("winery_2", winery_2), ("tailors_shop", tailors_shop), ("tailors_shop_2", tailors_shop_2)):
         if name not in REBUILT:  # ROADMAP 50.4: the Winery comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13

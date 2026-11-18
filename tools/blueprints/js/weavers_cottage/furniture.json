@@ -10,6 +10,7 @@
   {"kind":"chair","pos":[5,5,3],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"table","pos":[5,5,7],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"white"},
   {"kind":"table","pos":[6,5,7],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"light_blue"},
+  {"kind":"chair","pos":[5,5,6],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[4,8,5],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[8,8,5],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0]],"wood":"spruce","colour":null}
 ]}

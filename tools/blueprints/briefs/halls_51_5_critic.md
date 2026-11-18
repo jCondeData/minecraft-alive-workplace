@@ -38,3 +38,35 @@ Brief checks done on the candidates: Leader's Hall one Training Post, no trapdoo
 plot; Map Room one cartography table, 23 tall (needs 13), a lookout in the top quarter, 13 ladders; Trade Hall one
 Shop Counter, one bed (up a ladder: whether the reach check counts ladders is untested), no barrel, about 47 stacks
 (budget 81). Not tested: the GameTests.
+
+## Round 3 (lane-c-1118-0353; each critic a fresh subagent)
+
+| Score | Map Room r3 OLD | NEW | Trade Hall r3 OLD | NEW | Guildhall r1 OLD | NEW |
+|---|---|---|---|---|---|---|
+| Silhouette | 4 | 4 | 3 | 4 | 4 | 3 |
+| Depth | 4 | 4 | 4 | 4 | 3 | 4 |
+| Interior | 2 | 3 | 2 | 3 | 3 | 2 |
+| Detail | 3 | 3 | 3 | 4 | 3 | 3 |
+| Verdict | | BACK (3rd: to the owner as it stands) | | SHIP | | BACK |
+
+- **Map Room: BACK a third time; goes to the owner as it stands** (REBUILD.md: twice at most). Round 3 added corner
+  piers, belt courses, a stair-plinth porch, banner map wall and lookout brackets (11x25x14). The critic's remaining
+  notes: furnish the 3rd floor and the lookout deck; a window on the bare back of the shaft; drop the two dark-blue
+  banners halfway up the front piers; set the lookout windows back with sills; one roof feature of its own.
+- **Trade Hall: SHIP** (round 3). Proud dark-oak frame all round, sills and eaves on every side, a cross-gabled ledger
+  bay on the back, the tower top in the walls' palette, a stone skirt round the tower. Optional polish: a second window
+  per tower face; furnish or close the loft under the hall roof; something on the back gable. Ship step: size
+  (11,17,11) -> (18,18,19).
+- **Guildhall: BACK** (round 1). Arcade allowed in holes.py (one ALLOW line, the hall above closed). Notes: (1) furnish
+  II's two wing rooms (records room, guild master's chamber, lamps); (2) a dormer or cross gable and windows on the
+  long back roof and blank plaster; (3) a real gable on the wing's east end (II-right) instead of a bare hip;
+  (4) a second roof shape on Level I (a cross gable over the arcade's middle bay, or a real lantern tower);
+  (5) candles on the hall table, a focal wall round the charter frames, window boxes, stalls in the arcade.
+
+**Guildhall round 2: BACK** (OLD 4/4/2/3, NEW 3/4/3/3; one return left). Round 2 furnished the wing rooms (counting
+house, records room), added a rear gablet, an east cross gable on II, window boxes and arcade market counters.
+**It misses the brief:** the arcade counters' stock barrels (I (2,1,4), (14,1,7); II/III also (23,1,7)) are forbidden
+(a barrel pulls a jobless villager into the fisherman job): replace with empty chests against a wall. Other notes:
+(2) give II a mass of its own (a taller wing, a tower or a projecting entrance bay), not I made longer; (3) the
+back gable above the plinth is a blank dark-wood panel: framed windows; (4) the hall's upper floor (cut9) is bare:
+furnish the meeting room by the charter frames; (5) film eye-level shots.

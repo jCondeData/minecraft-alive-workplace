@@ -79,6 +79,11 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Clock Tower is rebuilt from scratch** (51.6, with Create). A slender stone tower carries a timber clock room
+  with a cuckoo clock on every side under a flared copper spire (15 x 15, 26 high). Water pours from a stone spout
+  down the tower's front corner and turns the wheel by the door, and through a slit in the wall you can watch the drive
+  climb to the four clocks; the Cartographer's map room is at its foot. Clock Towers already standing keep their look
+  until you refresh them.
 - **The Post Office and the Graveyard are rebuilt from scratch** (51.6). The Post Office is a brick tower with a
   steep slate spire and a weathervane, standing forward of a long counter hall: you come in at the tower's foot and
   walk straight to the Mailbox in the middle of the counter, with a writing table, a bench by the stove and the

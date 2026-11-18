@@ -1607,6 +1607,13 @@ SCENES = [
            ("02_outside_back", "From the back: the chapel's stone gable with its tall lancet, a yew either side"),
            ("03_outside_west", "From the west: the lantern tower rising over the chapel roof"),
            ("10_room_1", "The chapel at eye level: pews along both walls, the bier under the lamp, the Undertaker's brewing stand at the altar between candles")], furniture=True),
+    # ROADMAP 51.6: the Clock Tower rebuilt from scratch ("the Water Clock", Create only)
+    S("rebuild_clock_tower", "Build families", "The Clock Tower, rebuilt: from four sides and at eye level inside",
+      "the Clock Tower's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Clock Tower from the front: water falling from the spout pier past the wheel by the door, the drive climbing behind the slit, a clock face under the copper spire"),
+           ("02_outside_back", "From the back: the stone shaft, the jettied clock chamber on its corbels and the back clock face"),
+           ("04_outside_east", "From the east: the bell-cast copper spire and its needle over the chamber"),
+           ("10_room_1", "Inside at eye level: the map room, the cartography table and its chair, the gearbox turning the drive up the corner")], furniture=True, create=True),
     # ROADMAP 50.4: the Butcher's Shop rebuilt from scratch (REBUILD.md)
     S("rebuild_butchers_shop", "Build families", "The Butcher's Shop, rebuilt: from four sides and at eye level inside",
       "the Butcher's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",

@@ -542,7 +542,8 @@ public final class StarterBlueprints {
 	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
 	 */
 	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
-	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(11, 19, 9));
+	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
+	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
 	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
 	/** The builds of 39.8, in the order the Table shows them. */
 	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);

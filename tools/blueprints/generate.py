@@ -77,7 +77,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # cut), then rebuild.py post_office post_office --nbt out/post-office.nbt; js/graveyard (npm run cut, LEVEL=2
            # for graveyard_2), then rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt. The post office's
            # village pieces keep their own looks (village.py's staffed house)
-           "post_office", "graveyard", "graveyard_2"}
+           "post_office", "graveyard", "graveyard_2",
+           # 51.6, the Clock Tower ("the Water Clock", Create only): js/clock_tower (npm run cut), then rebuild.py
+           # clock_tower clock_tower --nbt out/clock-tower.nbt
+           "clock_tower"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

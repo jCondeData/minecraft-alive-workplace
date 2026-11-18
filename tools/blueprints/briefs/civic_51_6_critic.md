@@ -30,3 +30,19 @@ fresh subagent (lane-c-1118-1253). Eye-level shots: not filmed (scored from cuta
   belfry, a ridge cap over air (B1384's shape). **Round 3 is drawn** (narrower, taller nave to y6, stepped buttresses
   at z 8/11, set-back windows with sills, blossom bushes at the corners, barred belfry over a corbel course, the ridge
   flush at y10; 13x16x17, 879 blocks): its critic (the last round) is next.
+
+**lane-c-1118-1553:** the Clock Tower shipped (round 1's SHIP scores above): live `clock_tower.nbt` 15x26x15, 896
+blocks, 12 furniture spots; `aBuilderBuildsTheClockTowerAndItTurns` in TALL_AREA with the new pinned spots (cartography
+table (7,1,9), north cuckoo clock (7,15,3) as the machine, gearboxes (5,2,5)/(5,15,5)/(7,15,7), shaft (5,8,5)) passed,
+as did `qaReleaseRefresh_clock_tower` (tall area). The copper collars over air did not hang the builder (no B1384 here).
+**Chapel round 3: critic not run yet** (this run's build subagent had no way to start a fresh critic subagent). Its
+sheet is ready: `build/rebuild/chapel_r3_sheet.png` (five views, OLD = live chapel.nbt, NEW = round 3, 13x16x17, 879
+blocks, no CHECK line) and `build/rebuild/chapel_r3_cuts.png` (cutaways at y 3 and y 6); eye-level shots not filmed.
+
+| Score | Chapel r3 OLD | NEW |
+|---|---|---|
+| Silhouette | | |
+| Depth | | |
+| Interior | | |
+| Detail | | |
+| Verdict | | (critic pending) |

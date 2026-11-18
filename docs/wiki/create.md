@@ -67,9 +67,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   (blast furnace); the **Greenhouse**, a glass house on a brick knee wall with a stepped glass roof on spruce
   rafters, farmland beds watered by two channels, and a belt from the wheel down the aisle to a depot, a little cart
   of andesite casing on it carrying a mechanical harvester and a mechanical plough (ready to be fixed to a
-  contraption: Create's harvester and plough only work moving) (composter); the **Clock Tower**, a stone tower with a
-  plastered belfry under a dark oak hip roof and a cuckoo clock in its front, turned by a shaft up the middle of the
-  tower from the wheel at its foot (cartography table; purely for show); and the **Pump House**, a small brick house
+  contraption: Create's harvester and plough only work moving) (composter); the **Clock Tower** (rebuilt in 51.6, "the Water
+  Clock", 15 x 26 x 15), a slender stone shaft under a jettied timber clock chamber with a cuckoo clock on every face and
+  a bell-cast copper spire: water poured into a spout pier's cup falls down the tower's front corner past the wheel by
+  the door, whose drive runs in through the wall, up a corner shaft (seen through a slit) and out through the chamber's
+  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House**, a small brick house
   where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
   two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
   handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels

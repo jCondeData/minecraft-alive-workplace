@@ -1,0 +1,11 @@
+{
+  "name": "map-room",
+  "private": true,
+  "type": "module",
+  "description": "The Map Room (49), the Lantern Tower: a stone shaft under a jettied lookout. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py map_room map_room --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/map-room.nbt"
+  }
+}

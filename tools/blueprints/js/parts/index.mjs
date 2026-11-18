@@ -43,3 +43,16 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './village_hall_b_moot.mjs' // stretchedLevel, stretchedTent, octRing, ringFace, wallBench, hangingPot, bellPorch (moot halls: stretched octagons)
+export * from './village_hall_a_civic.mjs' // meetingBell, civicParts (hangingPot, bench), wallHearth, belfry, needleSpire, pewRows, civicDormer
+export * from './inn_b_arcade.mjs' // arcade, moulding, skirt, bench, coachGate, stall, pitchDormer (the Arcade Inn, 49 B)
+export * from './inn_a_coaching.mjs' // jetty, barRun, turningStair, gallery, stalls, caskRack, signPost, gatePiers (coaching inns)
+export * from './storehouse_a_store.mjs' // chestRack, tallyDesk (storehouses: chest racks paired into doubles, the tally desk)
+export * from './storehouse_b_warehouse.mjs' // chestStack, countingDesk, crowSteps, hoistArm (canal warehouses: paired chests, the desk, stepped gables, hoists)
+export * from './schoolhouse_school.mjs' // schoolBellcote, blackboard, lectern (schoolhouses: the bell-cote, the board, the lectern)
+export * from './school_dojo.mjs' // sparringRing, moonWindow, strawTarget (the Move Tutor's School, 49 A: a sparring ring in the yard's paving, a round gable window, practice targets)
+export * from './library_nave.mjs' // buttress, shelfWall, enchantRing, pyramidRoof, lancet (the Lamplit Nave library, 49)
+export * from './leaders_hall_arena.mjs' // piers, dais, standard (challenge halls: proud piers, the leader's dais, banner poles)
+export * from './guildhall_arcade.mjs' // arcadeRun, jettyCorbels (guildhalls: an open arcade under a jettied hall)
+export * from './map_room_tower.mjs' // corbelRing, compassRose, lookoutRail, ladderShaft, batter (towers: a jettied lookout on corbels, a floor compass rose, a ladder shaft, a splayed foot)
+export * from './trade_hall_ball.mjs' // roundShaft, ballCap, steppedCap (the Ball Tower trade hall: a chamfered tower and the ball on it)

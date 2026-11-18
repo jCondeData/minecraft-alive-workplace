@@ -12,8 +12,8 @@
 //  2. "Stone saltbox": the shipped shape in pale stone with snow on it. Safe, and only a palette: its 45-degree slopes
 //     are the very roof that holds a snow load.
 //  3. "The Snowbound House": the long side to the road and a STEEP slate roof (two up per one across) coming down to
-//     the top of the ground storey front and back, so the roof is two thirds of the house; every course of slate a
-//     step with snow lying on it, snow on the ridge, a drift round the walls. Pale calcite-and-diorite rubble walls
+//     the top of the ground storey front and back, so the roof is two thirds of the house; snow on the ridge, a
+//     snow-laden eave and a snow line across the slopes, a drift round the walls. White calcite walls
 //     with grey dressed quoins, white birch posts and a calcite dormer face. The chamber lives inside the roof, lit by a
 //     steep gabled dormer over the desk and a small gable window. A closed storm porch (stone cheeks under the eave)
 //     before the door, firewood stacked to the eaves either side of it, and a massive stone stack on the west gable,
@@ -33,7 +33,7 @@
 //  Back     III: walls x 1..9, z 9..13, a steep roof (ridge along z at x 5, y 14) meeting the main roof's back slope
 //           (a cross gable), its gable at z 13; a ceiling at y 6 over the back room.
 //  Cellar   IV: the shipped store, cell for cell (x 1..9, z 1..9, 4 deep).
-//  Snow     snow layers on every roof tread and ridge, on the window sills, and a drift skirt on the ground, never on
+//  Snow     snow layers on the ridges, the eaves and the snow line's treads, on the window sills, and a drift skirt, never on
 //           the doorstep (5, 0, 0) or the walks to the doors. Snow layers sit on full blocks only (the treads are full
 //           tiles), so the builder places each on a solid top.
 //  Lamps    the furniture of the shipped house cell for cell; only the hanging lamps' chains change to reach what is
@@ -41,8 +41,15 @@
 //  Done (2026-11-18): all four levels saved as candidates (build.sh -> build/rebuild/stone_house_snowy/), each with no CHECK
 //           line, holes.py 0 (open included), check.py's owner rules and checks 0, and every furniture spot of the
 //           shipped Stone House present in the same cell with the same kind and facing at every level (29/34/39/47).
-//           Blocks per level 907/1066/1371/1581 (shipped 759/851/996/1206); II keeps 98 % of I, III 95 % of II, IV 100 % of III.
+//           Blocks per level 830/968/1237/1447 (shipped 759/851/996/1206); II keeps 97 % of I, III 95 % of II, IV 100 % of III.
 //           Not shipped (no SHIP=1): the critic goes first.
+//  Round 2 (2026-11-18, the critic's five notes, briefs/stone_house_looks_critic.md): 1 the gables' rakes keep their
+//           stairs (snowLoad skips the rake columns), so each gable edge is a clean steep rake at the same pitch; 2 the
+//           dormer keeps its own stair gable (skipped too) and the front slope runs in even courses past it, no ledges;
+//           3 snow only on the ridges, the eaves and one snow line (y 9) across the back and side slopes, no stripes;
+//           4 the walls one stone (calcite) with grey dressed quoins and band, the chimney all stone brick; 5 Level I's
+//           east side: a window box (a sill with a potted spruce) under the hall's east window and a firewood stack
+//           against the gable under its rake (II's wing takes those cells).
 //  Left for the critic: the back gable stands flush at z 13 (the plot's edge leaves no cell for an overhang), and
 //           so does the wing's at x 12.
 import { FURNITURE as SH_FURNITURE, OPENINGS as SH_OPENINGS, MASSES as SH_MASSES, BASEMENT, SIZES, IDS } from '../stone_house/plan.mjs'
@@ -50,12 +57,12 @@ import { FURNITURE as SH_FURNITURE, OPENINGS as SH_OPENINGS, MASSES as SH_MASSES
 export { BASEMENT, SIZES, IDS }
 export const LEVELS = [1, 2, 3, 4]
 
-// PALETTE 60/30/10: 60 pale rubble (calcite, diorite, stone) on a darker stone-brick plinth; 30 dark slate roof
+// PALETTE 60/30/10: 60 white calcite walls on a darker stone-brick plinth; 30 dark slate roof
 // (deepslate tiles) under white snow; 10 dressed grey quoins, white birch boards and trim, spruce doors and shutters.
 export const PALETTE = {
-  rubble: [['calcite', 3], ['diorite', 3], ['stone', 2], ['polished_diorite', 1], ['andesite', 1]],
+  rubble: [['calcite', 1]], // one wall stone (round 2: the calcite/diorite checkerboard read as noise)
   plinth: [['stone_bricks', 3], ['cobblestone', 2], ['andesite', 1]],
-  chimney: [['stone_bricks', 4], ['calcite', 2], ['stone', 2], ['cobblestone', 1]],
+  chimney: [['stone_bricks', 5], ['cracked_stone_bricks', 1]], // dressed grey, apart from the white walls
   course: 'polished_andesite', // the upper floor's line in the walls: a grey band round the pale stone
   dressed: 'stone_bricks', dressedAlt: 'polished_andesite', // quoins
   sill: 'stone_brick_stairs', cap: 'stone_bricks',
@@ -75,6 +82,7 @@ export const MASSES = {
   back: { x0: 1, z0: 9, x1: 9, z1: 13, roof: { axis: 'z', across: [0, 10], along: [5, 13], eaveY: 5, steep: true }, ceilingY: 6 },
   cellar: SH_MASSES.cellar,
   porch: { x: 5, z: 0, top: 4 }, // the storm porch's cheeks at x 4 and 6 on the front row
+  snowLine: 9, // round 2: snow lies on the treads at this height only (and on every ridge and eave)
 }
 
 export const OPENINGS = {
@@ -87,7 +95,7 @@ export const OPENINGS = {
     { name: 'box room back', cells: [[3, 2, 9], [3, 3, 9]], out: 'south', dress: 'sill', snow: true, until: 2 },
     { name: 'box room west', cells: [[1, 2, 7], [1, 3, 7]], out: 'west', dress: 'shutters' },
     { name: 'kitchen back', cells: [[7, 2, 9], [7, 3, 9]], out: 'south', dress: 'sill', snow: true, until: 2 },
-    { name: 'hall east', cells: [[9, 2, 7], [9, 3, 7]], out: 'east', dress: 'shutters', until: 1 },
+    { name: 'hall east', cells: [[9, 2, 7], [9, 3, 7]], out: 'east', dress: 'sill', pots: ['potted_spruce_sapling'], until: 1 }, // a window box
     { name: 'chamber west', cells: [[1, 7, 6], [1, 8, 6]], out: 'west', dress: 'shutters' },
     { name: 'chamber east', cells: [[9, 7, 5], [9, 8, 5]], out: 'east', dress: 'shutters', until: 1 },
     { name: 'west gable', cells: [[1, 11, 5]], out: 'west', dress: null },
@@ -108,6 +116,7 @@ export const FURNITURE = SH_FURNITURE.map(f => (f.part === 'hangingLamp' && chai
 export const OUTSIDE = {
   // firewood stacked to the eaves either side of the storm porch (out of the snow, under the front eave)
   firewood: [[1, 0], [2, 0], [8, 0], [9, 0]], firewoodTop: 3,
+  eastWood: [[10, 2], [10, 3], [10, 4]], // I: a wood stack against the east gable under its rake (II's wing takes the cells)
   // where the drift stays clear: the doorstep and its approach
   bare: [[5, 0], [4, 0], [6, 0]],
 }

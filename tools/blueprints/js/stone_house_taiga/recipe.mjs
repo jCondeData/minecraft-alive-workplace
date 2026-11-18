@@ -93,6 +93,14 @@ export function drawLevel(level) {
     c.set(wp.x, 0, z, base)
     for (let y = 1; y <= wp.top; y++) c.set(wp.x, y, z, P.firewood[(y + z) % P.firewood.length], { axis: 'x' })
   }
+  c.set(wp.x, wp.top + 1, wp.zs[0], P.woodCap, { type: 'bottom', waterlogged: 'false' })
+  c.set(wp.x, wp.top + 1, wp.zs[wp.zs.length - 1], P.woodCap, { type: 'bottom', waterlogged: 'false' })
+  if (level >= 2) for (const z of Wg.wood.zs) for (let y = 1; y <= Wg.wood.top; y++) c.set(Wg.wood.x, y, z, P.firewood[0], { axis: 'x' })
+  if (level >= 3) {
+    const T = MASSES.backTrim
+    for (const [a, b] of T.lintels) for (let x = a; x <= b; x++) c.set(x, T.y, T.z, P.trimLog, { axis: 'x' })
+    for (const x of T.loftPosts) for (const y of T.loftY) c.set(x, y, T.z, P.trimLog, { axis: 'y' })
+  }
   for (const b of OUTSIDE.fernBeds) flowerBed(c, b.x0, b.x1, b.z, P.plants, P.bedSoil)
 
   // --- Pass 4: interior (the plan's furniture) ---------------------------------------------------------------------

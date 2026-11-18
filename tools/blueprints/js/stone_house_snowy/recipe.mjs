@@ -15,7 +15,7 @@ import {
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 
-// the top of a steep roof's column i courses in from its eave at eaveY (after snowLoad: every course a full block)
+// the top of a steep roof's column i courses in from its eave at eaveY (its stair's cell; the ridge's full block)
 const steepTop = (eaveY, half, i) => (i === 0 ? eaveY : i >= half ? eaveY + 2 * half - 1 : eaveY + 2 * i)
 
 export function drawLevel(level) {
@@ -68,8 +68,8 @@ export function drawLevel(level) {
   if (level >= OPENINGS.wingDoorway.level) doorway(c, OPENINGS.wingDoorway.at)
   if (level >= OPENINGS.backDoorway.level) doorway(c, OPENINGS.backDoorway.at)
   for (const w of OPENINGS.windows) if (has(w)) {
-    window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood, sill: P.sill })
-    if (w.snow) { // snow on the sill: one layer on the upside-down stair under the panes
+    window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood, sill: P.sill, pots: w.pots ?? [] })
+    if (w.snow && !w.pots) { // snow on the sill: one layer on the upside-down stair under the panes
       const [x, y, z] = w.cells[0], d = { north: [0, -1], south: [0, 1], west: [-1, 0], east: [1, 0] }[w.out]
       c.set(x + d[0], y, z + d[1], P.snow, { layers: '1' })
     }
@@ -100,8 +100,8 @@ export function drawLevel(level) {
   stair(c, ch.x, ch.breastTop + 1, ch.breast[1], P.sill, 'north')
   chimney(c, ch.x, ch.z, ch.breastTop + 1, ch.top, stack)
   c.set(ch.x, ch.top, ch.z, P.cap)
-  // firewood stacked to the eaves either side of the porch, on stone
-  for (const [x, z] of OUTSIDE.firewood) {
+  // firewood stacked to the eaves either side of the porch, on stone (and, in I, against the east gable)
+  for (const [x, z] of [...OUTSIDE.firewood, ...(level < 2 ? OUTSIDE.eastWood : [])]) {
     c.set(x, 0, z, base)
     for (let y = 1; y <= OUTSIDE.firewoodTop; y++) c.set(x, y, z, P.firewood[(x + y) % P.firewood.length], { axis: 'z' })
   }
@@ -121,7 +121,14 @@ export function drawLevel(level) {
   }
 
   // --- Pass 6: snow -------------------------------------------------------------------------------------------------
-  snowLoad(c, P.roof, P.snow, { eaves: true })
+  // snow on the ridges and the eaves, and one line of it across the back and side slopes at one height (the snow
+  // line; the front slope, broken by the dormer, keeps clean courses); the
+  // rakes (the gables' edges) and the dormer keep their stairs, so the gables read as clean rakes
+  const D = MASSES.dormer
+  const rake = (x, y, z) => x === M.roof.along[0] || x === M.roof.along[1] || (level >= 2 && x === Wg.roof.along[1]) ||
+    (level >= 3 && z === B.roof.along[1])
+  const dormer = (x, y, z) => x >= D.cx - 2 && x <= D.cx + 2 && z <= D.face + 1 && y >= D.y0 + 2
+  snowLoad(c, P.roof, P.snow, { eaves: true, tread: (x, y, z) => y === MASSES.snowLine && !(z <= M.roof.across[1] / 2 && x <= M.roof.along[1]), skip: (x, y, z) => rake(x, y, z) || dormer(x, y, z) })
   snowSkirt(c, P.snow, OUTSIDE.bare)
   return { c, dug }
 }

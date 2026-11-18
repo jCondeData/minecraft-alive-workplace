@@ -1,6 +1,6 @@
 // Cold homes: the pieces the snowy and taiga looks of a home are drawn with (ROADMAP 49.10b, the Stone House's snowy
 // and taiga looks; the Starter Cottage's looks set the language). Every block comes from the palette passed in.
-//   snowLoad     a steep slate roof drawn as stepped courses with snow lying on every tread (snow on the slopes)
+//   snowLoad     snow lying on a steep slate roof: on its ridges, its eaves and the treads the caller picks
 //   snowSkirt    a drift of snow layers on the ground round a house, kept off its doorsteps and walks
 //   stormPorch   a closed entry niche before a door: stone cheeks either side under the eave, a lintel, a lantern
 //   frontDormer  a steep gabled dormer in a slope whose ridge runs along x, its face in the wall line (z)
@@ -13,9 +13,11 @@ const ns = id => (id.includes(':') ? id : `minecraft:${id}`)
 /** snowLoad: turns every steep roof course into a step of snow: each `roof.stairs` (bottom half) standing on a
  *  `roof.full` in its own column becomes a full block with `snow` layers on top (when the cell over it is free and
  *  inside the canvas), and each bare full block topping a roof column (the ridges) takes snow too. With `eaves`, the
- *  eave stairs (nothing under them) become full blocks with snow as well: a thick, snow-laden lip. `skip(x, y, z)`
- *  keeps a cell as drawn. The cells stay where the roof's were, so the roof keeps its underside (rooms, chains). */
-export function snowLoad(c, roof, snow, { layers = '2', ridge = '3', eaves = false, skip = () => false } = {}) {
+ *  eave stairs (nothing under them) become full blocks with snow as well: a thick, snow-laden lip. `tread(x, y, z)`
+ *  picks which courses above the eave carry snow (default all; a few reads as snow lying, every one as stripes);
+ *  `skip(x, y, z)` keeps a cell as drawn (a rake, a dormer). The cells stay where the roof's were, so the roof keeps
+ *  its underside (rooms, chains). */
+export function snowLoad(c, roof, snow, { layers = '2', ridge = '3', eaves = false, tread = () => true, skip = () => false } = {}) {
   const full = ns(roof.full), stairs = ns(roof.stairs)
   const [w, h, d] = c.size
   const base = c.base ?? 0
@@ -24,7 +26,7 @@ export function snowLoad(c, roof, snow, { layers = '2', ridge = '3', eaves = fal
     const got = c.get(x, y, z)
     if (!got || skip(x, y, z)) continue
     const below = c.name(x, y - 1, z)
-    if (got.id === stairs && got.props.half === 'bottom' && (below === full || (eaves && below === 'minecraft:air'))) {
+    if (got.id === stairs && got.props.half === 'bottom' && ((below === full && tread(x, y, z)) || (eaves && below !== full && below !== stairs))) {
       c.set(x, y, z, roof.full)
       tops.push([x, y + 1, z, layers])
     } else if (got.id === full && c.name(x, y + 1, z) === 'minecraft:air') tops.push([x, y + 1, z, ridge])

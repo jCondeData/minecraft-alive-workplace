@@ -116,7 +116,10 @@ function levelOne(c) {
   // Pass 5: ground
   for (const b of OUTSIDE.flowerBeds) flowerBed(c, b.x0, b.x1, b.z, b.plants)
   c.set(...OUTSIDE.wares, 'barrel', { facing: 'up', open: 'false' })
-  for (const p of OUTSIDE.woodpiles) for (let z = p.z0; z <= p.z1; z++) for (let y = 0; y <= (z === p.z0 + 1 ? 1 : 0); y++) c.set(p.x, y, z, 'spruce_log', { axis: 'z' })
+  for (const p of OUTSIDE.woodpiles) for (const [z, x0] of p.rows) for (let x = x0; x <= 15; x++) {
+    for (let y = 0; y <= 1; y++) c.set(x, y, z, 'spruce_log', { axis: 'x' }) // end grain out
+    slab(c, x, 2, z, `${P.wood}_slab`, 'bottom') // the lid
+  }
   const sd = OUTSIDE.shed
   for (let z = sd.logs.z0; z <= sd.logs.z1; z++) for (let y = 1; y <= sd.logs.high; y++) c.set(sd.logs.x, y, z, 'spruce_log', { axis: 'x' })
   for (const p of sd.clay) c.set(...p, 'clay')

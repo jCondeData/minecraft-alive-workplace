@@ -1552,6 +1552,15 @@ SCENES = [
            ("02_outside_back", "From the back: the stepped back gables, a chimney in each one's apex"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.8: the Artisan's House rebuilt from scratch (the Kiln House: a potter's jettied house gable-end to the
+    # street beside a brick bottle kiln that is its chimney), its first level built as a server with the furniture mods
+    # builds it, from four sides and at eye level in every room
+    S("rebuild_artisans_house", "Build families", "The Artisan's House, rebuilt from scratch, furnished: from four sides and every room",
+      "the Artisan's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the workroom and the hall with its kitchen downstairs, the bedroom and the sitting room up the stair) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Artisan's House from the front: the plaster floor jettied over the stone workroom, window boxes, the steep dark gable, the kiln beside it"),
+           ("02_outside_back", "From the back: the lean-to fuel shed stacked with logs against the kiln, the back gable"),
+           ("10_room_1", "The ground floor at eye level"),
+           ("11_room_2", "The next room at eye level")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",

@@ -23,6 +23,12 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Artisan's House is rebuilt from scratch** (49.8): a potter's house. Its gable faces the street, a white
+  plaster floor juts out over a stone workroom, and beside it stands a brick bottle kiln that is the house's chimney.
+  Downstairs are the potter's bench, a dining table for four and a kitchen corner. Upstairs are the couple's two beds
+  under the street windows and a sitting room. Level II adds the journeyman's room at the back with the third bed, and
+  a yard for drying pots. Level III digs a clay cellar under the workroom, down a ladder through a hatch. Houses already
+  standing keep their look until you press Refresh on the Village Hall's Repairs page.
 - **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
   saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
   the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a

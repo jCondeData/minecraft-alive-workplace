@@ -22,7 +22,7 @@
 //
 // Levels grow out of each other:
 //   I    the Kiln House: the house, the kiln and the fuel shed (2 beds, the front bedroom upstairs).
-//   II   + the journeyman's room: a lower framed wing on the back (x 2..6, z 13..16) with the third bed, its steep
+//   II   + the journeyman's room: a lower framed wing on the back (x 2..6, z 13..17) with the third bed, its steep
 //        roof under the house's back gable (same pitch, ridge 6 lower), and a pot-drying yard behind the shed.
 //   III  + the clay cellar under the house (4 deep), down a ladder under a hatch in the workroom floor.
 //
@@ -40,11 +40,11 @@
 //             (y 11) and the smoking rim (y 12); two dark hoops bind it. A brick breast bonds it to the house wall.
 //   Shed      the fuel and clay shed behind the kiln (x 8..10, z 8..12), a lean-to off the house wall on two posts, its back
 //             bay stacked to the roof with split logs for the kiln.
-//   Wing      (II) the journeyman's room, framed in dark oak and plaster on a stone plinth, a steep gable at z 16.
+//   Wing      (II) the journeyman's room, framed in dark oak and plaster on a stone plinth, a steep gable at z 17.
 //   Yard      (II) the drying yard behind the shed: a rack of fired pots, clay and a quench cauldron.
 //   Cellar    (III) the clay cellar under the house (x 1..7, z 2..12, floor y -4).
 
-export const SIZE = { 1: [16, 17, 14], 2: [16, 17, 18], 3: [16, 17, 18] }
+export const SIZE = { 1: [16, 17, 14], 2: [16, 17, 19], 3: [16, 17, 19] }
 export const BASEMENT = 4 // Level III's cellar depth (the file holds it at the bottom: floor at file y 0, ground floor y 4)
 
 // Palette (60/30/10): rubble stone (ground walls) and lime plaster (upper panels) / spruce frame and deepslate tile
@@ -82,9 +82,9 @@ export const MASSES = {
   kiln: { cx: 11, cz: 4, stages: [{ r: 3, top: 3 }, { r: 2, top: 6 }, { r: 1, top: 10 }], bands: [2, 6] },
   shed: { x0: 8, x1: 10, z0: 8, z1: 12, posts: [[9, 9], [9, 12]] }, // floor x 8..10; the roof x 8..9 and its eave over x 10
   wing: {
-    walls: { x0: 2, x1: 6, z0: 13, z1: 16 },
-    roof: { axis: 'z', across: [1, 7], along: [13, 17], eaveY: 5, steep: true },
-    posts: [[2, 16], [6, 16], [2, 13], [6, 13]],
+    walls: { x0: 2, x1: 6, z0: 13, z1: 17 },
+    roof: { axis: 'z', across: [1, 7], along: [13, 18], eaveY: 5, steep: true },
+    posts: [[2, 17], [6, 17], [2, 13], [6, 13]],
   },
   cellar: { x0: 1, z0: 2, x1: 7, z1: 12, depth: 4 },
 }
@@ -94,7 +94,7 @@ export const ROOMS = [
   { name: 'Hall', level: 1, use: 'dining table for four, the kitchen corner, the stair up', box: [2, 1, 6, 5, 4, 11] },
   { name: 'Bedroom', level: 1, use: 'the couple\'s two beds under the street windows, the chest between them', box: [2, 6, 2, 6, 9, 5] },
   { name: 'Sitting room', level: 1, use: 'a settle on a rug, a writing desk at the back window, books', box: [2, 6, 6, 6, 9, 11] },
-  { name: 'Journeyman\'s room', level: 2, use: 'the third bed, a nightstand, a chest and a cupboard', box: [3, 1, 13, 5, 4, 15] },
+  { name: 'Journeyman\'s room', level: 2, use: 'the third bed, a nightstand, a chest and a cupboard', box: [3, 1, 13, 5, 4, 16] },
   { name: 'Clay cellar', level: 3, use: 'the family\'s chests along the front wall, casks of slip, a sorting table', box: [2, -3, 3, 6, -1, 11] },
 ]
 
@@ -133,8 +133,8 @@ export const OPENINGS = {
   wingWindows: [
     { name: 'wing west', cells: [[2, 2, 14], [2, 3, 14], [2, 2, 15], [2, 3, 15]], out: 'west', dress: 'shutters' },
     { name: 'wing east', cells: [[6, 2, 14], [6, 3, 14], [6, 2, 15], [6, 3, 15]], out: 'east', dress: 'shutters' },
-    { name: 'wing back', cells: [[4, 2, 16], [4, 3, 16]], out: 'south', dress: 'sill', pots: ['potted_blue_orchid'] },
-    { name: 'wing gable', cells: [[4, 6, 16], [4, 7, 16]], out: 'south', dress: null },
+    { name: 'wing back', cells: [[4, 2, 17], [4, 3, 17]], out: 'south', dress: 'sill', pots: ['potted_blue_orchid'] },
+    { name: 'wing gable', cells: [[4, 6, 17], [4, 7, 17]], out: 'south', dress: null },
   ],
 }
 
@@ -161,8 +161,7 @@ export const FURNITURE = {
     { room: 'Hall', kind: 'counter', part: 'counter', pos: [2, 1, 10], facing: 'east', wood: 'spruce' },
     { room: 'Hall', kind: 'fixture', part: 'stove', pos: [2, 1, 11], facing: 'east', block: 'furnace' },
     { room: 'Hall', kind: 'counter', part: 'counter', pos: [3, 1, 11], facing: 'north', wood: 'spruce' },
-    { room: 'Hall', kind: 'counter', part: 'counter', pos: [5, 1, 11], facing: 'north', topSlab: true, wood: 'spruce' }, // II's kept loom cell
-    { room: 'Hall', kind: 'crockery', part: 'plates', pos: [5, 3, 11], facing: 'north', wood: 'spruce', block: 'flower_pot' },
+    // (5, 1, 11), II's kept loom cell in the older drawings, stays plain floor: a refreshed loom stands there free
     { room: 'Hall', kind: 'shelf', part: 'shelf', pos: [3, 3, 11], facing: 'north', wood: 'spruce', crockery: 'potted_brown_mushroom' },
     { room: 'Hall', kind: 'fixture', part: 'sink', pos: [6, 1, 11], facing: 'north' },
     { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 9], facing: 'north', wood: 'spruce' },
@@ -188,11 +187,11 @@ export const FURNITURE = {
     { room: 'Sitting room', kind: 'lamp', part: 'hangingLamp', pos: [3, 8, 9], facing: 'north', wood: 'spruce' },
   ],
   2: [
-    // Journeyman's room (the wing): the third bed in the kept cells, head to the back wall
+    // Journeyman's room (the wing): the third bed in the kept cells, its head to a cupboard against the back wall
     { room: 'Journeyman\'s room', kind: 'bed', part: 'bed', pos: [3, 1, 14], facing: 'south', colour: 'brown' }, // kept
     { room: 'Journeyman\'s room', kind: 'nightstand', part: 'nightstand', pos: [4, 1, 15], facing: 'north', wood: 'spruce' },
     { room: 'Journeyman\'s room', kind: 'fixture', part: 'chest', pos: [5, 1, 15], facing: 'west', block: 'chest' }, // kept
-    { room: 'Journeyman\'s room', kind: 'cupboard', part: 'cupboard', pos: [5, 1, 13], facing: 'west', wood: 'spruce' },
+    { room: 'Journeyman\'s room', kind: 'cupboard', part: 'cupboard', pos: [3, 1, 16], facing: 'north', wood: 'spruce' }, // the bed's headboard
     { room: 'Journeyman\'s room', kind: 'rug', part: 'rug', cellsAbs: [[4, 1, 14], [5, 1, 14]], colour: 'brown' },
     { room: 'Journeyman\'s room', kind: 'lamp', part: 'hangingLamp', pos: [4, 4, 14], facing: 'north', chain: 5, wood: 'spruce' },
   ],
@@ -215,7 +214,9 @@ export const OUTSIDE = {
   stoop: { x0: 1, x1: 7, z: 1 }, // the paved strip under the jetty
   flowerBeds: [{ x0: 1, x1: 3, z: 0, plants: ['poppy', 'cornflower', 'oxeye_daisy'] }, { x0: 5, x1: 7, z: 0, plants: ['allium', 'poppy', 'azure_bluet'] }],
   wares: [5, 1, 1], // a kept barrel of the potter's wares beside the door
-  woodpiles: [{ x: 15, z0: 1, z1: 3 }, { x: 15, z0: 5, z1: 7 }],
+  // two tidy log stacks against the kiln's flank either side of the stoke hole, two high under a board lid
+  // (each row runs from the kiln's curve out to x 15, so no gap is left against the brick)
+  woodpiles: [{ rows: [[1, 13], [2, 14]] }, { rows: [[6, 14], [7, 13]] }], // [z, first x]; every row ends at x 15
   shed: { logs: { x: 8, z0: 7, z1: 12, high: 3 }, clay: [[9, 1, 10], [9, 1, 11], [9, 2, 11]], cauldron: [10, 1, 8] }, // kiln fuel stacked to the roof
   rack: { x0: 10, x1: 12, z: 15 }, // II: the drying rack of fired pots
 }

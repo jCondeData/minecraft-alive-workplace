@@ -100,3 +100,4 @@ export * from './ts_cloth.mjs' // clothBolts, boltRack, dressForm, clothBay, pos
 export * from './climate_desert.mjs' // windcatcher, screenOriel, archBay (desert stone houses: a slotted windcatcher tower, a lattice oriel, a round-headed bay)
 export * from './climate_roofs.mjs' // hipRoof, flatRoof (hot climates: a low hipped roof with deep eaves; a flat mud roof with parapet and toron)
 export * from './market_cross.mjs' // edgeRing8, vertexCells, mercatDrum, crossShaft (market crosses: an outline joined round an octagon, its vertex cells, an octagonal mercat drum with pilasters and a parapet, a cross shaft with a lamp-hung capital and a flag; the Market Cross, 49)
+export * from './cold_homes.mjs' // snowLoad, snowSkirt, stormPorch, frontDormer, pentPorch, beamEnds (cold homes, 49.10b: a stepped slate roof with snow on every tread, a drift skirt, a closed storm porch, a steep front dormer, a lodge's front pent on posts, log ends)

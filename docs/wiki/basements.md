@@ -66,6 +66,8 @@ Cellars from Level 1:
   Waterlogged blocks in that earth (glow lichen, dripstone, a buried stair) are drained and kept, and seagrass or
   kelp is plugged like water (B958); water that has already run into the room is taken away, never plugged with
   dirt, so the room is left open as drawn. A waterlogged block the blueprint draws stays as drawn.
+- "Dig the cellar" digs the cellar of the drawing a building was built from (50.3): a Smithy of the drawing before
+  its rebuild gets its old cellar, never the new drawing's (whose stair would come up through the old forge).
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
   never hands a villager a job. The Butcher's Shop has the smoker upstairs.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up

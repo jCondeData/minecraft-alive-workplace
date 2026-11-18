@@ -25,7 +25,8 @@ export function cog(c, [x, y, z], axis, large = false) {
  *  four cells round it in its plane (falling water only counts beside a solid face). */
 export function waterWheel(c, [x, y, z], facing) { c.set(x, y, z, CREATE('water_wheel'), { facing }) }
 
-/** mixerStack: a mechanical mixer at [x, y, z] (driven from the shaft above it), the cell under it left empty for its
+/** mixerStack: a mechanical mixer at [x, y, z] (it takes no shaft: drive it through its cog, with a small cogwheel on
+ *  axis y beside it at its height or a large one diagonally), the cell under it left empty for its
  *  head, a basin two below it (facing down: it keeps what it makes) and a filled blaze burner under the basin. */
 export function mixerStack(c, [x, y, z]) {
   c.set(x, y, z, CREATE('mechanical_mixer'))

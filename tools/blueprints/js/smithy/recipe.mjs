@@ -39,6 +39,8 @@ export function draw(level) {
   wallPanel(c, [S.x0, S.z0], [S.x1, S.z0], 1, S.wallTop, rubble)
   wallPanel(c, [S.x1, S.z0], [S.x1, zBack], 1, S.wallTop, rubble)
   wallPanel(c, [S.x0, zBack], [S.x1, zBack], 1, S.wallTop, rubble)
+  // (II) the old back wall's west end stays, a pier against the stack: the hall's chest at (7, 1, 7) keeps its back to it
+  if (two) wallPanel(c, [S.x0 + 1, 8], [S.x0 + 1, 8], 1, S.wallTop, rubble)
   const corners = [[S.x0, S.z0], [S.x1, S.z0], [S.x1, 8], [S.x0, zBack], [S.x1, zBack]].filter(([x, z]) => !inStack(x, z))
   quoins(c, corners, 1, S.wallTop, P.quoin[0], P.quoin[1])
   for (let x = S.x0; x <= S.x1; x++) for (let z = S.z0; z <= zBack; z++) {

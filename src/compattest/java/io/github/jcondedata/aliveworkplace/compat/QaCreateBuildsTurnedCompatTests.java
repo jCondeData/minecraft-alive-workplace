@@ -233,7 +233,14 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 		Map<BlockPos, List<Integer>> indexes = new java.util.HashMap<>();
 		Map<BlockPos, Integer> lengths = new java.util.HashMap<>();
 		int belts = 0;
-		for (BlockPos pos : BlockPos.betweenClosed(run.world(BlockPos.ZERO).offset(-30, -2, -30), run.world(BlockPos.ZERO).offset(30, 20, 30))) {
+		// The build's own footprint, turned as it was placed (and the ground under it): a box 30 blocks round the origin
+		// also took in a belt a neighboring batch's Workshop left half inside it, numbered [0, 1, 2, 3] of 7 (50.3)
+		net.minecraft.core.Vec3i size = run.entry().size();
+		BlockPos a = run.world(BlockPos.ZERO);
+		BlockPos b = run.world(new BlockPos(size.getX() - 1, size.getY() - 1, size.getZ() - 1));
+		BlockPos low = new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()) - 2, Math.min(a.getZ(), b.getZ()));
+		BlockPos high = new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
+		for (BlockPos pos : BlockPos.betweenClosed(low, high)) {
 			if (!"create:belt".equals(BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()).toString())) {
 				continue;
 			}

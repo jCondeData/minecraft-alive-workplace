@@ -436,6 +436,19 @@ public final class BuildSite {
 			Blueprint drawn = blueprint.get();
 			blueprint = Optional.of(furniture.apply(blueprint.get(), structure));
 			if (cellarOnly) {
+				if (builtFrom == null) {
+					// 50.3: the cellar of the drawing the standing build was built from (an older drawing of a rebuilt family
+					// puts its cellar elsewhere); worked out once, while the build above still stands as it was
+					builtFrom = java.util.Objects.requireNonNullElse(Refreshes.builtFrom(level, structure, placement, furniture), "");
+					onChange.run();
+				}
+				if (!builtFrom.isEmpty()) {
+					Optional<Blueprint> old = Refreshes.drawing(level, structure, builtFrom, furniture);
+					if (old.isPresent()) {
+						blueprint = old;
+						drawn = old.get();
+					}
+				}
 				blueprint = Optional.of(Cellars.cellarOnly(blueprint.get())); // 36.7: the cellar and the way down, nothing above
 			}
 			boolean newBuild = !deconstruct && !repair && !cellarOnly && wonder == null && builtFromOf == null;

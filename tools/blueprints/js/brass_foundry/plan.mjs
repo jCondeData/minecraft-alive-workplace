@@ -15,8 +15,8 @@
 //   3. "The gear lantern": a tall red-brick foundry hall under a weathered-copper gable, and riding its ridge a glazed
 //      lantern (a roof monitor) in which the whole gear train turns flat, in daylight, where the street can see it:
 //      a water wheel on the back, fed from a copper tank on a brick tank tower, drives two up-gearings in the lantern,
-//      and one long shaft drops from the lantern straight down the middle of the hall into the mixer over its basin
-//      and blaze burner. A second shaft drops behind it to the floor and runs the belt down the west wall to a depot
+//      and one long shaft drops from the lantern down the middle of the hall to a cogwheel on the mixer's own cog,
+//      the mixer over its basin and blaze burner. A second shaft drops behind it to the floor and runs the belt down the west wall to a depot
 //      at the front window. The Chef cooks in a low cookhouse under a catslide that sweeps the hall's east slope down
 //      over it. Massing: hall + lantern + tank tower + cookhouse, four heights. Roof: a 45-degree gable along z, a
 //      second gable on the lantern, a catslide. Plan: the machine hall and the cookhouse, joined by an inner door.
@@ -45,7 +45,10 @@
 //           (axis y) at (9, 12, 9): 16 RPM.
 //   gear 2  a large cogwheel (axis y) at (9, 13, 9), on the small one's axle (16 RPM), meshes diagonally with a small
 //           cogwheel (axis y) at (8, 13, 8): 32 RPM.
-//   mixer   shafts (axis y) from (8, 12, 8) down to (8, 5, 8) into create:mechanical_mixer at (8, 4, 8) at 32 RPM;
+//   mixer   a small cogwheel (axis y) at (7, 13, 8) meshes with (8, 13, 8) (32 RPM, the other way); shafts (axis y)
+//           from (7, 12, 8) down to (7, 5, 8) to a small cogwheel at (7, 4, 8) that meshes with the cog of
+//           create:mechanical_mixer at (8, 4, 8): 32 RPM. (Create's mixer takes no shaft, not even from above: it
+//           turns only through its cog, ROADMAP 50.3's compat build saw it stand still under a shaft.)
 //           (8, 3, 8) empty (its head works there); create:basin (facing down: it keeps what it makes) at (8, 2, 8) on
 //           create:blaze_burner at (8, 1, 8).
 //   belt    from the large cogwheel at (8, 12, 10) a shaft (axis y) drops (8, 11..2, 10) to a gearbox (axis z) at
@@ -102,8 +105,8 @@ export const MASSES = {
 
 export const MACHINE = {
   mixer: [8, 4, 8], basin: [8, 2, 8], burner: [8, 1, 8],
-  mixerShaft: { x: 8, z: 8, y0: 5, y1: 12 },
-  smallCogs: [[9, 12, 9], [8, 13, 8]],
+  mixerShaft: { x: 7, z: 8, y0: 5, y1: 12 }, // beside the mixer: its cogwheels at both ends turn it through its cog
+  smallCogs: [[9, 12, 9], [8, 13, 8], [7, 13, 8], [7, 4, 8]],
   largeCogs: [[8, 12, 10], [9, 13, 9]],
   gearboxes: [{ at: [8, 13, 10], axis: 'x' }, { at: [8, 1, 10], axis: 'z' }],
   shafts: [
@@ -150,12 +153,13 @@ export const OPENINGS = {
 // job site): the work surfaces are counters.
 // Every piece of furniture, footprint first (kind: a furniture.py kind, or a fixture the game uses as itself).
 export const FURNITURE = [
-  // Cookhouse: the smoker in the middle of the east wall between two counters, crockery shelves over them, the store
+  // Cookhouse: the smoker on the east wall, a run of counters beside it (none in the door's line), crockery shelves over, the store
   // chest in the back corner, a table for two by the front window, a lamp over the table and one over the stove
   { room: 'Cookhouse', kind: 'fixture', part: 'jobBlock', pos: [16, 1, 5], facing: 'west', block: 'smoker' },
-  { room: 'Cookhouse', kind: 'counter', part: 'counter', pos: [16, 1, 4], facing: 'east', wood: 'spruce' },
   { room: 'Cookhouse', kind: 'counter', part: 'counter', pos: [16, 1, 6], facing: 'east', wood: 'spruce' },
   { room: 'Cookhouse', kind: 'counter', part: 'counter', pos: [16, 1, 7], facing: 'east', wood: 'spruce' },
+  // (16, 1, 4) stays clear: the cell two in from the cookhouse door, the Chef's way in
+  { room: 'Cookhouse', kind: 'counter', part: 'counter', pos: [16, 1, 8], facing: 'east', wood: 'spruce' },
   { room: 'Cookhouse', kind: 'shelf', part: 'shelf', pos: [16, 3, 6], facing: 'west', wood: 'spruce', crockery: 'flower_pot' },
   { room: 'Cookhouse', kind: 'shelf', part: 'shelf', pos: [16, 3, 4], facing: 'west', wood: 'spruce', crockery: 'potted_brown_mushroom' },
   { room: 'Cookhouse', kind: 'fixture', part: 'chest', pos: [16, 1, 9], facing: 'west', block: 'chest' },

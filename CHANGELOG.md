@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
+  terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
+  meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
+  chests with his composter in the yard. Watermills already standing keep the drawing they were built from until you
+  refresh them.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II

@@ -71,8 +71,10 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"watermill_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "watermill_build")
 	public void aBuilderBuildsTheWatermillAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.WATERMILL, List.of(at(7, 1, 2, "minecraft:composter"), at(1, 1, 4, "create:water_wheel"),
-			at(4, 1, 4, "create:gearbox")), new BlockPos(4, 2, 4));
+		// ROADMAP 50.5 (the rebuilt Watermill): the composter in the yard, the wheel on the west wall, the gearbox and the
+		// millstone over it at the end of the shaft through the wall
+		build(helper, StarterBlueprints.WATERMILL, List.of(at(15, 0, 3, "minecraft:composter"), at(2, 2, 9, "create:water_wheel"),
+			at(5, 2, 9, "create:gearbox")), new BlockPos(5, 3, 9));
 	}
 
 	/** The Windmill: the builder starts the bearing, its sails turn the millstone at the foot of the tower. */

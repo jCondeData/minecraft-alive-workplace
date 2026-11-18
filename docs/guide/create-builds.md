@@ -21,7 +21,9 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
 
 ## The builds
 
-- **Watermill**: a stone-and-timber mill house whose wheel turns a millstone, with the farmer's composter.
+- **Watermill**: a stone-and-timber mill. A pond behind it feeds a timber channel over the top of the wheel, which
+  turns the millstone inside; a sack hoist's hood juts over the front steps, and the farmer's chests are in the
+  granary beside it, his composter in the yard.
 - **Windmill**: a stone tower with 24 sails on its front and a millstone at the bottom.
 - **Workshop**: a brick shop whose wheel drives a belt to a depot under a mechanical press, with the armorer's blast
   furnace.

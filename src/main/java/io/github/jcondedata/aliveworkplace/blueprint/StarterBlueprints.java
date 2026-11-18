@@ -522,7 +522,7 @@ public final class StarterBlueprints {
 	 * millstone), the Windmill (a windmill bearing with 24 sails over a millstone) and the Workshop (a water wheel driving
 	 * a belt to a depot under a mechanical press). Workplaces for 39.3's machine work.
 	 */
-	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(11, 11, 9));
+	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(17, 16, 17)); // ROADMAP 50.5: rebuilt
 	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
 	public static final Entry WORKSHOP = new Entry(AliveWorkplace.id("workshop"), new Vec3i(14, 10, 9));
 	/** The three Create-powered builds of 39.4. */

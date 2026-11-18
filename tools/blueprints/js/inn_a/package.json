@@ -1,0 +1,7 @@
+{
+  "name": "inn-a",
+  "private": true,
+  "type": "module",
+  "description": "Inn, Version A (ROADMAP 49): a candidate for the critic. LEVEL=1..3 picks the level; build.sh builds and saves all three.",
+  "scripts": { "build": "sh build.sh" }
+}

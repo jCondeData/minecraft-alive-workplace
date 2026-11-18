@@ -43,3 +43,9 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './village_hall_b_moot.mjs' // stretchedLevel, stretchedTent, octRing, ringFace, wallBench, hangingPot, bellPorch (moot halls: stretched octagons)
+export * from './village_hall_a_civic.mjs' // meetingBell, civicParts (hangingPot, bench), wallHearth, belfry, needleSpire, pewRows, civicDormer
+export * from './inn_b_arcade.mjs' // arcade, moulding, skirt, bench, coachGate, stall, pitchDormer (the Arcade Inn, 49 B)
+export * from './inn_a_coaching.mjs' // jetty, barRun, turningStair, gallery, stalls, caskRack, signPost, gatePiers (coaching inns)
+export * from './storehouse_a_store.mjs' // chestRack, tallyDesk (storehouses: chest racks paired into doubles, the tally desk)
+export * from './storehouse_b_warehouse.mjs' // chestStack, countingDesk, crowSteps, hoistArm (canal warehouses: paired chests, the desk, stepped gables, hoists)

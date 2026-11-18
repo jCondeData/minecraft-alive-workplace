@@ -1,0 +1,10 @@
+{
+  "name": "storehouse-b",
+  "private": true,
+  "type": "module",
+  "description": "Storehouse, Version B (the Canal Warehouse), drawn from scratch for ROADMAP 49 (tools/blueprints/briefs/storehouse.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the owner picks and the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "for L in 1 2 3; do ID=storehouse; [ $L = 1 ] || ID=storehouse_$L; LEVEL=$L node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py storehouse_b $ID --candidate --nbt out/$(echo $ID | tr _ -).nbt --basement 4 --cellar 2,2,8,10 || exit 1; done",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

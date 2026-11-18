@@ -210,6 +210,43 @@ public final class VillageProtection {
 		return true;
 	}
 
+	/**
+	 * B808, B993, B1033: whether a machine standing at {@code machine} (a Create drill or saw, the controller of a piston
+	 * or bearing contraption) may change the block at {@code target}: break it, move a block into or out of it, or set one
+	 * down there. Not when {@code target} is in the area of a protected hall that the machine itself isn't in: machines
+	 * inside a village work as before, one outside stops at its edge (B745's rule for pistons). Judged where the change
+	 * lands, not where the machine is. Off with protection off.
+	 */
+	public static boolean mayMachineChange(Level level, BlockPos machine, BlockPos target) {
+		return mayMachineChange(level, machine, java.util.List.of(target));
+	}
+
+	/** Whether any loaded village is protected now (so a machine's moves need judging at all). */
+	public static boolean guarding() {
+		return ENABLED && !PROTECTED.isEmpty();
+	}
+
+	/** {@link #mayMachineChange(Level, BlockPos, BlockPos)} for every block in {@code targets} (a contraption's blocks). */
+	public static boolean mayMachineChange(Level level, BlockPos machine, Iterable<BlockPos> targets) {
+		if (!ENABLED || PROTECTED.isEmpty() || !(level instanceof ServerLevel server)) {
+			return true;
+		}
+		long radius = VillageHalls.RADIUS;
+		for (GlobalPos g : PROTECTED) {
+			BlockPos h = g.pos();
+			if (g.dimension() != level.dimension() || inColumns(h, machine, radius)
+				|| !server.isLoaded(h) || !(server.getBlockEntity(h) instanceof VillageHallBlockEntity entity) || !entity.isProtected()) {
+				continue;
+			}
+			for (BlockPos target : targets) {
+				if (inColumns(h, target, radius)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	/** Whether {@code pos}'s column is within {@code radius} blocks of the hall at {@code hall} (as {@link #keeper} counts). */
 	private static boolean inColumns(BlockPos hall, BlockPos pos, long radius) {
 		long dx = hall.getX() - pos.getX();

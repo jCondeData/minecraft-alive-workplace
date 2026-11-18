@@ -1,0 +1,17 @@
+{
+	"required": true,
+	"package": "io.github.jcondedata.aliveworkplace.compat.create.mixin",
+	"plugin": "io.github.jcondedata.aliveworkplace.compat.create.mixin.CreateMixinPlugin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"BlockBreakerMixin",
+		"ContraptionAssemblyMixin",
+		"ContraptionColliderMixin",
+		"ContraptionPlacementMixin",
+		"ControlledContraptionAccessor",
+		"MovingBreakerMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

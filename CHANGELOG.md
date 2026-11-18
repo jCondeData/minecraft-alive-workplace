@@ -123,6 +123,10 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected
+  village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
+  blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and
+  a Deployer outside places nothing inside. Machines inside the village work as before (B808, B993, B1033, B1015).
 - With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
   and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
   bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.

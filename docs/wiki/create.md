@@ -523,9 +523,13 @@ Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a
 hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
 becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
 deployer can place blocks in and rename the hall of a protected village (B844).
-From outside a protected village, Create's Mechanical Piston pushes blocks into it and its Mechanical Drill breaks
-blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual. A Create funnel outside on the side of a chest in the
-village's last column empties it (B994).
+Create's machines keep out of a protected village the way a vanilla piston does (B808, B993, B1033): one standing
+outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing, a
+Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or saw rides on it), a bearing's arm
+sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
+setting them down there, and a Deployer places no block inside (B1015). The same machines inside the village, or
+with its protection off, work as usual. A Create funnel outside on the side of a chest in the village's last column
+empties it (B994), and a Mechanical Arm outside takes items off a depot in it (B1015).
 
 ## Proof
 

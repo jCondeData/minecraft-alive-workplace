@@ -545,6 +545,15 @@ point of interest, saved by Minecraft).
   whose area the piston isn't in, the move fails if the head's cell (extending), any pushed block or its destination,
   or any block it would break is in that area. An extending piston then stays put; a sticky one retracts without
   pulling. Halls further than reach + 14 columns away are skipped first; protection off skips it all.
+- B808, B993, B1033 (Create, only when it is installed: `aliveworkplace.create.mixins.json`, whose plugin skips it
+  otherwise): `VillageProtection.mayMachineChange` asks the same question for any machine, judged where the change
+  lands: not in the area of a protected hall the machine isn't in. A drill's or saw's own break
+  (`BlockBreakingKineticBlockEntity`) is judged at its block; a drill or saw on a contraption, a piston, gantry or
+  pulley step (a refused step counts as a collision, also before the contraption is put together) and the blocks a
+  stopped contraption sets down (dropped at the machine instead) are judged at the contraption's controller.
+- B1015: `BlockItemMixin` refuses `BlockItem.place` where the placing player may not change things, judged where the
+  block lands, so a machine's stand-in player (Create's Deployer) can't place inside a village its owner may not
+  change; a real player's click was already judged there (B741).
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 

@@ -49,7 +49,8 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "masons_yard", "masons_yard_2", "sawmill", "carpenters_workshop",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
-           "builders_workshop"}
+           "builders_workshop",
+           "camp_kitchen", "camp_kitchen_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -238,8 +239,9 @@ if __name__ == "__main__":
     for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks
         tier1().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center")
         tier2().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center_2")
-    for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds
-        draw().save(MAIN_STRUCTURES, name)
+    for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds (52.2: the camp kitchen is rebuilt)
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     guildhall().save(MAIN_STRUCTURES, "guildhall")
     guildhall_2().save(MAIN_STRUCTURES, "guildhall_2")
     for name, draw in ARENAS:  # ROADMAP 28.16: the Arena's three tiers

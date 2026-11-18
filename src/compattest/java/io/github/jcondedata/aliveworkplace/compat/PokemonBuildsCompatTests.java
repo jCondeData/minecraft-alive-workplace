@@ -62,19 +62,19 @@ public class PokemonBuildsCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The Camp Kitchen: its Campfire Pot gets a pot on it, the benches and the grain store's Hearty Grain bales. */
+	/** The Camp Kitchen: its Campfire Pot gets a pot on it, the lean-to's Hearty Grain bales. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"camp_kitchen_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "camp_kitchen_build")
 	public void aBuilderBuildsTheCampKitchen(GameTestHelper helper) {
-		build(helper, StarterBlueprints.CAMP_KITCHEN, List.of(at(6, 1, 5, "cobblemon:campfire"), at(3, 1, 7, "cobblemon:hearty_grain_bale")));
+		build(helper, StarterBlueprints.CAMP_KITCHEN, List.of(at(6, 1, 6, "cobblemon:campfire"), at(1, 1, 6, "cobblemon:hearty_grain_bale")));
 	}
 
 	/** Camp Kitchen II: the Hearty Grain plot (ripe grains on farmland) and the smokehouse's smoker. */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"camp_kitchen_2_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "camp_kitchen_2_build")
 	public void aBuilderBuildsCampKitchenII(GameTestHelper helper) {
-		build(helper, StarterBlueprints.CAMP_KITCHEN_2, List.of(at(6, 1, 5, "cobblemon:campfire"), at(16, 1, 7, "minecraft:smoker"),
-			at(2, 1, 12, "cobblemon:hearty_grains"), at(2, 0, 12, "minecraft:farmland")));
+		build(helper, StarterBlueprints.CAMP_KITCHEN_2, List.of(at(6, 1, 6, "cobblemon:campfire"), at(16, 1, 7, "minecraft:smoker"),
+			at(2, 2, 14, "cobblemon:hearty_grains"), at(2, 1, 14, "minecraft:farmland")));
 	}
 
 	/** The Berry Nursery: the composter by the path and the paired farmland beds with water between. */

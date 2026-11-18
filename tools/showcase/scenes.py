@@ -1465,6 +1465,13 @@ SCENES = [
            ("02_outside_back", "From the back"),
            ("03_outside_west", "From the west: the white rump and the back line"),
            ("04_outside_east", "From the east")], furniture=True),
+    S("rebuild_camp_kitchen", "Build families", "The rebuilt Camp Kitchen from four sides and inside the cookhouse",
+      "the Camp Kitchen's blueprint (Level I) stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every furniture spot holds its piece and the cookhouse gets an eye-level shot from a free floor cell with a clear view of the Campfire Pot",
+      40, [("01_outside_front", "The Camp Kitchen from the front: the bell-cast deepslate roof and its copper louvre, the shuttered timber walls, the stone steps and planters"),
+           ("02_outside_back", "From the back"),
+           ("03_outside_west", "From the west: the lean-to of Hearty Grain bales"),
+           ("04_outside_east", "From the east: the woodpiles either side of the window"),
+           ("10_room_1", "Inside the cookhouse at eye level: the Campfire Pot alone on its brick hearth, the bench facing it, the dresser and chests behind")], furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",

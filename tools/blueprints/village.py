@@ -466,20 +466,19 @@ pokemon_center_room.claims_job_block = True  # a nurse takes a Healing Machine o
 
 
 def camp_kitchen_room(b, style):
-    """The Camp Cook's Campfire Pot (Cobblemon's campfire with a red pot on it) on a stone hearth at the back, the grain
-    store beside it (Hearty Grain bales), her chest of makings on the other side and a bench by the west wall."""
-    for x in (1, 2, 3):
-        for z in (5, 6):
-            b.set(x, 0, z, "stone_bricks")
-    b.set(2, 0, 6, "mud_bricks")
-    b.set(2, 1, 6, "cobblemon:campfire", facing="north", lid=False)
-    b.set_nbt(2, 1, 6, Compound({"id": String("cobblemon:campfire_pot"),
+    """The Camp Cook's Campfire Pot (Cobblemon's campfire with a red pot on it) alone in the middle of the room on a
+    square brick hearth, right under the roof's louvre (ROADMAP 52.2, as the rebuilt Camp Kitchen); her chest of makings
+    against the west wall in the back corner, a bale of Hearty Grains by it, and a bench by the west wall facing the fire.
+    (Drawn for the interior x 1-5, z 2-6, moved in by one: the pot stands at template (4, 1, 5).)"""
+    for x in (2, 3, 4):
+        for z in (3, 4, 5):
+            b.set(x, 0, z, "bricks")
+    b.set(3, 1, 4, "cobblemon:campfire", facing="north", lid=False)
+    b.set_nbt(3, 1, 4, Compound({"id": String("cobblemon:campfire_pot"),
                                  "PotComponent": Compound({"id": String("cobblemon:campfire_pot_red"), "count": Int(1)})}))
-    b.set(1, 1, 6, "cobblemon:hearty_grain_bale", axis="y")
-    b.set(1, 2, 6, "cobblemon:hearty_grain_bale", axis="z")
+    loot_chest(b, 1, 1, 6, "village_camp_kitchen", facing="east")
     b.set(1, 1, 5, "cobblemon:hearty_grain_bale", axis="y")
-    loot_chest(b, 3, 1, 6, "village_camp_kitchen", facing="north")
-    for z in (3, 4):  # the bench, its back to the west wall
+    for z in (3, 4):  # the bench, its back to the west wall, the diners facing the fire
         b.set(1, 1, z, "spruce_stairs", facing="west", half="bottom", shape="straight", waterlogged=False)
     b.set(1, 1, 2, "potted_fern")
 

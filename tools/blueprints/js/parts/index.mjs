@@ -16,6 +16,7 @@
 //   planters  plantFlower, tieredBed, boxBoards, beamRun, kneeBrace, hangingLantern   (planters, pergolas)
 //   furniture furnitureParts (every room piece, kitchens included; couch and blinds)
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
+//   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -43,6 +44,7 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './camps.mjs' // campPot, grainBed (the Camp Cook's pot and a raised, watered grain bed)
 export * from './village_hall_b_moot.mjs' // stretchedLevel, stretchedTent, octRing, ringFace, wallBench, hangingPot, bellPorch (moot halls: stretched octagons)
 export * from './village_hall_a_civic.mjs' // meetingBell, civicParts (hangingPot, bench), wallHearth, belfry, needleSpire, pewRows, civicDormer
 export * from './inn_b_arcade.mjs' // arcade, moulding, skirt, bench, coachGate, stall, pitchDormer (the Arcade Inn, 49 B)

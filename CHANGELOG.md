@@ -49,6 +49,13 @@ asks for the steps, `latest.log` and any crash report).
   slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
   tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
   Builds already standing keep their old look until refreshed.
+- **The Camp Kitchen is redrawn from scratch** (52.2): a square timber cookhouse of spruce logs and birch boards on a
+  stone terrace, under a steep bell-cast deepslate roof that climbs to a copper louver right over the Campfire Pot,
+  which stands alone on a brick hearth with a bench facing it, the dresser and two chests behind, shutters, lanterns
+  hung by the door and a lean-to of Hearty Grain bales (13 x 15 x 12). Camp Kitchen II adds a stone smokehouse with
+  its own chimney, a smoker and a smoking rack, and a raised, watered Hearty Grain bed behind (20 x 15 x 21). The
+  Camp Kitchens villages grow take the same look in each village's materials. Builds already standing keep their old
+  look until refreshed.
 - **The Mason's Yard, the Sawmill and the Carpenter's Workshop are rebuilt from scratch** (50.2). The Mason's Yard is
   a stone lodge whose roof sweeps down over an open banker shed, the stonecutter in its bay facing a walled yard with a
   jib crane; Level II adds a second stonecutter and a tall tracing house where the master draws. The Sawmill (with
@@ -58,6 +65,21 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
+  mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
+  (B1378).
+- A sum of one CobbleDollar now reads "1 CobbleDollar", not "1 CobbleDollars", wherever money is named (the Village
+  Hall's treasury, quest rewards, retraining and family tree prices, the cup's purse), as at a rate of one CobbleDollar
+  an emerald (B1379).
+- A wall segment you upgraded (the Palisade's fighting step, the Stone Wall's hoardings) still counts as that piece of
+  the village's wall: the wall reads as finished again and counts as one building for the rank, not one more per
+  upgraded segment, and a Town's stone still replaces an upgraded palisade (B1380).
+- A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
+- Steward: one damaged entry in his saved record or desk (a hand-edited file, or one a crash cut short) no longer
+  empties the whole record: declined rules no longer come back, renewals of old houses under way are no longer
+  forgotten and proposal numbers no longer restart at 1. Only the bad entry is left out, with a warning in the log (B821).
+- A story arc running in two villages at once: killing one village's foe ("The Boar") no longer also finishes the
+  other village's hunt before that village's own foe has even come (B724).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
   takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and

@@ -32,7 +32,7 @@ the owner: "make new completely different exteriors ... nothing should look iden
     jewellers_workshop   a stone strongroom with barred windows, a dome and an amethyst finial, gem pedestals
     crafters_workshop    a board workshop, its gable to the street, a hatch counter and a lean-to parts store of boards and logs
     pokemon_center       a white house under a red hipped roof, a glazed front under a canopy
-    camp_kitchen         an A-frame cook hut down to the ground, a fire pit with a spit and log seats beside it
+    camp_kitchen         a square timber cookhouse under a bell-cast pyramid roof, a louvre over the pot, a bale lean-to
     berry_nursery        a cottage under a stepped thatch of hay, berry beds watered by a channel
     daycare              a cottage with a cross gable and a round window, a playground with a swing and a sandpit
     gem_grotto           a mound of stone and moss with amethyst growing out of it and a geode-banded doorway
@@ -1480,49 +1480,49 @@ def pokemon_center(b, P):
 
 
 def camp_kitchen(b, P):
-    """An A-frame cook hut, its roof down to the ground, and a fire pit with a spit and log seats beside it."""
-    plinth(b, 1, 2, 7, 8, P.base, floor=P.floor)
-    for z in range(2, 9):
-        for x in (1, 7):
-            b.set(x, 1, z, resolve(P.boards, x, 1, z))
-    for x in range(0, 9):
-        for z in range(1, 10):
-            if x in (0, 8):
-                b.set(x, 0, z, resolve(P.base, x, 0, z))
+    """A square timber cookhouse under a bell-cast pyramid roof, a lit louvre at its peak right over the Campfire Pot in
+    the middle of the room (ROADMAP 52.2: the rebuilt Camp Kitchen's character), shuttered windows, lanterns hung either
+    side of the door from the flared eave, and a lean-to of Hearty Grain bales and split logs on the east flank."""
+    body(b, P, 1, 2, 7, 8, 3, posts_at=((1, 5), (7, 5), (4, 8)))
     fam = P.roof2 if P.roof2 is not COBBLE else P.roof
-    gable_roof(b, 0, 8, 1, 9, 1, fam, axis="z", gable=P.boards, gable_at=(2, 8), steep=True)
+    # the bell cast: a kick of the house's wood stairs at the plate, then the steep pyramid over the walls; its third
+    # ring stops short of a point, leaving the louvre's cell open over the pot, a copper cap and a lantern in it
+    for x in range(0, 9):
+        stairs(b, x, 4, 1, P.wood, "south")
+        stairs(b, x, 4, 9, P.wood, "north")
+    for z in range(2, 9):
+        stairs(b, 0, 4, z, P.wood, "east")
+        stairs(b, 8, 4, z, P.wood, "west")
+    hip_roof(b, 1, 7, 2, 8, 5, fam, steep=True, rings=3)
+    slab(b, 4, 10, 5, "waxed_cut_copper_slab")
+    lantern(b, 4, 9, 5, hanging=True)
     entry(b, P, hood=False)
-    fence(b, 6, 1, 1, P.fence)
-    lantern(b, 6, 2, 1)
-    for x in (3, 5):
-        pane(b, x, 3, 2)
-        pane(b, x, 3, 8)
-    pane(b, 4, 5, 2)
-    pane(b, 4, 5, 8)
-    for x in range(2, 7):
-        log(b, x, 5, 5, P.strip, axis="x") if x in (3, 4, 5) else None
-    lantern(b, 4, 4, 5, hanging=True)
-    # the fire pit: a campfire in a stone ring, a spit on two posts, log seats round it, firewood stacked
-    for x in range(9, 12):
-        for z in range(3, 8):
-            b.set(x, 0, z, P.yard.at(x, 0, z) if isinstance(P.yard, Mix) else P.yard)
-    b.set(10, 0, 5, resolve(P.base, 10, 0, 5))
-    b.set(10, 1, 5, "campfire", facing="north", lit=True, signal_fire=False, waterlogged=False)
+    for x in (3, 5):  # lanterns hung from the eave either side of the door
+        lantern(b, x, 3, 1, hanging=True)
+    for x in (2, 6):
+        win(b, P, x, 2, 2, "north")
     for z in (4, 6):
-        stairs(b, 10, 0, z, P.sfam, "south" if z == 6 else "north")
-    for x in (9, 11):
-        fence(b, x, 1, 5, P.fence)
-        fence(b, x, 2, 5, P.fence)
-    log(b, 10, 3, 5, P.strip, axis="x")
-    log(b, 9, 3, 5, P.strip, axis="x")
-    log(b, 11, 3, 5, P.strip, axis="x")
-    for x in (9, 10, 11):
-        log(b, x, 1, 3, P.log if "_log" in P.log else P.strip, axis="x") if x != 10 else None
-        log(b, x, 1, 7, P.log if "_log" in P.log else P.strip, axis="x") if x != 10 else None
-    for z in (8, 9):
-        for x in (9, 10, 11):
-            log(b, x, 1, z, P.log if "_log" in P.log else P.strip, axis="z")
-        log(b, 10, 2, z, P.log if "_log" in P.log else P.strip, axis="z")
+        win(b, P, 1, 2, z, "west")
+    win(b, P, 7, 2, 4, "east")
+    win(b, P, 2, 2, 8, "south")
+    win(b, P, 6, 2, 8, "south")
+    tie(b, P, 4, z=3, lamps=(3, 5))
+    # the lean-to: a pent roof of the house's wood from the eave, on two posts, over the bales and the woodpile
+    for x in range(8, 12):
+        for z in range(2, 9):
+            b.set(x, 0, z, P.yard.at(x, 0, z) if isinstance(P.yard, Mix) else P.yard)
+    for z in (3, 7):
+        fence(b, 10, 1, z, P.fence)
+        fence(b, 10, 2, z, P.fence)
+    for z in range(2, 9):
+        slab(b, 9, 3, z, P.wood, top=True)
+        slab(b, 10, 3, z, P.wood)
+    for z, h in ((4, 2), (5, 1), (6, 2)):
+        for y in range(1, h + 1):
+            b.set(8, y, z, "cobblemon:hearty_grain_bale", axis="y" if y == 1 else "z")
+    for z in (4, 5, 6):
+        log(b, 10, 1, z, P.log if "_log" in P.log else P.strip, axis="x")
+    log(b, 10, 2, 5, P.log if "_log" in P.log else P.strip, axis="x")
 
 
 def berry_nursery(b, P):

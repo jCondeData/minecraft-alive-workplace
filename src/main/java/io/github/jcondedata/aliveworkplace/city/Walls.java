@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintUpgrades;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
@@ -460,9 +461,9 @@ public final class Walls {
 		return kitFor(level, hall).map(kit -> layout(level, hall, plan, kit)).orElse(List.of());
 	}
 
-	/** Whether {@code piece} stands finished: its own blueprint built on its spot. */
+	/** Whether {@code piece} stands finished: its own blueprint built on its spot, or an upgrade of it (B1380). */
 	public static boolean stands(ServerLevel level, Piece piece) {
-		return finishedOn(level, piece).filter(f -> BlueprintStyles.base(f.structure()).equals(piece.blueprint())).isPresent();
+		return finishedOn(level, piece).flatMap(f -> kitPiece(f.structure())).filter(piece.blueprint()::equals).isPresent();
 	}
 
 	/**
@@ -673,9 +674,32 @@ public final class Walls {
 
 	// ---- what the rest of the mod asks ------------------------------------------------------------------------
 
-	/** Whether {@code structure} is a piece of some wall kit (its gates shut at night, and it is not a building of its own). */
+	/**
+	 * Whether {@code structure} is a piece of some wall kit (its gates shut at night, and it is not a building of its own),
+	 * in any style or upgrade tier: a player's palisade_2 built over a palisade segment is still that segment (B1380).
+	 */
 	public static boolean isPiece(ResourceLocation structure) {
-		return WallKits.allBlueprints().contains(BlueprintStyles.base(structure));
+		return kitPiece(structure).isPresent();
+	}
+
+	/**
+	 * The kit's own blueprint {@code structure} is, in any style or upgrade tier ({@link BlueprintUpgrades}: an upgrade is
+	 * named {@code <name>_2}, {@code _3}..., and is built over its base on the same spot), or empty if it is no wall piece.
+	 */
+	static Optional<ResourceLocation> kitPiece(ResourceLocation structure) {
+		List<ResourceLocation> ours = WallKits.allBlueprints();
+		ResourceLocation base = BlueprintStyles.base(structure);
+		for (int i = 0; i < 100; i++) {
+			if (ours.contains(base)) {
+				return Optional.of(base);
+			}
+			Optional<ResourceLocation> lower = BlueprintUpgrades.baseOf(base);
+			if (lower.isEmpty()) {
+				return Optional.empty();
+			}
+			base = lower.get();
+		}
+		return Optional.empty();
 	}
 
 	/**

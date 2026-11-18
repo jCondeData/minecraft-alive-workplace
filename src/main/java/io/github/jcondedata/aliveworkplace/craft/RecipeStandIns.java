@@ -32,6 +32,7 @@ import net.minecraft.world.item.crafting.RecipeManager;
  * plain chest. A player gets a plain chest from 8 oak planks in two crafts; the crafters plan that route through this
  * file's one-slot recipe. B1290: its {@code carved_wood:crafting_special_crafting_table} makes Minecraft's crafting table
  * from any 2x2 of planks no other recipe takes (Chipped's mosaic planks); that one is a {@code "count": 4} stand-in.
+ * B1378: mixed kinds too (2 oak and 2 acacia planks): a second recipe takes any mix, checked against the game's own table.
  *
  * <p>Read from {@code data/<namespace>/recipe_stand_ins/*.json}:
  * {@code {"serializer": "somemod:special_type", "from": ["#c:some_tag", "somemod:item"], "except": [...], "result": "minecraft:chest"}},
@@ -99,6 +100,7 @@ public final class RecipeStandIns {
 			Set<Item> options = items(standIn.from());
 			options.removeAll(items(standIn.except()));
 			options.remove(result); // never the thing from itself
+			Set<Item> every = new LinkedHashSet<>(options);
 			if (standIn.count() > 1) {
 				List<List<net.minecraft.world.item.crafting.Ingredient>> plain = plainRecipesOf(manager, standIn.count());
 				options.removeIf(item -> takenByAPlainRecipe(plain, item));
@@ -116,8 +118,33 @@ public final class RecipeStandIns {
 			if (!options.isEmpty()) {
 				out.add(Recipes.shapeless(standIn.id(), new ItemStack(result), List.copyOf(options), standIn.count()));
 			}
+			if (standIn.count() > 1 && every.size() > options.size()) {
+				// B1378: the special recipe takes any mix no other recipe takes (2 oak and 2 acacia planks, 3 mosaic and 1
+				// oak), which the ingredients can't say; this one takes any mix of them all, and the planner keeps a grid it
+				// picks only when the game's own table makes the result of it (checksGrid)
+				Set<Item> mixed = new LinkedHashSet<>(options);
+				mixed.addAll(every);
+				out.add(Recipes.shapeless(mixedId(standIn.id()), new ItemStack(result), List.copyOf(mixed), standIn.count()));
+			}
 		}
 		return out;
+	}
+
+	private static ResourceLocation mixedId(ResourceLocation id) {
+		return id.withSuffix("/any_mix");
+	}
+
+	/**
+	 * B1378: whether {@code id} is a stand-in that takes any mix of its things, which the planner uses only for a grid the
+	 * game's own crafting table makes the result of (four acacia planks make Carved Wood's acacia table instead).
+	 */
+	static boolean checksGrid(ResourceLocation id) {
+		for (StandIn standIn : loaded) {
+			if (standIn.count() > 1 && mixedId(standIn.id()).equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**

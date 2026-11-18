@@ -68,14 +68,15 @@ public class BattleStationGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final ResourceLocation BESIEGERS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "station_besiegers");
 	private static final BlockPos HALL = new BlockPos(7, 2, 19);
-	/** The Wall Tower's corner: it stands on x 5 to 9, z 13 to 17, its top floor's walk at y 9. */
+	/** The Wall Tower's corner: it stands on x 5 to 9, z 13 to 17, its top's walk at y 10 (52.3). */
 	private static final BlockPos TOWER = new BlockPos(5, 2, 13);
 	/**
 	 * The station an archer takes with the raiders to the south or east: the tower's own door (7, 3, 13) is the breach
-	 * then, its outside the south, and this is the station on that side with the most of the ground in sight: behind
-	 * the crenel at (6, 9, 17), not the merlon at (7, 9, 17) right beside it (B252).
+	 * then, its outside the south, and this is the station on that side with the most of the ground in sight: the
+	 * crenel at (6, 10, 17), not the merlon at (7, 10, 17) right beside it (B252; 52.3: the rebuilt tower's crenels are
+	 * stations of their own, stood in, on the deck's height).
 	 */
-	private static final BlockPos STATION = new BlockPos(6, 9, 16);
+	private static final BlockPos STATION = new BlockPos(6, 10, 17);
 	/** A spot in the village (where a builder's bench could be). */
 	private static final BlockPos POST = new BlockPos(11, 2, 22);
 	/** The Palisade Gate's corner: its fence gates at x 15 to 17, z 26; the outside is to the south. */
@@ -187,11 +188,12 @@ public class BattleStationGameTests implements FabricGameTest {
 		ServerLevel level = village.level();
 		int reads = BattleStations.reads;
 		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
-		Mob foe = raider(helper, 28.5, 16.5);
+		// South-east, out past his crenel's mouth (52.3: the crenel's merlons hide the old spot due east, 28.5, 16.5)
+		Mob foe = raider(helper, 25.5, 26.5);
 		BlockPos station = helper.absolutePos(STATION);
 		List<BlockPos> stations = BattleStations.stations(level, village.hall());
-		helper.assertTrue(stations.size() == 7 && stations.contains(station) && stations.stream().allMatch(s -> s.getY() == station.getY()),
-			"the Wall Tower's stations are the seven free planks of its top floor: " + stations);
+		helper.assertTrue(stations.size() == 16 && stations.contains(station) && stations.stream().allMatch(s -> s.getY() == station.getY()),
+			"the Wall Tower's stations are the 16 of its top (52.3): the deck round the ladder's hole and the eight crenels: " + stations);
 		VillageRaids.track(level, village.hall(), village.culture(), List.of(foe));
 		village.siege(helper);
 		long[] seen = {-1, -1}; // on the station, the first arrow
@@ -391,9 +393,11 @@ public class BattleStationGameTests implements FabricGameTest {
 	public void onTheGroundAnArcherClosesInFirst(GameTestHelper helper) {
 		Village village = village(helper, false);
 		ServerLevel level = village.level();
-		for (int x = 6; x <= 8; x++) {
-			for (int z = 14; z <= 16; z++) {
-				helper.setBlock(new BlockPos(x, 9, z), Blocks.STONE);
+		for (int x = 5; x <= 9; x++) { // the deck and the crenels: all 16 stations of the rebuilt tower (52.3)
+			for (int z = 13; z <= 17; z++) {
+				if (helper.getBlockState(new BlockPos(x, 10, z)).isAir()) {
+					helper.setBlock(new BlockPos(x, 10, z), Blocks.STONE);
+				}
 			}
 		}
 		Villager archer = guard(helper, new ItemStack(Items.BOW), 8, 22);

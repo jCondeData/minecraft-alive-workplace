@@ -53,8 +53,10 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
 
 - **More Create builds** (39.8). Six more workplaces at the Blueprint Table, again only with Create, each driven by a
-  water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry**, a brick
-  hall under a deepslate roof whose wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
+  water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry** (rebuilt
+  from scratch in 50.3), a tall brick hall under a weathered copper roof with a glazed gear lantern on its ridge where
+  the gear train turns in daylight, a copper tank on a brick tower feeding the wheel, and a cookhouse under a catslide;
+  its wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
   large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
   job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
   shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite

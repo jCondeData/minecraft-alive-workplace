@@ -164,8 +164,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   archer closes in on a raider or shoots from the ground for want of a station.
   - A station is a block of a finished wall, gate or Lookout Tower blueprint, at least 2 above its floor row, with a
     whole top face and nothing in the two blocks above it, that is not a merlon (a spot one higher than a spot beside
-    it). Each blueprint is read once and kept in memory. A Wall Tower has 7: its top floor's planks without the
-    ladder's hole and the lantern's plank.
+    it). Each blueprint is read once and kept in memory. A Wall Tower has 16 (52.3): its top's deck round the
+    ladder's hole and the crenels between its merlons, all at one height.
   - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
     built over or with its floor gone is skipped, and a guard on it gets another.
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village

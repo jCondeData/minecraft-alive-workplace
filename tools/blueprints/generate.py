@@ -47,10 +47,16 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.2, the workshops: tools/blueprints/js/<family>/ (MC_BUILDER=<minecraft-builder skill>; masons_yard: npm
            # run build with LEVEL=1|2), then python3 tools/blueprints/rebuild.py <family> <id>
            "masons_yard", "masons_yard_2", "sawmill", "carpenters_workshop",
+           # 50.3, the forges: js/smithy (MC_BUILDER=..., sh build.sh writes candidates; live: rebuild.py smithy <id>
+           # --nbt out/<id>.nbt --basement 4 --cellar "$(cat out/cellar.txt)"), js/tinkers_workshop (LEVEL=1|2) and
+           # js/brass_foundry (Create only), then rebuild.py <family> <id>
+           "smithy", "smithy_2", "tinkers_workshop", "tinkers_workshop_2", "brass_foundry",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
-           "camp_kitchen", "camp_kitchen_2"}
+           "camp_kitchen", "camp_kitchen_2",
+           # 52.3, the walls (the palisade, palisade_2 and palisade_tower follow)
+           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -164,7 +170,7 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2: drawn by the rebuild kit (below)
+            continue  # ROADMAP 50.2 and 50.3: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
@@ -202,11 +208,10 @@ if __name__ == "__main__":
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
                        ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):
-        draw().save(MAIN_STRUCTURES, name)
-    tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
-    tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")
-    for name, draw in (("smithy", smithy), ("smithy_2", smithy_2),
-                       ("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
+        if name not in REBUILT:  # 52.3: the stone wall, the wall tower and the palisade gate are rebuilt
+            draw().save(MAIN_STRUCTURES, name)
+    # ROADMAP 50.3: the Tinker's Workshop and the Smithy come from the rebuild kit (REBUILT)
+    for name, draw in (("fletchers_lodge", fletchers_lodge), ("fletchers_lodge_2", fletchers_lodge_2), ("map_room", map_room)):
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("farmstead", farmstead), ("farmstead_2", farmstead_2), ("fishers_hut", fishers_hut), ("fishers_hut_2", fishers_hut_2),
                        ("weavers_cottage", weavers_cottage), ("weavers_cottage_2", weavers_cottage_2), ("bandstand", bandstand)):
@@ -270,3 +275,4 @@ if __name__ == "__main__":
     test_area("colony_area", 44, 20, 44)  # ROADMAP 33.10: a colony's camp with a build on either side is 35 blocks across
     test_area("build_area", 17, 8, 17, COMPAT_AREAS)
     test_area("huge_area", 30, 20, 30, COMPAT_AREAS)
+    test_area("tall_area", 30, 30, 30, COMPAT_AREAS)  # ROADMAP 50.3: the Brass Foundry is 21 tall, built from y = 2

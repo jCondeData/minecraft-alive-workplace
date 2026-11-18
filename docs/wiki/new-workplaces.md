@@ -16,9 +16,10 @@ job block: "1 job here has no workplace of its trade".
 
 **The buildings.**
 
-- **Smithy**: a stone forge under a timber roof with an open front, an anvil, a quench trough and a chimney with a
-  campfire; a blast furnace, a smithing table and a grindstone. Smithy II adds a coal and ore store and a second
-  blast furnace.
+- **Smithy**: a stepped stone forge stack beside a low shop, one forge hall inside with the blast furnace under its
+  hood, the smithing table, the grindstone, an anvil and a quench trough, iron-bar vents and a smoking campfire on the
+  stack, and a coal cellar down a stair with bins, lanterns and a cart run (rebuilt from scratch in 50.3). Smithy II
+  adds a second stack with a second blast furnace and a bigger coal and ore store.
 - **Mason's Yard**: a stone lodge whose roof sweeps down at the front over an open banker shed, the stonecutter in its
   bay facing a walled yard with a jib crane, the Mason's chest and desk in the lodge behind (rebuilt from scratch in
   50.2). Its II adds a second stonecutter and a tall tracing house on the east end, where the master draws templates

@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3
 
 ## 1. What a player sees
 
@@ -16,6 +16,10 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2
 - **Carpenter's Workshop**: a cruck-framed shop under a steep roof with a dormer and a stone glue-stove flue; logs, a
   sawhorse and plank stacks on the porch, an L of workbench round the crafting table, the Carpenter's bed in the loft
   (rebuilt from scratch in 50.2). The village houses below keep their own looks.
+- **Tinker's Workshop**: the Tinker's Tower, a square tower on the street under a copper cap with a dark oak band,
+  the workshop behind it with the smithing table at its forge and a brick stack up its side (rebuilt from scratch in
+  50.3). Its II lifts the tower a story: a stores loft of double chests up a ladder and a lamp room on top for fine
+  work, a lightning rod on the new cap.
 - **Kitchen**: a white plastered cookhouse under a hipped roof, a domed brick bread oven bulging out of its side (the
   smoker is its mouth inside) with a tall smoking flue, and herb beds either side of the path.
 - **Post Office**: a narrow two-story house, its timber upper floor jettied over the street with flower boxes, a red

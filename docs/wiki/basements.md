@@ -33,7 +33,7 @@ Cellars from Level 1:
   behind. Under it the **freezer**: walls of packed ice, a blue-ice path down the floor, sides of meat and bones on
   chains along the walls, chests of frozen stock, snow heaped in a corner. The ice never melts (packed and blue ice
   don't).
-- **Smithy** (and Smithy II): a **coal store** down a ladder by the forge: heaps of coal behind boards, raw iron, chests of ore.
+- **Smithy** (and Smithy II): a **coal store** down a stair from the forge hall: bins of coal and ore, lanterns and a cart run.
 - **Kitchen** (the Steward's workplace): a **cold larder** down a ladder inside the door: a stone counter under sides of
   meat and pumpkins, a shelf of jars, chests of flour and salt.
 - **Storehouse** (and II and III): a **vault** down a ladder beside the loft's: chests two high round a stone room, a
@@ -66,6 +66,8 @@ Cellars from Level 1:
   Waterlogged blocks in that earth (glow lichen, dripstone, a buried stair) are drained and kept, and seagrass or
   kelp is plugged like water (B958); water that has already run into the room is taken away, never plugged with
   dirt, so the room is left open as drawn. A waterlogged block the blueprint draws stays as drawn.
+- "Dig the cellar" digs the cellar of the drawing a building was built from (50.3): a Smithy of the drawing before
+  its rebuild gets its old cellar, never the new drawing's (whose stair would come up through the old forge).
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
   never hands a villager a job. The Butcher's Shop has the smoker upstairs.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up

@@ -43,6 +43,8 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  */
 public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	/** 30 tall (ROADMAP 50.3): the rebuilt Brass Foundry is 21 tall, over the huge area's 20. */
+	private static final String TALL_AREA = "aliveworkplace_compat:tall_area";
 
 	/** The Workshop flipped left to right: its belt runs the other way and still drives the press over the depot. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"qa_workshop_mirrored"'
@@ -92,12 +94,12 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	}
 
 	/** The Brass Foundry (39.8) turned a quarter: its gear train still gets the mixer over the basin up to mixing speed (30). */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"qa_brass_foundry_90"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa_brass_foundry_90")
+	//$ gametest_ticks_batch TALL_AREA '30000' '"qa_brass_foundry_90"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "qa_brass_foundry_90")
 	public void aBrassFoundryTurnedAQuarterStillMixes(GameTestHelper helper) {
 		Run run = start(helper, StarterBlueprints.BRASS_FOUNDRY, Rotation.CLOCKWISE_90, Mirror.NONE);
 		helper.succeedWhen(() -> {
-			assertBuiltAndTurning(helper, run, new BlockPos(9, 1, 2), "minecraft:smoker", List.of(new BlockPos(8, 4, 8), new BlockPos(4, 1, 4)));
+			assertBuiltAndTurning(helper, run, new BlockPos(16, 1, 5), "minecraft:smoker", List.of(new BlockPos(8, 4, 8), new BlockPos(4, 1, 4)));
 			float mixer = speed(run, new BlockPos(8, 4, 8));
 			helper.assertTrue(Math.abs(mixer) >= 30, "the mixer turns at " + mixer + " RPM, too slow to mix (30)");
 		});
@@ -231,7 +233,14 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 		Map<BlockPos, List<Integer>> indexes = new java.util.HashMap<>();
 		Map<BlockPos, Integer> lengths = new java.util.HashMap<>();
 		int belts = 0;
-		for (BlockPos pos : BlockPos.betweenClosed(run.world(BlockPos.ZERO).offset(-30, -2, -30), run.world(BlockPos.ZERO).offset(30, 20, 30))) {
+		// The build's own footprint, turned as it was placed (and the ground under it): a box 30 blocks round the origin
+		// also took in a belt a neighboring batch's Workshop left half inside it, numbered [0, 1, 2, 3] of 7 (50.3)
+		net.minecraft.core.Vec3i size = run.entry().size();
+		BlockPos a = run.world(BlockPos.ZERO);
+		BlockPos b = run.world(new BlockPos(size.getX() - 1, size.getY() - 1, size.getZ() - 1));
+		BlockPos low = new BlockPos(Math.min(a.getX(), b.getX()), Math.min(a.getY(), b.getY()) - 2, Math.min(a.getZ(), b.getZ()));
+		BlockPos high = new BlockPos(Math.max(a.getX(), b.getX()), Math.max(a.getY(), b.getY()), Math.max(a.getZ(), b.getZ()));
+		for (BlockPos pos : BlockPos.betweenClosed(low, high)) {
 			if (!"create:belt".equals(BuiltInRegistries.BLOCK.getKey(level.getBlockState(pos).getBlock()).toString())) {
 				continue;
 			}

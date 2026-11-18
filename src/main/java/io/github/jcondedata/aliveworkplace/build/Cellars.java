@@ -58,8 +58,11 @@ public final class Cellars {
 	 * ({@link #stands}; unloaded: no).
 	 */
 	public static boolean needsDigging(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement) {
-		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, structure);
-		if (blueprint.isEmpty() || blueprint.get().basement() == 0 || !placement.dimension().equals(Ids.of(level.dimension()))) {
+		if (!placement.dimension().equals(Ids.of(level.dimension())) || !level.isLoaded(placement.origin())) {
+			return false;
+		}
+		Optional<Blueprint> blueprint = asBuilt(level, structure, placement);
+		if (blueprint.isEmpty() || blueprint.get().basement() == 0) {
 			return false;
 		}
 		int open = 0;
@@ -79,6 +82,17 @@ public final class Cellars {
 			}
 		}
 		return open > 0 && solid * 2 > open && stands(level, blueprint.get(), placement);
+	}
+
+	/**
+	 * 50.3: the drawing the finished {@code structure} at {@code placement} was built from ({@link Refreshes#builtFrom}): an
+	 * older drawing of a rebuilt family when the build still stands as that one, else today's. Its cellar is where that
+	 * drawing put it: a Smithy of the old drawing whose cellar was never dug gets the old cellar dug, never the new
+	 * drawing's (which lies under the old one's blast furnace).
+	 */
+	static Optional<Blueprint> asBuilt(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement) {
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(placement);
+		return Refreshes.drawing(level, structure, Refreshes.builtFrom(level, structure, placement, furniture), furniture);
 	}
 
 	/**

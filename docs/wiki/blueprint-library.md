@@ -276,3 +276,21 @@ the screen doorway (12, 1, 13): `check.py`'s doorway rule looks at the doorway c
 and behind it, (11, 1, 13) and (13, 1, 13), both open floor, so the way through is clear. The old drawing (and its
 modded copy) is in `blueprint_history/school/` as v0.145.0; the village houses `<style>_school` keep their own looks
 (`village.py`'s staffed house). Scene `rebuild_school`.
+
+**51.6: the Post Office and the Graveyard** (critic SHIP). Recipes `tools/blueprints/js/{post_office,graveyard}/`
+(`npm run cut` with `MC_BUILDER=<minecraft-builder skill>`, `LEVEL=2` for `graveyard_2`), then `rebuild.py post_office
+post_office --nbt out/post-office.nbt` and `rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt`.
+`post_office` ("the Signal Tower") is now 17 x 15 x 15, 885 blocks: a 5 x 5 brick tower (lobby below, the Postman's
+room with his bed at floor y 5, a slate spire to y 13 and a lightning-rod vane) forward of a 15 x 9 counter hall, the
+Mailbox (8, 1, 9) in the middle of a counter of eight, the sorting room behind it with the pigeonholes, the sorting
+desk and two parcel chests; 33 furniture spots, recorded in `blueprint_furniture/post_office.json`. It leaves
+`owner_rules_baseline.json`. `graveyard` and `graveyard_2` ("the Lantern Yard") are 13 x 16 x 13 (was 13 x 11 x 13),
+570 and 652 blocks: the coped rubble wall, the lychgate over x 4..8, the 32 grave slots exactly where they were
+(`Graveyards`' YARD_SLOTS; nothing drawn at y 0 or 1 in one), the lantern tower x 5..7, z 6..8, to y 15, and the
+chapel behind with the Undertaker's brewing stand (6, 1, 11) and his chest (8, 1, 11). The designer drew the old
+Undertaker's Table, which is no longer craftable, so the ship swapped it for a brewing stand (the Undertaker's
+workstation, and the old drawing's). Level II's benches on the cross walk stand on the ground at y 0, which the
+drawing has no floor under, so they are plain stair benches rather than furniture spots. `StarterBlueprints.GRAVEYARD`,
+`GRAVEYARD_2` and `Graveyards.SIZE` are 13 x 16 x 13. The old drawings (and modded copies) are in `blueprint_history/`
+as v0.145.0; the village houses `<style>_post_office` keep their own looks (`village.py`'s staffed house). Scenes
+`rebuild_post_office`, `rebuild_graveyard`.

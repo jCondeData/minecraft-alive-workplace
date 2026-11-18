@@ -1,0 +1,11 @@
+{
+  "name": "clock-tower",
+  "private": true,
+  "type": "module",
+  "description": "The Clock Tower (51.6): MC_BUILDER = the minecraft-builder skill's folder; build writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py clock_tower clock_tower --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/clock-tower.nbt"
+  }
+}

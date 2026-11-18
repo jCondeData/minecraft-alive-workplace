@@ -2,20 +2,20 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 17 wide, 15 deep, 15 high
 Tiers: one
 Houses: a Postman at the Mailbox
 Where to get it: Blueprint Table
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: bricks, deepslate tiles and stairs, stone bricks, spruce planks
 categories: Builds
 related: jobs-services.md, supply-shop-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Mailbox**: everything one worker needs to live and work in the same place.
+A brick post office you can pick out from across the village: a slender tower with a steep slate spire and a weathervane stands forward of a long slate-roofed counter hall. You come in at the tower's foot and walk straight to the **Mailbox** in the middle of the counter; on the public side there's a writing table and a bench by the stove, and behind the counter the sorting room holds the pigeonholes, a sorting desk and two parcel chests. The Postman sleeps in the tower room over the door, and a red pillar box stands outside. Everything one worker needs to live and work in the same place.
 
 ## Getting the blueprint
 
-It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, which takes a Blank Blueprint (paper and blue dye make two). Newly explored villages often have one of these houses already, with its worker inside.
+It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, which takes a Blank Blueprint (paper and blue dye make two). Newly explored villages often have a Postman's house already (in the village's own style), with its worker inside.
 
 ## Building it
 

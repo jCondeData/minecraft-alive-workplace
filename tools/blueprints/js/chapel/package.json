@@ -1,0 +1,10 @@
+{
+  "name": "chapel",
+  "private": true,
+  "type": "module",
+  "description": "The Chapel (49 rebuild, the Blossom Court): tools/blueprints/REBUILD.md. MC_BUILDER = the minecraft-builder skill's folder. Until the critic passes it, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/chapel/out --data-version 3955 && python3 ../../rebuild.py chapel chapel --candidate --nbt ../../../../build/rebuild/chapel/out/chapel.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/chapel/out --data-version 3955"
+  }
+}

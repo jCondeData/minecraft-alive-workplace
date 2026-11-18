@@ -90,6 +90,7 @@ export const MASSES = {
     front: { z: 0, posts: [1, 3, 5, 7], top: 4 },
     west: { x: 0, posts: { 1: [1, 8], 2: [1, 8, 10, 15, 20] }, beamY: 5, skip: [4, 5, 6] },
     back: { z: 9, posts: [1, 7] }, // I only: the passage takes z 9 in II
+    east: { x: 7, posts: [4, 6] }, // the field side: posts in the wall plane (the gallery's deck takes the block out)
     barnBack: { z: 21, posts: [1, 7], beamY: 5 },
   },
   cellar: { x0: 1, z0: 1, x1: 7, z1: 8, depth: 4, ladder: { x: 2, z: 2, facing: 'south' } },
@@ -119,6 +120,9 @@ export const OPENINGS = {
     { name: 'hall west', cells: [[1, 2, 2], [1, 3, 2]], out: 'west', dress: 'sill' },
     { name: 'hall west back', cells: [[1, 2, 7], [1, 3, 7]], out: 'west', dress: 'sill' },
     { name: 'hall east', cells: [[7, 2, 5], [7, 3, 5]], out: 'east', dress: null }, // onto the gallery and the field
+    // the field side's rhythm (the critic's note): a window in each bay between the wall-plane posts at z 4 and 6
+    { name: 'hall east front', cells: [[7, 2, 3], [7, 3, 3]], out: 'east', dress: null },
+    { name: 'hall east back', cells: [[7, 2, 7], [7, 3, 7]], out: 'east', dress: null },
     { name: 'hall back', cells: [[2, 2, 8], [2, 3, 8]], out: 'south', dress: 'sill', until: 1 }, // and a shutter; plain once the passage is built
     { name: 'hall back plain', level: 2, cells: [[2, 2, 8], [2, 3, 8]], out: 'south', dress: null },
     { name: 'back gable', cells: [[3, 7, 8]], out: 'south', dress: null },

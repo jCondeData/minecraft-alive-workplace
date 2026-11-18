@@ -40,6 +40,11 @@ asks for the steps, `latest.log` and any crash report).
   gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold
   lifts fleeces to a hatch in the loft. Level II walls a dye garden behind, rows of flowers by color and a frame of dyed
   cloth. Cottages already standing keep their look until you press Refresh on the hall's Repairs page.
+- **The Farmstead is rebuilt from scratch** (49.9): a whitewashed farmhouse under one slate roof that sweeps down low
+  over a covered walk along the field, where the Farmer's composter and harvest chest stand a step from his crops.
+  Level II carries the roof on into a red barn with the second Farmer's room, stalls, a hay loft and a cupola, beside a
+  second field. Level III digs a root cellar under the house, down a ladder through a hatch by the door. Farmsteads
+  already standing keep their look until you press Refresh on the hall's Repairs page.
 - **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
   saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
   the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a

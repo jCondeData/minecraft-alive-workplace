@@ -390,13 +390,15 @@ public final class StarterBlueprints {
 	/**
 	 * The country workplaces of ROADMAP 27.14 (tools/blueprints/countryside.py), each the building a {@code workplace_*}
 	 * Steward rule builds for its trade. A farmhouse with one bed beside a 9 x 5 field of farmland round a water channel,
-	 * a scarecrow, and the composter (Farmer) with a chest for the harvest.
+	 * a scarecrow, and the composter (Farmer) with a chest for the harvest. The Farmstead was rebuilt from scratch (ROADMAP
+	 * 49.9, {@code tools/blueprints/js/farmstead}): a limewashed house under one catslide roof that sweeps down over a
+	 * gallery along the field, where the composter and the harvest chest stand.
 	 */
-	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 12, 13));
-	/** A barn behind the house and a second field behind the first, with a second composter. */
-	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 12, 22));
-	/** A root cellar dug under the farmhouse (36.7). */
-	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 12, 22), 4);
+	public static final Entry FARMSTEAD = new Entry(AliveWorkplace.id("farmstead"), new Vec3i(15, 13, 12));
+	/** The same roof carried on over a cross passage into a red barn (the second Farmer's chamber, stalls, a hay loft) and a second field. */
+	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 15, 22));
+	/** A root cellar dug under the farmhouse (36.7), down a ladder under a hatch inside the door. */
+	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 15, 22), 4);
 	/**
 	 * A shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman). Its plot must be on a shore:
 	 * water within 4 blocks of its front, no more than 3 deep under the jetty (city/Plots).

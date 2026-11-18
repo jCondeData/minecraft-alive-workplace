@@ -1,0 +1,10 @@
+{
+  "name": "artisans-house",
+  "private": true,
+  "type": "module",
+  "description": "Artisan's House I-III (Milestone 49, rebuilt from its brief): the Kiln House, a jettied gable-to-street town house beside a brick bottle kiln; II the journeyman's wing; III the clay cellar. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates to build/rebuild/artisans_house/.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

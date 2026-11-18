@@ -75,3 +75,5 @@ export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruiting
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)
 export * from './watermill_lucam.mjs' // raisedPond, overshotWheel, driveToMillstone, hurst, lucam, sluiceGate (watermills: a raised mill pond, a launder over an overshot wheel into a closed pit, the millstone on its hurst, a gable's sack-hoist hood)
+export * from './weavers.mjs' // lightBand, mouldedCourse, takingInDoor, tenterFrame, dyeRows, leanTo (weavers' houses: the long mullioned window, a moulded course, a taking-in door with its hoist, a tenter frame of dyed cloth, rows of dye flowers, a fold's open lean-to)
+export * from './kilns.mjs' // inDisc, bottleKiln (a round course test; a potter's brick bottle kiln whose neck is the house's chimney, 49)

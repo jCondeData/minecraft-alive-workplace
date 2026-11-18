@@ -131,7 +131,7 @@ export const FURNITURE = [
   { room: 'Lodge', kind: 'fixture', part: 'worktop', pos: [9, 1, 6], facing: 'north', block: 'crafting_table' },
   { room: 'Lodge', kind: 'table', part: 'table', pos: [11, 1, 5], facing: 'west', wood: 'spruce', colour: 'brown' },
   { room: 'Lodge', kind: 'chair', part: 'chair', pos: [10, 1, 5], facing: 'east', wood: 'spruce' },
-  { room: 'Lodge', kind: 'lamp', part: 'hangingLamp', pos: [11, 3, 4], facing: 'north', chain: 3, wood: 'spruce' },
+  { room: 'Lodge', kind: 'lamp', part: 'hangingLamp', pos: [11, 3, 4], facing: 'north', chain: 4, wood: 'spruce' },
   { room: 'Saw shed', kind: 'lamp', part: 'hangingLamp', pos: [6, 3, 4], facing: 'north', wood: 'spruce' },
   { room: 'Saw shed', kind: 'lamp', part: 'hangingLamp', pos: [6, 3, 7], facing: 'north', wood: 'spruce' },
 ]

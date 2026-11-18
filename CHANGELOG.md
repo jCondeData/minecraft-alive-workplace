@@ -42,6 +42,13 @@ asks for the steps, `latest.log` and any crash report).
   slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
   tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
   Builds already standing keep their old look until refreshed.
+- **The Mason's Yard, the Sawmill and the Carpenter's Workshop are rebuilt from scratch** (50.2). The Mason's Yard is
+  a stone lodge whose roof sweeps down over an open banker shed, the stonecutter in its bay facing a walled yard with a
+  jib crane; Level II adds a second stonecutter and a tall tracing house where the master draws. The Sawmill (with
+  Create) has a hooped water tank on log legs whose flume drops onto the water wheel, a long saw shed over the belt and
+  both saws, and a lower Lumberjack's lodge. The Carpenter's Workshop is a cruck-framed shop under a steep roof with a
+  dormer, logs, a sawhorse and plank stacks on its porch, and the Carpenter's bed in the loft. Buildings already
+  standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to

@@ -319,9 +319,9 @@ public final class StarterBlueprints {
 	/** A coal and ore store behind, with a second blast furnace. */
 	public static final Entry SMITHY_2 = new Entry(AliveWorkplace.id("smithy_2"), new Vec3i(13, 12, 13), 4);
 	/** A fenced yard of cut stone with a lean-to over a stonecutter (Mason). */
-	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(11, 9, 11));
+	public static final Entry MASONS_YARD = new Entry(AliveWorkplace.id("masons_yard"), new Vec3i(13, 9, 13));
 	/** A second stonecutter and a hoist. */
-	public static final Entry MASONS_YARD_2 = new Entry(AliveWorkplace.id("masons_yard_2"), new Vec3i(11, 9, 11));
+	public static final Entry MASONS_YARD_2 = new Entry(AliveWorkplace.id("masons_yard_2"), new Vec3i(18, 15, 13));
 	/** A log cabin with a log pile and a straw target, a fletching table inside (Fletcher; Lumberjack with an axe). */
 	public static final Entry FLETCHERS_LODGE = new Entry(AliveWorkplace.id("fletchers_lodge"), new Vec3i(11, 11, 10));
 	/** A drying-rack wing with a second fletching table. */
@@ -519,7 +519,7 @@ public final class StarterBlueprints {
 	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
 	 */
 	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(13, 14, 11));
-	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 12));
+	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 14));
 	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
 	/**
 	 * The Greenhouse (a glass house whose water wheel turns a belt down the aisle between farmland beds, a casing cart on
@@ -568,7 +568,7 @@ public final class StarterBlueprints {
 	/** A saltbox drawing studio and a fenced yard with a timber crane. */
 	public static final Entry BUILDERS_WORKSHOP = workplace("builders_workshop", 13, 13, 11);
 	/** A long saw shed, half closed workshop, half open trestles, log piles front and back. */
-	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop", 13, 11, 11);
+	public static final Entry CARPENTERS_WORKSHOP = workplace("carpenters_workshop", 14, 12, 11);
 	/** A plastered cookhouse under a hipped roof, a brick bread oven bulging from its side, herb beds. */
 	public static final Entry KITCHEN = workplace("kitchen", 11, 12, 11, 4);
 	/** A narrow house, its upper floor jettied over the street, a dovecote on the ridge. */

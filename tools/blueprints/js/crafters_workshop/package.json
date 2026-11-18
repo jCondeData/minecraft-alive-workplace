@@ -1,0 +1,11 @@
+{
+  "name": "crafters-workshop",
+  "private": true,
+  "type": "module",
+  "description": "Crafter's Workshop (crafters_workshop), rebuilt blind for ROADMAP 50.7 (tools/blueprints/REBUILD.md): the Saw-Tooth Shop. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/crafters_workshop.nbt"
+  }
+}

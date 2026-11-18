@@ -1433,7 +1433,8 @@ def jewellers_roof(b):
 
 
 def jewellers_workshop():
-    """9 x 10 x 9: a small shop of cut stone under a slate roof: an iron door, iron shutters, the stonecutter
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 9: a small shop of cut stone under a slate roof: an iron door, iron shutters, the stonecutter
     (Jeweller) at a bench under a lantern, a counter, an amethyst cluster in a glass case; a plank door in the east
     wall for the jeweller."""
     b = Build(9, 10, 9)
@@ -1445,7 +1446,8 @@ def jewellers_workshop():
 
 
 def jewellers_workshop_2():
-    """9 x 10 x 14: a strong room behind the shop, lower and windowless: through an iron door, a vault of ten chests
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop_2.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 14: a strong room behind the shop, lower and windowless: through an iron door, a vault of ten chests
     behind iron bars with an iron door of its own, a lantern on the wall."""
     b = jewellers_workshop().grow(9, 10, 14)
     b.clear(3, 1, 8, 5, 4, 8)

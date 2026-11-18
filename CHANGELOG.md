@@ -23,6 +23,17 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Glassblower's Workshop, the Jeweler's Workshop, the Crafter's Workshop and the Workshop are rebuilt from
+  scratch** (50.7). The Glassblower's Workshop is a brick glass cone 18 blocks tall over the Glass Kiln, narrowing in
+  three even courses to a smoking lip, with a timber-framed glass shop in front (a crown-glass bullseye in its gable)
+  and a fuel shed of sand and wood on its side. The Jeweler's Workshop is "the Stepped Gable": a stone shop with a
+  crow-stepped gable and a green copper roof, a glass case with the amethyst out in the street between the Jeweler's
+  timber door and the buyers' iron door; Level II adds a barrel-vaulted strong room behind with fourteen chests behind
+  bars, and Level III the Deep Vault under it. The retired Crafter's Workshop is "the Saw-Tooth Shop", a brick workroom
+  under three glazed saw teeth with a twin-flue forge stack, now with no job block in it. The Create Workshop is "the
+  head-tank works": a water tower whose head tank pours onto the wheel that drives the belt and the press, seen through
+  a glazed gable, and a brick stack over the Armorer's blast furnace. Builds already standing keep the drawing they
+  were built from until you refresh them; the village jeweler's and crafter's houses are unchanged.
 - **The Fletcher's Lodge, the Tailor's Shop and the Print Shop are rebuilt from scratch** (50.6). The Fletcher's Lodge
   is a log pen under a long roof with a stone chimney, a porch and an entry gable; its Level II makes it a dogtrot, an
   open breezeway and a second, front-gabled pen with the second fletching table. The Tailor's Shop is a white shop with

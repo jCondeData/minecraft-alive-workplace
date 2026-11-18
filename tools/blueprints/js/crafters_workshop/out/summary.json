@@ -1,0 +1,19 @@
+{
+  "name": "crafters-workshop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 74
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crafters_workshop/out/crafters-workshop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crafters_workshop/out/summary.json",
+  "size": [
+    13,
+    11,
+    11
+  ],
+  "blockCount": 673,
+  "paletteCount": 55,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crafters_workshop/recipe.mjs"
+}

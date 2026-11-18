@@ -14,14 +14,11 @@
   "fishers_hut_2": 1,
   "gatehouse": 2,
   "gatehouse_2": 2,
-  "glassblowers_workshop": 2,
   "greenhouse": 2,
   "guildhall_2": 2,
   "guildhall_3": 2,
   "habitat_garden": 2,
   "habitat_garden_2": 2,
-  "jewellers_workshop_2": 1,
-  "jewellers_workshop_3": 1,
   "leaders_hall": 2,
   "legend/hermit_hut": 1,
   "map_room": 1,
@@ -36,8 +33,6 @@
   "modded/guildhall_3": 2,
   "modded/habitat_garden_2": 2,
   "modded/inn_3": 2,
-  "modded/jewellers_workshop_2": 1,
-  "modded/jewellers_workshop_3": 1,
   "modded/leaders_hall": 2,
   "modded/map_room": 1,
   "modded/quarry": 1,
@@ -88,8 +83,7 @@
   "wonder/observatory/stage_1_0": 2,
   "wonder/observatory/stage_2_0": 18,
   "wonder/observatory/stage_3_0": 3,
-  "wonder/stadium/stage_3_0": 6,
-  "workshop": 2
+  "wonder/stadium/stage_3_0": 6
  },
  "why": "Blueprints drawn before the owner's three rules (ROADMAP 49.1). Their owner-rule problems are reported as one line until their rebuild (Milestones 49-52), which removes them from this list. Never add a new blueprint here."
 }

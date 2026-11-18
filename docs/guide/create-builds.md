@@ -25,8 +25,9 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
   turns the millstone inside; a sack hoist's hood juts over the front steps, and the farmer's chests are in the
   granary beside it, his composter in the yard.
 - **Windmill**: a stone tower with 24 sails on its front and a millstone at the bottom.
-- **Workshop**: a brick shop whose wheel drives a belt to a depot under a mechanical press, with the armorer's blast
-  furnace.
+- **Workshop**: a timber shop between a water tower and a brick furnace stack. The tower's head tank pours onto a wheel
+  that drives a belt to a depot under a mechanical press, which you can watch through the glazed gable on the street;
+  the armorer's blast furnace sits at the foot of the stack.
 - **Brass Foundry**: a tall brick hall with a glazed gear lantern on its copper roof and a cookhouse on its side. Its wheel is geared up fast enough for a mechanical mixer over a
   basin and a blaze burner, and a belt carries things out to a depot by the door. The chef's smoker is inside.
 - **Sawmill**: a water tank on log legs pours down a chute onto the wheel. In the long saw shed a belt carries logs

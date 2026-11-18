@@ -4,7 +4,7 @@ The buildings of the four luxury jobs, the Vintner, the Tailor, the Printer and 
 the Winery, the Tailor's Shop, the Print Shop and the Jeweler's Workshop, four blueprints with an upgrade each, and a
 small house of each that villages grow. Part of Classes and luxuries (1.8).
 
-Roadmap items: 34.13, 34.14, 50.6
+Roadmap items: 34.13, 34.14, 50.6, 50.7
 
 ## What a player sees
 
@@ -30,12 +30,16 @@ Four new buildings in the Blueprint Table, each with a II:
   column of light from the lantern, with shelves of paper (white sheets) and ink (black pots). There is no lectern.
 - **Print Shop II.** A lower reading room beside the hall, its gable set back from the street and the two roofs meeting
   in a valley, lined with bookshelves, with a reading table.
-- **Jeweler's Workshop.** A small shop of cut stone on a dark footing under a slate roof, with iron shutters. The
-  street door is an iron door; a stone button beside it, outside and in, opens it. Inside: the stonecutter at a bench
-  by the window under a lantern, a counter, and by the front window an amethyst cluster in a glass case. A plank door
-  in the east wall is the Jeweler's own way in.
-- **Jeweler's Workshop II.** A strong room behind, lower and windowless, through a second iron door: a vault of ten
-  chests behind iron bars, with an iron door in the bars.
+- **Jeweler's Workshop** (rebuilt from scratch in 50.7, "the Stepped Gable"). A stone-brick shop gable-end to the
+  street on a dark deepslate footing, under a roof of green copper, its front a crow-stepped gable. A glass case juts
+  out into the street between the two doors, the amethyst cluster on a plinth in the middle of it, under a copper
+  pentice. The buyers' door, on the right, is an iron door; a stone button beside it, outside and in, opens it. The
+  timber door on the left is the Jeweler's own way in. Inside, one tall room open to the rafters: the stonecutter
+  under the side window with its lantern hanging over it, the anvil, a furnace and his chest down the west wall, a
+  counter keeping buyers to the front.
+- **Jeweler's Workshop II.** The Strong Room behind: a squat stone barrel vault on buttresses, in through a second
+  iron door to an anteroom, then a barred grille with a third iron door; behind the bars fourteen chests stand two
+  high against the round back wall, and barred slits and a barred lunette let a little light in.
 
 A Vintner who reaches Journeyman sells the Winery's blueprint, a Tailor the Tailor's Shop's, a Printer the Print
 Shop's and a Jeweler the Jeweler's Workshop's, for 12 emeralds.
@@ -52,17 +56,17 @@ building.
 
 ## How it works
 
-**The blueprints.** Drawn in `tools/blueprints/workshops.py` (the Winery since 50.4, the Tailor's Shop and the Print Shop since 50.6 in `tools/blueprints/js/<family>`) to `tools/blueprints/STYLE.md`. Sizes (wide x tall x
+**The blueprints.** Drawn in `tools/blueprints/workshops.py` (the Winery since 50.4, the Tailor's Shop and the Print Shop since 50.6, the Jeweler's Workshop since 50.7 in `tools/blueprints/js/<family>`) to `tools/blueprints/STYLE.md`. Sizes (wide x tall x
 deep): Winery 17 x 17 x 15, Winery II 17 x 17 x 22 (50.4), Tailor's Shop 12 x 13 x 12, Tailor's Shop II 15 x 17 x 13 (50.6). Each
 II keeps most of its first tier, so a builder upgrading one only builds what is new. Print Shop 11 x 12 x 11, Print Shop
-II 17 x 12 x 11 (50.6), Jeweler's Workshop 9 x 10 x 9, Jeweler's Workshop II
-9 x 10 x 14 (its II is the first tier grown backwards, so nearly all of it is kept).
+II 17 x 12 x 11 (50.6), Jeweler's Workshop 11 x 13 x 10, Jeweler's Workshop II
+11 x 13 x 17 (50.7; its II is the first tier grown backwards, so nearly all of it is kept).
 Each building has exactly one job block: the Winery its cauldron, the Tailor's Shop its loom, the Print Shop its
 cartography table, the Jeweler's Workshop its stonecutter.
 
 **The iron door.** A villager can't open an iron door, and can't plan a path through a closed one. So the Jeweler's
-Workshop has two doors: the iron one on the street for players (press the button), and a plank door in the east wall,
-which is how the Jeweler reaches the stonecutter.
+Workshop has two doors on the street: the iron one for players (press the button), and a timber door beside the glass
+case, which is how the Jeweler reaches the stonecutter.
 
 **Casks below the vat.** A blueprint can't dig below the block it is placed on, so the cellar is the ground story:
 since 50.4 the stone Cask Hall, with the vat one story up on the press floor (the old drawing banked earth up a

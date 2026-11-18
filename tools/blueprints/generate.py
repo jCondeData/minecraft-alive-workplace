@@ -94,7 +94,12 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.6, the Fletcher's Lodge, the Tailor's Shop and the Print Shop (the buildables only; the village tailor's and
            # print shops stay village.py's): js/<family> (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh
            # the live ones)
-           "fletchers_lodge", "fletchers_lodge_2", "tailors_shop", "tailors_shop_2", "print_shop", "print_shop_2"}
+           "fletchers_lodge", "fletchers_lodge_2", "tailors_shop", "tailors_shop_2", "print_shop", "print_shop_2",
+           # 50.7, the Glassblower's, Jeweler's and Crafter's Workshops and the Workshop (Create only; the buildables only:
+           # the village jeweler's and crafter's pieces stay village.py's): js/<family> (MC_BUILDER=..., sh build.sh writes
+           # the candidates; LIVE=1 sh build.sh the live ones, the jeweler's III with its Deep Vault)
+           "glassblowers_workshop", "jewellers_workshop", "jewellers_workshop_2", "jewellers_workshop_3",
+           "crafters_workshop", "workshop"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -205,7 +210,7 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2, 50.3 and 50.5: drawn by the rebuild kit
+            continue  # ROADMAP 50.2, 50.3, 50.5 and 50.7: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
@@ -259,11 +264,11 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.13
     for name, draw in (("print_shop", print_shop), ("print_shop_2", print_shop_2), ("jewellers_workshop", jewellers_workshop),
                        ("jewellers_workshop_2", jewellers_workshop_2)):
-        if name not in REBUILT:  # ROADMAP 50.6: the Print Shop comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 50.6 and 50.7: the Print Shop and the Jeweler's Workshop come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
     quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
-    crafters_workshop().save(MAIN_STRUCTURES, "crafters_workshop")  # ROADMAP 37.14: the Crafter's workroom and store
-    glassblowers_workshop().save(MAIN_STRUCTURES, "glassblowers_workshop")  # ROADMAP 46.6: the Glassblower's glasshouse
+    # ROADMAP 37.14 crafters_workshop and 46.6 glassblowers_workshop come from the rebuild kit since 50.7 (REBUILT);
+    # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
@@ -273,7 +278,7 @@ if __name__ == "__main__":
     # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
     # is the old drawing, kept in blueprint_history/
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
-        if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 50.4 and 50.7: winery_3 and jewellers_workshop_3 come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     chapel().save(MAIN_STRUCTURES, "chapel")

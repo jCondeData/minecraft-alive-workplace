@@ -187,6 +187,9 @@ asks for the steps, `latest.log` and any crash report).
   as in a village for a few seconds after its hall is gone (B1356).
 
 ### Dev
+- Tests: the Waystones travel-cost and moved-stone checks (`QaWaystones1117dCompatTests`) are in the compat suite. Its
+  "village listed twice" failure (B1375) was the test next door's plaza, taken over by the test's village, not a dead
+  entry in game: the waystone tests now clear such a plaza along with its hall (`QaWaystoneLeftover1118aCompatTests`).
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
   `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).

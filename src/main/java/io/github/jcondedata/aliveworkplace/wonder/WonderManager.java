@@ -112,8 +112,9 @@ public final class WonderManager extends SavedData {
 
 	/** Records a Wonder begun in the village round {@code hall} on {@code day}, at its first stage. */
 	public WonderSite begin(ResourceLocation wonder, BlockPos hall, @Nullable UUID owner, String ownerName, long day) {
+		String drawing = Wonders.drawing(wonder); // 52.6: begun with today's drawing, and kept to it after a redraw
 		WonderSite site = new WonderSite(UUID.randomUUID(), wonder, hall.immutable(), Optional.ofNullable(owner), ownerName == null ? "" : ownerName,
-			1, day, Optional.empty());
+			1, day, Optional.empty()).withDrawing(drawing.isEmpty() ? Optional.empty() : Optional.of(drawing));
 		sites.put(site.id(), site);
 		changed();
 		return site;
@@ -209,6 +210,19 @@ public final class WonderManager extends SavedData {
 		WonderSite site = sites.get(id);
 		if (site != null && !site.kept().equals(kept)) {
 			sites.put(id, site.withKept(kept));
+			changed();
+		}
+	}
+
+	/**
+	 * Records the drawing a site's Wonder was begun with (52.6, {@link WonderDrawings}): a key of {@link Wonders#drawing}
+	 * or of an older drawing in {@code blueprint_history}; null forgets it (the site is then matched by best fit again).
+	 */
+	public void setDrawing(UUID id, @Nullable String key) {
+		WonderSite site = sites.get(id);
+		Optional<String> now = Optional.ofNullable(key);
+		if (site != null && !site.drawing().equals(now)) {
+			sites.put(id, site.withDrawing(now));
 			changed();
 		}
 	}

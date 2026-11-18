@@ -48,6 +48,10 @@ public final class BlueprintLibrary {
 			// A Wonder's whole blueprint (35.3): its stages' parts merged, kept until the Wonders load again.
 			return io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints.whole(server, id);
 		}
+		if (io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.parse(id).isPresent()) {
+			// 52.6: a part of an older drawing of a Wonder, as blueprint_history ships it (a Wonder begun with it goes on with it)
+			return io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.blueprint(server, id);
+		}
 		Optional<BlueprintStyles.Styled> styled = BlueprintStyles.parse(id);
 		if (styled.isPresent()) {
 			// A blueprint in another style: the base with its blocks swapped (as drawn if the style is gone).

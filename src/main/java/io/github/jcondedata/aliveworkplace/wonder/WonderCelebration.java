@@ -113,7 +113,7 @@ public final class WonderCelebration {
 		if (!site.done() || site.placement().isEmpty() || !Wonders.ENABLED) {
 			return Optional.empty();
 		}
-		BlockPos centre = BlueprintLibrary.get(level, WonderBlueprints.idOf(site.wonder()))
+		BlockPos centre = WonderDrawings.whole(level, site)
 			.map(b -> BlueprintOutline.bounds(site.placement().get(), b.size()).getCenter())
 			.orElse(site.placement().get().origin());
 		if (Math.abs(centre.getX() - hall.getX()) > half - 1 || Math.abs(centre.getZ() - hall.getZ()) > half - 1) {
@@ -128,7 +128,7 @@ public final class WonderCelebration {
 		if (site.placement().isEmpty()) {
 			return Optional.empty();
 		}
-		Optional<Blueprint> whole = BlueprintLibrary.get(level, WonderBlueprints.idOf(site.wonder()));
+		Optional<Blueprint> whole = WonderDrawings.whole(level, site);
 		if (whole.isEmpty()) {
 			return Optional.empty();
 		}

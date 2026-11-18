@@ -5194,6 +5194,11 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
     """Saves a Wonder's stage parts (kit.wonder_stages) and writes its data file (docs/design/M35.md's format) with those
     parts. Each stage is checked as it will stand, on the stages before it (check.py's lines, as for any build)."""
     from check import check
+    import wonder_history
+    shipped = structures == MAIN_STRUCTURES and data == WONDER_DATA
+    if shipped:
+        # 52.6: the drawing standing Wonders were begun with stays in blueprint_history before this one replaces it
+        wonder_history.archive(wonder_id, quiet=True)
     w = WONDERS[wonder_id]
     b = w["draw"]()
     stages = b.stage_builds()
@@ -5227,6 +5232,8 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
     os.makedirs(data, exist_ok=True)
     with open(os.path.join(data, wonder_id + ".json"), "w") as f:
         f.write(text + "\n")
+    if shipped:
+        wonder_history.archive(wonder_id)  # the new drawing's key in its data file ("drawing"), and it archived too
 
 
 def save_test_folly():

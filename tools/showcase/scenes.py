@@ -1675,6 +1675,21 @@ SCENES = [
       40, [("01_outside_front", "The Market Cross from the front: the stair cut into the octagonal drum, the white shaft and its lantern-hung head over the parapet"),
            ("02_outside_back", "From the back: the drum's stone faces and pilasters, a bench against them"), ("03_outside_west", "From the west"),
            ("04_outside_east", "From the east: the market flag flying from the head, flowering azaleas in the plinth's corners")], furniture=True),
+    # ROADMAP 51.7: the Market Corner rebuilt from scratch (round 2)
+    S("rebuild_market_corner", "Build families", "The rebuilt Market Corner from four sides",
+      "the Market Corner's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: an open market court) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Corner from the front: two striped canvases stepping down over the L of counters, the little booth at the front, the court open in the middle"),
+           ("02_outside_back", "From the back: dark oak posts standing proud of the board screens, the canvas running on as an eave"),
+           ("03_outside_west", "From the west: the booth's canvas over its goods, lanterns hung over the walk"),
+           ("04_outside_east", "From the east: the banner mast on the street corner, open hatches with their shutters folded back")], furniture=True),
+    # ROADMAP 51.7: the Market Square rebuilt from scratch ("the Market House")
+    S("rebuild_market_square", "Build families", "The Market Square, rebuilt: from four sides and at eye level inside",
+      "the Market Square's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Square from the front: the paved square, the balcony over its middle, the jettied Market Court under its brick-tile roof and cupola"),
+           ("02_outside_back", "From the back: the long tile roof over the Market Court's shuttered windows"),
+           ("03_outside_west", "From the west: the striped stall with produce on its counter, the open undercroft behind"),
+           ("04_outside_east", "From the east: the outside stair up to the Market Court's door, a lamp post at its foot"),
+           ("10_room_1", "The Market Court at eye level: the reeve's tables either side of the aisle to the balcony door, the cupboards of standard weights, two lamps hung from the tie beams")], furniture=True),
     # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
     S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
       "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",

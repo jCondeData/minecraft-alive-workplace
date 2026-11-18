@@ -90,6 +90,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 51.7, the Market Cross ("the Mercat Drum"): js/market_cross (npm run cut), then rebuild.py market_cross
            # market_cross --nbt build/rebuild/market_cross/out/market-cross.nbt (decor.py's market_cross() is the old one)
            "market_cross",
+           # 51.7, the Market Corner (round 2) and the Market Square ("the Market House"): js/market_corner and
+           # js/market_square (npm run cut), then rebuild.py market_corner market_corner and rebuild.py market_square
+           # market_square --nbt build/rebuild/market_square/out/market-square.nbt (decor.py's are the old ones)
+           "market_corner", "market_square",
            # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
            # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
            "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine",

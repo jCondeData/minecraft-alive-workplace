@@ -130,7 +130,7 @@ The buildings, homes, workplaces and walls in the Blueprint Table, each with its
 - [Gazebo](gazebo-build.md): an open octagonal gazebo with benches under a slate roof.
 - [Graves](graves.md): what a villager leaves behind, and bringing them back.
 - [Market days](market-days.md): traveling traders once a week.
-- [Market Square](market-square-build.md): the paved square, its bell and its markets.
+- [Market Square](market-square-build.md): the paved square and its Market House, and its markets.
 - [Moods](moods.md): what makes a villager happy or unhappy, point by point.
 - [Names](names.md): every villager's own name.
 - [Park Bench](park-bench-build.md): a bench in the shade of a cherry tree.

@@ -83,6 +83,10 @@ ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not 
 # (round 3: its west stall's stock chest stands at (2, 1, 6) against the pier, so the opening is reported one up)
 ALLOW.update({(n, (2, 2, 6)): "the Guildhall's open market arcade under the closed hall, not a walled room"
               for n in ("guildhall", "guildhall_2", "guildhall_3")})
+# The Market Square (51.7 rebuild, "the Market House") stands its Market Court on an open stone undercroft: the
+# market's covered trading floor, trader and banquet ground inside the square's 9x9, which glazing would cut off
+ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's covered trading floor under the "
+              "Market Court, not a walled room" for n in ("market_square",)})
 
 # The Prisoner Cage (49 rebuild) is a cage wagon on purpose: its bed rides on four wheels at wheel-top height, open
 # underneath between them but for the axles; the air under the bed is under a cart, not a room ("prisoner_cage" is how

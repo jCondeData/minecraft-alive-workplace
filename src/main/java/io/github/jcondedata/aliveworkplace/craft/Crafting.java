@@ -588,6 +588,22 @@ public final class Crafting {
 			// by making its makings from what the other ways use (the glass of the plain panes): that's the long way round
 			int down = loops(level, holder) ? 0 : depth;
 			List<Crafts> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, down, allowed);
+			if (in != null && RecipeStandIns.checksGrid(Recipes.id(holder)) && !theGameMakes(level, in, target)) {
+				// B1378: a stand-in for a special recipe that takes any mix is used only for a grid the game's own table
+				// makes the thing of; four of one plank a plain recipe takes (acacia: Carved Wood's acacia table) is
+				// tried again with at least one other in it (3 acacia and 1 mosaic plank)
+				Item same = allOf(in);
+				in = null;
+				List<Ingredient> others = same == null ? null : withAnother(level, holder, same);
+				if (others != null) {
+					trial = pool.copy();
+					trialSteps = new ArrayList<>();
+					in = choose(level, kind, others, times, trial, trialSteps, down, allowed);
+					if (in != null && !theGameMakes(level, in, target)) {
+						in = null;
+					}
+				}
+			}
 			if (in == null) {
 				continue;
 			}
@@ -639,6 +655,67 @@ public final class Crafting {
 			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
 		}
 		return false;
+	}
+
+	/** B1378: whether the game's own crafting table makes {@code target} of every craft's grid in {@code crafts}. */
+	private static boolean theGameMakes(ServerLevel level, List<Crafts> crafts, Item target) {
+		for (Crafts c : crafts) {
+			List<ItemStack> grid = new ArrayList<>();
+			c.in().forEach((item, n) -> {
+				for (int i = 0; i < n; i++) {
+					grid.add(new ItemStack(item));
+				}
+			});
+			if (!Recipes.crafted(level, grid).is(target)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** The one item some craft in {@code crafts} is made of alone, or null if none is. */
+	@Nullable
+	private static Item allOf(List<Crafts> crafts) {
+		for (Crafts c : crafts) {
+			if (c.in().size() == 1) {
+				return c.in().keySet().iterator().next();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * B1378: {@code ingredients} with the first one's {@code same} left out, so every craft takes at least one other thing,
+	 * or null when that one has nothing else.
+	 */
+	@Nullable
+	private static List<Ingredient> withAnother(ServerLevel level, RecipeHolder<?> holder, Item same) {
+		// kept per recipe and item: an Ingredient hashes by identity, so a new one each time would grow the options index
+		Map<Object, java.util.Optional<List<Ingredient>>> kept;
+		synchronized (WITH_ANOTHER) {
+			kept = WITH_ANOTHER.computeIfAbsent(Recipes.manager(level), m -> new java.util.concurrent.ConcurrentHashMap<>());
+		}
+		return kept.computeIfAbsent(List.of(Recipes.id(holder), same),
+			k -> java.util.Optional.ofNullable(withAnother(level, Recipes.ingredients(holder.value()), same))).orElse(null);
+	}
+
+	private static final Map<RecipeManager, Map<Object, java.util.Optional<List<Ingredient>>>> WITH_ANOTHER = new WeakHashMap<>();
+
+	@Nullable
+	private static List<Ingredient> withAnother(ServerLevel level, List<Ingredient> ingredients, Item same) {
+		List<Ingredient> out = new ArrayList<>(ingredients);
+		for (int i = 0; i < out.size(); i++) {
+			if (out.get(i).isEmpty()) {
+				continue;
+			}
+			List<Item> rest = new ArrayList<>(options(level, out.get(i)));
+			if (!rest.remove(same) || rest.isEmpty()) {
+				return null;
+			}
+			out.set(i, Ingredient.of(rest.stream().map(ItemStack::new)));
+			return out;
+		}
+		return null;
 	}
 
 	/**

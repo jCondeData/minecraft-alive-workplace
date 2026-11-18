@@ -44,6 +44,9 @@ asks for the steps, `latest.log` and any crash report).
   Builds already standing keep their old look until refreshed.
 
 ### Fixed
+- With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
+  mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
+  (B1378).
 - A sum of one CobbleDollar now reads "1 CobbleDollar", not "1 CobbleDollars", wherever money is named (the Village
   Hall's treasury, quest rewards, retraining and family tree prices, the cup's purse), as at a rate of one CobbleDollar
   an emerald (B1379).

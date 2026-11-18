@@ -1145,9 +1145,10 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.MANOR_2, new BlockPos(1, 2, 5));
 	}
 
-	/** The Manor III (34.16) from bare ground: the ballroom wing makes it 29 x 25. */
-	//$ gametest_ticks_batch HUGE_AREA '100000' '"starter_builds_manor_3"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 100000, batch = "starter_builds_manor_3")
+	/** The Manor III (34.16) from bare ground: the ballroom wing makes it 29 x 25. 49.7: the rebuilt drawing has 3,404 blocks
+	 * against the old 2,299 and reached 96 % at 100,000 ticks, so the limit grows with it (150,000). */
+	//$ gametest_ticks_batch HUGE_AREA '150000' '"starter_builds_manor_3"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 150000, batch = "starter_builds_manor_3")
 	public void buildsManorIII(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MANOR_3, new BlockPos(1, 2, 5));
 	}

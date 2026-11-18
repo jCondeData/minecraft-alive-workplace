@@ -11,6 +11,7 @@ import { SIZE, SHIFT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './pl
 import {
   Canvas, mix, plinth, floor, post, beamRing, wallPanel, window, door, gableWall, catslideRoof, chimney, flowerBed,
   woodpile, lampPost, quoins, furnitureParts, catslideTrim, slopeDormer, jettyBrackets, hoist, timberRack, ShiftedCanvas, stockShelf, mantel, railingRun,
+  masonJibCrane, slab,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -145,7 +146,23 @@ export function draw() {
   const gt = OUTSIDE.pen.gate
   c.set(gt[0], gt[1], gt[2], `${P.wood}_fence_gate`, { facing: 'east', in_wall: 'false', open: 'false', powered: 'false' })
   for (const [x, y, z, id] of OUTSIDE.stacks) c.set(x, y, z, id)
-  for (let x = 12; x <= 14; x++) for (let z = 2; z <= 8; z++) if (!c.get(x, 0, z)) c.set(x, 0, z, 'coarse_dirt') // trodden ground
+  timberRack(c, OUTSIDE.logs, P.log, 'z')
+  // the Crane: the mast on a stone footing, the jib west over the cobble with its hook, the counter-jib east with its
+  // weight hung under it, a slab cap: the builder's sign, read from down the street
+  const cr = OUTSIDE.crane, [mx, my, mz] = cr.mast
+  c.set(mx, 0, mz, P.dressing)
+  masonJibCrane(c, cr.mast, 'west', { mast: P.frame, jib: P.frame, brace: `${P.trim}_stairs`, height: cr.height, reach: cr.reach, drop: cr.drop })
+  const ct = my + cr.height - 1
+  c.set(mx + 1, ct, mz, P.frame, { axis: 'x' }) // the counter-jib
+  c.set(mx + 1, ct - 1, mz, cr.counterweight) // its weight
+  slab(c, mx, ct + 1, mz, `${P.trim}_slab`, 'bottom') // the cap
+  // the hook takes a block of dressed stone up off the stack: the chain on down past the lantern to the slung load
+  const hx = mx - cr.reach, hookY = ct - cr.drop - 1
+  c.set(hx, hookY, mz, 'chain', { axis: 'y', waterlogged: 'false' })
+  c.set(hx, hookY - 1, mz, P.dressing)
+  // the mast's foot: stone stairs round it on three sides, so it stands and doesn't just stick up
+  for (const [dx, dz, f] of [[-1, 0, 'east'], [1, 0, 'west'], [0, 1, 'north']]) c.set(mx + dx, my, mz + dz, 'stone_brick_stairs', { facing: f, half: 'bottom', shape: 'straight', waterlogged: 'false' })
+  for (let x = 12; x <= 16; x++) for (let z = 2; z <= 8; z++) if (!c.get(x, 0, z)) c.set(x, 0, z, 'coarse_dirt') // trodden ground
   lampPost(c, ...OUTSIDE.lampPost, `${P.wood}_fence`)
   c.set(OUTSIDE.lampPost[0], 0, OUTSIDE.lampPost[2], stone) // its footing
   woodpile(c, OUTSIDE.woodpile.x, OUTSIDE.woodpile.z0, OUTSIDE.woodpile.z1, P.log)

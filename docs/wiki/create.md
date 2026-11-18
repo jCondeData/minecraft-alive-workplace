@@ -56,8 +56,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry**, a brick
   hall under a deepslate roof whose wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
   large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
-  job block); the **Sawmill**, a timber mill with a log store whose belt runs through two mechanical saws to a depot
-  (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
+  job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
+  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
   ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
   (blast furnace); the **Greenhouse**, a glass house on a brick knee wall with a stepped glass roof on spruce
   rafters, farmland beds watered by two channels, and a belt from the wheel down the aisle to a depot, a little cart

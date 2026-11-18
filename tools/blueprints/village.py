@@ -48,9 +48,7 @@ class Shifted:
 
 
 def house_name(fit_out):
-    """The village house a fit-out furnishes (its name in VILLAGE_HOUSES, or the builder's workshop)."""
-    if fit_out is workshop_fit_out:
-        return "builders_workshop"
+    """The village house a fit-out furnishes (its name in VILLAGE_HOUSES)."""
     return next(name for name, f in VILLAGE_HOUSES.items() if f is fit_out)
 
 
@@ -95,20 +93,89 @@ def village_house(style, fit_out, job=None):
     return b
 
 
-def workshop_fit_out(b, style):
-    """A Blueprint Table, a chest of building supplies, a crafting table and a stack of scaffolding."""
-    b.set(1, 1, 6, "aliveworkplace:blueprint_table", facing="east")
-    b.set(1, 1, 5, "chest", facing="east", type="single", waterlogged=False)
-    b.set_nbt(1, 1, 5, Compound({"LootTable": String("aliveworkplace:chests/village_builders_workshop"), "id": String("minecraft:chest")}))
-    # (no barrel: it is a fisherman's job block and would steal the villager)
-    b.set(1, 1, 2, "crafting_table")
-    b.set(5, 1, 2, "scaffolding", bottom=False, distance=0, waterlogged=False)
-
-
 def builders_workshop(style):
-    """The builder's workshop: a Blueprint Table, a chest of building supplies, a bed and a villager spawn, so a builder
-    moves in on its own (the table's own job)."""
-    return village_house(style, workshop_fit_out)
+    """The builder's workshop (ROADMAP 50.1): the rebuilt Builder's Workshop (the rebuild kit's
+    tools/blueprints/js/builders_workshop_b, saved as structure/builders_workshop.nbt) as a village house in {@code style}.
+    Its plan was drawn on the village contract's coordinates and the file is that plan moved one block east, so the piece
+    is the blueprint moved back west (the west eave's column, file x = 0, left off), its materials swapped per style
+    (WORKSHOP_STYLES). The contract's fixed cells: the street's jigsaw at (4, 1, 0) (the front row left as the ground it
+    lands on), the door at (4, 1, 2), the Blueprint Table at (2, 1, 7) and the supply chest (with its loot) at (2, 1, 6),
+    the bed foot (6, 1, 6) head (6, 1, 7) facing south (VillagePieces' reference bed, so the loft's bed is left out: one
+    bed), and a jobless villager from the worker pool on the floor jigsaw (4, 0, 5) (the rug, where he and the mover at
+    (3, 1, 5) stand, left out). One job block, the table: no crafting table (a Carpenter's job site) or barrel."""
+    from holes import load
+    s = VILLAGE_STYLES[style]
+    (w, h, d), cells, states = load(os.path.join(MAIN_STRUCTURES, "builders_workshop.nbt"), props=True)
+    b = Build(w - 1, h, d)
+    for (x, y, z), name in cells.items():
+        if x == 0 or name is None or name == "minecraft:air":
+            continue
+        b.set(x - 1, y, z, restyle(WORKSHOP_STYLES[style], name), **states[(x, y, z)])
+    for (x, y, z), name in list(b.blocks.items()):
+        if name[0].endswith("_bed") or (y == 1 and 3 <= x <= 5 and 5 <= z <= 6 and name[0].endswith("_carpet")):
+            del b.blocks[(x, y, z)]  # the loft's bed and the room's rug (see above)
+    for x in range(b.w):
+        for y in range(b.h):
+            if b.get(x, y, 0) is None:
+                b.set(x, y, 0, "structure_void")  # the front row is the street's ground (VillageGameTests, B5)
+    assert b.get(4, 1, 2)[0].endswith("_door") and b.get(2, 1, 7)[0] == "aliveworkplace:blueprint_table", "the workshop's room moved"
+    assert b.get(2, 1, 6)[0] == "minecraft:chest" and b.get(6, 1, 6) is None and b.get(6, 1, 7) is None, "the workshop's room moved"
+    b.set_nbt(2, 1, 6, Compound({"LootTable": String("aliveworkplace:chests/village_builders_workshop"), "id": String("minecraft:chest")}))
+    b.bed(6, 1, 6, s.bed, facing="south")
+    b.set(4, 1, 0, "jigsaw", orientation="north_up")
+    b.set_nbt(4, 1, 0, Compound({
+        "name": String("minecraft:building_entrance"), "target": String("minecraft:building_entrance"),
+        "pool": String("minecraft:empty"), "final_state": String("minecraft:structure_void"),
+        "joint": String("aligned"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    floor = b.get(4, 0, 5)[0]
+    b.set(4, 0, 5, "jigsaw", orientation="up_north")
+    b.set_nbt(4, 0, 5, Compound({
+        "name": String("minecraft:bottom"), "target": String("minecraft:bottom"),
+        "pool": String(f"aliveworkplace:village/{style}/workers"), "final_state": String(floor),
+        "joint": String("rollable"), "id": String("minecraft:jigsaw"),
+        "selection_priority": Int(0), "placement_priority": Int(0)}))
+    b.fill_air()
+    return b
+
+
+# The rebuilt workshop's materials in each village style (by block id, every block's state kept; "@wood" swaps a wood
+# family's blocks): plains is the blueprint itself (rubble, brick nogging in dark oak, slate, spruce joinery).
+WORKSHOP_STYLES = {
+    "plains": {},
+    "desert": {  # sandstone under a red sandstone roof, terracotta nogging in jungle wood
+        "cobblestone": "sandstone", "stone": "smooth_sandstone", "andesite": "sandstone", "mossy_cobblestone": "cut_sandstone",
+        "stone_bricks": "cut_sandstone", "polished_andesite": "chiseled_sandstone", "cobblestone_stairs": "sandstone_stairs",
+        "stone_brick_stairs": "sandstone_stairs", "smooth_stone_slab": "smooth_sandstone_slab", "bricks": "terracotta",
+        "deepslate_tiles": "smooth_red_sandstone", "deepslate_tile_stairs": "smooth_red_sandstone_stairs",
+        "deepslate_tile_slab": "smooth_red_sandstone_slab", "coarse_dirt": "sand", "grass_block": "sand",
+        "poppy": "dead_bush", "cornflower": "dead_bush", "@wood": {"dark_oak": "jungle", "spruce": "jungle"}},
+    "savanna": {  # white terracotta between an acacia frame, an acacia roof
+        "bricks": "white_terracotta", "deepslate_tiles": "acacia_planks", "deepslate_tile_stairs": "acacia_stairs",
+        "deepslate_tile_slab": "acacia_slab", "@wood": {"dark_oak": "acacia", "spruce": "acacia"}},
+    "snowy": {  # pale stone and white nogging in stripped spruce under the dark slate
+        "cobblestone": "stone_bricks", "mossy_cobblestone": "cobblestone", "andesite": "diorite", "stone": "cobblestone",
+        "cobblestone_stairs": "stone_brick_stairs", "stone_bricks": "polished_diorite", "polished_andesite": "polished_diorite",
+        "bricks": "white_terracotta", "dark_oak_log": "stripped_spruce_log"},
+    "taiga": {  # spruce boards in a spruce frame, a dark oak roof on a mossy plinth
+        "bricks": "spruce_planks", "dark_oak_log": "spruce_log", "stone": "mossy_cobblestone", "andesite": "mossy_cobblestone",
+        "deepslate_tiles": "dark_oak_planks",
+        "deepslate_tile_stairs": "dark_oak_stairs", "deepslate_tile_slab": "dark_oak_slab"},
+}
+
+
+def restyle(swaps, name):
+    """The block {@code name} (a namespaced id) with a village style's {@code swaps} (WORKSHOP_STYLES, DAUB_STYLES)."""
+    short = name.split(":", 1)[1]
+    if not name.startswith("minecraft:"):
+        return name
+    if short in swaps:
+        return "minecraft:" + swaps[short]
+    for old, new in swaps.get("@wood", {}).items():
+        for prefix in ("", "stripped_"):
+            if short.startswith(prefix + old + "_"):
+                return "minecraft:" + prefix + new + short[len(prefix + old):]
+    return name
 
 
 def staffed_house(style, fit_out, job=None):

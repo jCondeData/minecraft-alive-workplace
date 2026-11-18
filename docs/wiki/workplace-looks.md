@@ -4,14 +4,18 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2
 
 ## 1. What a player sees
 
-- **Builder's Workshop**: a saltbox drawing studio (a short steep roof side, a long low one) beside a fenced yard with a
-  timber crane, its chain holding a block of stone, and stacks of stone and planks.
-- **Carpenter's Workshop**: a long saw shed, its west end a closed workshop, the rest open on braced posts over logs on
-  trestles; log piles before it (their ends to the street) and along the back, boards stood on end by the open gable.
+- **Builder's Workshop**: a rubble-stone workshop under a jettied brick-and-timber loft, one long slate roof sweeping
+  down over a plank store with cart doors, and a timber jib crane in the fenced materials yard, its hook lifting a block
+  of dressed stone off the stacks: the sign of the trade from down the street. Inside, the Blueprint Table with his
+  chest beside it by the hearth, three more chests and a lumber rack in the store, and the Builder's bed up the ladder
+  in the loft (rebuilt from scratch in 50.1).
+- **Carpenter's Workshop**: a cruck-framed shop under a steep roof with a dormer and a stone glue-stove flue; logs, a
+  sawhorse and plank stacks on the porch, an L of workbench round the crafting table, the Carpenter's bed in the loft
+  (rebuilt from scratch in 50.2). The village houses below keep their own looks.
 - **Kitchen**: a white plastered cookhouse under a hipped roof, a domed brick bread oven bulging out of its side (the
   smoker is its mouth inside) with a tall smoking flue, and herb beds either side of the path.
 - **Post Office**: a narrow two-story house, its timber upper floor jettied over the street with flower boxes, a red
@@ -37,7 +41,9 @@ Village houses (grown by world generation, one per job, each in its village's ow
 calcite on the plains; sandstone with flat roofs in the desert; acacia and white terracotta on the savanna; stone,
 calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
 
-- **Builder's Workshop**: a saltbox studio (a stepped flat roof in the desert) with a crane yard.
+- **Builder's Workshop**: the rebuilt workshop itself (50.1) in the village's materials (sandstone, terracotta and a red
+  sandstone roof in the desert; acacia and white terracotta on the savanna; stone, white nogging and stripped spruce in
+  the snow; spruce and mossy cobblestone under dark oak in the taiga), its bed downstairs by the table.
 - **Carpenter's Workshop**: a closed workshop and an open saw shed under one long roof, log piles front and back.
 - **Kitchen**: a hipped cookhouse with a domed brick oven and a tall flue on its side, herb beds before it.
 - **Post Office**: a stone ground floor, a timber upper floor jettied over the street, a dovecote on the ridge.
@@ -121,7 +127,9 @@ trade. The Ferry House kept its plot size so the shore rule and its tests stay a
 GameTests: `WorkplacesGameTests` (each workplace built by a builder from the player's own entry points, its job block
 taken by its worker), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`,
 `VillageGameTests.noVillageHouseHasATrapdoorInItsFrontWalkRow`, `VillageGameTests.everyVillageTypeCanGrowTheOtherHouses`,
-`VillageGameTests.everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`, `CountryWorkplacesGameTests`.
+`VillageGameTests.everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`, `CountryWorkplacesGameTests`,
+`BuildersWorkshopGameTests` (50.1: the rebuilt workshop's one table, bed, chests and crane; walked in to by the
+front door and up the ladder; built to DONE within 12,000 ticks; its village pieces' fixed cells in all five styles).
 
 Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21).
 

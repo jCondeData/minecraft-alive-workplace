@@ -1,0 +1,19 @@
+{
+  "name": "builders-workshop-b",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 51
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/builders_workshop_b/out/builders-workshop-b.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/builders_workshop_b/out/summary.json",
+  "size": [
+    18,
+    16,
+    11
+  ],
+  "blockCount": 894,
+  "paletteCount": 78,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/builders_workshop_b/recipe.mjs"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "starter-cottage-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, savanna look (ROADMAP 49.10a): the Veranda House and its Mud Tower. MC_BUILDER = the minecraft-builder skill folder. build writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

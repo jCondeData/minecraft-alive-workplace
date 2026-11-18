@@ -40,19 +40,25 @@ function windows(c, level, only = null) {
   for (const w of OPENINGS.windows) {
     if (!has(w, level) || (only && !only(w))) continue
     window(c, w.cells, w.out, null, { glass: P.glass })
-    if (w.brow === false) continue
     const top = w.cells.reduce((a, b) => (b[1] > a[1] ? b : a))
     const [ox, oz] = DIRS[w.out]
     const [x, y, z] = [top[0] + ox, top[1] + 1, top[2] + oz]
-    if (c.inside(x, y, z) && !c.get(x, y, z)) slab(c, x, y, z, P.brow, 'top') // a stone brow: shade over the glass
+    if (w.brow !== false && c.inside(x, y, z) && !c.get(x, y, z)) slab(c, x, y, z, P.brow, 'top') // a stone brow: shade over the glass
     // round 2: a proud sill under a ground-storey window (the front's are in the arcade)
     const low = w.cells.reduce((a, b) => (b[1] < a[1] ? b : a))
     const [sx, sy, sz] = [low[0] + ox, low[1] - 1, low[2] + oz]
-    if (w.out !== 'north' && low[1] === 2 && c.inside(sx, sy, sz) && !c.get(sx, sy, sz)) stair(c, sx, sy, sz, P.sillStair, OPP[w.out], 'top')
+    if (w.sill !== false && w.out !== 'north' && low[1] === 2 && c.inside(sx, sy, sz) && !c.get(sx, sy, sz)) stair(c, sx, sy, sz, P.sillStair, OPP[w.out], 'top')
   }
 }
 const furnish = (c, level) => { for (const f of FURNITURE) if ((f.from ?? 1) === level) furnitureParts[f.part](c, f) } // what this level adds
 const pots = (c, list) => { for (const [x, y, z, id] of list ?? []) c.set(x, y, z, id) }
+/** azalea: a little flowering azalea tree in its own soil at [x, y, z]: rooted dirt, the bush, then a crown of
+ *  leaves `crown` high. */
+const azalea = (c, [x, y, z], crown) => {
+  c.set(x, y, z, 'rooted_dirt')
+  c.set(x, y + 1, z, 'flowering_azalea')
+  for (let i = 0; i < crown; i++) c.set(x, y + 2 + i, z, i % 2 ? 'azalea_leaves' : 'flowering_azalea_leaves', { persistent: 'true', distance: '1', waterlogged: 'false' })
+}
 const jars = (c, list) => { for (const p of list ?? []) c.set(...p, 'decorated_pot', { facing: 'north', cracked: 'false', waterlogged: 'false' }) }
 
 // --- Level I: the sandstone house ------------------------------------------------------------------------------------
@@ -68,7 +74,7 @@ function levelOne(c) {
   // the hearth's stack on the west wall, its breast stepped, smoking over the coping
   const F = MASSES.flue
   chimney(c, F.x, F.z, 0, F.top, P.pier, { breast: { axis: 'z', top: F.breastTop, stair: P.step } })
-  // the windcatcher over the bedroom's back corner, flush with the west and back walls
+  // the windcatcher in the middle of the roof deck, over the bedroom's lamp
   const T = MASSES.tower
   windcatcher(c, T.x0, T.z0, T.y0, T.y1, { body: ashlar, corner: P.pier, cap: P.dressed, capTop: P.coping, slot: T.slot })
 
@@ -128,13 +134,14 @@ function levelOne(c) {
   // Pass 5, ground: potted cactus and dead bush at the corners, water jars by the portal
   pots(c, OUTSIDE.pots[1])
   jars(c, OUTSIDE.jars[1])
+  azalea(c, OUTSIDE.tree, 4)
 }
 
 // --- Level II: the parlour and its loggia ----------------------------------------------------------------------------
 function levelTwo(c) {
   const W = MASSES.parlour, L = W.loggia
   for (let z = 0; z <= 1; z++) c.clear(10, 0, z) // Level I's corner pot, where the loggia's floor goes
-  for (let y = 0; y <= MASSES.house.upperY; y++) c.clear(10, y, 1) // Level I's front east pilaster, in the loggia
+  for (let y = 0; y <= MASSES.house.upperY; y++) { c.clear(10, y, 1); c.clear(10, y, 9) } // Level I's east pilasters: in the loggia, behind the parlour
   for (let z = W.z0 - 1; z <= W.z1; z++) c.clear(10, MASSES.house.upperY, z) // the moulding, where the parlour stands
   // Pass 1: plinth and floor, mud-brick walls against the house's east wall, the deck and its coping
   plinth(c, W.x0 + 1, W.z0, W.x1, W.z1, P.plinth)
@@ -164,6 +171,7 @@ function levelThree(c) {
   // everything a block out of the house's back wall (moulding, sills, brows, pilasters, beam ends, pots) where the
   // back room and its terrace go
   c.clearBox(0, 0, H.z1 + 1, 10, H.deckY + 2, H.z1 + 1)
+  for (let y = 0; y <= H.upperY; y++) c.clear(H.x0 - 1, y, H.z1) // the west pilaster, now a pier between two volumes
   for (const [x, y, z] of [[3, 2, 9], [3, 3, 9]]) c.set(x, y, z, ashlar) // the box room's back window, now indoors
   for (const [x, y, z] of [[3, 4, 10], [7, 4, 10], [5, 8, 10], [3, 8, 10]]) c.clear(x, y, z) // their brows
   // Pass 1: plinth and floor, mud-brick walls against the house's back wall, the deck (the terrace) and its coping
@@ -186,6 +194,7 @@ function levelThree(c) {
   for (const x of G.rafters) for (let z = B.z0 + 1; z < G.posts[0][1]; z++) c.set(x, G.y, z, `${P.wood}_fence`)
   c.set(5, G.y - 1, 11, 'lantern', { hanging: 'true', waterlogged: 'false' })
   pots(c, OUTSIDE.terrace.pots)
+  azalea(c, OUTSIDE.terrace.tree, 1)
   jars(c, OUTSIDE.terrace.jars)
   // Pass 4, interior
   furnish(c, 3)

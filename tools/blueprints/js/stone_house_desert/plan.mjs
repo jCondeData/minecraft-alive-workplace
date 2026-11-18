@@ -42,6 +42,12 @@
 //        with a breast stepped in at y 4, the moulding kept clear of it, no pilaster beside it; 5 the beam ends thin
 //        spruce poles (fences) instead of logs, more planting (cactus and dead bush at every corner and side, tulips in
 //        the arcade, an azalea on the terrace). Full-height corner piers were tried and read as a keep's towers.
+//  Round 3 (the critic's round 2, BACK 4/4/4/3): 1 the windcatcher moved off the back corner to the middle of the
+//        roof and cut to two blocks over the coping (y 13), so the outline is a house with a roof vent, not a keep and
+//        turret; 2 the corner pilasters behind the parlour (II) and the back room (III) taken down, and the two small
+//        windows by the junction left plain (no brow, no sill), so no ledge meets a pier between two volumes; 3 a
+//        flowering azalea tree in its own soil at the front west corner (every level) and another in a planter on the
+//        terrace (III), its crown over the parapet.
 //  Left: the critic's pass (REBUILD.md) against the shipped Stone House; the Java side (49.10b ship step).
 //
 // Coordinates as the shipped house: x across the front (west 0 -> east), y up, z from the front (z = 0) to the back.
@@ -49,7 +55,7 @@
 //             bedroom y 6..8, the roof deck at y 9, the parapet y 10 with a smooth coping course at y 11.
 //   Portal    piers at x 4 and 6 on z 0 round the door, a lintel course at y 5, the oriel x 4..6 at z 0 above (y 5..8).
 //   Flue      the hearth's stack on the west wall at x 0, z 3 (breast z 2..4), its campfire over the coping.
-//   Tower     the windcatcher x 1..3, z 7..9 from the parapet (y 10) to its cap at y 15, slots at y 12..14.
+//   Tower     the windcatcher x 4..6, z 5..7 in the middle of the roof deck, y 10 to its cap at y 13 (two over the coping), slots y 11..12.
 //   Parlour   II: walls x 9..12, z 2..8 in mud brick, deck y 6, parapet y 7, coping y 8 (a full smooth course: a slab lip read as a roof round a pit to holes.py); the loggia x 9..12, z 0..1:
 //             piers at x 9 and 12 on z 0, two round arches, its roof deck at y 5.
 //   Back room III: walls x 1..9, z 9..13 in mud brick, deck y 6, parapet y 7, coping y 8 (a full smooth course: a slab lip read as a roof round a pit to holes.py); the roof a terrace under a
@@ -81,10 +87,11 @@ export const PALETTE = {
 export const MASSES = {
   house: { x0: 1, z0: 1, x1: 9, z1: 9, upperY: 5, deckY: 9 },
   arcade: { z: 0, piers: [1, 9], arches: [[2, 3], [7, 8]], roofY: 5 }, // round 2: a shallow arcade along the front
-  pilasters: [[1, 0], [9, 0], [0, 9], [1, 10], [9, 10], [10, 1], [10, 9]], // proud corners (none at x 0, z 1: the flue's breast)
+  pilasters: [[1, 0], [9, 0], [0, 9], [1, 10], [9, 10], [10, 1], [10, 9]], // proud corners (none at x 0, z 1: the flue's breast; II takes
+  // down x 10, z 9 and III x 0, z 9: once a block stands behind them they read as a pier between two volumes)
   portal: { piers: [4, 6], z: 0, top: 4, lintelY: 5, oriel: { x0: 4, x1: 6, z: 0, y0: 5, y1: 8 } },
   flue: { x: 0, z: 3, top: 12, breastTop: 4 },
-  tower: { x0: 1, z0: 7, y0: 10, y1: 15, slot: 3 },
+  tower: { x0: 4, z0: 5, y0: 10, y1: 13, slot: 2 }, // round 3: off the corner, two over the coping
   parlour: { x0: 9, z0: 2, x1: 12, z1: 8, deckY: 6, loggia: { x0: 9, x1: 12, z0: 0, z1: 1, piers: [9, 12], deckY: 5 } },
   backRoom: { x0: 1, z0: 9, x1: 9, z1: 13, deckY: 6,
     pergola: { posts: [[2, 12], [8, 12]], rafters: [2, 5, 8], y: 9 }, door: [5, 7, 9], step: [5, 6, 8] },
@@ -113,11 +120,11 @@ export const OPENINGS = {
     { name: 'chamber back west', cells: [[3, 6, 9], [3, 7, 9]], out: 'south' },
     { name: 'parlour front', cells: [[11, 2, 2], [11, 3, 2]], out: 'north', from: 2, brow: false }, // in the loggia
     { name: 'parlour east', cells: [[12, 2, 5], [12, 3, 5]], out: 'east', from: 2 },
-    { name: 'parlour back', cells: [[11, 2, 8]], out: 'south', from: 2 },
+    { name: 'parlour back', cells: [[11, 2, 8]], out: 'south', from: 2, brow: false, sill: false }, // by the junction: no ledges (round 3)
     { name: 'back room west', cells: [[1, 2, 11], [1, 3, 11]], out: 'west', from: 3 },
     { name: 'back room back west', cells: [[3, 2, 13], [3, 3, 13]], out: 'south', from: 3 },
     { name: 'back room back east', cells: [[7, 2, 13], [7, 3, 13]], out: 'south', from: 3 },
-    { name: 'back room east', cells: [[9, 2, 11]], out: 'east', from: 3 },
+    { name: 'back room east', cells: [[9, 2, 11]], out: 'east', from: 3, brow: false, sill: false },
   ],
 }
 
@@ -134,6 +141,8 @@ export const OUTSIDE = {
     3: [[0, 0, 13, 'potted_dead_bush'], [10, 0, 13, 'potted_cactus']],
   },
   jars: { 1: [[2, 1, 0], [8, 1, 0]], 2: [[10, 1, 1]], 3: [] },
-  terrace: { pots: [[2, 7, 10, 'potted_cactus'], [8, 7, 10, 'potted_orange_tulip'], [2, 7, 11, 'potted_flowering_azalea_bush']], jars: [[8, 7, 11]] },
+  terrace: { pots: [[2, 7, 10, 'potted_cactus'], [8, 7, 10, 'potted_orange_tulip'], [2, 7, 11, 'potted_flowering_azalea_bush']], jars: [[8, 7, 11]],
+    tree: [7, 7, 11] }, // round 3: a flowering azalea in a planter, its crown over the parapet
+  tree: [0, 0, 0], // round 3: a little flowering azalea tree in its own soil at the front west corner, every level
   vigas: { front: [2, 8], back: [2, 5, 8], west: [5, 8], east: [2, 5, 8], parlourBack: [] },
 }

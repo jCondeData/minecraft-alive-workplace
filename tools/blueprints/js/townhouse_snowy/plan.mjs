@@ -64,6 +64,10 @@
 //           ridge strip (the shoulders' second line dropped); 4 a verge on every gable's overhanging rake row: the block
 //           under each roof stair an upside-down stair facing the eave, so the edge runs at the pitch; 5 the plinth one
 //           dressed course of stone bricks.
+//  Round 3 (2026-11-18, the critic's last round): 1 the dormers dropped (they kept reading as cuts in the steep slope);
+//           the attic is lit from its two gables (furniture cells unchanged); 2 the back valley between the house and
+//           the wing ends in a short level eave block with no snow on it, no V hanging below the walls; 3 the verge from
+//           round 2 carries every rake; the gable walls behind it keep the 2:1 outline.
 //  Left for the critic: the white gable walls still step behind the verge (a 2:1 gable's outline).
 import {
   FURNITURE as TH_FURNITURE, OPENINGS as TH_OPENINGS, MASSES as TH_MASSES, BASEMENT, SIZES, IDS,

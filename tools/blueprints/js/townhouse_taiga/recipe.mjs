@@ -8,7 +8,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { IDS, SIZES, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  LiftedCanvas, mix, plinth, floor, wallPanel, window, door, doorway, gableRoof, gableWall, hipRoof, sideDormer, chimney, flight,
+  LiftedCanvas, mix, plinth, floor, wallPanel, window, door, doorway, gableRoof, gableWall, bargeTrim, hipRoof, chimney, flight,
   railingRun, furnitureParts, cellar, hatchLadder, quoins, stair, flowerBed, logPen, pentPorch, porchGable, post,
 } from '../parts/index.mjs'
 
@@ -61,14 +61,18 @@ export function drawLevel(level) {
   // --- Pass 2: roofs and gables ----------------------------------------------------------------------------------
   const roof = gableRoof(c, H.roof, P.roof)
   for (const z of [J, H.z1]) gableWall(c, 'z', z, [H.x0 + 1, H.x1 - 1], H.kneeTop + 1, roof.under, () => logX)
-  const Dm = MASSES.dormer
-  sideDormer(c, Dm.z, P.roof, { infill: [P.trimLog, { axis: 'z' }], glass: P.glass, cheek: P.roof.full }, { face: H.x0, y0: Dm.y0, depth: 4, overhang: false })
+  // round 3: no dormer (it read as a cut in the slope); the attic is lit from its gables. A slate verge under every
+  // overhanging rake, so each gable's edge and soffit run as one clean diagonal
+  for (const z of H.roof.along) bargeTrim(c, 'z', z, H.roof.across, roof.under, P.roof.stairs)
   if (level >= 2) {
     const wing = gableRoof(c, Wg.roof, P.roof, (x, y, z) => !c.get(x, y, z))
     // round 2: the wing's west eave lies under the house's wall but for its back overhang, where it hung as a lone
     // stair under the valley: the house's own eave closes the valley there
     for (let z = Wg.roof.along[0]; z <= Wg.roof.along[1]; z++)
       if (c.name(Wg.roof.across[0], Wg.roof.eaveY, z) === `minecraft:${P.roof.stairs}`) c.clear(Wg.roof.across[0], Wg.roof.eaveY, z)
+    for (const z of Wg.roof.along) bargeTrim(c, 'z', z, [Wg.x0, Wg.roof.across[1]], wing.under, P.roof.stairs)
+    // round 3: the back valley ends in a short level eave (no V hanging below the walls)
+    { const zb = H.roof.along[1]; c.set(Wg.x0, H.roof.eaveY, zb, P.roof.slab, { type: 'top', waterlogged: 'false' }); c.set(Wg.x0, H.roof.eaveY + 1, zb, P.roof.full) }
     for (const z of [Wg.z0, Wg.z1]) gableWall(c, 'z', z, [Wg.x0 + 1, Wg.x1 - 1], 10, wing.under, () => logX)
   }
 

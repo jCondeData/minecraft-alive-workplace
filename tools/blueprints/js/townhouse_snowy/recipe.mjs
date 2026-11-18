@@ -8,7 +8,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { IDS, SIZES, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  LiftedCanvas, mix, plinth, floor, wallPanel, window, door, doorway, flaredGableRoof, gableWall, sideDormer,
+  LiftedCanvas, mix, plinth, floor, wallPanel, window, door, doorway, flaredGableRoof, gableWall,
   pyramidRoof, flight, railingRun, furnitureParts, cellar, hatchLadder, quoins, stringCourse, stair, snowLoad, snowSkirt,
   stormPorch, deepWindow, oriel, wideStack,
 } from '../parts/index.mjs'
@@ -47,11 +47,7 @@ export function drawLevel(level) {
   // --- Pass 2: roofs and gables ----------------------------------------------------------------------------------
   const roof = flaredGableRoof(c, { ...H.roof, steep: true }, P.roof, P.roof.stairs)
   for (const z of [H.z0, H.z1]) gableWall(c, 'z', z, [H.x0, H.x1], H.kneeTop, roof.under, () => wall)
-  // two gabled dormers on the long west slope lighting the attic (calcite faces between birch posts)
-  const Dm = MASSES.dormers
-  for (const z of Dm.at) {
-    sideDormer(c, z, P.roof, { infill: [P.trim, { axis: 'z' }], glass: P.glass, cheek: P.roof.full }, { face: H.x0, y0: Dm.y0, overhang: false })
-  }
+  // round 3: no dormers (they read as cuts in the steep slope); the attic is lit from its gables
   let wing = null
   if (level >= 2) {
     wing = flaredGableRoof(c, { ...Wg.roof, steep: true }, P.roof, P.roof.stairs, (x, y, z) => !c.get(x, y, z))
@@ -162,6 +158,8 @@ export function drawLevel(level) {
       stair(c, x, y, z, P.roof.stairs, out, 'top')
     }
   }
+  // round 3: the back valley between the house and the wing ends in a short level eave (no V hanging below the walls)
+  if (level >= 2) { const zb = H.roof.along[1]; c.clear(Wg.x0, H.roof.eaveY, zb); c.set(Wg.x0, H.roof.eaveY + 1, zb, P.roof.full) }
   for (const z of H.roof.along) verge(H.roof.across[0], H.roof.across[1], z)
   if (level >= 2) for (const z of Wg.roof.along) verge(Wg.roof.across[0] + 1, Wg.roof.across[1], z)
 
@@ -171,11 +169,11 @@ export function drawLevel(level) {
   // valley between the house and the wing
   const bodyEave = (x, y, z) => ((x === H.x0 || x === H.x1) && y === H.roof.eaveY + 1) ||
     (level >= 2 && (x === Wg.x0 || x === Wg.x1) && y === Wg.roof.eaveY + 1)
-  const D = MASSES.dormers, dormerCell = (x, y, z) => x <= H.x0 + 2 && D.at.some(dz => Math.abs(z - dz) <= 2) && y > D.y0
   const valley = (x, y, z) => level >= 2 && x === Wg.x0 && y === H.roof.eaveY && z >= Wg.roof.along[0] && z <= Wg.roof.along[1] ||
     level >= 2 && x === Wg.roof.across[0] && y === Wg.roof.eaveY // the wing's west kick: only its back corner shows
   snowLoad(c, P.roof, P.snow, { eaves: true, tread: () => false,
-    skip: (x, y, z) => dormerCell(x, y, z), eaveSkip: (x, y, z) => bodyEave(x, y, z) || valley(x, y, z) || dormerCell(x, y, z) })
+    skip: (x, y, z) => level >= 2 && x === Wg.x0 && z === H.roof.along[1] && y === H.roof.eaveY + 1, // the valley's level eave: no lone snow
+    eaveSkip: (x, y, z) => bodyEave(x, y, z) || valley(x, y, z) })
   snowSkirt(c, P.snow, OUTSIDE.bare)
   return { c, dug }
 }

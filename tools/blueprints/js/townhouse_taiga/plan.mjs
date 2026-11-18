@@ -62,6 +62,10 @@
 //           checkerboard); 2 the dormer flush with its face, slate-hung cheeks, a stripped log over the panes; 3 the back
 //           stack's breast stands whole to y 8 under mossy slabs, no stair pieces at the jetty line; 4 a king post under the
 //           tower's peak (15, 19..20, 15), so its top block stands on wood; 5 a window in the tower's middle storey (east).
+//  Round 3 (2026-11-18, the critic's last round): 1 the dormer dropped (it kept reading as a cut in the slope); the
+//           attic is lit from its gables (furniture cells unchanged); 2 the back valley ends in a level eave (a top slab
+//           under a tile), and every wing rake has a slate verge; 3 a slate verge (upside-down stairs) under each of the
+//           house's overhanging rakes, front and back, so each edge runs as one diagonal.
 //  Left for the critic: the porch's four log posts are heavy.
 import {
   FURNITURE as TH_FURNITURE, OPENINGS as TH_OPENINGS, MASSES as TH_MASSES, BASEMENT, SIZES, IDS,

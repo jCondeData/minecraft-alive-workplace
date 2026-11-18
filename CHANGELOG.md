@@ -127,6 +127,10 @@ asks for the steps, `latest.log` and any crash report).
   village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
   blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and
   a Deployer outside places nothing inside. Machines inside the village work as before (B808, B993, B1033, B1015).
+- A stranger's Create funnel, chute or Mechanical Arm outside a protected village no longer takes items out of (or puts
+  them into) its chests and depots, and a stranger's Deployer inside it can't rename the Village Hall (B994, B1015,
+  B844). A Deployer nobody placed no longer becomes the owner of a Village Hall it sets down or of a Mailbox or Shop
+  Counter it clicks; one a player placed still acts for that player (B843).
 - With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
   and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
   bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.

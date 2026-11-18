@@ -554,6 +554,14 @@ point of interest, saved by Minecraft).
 - B1015: `BlockItemMixin` refuses `BlockItem.place` where the placing player may not change things, judged where the
   block lands, so a machine's stand-in player (Create's Deployer) can't place inside a village its owner may not
   change; a real player's click was already judged there (B741).
+- B994, B1015 (Create): item transport is judged where the items are. Create's inventory behaviour (funnels, chutes)
+  sees no inventory at a block inside a protected village it stands outside of, and a Mechanical Arm outside takes
+  nothing from and puts nothing onto its points inside; both are asked at each use, so switching protection takes
+  effect at once.
+- B843, B844: machines that act as players (fake players, `Platform.isFakePlayer`) are judged by whom they act for
+  (`StandIns`; Create's Deployer acts for the player who placed it, one nobody placed for nobody). One acting for
+  nobody never becomes the owner of a hall, mailbox, shop counter or storehouse, and a stranger's machine at a
+  protected hall gets a refusal instead of the price board, so it can't go on to rename it.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 
@@ -568,7 +576,8 @@ point of interest, saved by Minecraft).
   hall's side; how the head count splits shared villagers was not checked for this page.
 - The hall's numbers are up to 600 ticks (30 seconds) old.
 - Nothing in the mod changes with the seasons except festivals, the Festival Cup and the Harvest Idol.
-- A hall placed by a machine has no owner until a player turns its protection on.
+- A hall placed by a machine nobody placed has no owner until a player turns its protection on; one set down by a
+  player's own Deployer is that player's.
 - Free job blocks: a villager given a block walks there with the usual brain; at night or in a festival their
   schedule may take them elsewhere first. Blocks past the 36th aren't clickable until nearer ones fill. Only grown
   villagers in the hall's circle are offered.

@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.store;
 
 import com.mojang.serialization.MapCodec;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
+import io.github.jcondedata.aliveworkplace.hall.StandIns;
 import io.github.jcondedata.aliveworkplace.mc.Interact;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -80,8 +81,8 @@ public class StorehouseBlock extends BaseEntityBlock {
 	@Override
 	public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
 		super.setPlacedBy(level, pos, state, placer, stack);
-		if (placer instanceof ServerPlayer player && level.getBlockEntity(pos) instanceof StorehouseBlockEntity storehouse) {
-			storehouse.setOwner(player.getUUID(), player.getGameProfile().getName());
+		if (placer instanceof ServerPlayer player && StandIns.mayOwn(player) && level.getBlockEntity(pos) instanceof StorehouseBlockEntity storehouse) {
+			storehouse.setOwner(StandIns.person(player), StandIns.name(player)); // B843: never a machine acting for nobody
 		}
 	}
 

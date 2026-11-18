@@ -520,16 +520,19 @@ Post its name and finder (B986).
 Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
 mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
 Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a player breaking it gets (a named
-hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
-becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
-deployer can place blocks in and rename the hall of a protected village (B844).
+hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him (his hall set down is his);
+one nobody placed acts for nobody, so a hall it sets down stays unowned until a player claims it, and an unowned
+Mailbox, Shop Counter or Storehouse it places or clicks stays unowned (B843). A stranger's deployer in a protected
+village can do only what the stranger may: it places no block and renames, opens or hands nothing in at the hall
+(B844).
 Create's machines keep out of a protected village the way a vanilla piston does (B808, B993, B1033): one standing
 outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing, a
 Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or saw rides on it), a bearing's arm
 sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
 setting them down there, and a Deployer places no block inside (B1015). The same machines inside the village, or
-with its protection off, work as usual. A Create funnel outside on the side of a chest in the village's last column
-empties it (B994), and a Mechanical Arm outside takes items off a depot in it (B1015).
+with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
+inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
+onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Portable Storage Interface.
 
 ## Proof
 
@@ -586,8 +589,11 @@ empties it (B994), and a Mechanical Arm outside takes items off a depot in it (B
   `QaCreateMachinesOnOurBlocks1102eCompatTests` (lane E's QA, 15): funnels and chutes on a counter, mailbox and drop
   box, and a drill breaking each of the mod's item-holding blocks, each against a control (a chest, a player).
   `QaCreateDeployerOnOurThings1102eCompatTests` (lane E's QA, 7): a deployer an owner placed sets down his hall, names a
-  hall and a villager, hands in an insignia once; a stranger's stick changes nothing. The failing cases (B843, B844)
-  are on `tests/create-deployer-1102`.
+  hall and a villager, hands in an insignia once; a stranger's stick changes nothing.
+  `QaCreateDeployerOnOurThings1102eBugCompatTests` (5): a deployer nobody placed owns nothing it sets down or clicks
+  (B843), and a stranger's deployer in a protected village places nothing and can't rename the hall (B844).
+  `QaCreateFunnelAtProtectedVillage1107eBugCompatTests` (B994) and `QaCreateMoreMachinesProtection1107eBugCompatTests`
+  (B1015: saw, deployer and arm at the edge), with their open-village controls.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,

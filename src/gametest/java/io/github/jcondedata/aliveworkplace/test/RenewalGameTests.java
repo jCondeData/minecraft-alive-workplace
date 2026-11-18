@@ -489,7 +489,9 @@ public class RenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.Fab
 			helper.assertTrue(renewals.size() == 1, "renewal proposals: " + renewals.size());
 			helper.assertTrue(Renewals.active(level, v.hall()).isEmpty(), "started without asking");
 			String title = renewals.get(0).name().getString();
-			helper.assertTrue(title.matches("Renew the old house \\d+ blocks [a-z-]+ as a Starter Cottage"), "the proposal reads \"" + title + "\"");
+			// 49.3: the rebuilt Starter Cottage (12 deep) doesn't fit a plains small house's plot (7 deep, 3 to grow back), the
+			// Stone House (11) neither: the homes list's Terrace (10) does
+			helper.assertTrue(title.matches("Renew the old house \\d+ blocks [a-z-]+ as a Terrace"), "the proposal reads \"" + title + "\"");
 			helper.assertTrue(renewals.get(0).reason().getString().equals("An old village house no builder built, in a zone to renew"),
 				"the reason reads \"" + renewals.get(0).reason().getString() + "\"");
 			// the switch turned off: the survey has nothing to show, and nothing more is proposed

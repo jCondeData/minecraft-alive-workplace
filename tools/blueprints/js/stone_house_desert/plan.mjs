@@ -79,7 +79,7 @@ export const PALETTE = {
   plinth: 'smooth_sandstone', coping: 'smooth_sandstone_slab', dressed: 'smooth_sandstone', pier: 'cut_sandstone',
   carved: 'chiseled_sandstone', frieze: 'terracotta', brow: 'smooth_sandstone_slab', step: 'sandstone_stairs',
   arch: 'smooth_sandstone_stairs', deck: 'smooth_sandstone', floor: 'smooth_sandstone', upperFloor: 'spruce_planks',
-  viga: 'spruce_fence', beam: 'stripped_spruce_log', moulding: 'terracotta_stairs', sillStair: 'smooth_sandstone_stairs', lattice: 'dark_oak_trapdoor', latticePost: 'dark_oak_log', latticeRoof: 'dark_oak_slab',
+  viga: 'spruce_fence', beam: 'stripped_spruce_log', moulding: 'smooth_red_sandstone_stairs', sillStair: 'smooth_sandstone_stairs', lattice: 'dark_oak_trapdoor', latticePost: 'dark_oak_log', latticeRoof: 'dark_oak_slab',
   wood: 'spruce', glass: 'glass_pane', partition: 'spruce_planks',
   cellarWall: [['sandstone', 5], ['smooth_sandstone', 2], ['cut_sandstone', 1]], cellarFloor: 'smooth_sandstone',
 }

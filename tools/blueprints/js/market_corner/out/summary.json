@@ -4,16 +4,16 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 4
+    "updatedBlocks": 19
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/out/market-corner.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/out/summary.json",
   "size": [
+    9,
     8,
-    8,
-    8
+    9
   ],
-  "blockCount": 229,
-  "paletteCount": 34,
+  "blockCount": 317,
+  "paletteCount": 39,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/recipe.mjs"
 }

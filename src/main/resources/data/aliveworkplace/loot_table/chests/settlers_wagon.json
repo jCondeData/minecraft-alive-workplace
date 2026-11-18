@@ -39,7 +39,7 @@
       "rolls": 1,
       "entries": [{ "type": "minecraft:item", "name": "aliveworkplace:blueprint",
         "functions": [{ "function": "minecraft:set_components",
-          "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage", "size": [11, 12, 10] } } }] }]
+          "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage", "size": [9, 11, 12] } } }] }]
     },
     {
       "rolls": 1,

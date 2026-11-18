@@ -31,6 +31,30 @@ asks for the steps, `latest.log` and any crash report).
   "the Lantern Press": a tall brick hall with a dark-oak shopfront and a glazed lantern on the ridge that drops a column
   of daylight onto the press; Level II adds a reading room lined with bookshelves beside it. Builds already standing
   keep the drawing they were built from until you refresh them; the village tailor's and print shops are unchanged.
+- **The Artisan's House is rebuilt from scratch** (49.8): a potter's house. Its gable faces the street, a white
+  plaster floor juts out over a stone workroom, and beside it stands a brick bottle kiln that is the house's chimney.
+  Downstairs are the potter's bench, a dining table for four and a kitchen corner. Upstairs are the couple's two beds
+  under the street windows and a sitting room. Level II adds the journeyman's room at the back with the third bed, and
+  a yard for drying pots. Level III digs a clay cellar under the workroom, down a ladder through a hatch. Houses already
+  standing keep their look until you press Refresh on the Village Hall's Repairs page.
+- **The Weaver's Cottage is rebuilt from scratch** (49.8): a hill weaver's stone house with the loom behind a long
+  mullioned window and a second band of lights over it for the wool loft, up a stair inside. The sheep fold leans on its
+  gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold
+  lifts fleeces to a hatch in the loft. Level II walls a dye garden behind, rows of flowers by color and a frame of dyed
+  cloth. Cottages already standing keep their look until you press Refresh on the hall's Repairs page.
+- **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
+  saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
+  the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a
+  two-story wing to the road with two more beds upstairs, Level III leans a stone kitchen with its own door on the wing,
+  and Level IV digs a store cellar under the hall. Cottages already standing keep their look until you press Refresh on
+  the Village Hall's Repairs page.
+- **The Noble's Manor is rebuilt from scratch** (49.7): a brick hall-and-cross-wing house dressed in cut stone. A porch
+  tower under a steep pyramid roof leads through an arch into a black-and-white hall with the grand stair, the hearth and
+  a dining table for nine; a crow-gabled west wing holds the parlor and the kitchen, with two chambers and their oriels
+  above, and the Long Gallery and the tower study are up the stair. Manor II walls in a knot garden behind the hall,
+  Manor III completes the front with the east wing's double-height ballroom and its musicians' gallery (where the
+  Noble's Ball gathers), and Manor IV digs a wine cellar under the kitchen. Manors already standing keep their look until
+  you press Refresh on the Village Hall's Repairs page.
 - **The Ferry House is rebuilt from scratch** (50.5): a ferry station. Passengers wait in a stone waiting room with a
   stove, a table, a bench and the station clock; the Ferryman sleeps in the white plastered room above, and a lookout
   cupola on the slate roof carries the ferry light. A boarded landing runs the whole front under a canopy with a teal
@@ -152,6 +176,9 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- **Refresh to the latest look** now digs and builds what a redrawn build has under the ground where its older drawing
+  had nothing: an Artisan's House III refreshed to the Kiln House kept solid ground where the cellar now runs under the
+  kiln, its new walls and floor unbuilt. Chests, beds in use and job blocks there stay, as everywhere in a refresh.
 - With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
   andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
 - Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected

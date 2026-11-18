@@ -1,0 +1,9 @@
+{
+  "name": "ranch",
+  "private": true,
+  "type": "module",
+  "description": "The Ranch (ranch, ranch_2; ROADMAP 49): a rebuild family (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes both levels as candidates.",
+  "scripts": {
+    "build": "sh build.sh"
+  }
+}

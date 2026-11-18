@@ -86,8 +86,12 @@ How everything in the mod works, in plain words: written for the owner first, th
 - [Grander homes](grander-homes.md): home grades, the Artisan's House, the Burgher's Townhouse and the Noble's Manor
   (its garden and ballroom), the households that want a grander home, the builders who sell them and the Steward's
   rules (1.8).
+- [The Starter Cottage](starter-cottage.md): every village's first home (four levels), rebuilt from scratch with the rebuild kit, the owner's pick of two designs (49.3).
 - [The Stone House](stone-house.md): the village's second kind of home (four levels), rebuilt from scratch with the rebuild kit (49.4).
 - [The Burgher's Townhouse](townhouse.md): the grade II home for Burghers (four levels), rebuilt from scratch with the rebuild kit (49.5).
+- [The Noble's Manor](manor.md): the grade III home for Nobles and the Noble's Ball's ballroom (four levels), rebuilt from scratch with the rebuild kit (49.7).
+- [The Artisan's House](artisans-house.md): the grade I home for Artisans (three levels), a potter's house beside its bottle kiln, rebuilt from scratch with the rebuild kit (49.8).
+- [The Weaver's Cottage](weavers-cottage.md): the Shepherd's stone cottage with its long weaver's window, wool loft and sheep fold, and a dye garden at Level II, rebuilt from scratch with the rebuild kit (49.8).
 - [The Terrace](terrace.md): several households under one roof, two homes and four beds (Terrace II: three homes, six beds), rebuilt from scratch with the rebuild kit (49.6).
 - [The Daub House](daub-house.md): the Level I home of 36.23 (the owner's pick) in the Blueprint Table, in vanilla villages of all five styles and in the Steward's plans, built with the rebuild kit (49.2).
 - [Graveyards](graveyards.md): the Undertaker lays the village's graves to rest in its Graveyard, in rows, or in a plot by the hall (B222).

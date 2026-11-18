@@ -22,7 +22,7 @@ workers' chests and job blocks stay where they were.
 | Barracks III | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the east wall |
 | Research Lab III | a lower lab: bookshelves, a stone bench of specimens (amethyst, tinted jars, bone, potted cactus and fungus), chests of samples, a work table with candles | ladder by the lab's front wall |
 | Jeweler's Workshop III | a vault: gold, amethyst, raw gold and emerald caged behind bars with chests of cut stones on them, chests of rough stones, a sorting table | ladder in the shop's north-west corner |
-| Artisan's House III | a storeroom: chests two high, bolts of cloth, crates, a packing table | ladder in the back corner of the hall |
+| Artisan's House III | a clay cellar (rebuilt in 49.8): chests along the front wall with barrels on them, casks of slip, clay stock, a sorting table | ladder under a hatch in the workroom floor |
 
 **Dig the cellar.** A finished building whose blueprint now has a cellar, but whose cellar is still mostly ground
 (more than half of the spots the drawing leaves open down there are solid), is offered "Dig the cellar" where its

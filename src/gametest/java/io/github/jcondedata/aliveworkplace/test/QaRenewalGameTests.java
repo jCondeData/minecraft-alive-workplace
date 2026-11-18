@@ -459,7 +459,9 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		Resource ours = files.get(homes);
 		helper.assertTrue(ours != null, "setup: no " + homes);
 		Map<ResourceLocation, Resource> withPack = new HashMap<>(files);
-		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:no_such_building\", \"aliveworkplace:starter_cottage\"]}"));
+		// 49.3: a renewal keeps the old front's line and may grow only 3 blocks back, so on a plains small house (7 deep) only a
+		// home at most 10 deep fits: the rebuilt Starter Cottage (12) and Stone House (11) don't, the Terrace (10) does
+		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:no_such_building\", \"aliveworkplace:terrace\"]}"));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/broken.json"), json(ours.source(), "{\"kind\": \"home\", \"buildings\": [ "));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/no_kind.json"), json(ours.source(), "{\"buildings\": [\"aliveworkplace:stone_house\"]}"));
 		withPack.put(ResourceLocation.fromNamespaceAndPath("qa", RenewalLists.FOLDER + "/no_buildings.json"), json(ours.source(), "{\"job\": \"minecraft:mason\", \"buildings\": []}"));
@@ -476,7 +478,7 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 			BoundingBox old = OldHousesGameTests.placeVanilla(helper, SMALL_HOUSE, HOUSE);
 			OldHouses.House house = measure(v, beds(level, old).get(0));
 			Optional<Renewals.Replacement> r = Renewals.replacement(level, v.hall(), house);
-			helper.assertTrue(r.isPresent() && BlueprintStyles.base(r.get().blueprint()).getPath().equals("starter_cottage"),
+			helper.assertTrue(r.isPresent() && BlueprintStyles.base(r.get().blueprint()).getPath().equals("terrace"),
 				"past the unknown building the next wasn't taken: " + r.map(Renewals.Replacement::blueprint));
 		} finally {
 			listener.onResourceManagerReload(real);
@@ -502,7 +504,8 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 		ResourceLocation fletcher = ResourceLocation.fromNamespaceAndPath("aliveworkplace", RenewalLists.FOLDER + "/fletcher.json");
 		Resource ours = files.get(homes);
 		Map<ResourceLocation, Resource> withPack = new HashMap<>(files);
-		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:arena_3\", \"aliveworkplace:starter_cottage\"]}"));
+		// 49.3: the Terrace is the home that fits the small house's plot (see qaBrokenListsAndUnknownBuildingsAreSkipped)
+		withPack.put(homes, json(ours.source(), "{\"kind\": \"home\", \"buildings\": [\"aliveworkplace:arena_3\", \"aliveworkplace:terrace\"]}"));
 		withPack.put(fletcher, json(ours.source(), "{\"job\": \"minecraft:fletcher\", \"buildings\": [\"aliveworkplace:arena_3\", \"aliveworkplace:fletchers_lodge\"]}"));
 		java.lang.reflect.Constructor<RenewalLists> c = RenewalLists.class.getDeclaredConstructor();
 		c.setAccessible(true);
@@ -522,7 +525,7 @@ public class QaRenewalGameTests implements net.fabricmc.fabric.api.gametest.v1.F
 			Optional<Renewals.Replacement> r2 = Renewals.replacement(level, v.hall(), shop);
 			io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.info("qaRenewTooBig: home {} -> {}, shop {} -> {}", home.box(),
 				r1.map(Renewals.Replacement::placement), shop.box(), r2.map(Renewals.Replacement::placement));
-			helper.assertTrue(r1.map(r -> r.blueprint().getPath().equals("starter_cottage")).orElse(false), "the home became " + r1.map(Renewals.Replacement::blueprint));
+			helper.assertTrue(r1.map(r -> r.blueprint().getPath().equals("terrace")).orElse(false), "the home became " + r1.map(Renewals.Replacement::blueprint));
 			helper.assertTrue(r2.map(r -> r.blueprint().getPath().equals("fletchers_lodge")).orElse(false), "the fletcher house became " + r2.map(Renewals.Replacement::blueprint));
 		} finally {
 			listener.onResourceManagerReload(real);

@@ -69,7 +69,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * Setup and helpers are {@link QaBasementGround1104GameTests}'s; failing edges (waterlogged blocks) are in QaBasementFluids1104fBugTests on the tests/basement-fluids-1104f branch.
  */
 public class QaBasementFluids1104fGameTests implements FabricGameTest {
-	/** A spot in the middle of the Cottage IV's basement room (relative to the origin), drawn as air (5, -2, 5 is a table). */
+	/** A spot in the middle of the Cottage IV's basement room (relative to the origin), drawn as air (in the rebuilt cellar of 49.3 too). */
 	static final BlockPos ROOM_MIDDLE = new BlockPos(6, -2, 5);
 
 	// ------------------------------------------------------------------------------------------ pockets in the room

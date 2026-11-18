@@ -23,6 +23,14 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
+  stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
+  trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The
+  Tinker's Workshop is a tower on the street under a copper cap with the workshop behind it; Level II lifts the tower a
+  storey with a stores loft and a lamp room. The Brass Foundry (with Create) is a tall brick hall with a glazed gear
+  lantern on its ridge where the gears turn in daylight, a copper tank on a brick tower feeding the wheel, and the
+  Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
+  drawing they were built from until you refresh them.
 - **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
   jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
   crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.

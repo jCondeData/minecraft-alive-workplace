@@ -1,0 +1,19 @@
+{
+  "name": "tinkers-workshop-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 44
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tinkers_workshop/out/tinkers-workshop-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tinkers_workshop/out/summary.json",
+  "size": [
+    13,
+    16,
+    13
+  ],
+  "blockCount": 852,
+  "paletteCount": 60,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/tinkers_workshop/recipe.mjs"
+}

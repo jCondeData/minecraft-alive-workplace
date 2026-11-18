@@ -33,7 +33,7 @@ Cellars from Level 1:
   behind. Under it the **freezer**: walls of packed ice, a blue-ice path down the floor, sides of meat and bones on
   chains along the walls, chests of frozen stock, snow heaped in a corner. The ice never melts (packed and blue ice
   don't).
-- **Smithy** (and Smithy II): a **coal store** down a ladder by the forge: heaps of coal behind boards, raw iron, chests of ore.
+- **Smithy** (and Smithy II): a **coal store** down a stair from the forge hall: bins of coal and ore, lanterns and a cart run.
 - **Kitchen** (the Steward's workplace): a **cold larder** down a ladder inside the door: a stone counter under sides of
   meat and pumpkins, a shelf of jars, chests of flour and salt.
 - **Storehouse** (and II and III): a **vault** down a ladder beside the loft's: chests two high round a stone room, a

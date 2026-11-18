@@ -43,3 +43,6 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './tinker.mjs' // hipCap, skirtRing, doubleChest, lampOn, railSpur (towers with hip caps, workshops)
+export * from './smithy.mjs' // taperedStack, quenchTrough, furnaceMouth, clumped (furnace stacks, quench water, a furnace in a wall, patchy rubble)
+export * from './foundry.mjs' // shaftRun, gearbox, cog, waterWheel, mixerStack, settledWater, roofLantern, bandedTank (Create foundries)

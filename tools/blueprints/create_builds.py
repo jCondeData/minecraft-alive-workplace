@@ -193,7 +193,8 @@ FOUNDRY_FRAME = "stripped_dark_oak_log"
 
 
 def brass_foundry():
-    """13 x 14 x 11 (ROADMAP 39.8): the Brass Foundry. A nine-square brick hall on a stone-brick plinth, framed in dark
+    """The OLD drawing (ROADMAP 50.3: the live brass_foundry.nbt now comes from the rebuild kit, tools/blueprints/js/brass_foundry; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 14 x 11 (ROADMAP 39.8): the Brass Foundry. A nine-square brick hall on a stone-brick plinth, framed in dark
     oak under a deepslate gable, a brick chimney smoking at the back corner; the water wheel on its west wall (header
     tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running out to a depot by the door,
     and from the belt's pulley a gearbox sends the drive up a shaft to two stacked steps of large and small cogwheels

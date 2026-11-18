@@ -190,6 +190,13 @@ public class QaHallClasses1027GameTests implements net.fabricmc.fabric.api.gamet
 		QaClassHallGameTests.marry(tomas, pia, true);
 		QaClassHallGameTests.eats(tomas, PLAIN_MEALS);
 		QaClassHallGameTests.eats(pia, PLAIN_MEALS);
+		// B621: the couple already counted at today's dawn. The hall's first round lists the day's households and its next
+		// round counts them; when that next round (its turn every 600 ticks, set by the hall's position) fell in this
+		// test's two ticks, the dawn gave Pia her household's class, as it should, and her row read "Burgher · ...".
+		long today = Chronicle.day(helper.getLevel());
+		for (Villager v : List.of(tomas, pia)) {
+			io.github.jcondedata.aliveworkplace.registry.ModAttachments.CLASS_PROGRESS.set(v, new SocialClasses.Progress(0, 0, 0, today));
+		}
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		helper.runAfterDelay(2, () -> {
 			ChoiceMenu menu = QaClassHallGameTests.open(helper, player);

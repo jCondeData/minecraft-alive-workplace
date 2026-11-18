@@ -1,12 +1,14 @@
 // The rebuild kit's parts library (ROADMAP 49.1, tools/blueprints/REBUILD.md): import everything from here.
 //   canvas    Canvas, LiftedCanvas (a basement under y 0), mix, DIRS, OPP, stair/slab/trapdoor
-//   frames    plinth, steppedPlinth, floor, post, posts, beamRing, cellar
+//   frames    plinth, steppedPlinth, floor, post, posts, beamRing, cellar, brackets
 //   walls     wallPanel, window, door, doorway, quoins, stringCourse
-//   roofs     gableRoof, flaredGableRoof, catslideRoof, pentice, gableWall, bargeTrim, dormer, crossGableRoof, louvre   (roofs and gables)
+//   roofs     gableRoof, flaredGableRoof, catslideRoof, pentice, pyramidRoof, gableWall, bargeTrim, dormer,
+//             evenGableRoof (a narrow house's two-stair ridge, gutters over party walls), crowGable (stepped parapet),
+//             crossGableRoof, louvre   (roofs and gables)
 //   hearths   chimney, hearthFire
 //   kitchens  kitchenParts (counter, stove, worktop, pantry, shelf, plates)
 //   stairs    flight, stairwell, lining, hatchLadder                     (stairs and lofts)
-//   porches   hood, porch, flowerBed, woodpile
+//   porches   hood, porch, flowerBed, woodpile, doorCanopy
 //   railings  railing, railingRun
 //   cellars   lampPost                                         (outdoor lights)
 //   water     roundCurb, pool, wellShaft, aqueduct, octCells, ringCells, inward, bowl (wells, fountains, cisterns)
@@ -16,6 +18,7 @@
 //   planters  plantFlower, tieredBed, boxBoards, beamRun, kneeBrace, hangingLantern   (planters, pergolas)
 //   furniture furnitureParts (every room piece, kitchens included; couch and blinds)
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
+//   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
@@ -44,6 +47,7 @@ export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafC
 export * from './carpenter.mjs'
 export * from './mason.mjs'
 export * from './mill.mjs'
+export * from './brickwork.mjs' // quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick houses with stone dressings)
 export * from './camps.mjs' // campPot, grainBed (the Camp Cook's pot and a raised, watered grain bed)
 export * from './village_hall_b_moot.mjs' // stretchedLevel, stretchedTent, octRing, ringFace, wallBench, hangingPot, bellPorch (moot halls: stretched octagons)
 export * from './village_hall_a_civic.mjs' // meetingBell, civicParts (hangingPot, bench), wallHearth, belfry, needleSpire, pewRows, civicDormer
@@ -53,11 +57,13 @@ export * from './storehouse_a_store.mjs' // chestRack, tallyDesk (storehouses: c
 export * from './storehouse_b_warehouse.mjs' // chestStack, countingDesk, crowSteps, hoistArm (canal warehouses: paired chests, the desk, stepped gables, hoists)
 export * from './schoolhouse_school.mjs' // schoolBellcote, blackboard, lectern (schoolhouses: the bell-cote, the board, the lectern)
 export * from './school_dojo.mjs' // sparringRing, moonWindow, strawTarget (the Move Tutor's School, 49 A: a sparring ring in the yard's paving, a round gable window, practice targets)
-export * from './library_nave.mjs' // buttress, shelfWall, enchantRing, pyramidRoof, lancet (the Lamplit Nave library, 49)
+export * from './library_nave.mjs' // buttress, shelfWall, enchantRing, boxPyramidRoof, lancet (the Lamplit Nave library, 49)
 export * from './leaders_hall_arena.mjs' // piers, dais, standard (challenge halls: proud piers, the leader's dais, banner poles)
 export * from './guildhall_arcade.mjs' // arcadeRun, jettyCorbels (guildhalls: an open arcade under a jettied hall)
 export * from './map_room_tower.mjs' // corbelRing, compassRose, lookoutRail, ladderShaft, batter (towers: a jettied lookout on corbels, a floor compass rose, a ladder shaft, a splayed foot)
 export * from './trade_hall_ball.mjs' // roundShaft, ballCap, steppedCap (the Ball Tower trade hall: a chamfered tower and the ball on it)
+export * from './tower_depth.mjs' // cornerPiers, stairPlinth, towerBrackets, mapWall (towers: proud corner piers, a stepped plinth, brackets under an overhang, a banner map wall)
+export * from './trade_hall_frame.mjs' // proudFrame, shaftBand, footSkirt, seatCrossGable (a frame proud of its infill, a band round a shaft, a stone skirt, a cross-gable seated in a slope)
 export * from './tinker.mjs' // hipCap, skirtRing, doubleChest, lampOn, railSpur (towers with hip caps, workshops)
 export * from './smithy.mjs' // taperedStack, quenchTrough, furnaceMouth, clumped (furnace stacks, quench water, a furnace in a wall, patchy rubble)
 export * from './foundry.mjs' // shaftRun, gearbox, cog, waterWheel, mixerStack, settledWater, roofLantern, bandedTank (Create foundries)

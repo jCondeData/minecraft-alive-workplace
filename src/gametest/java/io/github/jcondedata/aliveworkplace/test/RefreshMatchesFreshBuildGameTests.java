@@ -55,7 +55,11 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
-	private static final BlockPos HOUSE = new BlockPos(9, 2, 9);
+	/**
+	 * (the rebuilt Stone House, 49.4, is 11 deep with eaves, so turned or mirrored it reaches 10 blocks back from here: at
+	 * 9 it stood in the area's barrier wall, which no refresh can build into)
+	 */
+	private static final BlockPos HOUSE = new BlockPos(13, 2, 13);
 	private static final ResourceLocation STONE_HOUSE = AliveWorkplace.id("stone_house");
 	/** The Stone House as drawn before B260 redrew its rooms (what the owner's house was built from). */
 	static final String BEFORE_B260 = "aec09cb26";
@@ -181,12 +185,13 @@ public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					s.level().setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-					if (step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock) {
-						// (as the Builder puts a bed: both halves at once)
-						BlockPos other = step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()));
-						if (now.containsKey(other)) {
-							s.level().setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-						}
+					// (as the Builder puts a two-block block: both halves at once, a bed's other half and a door's top with its
+					// bottom, MaterialRules.secondaryPos; the rebuilt Stone House has doors where the old drawings had none)
+					BlockPos other = step.state().getBlock() instanceof net.minecraft.world.level.block.BedBlock
+						? step.pos().relative(net.minecraft.world.level.block.BedBlock.getConnectedDirection(step.state()))
+						: MaterialRules.secondaryPos(step.pos(), step.state());
+					if (other != null && now.containsKey(other)) {
+						s.level().setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 					}
 				}
 			}
@@ -274,8 +279,10 @@ public class RefreshMatchesFreshBuildGameTests implements FabricGameTest {
 	 * The Builder works the refresh of a house furnished before B260 through, turned and mirrored: the house ends as a
 	 * fresh build, and its saved furniture is today's, so the page offers no second refresh.
 	 */
-	//$ gametest_ticks_batch HUGE '12000' '"b642_builder"'
-	@GameTest(template = HUGE, timeoutTicks = 12000, batch = "b642_builder")
+	// 49.4: the Stone House was redrawn from scratch, so a refresh from an older drawing is now a near-whole rebuild
+	// (about 950 clears and placements, some 8,500 ticks at the default pace): the time limit went from 12,000 to 20,000.
+	//$ gametest_ticks_batch HUGE '20000' '"b642_builder"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "b642_builder")
 	public void aBuilderRefreshesTheOldStoneHouseToAFreshBuild(GameTestHelper helper) {
 		FurnitureChoice furniture = oldFurniture();
 		Stage s = stage(helper, BEFORE_B260, Rotation.CLOCKWISE_90, Mirror.FRONT_BACK, furniture);

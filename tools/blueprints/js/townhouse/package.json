@@ -1,0 +1,11 @@
+{
+  "name": "townhouse",
+  "private": true,
+  "type": "module",
+  "description": "Burgher's Townhouse (ROADMAP 49): four levels. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/townhouse.nbt"
+  }
+}

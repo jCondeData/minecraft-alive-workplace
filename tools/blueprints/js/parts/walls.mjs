@@ -9,7 +9,7 @@ export function wallPanel(c, [ax, az], [bx, bz], y0, y1, id) {
 }
 
 /** window: glass panes in the given cells; dressing 'sill' (an upside-down stair one block out under the lowest
- *  pane, with a potted flower on it), or 'shutters' (open trapdoors flat on the wall either side, one block out). */
+ *  pane, or a top slab when `sill` is a slab id, with a potted flower on it), or 'shutters' (open trapdoors flat on the wall either side, one block out). */
 export function window(c, cells, out, dress, { glass = 'glass_pane', wood = 'spruce', pots = [], sill = null } = {}) {
   for (const [x, y, z] of cells) c.set(x, y, z, glass)
   if (!dress) return
@@ -19,7 +19,9 @@ export function window(c, cells, out, dress, { glass = 'glass_pane', wood = 'spr
   const bottoms = cells.filter(p => p[1] === low)
   if (dress === 'sill') {
     bottoms.forEach(([x, y, z], i) => {
-      stair(c, x + ox, y - 1, z + oz, sill ?? `${wood}_stairs`, OPP[out], 'top')
+      const id = sill ?? `${wood}_stairs`
+      if (id.endsWith('_slab')) c.set(x + ox, y - 1, z + oz, id, { type: 'top', waterlogged: 'false' }) // a flat ledge (the Terrace's)
+      else stair(c, x + ox, y - 1, z + oz, id, OPP[out], 'top')
       if (pots[i]) c.set(x + ox, y, z + oz, pots[i])
     })
   } else if (dress === 'shutters') {

@@ -73,7 +73,7 @@ public class HomesGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		List<Villager> villagers = List.of(helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 12)),
 			helper.spawn(EntityType.VILLAGER, new BlockPos(6, 2, 12)), helper.spawn(EntityType.VILLAGER, new BlockPos(8, 2, 12)));
 		helper.runAfterDelay(2, () -> {
-			// Their beds are inside the house (x 2-12, z 2-10 here); the brain checks them later, so all of this is one tick
+			// Their beds are inside the house (x 2-14, z 2-15 here, III the largest); the brain checks them later, so all of this is one tick
 			for (int i = 0; i < villagers.size(); i++) {
 				Beds.home(villagers.get(i), helper.absolutePos(new BlockPos(4 + 2 * i, 3, 5)));
 			}
@@ -101,7 +101,7 @@ public class HomesGameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 				"tier III: " + plain.score() + " -> " + grand);
 
 			// A bed outside the building is no home of it
-			Beds.home(villager, helper.absolutePos(new BlockPos(14, 2, 4)));
+			Beds.home(villager, helper.absolutePos(new BlockPos(16, 2, 4)));
 			helper.assertTrue(Homes.of(level, villager).isEmpty(), "a bed outside the house counts as in it");
 			helper.succeed();
 		});

@@ -64,7 +64,7 @@ public class TerraceSleepCompatTests implements FabricGameTest {
 			level.getPoiManager().take(h -> h.is(PoiTypes.HOME), (h, p) -> p.equals(taken), taken, 1); // someone else's
 		}
 		List<BlockPos> free = beds.subList(0, 2);
-		BlockPos kitchen = origin.offset(8, 1, 5);
+		BlockPos kitchen = origin.offset(9, 1, 5); // the east kitchen beside its ladder (the rebuilt Terrace, 49.6)
 		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(kitchen));
 		villager.moveTo(kitchen.getX() + 0.5, kitchen.getY(), kitchen.getZ() + 0.5, 0, 0);
 		long now = level.getDayTime() % 24000;

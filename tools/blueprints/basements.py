@@ -487,7 +487,8 @@ def butchers_shop():
     return b
 
 
-LEVEL_4 = (("starter_cottage_4", starter_cottage_4), ("stone_house_4", stone_house_4), ("townhouse_4", townhouse_4),
+# (stone_house_4 and townhouse_4 are drawn by the rebuild kit since ROADMAP 49.4 and 49.5: tools/blueprints/js/)
+LEVEL_4 = (("starter_cottage_4", starter_cottage_4),
            ("manor_4", manor_4), ("supply_shop_4", supply_shop_4), ("library_4", library_4),
            ("healing_center_4", healing_center_4), ("lookout_tower_4", lookout_tower_4))
 

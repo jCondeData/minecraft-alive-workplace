@@ -6,7 +6,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { LEVELS, PALETTE as P, ARCADE, HALL as H, WING as W, CELLAR, OPENINGS as O, FRAMES, FURNITURE } from './plan.mjs'
 import {
-  LiftedCanvas, mix, plinth, floor, post, beamRing, wallPanel, window, gableRoof, gableWall, bargeTrim, louvre,
+  LiftedCanvas, stair as stairAt, mix, plinth, floor, post, beamRing, wallPanel, window, gableRoof, gableWall, bargeTrim, louvre,
   flight, railing, door, cellar, hatchLadder, stair, furnitureParts, arcadeRun, jettyCorbels,
 } from '../parts/index.mjs'
 
@@ -27,6 +27,11 @@ export function draw(id = ID) {
     arcadeRun(c, side === 'front' ? 'x' : 'z', a.line, a.piers, ARCADE.top, { pier: stone, course: P.course, arch: P.arch, cap: P.cap })
   }
   wallPanel(c, [H.x0, H.z1], [H.x1, H.z1], 1, ARCADE.top, stone) // the back wall
+  for (const x of H.backPosts) { // buttresses under the back wall's posts, weathered tops
+    c.set(x, 0, H.z1 + 1, rubble)
+    for (let y = 1; y <= 2; y++) c.set(x, y, H.z1 + 1, stone)
+    c.set(x, 3, H.z1 + 1, P.arch, { facing: 'north', half: 'bottom', shape: 'straight', waterlogged: 'false' })
+  }
   // the hall: floor jettied out a block over the arcade, oak posts, plaster panels, a beam ring, tie beams
   floor(c, H.x0, H.z0, H.x1, H.z1, H.floorY, P.floor)
   for (let x = H.x0; x <= H.x1; x++) log(x, H.floorY, H.z0, 'x') // the jetty's bressumer
@@ -43,10 +48,23 @@ export function draw(id = ID) {
 
   // roofs: the gablet first (it owns its cells), then the long slate roof around it
   const g = gableRoof(c, H.gablet, P.roof)
+  // the rear gablet: only where it stands proud of the long roof's back slope (none of it inside the open hall)
+  const backSlope = z => H.beamY + Math.max(0, H.z1 + 1 - z)
+  const rg = gableRoof(c, H.rearGablet, P.roof, (x, y, z) => y >= backSlope(z))
   const main = gableRoof(c, H.roof, P.roof, (x, y, z) => !c.get(x, y, z))
   for (let x = 5; x <= 11; x++) for (let z = H.z0; z <= 5; z++) for (let y = H.beamY + 1; y < g.under[x]; y++)
     if (c.get(x, y, z)?.id.includes('deepslate')) c.clear(x, y, z) // open the hall up into the gablet
+  for (let x = 5; x <= 11; x++) for (let z = 9; z <= H.z1 + 1; z++) for (let y = H.beamY; y < rg.under[x]; y++)
+    if (c.get(x, y, z)?.id.includes('deepslate')) c.clear(x, y, z) // open the hall up into the rear gablet
   gableWall(c, 'z', H.z0, [4, 12], H.beamY + 1, g.under, (u) => (u === 8 ? [P.frame, { axis: 'y' }] : P.infill))
+  gableWall(c, 'z', H.z1, [4, 12], H.beamY + 1, rg.under, (u, y) => ((u === 6 || u === 10) ? [P.frame, { axis: 'y' }] : y === 13 ? [P.frame, { axis: 'x' }] : P.infill))
+  bargeTrim(c, 'z', H.z1 + 1, [4, 12], rg.under, `${P.trim}_slab`)
+  // the charter wall: dark oak boarding behind the frames, inside and out, so the head of the hall reads as its focus
+  for (const x of [6, 7, 9, 10]) for (let y = 6; y <= 9; y++) c.set(x, y, H.z1, `${P.trim}_planks`)
+  // window boxes on the jetty under the two shuttered windows
+  for (const [x, f] of [[2, 'potted_red_tulip'], [3, 'potted_poppy'], [13, 'potted_poppy'], [14, 'potted_red_tulip']]) {
+    stairAt(c, x, 6, 0, `${P.wood}_stairs`, 'south', 'top'); c.set(x, 7, 0, f)
+  }
   for (const xLine of [H.x0, H.x1]) gableWall(c, 'x', xLine, [0, 12], H.beamY + 1, main.under, (u, y) =>
     (u === 3 || u === 9) && y <= 13 ? [P.frame, { axis: 'y' }] : y === 14 && u >= 4 && u <= 8 ? [P.frame, { axis: 'z' }] : P.infill)
   louvre(c, 8, 6, main.ridgeY, { base: P.roof.full, post: `${P.trim}_fence`, roof: P.roof, finial: 'lightning_rod' })
@@ -91,15 +109,33 @@ export function draw(id = ID) {
     for (const z of [4, 8]) post(c, W.x1, z, 6, H.wallTop, P.frame)
     beamRing(c, W.x0, W.z0, W.x1, W.z1, H.beamY, P.frame)
     for (let z = W.z0 + 1; z < W.z1; z++) log(20, H.beamY, z, 'z') // the wing's tie beam
-    const wr = gableRoof(c, W.roof, P.roof)
+    // the east cross gable first, only outside the wing's own east slope; the wing roof then fills round it
+    const eg = new Set()
+    const egr = gableRoof(c, W.eastGable, P.roof, (x, y, z) => { if (y < H.beamY + 2 * (W.x1 - x) - 1) return false; eg.add(`${x},${y},${z}`); return true })
+    const wr = gableRoof(c, W.roof, P.roof, (x, y, z) => !eg.has(`${x},${y},${z}`))
+    for (let x = 22; x <= W.x1; x++) for (let z = 4; z <= 8; z++) for (let y = H.beamY; y < egr.under[z]; y++)
+      if (!eg.has(`${x},${y},${z}`) && c.get(x, y, z)?.id.includes('deepslate')) c.clear(x, y, z)
+    for (let z = 4; z <= 8; z++) log(W.x1, H.beamY, z, 'z')
+    gableWall(c, 'x', W.x1, [3, 9], H.beamY + 1, egr.under, (u, y) => (u === 5 || u === 7) ? [P.frame, { axis: 'y' }] : P.infill)
     for (const zLine of [W.z0, W.z1]) gableWall(c, 'z', zLine, [W.x0, W.x1], H.beamY + 1, wr.under, (u, y) =>
       (u === 18 || u === 22) && y <= 13 ? [P.frame, { axis: 'y' }] : y === 15 && u >= 19 && u <= 21 ? [P.frame, { axis: 'x' }] : P.infill)
     bargeTrim(c, 'z', 0, [W.x0, W.x1], wr.under, `${P.trim}_stairs`)
     bargeTrim(c, 'z', 12, [W.x0, W.x1], wr.under, `${P.trim}_stairs`)
     for (const w of O.wingWindows) window(c, w.cells, w.out, null, { glass: P.glass, wood: P.wood })
     door(c, O.wingDoor, 'south', 'north', { wood: P.wood, step: [O.wingDoor[0], 0, 1], stepStair: 'stone_brick_stairs' })
+    // the hall's slates run on east into the wing's taller roof (a valley, no open gable between the two)
+    for (let x = W.x0; x < 20; x++) for (let i = 0; i <= 6; i++) for (const z of i === 6 ? [6] : [i, 12 - i]) {
+      const y = H.beamY + i
+      if (y < wr.under[x] || c.get(x, y, z)) continue
+      if (i === 6) c.set(x, y, z, P.roof.full)
+      else c.set(x, y, z, P.roof.stairs, { facing: z < 6 ? 'south' : 'north', half: 'bottom', shape: 'straight', waterlogged: 'false' })
+    }
+    for (let x = 17; x < 20; x++) for (let y = wr.under[x]; y < H.beamY + 6; y++) if (!c.get(x, y, 6)) c.set(x, y, 6, P.roof.full) // the valley's spine
+
+    // the counting house opens off the market behind a door, so the open arcade never reaches it
     const [gx, gy, gz] = O.wingGround
     c.clear(gx, gy, gz); c.clear(gx, gy + 1, gz)
+    door(c, O.wingGround, 'east', 'west', { wood: P.wood })
     for (const [x, y, z] of O.wingUpper) { c.clear(x, y, z); c.clear(x, y + 1, z) }
   }
 
@@ -118,6 +154,11 @@ export function draw(id = ID) {
   // --- Pass 5: interior -----------------------------------------------------------------------------------------
   for (const f of FURNITURE) if (!f.wing || L.wing) furnitureParts[f.part](c, f)
   c.set(8, 4, 7, 'bell', { attachment: 'ceiling', facing: 'north', powered: 'false' }) // the market bell
+  // market day's leftovers against the stair box and in the front corner: fodder and a farmer's pumpkins and melons
+  const hay = { axis: 'y' }
+  for (const [x, y, z, id, p] of [[2, 1, 8, 'hay_block', hay], [2, 2, 8, 'hay_block', hay], [3, 1, 8, 'hay_block', { axis: 'x' }],
+    [4, 1, 8, 'pumpkin', {}], [5, 1, 8, 'carved_pumpkin', { facing: 'south' }], [14, 1, 3, 'melon', {}], [13, 1, 3, 'pumpkin', {}],
+    [14, 2, 3, 'pumpkin', {}], [14, 1, 4, 'hay_block', hay]]) c.set(x, y, z, id, p)
   return c
 }
 

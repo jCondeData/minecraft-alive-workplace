@@ -956,6 +956,7 @@
   "screen.aliveworkplace.card.job.no_hall": "There's no Village Hall near %s.",
   "screen.aliveworkplace.card.job.hint": "In chat: every detail, with the Stop link.",
   "message.aliveworkplace.money.dollars": "%s CobbleDollars",
+  "message.aliveworkplace.money.dollars.one": "%s CobbleDollar",
   "message.aliveworkplace.money.emeralds": "%s emeralds",
   "message.aliveworkplace.money.emeralds.one": "%s emerald",
   "block.aliveworkplace.tutors_desk": "Tutor's Desk",

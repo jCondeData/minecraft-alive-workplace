@@ -89,6 +89,12 @@ const roomParts = {
     c.spot('picture', f.pos, f.facing, [[0, 0, 0]], f.wood, f.colour)
   },
   rug(c, f) { for (const [x, y, z] of f.cellsAbs) { c.free([x, y, z]); c.set(x, y, z, `${f.colour}_carpet`) } },
+  bookcase(c, f) { // a low bookcase (one bookshelf, a fixture: no spot) with a pot plant on it when f.plant. Grown from the Terrace (49).
+    const [x, y, z] = f.pos
+    c.free(f.pos)
+    c.set(x, y, z, 'bookshelf')
+    if (f.plant) { c.free([x, y + 1, z]); c.set(x, y + 1, z, f.plant) }
+  },
   hearth(c, f) { hearthFire(c, f.pos, f.facing) },
   chest(c, f) { kitchenParts.pantry(c, f) },
   bed(c, f) { // foot at pos, head one block toward facing

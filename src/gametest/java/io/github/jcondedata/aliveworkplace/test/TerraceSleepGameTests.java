@@ -55,9 +55,9 @@ public class TerraceSleepGameTests implements net.fabricmc.fabric.api.gametest.v
 		return new Terrace(origin, box, beds);
 	}
 
-	/** A villager standing in the east home's kitchen (blueprint 8, 1, 5), by its ladder. */
+	/** A villager standing in the east home's kitchen (blueprint 9, 1, 5), by its ladder (10, 1..5, 5; the rebuilt Terrace, 49.6). */
 	private static Villager inEastKitchen(GameTestHelper helper, Terrace t) {
-		BlockPos at = t.origin().offset(8, 1, 5);
+		BlockPos at = t.origin().offset(9, 1, 5);
 		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(at));
 		villager.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
 		return villager;

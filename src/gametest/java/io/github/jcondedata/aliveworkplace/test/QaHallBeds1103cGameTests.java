@@ -369,7 +369,7 @@ public class QaHallBeds1103cGameTests implements net.fabricmc.fabric.api.gametes
 			.map(BlockPos::immutable)
 			.sorted(Comparator.comparingInt(b -> StructureTemplate.calculateRelativePosition(back, b.subtract(origin)).getX())).toList();
 		helper.assertTrue(beds.size() == 4, "setup: the Terrace's beds are " + beds.stream().map(helper::relativePos).toList());
-		BlockPos kitchen = origin.offset(StructureTemplate.calculateRelativePosition(settings, new BlockPos(8, 1, 5)));
+		BlockPos kitchen = origin.offset(StructureTemplate.calculateRelativePosition(settings, new BlockPos(9, 1, 5))); // 49.6: beside the east ladder (10, 1..5, 5)
 		return new Terrace(origin, beds, kitchen);
 	}
 

@@ -1,0 +1,10 @@
+{
+  "name": "manor",
+  "private": true,
+  "type": "module",
+  "description": "Noble's Manor I-IV (Milestone 49, rebuilt from its brief): hall range, west cross-wing and porch tower; II the walled garden; III the ballroom wing; IV the cellar. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates to build/rebuild/manor/.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

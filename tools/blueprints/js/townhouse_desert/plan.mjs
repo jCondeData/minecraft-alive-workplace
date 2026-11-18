@@ -42,6 +42,11 @@
 //  that look's ship step).
 //  Open for the critic: the court's palms are compact (a big crown over a walled court splits its sky into pits for
 //  holes.py); the windcatcher is the town's tallest thing by design.
+//  Round 2 (the critic's round 1, BACK 4/4/4/3, briefs/townhouse_looks_critic.md): 1 the stack one square breast up to
+//        the frieze, no stair steps, the back moulding stopping two short of it; 2 the court wall's ends and the gate
+//        capped piers (no stub by the house); 3 the tower banded in mud brick at its floors, a latticed window a
+//        storey on its east face; 4 the palms two taller, with long fronds drooping at their tips; 5 the pots off
+//        the plot's corners: in the arcade, by the door, against the walls.
 //  Left: the critic's pass (REBUILD.md) against the shipped Townhouse; the Java side (49.10b ship step).
 //
 // --- Named parts (template coordinates: x across the front, west 0 -> east; z from the front, z = 0, to the back) ---
@@ -79,7 +84,7 @@ export const PALETTE = {
   ashlar: [['sandstone', 6], ['cut_sandstone', 3], ['smooth_sandstone', 1]],
   mud: [['mud_bricks', 7], ['packed_mud', 2]],
   plinth: 'smooth_sandstone', dressed: 'smooth_sandstone', pier: 'cut_sandstone', carved: 'chiseled_sandstone',
-  course: 'cut_sandstone', frieze: 'terracotta', moulding: 'mud_brick_stairs', brow: 'smooth_sandstone_slab',
+  course: 'cut_sandstone', band: 'mud_bricks', frieze: 'terracotta', moulding: 'mud_brick_stairs', brow: 'smooth_sandstone_slab',
   sillStair: 'smooth_sandstone_stairs', arch: 'smooth_sandstone_stairs', step: 'sandstone_stairs',
   deck: 'smooth_sandstone', floor: 'smooth_sandstone', upperFloor: 'spruce_planks', partition: 'spruce_planks',
   viga: 'spruce_fence', wood: 'spruce', glass: 'glass_pane',
@@ -151,6 +156,8 @@ export const OPENINGS = {
     { cells: [[12, 6, 12], [12, 7, 12]], out: 'south', from: 2, brow: false },
     // III, the tower: a window a storey on its open faces, the lookout's on three sides
     { cells: [[15, 2, 17], [15, 3, 17]], out: 'south', from: 3, screen: true },
+    { cells: [[17, 2, 15], [17, 3, 15]], out: 'east', from: 3, screen: true }, // round 2: the east face a window a storey
+    { cells: [[17, 10, 15], [17, 11, 15]], out: 'east', from: 3, screen: true },
     { cells: [[17, 6, 15], [17, 7, 15]], out: 'east', from: 3, screen: true },
     { cells: [[15, 10, 17], [15, 11, 17]], out: 'south', from: 3, screen: true },
     { cells: [[13, 10, 15], [13, 11, 15]], out: 'west', from: 3, screen: true },
@@ -166,11 +173,12 @@ export const FURNITURE = TH_FURNITURE.map(f => (f.part === 'hangingLamp' && f.po
 
 export const OUTSIDE = {
   pots: {
-    1: [[0, 0, 0, 'potted_cactus'], [10, 0, 0, 'potted_dead_bush'], [0, 0, 7, 'potted_dead_bush'], [10, 0, 7, 'potted_cactus'],
-      [0, 0, 13, 'potted_cactus'], [10, 0, 13, 'potted_dead_bush']],
-    2: [[17, 0, 0, 'potted_cactus'], [17, 0, 8, 'potted_dead_bush'], [17, 0, 13, 'potted_cactus'],
+    // round 2: off the plot's corners, against the walls, in the arcade and by the door
+    1: [[3, 1, 1, 'potted_cactus'], [7, 1, 1, 'potted_cactus'], [4, 0, 0, 'potted_orange_tulip'], [6, 0, 0, 'potted_orange_tulip'],
+      [0, 0, 3, 'potted_dead_bush'], [0, 0, 11, 'potted_cactus'], [10, 0, 6, 'potted_cactus'], [3, 0, 13, 'potted_dead_bush'], [8, 0, 13, 'potted_cactus']],
+    2: [[17, 0, 6, 'potted_cactus'], [17, 0, 10, 'potted_dead_bush'],
       [11, 6, 3, 'potted_orange_tulip'], [13, 6, 3, 'potted_flowering_azalea_bush']],
-    3: [[18, 0, 14, 'potted_dead_bush'], [18, 0, 17, 'potted_cactus'], [3, 1, 13, 'potted_orange_tulip'], [11, 1, 13, 'potted_red_tulip']],
+    3: [[18, 0, 14, 'potted_dead_bush'], [18, 0, 16, 'potted_cactus'], [3, 1, 13, 'potted_orange_tulip'], [11, 1, 13, 'potted_red_tulip']],
   },
   jars: { 1: [[2, 1, 1], [8, 1, 1]], 2: [[11, 1, 3], [15, 1, 3]], 3: [[1, 1, 16], [12, 1, 16]] },
   vigas: { front: [2, 5, 8], west: [3, 6, 9], east: [3, 6, 9], back: [2, 8], wingEast: [6, 10], wingBack: [] },

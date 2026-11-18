@@ -68,16 +68,21 @@ const putLeaf = (c, x, y, z, id, props) => { if (c.inside(x, y, z) && !c.get(x, 
 
 /** datePalm: soil at [x, y, z], a trunk `height` high, a crown: a tuft on top, a ring round the trunk's head, a frond
  *  out on each side two from the trunk with its tip hanging a block below it, and the ring's corners hanging a block
- *  too (every leaf face to face with another, so none floats). Cells already drawn or outside the canvas are left,
+ *  too (every leaf face to face with another, so none floats); `reach` 3 runs the side fronds a block further, their
+ *  tips hanging two. Cells already drawn or outside the canvas are left,
  *  and those `skip(x, y, z)` names (a frond that would roof a loggia below). */
-export function datePalm(c, [x, y, z], { soil, trunk, leaves, height = 4, skip = () => false }) {
+export function datePalm(c, [x, y, z], { soil, trunk, leaves, height = 4, reach = 2, skip = () => false }) {
   const put = (x, y, z) => { if (!skip(x, y, z)) putLeaf(c, x, y, z, leaves, leafProps) }
   c.set(x, y, z, soil)
   for (let i = 1; i <= height; i++) c.set(x, y + i, z, trunk, { axis: 'y' })
   const t = y + height
   put(x, t + 1, z)
   for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) if (dx || dz) put(x + dx, t, z + dz)
-  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { put(x + 2 * dx, t, z + 2 * dz); put(x + 2 * dx, t - 1, z + 2 * dz) }
+  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+    put(x + 2 * dx, t, z + 2 * dz)
+    if (reach >= 3) { put(x + 3 * dx, t, z + 3 * dz); put(x + 3 * dx, t - 1, z + 3 * dz); put(x + 3 * dx, t - 2, z + 3 * dz) } // a long frond, its tip hanging two
+    else put(x + 2 * dx, t - 1, z + 2 * dz)
+  }
   for (const [dx, dz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) put(x + dx, t - 1, z + dz)
 }
 

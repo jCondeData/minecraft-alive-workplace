@@ -51,7 +51,8 @@ export function drawLevel(level) {
   qaaLantern(c, Ln, { wall: ashlar, coping: P.dressed, ceiling: P.deck, glass: P.glass, windows: Ln.windows })
   // the hearth's stack up the back wall, its breast stepped, smoking over the coping
   const S = MASSES.stack
-  chimney(c, S.x, S.z, 0, S.top, P.pier, { breast: { axis: 'x', top: 4, stair: P.step } })
+  chimney(c, S.x, S.z, 0, S.top, P.pier)
+  for (const dx of [-1, 1]) for (let y = 0; y <= H.firstY; y++) c.set(S.x + dx, y, S.z, P.pier) // round 2: one breast, square-topped at the frieze, no stair steps
 
   if (level >= 2) { // the counting house: a sandstone storey, a mud bedroom storey, a flat deck
     plinth(c, Wg.x0, Wg.z0, Wg.x1, Wg.z1, P.plinth)
@@ -79,6 +80,7 @@ export function drawLevel(level) {
     ring(c, T.x0, T.z0, T.x1, T.z1, 1, T.deckY - 1, ashlar)
     for (const y of T.floors) floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, y, P.upperFloor)
     ring(c, T.x0, T.z0, T.x1, T.z1, T.deckY, T.deckY, P.frieze)
+    for (const y of T.floors) ring(c, T.x0, T.z0, T.x1, T.z1, y, y, P.band) // round 2: a mud-brick band at each floor
     floor(c, T.x0 + 1, T.z0 + 1, T.x1 - 1, T.z1 - 1, T.deckY, P.deck)
     badgirHead(c, { x0: T.x0, z0: T.z0, x1: T.x1, z1: T.z1, y0: T.head[0], y1: T.head[1] }, { body: ashlar, fin: P.pier, cap: P.dressed, cornice: P.cornice })
     // the court: the yard behind the house walled in, a gate in its west wall
@@ -88,6 +90,10 @@ export function drawLevel(level) {
     for (let x = C.west; x < T.x0; x++) c.set(x, 0, C.back, P.plinth)
     const [gx, gz] = C.gate
     doorway(c, [gx, 1, gz])
+    for (const [x, z] of [[C.west, MASSES.house.z1 + 1], [C.west, C.back], [C.west, gz - 1], [C.west, gz + 1]]) { // round 2: capped piers, no stub
+      for (let y = 1; y < C.wallY + 1; y++) c.set(x, y, z, P.pier)
+      c.set(x, C.wallY + 1, z, P.dressed)
+    }
     const pave = mix([['smooth_sandstone', 3], ['sandstone', 2], ['cut_sandstone', 1]], 41)
     for (let x = C.west + 1; x < T.x0; x++) for (let z = MASSES.house.z1 + 1; z < C.back; z++) if (!c.get(x, 0, z)) c.set(x, 0, z, pave)
     // the basin: a smooth rim round still water
@@ -134,7 +140,7 @@ export function drawLevel(level) {
   // the frieze carried round the sides and back as a proud moulding (clear of the stack's breast)
   const out = []
   for (let z = H.zUp; z <= H.z1; z++) out.push([H.x0 - 1, z, 'east'], [H.x1 + 1, z, 'west'])
-  if (level < 3) for (let x = H.x0; x <= H.x1; x++) if (Math.abs(x - S.x) > 1) out.push([x, H.z1 + 1, 'north']) // III: in the court, no moulding (it reads as a roof over the yard)
+  if (level < 3) for (let x = H.x0; x <= H.x1; x++) if (Math.abs(x - S.x) > 2) out.push([x, H.z1 + 1, 'north']) // III: in the court, no moulding (it reads as a roof over the yard)
   if (level >= 2) for (let z = Wg.z0; z <= Wg.z1 - (level >= 3 ? 1 : 0); z++) out.push([Wg.x1 + 1, z, 'west']) // (III: not under the windcatcher's cornice, or the kit carries a column up to it)
   if (level === 2) for (let x = Wg.x0; x <= Wg.x1; x++) out.push([x, Wg.z1 + 1, 'north'])
   for (const [x, z, f] of out) if (c.inside(x, H.firstY, z) && !c.get(x, H.firstY, z)) stair(c, x, H.firstY, z, P.moulding, f, 'top')
@@ -179,8 +185,8 @@ export function drawLevel(level) {
     for (const [x, y, z, id] of OUTSIDE.pots[l] ?? []) if (!c.get(x, y, z)) c.set(x, y, z, id)
     for (const p of OUTSIDE.jars[l] ?? []) if (!c.get(...p)) jar(c, p)
   }
-  if (level >= 2) datePalm(c, OUTSIDE.terracePalm, { ...P.palm, height: 5, skip: (x, y, z) => z < L.z0 }) // no frond out over the street: it would roof the loggia
-  if (level >= 3) for (const [x, z] of C.palms) datePalm(c, [x, 0, z], { ...P.palm, height: 6 })
+  if (level >= 2) datePalm(c, OUTSIDE.terracePalm, { ...P.palm, height: 6, reach: 3, skip: (x, y, z) => z < L.z0 }) // no frond out over the street: it would roof the loggia
+  if (level >= 3) for (const [x, z] of C.palms) datePalm(c, [x, 0, z], { ...P.palm, height: 8, reach: 3 })
   return { c, dug }
 }
 

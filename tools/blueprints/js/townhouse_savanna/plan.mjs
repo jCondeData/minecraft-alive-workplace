@@ -41,7 +41,9 @@
 //  wing windows and on the house's east hall window left one-wide slots the kit sealed (shutters on the middle one);
 //  two pots on the ridge read as chimney pots (one).
 //  Open for the critic: the tower's eaves are a block deep (the plot's edge); acacia shutters are bright.
-//  Left: the critic's pass (REBUILD.md) against the shipped Townhouse; the Java side (49.10b ship step).
+//  Critic round 1: SHIP (5/4/4/4). Polish after it: the stack one square breast, no stair steps at the hall floor; a
+//  shuttered window on the tower's east face at its middle storey; III's corner pots moved against the walls.
+//  Left: the Java side (49.10b ship step).
 //
 // --- Named parts (template coordinates: x across the front, west 0 -> east; z from the front, z = 0, to the back) ---
 //   House      ground storey x 1..9, z 2..12, y 1..4 (red granite, acacia corner posts); the beam ring at y 5 out to the
@@ -145,6 +147,7 @@ export const OPENINGS = {
     { cells: [[15, 2, 17], [15, 3, 17]], out: 'south', ...sh, from: 3 },
     { cells: [[17, 6, 15], [17, 7, 15]], out: 'east', ...sh, from: 3 },
     { cells: [[15, 10, 17], [15, 11, 17]], out: 'south', ...sh, from: 3 },
+    { cells: [[17, 10, 15], [17, 11, 15]], out: 'east', ...sh, from: 3 }, // critic: the middle storey's blank face
     { cells: [[13, 10, 15], [13, 11, 15]], out: 'west', ...sh, from: 3 },
     { cells: [[13, 14, 15], [13, 15, 15]], out: 'west', ...sh, from: 3 },
     { cells: [[17, 14, 15], [17, 15, 15]], out: 'east', ...sh, from: 3 },
@@ -161,7 +164,7 @@ export const OUTSIDE = {
     1: [[0, 0, 0, 'potted_acacia_sapling'], [10, 0, 0, 'potted_dead_bush'], [0, 0, 7, 'potted_dead_bush'], [10, 0, 7, 'potted_acacia_sapling'],
       [0, 0, 13, 'potted_acacia_sapling'], [10, 0, 13, 'potted_dead_bush']],
     2: [[17, 0, 0, 'potted_acacia_sapling'], [17, 0, 6, 'potted_dead_bush'], [17, 0, 13, 'potted_acacia_sapling'], [11, 1, 3, 'potted_red_tulip']],
-    3: [[18, 0, 12, 'potted_dead_bush'], [18, 0, 18, 'potted_acacia_sapling'], [0, 0, 18, 'potted_dead_bush'], [9, 0, 17, 'potted_orange_tulip']],
+    3: [[18, 0, 12, 'potted_dead_bush'], [18, 0, 15, 'potted_acacia_sapling'], [1, 0, 13, 'potted_dead_bush'], [9, 0, 17, 'potted_orange_tulip']],
   },
   hay: { 1: [], 2: [[15, 1, 3]], 3: [[11, 0, 16], [11, 1, 16], [11, 0, 17]] },
   jars: { 1: [[6, 1, 1]], 2: [], 3: [[1, 0, 14]] },

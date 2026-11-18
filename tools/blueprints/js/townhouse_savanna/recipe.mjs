@@ -61,7 +61,8 @@ export function drawLevel(level) {
   for (const p of MASSES.ridgePots) pot(c, p)
   // the hearth's stack: mud brick through the back eave, its breast stepped, smoking
   const S = MASSES.stack
-  chimney(c, S.x, S.z, 0, S.top, P.mudBrick, { breast: { axis: 'x', top: 4, stair: P.step } })
+  chimney(c, S.x, S.z, 0, S.top, P.mudBrick)
+  for (const dx of [-1, 1]) for (let y = 0; y <= H.firstY; y++) c.set(S.x + dx, y, S.z, P.mudBrick) // one square breast, no stair steps
 
   if (level >= 2) { // the counting house: granite below, mud and acacia above, under its own hip kept off the house
     plinth(c, Wg.x0, Wg.z0, Wg.x1, Wg.z1, base)

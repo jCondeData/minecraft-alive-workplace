@@ -1,0 +1,19 @@
+{
+  "name": "market-corner",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 4
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/out/market-corner.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/out/summary.json",
+  "size": [
+    8,
+    8,
+    8
+  ],
+  "blockCount": 229,
+  "paletteCount": 34,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/market_corner/recipe.mjs"
+}

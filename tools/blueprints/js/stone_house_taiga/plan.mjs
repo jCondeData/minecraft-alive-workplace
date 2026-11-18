@@ -38,8 +38,12 @@
 //  Done (2026-11-18): all four levels saved as candidates (build.sh -> build/rebuild/stone_house_taiga/), each with no CHECK
 //           line, holes.py 0 (open included), check.py's owner rules and checks 0, and every furniture spot of the
 //           shipped Stone House present in the same cell with the same kind and facing at every level (29/34/39/47).
-//           Blocks per level 671/754/954/1164 (shipped 759/851/996/1206); II keeps 99 % of I, III 97 % of II, IV 100 % of III.
+//           Blocks per level 665/748/948/1158 (shipped 759/851/996/1206); II keeps 99 % of I, III 97 % of II, IV 100 % of III.
 //           Not shipped (no SHIP=1): the critic goes first.
+//  Round 2 (2026-11-18, the critic's optional polish; round 1 SHIPped it narrowly): one tidy firewood stack under
+//           the west eave with a slab over it; II/III firewood stacked end-on in the parlour's east wall under the
+//           catslide; III stripped spruce lintels over the back pen's windows and posts beside its loft window (the
+//           plot's edge leaves no cell outside the back wall for a window box or brackets).
 //  Left for the critic: the back gable stands flush at z 13 in III (the plot's edge leaves no cell for an overhang).
 import { FURNITURE as SH_FURNITURE, OPENINGS as SH_OPENINGS, MASSES as SH_MASSES, BASEMENT, SIZES, IDS } from '../stone_house/plan.mjs'
 
@@ -57,7 +61,7 @@ export const PALETTE = {
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
   trim: 'spruce_stairs', sill: 'cobblestone_stairs',
   wood: 'spruce', floor: 'spruce_planks', partition: 'spruce_planks', glass: 'glass_pane',
-  firewood: ['spruce_log', 'spruce_log', 'oak_log'], bedSoil: 'moss_block', plants: ['fern'],
+  firewood: ['spruce_log'], trimLog: 'stripped_spruce_log', woodCap: 'spruce_slab', bedSoil: 'moss_block', plants: ['fern'],
   cellarFloor: 'cobblestone', cellarWall: [['cobblestone', 3], ['stone', 2], ['mossy_cobblestone', 1]],
 }
 
@@ -65,8 +69,11 @@ export const MASSES = {
   main: { x0: 1, z0: 1, x1: 9, z1: 9, upperY: 5, roof: { axis: 'z', across: [0, 10], along: [0, 10], eaveY: 6, steep: false } },
   porch: { x0: 0, x1: 10, z: 0, y: 5, posts: [0, 10], lamps: [5] },
   chimney: { x: 0, z: 3, breast: [2, 4], breastTop: 4, top: 10 },
-  woodpile: { x: 0, zs: [5, 6, 8, 9], top: 3 }, // either side of the box room's west window
-  wing: { x0: 9, z0: 2, x1: 12, z1: 8, slope: [[11, 5], [12, 4]], along: [1, 9] }, // the catslide's columns [x, y]
+  woodpile: { x: 0, zs: [5, 6], top: 3 }, // one tidy stack under the west eave, a slab over it (round 2)
+  wing: { x0: 9, z0: 2, x1: 12, z1: 8, slope: [[11, 5], [12, 4]], along: [1, 9], // the catslide's columns [x, y]
+    wood: { x: 12, zs: [6, 7], top: 3 } }, // round 2: firewood stacked end-on in the east wall under the catslide
+  // round 2: stripped spruce lintels over the back pen's windows and posts either side of its loft window
+  backTrim: { lintels: [[2, 4], [5, 7]], y: 4, z: 13, loftPosts: [4, 6], loftY: [8, 9] },
   back: { x0: 1, z0: 9, x1: 9, z1: 13, along: [0, 13], ceilingY: 7 },
   cellar: SH_MASSES.cellar,
 }

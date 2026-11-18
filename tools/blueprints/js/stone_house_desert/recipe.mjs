@@ -10,13 +10,16 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { IDS, SIZES, BASEMENT, PALETTE, MASSES, OPENINGS, FURNITURE, OUTSIDE } from './plan.mjs'
 import {
-  Canvas, LiftedCanvas, mix, DIRS, slab, stair, plinth, floor, wallPanel, window, door, doorway, chimney, flight,
+  Canvas, LiftedCanvas, mix, DIRS, OPP, slab, stair, plinth, floor, wallPanel, window, door, doorway, chimney, flight,
   railingRun, furnitureParts, cellar, hatchLadder, flatDeck, vigas, windcatcher, screenOriel, archBay, hearthFire,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const P = PALETTE
 const ashlar = mix(P.ashlar, 23), mud = mix(P.mud, 17)
+const house = (x, y, z) => (y > MASSES.house.upperY ? mud : ashlar)(x, y, z) // stone below the frieze, mud brick above
+// beam ends: thin spruce poles poking a block out of the wall (round 2: whole logs read as crates)
+const beamEnds = (c, axis, out, at, y) => { for (const a of at) c.set(...(axis === 'z' ? [a, y, out] : [out, y, a]), P.viga) }
 
 /** block: the walls of a flat-roofed block round W (x0..x1, z0..z1) from y 1 up to the parapet (deckY + 1), skipping the
  *  side `open` (a wall another block already stands on), the frieze at friezeY, cut piers at its free corners, the
@@ -42,6 +45,10 @@ function windows(c, level, only = null) {
     const [ox, oz] = DIRS[w.out]
     const [x, y, z] = [top[0] + ox, top[1] + 1, top[2] + oz]
     if (c.inside(x, y, z) && !c.get(x, y, z)) slab(c, x, y, z, P.brow, 'top') // a stone brow: shade over the glass
+    // round 2: a proud sill under a ground-storey window (the front's are in the arcade)
+    const low = w.cells.reduce((a, b) => (b[1] < a[1] ? b : a))
+    const [sx, sy, sz] = [low[0] + ox, low[1] - 1, low[2] + oz]
+    if (w.out !== 'north' && low[1] === 2 && c.inside(sx, sy, sz) && !c.get(sx, sy, sz)) stair(c, sx, sy, sz, P.sillStair, OPP[w.out], 'top')
   }
 }
 const furnish = (c, level) => { for (const f of FURNITURE) if ((f.from ?? 1) === level) furnitureParts[f.part](c, f) } // what this level adds
@@ -54,7 +61,7 @@ function levelOne(c) {
   // Pass 1, block-out and structure: the plinth, the floors, the walls up to the coped parapet, the deck
   plinth(c, H.x0, H.z0, H.x1, H.z1, P.plinth)
   floor(c, H.x0 + 1, H.z0 + 1, H.x1 - 1, H.z1 - 1, 0, P.floor)
-  block(c, H, H.deckY, ashlar)
+  block(c, H, H.deckY, house)
   wallPanel(c, [H.x0, H.z0], [H.x1, H.z0], 1, 1, P.dressed) // a smooth base course on the front
   floor(c, H.x0 + 1, H.z0 + 1, H.x1 - 1, H.z1 - 1, H.upperY, P.upperFloor)
 
@@ -83,18 +90,37 @@ function levelOne(c) {
   const Po = MASSES.portal
   for (const x of Po.piers) {
     c.set(x, 0, Po.z, P.plinth)
-    for (let y = 1; y <= Po.top; y++) c.set(x, y, Po.z, y === 1 || y === Po.top ? P.carved : P.pier)
+    for (let y = 1; y <= Po.top; y++) c.set(x, y, Po.z, P.carved) // round 2: the door's surround carved all the way up
   }
   c.set(fd.at[0], 3, fd.at[2], P.carved)
   const O = Po.oriel
   screenOriel(c, O, { post: P.latticePost, lattice: P.lattice, roof: P.latticeRoof, sill: P.dressed })
   c.set(fd.at[0], Po.top, Po.z, 'lantern', { hanging: 'true', waterlogged: 'false' })
+  // round 2: a shallow arcade along the front (two round arches either side of the door's carved bay), its roof the
+  // frieze's course; proud corner pilasters; the frieze carried round the house as a proud moulding
+  const A = MASSES.arcade
+  for (let x = H.x0; x <= H.x1; x++) if (!c.get(x, 0, A.z)) c.set(x, 0, A.z, P.plinth)
+  for (const x of A.piers) for (let y = 1; y < A.roofY; y++) c.set(x, y, A.z, y === 1 ? P.carved : P.pier)
+  for (const [a0, a1] of A.arches) archBay(c, { axis: 'x', line: A.z, a0, a1, y: A.roofY - 1 }, P.arch)
+  for (let x = H.x0; x <= H.x1; x++) if (!c.get(x, A.roofY, A.z)) c.set(x, A.roofY, A.z, P.dressed)
+  for (const [x, z] of MASSES.pilasters) {
+    c.set(x, 0, z, P.plinth)
+    // the ground storey's corners only, capped by the frieze's course (full-height piers read as a keep's towers)
+    for (let y = 1; y <= H.upperY; y++) if (!(z === A.z && y <= A.roofY)) c.set(x, y, z, y === H.upperY ? P.dressed : P.pier)
+  }
+  const ring = []
+  for (let z = H.z0; z <= H.z1; z++) ring.push([H.x0 - 1, z, 'east'], [H.x1 + 1, z, 'west'])
+  for (let x = H.x0; x <= H.x1; x++) ring.push([x, H.z1 + 1, 'north'])
+  for (const [x, z, f] of ring) {
+    if (x === MASSES.flue.x && Math.abs(z - MASSES.flue.z) <= 1) continue // the flue's breast stands clear of it
+    if (!c.get(x, H.upperY, z)) stair(c, x, H.upperY, z, P.moulding, f, 'top')
+  }
   // beam ends: one even row at the deck's level, out of every wall
   const V = OUTSIDE.vigas
-  vigas(c, 'z', H.z0 - 1, V.front, H.deckY, P.viga)
-  vigas(c, 'z', H.z1 + 1, V.back, H.deckY, P.viga)
-  vigas(c, 'x', H.x0 - 1, V.west, H.deckY, P.viga)
-  vigas(c, 'x', H.x1 + 1, V.east, H.deckY, P.viga)
+  beamEnds(c, 'z', H.z0 - 1, V.front, H.deckY)
+  beamEnds(c, 'z', H.z1 + 1, V.back, H.deckY)
+  beamEnds(c, 'x', H.x0 - 1, V.west, H.deckY)
+  beamEnds(c, 'x', H.x1 + 1, V.east, H.deckY)
 
   // Pass 4, interior: the shipped house's furniture, cell for cell
   furnish(c, 1)
@@ -108,6 +134,8 @@ function levelOne(c) {
 function levelTwo(c) {
   const W = MASSES.parlour, L = W.loggia
   for (let z = 0; z <= 1; z++) c.clear(10, 0, z) // Level I's corner pot, where the loggia's floor goes
+  for (let y = 0; y <= MASSES.house.upperY; y++) c.clear(10, y, 1) // Level I's front east pilaster, in the loggia
+  for (let z = W.z0 - 1; z <= W.z1; z++) c.clear(10, MASSES.house.upperY, z) // the moulding, where the parlour stands
   // Pass 1: plinth and floor, mud-brick walls against the house's east wall, the deck and its coping
   plinth(c, W.x0 + 1, W.z0, W.x1, W.z1, P.plinth)
   floor(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, 0, P.floor)
@@ -124,7 +152,6 @@ function levelTwo(c) {
   for (let x = L.x0; x <= L.x1; x++) slab(c, x, L.deckY + 1, L.z0, P.coping, 'bottom')
   slab(c, L.x1, L.deckY + 1, L.z1, P.coping, 'bottom')
   c.set(10, L.deckY - 1, 1, 'lantern', { hanging: 'true', waterlogged: 'false' }) // light at the parlour's window
-  vigas(c, 'z', W.z1 + 1, OUTSIDE.vigas.parlourBack, W.deckY, P.viga) // (the east wall is the plot's edge: no beam ends there)
   // Pass 4, interior
   furnish(c, 2)
   pots(c, OUTSIDE.pots[2])
@@ -134,7 +161,9 @@ function levelTwo(c) {
 // --- Level III: the back room and its terrace ------------------------------------------------------------------------
 function levelThree(c) {
   const B = MASSES.backRoom, H = MASSES.house
-  for (const x of OUTSIDE.vigas.back) c.clear(x, H.deckY, H.z1 + 1) // the back beam ends, where the pergola goes
+  // everything a block out of the house's back wall (moulding, sills, brows, pilasters, beam ends, pots) where the
+  // back room and its terrace go
+  c.clearBox(0, 0, H.z1 + 1, 10, H.deckY + 2, H.z1 + 1)
   for (const [x, y, z] of [[3, 2, 9], [3, 3, 9]]) c.set(x, y, z, ashlar) // the box room's back window, now indoors
   for (const [x, y, z] of [[3, 4, 10], [7, 4, 10], [5, 8, 10], [3, 8, 10]]) c.clear(x, y, z) // their brows
   // Pass 1: plinth and floor, mud-brick walls against the house's back wall, the deck (the terrace) and its coping
@@ -170,8 +199,8 @@ function levelFour(c) {
   hatchLadder(c, C.ladder.x, C.ladder.z, -C.depth + 1, 0, C.ladder.facing, P.wood)
   furnish(c, 4) // first: the beam goes round what the shelves already hold
   const Bm = C.beam // the summer beam across the store carrying the hall's floor, on one post in the middle
-  for (let x = C.x0 + 1; x <= C.x1 - 1; x++) if (!c.get(x, -1, Bm.z)) c.set(x, -1, Bm.z, P.viga, { axis: 'x' })
-  for (let y = -C.depth + 1; y <= -2; y++) c.set(Bm.post, y, Bm.z, P.viga, { axis: 'y' })
+  for (let x = C.x0 + 1; x <= C.x1 - 1; x++) if (!c.get(x, -1, Bm.z)) c.set(x, -1, Bm.z, P.beam, { axis: 'x' })
+  for (let y = -C.depth + 1; y <= -2; y++) c.set(Bm.post, y, Bm.z, P.beam, { axis: 'y' })
   return dug
 }
 

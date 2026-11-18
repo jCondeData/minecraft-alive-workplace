@@ -31,8 +31,17 @@
 //  Checked: rebuild.py no CHECK line at any level; holes.py 0 (with open); check.py's owner rules 0; II keeps 100 % of
 //  I and places 18 %, III keeps 98 % of II and places 20 % (shipped: 98/13, 94/19); Level I about 45 stacks, III 57.
 //  Renders (front, back, left, right, top per level, IV's cutaways at y -1, 3, 7): build/rebuild/stone_house_desert/renders/.
-//  Open for the critic: the beam ends read as crates close up (the cottage's look uses the same); the back room's back
+//  Open for the critic: the back room's back
 //  wall is the plot's edge, so its windows have no brows; the main roof is a bare deck (no way up, so nothing on it).
+//  Round 2 (the critic's notes, briefs/stone_house_looks_critic.md, round 1 BACK 4/3/4/3): 1 the walls given depth:
+//        proud ground-storey corner pilasters (cut sandstone, smooth caps), the frieze carried round as a proud
+//        terracotta moulding, a proud sill under every side and back window below its brow; 2 a home, not a watchtower:
+//        the upper storey in mud brick over the stone ground storey (the cottage's material), a shallow arcade of two
+//        round arches along the front either side of the door's bay, jars and pots in its shade; 3 the door's bay
+//        carved full height in chiseled sandstone, its step, the lantern and the oriel over it; 4 the flue one stack
+//        with a breast stepped in at y 4, the moulding kept clear of it, no pilaster beside it; 5 the beam ends thin
+//        spruce poles (fences) instead of logs, more planting (cactus and dead bush at every corner and side, tulips in
+//        the arcade, an azalea on the terrace). Full-height corner piers were tried and read as a keep's towers.
 //  Left: the critic's pass (REBUILD.md) against the shipped Stone House; the Java side (49.10b ship step).
 //
 // Coordinates as the shipped house: x across the front (west 0 -> east), y up, z from the front (z = 0) to the back.
@@ -64,15 +73,17 @@ export const PALETTE = {
   plinth: 'smooth_sandstone', coping: 'smooth_sandstone_slab', dressed: 'smooth_sandstone', pier: 'cut_sandstone',
   carved: 'chiseled_sandstone', frieze: 'terracotta', brow: 'smooth_sandstone_slab', step: 'sandstone_stairs',
   arch: 'smooth_sandstone_stairs', deck: 'smooth_sandstone', floor: 'smooth_sandstone', upperFloor: 'spruce_planks',
-  viga: 'stripped_spruce_log', lattice: 'dark_oak_trapdoor', latticePost: 'dark_oak_log', latticeRoof: 'dark_oak_slab',
+  viga: 'spruce_fence', beam: 'stripped_spruce_log', moulding: 'terracotta_stairs', sillStair: 'smooth_sandstone_stairs', lattice: 'dark_oak_trapdoor', latticePost: 'dark_oak_log', latticeRoof: 'dark_oak_slab',
   wood: 'spruce', glass: 'glass_pane', partition: 'spruce_planks',
   cellarWall: [['sandstone', 5], ['smooth_sandstone', 2], ['cut_sandstone', 1]], cellarFloor: 'smooth_sandstone',
 }
 
 export const MASSES = {
   house: { x0: 1, z0: 1, x1: 9, z1: 9, upperY: 5, deckY: 9 },
+  arcade: { z: 0, piers: [1, 9], arches: [[2, 3], [7, 8]], roofY: 5 }, // round 2: a shallow arcade along the front
+  pilasters: [[1, 0], [9, 0], [0, 9], [1, 10], [9, 10], [10, 1], [10, 9]], // proud corners (none at x 0, z 1: the flue's breast)
   portal: { piers: [4, 6], z: 0, top: 4, lintelY: 5, oriel: { x0: 4, x1: 6, z: 0, y0: 5, y1: 8 } },
-  flue: { x: 0, z: 3, top: 12, breastTop: 3 },
+  flue: { x: 0, z: 3, top: 12, breastTop: 4 },
   tower: { x0: 1, z0: 7, y0: 10, y1: 15, slot: 3 },
   parlour: { x0: 9, z0: 2, x1: 12, z1: 8, deckY: 6, loggia: { x0: 9, x1: 12, z0: 0, z1: 1, piers: [9, 12], deckY: 5 } },
   backRoom: { x0: 1, z0: 9, x1: 9, z1: 13, deckY: 6,
@@ -86,8 +97,8 @@ export const OPENINGS = {
   frontDoor: SH_OPENINGS.frontDoor, stairs: SH_OPENINGS.stairs, partition: SH_OPENINGS.partition,
   wingDoorway: SH_OPENINGS.wingDoorway, backDoorway: SH_OPENINGS.backDoorway,
   windows: [
-    { name: 'hall front west', cells: [[3, 2, 1], [3, 3, 1]], out: 'north' },
-    { name: 'hall front east', cells: [[7, 2, 1], [7, 3, 1]], out: 'north' },
+    { name: 'hall front west', cells: [[3, 2, 1], [3, 3, 1]], out: 'north', brow: false }, // under the arcade
+    { name: 'hall front east', cells: [[7, 2, 1], [7, 3, 1]], out: 'north', brow: false },
     { name: 'box room west', cells: [[1, 2, 7], [1, 3, 7]], out: 'west' },
     { name: 'box room back', cells: [[3, 2, 9], [3, 3, 9]], out: 'south', until: 2 },
     { name: 'kitchen back', cells: [[7, 2, 9], [7, 3, 9]], out: 'south', until: 2 },
@@ -117,11 +128,12 @@ export const FURNITURE = SH_FURNITURE.map(f => (f.part === 'hangingLamp' && f.po
 export const OUTSIDE = {
   // potted desert plants on the plinth's corners and by the portal, water jars (decorated pots) under the windows
   pots: {
-    1: [[1, 0, 0, 'potted_cactus'], [9, 0, 0, 'potted_dead_bush'], [0, 0, 9, 'potted_cactus'], [10, 0, 1, 'potted_cactus']],
+    1: [[0, 0, 0, 'potted_cactus'], [10, 0, 0, 'potted_dead_bush'], [0, 0, 10, 'potted_cactus'], [10, 0, 10, 'potted_dead_bush'],
+      [0, 0, 6, 'potted_dead_bush'], [10, 0, 5, 'potted_cactus'], [3, 1, 0, 'potted_orange_tulip'], [7, 1, 0, 'potted_orange_tulip']],
     2: [[12, 0, 9, 'potted_dead_bush']],
     3: [[0, 0, 13, 'potted_dead_bush'], [10, 0, 13, 'potted_cactus']],
   },
-  jars: { 1: [[2, 0, 0], [8, 0, 0]], 2: [[10, 1, 1]], 3: [] },
-  terrace: { pots: [[2, 7, 10, 'potted_cactus'], [8, 7, 10, 'potted_orange_tulip']], jars: [[8, 7, 11]] },
-  vigas: { front: [2, 8], back: [2, 5, 8], west: [5, 8], east: [2, 5, 8], parlourBack: [10] },
+  jars: { 1: [[2, 1, 0], [8, 1, 0]], 2: [[10, 1, 1]], 3: [] },
+  terrace: { pots: [[2, 7, 10, 'potted_cactus'], [8, 7, 10, 'potted_orange_tulip'], [2, 7, 11, 'potted_flowering_azalea_bush']], jars: [[8, 7, 11]] },
+  vigas: { front: [2, 8], back: [2, 5, 8], west: [5, 8], east: [2, 5, 8], parlourBack: [] },
 }

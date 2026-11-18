@@ -15,7 +15,7 @@ categories: Builds, Village life, Festivals
 related: market-days.md, decorations.md, festivals-and-markets.md, builder.md
 ```
 
-The heart of a busy village, rebuilt from scratch in 51.7 as **the Market House**: a paved square with a rosette in its
+The heart of a busy village, rebuilt from scratch as **the Market House**: a paved square with a rosette in its
 middle and flowering azaleas in its front corners, and across the back a timber-framed Market Court standing on an open
 stone undercroft, jettied out on corbels under a steep brick-tile roof with a cross gable and a lantern cupola. A little
 balcony looks out over the middle of the square, where the market is opened; an outside stair climbs the east side to

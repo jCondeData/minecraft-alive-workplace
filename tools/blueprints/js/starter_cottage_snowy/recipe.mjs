@@ -31,7 +31,33 @@ function cabinWalls(c, W, y1) {
     wallPanel(c, a, b, 1, 1, stone)
     logCourse(c, a, b, 2, y1, P.log)
   }
-  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) post(c, x, z, 1, y1, P.log)
+  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) post(c, x, z, 1, y1, P.trim)
+}
+
+// snowCap: snow lying along every ridge (on each roof full block with nothing over it)
+function snowCap(c) {
+  const [w, h, d] = c.size
+  for (let x = 0; x < w; x++) for (let z = 0; z < d; z++) for (let y = h - 1; y > 0; y--) {
+    const n = c.name(x, y, z)
+    if (n === 'minecraft:air') continue
+    if (n === `minecraft:${P.roof.full}` && y + 1 < h) c.set(x, y + 1, z, P.snow, { layers: '3' })
+    break
+  }
+}
+
+// driftSkirt: snow layers on the ground (y 0) round the house: every empty ground cell beside the build, with nothing
+// over it, except before the doors
+function driftSkirt(c) {
+  const [w, , d] = c.size
+  const solid = (x, z) => c.name(x, 0, z) !== 'minecraft:air' || c.name(x, 1, z) !== 'minecraft:air'
+  const roofed = (x, z) => [1, 2, 3].some(y => c.name(x, y, z) !== 'minecraft:air') // under a low eave: no drift (headroom)
+  const no = new Set(OUTSIDE.noDrift.map(p => `${p[0]},${p[2]}`))
+  const add = []
+  for (let x = 0; x < w; x++) for (let z = 0; z < d; z++) {
+    if (solid(x, z) || roofed(x, z) || no.has(`${x},${z}`)) continue
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => x + dx >= 0 && x + dx < w && z + dz >= 0 && z + dz < d && solid(x + dx, z + dz))) add.push([x, z])
+  }
+  for (const [x, z] of add) c.set(x, 0, z, P.snow, { layers: '2' })
 }
 
 // --- Level I: the cabin --------------------------------------------------------------------------------------------
@@ -61,7 +87,18 @@ function levelOne(c) {
 
   // Pass 3, detail: lanterns under the mudroom's eaves, a woodpile under the east eave
   for (const p of OUTSIDE.porchLamps) c.set(...p, 'lantern', { hanging: 'true', waterlogged: 'false' })
-  for (const p of OUTSIDE.woodpile) c.set(...p, P.log, { axis: 'z' })
+  for (const p of OUTSIDE.woodpile) { c.set(p[0], 0, p[2], stone); c.set(...p, P.log, { axis: 'z' }) }
+  for (const p of OUTSIDE.porchWood) { c.set(p[0], 0, p[2], stone); c.set(...p, P.log, { axis: 'x' }) }
+  c.set(OUTSIDE.bootBench[0], 0, OUTSIDE.bootBench[2], stone)
+  stair(c, ...OUTSIDE.bootBench, `${P.wood}_stairs`, 'south')
+  for (const [x, y, z, out, pot] of OUTSIDE.flowerBoxes) {
+    stair(c, x, y, z, `${P.wood}_stairs`, out === 'east' ? 'west' : 'east', 'top')
+    c.set(x, y + 1, z, pot)
+  }
+  // snow: lying along the ridge and on the porch's ridge
+  snowCap(c)
+  const M2 = MASSES.mudroom
+  for (let z = M2.z0; z <= M2.z1; z++) { c.clear(4, M2.eaveY + 1, z); c.set(4, M2.eaveY + 1, z, P.snow, { layers: '3' }) }
 
   // Pass 4, interior
   furnish(c, 1)
@@ -81,10 +118,11 @@ function levelTwo(c) {
     logCourse(c, a, b, K.floorY, K.floorY, P.log)
     logCourse(c, a, b, K.floorY + 1, K.plateY, P.log)
   }
-  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) post(c, x, z, K.floorY, K.plateY, P.log)
+  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) post(c, x, z, K.floorY, K.plateY, P.trim)
   for (let x = R.x0; x <= R.x1; x++) for (let z = R.z0; z <= R.z1; z++) c.set(x, K.floorY, z, P.floor)
   const roof = gableRoof(c, K.roof, P.roof, (x, y, z) => !c.get(x, y, z))
   for (const z of [W.z0, W.z1]) gableWall(c, 'z', z, [W.x0 + 1, W.x1 - 1], K.plateY + 1, roof.under, () => P.gable)
+  snowCap(c)
   // the hall's roof meets the wing's west wall: close the hall's gable ends where the wing's wall took the eave
   for (const z of [MASSES.cabin.walls.z0, MASSES.cabin.walls.z1]) for (let y = 5; y <= 6; y++) if (!c.get(6, y, z)) c.set(6, y, z, P.gable)
 
@@ -110,7 +148,7 @@ function levelThree(c) {
   const top = x => roof.under[x] - 1
   for (let x = W.x0; x <= W.x1; x++) for (const z of [W.z0, W.z1]) for (let y = 1; y <= top(x); y++) c.set(x, y, z, stone)
   for (let z = W.z0 + 1; z < W.z1; z++) for (let y = 1; y <= top(W.x1); y++) c.set(W.x1, y, z, stone)
-  for (const z of [W.z0, W.z1]) post(c, W.x1, z, 1, top(W.x1), P.log)
+  for (const z of [W.z0, W.z1]) post(c, W.x1, z, 1, top(W.x1), P.trim)
   // the flue behind the smoker, up through the slope, smoking
   chimney(c, K.flue.x, K.flue.z, 0, K.flue.top, chimneyStone)
 
@@ -149,6 +187,7 @@ export function draw(level = 1) {
   if (level >= 2) levelTwo(c)
   if (level >= 3) levelThree(c)
   if (level >= 4) c.cellarInside = levelFour(c)
+  driftSkirt(c)
   return c
 }
 

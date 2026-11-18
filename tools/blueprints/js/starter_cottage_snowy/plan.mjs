@@ -14,6 +14,12 @@
 //        looks/snowy/...). Level II's chimney campfire (y 11) is reached from the hall's roof at x 2 (two across,
 //        two up): ChimneyCampfireGameTests should run on the look before it ships. Ideas for the critic: barge boards
 //        under the gables' verges, a snow-hood over the wing's ground window.
+//  Round 2 (the critic's notes, briefs/starter_cottage_looks_critic.md): 1 a snowy identity of its own: snow lying
+//        along every ridge and the porch roof, a drift skirt of snow layers round the house (not under the low eaves:
+//        headroom), pale calcite and diorite stone, white birch gables and stripped-birch corner posts; 2 flower
+//        boxes under the shuttered side windows (no dormer yet); 3 the porch dressed: firewood stacked by it, a boot
+//        bench, its lanterns. Sizes grew one block up for the ridge snow (I 13, II-IV 15 tall; under the 16 limit).
+//        Snow layers need the builder to carry snow: check the supplies tests take them.
 //
 // --- Three rough concepts --------------------------------------------------------------------------------------------
 //  1. "Snowy saltbox": B's shape in spruce and slate. Fits everything, but the long shallow catslide is exactly the
@@ -41,15 +47,19 @@
 //            y 8, its steep gable (ridge along z, y 13) to the road.
 import { FURNITURE as B_FURNITURE, OPENINGS as B_OPENINGS } from '../starter_cottage_b/plan.mjs'
 
-export const SIZE = { 1: [9, 12, 12], 2: [13, 14, 12], 3: [18, 14, 12], 4: [18, 14, 12] }
+export const SIZE = { 1: [9, 13, 12], 2: [13, 15, 12], 3: [18, 15, 12], 4: [18, 15, 12] } // one over each ridge for its snow
 
 // Palette (60/30/10): spruce logs (60) / dark deepslate-tile roof (30) / cobble and stone for the course, chimney and
 // the wing's ground storey (10, darkest low down). Furniture stays spruce (the tests read Level I's spots' wood).
 export const PALETTE = {
-  stone: [['cobblestone', 5], ['stone', 2], ['mossy_cobblestone', 1], ['andesite', 1]],
-  chimney: [['stone_bricks', 4], ['cobblestone', 3], ['cracked_stone_bricks', 1]],
+  // pale stone and white trim against the dark slate: the snow country's look (the critic: so it can't be taken for
+  // taiga, whose spruce and cobble it would otherwise share)
+  stone: [['calcite', 3], ['diorite', 2], ['stone', 2], ['polished_diorite', 1]],
+  chimney: [['stone_bricks', 4], ['calcite', 2], ['stone', 2]],
   log: 'spruce_log',
-  gable: 'spruce_planks',
+  trim: 'stripped_birch_log', // white corner posts
+  gable: 'birch_planks', // white-painted gable boards
+  snow: 'snow', // snow layers: the drift skirt, the porch roof, the woodpile
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
   floor: 'spruce_planks',
   door: 'oak',
@@ -101,5 +111,12 @@ export const OUTSIDE = {
   porchLamps: [[2, 2, 0], [6, 2, 0]], // hung under the mudroom's eaves
   kitchenLamp: [15, 1, 3], // a lantern on a spruce post by the kitchen door
   kitchenHood: { x0: 12, x1: 14, z: 3, y: 4 }, // a snow hood over the kitchen door: a short slate pentice
-  woodpile: [[8, 1, 3], [8, 1, 4], [8, 2, 3], [8, 2, 4], [8, 1, 5]], // under the east eave, out of the snow
+  woodpile: [[8, 1, 5], [8, 1, 6], [8, 2, 5], [8, 2, 6]], // under the east eave, out of the snow, on a stone pad
+  // the porch dressed (the critic: the entry porch is the set's best idea): firewood stacked by it, a boot bench
+  porchWood: [[1, 1, 0], [2, 1, 0], [1, 2, 0]],
+  bootBench: [6, 1, 0],
+  // flower boxes under the shuttered side windows: a sill and a pot (the critic: break the plain side walls)
+  flowerBoxes: [[8, 1, 4, 'east', 'potted_red_tulip'], [8, 1, 8, 'east', 'potted_cornflower'], [0, 1, 9, 'west', 'potted_poppy']],
+  // where the drift skirt stays clear: before the kitchen's door
+  noDrift: [[13, 0, 2], [12, 0, 2], [14, 0, 2]],
 }

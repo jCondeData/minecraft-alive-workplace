@@ -32,13 +32,13 @@ const windows = (c, level) => {
 }
 
 // box: a mud-brick block's walls round W from y0 up to the parapet's top y1, terracotta friezes at `friezes`, sandstone
-// corners one higher than the parapet (the piers)
+// corners up to the parapet's top, one even height (the critic: piers sticking up read as a ruin)
 function box(c, W, y0, y1, friezes) {
   for (const [a, b] of [[[W.x0, W.z0], [W.x1, W.z0]], [[W.x0, W.z1], [W.x1, W.z1]], [[W.x0, W.z0], [W.x0, W.z1]], [[W.x1, W.z0], [W.x1, W.z1]]]) {
     wallPanel(c, a, b, y0, y1, wall)
     for (const y of friezes) wallPanel(c, a, b, y, y, P.frieze)
   }
-  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) for (let y = y0; y <= y1 + 1; y++) c.set(x, y, z, y > y1 ? P.pier : P.column)
+  for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) for (let y = y0; y <= y1; y++) c.set(x, y, z, y === y1 ? P.pier : P.column)
 }
 
 // --- Level I: the house and its loggia -------------------------------------------------------------------------------
@@ -49,7 +49,6 @@ function levelOne(c) {
   floor(c, R.x0, R.z0, R.x1, R.z1, 0, P.floor)
   box(c, W, 1, H.deckY + 1, [H.friezeY])
   flatDeck(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, H.deckY, P.deck)
-  c.clear(W.x0, H.deckY + 1, 8) // the scupper: a gap in the parapet, its spout below
   // the loggia: columns two deep, a slab lintel in each bay, its roof a step below the house's, a lip on its edge
   for (const x of L.columns) for (let y = 1; y < L.roofY; y++) c.set(x, y, L.z0, P.column)
   for (const z of [L.z1]) for (const x of [L.x0, L.x1]) for (let y = 1; y < L.roofY; y++) c.set(x, y, z, P.column)
@@ -65,10 +64,14 @@ function levelOne(c) {
   door(c, fd.at, fd.facing, 'north', { wood: P.door, step: fd.step, stepStair: P.breast })
   windows(c, 1)
 
-  // Pass 3, depth: beam ends out of the back wall and the sides under the deck, a scupper spout at the parapet's gap
-  vigas(c, 'z', W.z1 + 1, OUTSIDE.vigasBack, H.deckY - 1, P.viga)
-  vigas(c, 'x', W.x1 + 1, [3, 6, 9], H.deckY - 1, P.viga)
-  c.set(W.x0 - 1, H.deckY, 8, P.viga, { axis: 'x' }) // the spout under the parapet's gap
+  // Pass 3, depth: one even row of beam ends at the deck's level, just under the parapet, every third block
+  vigas(c, 'z', W.z1 + 1, OUTSIDE.vigasBack, H.deckY, P.viga)
+  vigas(c, 'x', W.x1 + 1, [3, 6, 9], H.deckY, P.viga)
+  vigas(c, 'x', W.x0 - 1, [3, 9], H.deckY, P.viga)
+  // the door framed: chiseled jambs and lintel round it inside the loggia, the door bay open to the loggia's roof
+  for (let y = 1; y <= 2; y++) for (const x of [3, 5]) c.set(x, y, W.z0, P.pier)
+  for (const x of [3, 4, 5]) c.set(x, 3, W.z0, P.pier)
+  c.clear(4, L.roofY - 1, L.z0)
 
   // Pass 4, interior
   furnish(c, 1)
@@ -77,6 +80,7 @@ function levelOne(c) {
   c.set(...OUTSIDE.path, P.plinth)
   for (const p of OUTSIDE.jars) c.set(...p, 'decorated_pot', { facing: 'north', cracked: 'false', waterlogged: 'false' })
   for (const p of OUTSIDE.cactus) c.set(...p, 'potted_cactus')
+  for (const [x, y, z, plant] of OUTSIDE.planting[1]) c.set(x, y, z, plant)
 }
 
 // --- Level II: the wing block --------------------------------------------------------------------------------------
@@ -105,9 +109,11 @@ function levelTwo(c) {
   windows(c, 2)
 
   // Pass 3, depth: beam ends under the wing's deck front and back
-  vigas(c, 'z', W.z0 - 1, [8, 10], K.deckY - 1, P.viga)
-  vigas(c, 'z', W.z1 + 1, [8, 10], K.deckY - 1, P.viga)
-  vigas(c, 'x', W.x1 + 1, [2, 5, 8], K.deckY - 1, P.viga)
+  vigas(c, 'z', W.z0 - 1, [9], K.deckY, P.viga)
+  vigas(c, 'z', W.z1 + 1, [9], K.deckY, P.viga)
+  vigas(c, 'x', W.x1 + 1, [3, 6, 9], K.deckY, P.viga)
+
+  for (const [x, y, z, plant] of OUTSIDE.planting[2]) c.set(x, y, z, plant)
 
   // Pass 4, interior
   furnish(c, 2)
@@ -124,7 +130,7 @@ function levelThree(c) {
     wallPanel(c, a, b, 1, K.deckY + 1, wall)
     wallPanel(c, a, b, K.friezeY, K.friezeY, P.frieze)
   }
-  for (const z of [W.z0, W.z1]) for (let y = 1; y <= K.deckY + 2; y++) c.set(W.x1, y, z, y > K.deckY + 1 ? P.pier : P.column)
+  for (const z of [W.z0, W.z1]) for (let y = 1; y <= K.deckY + 1; y++) c.set(W.x1, y, z, y > K.deckY ? P.pier : P.column)
   flatDeck(c, R.x0, R.z0, R.x1, R.z1, K.deckY, P.deck)
   // the flue behind the smoker, up through the parapet, smoking
   chimney(c, K.flue.x, K.flue.z, 0, K.flue.top, P.stack)
@@ -134,8 +140,10 @@ function levelThree(c) {
   door(c, kd.at, kd.facing, 'north', { wood: P.door, step: kd.step, stepStair: P.breast })
   doorway(c, OPENINGS.wingToKitchen.at, OPENINGS.wingToKitchen.height)
   windows(c, 3)
-  vigas(c, 'z', W.z1 + 1, [14], K.friezeY, P.viga)
+  vigas(c, 'z', W.z1 + 1, [14], K.deckY, P.viga)
   lampPost(c, ...OUTSIDE.kitchenLamp, P.parapet)
+
+  for (const [x, y, z, plant] of OUTSIDE.planting[3]) c.set(x, y, z, plant)
 
   // Pass 4, interior
   furnish(c, 3)

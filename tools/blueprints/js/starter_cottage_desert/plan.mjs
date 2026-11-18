@@ -13,6 +13,10 @@
 //  Left: the critic pass (REBUILD.md) against the as-drawn cottage; the Java side of 49.10a (culture pick, Table,
 //        GameTests, saving as looks/desert/...). Ideas the critic may want: an arched loggia (stairs, not slab
 //        lintels), a palm or a well in the yard, a pergola on the kitchen's roof terrace.
+//  Round 2 (the critic's notes, briefs/starter_cottage_looks_critic.md): 1 the corner piers stop at the parapet's
+//        height (no stumps above it); 2 the beam ends are one even row at the deck's level, every third block, on
+//        every block; 3 the door framed in chiseled sandstone, its bay open to the loggia's roof; 4 planting back
+//        (tulips flanking the door, cactus and dead bush under the windows and at the corners). Not done: an awning.
 //
 // --- Three rough concepts --------------------------------------------------------------------------------------------
 //  1. "Sandstone saltbox": B's shape exactly, roofs in sandstone slabs. Safe and fits every test, but it is only a
@@ -103,6 +107,14 @@ export const OUTSIDE = {
   jars: [[2, 1, 1], [6, 1, 1]], // water jars in the loggia, out of the door's way
   cactus: [[0, 0, 0], [8, 0, 0]], // potted cactus at the loggia's corners
   vigasBack: [2, 4, 6],
+  // planting by the door and the windows (the critic: bring it back): flowers flanking the door in the loggia,
+  // cactus and dead bush on the plinth under the back windows and at the corners
+  planting: {
+    1: [[3, 1, 1, 'potted_orange_tulip'], [5, 1, 1, 'potted_orange_tulip'], [3, 1, 11, 'potted_cactus'],
+      [5, 1, 11, 'potted_dead_bush'], [0, 0, 10, 'potted_dead_bush'], [8, 0, 10, 'potted_cactus']],
+    2: [[12, 0, 1, 'potted_cactus'], [9, 1, 11, 'potted_dead_bush']],
+    3: [[15, 1, 10, 'potted_cactus'], [12, 1, 3, 'potted_dead_bush']],
+  },
   kitchenLamp: [15, 1, 3], // a lantern on a sandstone post by the kitchen door
 }
 export { B_MASSES }

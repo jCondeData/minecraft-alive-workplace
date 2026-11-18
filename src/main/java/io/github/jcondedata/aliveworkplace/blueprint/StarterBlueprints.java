@@ -343,15 +343,16 @@ public final class StarterBlueprints {
 	public static final Entry MAP_ROOM = new Entry(AliveWorkplace.id("map_room"), new Vec3i(9, 16, 9));
 
 	/**
-	 * The luxury workshops of ROADMAP 34.13 (tools/blueprints/workshops.py). A stone press house over a half-sunk cellar:
-	 * earth banked up the cellar's sides, its door under the landing of the outside stair; the cauldron vat (Vintner) by
-	 * the press room's door, racks of casks (spruce log ends) and a cellar of chests. No barrel: that's the fisherman's.
+	 * The luxury workshops of ROADMAP 34.13 (the Winery rebuilt from scratch in 50.4, tools/blueprints/js/winery). A
+	 * gravity-flow press house: a stone Cask Hall at the ground, a white timber-framed press floor over it reached by a
+	 * double stone perron, the cauldron vat (Vintner) on the press floor, chests and racks of casks (spruce logs on their
+	 * sides) in the hall below, a stone tasting room on the east. No barrel: that's the fisherman's.
 	 */
-	public static final Entry WINERY = new Entry(AliveWorkplace.id("winery"), new Vec3i(13, 14, 12));
-	/** A tasting porch off a back door, and behind it two terraces of sweet berry rows down to a pergola of glow berries. */
-	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(13, 14, 20));
-	/** A barrel vault dug under the barrel cellar (36.7). */
-	public static final Entry WINERY_3 = new Entry(AliveWorkplace.id("winery_3"), new Vec3i(13, 14, 20), 4);
+	public static final Entry WINERY = new Entry(AliveWorkplace.id("winery"), new Vec3i(17, 17, 15));
+	/** The vineyard behind it: rows of sweet berries in a kerbed bed and an arbour hung with glow berries. */
+	public static final Entry WINERY_2 = new Entry(AliveWorkplace.id("winery_2"), new Vec3i(17, 17, 22));
+	/** A vintage vault dug under the Cask Hall, down a ladder from a hatch (36.7). */
+	public static final Entry WINERY_3 = new Entry(AliveWorkplace.id("winery_3"), new Vec3i(17, 17, 22), 4);
 	/** A timber shop with a bay window of dress forms, the loom (Tailor), bolts of coloured wool, a fitting room behind. */
 	public static final Entry TAILORS_SHOP = new Entry(AliveWorkplace.id("tailors_shop"), new Vec3i(11, 11, 12));
 	/** A cutting-room storey above, with bolts of cloth on racks, and a drying loft for dyed wool in the roof. */
@@ -420,10 +421,11 @@ public final class StarterBlueprints {
 	 */
 	public static final Entry GLASSBLOWERS_WORKSHOP = new Entry(AliveWorkplace.id("glassblowers_workshop"), new Vec3i(13, 12, 11));
 	/**
-	 * A brick-and-plaster Butcher's Shop under a red-and-white awning, the smoker in its chimney breast, a pen behind, and
-	 * under it an ice-lined freezer down a ladder behind the counter (26.15): one tier, a cellar from the first.
+	 * A white, dark-framed Butcher's Shop with its gable to the street and a red-brick smoke tower on its east side (the
+	 * smoker in the tower's foot, a woodpile against it), and under its back half an ice-lined freezer down a
+	 * ladder (26.15; rebuilt from scratch in 50.4, tools/blueprints/js/butchers_shop): one tier, a cellar from the first.
 	 */
-	public static final Entry BUTCHERS_SHOP = new Entry(AliveWorkplace.id("butchers_shop"), new Vec3i(13, 11, 13), 4);
+	public static final Entry BUTCHERS_SHOP = new Entry(AliveWorkplace.id("butchers_shop"), new Vec3i(21, 13, 16), 4);
 
 	/** The three houses of 32.19, in the order What next? and the scene show them. */
 	public static final List<Entry> ANSWERING_HOUSES = List.of(FIRE_STATION, WELL_HOUSE, PHYSICIANS_HOUSE);

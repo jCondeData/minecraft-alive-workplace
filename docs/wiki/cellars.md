@@ -16,7 +16,7 @@ workers' chests and job blocks stay where they were.
 | Build | The cellar | Way down |
 |---|---|---|
 | Inn III | an ale and wine cellar: racks of wine casks along both walls, oak ale casks and sacks of malt (hay) along the front, bottles in chests and pots, a tasting table | ladder in the taproom's north-east corner |
-| Winery III | a barrel vault under the barrel cellar: casks two high under a vault of stone-brick stairs, a tasting table, a chest of bottles | ladder in the barrel cellar's corner |
+| Winery III | a vintage vault under the Cask Hall (rebuilt in 50.4): stone-brick walls, racks of old casks two and three high, a tasting table for two under two lamps | ladder under a mangrove hatch in the Cask Hall's floor |
 | Farmstead III | a root cellar: bins of pumpkins and melons, hay, sacks (chests), potted mushrooms, a sorting table | ladder by the kitchen |
 | Guildhall III | a strongroom: gold, emerald and lapis and the guild's chests caged behind iron bars, ledgers in chests two high, a counting table | ladder by the hall's west wall |
 | Barracks III | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the east wall |

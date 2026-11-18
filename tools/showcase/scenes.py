@@ -1568,6 +1568,20 @@ SCENES = [
            ("03_outside_west", "From the west: the buttressed hall wall and the lantern's glazing"),
            ("02_outside_back", "From the back: the water tank on its brick tower and the wheel"),
            ("10_room_1", "Inside at eye level: the mixer over the basin, the belt to the depot")], furniture=True, create=True),
+    # ROADMAP 50.4: the Butcher's Shop rebuilt from scratch (REBUILD.md)
+    S("rebuild_butchers_shop", "Build families", "The Butcher's Shop, rebuilt: from four sides and at eye level inside",
+      "the Butcher's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Butcher's Shop from the front: the white shop's gable to the street, its display boards under the pentice"),
+           ("04_outside_east", "From the east: the red-brick smoke tower under its slate cap, smoking at the peak"),
+           ("03_outside_west", "From the west: the shop's long side, white panels in its dark oak frame"),
+           ("10_room_1", "Inside at eye level: the shop, its counter and the butcher's half behind")], furniture=True),
+    # ROADMAP 50.4: the Winery rebuilt from scratch (REBUILD.md)
+    S("rebuild_winery", "Build families", "The Winery, rebuilt: from four sides and at eye level inside",
+      "the Winery's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Winery from the front: the double stone perron up to the press-floor door, the Cask Hall's door under the landing"),
+           ("04_outside_east", "From the east: the stone Tasting Room under its tiled lean-to"),
+           ("03_outside_west", "From the west: the stone Cask Hall under the white timber-framed press floor"),
+           ("10_room_1", "Inside at eye level: the first furnished room, its furniture in view")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

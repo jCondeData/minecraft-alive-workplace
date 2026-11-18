@@ -944,7 +944,8 @@ def winery_inside(b):
 
 
 def winery():
-    """13 x 14 x 12: a stone press house over a half-sunk cellar: earth banked up the cellar's sides and back, its door
+    """The OLD drawing (ROADMAP 50.4: the live one comes from tools/blueprints/js/winery, this one is kept in
+    blueprint_history/). 13 x 14 x 12: a stone press house over a half-sunk cellar: earth banked up the cellar's sides and back, its door
     under the landing of the outside stair, the press room above under a clay-tile roof with a gabled porch; the
     cauldron vat (Vintner) by the door, a press, racks of casks (spruce log ends) and a cellar of chests."""
     b = Build(13, 14, 12)
@@ -981,7 +982,8 @@ def winery_terrace(b, x0, x1, z0, z1, top):
 
 
 def winery_2():
-    """13 x 14 x 20: the knoll behind the press house: a back door onto a tasting porch (a table, stools, a cask, a
+    """The OLD drawing (ROADMAP 50.4: the live one comes from tools/blueprints/js/winery, this one is kept in
+    blueprint_history/). 13 x 14 x 20: the knoll behind the press house: a back door onto a tasting porch (a table, stools, a cask, a
     railing) under a lean-to of the same tiles, steps down to two terraces of sweet berry rows held by dry-stone edges,
     and over the lower one a pergola hung with glow berries; a lamp at each foot of the garden."""
     b = winery().grow(13, 14, 20)

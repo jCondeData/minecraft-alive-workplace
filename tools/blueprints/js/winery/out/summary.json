@@ -1,0 +1,19 @@
+{
+  "name": "winery-3",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 71
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/winery/out/winery-3.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/winery/out/summary.json",
+  "size": [
+    17,
+    21,
+    22
+  ],
+  "blockCount": 1336,
+  "paletteCount": 76,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/winery/recipe.mjs"
+}

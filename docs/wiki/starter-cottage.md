@@ -26,8 +26,9 @@ Roadmap items: 26.15, 37.4, 49.3
   with its own oak door on the front and a lamp post by it, a doorway knocked through the wing's east wall: the smoker
   between two counters with the plates, a shelf, a chest, a little flue.
 - **Starter Cottage IV** (18 x 12 x 12, 4 deep below ground): a **store cellar** under the hall, down a ladder through a
-  hatch in the hall floor: two chests and shelves along the back, kelp and hay at the sides, pumpkins and a melon, a
-  summer beam across the ceiling, a lantern.
+  hatch in the hall floor: two chests along the back, shelves on the west wall, kelp and hay in the corners, pumpkins and
+  a melon, a summer beam across the ceiling, a lantern. It lies inside the cellar every older Level IV dug (z 2..8), so a
+  refresh from one finds the ground already dug.
 - Beds: 1, 3, 3 and 3. Jobs at Level I: exactly a Fisherman (the barrel) and a Carpenter (the crafting table). Every
   piece is a furniture spot, so a builder with the furniture mods builds the mods' pieces in their places (37.2); with
   the building mods its modded copy dresses the walls, floors and chests (37.12).

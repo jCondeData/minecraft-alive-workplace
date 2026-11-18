@@ -11,7 +11,7 @@ for L in 1 2 3 4; do
   f=out/$(echo $id | tr _ -).nbt
   LEVEL=$L node "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955 > /dev/null
   if [ "$L" = 4 ]; then
-    python3 ../../rebuild.py starter_cottage_b "$id" $where --nbt "$f" --basement 4 --cellar 2,3,6,9
+    python3 ../../rebuild.py starter_cottage_b "$id" $where --nbt "$f" --basement 4 --cellar 2,3,6,7
   else
     python3 ../../rebuild.py starter_cottage_b "$id" $where --nbt "$f"
   fi

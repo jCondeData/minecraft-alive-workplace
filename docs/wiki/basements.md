@@ -17,7 +17,7 @@ floor above, and has a ladder or a stone stair down from inside.
 
 | Build | The basement | Way down |
 |---|---|---|
-| Starter Cottage IV | a store cellar under the hall (49.3): two chests and shelves along the back, kelp and hay, pumpkins and a melon, a summer beam across the ceiling | ladder through a hatch in the hall floor |
+| Starter Cottage IV | a store cellar under the hall (49.3): two chests along the back, shelves, kelp and hay, pumpkins and a melon, a summer beam across the ceiling | ladder through a hatch in the hall floor |
 | Stone House IV | a store cellar (49.4): casks two high, shelves, a workbench with its lamp and a chest, a summer beam on one post | ladder by the hearth |
 | Burgher's Townhouse IV | a vaulted cellar under the shop (49.5): casks two high, shelves, a chest and a workbench with its lamp, two stone ribs | ladder down from the shop |
 | Noble's Manor IV | a great wine cellar under the hall, held up by two stone columns | stone stair beside the hall's table |

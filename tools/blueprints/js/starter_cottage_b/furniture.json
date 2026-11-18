@@ -35,8 +35,5 @@
   {"kind":"crockery","pos":[15,3,7],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":"white"},
   {"kind":"shelf","pos":[14,2,8],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"crockery","pos":[14,3,8],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":"white"},
-  {"kind":"lamp","pos":[13,4,6],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
-  {"kind":"shelf","pos":[5,-2,9],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
-  {"kind":"shelf","pos":[6,-2,9],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
-  {"kind":"lamp","pos":[4,-1,5],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null}
+  {"kind":"lamp","pos":[13,4,6],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null}
 ]}

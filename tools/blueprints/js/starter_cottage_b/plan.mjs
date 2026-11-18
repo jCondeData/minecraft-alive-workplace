@@ -38,7 +38,7 @@
 //              plate y 8), its own gable roof (ridge along z, y 11) and a pentice over the front ground window.
 //   Kitchen    Level III: a stone lean-to x 12..16, z 4..9, roof rising from y 2 (x 17) to y 7 under the wing's eave,
 //              its own oak door on the front (x 13), a doorway knocked through the wing's east wall, a flue in its east wall (x 16).
-//   Cellar     Level IV: a stone room under the hall (walls x 1..7, z 2..10, floor 4 below ground), a ladder down
+//   Cellar     Level IV: a stone room under the hall (walls x 1..7, z 2..8, floor 4 below ground), a ladder down
 //              through a hatch in the hall floor, a lantern.
 
 export const SIZE = { 1: [9, 11, 12], 2: [13, 12, 12], 3: [18, 12, 12], 4: [18, 12, 12] }
@@ -84,7 +84,9 @@ export const MASSES = {
     roof: { axis: 'z', across: [12, 17], ridge: 12, along: [3, 10], ridgeY: 7 },
     flue: { x: 16, z: 6, top: 5 },
   },
-  cellar: { x0: 1, z0: 2, x1: 7, z1: 10, depth: 4, beam: { y: -1, z: 6 } }, // the beam spans the room wall to wall
+  // z 2..8, not to the back wall: inside the cellar every older Level IV dug (x 1..9, z 2..8), so a refresh from one
+  // finds the ground already dug (QaReleaseRefresh1028); the beam spans the room wall to wall
+  cellar: { x0: 1, z0: 2, x1: 7, z1: 8, depth: 4, beam: { y: -1, z: 4 } },
 }
 
 export const ROOMS = [
@@ -93,7 +95,7 @@ export const ROOMS = [
   { level: 2, name: 'Parlour', use: "the wing's ground floor: a second table, the stair up", box: [8, 1, 2, 10, 3, 9] },
   { level: 2, name: 'Chamber', use: "the wing's upper floor: two beds under the hero gable", box: [8, 5, 2, 10, 7, 9] },
   { level: 3, name: 'Kitchen', use: 'smoker, counters, shelf; its own door to the yard', box: [12, 1, 5, 15, 5, 8] },
-  { level: 4, name: 'Cellar', use: 'stores under the hall: chests, kelp, hay', box: [2, -3, 3, 6, -1, 9] },
+  { level: 4, name: 'Cellar', use: 'stores under the hall: chests, kelp, hay', box: [2, -3, 3, 6, -1, 7] },
 ]
 
 export const OPENINGS = {
@@ -205,10 +207,10 @@ export const FURNITURE = {
   4: [
     // Cellar: chests along the back with shelves beside them, kelp and hay stacked at the front, pumpkins and a melon
     // in the east corner, a summer beam across the ceiling (MASSES.cellar.beam), a lantern from the hall's floor
-    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [3, -3, 9], facing: 'north', block: 'chest' },
-    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [4, -3, 9], facing: 'north', block: 'chest' },
-    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [5, -2, 9], facing: 'north', wood: 'spruce' },
-    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [6, -2, 9], facing: 'north', wood: 'spruce' },
+    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [3, -3, 7], facing: 'north', block: 'chest' },
+    { room: 'Cellar', kind: 'fixture', part: 'pantry', pos: [4, -3, 7], facing: 'north', block: 'chest' },
+    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [2, -2, 4], facing: 'east', wood: 'spruce' },
+    { room: 'Cellar', kind: 'shelf', part: 'shelf', pos: [2, -2, 5], facing: 'east', wood: 'spruce' },
     { room: 'Cellar', kind: 'lamp', part: 'hangingLamp', pos: [4, -1, 5], facing: 'north', chain: 0, wood: 'spruce' },
   ],
 }
@@ -231,6 +233,6 @@ export const OUTSIDE = {
   doorHood: { posts: [3, 5], z: 0, y: 4 }, // a gabled hood on two spruce posts over the path, under the eave's lantern
   doorLamp: [4, 3, 1], // hangs from the front eave over the step
   kitchenLamp: [15, 1, 3],
-  cellarStores: { kelp: [[2, -3, 3], [2, -2, 3], [3, -3, 3], [3, -2, 3]], hay: [[2, -3, 9], [2, -2, 9], [2, -3, 8]],
+  cellarStores: { kelp: [[2, -3, 3], [2, -2, 3], [3, -3, 3], [3, -2, 3]], hay: [[2, -3, 7], [2, -2, 7]],
     pumpkin: [[5, -3, 3], [6, -3, 3]], melon: [[6, -3, 4]] },
 }

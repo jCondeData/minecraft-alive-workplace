@@ -30,3 +30,35 @@ OLD scores 4/4/4/4 throughout.
 
 ## Taiga (SHIP, narrow), optional polish
 - L2/L3 right: a shuttered window or a firewood stack under the catslide; L3 back: a window box or log-end brackets; L1 left: one tidy firewood stack.
+
+# Round 2 (a second fresh critic, 2026-11-18): desert and snowy
+
+look_spots.py SAME BUILDING for both at every level; no isolated blocks; every snow layer on a full block or top stair.
+
+| Look | Silhouette | Depth | Interior | Detail | Verdict |
+|---|---|---|---|---|---|
+| Desert | 4 | 4 | 4 | 3 | BACK |
+| Snowy | 4 | 4 | 4 | 3 | BACK |
+
+Round-1 notes: desert 1, 3, 4 answered, 2 and 5 partly; snowy 1, 3, 4, 5 answered, 2 not.
+
+## Desert notes (round 2)
+1. L1 back/right/left: the windcatcher stands four blocks over the coping at the back corner (keep-and-turret): cut it to about two, or move it off the corner.
+2. L3 right and left: brows and sills that wrap onto the pier between the volumes read as loose steps: stop them at the window width.
+3. Every level: one planting bigger than a pot that shows from 20 blocks (a tree in a planter at the arcade, or the terrace azalea up where it shows).
+
+## Snowy notes (round 2)
+1. L1/L3 front: the dormer needs a visible roof (snow on its ridge or a contrasting verge) and no one-wide calcite column above its face.
+2. L3 front: no lone snow strip mid-slope or broken snow piece over the wing's eave: a snow line runs a whole course or isn't there.
+3. L1/L3 every side: the ground drift one continuous skirt like the snowy cottage's, or none (the spaced pads read as stepping stones).
+
+# Round 3 (a third fresh critic, 2026-11-18): desert and snowy, final
+
+| Look | Silhouette | Depth | Interior | Detail | Verdict |
+|---|---|---|---|---|---|
+| Desert | 4 | 4 | 4 | 4 | SHIP (the windcatcher a low box off the corner, brows stop at the windows, an azalea climber at the corner) |
+| Snowy | 4 | 4 | 4 | 3 | BACK, third time: goes to the owner as it stands, not shipped |
+
+Snowy, left for the owner: (1) L1 back and right: the ground drift still reads as spaced pads; (2) L3 left and right:
+short snow pieces down the gable edges and a gappy ridge where the cross-gable meets the main roof; (3) L3 right: a lumpy
+deepslate stair cluster in the valley where the wing roof meets the gable wall.

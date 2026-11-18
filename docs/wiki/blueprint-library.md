@@ -274,5 +274,5 @@ bookshelf screen, one bed, one chest). The brief now caps it at about 900 blocks
 another roof, so the builder never stands on one roof to lay the next. The bed's foot (13, 1, 14) stands diagonal to
 the screen doorway (12, 1, 13): `check.py`'s doorway rule looks at the doorway cell and the cells straight in front of
 and behind it, (11, 1, 13) and (13, 1, 13), both open floor, so the way through is clear. The old drawing (and its
-modded copy) is in `blueprint_history/school/` as `v0.145.0`; the village houses `<style>_school` keep their own looks
+modded copy) is in `blueprint_history/school/` as v0.145.0; the village houses `<style>_school` keep their own looks
 (`village.py`'s staffed house). Scene `rebuild_school`.

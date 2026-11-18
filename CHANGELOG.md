@@ -133,6 +133,16 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
+  andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
+- Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected
+  village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
+  blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and
+  a Deployer outside places nothing inside. Machines inside the village work as before (B808, B993, B1033, B1015).
+- A stranger's Create funnel, chute or Mechanical Arm outside a protected village no longer takes items out of (or puts
+  them into) its chests and depots, and a stranger's Deployer inside it can't rename the Village Hall (B994, B1015,
+  B844). A Deployer nobody placed no longer becomes the owner of a Village Hall it sets down or of a Mailbox or Shop
+  Counter it clicks; one a player placed still acts for that player (B843).
 - With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
   and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
   bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
@@ -184,6 +194,9 @@ asks for the steps, `latest.log` and any crash report).
   as in a village for a few seconds after its hall is gone (B1356).
 
 ### Dev
+- Tests: the Waystones travel-cost and moved-stone checks (`QaWaystones1117dCompatTests`) are in the compat suite. Its
+  "village listed twice" failure (B1375) was the test next door's plaza, taken over by the test's village, not a dead
+  entry in game: the waystone tests now clear such a plaza along with its hall (`QaWaystoneLeftover1118aCompatTests`).
 - The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
   library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
   `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).

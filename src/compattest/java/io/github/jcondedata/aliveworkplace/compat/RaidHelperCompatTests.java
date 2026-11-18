@@ -77,6 +77,8 @@ public class RaidHelperCompatTests implements FabricGameTest {
 				net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY).toList()) {
 			level.removeBlock(hall, false);
 		}
+		// B1375: and the waystone plazas they left: a hall set down by one takes it over (B1188), a second stone of its village
+		WaystoneQaCompatTests.clearPlazasAround(helper);
 		// The village store is the chests by the kitchens and Storehouses within a hall's reach: an earlier batch's camp
 		// kitchen, built outside this smaller area, became this village's store (after the 37.5/37.6 merge reordered the batches).
 		net.minecraft.world.phys.AABB own = helper.getBounds();

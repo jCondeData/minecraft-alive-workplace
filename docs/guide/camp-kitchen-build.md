@@ -14,7 +14,7 @@ related: camp-cook.md, kitchen-build.md, pokemon-village-houses.md
 ```
 
 A square timber cookhouse built round a **Campfire Pot**: spruce logs and pale birch boards on a stone terrace, under a
-steep bell-cast roof of deepslate tiles that climbs to a copper louvre right over the pot, so you can tell from across
+steep bell-cast roof of deepslate tiles that climbs to a copper louver right over the pot, so you can tell from across
 the valley where the cooking happens. Inside, the pot stands alone on a brick hearth in the middle of the room, a bench
 faces the fire, and along the back a dresser of counters and crockery stands between the cook's two chests. Shuttered
 windows, lanterns hung either side of the door, planters by the steps and a lean-to of Hearty Grain bales on the west

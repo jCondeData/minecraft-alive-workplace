@@ -14,7 +14,7 @@ Roadmap items: 28.15, 52.2
   a village).
 - Each house has exactly one job block and one villager, who already has that job when the village is found.
 - The Camp Kitchen (redrawn in 52.2 with the rebuilt buildable's character) is a square timber room under a steep
-  bell-cast pyramid roof of the style's roofing, a copper-capped louvre at its peak with a lantern in it, right over the
+  bell-cast pyramid roof of the style's roofing, a copper-capped louver at its peak with a lantern in it, right over the
   Campfire Pot, which stands alone on a 3 x 3 brick hearth in the middle of the room (template (4, 1, 5)); the chest
   against the west wall in the back corner, a bale and a bench facing the fire beside it, shuttered windows, lanterns
   hung from the flared eave either side of the door, and a lean-to of Hearty Grain bales and split logs on the east.
@@ -53,7 +53,7 @@ None of its own: a grown house is ordinary blocks, and its villager is an ordina
 - 52.2: the village Camp Kitchen keeps every cell the village contract reads (the jigsaw at (4, 1, 0), the door at
   (4, 1, 2) and its step, the bed foot (6, 1, 6) and head (6, 1, 7), one pot with its `PotComponent`, one loot chest,
   one Camp Cook, 12 x 11 x 11); only the shell and the room's layout changed (the pot moved from (3, 1, 7) to the
-  middle, under the louvre; the chest from (4, 1, 7) to (2, 1, 7)).
+  middle, under the louver; the chest from (4, 1, 7) to (2, 1, 7)).
 
 ## Known limits
 

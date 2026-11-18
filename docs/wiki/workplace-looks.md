@@ -62,7 +62,7 @@ calcite and spruce in the snow; spruce and mossy cobblestone in the taiga):
   columns; the **Ball Workshop** a round drying tower with a copper spire; the **Trade Hall** a market hall on an arcade
   with a cupola; the **School** a hall with a clock tower; the **Fossil Lab** a stone lab under a glass skylight with a
   bone skeleton on show; the **Pokémon Center** a white house under a red hipped roof; the **Camp Kitchen** a square
-  timber cookhouse under a bell-cast pyramid roof with a louvre over the pot and a lean-to of grain bales; the **Berry
+  timber cookhouse under a bell-cast pyramid roof with a louver over the pot and a lean-to of grain bales; the **Berry
   Nursery** a cottage thatched with hay and watered berry beds; the **Daycare** a cottage with a round window and a
   playground; the **Gem Grotto** a mound of stone and moss with amethyst growing out of it.
 

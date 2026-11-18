@@ -1525,6 +1525,46 @@ SCENES = [
            ("02_outside_back", "From the back: the cloak and the azaleas on the back corners"),
            ("03_outside_west", "From the west"),
            ("04_outside_east", "From the east")], env={"REBUILD_BLUEPRINT": "legend/founder_statue"}, furniture=True),
+    # ROADMAP 52.5: the Lost Caravan's trail marks, rebuilt ("the Carter's Rags"): the third mark, the Torn Banner, from
+    # four sides (the other four are in the wiki's trail-marks.png)
+    S("rebuild_trail", "Build families", "The Lost Caravan's trail, rebuilt: the third mark from four sides",
+      "the third trail mark stands on a patch of trodden earth on a cleared lawn: the wagon's white cover thrown over its one standing hoop and slumped to the ground, hacked through, the settlers' white banner jammed on a splintered pole before it, wheel ruts running through",
+      40, [("01_outside_front", "The Torn Banner from the front: the white banner on its pole, the canvas wall behind"),
+           ("02_outside_back", "From the back: the slumped cover, holes hacked through it"),
+           ("03_outside_west", "From the west: the hoop's rib and the canvas, five blocks tall"),
+           ("04_outside_east", "From the east")], env={"REBUILD_BLUEPRINT": "story/trail_3"}, furniture=True),
+    # ROADMAP 52.5: the Bandit Camp, rebuilt (the Lookout Camp; camp/bandit_camp, REBUILD_BLUEPRINT: its id has a
+    # folder): from four sides (its rooms, the tents and the chief's marquee, film as extra pictures)
+    S("rebuild_bandit_camp", "Build families", "The Bandit Camp, rebuilt: the Lookout Camp from four sides",
+      "the bandit camp stands on a cleared lawn: two low bunk tents of patched cloth in the west corners, the chief's black-and-red marquee across the back, a crow's nest on four legs in the south-east corner rising to a red flag over the stash and a stolen bell, a stolen handcart heaped with plunder by the way in, the lit fire in its stone ring in the middle",
+      40, [("01_outside_front", "The Bandit Camp from the front: the way in between two trophy stakes, the stolen cart, the fire"),
+           ("02_outside_back", "From the back: the chief's black-and-red marquee and the crow's nest"),
+           ("03_outside_west", "From the west: the two bunk tents of patched, stolen cloth"),
+           ("04_outside_east", "From the east: the crow's nest on its four legs and the cart")], env={"REBUILD_BLUEPRINT": "camp/bandit_camp"}, furniture=True),
+    # ROADMAP 52.5: the Lost Caravan's raiders' stockade, rebuilt ("the Lock-up Under the Lookout"), from four sides
+    S("rebuild_raiders_stockade", "Build families", "The raiders' stockade, rebuilt: from four sides",
+      "the raiders' stockade stands on a cleared lawn: a ragged ring of dark oak stakes behind spiked posts and a rubble bank, a gate tower over the open gates, a fighting perch hung out over the west wall under a red banner, and in the back-east corner the tall lookout under a black banner with the iron-barred cage at its foot",
+      40, [("01_outside_front", "The stockade from the front: the gate tower over the open gates, skulls on the posts beside it"),
+           ("02_outside_back", "From the back: the lookout's tall posts over the cage, the stakes and the rubble bank"),
+           ("03_outside_west", "From the west: the fighting perch hung out over the wall on its corbels"),
+           ("04_outside_east", "From the east: the lookout's buttress posts and its black banner")],
+      env={"REBUILD_BLUEPRINT": "story/raiders_stockade"}, furniture=True),
+    # ROADMAP 52.5: the Bandit King's fort, rebuilt ("Stakes and a stolen keep"): Level III, with the keep, from four sides
+    S("rebuild_bandit_fort", "Build families", "The Bandit King's fort, rebuilt: Level III from four sides",
+      "the Bandit King's fort at its third stage stands on a cleared lawn: a ring of spruce stakes with a roofed gatehouse, two watchtowers on log legs over the front corners, a wall-walk with roofed fighting stages, gray tents round the fire, a stable on the east wall, and at the back the King's stone keep under a steep dark oak gable",
+      40, [("01_outside_front", "The fort from the front: the gatehouse between the two watchtowers, the keep's gable over the yard"),
+           ("02_outside_back", "From the back: the keep's buttresses and the postern in its stone porch under a timber gallery"),
+           ("03_outside_west", "From the west: the stakes in panels between taller posts, the fighting stages' little gables"),
+           ("04_outside_east", "From the east: the stable's lean-to roof and the east fighting stage")],
+      env={"REBUILD_BLUEPRINT": "story/bandit_fort_3"}, furniture=True),
+    # ROADMAP 52.5: the Lost Caravan's wreck, rebuilt ("Rolled and Robbed"), from four sides
+    S("rebuild_caravan_wreck", "Build families", "The caravan wreck, rebuilt: from four sides",
+      "the caravan wreck lies on a cleared lawn: the settlers' wagon rolled onto its side, its floor standing like a wall, arrows in its underside, a bare-spoked wheel still on top, the white cover lying slashed along the far side, the load picked over round its open tail, and a second cart's ruts leading away",
+      40, [("01_outside_front", "The wreck from the front: the wagon's front board, the cover and the thrown crate"),
+           ("02_outside_back", "From the back: the open tail, the spilled goods and the hollow under the cover"),
+           ("03_outside_west", "From the west: the white cover lying slashed like a gutted sail"),
+           ("04_outside_east", "From the east: the road side, the underside stuck with arrows, the wheel flung onto the road")],
+      env={"REBUILD_BLUEPRINT": "story/caravan_wreck"}, furniture=True),
     # ROADMAP 49.2: the Daub House (36.23, the owner's pick), the Level I home now in villages and the Blueprint Table,
     # built as a server with the furniture mods builds it, from four sides and at eye level in the hall and the loft
     S("rebuild_house_t1_b", "Build families", "The Daub House, a Level I home, furnished: from four sides, the hall and the loft",

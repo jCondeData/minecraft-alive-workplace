@@ -105,6 +105,30 @@ asks for the steps, `latest.log` and any crash report).
   free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
   broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
   they are.
+- **The Lost Caravan's five trail marks are rebuilt from scratch** (52.5): the captive carter ties strips of the
+  wagon's white cover high wherever he can, so every mark is a piece of the same wagon standing up with white cloth on
+  it, easy to spot from the last one. A lantern pole with the carter's lantern, a cross-tree with the lost wheel and a
+  burst barrel, the torn cover slumped over its hoop under the settlers' banner, the cart levered up on its tail with
+  its shafts to the sky, and the raiders' arrow-shot crates and black standard over the last rag. Marks already
+  placed stay as they are.
+- **The Lost Caravan's wreck and the raiders' stockade are rebuilt from scratch** (52.5). The wreck: the settlers'
+  wagon rolled onto its side, arrows in its underside, a bare-spoked wheel still on top and the other flung onto the
+  road, the white cover lying slashed along the far side with a hollow you can step into, the load picked over, and a
+  second cart's ruts leading away toward the stockade. The stockade: a ragged ring of dark oak stakes behind spiked
+  posts and a rubble bank, a gate tower, a fighting perch over the west wall, and a tall lookout under a black banner
+  whose foot is the carter's cage, so you see where he is from far off; inside, the caravan's own cover is spread on
+  the ground with the loot being shared out, its cart stripped of its wheels. Sites already placed stay as they are.
+- **The Bandit King's fort is rebuilt from scratch** (52.5), all three stages: a ring of stakes in panels between
+  taller posts with a wall-walk and three roofed fighting stages, a roofed gatehouse, gray tents round the fire and
+  the King's black-skirted pavilion; then two watchtowers on log legs and a stable; then the King's keep, the only
+  stone in the fort, with a throne hall, a chamber up the stair, a war loft under the roof, and the postern deep in a
+  stone porch at its back. A finished fort stays as it is; one still rising takes the new look whole at its next
+  stage.
+- **The Bandit Camp is rebuilt from scratch** (52.5): the Lookout Camp. Two low bunk tents of patched, stolen cloth sit
+  round the fire, with the chief's black-and-red tent across the back holding his bed, his seat and the loot chest. A
+  crow's nest on four legs rises over the camp to a red flag, a stolen bell hung under its deck, and a handcart heaped
+  with plunder stands by the way in. The Bandit King's camps and bounty hideouts get the same look. Camps already
+  standing keep their old look, and still come down whole when their chief falls.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II

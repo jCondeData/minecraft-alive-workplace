@@ -30,7 +30,12 @@ function mark1(c, M) {
 
 // --- Mark 2: the Lost Wheel ----------------------------------------------------------------------------------------
 function mark2(c, M) {
-  ragPost(c, M.stake.at, { height: M.stake.height, tip: M.stake.tip, rags: M.stake.rags }, { post: C.post, fence: C.fence, rag: K.rag })
+  // the cross-tree: the post, a spar lashed across its top (a pale log along x), a rag hung from each end of the spar
+  const st = M.stake
+  ragPost(c, st.at, { height: st.height, tip: 0 }, { post: C.post, rag: K.rag })
+  for (let x = st.spar.x0; x <= st.spar.x1; x++) c.set(x, st.spar.y, st.at[2], C.post, { axis: 'x' })
+  for (let i = 0; i < st.tip; i++) c.set(st.at[0], st.spar.y + 1 + i, st.at[2], C.fence)
+  for (const [x, y, z, f] of st.rags) c.set(x, y, z, K.rag, { facing: f })
   cartWheel(c, M.wheel.hub, M.wheel.axle, { rim: { full: C.planks, stairs: C.stairs }, hubLog: C.post }) // a pale hub against the darker rim
   burstBarrel(c, M.barrel, M.staves, { barrel: C.barrel, stave: C.trapdoor })
   c.set(...M.sack, C.sack, { axis: 'x' })

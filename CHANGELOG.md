@@ -111,9 +111,23 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
+  and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
+  bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
+  Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
+  crockery the new drawing moved (one with something in it stays) (B1383).
+- A Blueprint placed far from the Blueprint Table inside a big village (150 blocks off with `villageHallRadius` 160,
+  say), which the Builder does take, no longer says "No Blueprint Table within 128 blocks of this spot" with every
+  material listed as still to bring: its supply report and its Book and Quill material list now find the table by the
+  Builder's own rule (anywhere in the table's village, or within `maxSiteDistance` outside it). A yes to a repair or a
+  refresh likewise reaches a free Builder anywhere in the village, not only one near the building (B619).
 - Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
   the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
   passing that wall's far side on the outside (B726).
+- A helper on a build far from the builder's chests does its share of a tall house. The builder carries nearly the whole
+  house over on its first trip, and the helper used to be handed three or four blocks' worth at a time and walk down to
+  the chests for the little left there, so it laid under a third of the Stone House; now it is handed its share at
+  once, lays about half, and the two finish the walls and roof a fifth sooner (B1381).
 - With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
   mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
   (B1378).

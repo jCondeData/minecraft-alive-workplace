@@ -12,6 +12,7 @@ import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.Refreshes;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
+import io.github.jcondedata.aliveworkplace.furnish.FurnishingTable;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
 import io.github.jcondedata.aliveworkplace.furnish.Resting;
@@ -48,8 +49,9 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 public class TerraceFurnitureCompatTests implements FabricGameTest {
 	/**
 	 * B281 (the owner, 2026-10-21: one Terrace home had a Handcrafted table and chair downstairs, the other spruce stand-ins):
-	 * with Handcrafted and Beautify (and with CobbleFurnies first), every furniture spot of the Terrace and Terrace II is a
-	 * mod's piece, none left vanilla, and each home's kitchen has a modded table and chair.
+	 * with Handcrafted and Beautify (and with CobbleFurnies first), every furniture spot of the Terrace and Terrace II that
+	 * one of those mods has a piece for (one the spot can hold, B260) is a mod's piece, and each home's kitchen has a modded
+	 * table and chair.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -60,8 +62,13 @@ public class TerraceFurnitureCompatTests implements FabricGameTest {
 				List<FurnitureSpot> spots = BlueprintFurniture.of(AliveWorkplace.id(name));
 				FurnitureChoice choice = FurnitureChoice.choose(spots, order, true);
 				for (int i = 0; i < spots.size(); i++) {
-					helper.assertTrue(choice.spots().containsKey(i), name + " with " + order + ": its " + spots.get(i).kind().id() + " at "
-						+ spots.get(i).pos().toShortString() + " stays vanilla");
+					// B1383: vanilla only where no listed mod has a piece the spot can hold (B260: the rebuilt Terrace's
+					// crockery shelves hang on the wall; Handcrafted's shelf stands on a floor, so they stay spruce slabs).
+					FurnitureSpot spot = spots.get(i);
+					boolean fits = order.stream().map(mod -> FurnishingTable.of(mod).map(t -> t.pieces().get(spot.kind())).orElse(null))
+						.anyMatch(piece -> piece != null && spot.supports(piece.needs()));
+					helper.assertTrue(choice.spots().containsKey(i) || !fits, name + " with " + order + ": its " + spot.kind().id() + " at "
+						+ spot.pos().toShortString() + " stays vanilla");
 				}
 				for (int home = 0; home < count; home++) {
 					int x0 = 1 + 5 * home;

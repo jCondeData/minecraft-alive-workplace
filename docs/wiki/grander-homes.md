@@ -18,12 +18,12 @@ Apprentice on, the Townhouse once the builder's village has a household of Artis
 Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
 tier below:
 
-- **Artisan's House** (a grade I home). A narrow house under a red tile gambrel roof (a barn-shaped roof, steep low
-  down and shallow on top), its gable to the street with a loft door and a hoist beam with a lamp on it: a stone
-  workroom below (a workbench, an anvil, a chest of stock, a ladder up) and an upper floor clad in pale weatherboards,
-  jettied a block out over the street on brackets, with two beds. A brick chimney runs up the side.
-- **Artisan's House II** (grade II). A stone workshop wing at the back, through a doorway in the back wall: a long
-  bench, a loom, a barrel and a third bed in the corner, under its own lower red gambrel.
+- **Artisan's House** (a grade I home; rebuilt from scratch in 49.8, [its own page](artisans-house.md)). A potter's
+  house gable-end to the street: a rubble-stone workroom and hall below, a white plaster floor in a spruce frame jettied
+  out over the street with the couple's two beds and a sitting room, a steep dark-tiled roof, and beside it a brick
+  bottle kiln that is its chimney, with a lean-to fuel shed behind it.
+- **Artisan's House II** (grade II). The journeyman's room, a lower framed wing at the back through a doorway in the
+  hall's back wall, with the third bed; and a yard behind the shed for drying pots.
 - **Burgher's Townhouse** (grade II; rebuilt from scratch in 49.5, [its own page](townhouse.md)). A tall merchant's
   house standing gable-end to the street: a stone shop and kitchen below, a timber-framed floor jettied out over the
   street on dark brackets with the hall and the parents' chamber, a steep red-tiled attic with the children's two beds,

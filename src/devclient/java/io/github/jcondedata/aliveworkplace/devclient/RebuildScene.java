@@ -44,7 +44,7 @@ final class RebuildScene {
 	 *  family films too, by hand (SCENE=rebuild_&lt;family&gt;), but isn't in the nightly showcase. */
 	static final List<String> FILMED = List.of("well", "house_t1_b", "well_house", "fountain", "lily_pond", "footbridge",
 		"park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue", "starter_cottage", "stone_house",
-		"townhouse", "terrace", "masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen", "smithy",
+		"townhouse", "artisans_house", "terrace", "masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen", "smithy",
 		"tinkers_workshop", "brass_foundry", "stone_wall", "wall_tower", "palisade_gate", "palisade", "butchers_shop", "winery",
 		"library", "schoolhouse", "school", "watermill");
 	private static final BlockPos AT = new BlockPos(0, -60, 0);

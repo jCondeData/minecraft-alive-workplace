@@ -288,12 +288,16 @@ public final class StarterBlueprints {
 	 */
 	public static final Entry DAUB_HOUSE = new Entry(AliveWorkplace.id("house_t1_b"), new Vec3i(13, 14, 13));
 
-	/** The Artisan's House (34.15, a grade I home): a narrow timber house, a stone workroom below and two beds above. */
-	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
-	/** A stone workshop wing at the back with a third bed (grade II). */
-	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(9, 15, 18));
-	/** A storeroom dug under the house (36.7). */
-	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(9, 15, 18), 4);
+	/**
+	 * The Artisan's House (34.15, a grade I home; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/artisans_house}):
+	 * a potter's house gable-end to the street, a stone workroom and hall under a jettied timber floor with two beds, beside
+	 * a brick bottle kiln that is its chimney.
+	 */
+	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(16, 17, 14));
+	/** The journeyman's wing at the back with a third bed, and a drying yard (grade II). */
+	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(16, 17, 19));
+	/** The clay cellar dug under the house (36.7). */
+	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(16, 17, 19), 4);
 	/**
 	 * The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}; rebuilt from scratch, ROADMAP 49.5,
 	 * {@code tools/blueprints/js/townhouse}): a tall merchant's house gable-end to the street, a stone shop and kitchen

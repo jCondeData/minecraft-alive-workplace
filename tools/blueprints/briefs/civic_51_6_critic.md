@@ -35,14 +35,25 @@ fresh subagent (lane-c-1118-1253). Eye-level shots: not filmed (scored from cuta
 blocks, 12 furniture spots; `aBuilderBuildsTheClockTowerAndItTurns` in TALL_AREA with the new pinned spots (cartography
 table (7,1,9), north cuckoo clock (7,15,3) as the machine, gearboxes (5,2,5)/(5,15,5)/(7,15,7), shaft (5,8,5)) passed,
 as did `qaReleaseRefresh_clock_tower` (tall area). The copper collars over air did not hang the builder (no B1384 here).
-**Chapel round 3: critic not run yet** (this run's build subagent had no way to start a fresh critic subagent). Its
-sheet is ready: `build/rebuild/chapel_r3_sheet.png` (five views, OLD = live chapel.nbt, NEW = round 3, 13x16x17, 879
-blocks, no CHECK line) and `build/rebuild/chapel_r3_cuts.png` (cutaways at y 3 and y 6); eye-level shots not filmed.
+**Chapel round 3 ("the Blossom Court"): SHIP** (fresh critic, lane-c-1118-1553; from `build/rebuild/chapel_r3_sheet.png`
+and `chapel_r3_cuts.png`, eye-level shots not filmed; not shipped yet: the ship is the next lane-c run's first job).
 
 | Score | Chapel r3 OLD | NEW |
 |---|---|---|
-| Silhouette | | |
-| Depth | | |
-| Interior | | |
-| Detail | | |
-| Verdict | | (critic pending) |
+| Silhouette | 3 | 4 |
+| Depth | 3 | 4 |
+| Interior | 3 | 3 |
+| Detail | 3 | 4 |
+| Verdict | | SHIP |
+
+Evidence: NEW reads as a chapel from three sides (central bell tower, cornice, belfry, pyramid cap over a long nave;
+the back is a plain gable); stepped buttresses with stair caps between every bay; lanterns on posts at the door, a rose
+window, an altar with candles, palette held. Interior ties: the pews are stubs two stairs wide (rows z=7 and z=12 one
+stair), the tower entry room is bare. Brief check: nothing missed (venue middle (6,1,8) open with three air cells and
+reachable; columns at (4,·,8)/(8,·,8) within 3 for the fireworks; wooden doors at z=1 and z=5, no carpet in them; no
+job blocks, beds, containers, calcite or entities; leaves persistent; no roof over a roof; 13x16x17 in the 14x16x17 plot).
+Ship steps: `StarterBlueprints.CHAPEL` size 11x16x16 -> 13x16x17; keep generate.py from overwriting it (REBUILT); the
+venue middle moves to (6,1,8); 879 blocks, so run `BuilderGameTests.buildsChapel` (and the festival/venue tests) before
+pushing; history, baseline, `RebuildScene.FILMED`, scene `rebuild_chapel`, CHANGELOG, wiki. Optional polish (not for the
+ship): break the tower front's tall glass strip into two or three windows; a recessed frame or pilasters on the back
+gable; full-width pews (three stairs a side) in every row; something in the tower entry room (a bench or a banner).

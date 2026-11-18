@@ -248,4 +248,6 @@ From 49.2 on, every blueprint the mod ships is being redrawn from scratch with t
 (`tools/blueprints/REBUILD.md`): a brief written from what the building must do, a designer who never sees the old
 building, and a critic who ships the new one only when it is clearly better. Ids never change, so standing buildings
 and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
-family from four sides and at eye level in every room.
+family from four sides and at eye level in every room. Rebuilt so far include the Nether Gate (13 by 16 by 9; II, 15 by
+16 by 14: an obsidian frame between blackstone piers under a flared crimson roof, with a lodge for the Nether Brazier),
+the Waystone Plaza and the Mega Shrine (52.4).

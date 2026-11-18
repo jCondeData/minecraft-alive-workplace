@@ -79,8 +79,9 @@ beaten counts once and for good; a village counts as having a Leader when its ha
 whose Leader left drops out of the count).
 
 With Mega Showdown, the Blueprint Table lists the **Mega Shrine** among the decorations (38.7): Mega Showdown's pedestal
-on a two-step dais of Mega meteorite bricks, with chiseled meteorite posts crowned with amethyst and soul lanterns (7 by
-6 by 7, beauty 2). Without Mega Showdown it isn't listed (its blocks don't exist). On a festival day, for its first
+under a keystone arch (rebuilt from scratch in 52.4): a stepped dais with a round-headed arch across it whose crown is a
+chiseled meteorite keystone, the pedestal on a terrace of meteorite bricks under it, soul lanterns hanging either side,
+a straight flight up the front to the trainer's stand and twin flights up the back (7 by 6 by 7, beauty 2). Without Mega Showdown it isn't listed (its blocks don't exist). On a festival day, for its first
 hour and a half (from the festival's start, 1,500 ticks), a village with a finished shrine holds its show there: the
 villagers off work gather in front of the shrine instead of at the square, and a village trainer (one who can Mega
 Evolve first, else the nearest) climbs to the pedestal and Mega Evolves their ace: a flash, a burst of light, a beacon

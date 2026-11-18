@@ -23,6 +23,15 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Nether Gate, the Waystone Plaza and the Mega Shrine are rebuilt from scratch** (52.4). The Nether Gate is a
+  ceremonial gate: the obsidian frame stands between blackstone piers under a steep, flared crimson roof, up a two-step
+  dais with soul fire either side, and a timbered Provisioning Lodge beside it holds the Nether Brazier and the
+  netherworker's stores; Nether Gate II adds a tall Haul House behind the lodge and a walled nether wart terrace behind
+  the gate. The Waystone Plaza (all five village looks) is a wayshrine: a low hipped roof on four posts, open over the
+  stone, with benches under it for travelers waiting on three sides and the front open to the road. The Mega Shrine is a
+  keystone arch: the pedestal stands under a chiseled meteorite keystone, a straight flight climbs the front to the
+  trainer's stand and twin flights climb the back. Builds already standing keep the drawing they were built from until
+  you refresh them.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II

@@ -62,7 +62,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "builders_workshop",
            "camp_kitchen", "camp_kitchen_2",
            # 52.3, the walls (the palisade_tower follows)
-           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate", "palisade", "palisade_2"}
+           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate", "palisade", "palisade_2",
+           # 52.4, the portals: js/nether_gate (LEVEL=1|2), js/waystone_plaza (LOOK=<culture>) and js/mega_shrine
+           # (MC_BUILDER=...; npm run build writes candidates; live: rebuild.py <family> <id> [--nbt <out .nbt>])
+           "nether_gate", "nether_gate_2", "waystone_plaza", "mega_shrine"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -181,8 +184,7 @@ if __name__ == "__main__":
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
-    mega_shrine().save(MAIN_STRUCTURES, "mega_shrine")  # ROADMAP 38.7: listed only with Mega Showdown's blocks
-    save_waystone_plazas()  # ROADMAP 41.1: proposed only with Waystones
+    # ROADMAP 38.7 mega_shrine and 41.1 waystone_plaza (all five looks) come from the rebuild kit since 52.4
     # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then
     # rebuild.py stone_house <id>); its old Python drawing in houses.py and basements.py is no longer saved
     # ROADMAP 49.5: the Townhouse (I-IV) comes from the rebuild kit too (tools/blueprints/js/townhouse/build.sh, then
@@ -241,8 +243,7 @@ if __name__ == "__main__":
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
         if name not in REBUILT:  # ROADMAP 50.4: winery_3 comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
-    nether_gate().save(MAIN_STRUCTURES, "nether_gate")
-    nether_gate_2().save(MAIN_STRUCTURES, "nether_gate_2")
+    # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     chapel().save(MAIN_STRUCTURES, "chapel")
     compost_yard().save(MAIN_STRUCTURES, "compost_yard")
     compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")

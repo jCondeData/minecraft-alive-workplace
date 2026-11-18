@@ -1790,6 +1790,14 @@ SCENES = [
            ("02_outside_back", "From the back: the gabled ledger bay out of the long roof"),
            ("04_outside_east", "From the east: the tower on its stone skirt, the chimney up the gable"),
            ("10_room_1", "The trading floor at eye level: the waiting tables by the shop windows, the Shop Counter facing the door")], furniture=True),
+    # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
+    # drawn), Level I of each built furnished side by side
+    S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",
+      "the Starter Cottage as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("11_desert", "Desert: a mud-brick block under a flat roof and parapet, its door in a shaded loggia"),
+           ("12_savanna", "Savanna: the veranda house under one golden thatched hip, deep eaves on every side"),
+           ("13_snowy", "Snowy: a log cabin under a steep snow-laden roof, an entry porch before the door"),
+           ("14_taiga", "Taiga: a spruce cabin on a stone course, a pair of steep gables to the road")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -1669,6 +1669,12 @@ SCENES = [
            ("02_outside_back", "From the back: the chapel's stone gable with its tall lancet, a yew either side"),
            ("03_outside_west", "From the west: the lantern tower rising over the chapel roof"),
            ("10_room_1", "The chapel at eye level: pews along both walls, the bier under the lamp, the Undertaker's brewing stand at the altar between candles")], furniture=True),
+    # ROADMAP 51.7: the Market Cross rebuilt from scratch ("the Mercat Drum")
+    S("rebuild_market_cross", "Build families", "The rebuilt Market Cross from four sides",
+      "the Market Cross's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: an open platform) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Cross from the front: the stair cut into the octagonal drum, the white shaft and its lantern-hung head over the parapet"),
+           ("02_outside_back", "From the back: the drum's stone faces and pilasters, a bench against them"), ("03_outside_west", "From the west"),
+           ("04_outside_east", "From the east: the market flag flying from the head, flowering azaleas in the plinth's corners")], furniture=True),
     # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
     S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
       "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",

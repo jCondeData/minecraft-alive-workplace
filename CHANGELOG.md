@@ -121,6 +121,10 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
+  with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
+  lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow
+  in the plinth's corners. Market Crosses already standing keep their look until you refresh them.
 - **The Chapel is rebuilt from scratch** (51.6, "the Blossom Court"). A limewashed bell tower with twin belfry
   openings and a slate spire stands at the front, lamp posts either side of its door, and behind it one long white nave
   runs under a single slate roof, stepped stone buttresses down both sides (13 x 17, 16 high). Inside, dark oak pews

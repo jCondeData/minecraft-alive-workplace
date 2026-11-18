@@ -488,8 +488,9 @@ public final class StarterBlueprints {
 	 * More decorations (ROADMAP 26.14; tools/blueprints/decor.py, MORE_DECORATIONS): small builds that aren't houses, none
 	 * with a villager's job block.
 	 */
-	/** A stepped stone plinth with a shaft, its arms hung with lanterns. */
-	public static final Entry MARKET_CROSS = new Entry(AliveWorkplace.id("market_cross"), new Vec3i(5, 8, 5));
+	/** The Mercat Drum: an octagonal stone platform with a stair cut into its front, a parapet round a white shaft
+	 *  whose head hangs four lanterns and flies the market flag, benches against the drum (rebuilt 51.7). */
+	public static final Entry MARKET_CROSS = new Entry(AliveWorkplace.id("market_cross"), new Vec3i(9, 8, 9));
 	/** A carved spruce stag standing broadside on a mossy crag, pale branching antlers, lanterns on rubble posts (52.2). */
 	public static final Entry STAG_STATUE = new Entry(AliveWorkplace.id("stag_statue"), new Vec3i(9, 8, 7));
 	/** A horseshoe of flower beds stepping up in three tiers round a little paved court and a bench, under a spruce

@@ -21,6 +21,7 @@
 //   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 //   tents     discEdge, coneTent, waymark                     (a stepped hide tipi with its poles; a cairn with a cap)
+//   climate_desert windcatcher, screenOriel, archBay                 (desert stone houses)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -96,5 +97,6 @@ export * from './ranch.mjs' // ranchGate, horseTrough, stallFront, cupola, hayHo
 export * from './fl_cabin.mjs' // logPen, porchGable (log cabins: a pen of notched round logs, a little gable on posts over a porch's mouth; the Fletcher's Lodge, 49)
 export * from './ps_press.mjs' // psRoofUnion, psLightLantern, psArch, psParts, psBracketLamp (print shops: merged gable roofs, a glazed ridge lantern, an inner arch, slab counters and ink candles)
 export * from './ts_cloth.mjs' // clothBolts, boltRack, dressForm, clothBay, postBanner, steepCap (tailors: bolts of cloth on stands and racks, a dress form, a drying bay of hung cloths, a banner on a post, a steep hollow tower cap with no overhang; the Tailor's Shop, 49)
+export * from './climate_desert.mjs' // windcatcher, screenOriel, archBay (desert stone houses: a slotted windcatcher tower, a lattice oriel, a round-headed bay)
 export * from './climate_roofs.mjs' // hipRoof, flatRoof (hot climates: a low hipped roof with deep eaves; a flat mud roof with parapet and toron)
 export * from './market_cross.mjs' // edgeRing8, vertexCells, mercatDrum, crossShaft (market crosses: an outline joined round an octagon, its vertex cells, an octagonal mercat drum with pilasters and a parapet, a cross shaft with a lamp-hung capital and a flag; the Market Cross, 49)

@@ -36,3 +36,20 @@ beds, chests, barrel, furnace, crafting table unchanged; holes.py clean on all 1
 - The whole-chimney rule (`chimneysStayWholeInEveryStyle`), same-cell-across-levels and under-80 %-placed rules: not tested on the looks. No GameTests run.
 
 Sheets (not committed, build/): `build/rebuild/looks_sheets/{culture}_{1,2,3}_exterior.png`, `{culture}_cutaways.png`.
+
+# Round 2 (a fresh critic subagent, 2026-11-18 20:37Z): all four SHIP
+
+| Look | Silhouette | Depth | Interior | Detail | Reads as its culture | Verdict |
+|---|---|---|---|---|---|---|
+| Desert | 4 | 4 | 4 | 4 | yes | SHIP |
+| Snowy | 4 | 4 | 4 | 4 | yes, now clearly apart from taiga (white and pale against dark spruce) | SHIP |
+| Savanna | 4 | 4 | 4 | 4 | yes, every level (the keep is gone; the thatched hip carries over the upper storey) | SHIP |
+| Taiga | 4 | 4 | 4 | 4 | yes | SHIP (narrow) |
+
+Same building checked against starter_cottage_b at every level (beds, chests, barrel, furnace, crafting table, 16/29/36
+furniture spots in the same cells; lamp chains and bed wood differ). Optional polish the critic left: desert, a visible
+chiseled door surround and awning on Level I (the designer says the frame is there; the critic couldn't see it in the
+front render), more planting; snowy, snow layers on the lower roof courses and something on Level I's right wall; taiga,
+shutters or a box on the right low wall. Still not tested: the brief's Level I material list on desert and savanna, the
+whole-chimney rule, same cell across levels, under 80 % placed; no GameTests. Sheets (look vs the live plains cottage,
+Levels I and III): `briefs/starter_cottage_looks/<culture>_<level>_vs_old.png`.

@@ -1607,6 +1607,13 @@ SCENES = [
            ("04_outside_east", "From the east: the stone Tasting Room under its tiled lean-to"),
            ("03_outside_west", "From the west: the stone Cask Hall under the white timber-framed press floor"),
            ("10_room_1", "Inside at eye level: the first furnished room, its furniture in view")], furniture=True),
+    # ROADMAP 50.5: the Watermill rebuilt from scratch (REBUILD.md)
+    S("rebuild_watermill", "Build families", "The Watermill, rebuilt: from four sides and at eye level inside",
+      "the Watermill's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Watermill from the front: the stone perron up under the lucam, the granary wing's door and the composter in the yard"),
+           ("03_outside_west", "From the west: the mill pond on its terrace, the launder over the wheel and the tail pit"),
+           ("02_outside_back", "From the back: the pond terrace against the mill's back wall"),
+           ("10_room_1", "Inside at eye level: the meal floor, the millstone over its gearbox")], furniture=True, create=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -44,9 +44,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
 
 - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
-  **Watermill**, a stone-and-timber mill house whose water wheel on the west wall is turned by water falling from a
-  header tank into a walled mill race, its shaft running through the wall to a gearbox and a millstone inside, with
-  the farmer's composter and the store chest; the **Windmill**, a seven-square stone tower with a windmill bearing and
+  **Watermill** (rebuilt from scratch in 50.5), a stone-and-timber mill on a stone undercroft: a mill pond on a terrace
+  against its back wall feeds a timber launder along the west side, over the top of the water wheel and down into a
+  stone pit, and the wheel's shaft runs through the wall to a gearbox under the millstone on the meal floor; a sack
+  hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
+  and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
+  keep their old drawing until refreshed); the **Windmill**, a seven-square stone tower with a windmill bearing and
   24 sails on its front and a shaft down the middle to the millstone; and the **Workshop**, a brick shop whose water
   wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
   pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
@@ -434,7 +437,8 @@ The planned fields of later items, each with its default, are listed in the desi
 - Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
-- Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
+- Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
+  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (9 x 17 x 9) and
   `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
   listed only with Create (`mechanic/CreateBuilds`).
 

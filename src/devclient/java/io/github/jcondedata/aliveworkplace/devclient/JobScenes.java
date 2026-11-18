@@ -1480,12 +1480,14 @@ final class JobScenes {
 		// side by side as a builder leaves them, facing the camera. Water falls from the header tanks through the two wheels,
 		// the windmill's bearing is started as the builder starts it, and every machine turns: both millstones and the press.
 		SCENES.put("create_builds", new Job("the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
-			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
+			900, new Vec3(0.5, -47.0, -21.5), new Vec3(0.5, -55.0, 10.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
-			int x = -20;
+			// ROADMAP 50.5: the rebuilt Watermill is 17 wide, so the row (17 + 3 + 9 + 3 + 14) starts further west and the
+			// camera stands further back to take it all in
+			int x = -23;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
 				BlockPos at = STATION.offset(x, 0, 4);
 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
@@ -1494,7 +1496,7 @@ final class JobScenes {
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
 				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
 				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
-				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
+				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(5, 3, 9) // ROADMAP 50.5: the rebuilt mill's millstone
 					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
 				x += entry.size().getX() + 3;
 			}

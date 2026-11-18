@@ -1,0 +1,19 @@
+{
+  "name": "watermill",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 57
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/watermill/out/watermill.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/watermill/out/summary.json",
+  "size": [
+    17,
+    16,
+    17
+  ],
+  "blockCount": 1110,
+  "paletteCount": 60,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/watermill/recipe.mjs"
+}

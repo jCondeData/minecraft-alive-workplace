@@ -57,6 +57,9 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.4, the Winery: js/winery (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live
            # winery, winery_2 and winery_3, III with --basement 4 --cellar "$(cat out/cellar.txt)")
            "winery", "winery_2", "winery_3",
+           # 50.5, the Watermill (Create only): js/watermill (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh
+           # build.sh the live one)
+           "watermill",
            # 50.1, the Builder's Workshop (Version B): js/builders_workshop_b, then rebuild.py builders_workshop_b
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
@@ -179,7 +182,7 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2 and 50.3: drawn by the rebuild kit
+            continue  # ROADMAP 50.2, 50.3 and 50.5: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         draw().save(MAIN_STRUCTURES, name)

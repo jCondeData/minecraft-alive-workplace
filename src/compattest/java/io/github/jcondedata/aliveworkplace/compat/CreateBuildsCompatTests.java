@@ -150,12 +150,16 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 			});
 	}
 
-	/** The Clock Tower (39.8): the wheel's drive goes up the tower's shaft and forward to the cuckoo clock, which turns. */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"clock_tower_build"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "clock_tower_build")
+	/**
+	 * The Clock Tower (39.8, rebuilt 51.6 as the Water Clock, 26 tall: the tall area): the wheel's drive goes in through
+	 * the front wall, up the tower's corner shaft and out through the chamber's gearboxes to the cuckoo clocks, which turn.
+	 */
+	//$ gametest_ticks_batch TALL_AREA '30000' '"clock_tower_build"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "clock_tower_build")
 	public void aBuilderBuildsTheClockTowerAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.CLOCK_TOWER, List.of(at(8, 1, 2, "minecraft:cartography_table"), at(6, 10, 1, "create:cuckoo_clock"),
-			at(6, 10, 5, "create:gearbox"), at(6, 5, 5, "create:shaft")), new BlockPos(6, 10, 1));
+		build(helper, StarterBlueprints.CLOCK_TOWER, List.of(at(7, 1, 9, "minecraft:cartography_table"), at(7, 15, 3, "create:cuckoo_clock"),
+			at(5, 2, 5, "create:gearbox"), at(5, 15, 5, "create:gearbox"), at(7, 15, 7, "create:gearbox"), at(5, 8, 5, "create:shaft")),
+			new BlockPos(7, 15, 3));
 	}
 
 	/** The Pump House (39.8): the wheel's cogwheel turns the pump beside it, between the sump's pipe and the fluid tank. */

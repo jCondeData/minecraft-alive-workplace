@@ -103,7 +103,9 @@ public class BuilderChaosGameTests {
 		rules.getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
 		rules.getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
 
-		StarterBlueprints.Entry entry = StarterBlueprints.STARTER_COTTAGE;
+		// 49.3: the rebuilt Level I cottage (401 blocks) is built in about 1,900 ticks here, too quick for MIN_TRAPS traps, so the
+		// builder builds Level II (783 blocks, from nothing) under the same traps
+		StarterBlueprints.Entry entry = StarterBlueprints.STARTER_COTTAGE_2;
 		Blueprint blueprint = BlueprintLibrary.get(level, entry.id())
 			.orElseThrow(() -> new GameTestAssertException("missing starter blueprint " + entry.id()));
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN),

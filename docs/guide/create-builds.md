@@ -36,8 +36,10 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
 - **Greenhouse**: a glass house with beds of wheat, carrots and potatoes, watered by two channels. A belt runs down
   the aisle to a depot, with a little cart on it carrying a mechanical harvester and a mechanical plough. Glue the cart
   to a contraption of your own and it will reap the beds. The farmer's composter is in the back corner.
-- **Clock Tower**: a stone tower with a white belfry and a cuckoo clock in its front, turned by a shaft that runs up
-  the middle of the tower from the wheel at its foot. It's there to look at, and the clock keeps the time.
+- **Clock Tower**: a slender stone tower with a timber clock room at the top, a cuckoo clock on each of its four
+  sides and a copper spire. Water pours from a stone spout down the tower's front corner and turns the wheel by the
+  door; through a slit in the wall you can watch the drive climb to the clocks. A map room with the cartography table
+  is at its foot. It's there to look at, and the clocks keep the time.
 - **Pump House**: a small brick house where the wheel turns a mechanical pump. It draws from a little pool in the floor
   that fills itself up again, and pumps the water into a tank. A cauldron makes it a leatherworker's workplace.
 

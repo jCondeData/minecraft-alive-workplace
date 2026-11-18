@@ -296,3 +296,14 @@ drawing has no floor under, so they are plain stair benches rather than furnitur
 `GRAVEYARD_2` and `Graveyards.SIZE` are 13 x 16 x 13. The old drawings (and modded copies) are in `blueprint_history/`
 as v0.145.0; the village houses `<style>_post_office` keep their own looks (`village.py`'s staffed house). Scenes
 `rebuild_post_office`, `rebuild_graveyard`.
+
+**51.6: the Clock Tower** (critic SHIP, round 1). Recipe `tools/blueprints/js/clock_tower/` (`npm run cut`), then
+`rebuild.py clock_tower clock_tower --nbt out/clock-tower.nbt`. `clock_tower` ("the Water Clock", Create only) is now
+15 x 26 x 15 (was 11 x 19 x 9), 896 blocks: a stone shaft x 4..10, z 4..10, a jettied clock chamber (y 13..17) with a
+cuckoo clock on every face, a bell-cast copper spire to y 25. The builder pours one water source into the spout pier's
+cup (4, 7, 3); it falls past the water wheel (5, 2, 3), whose drive goes through a gearbox (5, 2, 5), up the corner
+shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to the four clocks (the north one at
+(7, 15, 3)). The cartography table is at (7, 1, 9). It leaves `owner_rules_baseline.json`; its 12 furniture spots are in
+`blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
+`aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
+`rebuild_clock_tower`.

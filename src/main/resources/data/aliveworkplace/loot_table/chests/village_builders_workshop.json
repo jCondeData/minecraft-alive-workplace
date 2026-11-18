@@ -25,7 +25,7 @@
       "entries": [
         { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "weight": 3,
           "functions": [{ "function": "minecraft:set_components",
-            "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage", "size": [11, 12, 10] } } }] },
+            "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:starter_cottage", "size": [9, 11, 12] } } }] },
         { "type": "minecraft:item", "name": "aliveworkplace:blueprint", "weight": 2,
           "functions": [{ "function": "minecraft:set_components",
             "components": { "aliveworkplace:blueprint": { "structure": "aliveworkplace:market_stall", "size": [8, 7, 6] } } }] },

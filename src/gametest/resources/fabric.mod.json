@@ -785,6 +785,7 @@
 			"io.github.jcondedata.aliveworkplace.test.ThreatDamageGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LadderGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BattleStationGameTests",
+			"io.github.jcondedata.aliveworkplace.test.WallSightGameTests",
 			"io.github.jcondedata.aliveworkplace.test.WarningGameTests",
 			"io.github.jcondedata.aliveworkplace.test.DisasterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SifterGameTests",

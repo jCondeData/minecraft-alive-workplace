@@ -42,7 +42,13 @@ import net.minecraft.world.level.block.Rotation;
  * builder working on one of the Create builds is never left stuck on it.
  */
 public class QaCreateGoneGameTests implements FabricGameTest {
-	private static final String BIG_AREA = "aliveworkplace_test:big_area";
+	private static final String HUGE_AREA = "aliveworkplace_test:huge_area";
+	/**
+	 * B1390: how far round a build (blocks, across) its test area must reach. A builder stands up to 4 blocks out from
+	 * the block it works on, and levels the ground a little beyond the walls. Only the test area's chunks are kept
+	 * ticking: past its edge a villager can be in a chunk where nothing moves, and stands there for good.
+	 */
+	private static final int ROOM_AROUND = 6;
 	private static final String AREA = "aliveworkplace_test:build_area";
 
 	/** The wheat on the ground around the test area, and in {@code chest}. */
@@ -91,9 +97,14 @@ public class QaCreateGoneGameTests implements FabricGameTest {
 	/**
 	 * A builder was building the Watermill when Create was taken out: the site (saved by id) still loads and the builder
 	 * finishes it from the store, the parts no block exists for any more skipped, instead of standing on the site for good.
+	 *
+	 * <p>B1390: the rebuilt Watermill (17 x 17, 50.5) filled big_area to its far edges, so the builder worked from the
+	 * ground outside it. In about one run in eight that ground was in the next chunk, which the test doesn't keep ticking:
+	 * he hopped there to lay block 272 and was never ticked again (red main, CI run 44319331807). The build now stands in
+	 * the middle of huge_area, and the setup checks that the area reaches {@link #ROOM_AROUND} blocks round it.
 	 */
-	//$ gametest_ticks_batch BIG_AREA '12000' '"qa_create_gone_build"'
-	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "qa_create_gone_build")
+	//$ gametest_ticks_batch HUGE_AREA '12000' '"qa_create_gone_build"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 12000, batch = "qa_create_gone_build")
 	public void aCreateBuildStartedWithCreateIsFinishedWithoutIt(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
@@ -110,7 +121,7 @@ public class QaCreateGoneGameTests implements FabricGameTest {
 		helper.setBlock(bench, ModBlocks.BUILDERS_BENCH);
 		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(3, 2, 3));
 		Builders.employ(level, builder, helper.absolutePos(bench));
-		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(5, 2, 5)),
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(new BlockPos(6, 2, 6)),
 			Rotation.NONE, Mirror.NONE);
 		// Nothing of this build is left for later batches at this spot: the builder, its finished record, dropped items
 		Leftovers.after(helper, () -> {
@@ -127,6 +138,13 @@ public class QaCreateGoneGameTests implements FabricGameTest {
 				"the Watermill can't be planned without Create, yet its site stays: " + site.stage() + " " + site.status()));
 			return;
 		}
+		// B1390: the builder never has to stand outside the test area (see above)
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = plan.bounds();
+		net.minecraft.world.phys.AABB area = helper.getBounds();
+		helper.assertTrue(box.minX() - ROOM_AROUND >= area.minX && box.maxX() + 1 + ROOM_AROUND <= area.maxX
+			&& box.minZ() - ROOM_AROUND >= area.minZ && box.maxZ() + 1 + ROOM_AROUND <= area.maxZ,
+			"setup: the test area doesn't reach " + ROOM_AROUND + " blocks round the Watermill (" + box + " in " + area
+				+ "): a builder standing past its edge can be in a chunk that isn't ticked");
 		List<ItemStack> stock = new ArrayList<>();
 		for (Map.Entry<Item, Integer> e : plan.materials().entrySet()) {
 			for (int left = e.getValue(); left > 0; left -= e.getKey().getDefaultMaxStackSize()) {

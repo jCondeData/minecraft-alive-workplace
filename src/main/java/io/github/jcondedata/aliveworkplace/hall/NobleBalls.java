@@ -38,8 +38,9 @@ public final class NobleBalls {
 	public static final ResourceLocation MANOR = AliveWorkplace.id("manor");
 	/** The tier of the Manor that has the ballroom wing (Manor III). */
 	public static final int BALLROOM_TIER = 3;
-	/** The middle of the ballroom's floor in Manor III, from the blueprint's origin ({@code houses.py}, MANOR_BALLROOM). */
-	public static final BlockPos BALLROOM = new BlockPos(20, 1, 11);
+	/** The middle of the ballroom's floor in Manor III, from the blueprint's origin ({@code tools/blueprints/js/manor/plan.mjs},
+	 *  VENUES.ballroom; 49.7 rebuilt the Manor and moved it from (20, 1, 11)). */
+	public static final BlockPos BALLROOM = new BlockPos(23, 1, 8);
 	/** Gold, pale gold and white: the ball's fireworks. */
 	public static final int[] GOLD = {0xF5C542, 0xFFD966, 0xE8B923, 0xFFFFFF};
 

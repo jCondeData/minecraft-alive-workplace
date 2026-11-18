@@ -1,0 +1,10 @@
+{
+  "name": "fletchers-lodge",
+  "private": true,
+  "type": "module",
+  "description": "The Fletcher's Lodge (ROADMAP 49): the Twin Pen Lodge, a log dogtrot; Level II adds the breezeway and the second pen. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

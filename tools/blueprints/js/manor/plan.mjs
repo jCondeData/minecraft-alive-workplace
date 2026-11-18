@@ -55,7 +55,7 @@ export const PALETTE = {
   floor: 'spruce_planks', // chambers, gallery, parlour
   hallFloor: ['polished_andesite', 'polished_diorite'], // the hall's black-and-white chequer (the ball's floor in I and II)
   ballFloor: ['dark_oak_planks', 'spruce_planks'], // the ballroom's parquet
-  plaster: 'white_terracotta', // inner partitions
+  plaster: 'dark_oak_planks', // inner partitions: dark oak panelling (the critic: a white terracotta one read as a stray peach slab)
   lining: 'spruce_planks', // ceilings and the boards under the roofs
   glass: 'glass_pane',
   hearthSlab: 'smooth_stone_slab', // a hearth's fire stands on a slab, never on a full block: only the stacks smoke
@@ -139,7 +139,8 @@ export const OPENINGS = {
   grandStair: { flight: [[14, 1, 6], [15, 2, 6], [16, 3, 6], [17, 4, 6], [18, 5, 6]], rises: 'east', well: [[14, 5, 6], [15, 5, 6], [16, 5, 6], [17, 5, 6]] },
   railing: [[13, 6, 6], [13, 6, 7], [17, 6, 7]],
   // III
-  ballroomDoors: [{ at: [19, 1, 8], facing: 'west', hinge: 'left' }, { at: [19, 1, 9], facing: 'west', hinge: 'right' }],
+  // (z 7-8: at z 8-9 the hall table's east chair (17, 1, 9) stood in the doors' way)
+  ballroomDoors: [{ at: [19, 1, 7], facing: 'west', hinge: 'left' }, { at: [19, 1, 8], facing: 'west', hinge: 'right' }],
   galleryDoor: { at: [19, 6, 12], facing: 'west' },
   ballroomGardenDoor: { at: [23, 1, 15], facing: 'north' },
   gardenGate: { x: 19, z: 19 }, // III opens the old garden's east wall onto the new part
@@ -273,6 +274,9 @@ export const FURNITURE = {
     { room: 'Front chamber', kind: 'blinds', part: 'blinds', pos: [3, 8, 2], facing: 'south', wood: W },
     { room: 'Front chamber', kind: 'blinds', part: 'blinds', pos: [5, 8, 2], facing: 'south', wood: W },
     { room: 'Front chamber', kind: 'lamp', part: 'hangingLamp', pos: [4, 9, 4], facing: 'north', wood: W },
+    // (ship polish) a wardrobe in the corner and a reading chair in the oriel
+    { room: 'Front chamber', kind: 'cupboard', part: 'cupboard', pos: [6, 6, 3], facing: 'west', wood: W },
+    { room: 'Front chamber', kind: 'chair', part: 'armchair', pos: [2, 6, 4], facing: 'east', wood: W, colour: 'red' },
     // Great chamber: the double bed against the partition, a nightstand and the bedside chest, the chest at its foot, a
     // desk at the back window, books, lamps
     { room: 'Great chamber', kind: 'bed', part: 'bed', pos: [3, 6, 9], facing: 'north', colour: 'red' },
@@ -289,6 +293,10 @@ export const FURNITURE = {
     { room: 'Great chamber', kind: 'blinds', part: 'blinds', pos: [5, 8, 14], facing: 'north', wood: W },
     { room: 'Great chamber', kind: 'lamp', part: 'hangingLamp', pos: [4, 9, 9], facing: 'north', wood: W },
     { room: 'Great chamber', kind: 'lamp', part: 'hangingLamp', pos: [4, 9, 13], facing: 'north', wood: W },
+    // (ship polish) a wardrobe by the bed, a reading chair and a low bookcase with a fern by the oriel
+    { room: 'Great chamber', kind: 'cupboard', part: 'cupboard', pos: [6, 6, 8], facing: 'west', wood: W },
+    { room: 'Great chamber', kind: 'chair', part: 'armchair', pos: [2, 6, 12], facing: 'east', wood: W, colour: 'red' },
+    { room: 'Great chamber', kind: 'fixture', part: 'bookcase', pos: [2, 6, 13], plant: 'potted_fern' },
   ],
   2: [],
   3: [
@@ -297,8 +305,10 @@ export const FURNITURE = {
     { room: 'Ballroom', kind: 'couch', part: 'couch', pos: [20, 1, 3], facing: 'east', length: 3, arms: true, wood: W, colour: 'red' },
     { room: 'Ballroom', kind: 'couch', part: 'couch', pos: [26, 1, 5], facing: 'west', length: 3, arms: true, wood: W, colour: 'red' },
     { room: 'Ballroom', kind: 'fixture', part: 'jukebox', pos: [20, 1, 14] },
-    { room: 'Ballroom', kind: 'table', part: 'table', pos: [25, 1, 14], facing: 'south', wood: W, colour: 'white' },
-    { room: 'Ballroom', kind: 'table', part: 'table', pos: [26, 1, 14], facing: 'south', wood: W, colour: 'white' },
+    // the sideboard: two desks with candles, not tables (the modded library sets plates on every table, and plates go
+    // only on a kitchen or a dining table)
+    { room: 'Ballroom', kind: 'desk', part: 'desk', pos: [25, 1, 14], facing: 'south', wood: W },
+    { room: 'Ballroom', kind: 'desk', part: 'desk', pos: [26, 1, 14], facing: 'south', wood: W },
     { room: 'Ballroom', kind: 'picture', part: 'picture', pos: [26, 3, 6], facing: 'west', wood: W, colour: 'blue' },
     { room: 'Ballroom', kind: 'picture', part: 'picture', pos: [26, 3, 10], facing: 'west', wood: W, colour: 'blue' },
     { room: 'Ballroom', kind: 'picture', part: 'picture', pos: [20, 3, 6], facing: 'east', wood: W, colour: 'blue' },
@@ -317,7 +327,10 @@ export const FURNITURE = {
     { room: 'Cellar', kind: 'lamp', part: 'hangingLamp', pos: [10, -1, 11], facing: 'north', wood: W },
   ],
 }
-// Wall lamps (lanterns hung under a stone bracket on the wall) light the ballroom's seats: [x, y, z, the wall's side]
+// Wall lamps (lanterns hung under a stone block out of the wall) light the ballroom's seats: [x, y, z, the wall's side]
+// Oriels on the west flank (ship polish: the critic's plain left side): the chambers' west windows pushed out between
+// stone piers, on the string course, under the wing's eave: [z of the glass]
+export const ORIELS = [4, 13]
 export const BRACKET_LAMPS = { 3: [[20, 4, 4, 'west'], [26, 4, 4, 'east'], [20, 4, 9, 'west'], [26, 4, 9, 'east']] }
 
 // The walking lines: in by the front door, through the porch and the arch, onto the grand stair (the doorway test's
@@ -328,7 +341,7 @@ export const WALK = [
   [15, 2, 6], [16, 3, 6], [17, 4, 6], [18, 5, 6], [18, 6, 7], [18, 6, 8], [12, 6, 8], [12, 6, 6], [12, 6, 5], [12, 6, 4],
   [8, 6, 8], [8, 6, 10], [7, 6, 10], [6, 6, 10], [8, 6, 6], [7, 6, 6], [6, 6, 6],
   [13, 1, 7], [8, 1, 7], [7, 1, 7], [6, 1, 7], [8, 1, 11], [7, 1, 11], [6, 1, 11], [14, 1, 12], [14, 1, 13], [14, 1, 14],
-  [18, 1, 8], [19, 1, 8], [20, 1, 8], [23, 1, 8], [18, 6, 12], [19, 6, 12], [20, 6, 12],
+  [18, 1, 7], [19, 1, 7], [20, 1, 7], [23, 1, 8], [18, 6, 12], [19, 6, 12], [20, 6, 12],
 ]
 
 // The ground: flower beds of their own soil along the hall's front, the terrace and rain butt behind it, a lamp post

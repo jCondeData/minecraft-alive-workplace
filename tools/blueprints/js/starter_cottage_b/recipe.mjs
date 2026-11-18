@@ -34,6 +34,9 @@ const windows = (c, level) => {
 }
 const inner = ([a0, a1]) => [a0 + 1, a1 - 1] // trim only between the overhangs: no loose tabs at the corners
 const furnish = (c, level) => { for (const f of FURNITURE[level]) furnitureParts[f.part](c, f) }
+// the barge boards' peak: a full block under the ridge's end, where the two upside-down trim stairs
+// meet (one stair there left a notch at the gable's peak: the critic's note on II's front gable)
+const peak = (c, x, y, z) => { if (c.name(x, y, z) === `minecraft:${P.trim}`) c.set(x, y, z, P.roof.full) } // the ridge's own planks
 
 // --- Level I: the Saltbox --------------------------------------------------------------------------------------------
 function levelOne(c) {
@@ -76,6 +79,7 @@ function levelOne(c) {
   // Pass 3, depth and detail: dark barge boards under both verges, a lantern under the eave over the step
   bargeTrim(c, 'x', H.roof.along[0], inner(H.roof.across), roof.under, P.trim)
   bargeTrim(c, 'x', H.roof.along[1], inner(H.roof.across), roof.under, P.trim)
+  for (const x of H.roof.along) peak(c, x, roof.under[H.roof.ridge] - 1, H.roof.ridge)
   c.set(...OUTSIDE.doorLamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
 
   // Pass 4, interior
@@ -145,6 +149,8 @@ function levelTwo(c) {
   pentice(c, [[8, 0], [9, 0], [10, 0]], H.beamY, P.roof, 'south')
   bargeTrim(c, 'z', K.roof.along[0], inner(K.roof.across), roof.under, P.trim)
   bargeTrim(c, 'z', K.roof.along[1], inner(K.roof.across), roof.under, P.trim)
+  const mid = (K.roof.across[0] + K.roof.across[1]) / 2
+  for (const z of K.roof.along) peak(c, mid, roof.under[mid] - 1, z)
   for (const [y, z] of [[5, 4], [6, 4], [5, 6], [6, 6], [2, 8], [3, 8]]) c.set(7, y, z, P.infill) // and the outshot's east window by the new doorway
 
   // Pass 4, interior
@@ -167,6 +173,9 @@ function levelThree(c) {
   bargeTrim(c, 'z', K.roof.along[1], inner(K.roof.across), roof.under, P.trim)
   // the wing's back east window now looks into the kitchen's roof: closed with birch, its shutters gone
   for (const y of [5, 6]) { c.set(11, y, 8, P.infill); c.clear(12, y, 7) }
+  // and the parlour's back east window (Level II) now looks into the kitchen: stone again, its shutters and pot gone
+  for (const y of [2, 3]) { c.set(11, y, 7, stone); c.clear(12, y, 6); c.clear(12, y, 8) }
+  for (const y of [1, 2]) c.clear(12, y, 7)
   // the flue: a stack in the east wall behind the smoker, up through the slope, smoking
   chimney(c, K.flue.x, K.flue.z, 0, K.flue.top, stone)
 
@@ -191,6 +200,10 @@ function levelFour(c) {
   hatchLadder(c, L.x, L.z, -Cl.depth + 1, 0, L.facing, P.wood)
   for (const p of OUTSIDE.cellarStores.kelp) c.set(...p, 'dried_kelp_block')
   for (const p of OUTSIDE.cellarStores.hay) c.set(...p, 'hay_block', { axis: 'y' })
+  for (const p of OUTSIDE.cellarStores.pumpkin) c.set(...p, 'pumpkin')
+  for (const p of OUTSIDE.cellarStores.melon) c.set(...p, 'melon')
+  // a summer beam across the ceiling, wall to wall, under the hall's floor
+  for (let x = Cl.x0 + 1; x < Cl.x1; x++) c.set(x, Cl.beam.y, Cl.beam.z, P.frame, { axis: 'x' })
   furnish(c, 4)
   return inside
 }

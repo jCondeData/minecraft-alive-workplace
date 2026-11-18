@@ -27,13 +27,17 @@ public final class StarterBlueprints {
 		}
 	}
 
-	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(11, 12, 10));
-	/** The Starter Cottage with a second storey: an upgrade (same ground floor, lines up over a finished cottage). */
-	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(11, 16, 11));
-	/** Cottage II with a kitchen wing to the east (a roof terrace on top): an upgrade that grows sideways. */
-	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(17, 16, 11));
-	/** Cottage III with a root cellar dug under the cottage, down a ladder by the kitchen door (26.15). */
-	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(17, 16, 11), 4);
+	/**
+	 * The Starter Cottage (rebuilt from scratch, ROADMAP 49.3, the owner's pick of two: {@code tools/blueprints/js/starter_cottage_b}):
+	 * a one-room saltbox, a tall front over the hearth and the table, the bed nook and the work corner under the long back slope.
+	 */
+	public static final Entry STARTER_COTTAGE = new Entry(AliveWorkplace.id("starter_cottage"), new Vec3i(9, 11, 12));
+	/** A two-storey cross-wing on the east end, its gable to the road, with two more beds upstairs (an upgrade). */
+	public static final Entry STARTER_COTTAGE_2 = new Entry(AliveWorkplace.id("starter_cottage_2"), new Vec3i(13, 12, 12));
+	/** Cottage II with a stone kitchen leaning on the wing's east side, its own door: an upgrade that grows sideways. */
+	public static final Entry STARTER_COTTAGE_3 = new Entry(AliveWorkplace.id("starter_cottage_3"), new Vec3i(18, 12, 12));
+	/** Cottage III with a store cellar under the hall, down a ladder through a hatch (26.15, 49.3). */
+	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(18, 12, 12), 4);
 	/**
 	 * A timber hall with the Village Hall block inside (tools/blueprints/village_hall.py): finished, it is a placed Village
 	 * Hall like any other, owned by the player who handed over the blueprint. The bell hangs under its porch.
@@ -284,12 +288,16 @@ public final class StarterBlueprints {
 	 */
 	public static final Entry DAUB_HOUSE = new Entry(AliveWorkplace.id("house_t1_b"), new Vec3i(13, 14, 13));
 
-	/** The Artisan's House (34.15, a grade I home): a narrow timber house, a stone workroom below and two beds above. */
-	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(9, 15, 12));
-	/** A stone workshop wing at the back with a third bed (grade II). */
-	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(9, 15, 18));
-	/** A storeroom dug under the house (36.7). */
-	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(9, 15, 18), 4);
+	/**
+	 * The Artisan's House (34.15, a grade I home; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/artisans_house}):
+	 * a potter's house gable-end to the street, a stone workroom and hall under a jettied timber floor with two beds, beside
+	 * a brick bottle kiln that is its chimney.
+	 */
+	public static final Entry ARTISANS_HOUSE = new Entry(AliveWorkplace.id("artisans_house"), new Vec3i(16, 17, 14));
+	/** The journeyman's wing at the back with a third bed, and a drying yard (grade II). */
+	public static final Entry ARTISANS_HOUSE_2 = new Entry(AliveWorkplace.id("artisans_house_2"), new Vec3i(16, 17, 19));
+	/** The clay cellar dug under the house (36.7). */
+	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(16, 17, 19), 4);
 	/**
 	 * The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}; rebuilt from scratch, ROADMAP 49.5,
 	 * {@code tools/blueprints/js/townhouse}): a tall merchant's house gable-end to the street, a stone shop and kitchen
@@ -302,14 +310,15 @@ public final class StarterBlueprints {
 	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(19, 26, 19));
 	/** Townhouse III with a vaulted cellar of casks under the shop, down a ladder (26.15). */
 	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(19, 26, 19), 4);
-	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}): a stone house of two storeys round a hall with a grand stair. */
-	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(19, 18, 17));
-	/** A walled formal garden behind: clipped hedges, a fountain and gravel walks (3 beauty for the people who live there). */
-	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(19, 18, 24));
-	/** A gatehouse on the street and a ballroom wing, where the Noble's Ball is held. */
-	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(26, 18, 24));
-	/** Manor III with a great wine cellar under the hall, down a stone stair beside the table (26.15). */
-	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(26, 18, 24), 4);
+	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}; rebuilt in 49.7): a brick hall under a porch tower, a
+	 *  crow-gabled west wing of parlour, kitchen and two chambers, a grand stair to the Long Gallery. */
+	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(21, 18, 17));
+	/** A walled formal garden behind: four box-edged knots round a lamp, clipped yews and a bench (3 beauty for the people who live there). */
+	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(21, 18, 25));
+	/** The east cross-wing: a double-height ballroom with a musicians' gallery, where the Noble's Ball is held, and the garden's east half. */
+	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(29, 18, 25));
+	/** Manor III with a vaulted wine cellar under the kitchen and the hall, down a hatch ladder from the kitchen (26.15). */
+	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(29, 18, 25), 4);
 
 	/** A stone barracks with two Guard Posts, bunks and training dummies. */
 	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
@@ -391,10 +400,14 @@ public final class StarterBlueprints {
 	public static final Entry FISHERS_HUT = new Entry(AliveWorkplace.id("fishers_hut"), new Vec3i(13, 13, 13));
 	/** A smokehouse with a smoker (the fisherman's, for his catch) behind, and a boat shed over the water. */
 	public static final Entry FISHERS_HUT_2 = new Entry(AliveWorkplace.id("fishers_hut_2"), new Vec3i(14, 13, 19));
-	/** A cottage with a loom (Shepherd) and a fenced sheep pen. */
-	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(15, 11, 11));
-	/** A dye garden behind: beds of the flowers dyes come from and a drying frame of dyed cloth. */
-	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(15, 11, 16));
+	/**
+	 * The Weaver's Cottage (the Shepherd's, a loom; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/weavers_cottage}):
+	 * a two-storey stone range with a long mullioned weaver's window, a wool loft under a slate roof, and a sheep fold on
+	 * its east gable that the Shepherd walks into through a door.
+	 */
+	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(18, 14, 12));
+	/** A walled dye garden behind: rows of the flowers dyes come from and a tenter frame of dyed cloth. */
+	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(18, 14, 17));
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 
@@ -543,7 +556,8 @@ public final class StarterBlueprints {
 	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
 	 */
 	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
-	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(11, 19, 9));
+	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
+	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
 	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
 	/** The builds of 39.8, in the order the Table shows them. */
 	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
@@ -560,7 +574,7 @@ public final class StarterBlueprints {
 
 	/** Walls and gates: a wooden palisade with a walkway: an earth bank faced in mud brick, a flight up its village
 	 *  side to a stripped-oak walk of seven stations behind a row of pointed spruce stakes (52.3, rebuilt). */
-	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 5, 4));
+	public static final Entry PALISADE = new Entry(AliveWorkplace.id("palisade"), new Vec3i(7, 4, 4));
 	/** A gate in the palisade (shut at night): a gabled timber gatehouse on stone feet, three spruce gates under its
 	 *  lintel, a walk over the way (52.3, rebuilt). */
 	public static final Entry PALISADE_GATE = new Entry(AliveWorkplace.id("palisade_gate"), new Vec3i(7, 9, 2));
@@ -575,7 +589,7 @@ public final class StarterBlueprints {
 	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
 	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes (52.3, rebuilt: the bank built
 	 *  out into a walk three wide, 19 stations, seven dripstone stakes in a ditch of turned earth outside). */
-	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 5, 5));
+	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 4, 5));
 	/** Timber hoardings over the battlements: a roofed walkway with murder holes (52.3, rebuilt). */
 	public static final Entry STONE_WALL_2 = new Entry(AliveWorkplace.id("stone_wall_2"), new Vec3i(7, 9, 4));
 	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */

@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Weaver's Cottage is rebuilt from scratch** (49.8): a hill weaver's stone house with the loom behind a long
+  mullioned window and a second band of lights over it for the wool loft, up a stair inside. The sheep fold leans on its
+  gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold
+  lifts fleeces to a hatch in the loft. Level II walls a dye garden behind, rows of flowers by color and a frame of dyed
+  cloth. Cottages already standing keep their look until you press Refresh on the hall's Repairs page.
 - **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
   saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
   the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a

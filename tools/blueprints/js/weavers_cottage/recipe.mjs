@@ -94,9 +94,10 @@ export function draw(level = 1) {
   for (let y = 8; y < main.ridgeY; y++) c.set(W.x0, y, 5, P.dressed) // the flue's face down the gable
   c.set(W.x0, main.ridgeY + 2, 5, 'campfire', { facing: 'north', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
   for (const z of [4, 6]) slab(c, W.x0, main.ridgeY + 2, z, `${P.dressed.replace(/s$/, '')}_slab`, 'bottom')
-  // the taking-in door high in the east gable, the hoist beam over the fold, its hook a lantern
+  // the taking-in hatch high in the east gable (glazed, its leaf folded back: a door there would let a villager walk
+  // out of the loft onto a 4-block drop), the hoist beam over the fold, its hook a lantern
   const ti = OPENINGS.takingIn, h = FOLD.hoist
-  takingInDoor(c, ti.at, ti.facing, ti.out, { wood: P.wood, hoist: h.at, log: P.log, bracket: `${P.wood}_stairs`, reach: h.reach, drop: h.drop })
+  takingInDoor(c, ti.at, ti.facing, ti.out, { wood: P.wood, hoist: h.at, log: P.log, bracket: `${P.wood}_stairs`, reach: h.reach, drop: h.drop, glass: P.glass, leaf: ti.leaf })
   c.set(ti.at[0], ti.at[1] + 2, ti.at[2], P.dressed) // its lintel
 
   // --- Pass 4: interior (the plan's furniture) ----------------------------------------------------------------

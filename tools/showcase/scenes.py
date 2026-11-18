@@ -1542,6 +1542,15 @@ SCENES = [
            ("02_outside_back", "From the back: the stepped back gables, a chimney in each one's apex"),
            ("10_room_1", "The ground floor at eye level"),
            ("11_room_2", "The next room at eye level")], furniture=True),
+    # ROADMAP 49.8: the Weaver's Cottage rebuilt from scratch (a two-story stone range with the long weaver's window, a
+    # wool loft, a sheep fold on its east gable with a hoist over it), its first level built as a server with the
+    # furniture mods builds it, from four sides and at eye level in the workroom and the loft
+    S("rebuild_weavers_cottage", "Build families", "The Weaver's Cottage, rebuilt from scratch, furnished: from four sides and every room",
+      "the Weaver's Cottage's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and every room (the workroom with the loom, the wool loft up the stair) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Weaver's Cottage from the front: the long mullioned weaver's window and the loft's band of lights over it, the stone porch, the fold beside it"),
+           ("04_outside_east", "From the east: the sheep fold on the gable, its lean-to over the fold door, the hoist beam over the glazed taking-in hatch"),
+           ("10_room_1", "The workroom at eye level: the loom in the window, the hearth, the carding table"),
+           ("11_room_2", "The wool loft at eye level")], furniture=True),
     # ROADMAP 50.2: the Mason's Yard, the Sawmill and the Carpenter's Workshop rebuilt from scratch (REBUILD.md), each
     # built as a server with the furniture mods builds it, from four sides and at eye level in its rooms
     S("rebuild_masons_yard", "Build families", "The Mason's Yard, rebuilt: from four sides and at eye level inside",

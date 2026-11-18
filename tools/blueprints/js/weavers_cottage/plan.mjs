@@ -30,7 +30,7 @@
 //             (x 2..10: five lights), on a continuous moulded sill course at y 4 (the ground band's drip).
 //   Porch     a little gabled stone porch over the door (x 8..10, z 0..1), its ridge meeting the loft band's mullion.
 //   Stack     a wide gable-end chimney stack on the west gable's apex, the hearth inside.
-//   Hoist     the taking-in door high in the east gable, a hoist beam over the fold with its hook (a lantern).
+//   Hoist     the taking-in hatch high in the east gable (glazed, its leaf folded back: no door onto the drop), a hoist beam over the fold with its hook (a lantern).
 //   Fold      the sheep fold on the east gable (x 11..17, z 2..11): fences, a gate to the street, a drystone back wall,
 //             an open slate lean-to on the gable's back half (the fold door under it, hay at its back end; the
 //             hoist's hook hangs clear of it), grass for
@@ -80,7 +80,7 @@ export const OPENINGS = {
   porchArch: { at: [9, 1, 0], height: 2, step: [9, 0, 0] },
   frontDoor: { at: [9, 1, 2], facing: 'south', out: 'north' },
   foldDoor: { at: [11, 1, 6], facing: 'west', out: 'east' },
-  takingIn: { at: [11, 5, 5], facing: 'west', out: 'east' },
+  takingIn: { at: [11, 5, 5], facing: 'west', out: 'east', leaf: 'north' }, // a glazed hatch, its leaf folded back north
   backDoor: { at: [4, 1, 8], facing: 'north', out: 'south', level: 2 },
   // the flight up to the loft, along the back wall, rising west; the well over it
   stairs: { flight: [[10, 1, 7], [9, 2, 7], [8, 3, 7], [7, 4, 7]], rises: 'west', well: [[10, 4, 7], [9, 4, 7], [8, 4, 7]] },
@@ -120,6 +120,7 @@ export const FURNITURE = [
   { room: 'Loft', kind: 'chair', part: 'chair', pos: [5, 5, 3], facing: 'west', wood: 'spruce' },
   { room: 'Loft', kind: 'table', part: 'table', pos: [5, 5, 7], facing: 'north', wood: 'spruce', colour: 'white' }, // the cutting table, cloth laid on it
   { room: 'Loft', kind: 'table', part: 'table', pos: [6, 5, 7], facing: 'north', wood: 'spruce', colour: 'light_blue' },
+  { room: 'Loft', kind: 'chair', part: 'chair', pos: [5, 5, 6], facing: 'south', wood: 'spruce' }, // the cutter's stool
   { room: 'Loft', kind: 'fixture', part: 'chest', pos: [10, 5, 4], facing: 'west', block: 'chest' },
   { room: 'Loft', kind: 'rug', part: 'rug', cellsAbs: [[3, 5, 4], [4, 5, 4], [5, 5, 4], [4, 5, 5]], colour: 'brown' },
   { room: 'Loft', kind: 'lamp', part: 'hangingLamp', pos: [4, 8, 5], facing: 'north', chain: 2, wood: 'spruce' },
@@ -127,10 +128,12 @@ export const FURNITURE = [
 ]
 
 // Fleeces and bolts (wool blocks, not furniture): [x, y, z, which wool (an index into PALETTE.wool, or a colour)]:
-// raw fleeces under the loft's back slope and by the workroom's back wall, woven bolts by the loft's west gable
+// raw fleeces under the loft's back slope, by the workroom's back wall and behind his chest, woven bolts by the loft's
+// west gable
 export const FLEECES = [
   [2, 5, 4, 'blue_wool'], [2, 5, 5, 'red_wool'], [2, 6, 4, 'yellow_wool'],
   [2, 1, 7, 0], [3, 1, 7, 1], [3, 2, 7, 0],
+  [7, 1, 3, 1], // the day's fleeces piled at the back of his chest (the kept chest faces west: its back needs a wall)
   [2, 5, 7, 0], [3, 5, 7, 2], [2, 6, 7, 1], [2, 5, 6, 0], [4, 5, 7, 0],
 ]
 

@@ -1,7 +1,7 @@
 // Weavers' parts (parts library, tools/blueprints/REBUILD.md; grown from the Weaver's Cottage, 49): the long mullioned
 // window weavers' houses are known by, a moulded course under it, a taking-in door with its hoist, a tenter frame with
 // dyed cloth hung on it, and rows of dye flowers. Every block comes from the caller's palette; none is picked here.
-import { DIRS, OPP, stair } from './canvas.mjs'
+import { DIRS, OPP, stair, trapdoor } from './canvas.mjs'
 import { plantFlower } from './planters.mjs'
 import { hoistBeam } from './workshop_a_yard.mjs'
 
@@ -29,11 +29,22 @@ export function mouldedCourse(c, { axis, line, u0, u1, y, out }, id) {
 
 /** takingInDoor: an upper door in a gable (`at`: its lower half; `out`: the side it opens to, `facing` into the house)
  *  with a hoist beam (workshop_a_yard's hoistBeam) over it at `hoist` [x, y, z] whose hook hangs over the yard below:
- *  the way fleeces, sacks and bales are lifted straight into a loft. */
-export function takingInDoor(c, at, facing, out, { wood, hoist = null, log, bracket, reach = 2, drop = 4 }) {
+ *  the way fleeces, sacks and bales are lifted straight into a loft. With `glass`, it is a hatch instead of a door a
+ *  villager could walk out of onto the drop (the Weaver's Cottage critic, 49.8): the opening glazed (`glass`) and its
+ *  one leaf (`${wood}_trapdoor`s, open) folded back flat against the wall on the `leaf` side (a direction along the
+ *  wall), the way a taking-in door stands open on a fine day. */
+export function takingInDoor(c, at, facing, out, { wood, hoist = null, log, bracket, reach = 2, drop = 4, glass = null, leaf = null }) {
   const [x, y, z] = at
-  for (const half of ['lower', 'upper'])
-    c.set(x, y + (half === 'upper' ? 1 : 0), z, `${wood}_door`, { facing, half, hinge: 'left', open: 'false', powered: 'false' })
+  if (glass) {
+    const [ox, oz] = DIRS[out], [lx, lz] = DIRS[leaf]
+    for (const yy of [y, y + 1]) {
+      c.set(x, yy, z, glass)
+      if (leaf) trapdoor(c, x + ox + lx, yy, z + oz + lz, `${wood}_trapdoor`, out, 'bottom', true)
+    }
+  } else {
+    for (const half of ['lower', 'upper'])
+      c.set(x, y + (half === 'upper' ? 1 : 0), z, `${wood}_door`, { facing, half, hinge: 'left', open: 'false', powered: 'false' })
+  }
   if (hoist) hoistBeam(c, hoist, out, { log, bracket, reach, drop })
 }
 

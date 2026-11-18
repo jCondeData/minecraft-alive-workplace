@@ -395,10 +395,14 @@ public final class StarterBlueprints {
 	public static final Entry FISHERS_HUT = new Entry(AliveWorkplace.id("fishers_hut"), new Vec3i(13, 13, 13));
 	/** A smokehouse with a smoker (the fisherman's, for his catch) behind, and a boat shed over the water. */
 	public static final Entry FISHERS_HUT_2 = new Entry(AliveWorkplace.id("fishers_hut_2"), new Vec3i(14, 13, 19));
-	/** A cottage with a loom (Shepherd) and a fenced sheep pen. */
-	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(15, 11, 11));
-	/** A dye garden behind: beds of the flowers dyes come from and a drying frame of dyed cloth. */
-	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(15, 11, 16));
+	/**
+	 * The Weaver's Cottage (the Shepherd's, a loom; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/weavers_cottage}):
+	 * a two-storey stone range with a long mullioned weaver's window, a wool loft under a slate roof, and a sheep fold on
+	 * its east gable that the Shepherd walks into through a door.
+	 */
+	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(18, 14, 12));
+	/** A walled dye garden behind: rows of the flowers dyes come from and a tenter frame of dyed cloth. */
+	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(18, 14, 17));
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 

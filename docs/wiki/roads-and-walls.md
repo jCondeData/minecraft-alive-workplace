@@ -4,7 +4,7 @@ The roads and the wall you draw on a City Plan get built by the village's builde
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
 themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753, B1380
+Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753, B1380, B1382
 
 ## What a player sees
 
@@ -71,10 +71,10 @@ stands on a sloping foot with andesite quoins, arrow slits and a ring of overhan
 with a lantern on every side (5 x 12 x 5). The **Palisade Gate** is a small timber gatehouse: log jambs on stone feet,
 a pale lintel over three spruce gates (the way through 2 high), a steep gable roof with lanterns under it (7 x 9 x 2).
 The **Palisade** is an earthwork: a cobble toe and mud-brick steps up the village side of a rammed-earth bank to a
-stripped-oak walk of 7 battle stations, behind a row of bark-on spruce stakes with pointed heads and an oak rail through
-them (7 x 5 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
+stripped-oak walk of 7 battle stations, behind a row of bark-on spruce stakes with an oak rail through them, waist-high above the walk so the archers on it
+can see and shoot out (B1382: the old pointed heads hid everything outside) (7 x 4 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
 three wide (19 stations, the steps kept as its stair) and plants seven dripstone stakes in a ditch of turned earth
-outside (7 x 5 x 5). Pieces already standing keep their old look until refreshed.
+outside (7 x 4 x 5). Pieces already standing keep their old look until refreshed.
 
 ## Switches
 

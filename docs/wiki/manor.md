@@ -76,7 +76,7 @@ drawing until a refresh. Its grade and garden still come from `homes/manor.json`
 
 ## 6. Decisions
 
-- The critic's three optional notes, taken at the ship step: the inner partitions are dark oak panelling (a white
+- The critic's three optional notes, taken at the ship step: the inner partitions are dark oak paneling (a white
   terracotta one read as a stray peach slab); the plain west flank gets two stone-framed oriels on the chambers under
   the eave; each upstairs chamber gets a wardrobe and a reading chair (the great chamber a bookcase with a fern too).
 - The ballroom's double doors from the hall are at z 7-8, not 8-9: at 8-9 the dining table's end chair stood in their

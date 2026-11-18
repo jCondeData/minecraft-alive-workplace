@@ -11,7 +11,7 @@ Roadmap items: 34.15, 36.7, 49.8
 - **Artisan's House** (16 x 17 x 14, grade I; builders from Apprentice on sell it for 10 emeralds): the Kiln House, a
   potter's house standing gable-end to the street. A rubble-stone ground floor with dressed quoins; over it a white
   plaster floor between spruce posts, jettied a block out over the street on carved brackets, three windows with
-  flower boxes on its moulding and a lantern hung over the door; a steep dark-tiled roof with barge boards, a gabled
+  flower boxes on its molding and a lantern hung over the door; a steep dark-tiled roof with barge boards, a gabled
   dormer on the west slope. Beside the house stands a round brick **bottle kiln** (a wide hovel, two shoulders, a neck
   with a flared lip and two dark hoops): it is the house's chimney, its fire mouth opens into the workroom, its stoke
   hole into the yard, and a tidy log stack under a board lid leans on it either side of the stoke hole. A lean-to fuel

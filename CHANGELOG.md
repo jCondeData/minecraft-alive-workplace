@@ -23,6 +23,11 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Ferry House is rebuilt from scratch** (50.5): a ferry station. Passengers wait in a stone waiting room with a
+  stove, a table, a bench and the station clock; the Ferryman sleeps in the white plastered room above, and a lookout
+  cupola on the slate roof carries the ferry light. A boarded landing runs the whole front under a canopy with a teal
+  valance, the Travel Post by its steps and benches against the wall. Ferry Houses already standing keep the drawing
+  they were built from until you refresh them; the village ferry houses are unchanged.
 - **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
   terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
   meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's

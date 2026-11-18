@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5
 
 ## 1. What a player sees
 
@@ -29,7 +29,11 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3
 - **Clinic**: a white pavilion with its gable to the street and a stone-mullioned cross window over the door, and a ward
   across the back with cross windows and four white beds, heads to the back wall, for the ill. Its ceilings are closed
   up to the ridge.
-- **Ferry House**: a boathouse under a gambrel roof, a landing stage of planks at the front with a light on a mast.
+- **Ferry House** (rebuilt from scratch in 50.5): a ferry station. A stone waiting room with a stove, a table, a bench
+  and the station clock under a white plastered upper floor (the Ferryman's bedroom, up a stair inside) and a slate roof
+  with a lookout cupola carrying the ferry light; a boarded landing the whole width of the front under a canopy with a
+  teal valance, the Travel Post by the landing steps and benches against the wall. 15 x 17 x 11; standing Ferry Houses
+  keep their old drawing until refreshed.
 - **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
   targets.
 - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
@@ -82,7 +86,7 @@ the **Inn** has its guest story jettied over the street on brackets, under two g
 tall post at the corner.
 
 The buildings are bigger than the old 9 x 10 house (up to 17 x 17 x 14), so their plots are bigger; the Ferry House
-keeps its 9 x 10 plot (the shore rule measures from its front).
+(15 x 11 since its 50.5 rebuild) keeps the old plot's depth of 10 or 11 (the shore rule measures from its front).
 
 ## 2. How it works
 

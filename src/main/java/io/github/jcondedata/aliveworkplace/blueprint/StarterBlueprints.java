@@ -597,8 +597,8 @@ public final class StarterBlueprints {
 	public static final Entry GUARD_HOUSE = workplace("guard_house", 11, 13, 11);
 	/** A white pavilion with a ward wing across the back and cross-mullioned windows. */
 	public static final Entry CLINIC = workplace("clinic", 13, 11, 12);
-	/** A gambrel-roofed boathouse with a landing stage; the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
-	public static final Entry FERRY_HOUSE = workplace("ferry_house", 9, 10, 10);
+	/** A ferry station with a boarded landing under a canopy (rebuilt in ROADMAP 50.5); the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
+	public static final Entry FERRY_HOUSE = workplace("ferry_house", 15, 17, 11); // ROADMAP 50.5: rebuilt
 	/** A long low dojo with a deep veranda and a fenced sparring ring. */
 	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
 	/** A stone hall with a columned portico and a pediment. */

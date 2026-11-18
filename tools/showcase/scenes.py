@@ -1614,6 +1614,12 @@ SCENES = [
            ("03_outside_west", "From the west: the mill pond on its terrace, the launder over the wheel and the tail pit"),
            ("02_outside_back", "From the back: the pond terrace against the mill's back wall"),
            ("10_room_1", "Inside at eye level: the meal floor, the millstone over its gearbox")], furniture=True, create=True),
+    S("rebuild_ferry_house", "Build families", "The Ferry House, rebuilt: from four sides and at eye level inside",
+      "the Ferry House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ferry House from the front: the boarded landing under its canopy and teal valance, the Travel Post by the steps"),
+           ("02_outside_back", "From the back: the stone ground floor, the white plastered upper floor and the slate roof with its lookout cupola"),
+           ("04_outside_east", "From the east: the stove's chimney up the gable"),
+           ("10_room_1", "Inside at eye level: the waiting room, its table, bench and stove")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

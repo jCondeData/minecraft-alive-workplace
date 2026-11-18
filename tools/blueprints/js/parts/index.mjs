@@ -74,4 +74,6 @@ export * from './kitchen_hall.mjs' // ledgeRing, louvredHip, hipRolls, tieBeams,
 export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruitingVines (wineries: a double perron, log casks on their sides, vineyard rows, glow berries on a beam)
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)
+export * from './shore.mjs' // upturnedHull, transom, pier, dryingRack (shore buildings: an upturned boat for a roof, a pier on piles, a fish-drying rack)
+export * from './landing.mjs' // platformCanopy, mast (ferry and station platforms: a lean-to canopy with brackets and a valance, a signal mast; the Ferry House, 49)
 export * from './watermill_lucam.mjs' // raisedPond, overshotWheel, driveToMillstone, hurst, lucam, sluiceGate (watermills: a raised mill pond, a launder over an overshot wheel into a closed pit, the millstone on its hurst, a gable's sack-hoist hood)

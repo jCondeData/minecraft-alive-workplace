@@ -1,0 +1,19 @@
+{
+  "name": "fishers-hut-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 29
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/out/fishers-hut-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/out/summary.json",
+  "size": [
+    13,
+    11,
+    19
+  ],
+  "blockCount": 488,
+  "paletteCount": 58,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/fishers_hut/recipe.mjs"
+}

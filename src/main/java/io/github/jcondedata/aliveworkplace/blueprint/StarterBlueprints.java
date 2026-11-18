@@ -603,8 +603,8 @@ public final class StarterBlueprints {
 	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
 	/** A market hall: an upper storey on a stone arcade, a cupola on the ridge. */
 	public static final Entry TRADE_HALL = workplace("trade_hall", 11, 17, 11);
-	/** A U of brick round a courtyard with the tutor's post in it. */
-	public static final Entry SCHOOL = workplace("school", 17, 11, 13);
+	/** The Half Court: a gatehouse onto a sparring ring round the tutor's post, a cloister and the Tutor's hall behind (rebuilt 51.4). */
+	public static final Entry SCHOOL = workplace("school", 17, 12, 18);
 
 	/**
 	 * A pit the Miner works like a farm (36.12, {@code mine/QuarryBuilds}): a curbed, fenced rim round the ground it digs,

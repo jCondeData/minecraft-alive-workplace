@@ -250,7 +250,7 @@ building, and a critic who ships the new one only when it is clearly better. Ids
 and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
 family from four sides and at eye level in every room.
 
-**51.4: the Library and the Schoolhouse** (the School's rebuild waits, below). Recipes
+**51.4: the Library and the Schoolhouse** (the School followed in round 3, below). Recipes
 `tools/blueprints/js/{library,schoolhouse}/`
 (`build.sh` writes the Library's four levels and the Schoolhouse's two; Library IV with `--basement 4 --cellar
 out/cellar.txt`), saved live by `rebuild.py`; briefs and the critics' scorecards in `tools/blueprints/briefs/`
@@ -260,8 +260,19 @@ out/cellar.txt`), saved live by `rebuild.py`; briefs and the critics' scorecards
 `modded/`); the vanilla village houses `<style>_schoolhouse` keep their own looks (`village_looks.py`), as the
 Carpenter's Workshop's did in 50.2. `check.py` counts a modded wood ladder (Carved Wood's, in the modded Library IV)
 as a ladder. Scenes `rebuild_library`, `rebuild_schoolhouse`; `furnished_workplaces`' schoolroom shot stands inside the
-new front wall. The School's rebuild (`js/school`, 17 x 14 x 20, 1,410 blocks against the old 759) stays a candidate:
-in the School's build test (`WorkplacesGameTests`' generated workplaceBuilt_school) the builder was still on STRUCTURE at 12,000 ticks (the brief's limit;
-at tick 9,200 only up to y 7, then stuck 2,400 ticks on the gate roof's back barge stair at (4, 7, 5), over the west
-cloister's lean-to), so `school` keeps its old drawing until a lighter design builds in time. Its reading table now
-seats six (a chair at every place), so the modded copy's crockery at its middle is at a seat.
+new front wall. The School's round-2 rebuild (17 x 14 x 20, 1,410 blocks against the old 759) did not ship: in the
+School's build test (`WorkplacesGameTests`' generated workplaceBuilt_school) the builder was still on STRUCTURE at
+12,000 ticks (the brief's limit), stuck 2,400 ticks on the gate roof's back barge stair over the west cloister's
+lean-to.
+
+**51.4: the School** (round 3, "the Half Court", critic SHIP). Recipe `tools/blueprints/js/school/` (`npm run cut`
+with `MC_BUILDER=<minecraft-builder skill>`), then `rebuild.py school school`. `school` is now 17 x 12 x 18, 903 blocks
+(about 45 stacks of the 81 budget): the gatehouse with a moon window in both gables, the court with its sparring ring
+round the Training Post (8, 1, 8), one cloister on the west (`holes.py` ALLOW for its open side at (2, 1, 9)), a low
+yard wall with lantern piers and targets on the east, and the Tutor's hall behind (lecture room, quarters behind a
+bookshelf screen, one bed, one chest). The brief now caps it at about 900 blocks with no roof, barge or eave over
+another roof, so the builder never stands on one roof to lay the next. The bed's foot (13, 1, 14) stands diagonal to
+the screen doorway (12, 1, 13): `check.py`'s doorway rule looks at the doorway cell and the cells straight in front of
+and behind it, (11, 1, 13) and (13, 1, 13), both open floor, so the way through is clear. The old drawing (and its
+modded copy) is in `blueprint_history/school/` as `v0.145.0`; the village houses `<style>_school` keep their own looks
+(`village.py`'s staffed house). Scene `rebuild_school`.

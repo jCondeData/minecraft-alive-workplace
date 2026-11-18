@@ -1580,6 +1580,13 @@ SCENES = [
       40, [("01_outside_front", "The Schoolhouse from the front: the cloak porch and the copper bell-cote on the gable"),
            ("02_outside_back", "From the back"), ("04_outside_east", "From the east: the tall windows down the schoolroom"),
            ("10_room_1", "The schoolroom at eye level: the bench rows facing the lectern and the blackboard")], furniture=True),
+    # ROADMAP 51.4: the Move Tutor's School rebuilt from scratch (round 3, "the Half Court")
+    S("rebuild_school", "Build families", "The School, rebuilt: from four sides and at eye level inside",
+      "the School's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The School from the front: the gatehouse with its moon window, banners on the gate piers"),
+           ("02_outside_back", "From the back: the gate gable rising over the hall roof, the chimney"),
+           ("03_outside_west", "From the west: the cloister's lean-to along the sparring court"),
+           ("10_room_1", "Inside at eye level: the cloister bench by the court, the lecture room's reading table and the Tutor's desk")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -53,6 +53,11 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The School is rebuilt from scratch** (51.4, with Cobblemon). A timber-framed gatehouse with a round moon window
+  opens onto a paved court, where a sparring ring with straw targets circles the Move Tutor's Training Post; spectators
+  sit under a cloister on the west, and behind the court the Tutor's hall holds a lecture room with a reading table, a
+  desk by the hearth, and his quarters behind a bookshelf screen (17 x 12 x 18). Villages keep their own Tutor's
+  house. Schools already standing keep the drawing they were built from until you refresh them.
 - **The Library and the Schoolhouse are rebuilt from scratch** (51.4). The Library is a tall buttressed
   stone nave with a rose window over a gabled porch, shelves under its windows, reading desks under hanging lanterns
   and the lectern closing a blue runner; Level II adds a reading aisle through a wide arch, Level III a spired tower

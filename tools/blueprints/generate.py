@@ -59,9 +59,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate",
            # 51.4, the Library (four levels) and the Schoolhouse: tools/blueprints/js/{library,schoolhouse}/
            # (MC_BUILDER=<minecraft-builder skill>; library and schoolhouse: build.sh with LEVEL=1..4, library_4 with
-           # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School's
-           # rebuild (js/school) is not live yet: it builds past workplaceBuilt_school's 12,000 ticks (ROADMAP Notes)
-           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2"}
+           # --basement 4 --cellar out/cellar.txt), then python3 tools/blueprints/rebuild.py <family> <id>. The School
+           # (round 3, "the Half Court"): js/school (npm run cut), then rebuild.py school school; its village pieces keep
+           # their own looks (village.py's staffed house)
+           "library", "library_2", "library_3", "library_4", "schoolhouse", "schoolhouse_2", "school"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

@@ -119,7 +119,7 @@ export const OPENINGS = {
       { name: 'parlour east', cells: [[11, 2, 2], [11, 3, 2]], out: 'east', dress: null },
       // the wing's stone east wall gets a second window (the critic: "II's bare stone east ground wall"); Level III's
       // kitchen leans on this wall, so III closes it again with stone
-      { name: 'parlour east back', cells: [[11, 2, 7], [11, 3, 7]], out: 'east', dress: 'shutters', sill: 'potted_blue_orchid' },
+      { name: 'parlour east back', cells: [[11, 2, 7], [11, 3, 7]], out: 'east', dress: 'shutters' }, // no pot: II's upgrade fits one chest
       { name: 'chamber front', cells: [[9, 6, 1], [9, 7, 1]], out: 'north', dress: 'shutters' },
       { name: 'chamber gable', cells: [[9, 9, 1]], out: 'north', dress: null },
       { name: 'chamber back', cells: [[9, 6, 10], [9, 7, 10]], out: 'south', dress: 'shutters' },
@@ -154,7 +154,9 @@ export const FURNITURE = {
     { room: 'Hall', kind: 'chair', part: 'chair', pos: [6, 1, 5], facing: 'north', wood: 'spruce' },
     { room: 'Hall', kind: 'blinds', part: 'blinds', pos: [6, 3, 4], facing: 'west', wood: 'spruce' },
     { room: 'Hall', kind: 'couch', part: 'couch', pos: [3, 1, 6], facing: 'west', length: 2, arms: true, wood: 'spruce' },
-    { room: 'Hall', kind: 'rug', part: 'rug', cellsAbs: [[2, 1, 5], [2, 1, 6]], colour: 'red' },
+    // the stove stands before the hearth (every older drawing keeps a furnace at 2, 1, 5, and a refresh never moves it)
+    { room: 'Hall', kind: 'fixture', part: 'stove', pos: [2, 1, 5], facing: 'east', block: 'furnace' },
+    { room: 'Hall', kind: 'rug', part: 'rug', cellsAbs: [[2, 1, 6]], colour: 'red' },
     { room: 'Hall', kind: 'clock', part: 'clock', pos: [2, 1, 3], facing: 'east', wood: 'spruce' },
     { room: 'Hall', kind: 'picture', part: 'picture', pos: [5, 3, 3], facing: 'south', wood: 'spruce', colour: 'cyan' },
     { room: 'Hall', kind: 'lamp', part: 'hangingLamp', pos: [4, 5, 5], facing: 'north', chain: 2, wood: 'spruce' },
@@ -166,7 +168,7 @@ export const FURNITURE = {
     { room: 'Outshot', kind: 'fixture', part: 'pantry', pos: [4, 1, 9], facing: 'north', block: 'chest' },
     { room: 'Outshot', kind: 'counter', part: 'counter', pos: [5, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
     { room: 'Outshot', kind: 'crockery', part: 'plates', pos: [5, 3, 9], facing: 'north', wood: 'spruce', block: 'flower_pot' },
-    { room: 'Outshot', kind: 'fixture', part: 'stove', pos: [6, 1, 9], facing: 'north', block: 'furnace' },
+    { room: 'Outshot', kind: 'counter', part: 'counter', pos: [6, 1, 9], facing: 'north', topSlab: true, wood: 'spruce' },
     { room: 'Outshot', kind: 'shelf', part: 'shelf', pos: [6, 3, 7], facing: 'west', wood: 'spruce', crockery: 'potted_brown_mushroom' },
     { room: 'Outshot', kind: 'lamp', part: 'hangingLamp', pos: [3, 4, 8], facing: 'north', chain: 0, wood: 'spruce' },
   ],
@@ -183,8 +185,9 @@ export const FURNITURE = {
     { room: 'Chamber', kind: 'bed', part: 'bed', pos: [10, 5, 3], facing: 'north', colour: 'light_blue' },
     { room: 'Chamber', kind: 'nightstand', part: 'nightstand', pos: [9, 5, 2], facing: 'south', wood: 'spruce' },
     { room: 'Chamber', kind: 'cupboard', part: 'cupboard', pos: [10, 5, 4], facing: 'west', wood: 'spruce' },
-    { room: 'Chamber', kind: 'picture', part: 'picture', pos: [10, 7, 4], facing: 'west', wood: 'spruce', colour: 'light_blue' },
-    { room: 'Chamber', kind: 'rug', part: 'rug', cellsAbs: [[9, 5, 3], [9, 5, 4]], colour: 'light_gray' },
+    // (the parlour's colours, green and white: what II's upgrade still needs fits one chest, 27 stacks)
+    { room: 'Chamber', kind: 'picture', part: 'picture', pos: [10, 7, 4], facing: 'west', wood: 'spruce', colour: 'green' },
+    { room: 'Chamber', kind: 'rug', part: 'rug', cellsAbs: [[9, 5, 3], [9, 5, 4]], colour: 'white' },
     { room: 'Chamber', kind: 'lamp', part: 'hangingLamp', pos: [9, 7, 3], facing: 'north', chain: 3, wood: 'spruce' },
     { room: 'Chamber', kind: 'lamp', part: 'hangingLamp', pos: [8, 7, 8], facing: 'north', chain: 2, wood: 'spruce' },
   ],

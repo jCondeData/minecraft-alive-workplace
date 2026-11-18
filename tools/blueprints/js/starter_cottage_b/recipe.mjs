@@ -34,9 +34,9 @@ const windows = (c, level) => {
 }
 const inner = ([a0, a1]) => [a0 + 1, a1 - 1] // trim only between the overhangs: no loose tabs at the corners
 const furnish = (c, level) => { for (const f of FURNITURE[level]) furnitureParts[f.part](c, f) }
-// the barge boards' peak: a full block of the trim's wood under the ridge's end, where the two upside-down trim stairs
+// the barge boards' peak: a full block under the ridge's end, where the two upside-down trim stairs
 // meet (one stair there left a notch at the gable's peak: the critic's note on II's front gable)
-const peak = (c, x, y, z) => { if (c.name(x, y, z) === `minecraft:${P.trim}`) c.set(x, y, z, P.trim.replace(/_stairs$|_slab$/, '_planks')) }
+const peak = (c, x, y, z) => { if (c.name(x, y, z) === `minecraft:${P.trim}`) c.set(x, y, z, P.roof.full) } // the ridge's own planks
 
 // --- Level I: the Saltbox --------------------------------------------------------------------------------------------
 function levelOne(c) {

@@ -13,11 +13,10 @@ Roadmap items: 26.15, 37.4, 49.3
   short roof slope, and a long **catslide** sweeping down at the back over a low back wall. A cobble stack up the west
   gable with the campfire on top, a little gabled hood on two posts over the front door with a lantern under the eave,
   flower beds either side of the stone path, window boxes under the front windows.
-  - The **hall**, under the tall front: the hearth in the west wall with a red rug and a two-seat couch before it, a
-    table for two under the front east window (both chairs at it), the clock, a picture, a lamp from the ridge.
+  - The **hall**, under the tall front: the hearth in the west wall with the furnace standing before it, a red rug and a
+    two-seat couch by it, a table for two under the front east window (both chairs at it), the clock, a picture, a lamp from the ridge.
   - The **outshot**, under the catslide: the bed nook (the red bed and its nightstand) in the west, the work corner in
-    the east (the Fisherman's barrel, the Carpenter's crafting table, a chest, a counter with the plates and the furnace,
-    a shelf).
+    the east (the Fisherman's barrel, the Carpenter's crafting table, a chest, two counters with the plates, a shelf).
 - **Starter Cottage II** (13 x 12 x 12): a two-story **cross-wing** across the east end, its gable to the road: stone
   below, timber above, a pent roof over the parlor window. Through a doorway from the hall, the **parlor** (a second
   table for two, a cupboard, a picture) and a stair up the east wall to the **chamber** under the wing's roof: two light
@@ -75,7 +74,10 @@ mid-build keep their drawing until a refresh.
   again, the kitchen leans there); the cellar has shelves, pumpkins, a melon and a summer beam; the notch at the gable
   peaks is a full block of trim.
 - The kitchen's door is at x 13, not 14: every older Level III keeps a barrel at (14, 1, 4), and a refresh never moves a
-  container (as the Stone House found).
+  container (as the Stone House found). For the same reason the furnace stands before the hearth at (2, 1, 5), where
+  every older drawing has its furnace.
+- What Level II's upgrade still needs fits one chest (27 stacks, `builderUpgradesAFinishedCottage`): the chamber shares
+  the parlor's green and white, and the wing's new east window has shutters but no pot.
 
 ## 7. Known limits
 

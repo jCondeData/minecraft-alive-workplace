@@ -51,8 +51,8 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # builders_workshop; its village pieces are that blueprint restyled (village.py builders_workshop)
            "builders_workshop",
            "camp_kitchen", "camp_kitchen_2",
-           # 52.3, the walls (the palisade, palisade_2 and palisade_tower follow)
-           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate"}
+           # 52.3, the walls (the palisade_tower follows)
+           "stone_wall", "stone_wall_2", "wall_tower", "wall_tower_2", "palisade_gate", "palisade", "palisade_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     for name, draw in (("palisade", palisade), ("palisade_gate", palisade_gate), ("palisade_tower", palisade_tower), ("stone_wall", stone_wall), ("wall_tower", wall_tower),
                        ("gatehouse", gatehouse), ("barracks", barracks), ("barracks_2", barracks_2),
                        ("palisade_2", palisade_2), ("stone_wall_2", stone_wall_2), ("wall_tower_2", wall_tower_2), ("gatehouse_2", gatehouse_2)):
-        if name not in REBUILT:  # 52.3: the stone wall, the wall tower and the palisade gate are rebuilt
+        if name not in REBUILT:  # 52.3: the stone wall, the wall tower, the palisade gate and the palisade are rebuilt
             draw().save(MAIN_STRUCTURES, name)
     tinkers_workshop().save(MAIN_STRUCTURES, "tinkers_workshop")
     tinkers_workshop_2().save(MAIN_STRUCTURES, "tinkers_workshop_2")

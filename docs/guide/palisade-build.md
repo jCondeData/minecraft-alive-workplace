@@ -3,8 +3,8 @@
 ```infobox
 type: Build
 Kind: wall
-Size: 7 wide, 6 tall, 2 deep (Palisade II: 4 deep)
-Blocks: about 50 (spruce logs, fences and slabs, ladders)
+Size: 7 wide, 5 tall, 4 deep (Palisade II: 5 deep)
+Blocks: about 77 (spruce logs and fences, stripped oak logs, cobblestone, packed mud, mud brick and cobblestone stairs, an oak stair rail; Palisade II: about 109, with spruce slabs, coarse dirt and pointed dripstone)
 Upgrade: Palisade II (a fighting step and a ditch of dripstone stakes)
 Where: the Blueprint Table
 Goes with: the Palisade Gate and the Palisade Tower
@@ -12,9 +12,11 @@ categories: Builds, Defense
 related: palisade-gate-build.md, palisade-tower-build.md, defence.md, raids.md
 ```
 
-A wall of sharpened spruce logs with a walkway along the inside, reached by ladders. Each blueprint is a seven-block
-stretch, so a builder (or several) can ring a whole village in sections. It's the cheapest wall there is: almost all
-spruce logs.
+An earthwork wall, the kind a hamlet throws up in a week. On the village side a cobblestone toe and mud-brick steps
+climb a bank of rammed earth to a walk of pale stripped-oak logs, where seven archers can stand. Behind the walk stands
+a row of bark-on spruce stakes, waist-high over it, each with a pointed head, and an oak rail runs through their outer
+face. Each blueprint is a seven-block stretch, every column the same, so a builder (or several) can ring a whole village
+in sections that overlap anywhere.
 
 ## Building it
 
@@ -22,8 +24,9 @@ Take a Palisade blueprint from the Blueprint Table. Stand inside the village and
 end; put a [Palisade Gate](palisade-gate-build.md) where the road goes through and a
 [Palisade Tower](palisade-tower-build.md) at the corners. See [The Builder and blueprints](builder.md).
 
-**Palisade II.** Right-click a finished section with the Palisade II blueprint: the builder adds a plank fighting step
-behind the wall and, in front, a ditch of coarse dirt set with pointed dripstone stakes.
+**Palisade II.** Right-click a finished section with the Palisade II blueprint: the builder builds the bank out over
+the steps into a walk three wide (19 archers' places; the steps in the middle stay as its stair) and, in front, digs a
+ditch of turned earth with seven pointed dripstone stakes standing in it.
 
 ## How it fits in
 

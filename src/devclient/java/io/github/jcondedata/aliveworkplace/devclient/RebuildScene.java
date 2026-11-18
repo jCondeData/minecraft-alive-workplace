@@ -45,7 +45,7 @@ final class RebuildScene {
 	static final List<String> FILMED = List.of("well", "house_t1_b", "well_house", "fountain", "lily_pond", "footbridge",
 		"park_bench", "sundial", "flower_planters", "fire_pit", "gazebo", "topiary_garden", "stag_statue",
 		"masons_yard", "sawmill", "carpenters_workshop", "builders_workshop", "camp_kitchen",
-		"stone_wall", "wall_tower", "palisade_gate");
+		"stone_wall", "wall_tower", "palisade_gate", "palisade");
 	private static final BlockPos AT = new BlockPos(0, -60, 0);
 	private static final int FIRST = 80;
 	private static final int EACH = 50;

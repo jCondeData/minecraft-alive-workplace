@@ -69,7 +69,11 @@ stands on a sloping foot with andesite quoins, arrow slits and a ring of overhan
 16 battle stations, a furnished guardroom and store inside (5 x 10 x 5); **Wall Tower II** roofs the top on stone piers
 with a lantern on every side (5 x 12 x 5). The **Palisade Gate** is a small timber gatehouse: log jambs on stone feet,
 a pale lintel over three spruce gates (the way through 2 high), a steep gable roof with lanterns under it (7 x 9 x 2).
-Pieces already standing keep their old look until refreshed.
+The **Palisade** is an earthwork: a cobble toe and mud-brick steps up the village side of a rammed-earth bank to a
+stripped-oak walk of 7 battle stations, behind a row of bark-on spruce stakes with pointed heads and an oak rail through
+them (7 x 5 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
+three wide (19 stations, the steps kept as its stair) and plants seven dripstone stakes in a ditch of turned earth
+outside (7 x 5 x 5). Pieces already standing keep their old look until refreshed.
 
 ## Switches
 

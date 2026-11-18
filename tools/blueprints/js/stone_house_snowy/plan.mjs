@@ -33,7 +33,7 @@
 //  Back     III: walls x 1..9, z 9..13, a steep roof (ridge along z at x 5, y 14) meeting the main roof's back slope
 //           (a cross gable), its gable at z 13; a ceiling at y 6 over the back room.
 //  Cellar   IV: the shipped store, cell for cell (x 1..9, z 1..9, 4 deep).
-//  Snow     snow layers on the ridges, the eaves and the snow line's treads, on the window sills, and a drift skirt, never on
+//  Snow     snow layers capping the ridges, on the eaves and the back snow line, on the sills, and a continuous drift, never on
 //           the doorstep (5, 0, 0) or the walks to the doors. Snow layers sit on full blocks only (the treads are full
 //           tiles), so the builder places each on a solid top.
 //  Lamps    the furniture of the shipped house cell for cell; only the hanging lamps' chains change to reach what is
@@ -41,7 +41,7 @@
 //  Done (2026-11-18): all four levels saved as candidates (build.sh -> build/rebuild/stone_house_snowy/), each with no CHECK
 //           line, holes.py 0 (open included), check.py's owner rules and checks 0, and every furniture spot of the
 //           shipped Stone House present in the same cell with the same kind and facing at every level (29/34/39/47).
-//           Blocks per level 830/968/1237/1447 (shipped 759/851/996/1206); II keeps 97 % of I, III 95 % of II, IV 100 % of III.
+//           Blocks per level 853/990/1260/1470 (shipped 759/851/996/1206); II keeps 97 % of I, III 93 % of II, IV 100 % of III.
 //           Not shipped (no SHIP=1): the critic goes first.
 //  Round 2 (2026-11-18, the critic's five notes, briefs/stone_house_looks_critic.md): 1 the gables' rakes keep their
 //           stairs (snowLoad skips the rake columns), so each gable edge is a clean steep rake at the same pitch; 2 the
@@ -50,6 +50,13 @@
 //           4 the walls one stone (calcite) with grey dressed quoins and band, the chimney all stone brick; 5 Level I's
 //           east side: a window box (a sill with a potted spruce) under the hall's east window and a firewood stack
 //           against the gable under its rake (II's wing takes those cells).
+//  Round 3 (2026-11-18, the critic's three notes): 1 the dormer gets a proper gable: birch boards three wide over
+//           the panes and one at the apex (no one-wide column), under its own 45-degree roof with a spruce verge on the
+//           overhang and snow along its ridge, so it shows against the main slope; 2 no lone snow: the back snow line only
+//           while the back slope is whole (I, II), the wing's eaves bare (the house's rake covered one end), every ridge
+//           snowed its whole length, rakes included; 3 the drift is one continuous skirt (under sills and eaves too, round
+//           the corners). The ridges' snow now caps them three wide (the course under each ridge carries it), so it
+//           sits on the ridge instead of reading as a thin bar above it.
 //  Left for the critic: the back gable stands flush at z 13 (the plot's edge leaves no cell for an overhang), and
 //           so does the wing's at x 12.
 import { FURNITURE as SH_FURNITURE, OPENINGS as SH_OPENINGS, MASSES as SH_MASSES, BASEMENT, SIZES, IDS } from '../stone_house/plan.mjs'
@@ -66,7 +73,8 @@ export const PALETTE = {
   course: 'polished_andesite', // the upper floor's line in the walls: a grey band round the pale stone
   dressed: 'stone_bricks', dressedAlt: 'polished_andesite', // quoins
   sill: 'stone_brick_stairs', cap: 'stone_bricks',
-  gable: 'calcite', trim: 'stripped_birch_log', post: 'birch_log', // the dormer's white face and birch posts
+  trim: 'stripped_birch_log', post: 'birch_log', // the dormer's birch posts
+  dormerFace: 'birch_planks', verge: 'spruce_stairs', vergeTop: 'spruce_planks', // round 3: the dormer's board gable and a dark verge on its roof
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
   snow: 'snow',
   firewood: ['spruce_log', 'birch_log', 'oak_log'], // split rounds end-on, mixed woods
@@ -82,7 +90,7 @@ export const MASSES = {
   back: { x0: 1, z0: 9, x1: 9, z1: 13, roof: { axis: 'z', across: [0, 10], along: [5, 13], eaveY: 5, steep: true }, ceilingY: 6 },
   cellar: SH_MASSES.cellar,
   porch: { x: 5, z: 0, top: 4 }, // the storm porch's cheeks at x 4 and 6 on the front row
-  snowLine: 9, // round 2: snow lies on the treads at this height only (and on every ridge and eave)
+  snowLine: 9, // snow lies on the back slope's treads at this height (I, II), on every ridge and eave
 }
 
 export const OPENINGS = {

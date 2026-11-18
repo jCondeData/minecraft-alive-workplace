@@ -357,7 +357,7 @@ public final class Stories {
 			for (Quest q : List.copyOf(en.getValue().quests)) {
 				int i = q.current();
 				if (i >= 0 && q.objectives.get(i) instanceof Objectives.Kill kill && (here || kill.anywhere() || kill.role() != null) && kill.matches(killed)
-					&& (kill.role() == null || ArcEffects.plays(en.getValue(), q, kill.role(), killed)) // B711: this arc's own foe
+					&& (kill.role() == null || ArcEffects.plays(level, en.getValue(), q, kill.role(), killed)) // B711: this arc's own foe
 					&& mayHelp(level, en.getKey(), q, player)) {
 					VillageHallBlockEntity entity = ticking(level, en.getKey());
 					if (!counts(level, en.getKey(), entity)) {

@@ -65,6 +65,8 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- A story arc running in two villages at once: killing one village's foe ("The Boar") no longer also finishes the
+  other village's hunt before that village's own foe has even come (B724).
 - Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
   the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
   takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and

@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.157.0 — 2026-11-18
+
 ### Added
 - **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
   of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound

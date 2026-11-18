@@ -19,10 +19,10 @@ public final class Money {
 		return Bank.EXTENSION.present();
 	}
 
-	/** "600 CobbleDollars" (thousands marked: "150,000 CobbleDollars", B466) or "6 emeralds". */
+	/** "600 CobbleDollars" (thousands marked: "150,000 CobbleDollars", B466; "1 CobbleDollar", B1379) or "6 emeralds". */
 	public static Component describe(long dollars, int emeralds) {
 		return cobbleDollars()
-			? Component.translatable("message.aliveworkplace.money.dollars", grouped(dollars))
+			? Words.counted("message.aliveworkplace.money.dollars", dollars, grouped(dollars))
 			: Words.counted("message.aliveworkplace.money.emeralds", emeralds, emeralds);
 	}
 

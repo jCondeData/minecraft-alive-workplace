@@ -6981,18 +6981,18 @@ once 49.1 has landed; the other lanes join when their own milestones are empty.
 
 Same method (Milestone 49). Lane C builds it once Milestone 47 is done.
 
-- [ ] **51.1** (blocked: waits for 49.1, the rebuild kit) **Village Hall** (3 levels; flagship: A and B).
-- [ ] **51.2** (blocked: waits for 49.1, the rebuild kit) **Inn** (3 levels; flagship: A and B).
-- [ ] **51.3** (blocked: waits for 49.1, the rebuild kit) **Storehouse** (3 levels; flagship: A and B), **Storage
+- [ ] **51.1** **Village Hall** (3 levels; flagship: A and B).
+- [ ] **51.2** **Inn** (3 levels; flagship: A and B).
+- [ ] **51.3** **Storehouse** (3 levels; flagship: A and B), **Storage
   Hall** and **Warehouse**.
-- [ ] **51.4** (blocked: waits for 49.1, the rebuild kit) **Library** (4 levels), **School** and **Schoolhouse**.
-- [ ] **51.5** (blocked: waits for 49.1, the rebuild kit) **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
+- [ ] **51.4** **Library** (4 levels), **School** and **Schoolhouse**.
+- [ ] **51.5** **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
   and **Map Room**.
-- [ ] **51.6** (blocked: waits for 49.1, the rebuild kit) **Chapel**, **Graveyard**, **Clock Tower** and **Post Office**.
-- [ ] **51.7** (blocked: waits for 49.1, the rebuild kit) **Market Square**, **Market Cross** and **Market Corner**.
-- [ ] **51.8** (blocked: waits for 49.1, the rebuild kit) **Barracks** (3 levels), **Guard House**, **Fire Station**,
+- [ ] **51.6** **Chapel**, **Graveyard**, **Clock Tower** and **Post Office**.
+- [ ] **51.7** **Market Square**, **Market Cross** and **Market Corner**.
+- [ ] **51.8** **Barracks** (3 levels), **Guard House**, **Fire Station**,
   **Gatehouse** and **Lookout Tower** (4 levels).
-- [ ] **51.9** (blocked: waits for 49.1, the rebuild kit) **The Royal Hall** (`realm/`, 2 levels).
+- [ ] **51.9** **The Royal Hall** (`realm/`, 2 levels).
 
 ## Milestone 52: Rebuild from scratch: small pieces, walls, stories, wonders
 

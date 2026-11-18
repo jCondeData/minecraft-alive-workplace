@@ -831,9 +831,12 @@ public final class StarterBlueprints {
 	}
 
 	/** Every shipped build with a basement or a cellar (26.15): the Level 4s and the cellars from Level 1. */
-	public static final List<Entry> WITH_BASEMENTS = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
-		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN,
-		INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3, JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY);
+	public static final List<Entry> WITH_BASEMENTS = java.util.stream.Stream.concat(java.util.stream.Stream.of(STARTER_COTTAGE_4,
+		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
+		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
+		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY),
+		// 49.10a/b: the biome looks of a Level IV, each with its level's basement
+		java.util.stream.Stream.concat(STARTER_COTTAGE_LOOKS.stream(), STONE_HOUSE_LOOKS.stream()).filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);
@@ -842,9 +845,6 @@ public final class StarterBlueprints {
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3);
 
 	/** The builds with a basement (26.15), by id: filled from {@link #WITH_BASEMENTS}. */
-	private static final java.util.Map<ResourceLocation, Integer> BASEMENTS = java.util.stream.Stream.of(WITH_BASEMENTS.stream(),
-			STARTER_COTTAGE_LOOKS.stream().filter(e -> e.basement() > 0), // 49.10a: the looks of the cottage's Level IV
-			STONE_HOUSE_LOOKS.stream().filter(e -> e.basement() > 0)) // 49.10b: and of the Stone House's
-		.flatMap(s -> s)
+	private static final java.util.Map<ResourceLocation, Integer> BASEMENTS = WITH_BASEMENTS.stream()
 		.collect(java.util.stream.Collectors.toUnmodifiableMap(Entry::id, Entry::basement));
 }

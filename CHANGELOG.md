@@ -246,6 +246,15 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's mods, a crafter's "short of" line keeps to the thing's own recipe when nothing in the chest leads
+  another way: a chest, hopper or TNT minecart is short of 1 Minecart and a furnace minecart of its furnace's
+  cobblestone and a Minecart, never of Create's Minecart Contraption, and a slimeball is never read down to Create's
+  Wheat Flour. A Minecart Contraption in the chest is still used. With the earlier fixes for the smoker's logs and
+  Chipped's planks, all 47 such lines found across every job-made item now read right (B1289).
+- A Builder helping on another Builder's build always brings the materials it fetched back to that Builder's
+  chests, also when the build ended while the helper was away (its chunk unloaded, or the server restarted in
+  between). Before, such a helper emptied its bag into its own chest, and the other Builder's next build could wait
+  forever for materials you had stocked by his bench (B645).
 - A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
   visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
   list, so the afternoon no longer stutters the server (B644).

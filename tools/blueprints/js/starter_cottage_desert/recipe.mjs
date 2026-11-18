@@ -170,7 +170,15 @@ export function draw(level = 1) {
   levelOne(c)
   if (level >= 2) levelTwo(c)
   if (level >= 3) levelThree(c)
-  if (level >= 4) c.cellarInside = levelFour(c)
+  if (level >= 4) {
+    c.cellarInside = levelFour(c)
+    // With a cellar the drawing reaches below ground, so a pot on the ground must stand on a drawn block: a sandstone
+    // footing under each one that has nothing under it (FloatingFurnishingsGameTests).
+    for (let x = 0; x < SIZE[4][0]; x++) for (let z = 0; z < SIZE[4][2]; z++) {
+      const at = c.get(x, 0, z)
+      if (at && String(at.id ?? at).includes('potted_') && !c.get(x, -1, z)) c.set(x, -1, z, 'smooth_sandstone')
+    }
+  }
   return c
 }
 

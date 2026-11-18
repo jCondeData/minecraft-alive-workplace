@@ -207,7 +207,7 @@ public final class Builders {
 			}
 		}
 		if (best != null) {
-			ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), true));
+			ModAttachments.BUILDER_JOB.set(villager, BuilderJob.helping(best));
 			best.seen(villager.getUUID(), level.getGameTime());
 		}
 		return best;
@@ -223,7 +223,11 @@ public final class Builders {
 		}
 		// 35.5: a Wonder's crew member whose part is finished (its site gone) hands what it carries back to the stockpile
 		// round the Wonder's stone, where the next stage takes it from, not to its own bench.
-		BlockPos bench = site != null && site.bench() != null ? site.bench()
+		// B645: a helper whose site is already gone (the build ended while it was unloaded or out of sendHelpersBack's
+		// reach) still takes its bag to the lead's bench it joined at, not to its own, out of the lead's reach.
+		BlockPos leads = site == null && job != null && job.helper() ? job.bench().filter(at -> level.isLoaded(at)
+			&& level.getBlockState(at).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)).orElse(null) : null;
+		BlockPos bench = site != null && site.bench() != null ? site.bench() : leads != null ? leads
 			: io.github.jcondedata.aliveworkplace.wonder.WonderCrews.stockpile(level, villager).orElseGet(() -> benchPos(villager).orElse(villager.blockPosition()));
 		emptyBag(level, villager, bench, SupplyContainers.find(level, bench, null));
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -266,7 +270,7 @@ public final class Builders {
 		/** The new job didn't start after all: back to the crew it left. */
 		public void undo(ServerLevel level) {
 			if (!ModAttachments.BUILDER_JOB.has(builder) && !left.isDone()) {
-				ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(left.id(), true));
+				ModAttachments.BUILDER_JOB.set(builder, BuilderJob.helping(left));
 				left.seen(builder.getUUID(), level.getGameTime());
 			}
 		}

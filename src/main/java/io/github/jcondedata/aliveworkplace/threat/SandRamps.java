@@ -84,6 +84,8 @@ public final class SandRamps {
 		final Storm storm;
 		int height;
 		int inside = 2;
+		/** The raiders that have been on this ramp's top or over the wall from it: only these, or one with the ramp's wall beside it, are let go as over (B726). */
+		final Set<UUID> crossed = new HashSet<>();
 
 		Site(BlockPos foot, Direction into, Storm storm) {
 			this.foot = foot.immutable();
@@ -218,6 +220,9 @@ public final class SandRamps {
 		Site climb = CLIMBS.remove(before);
 		if (climb != null) {
 			CLIMBS.put(after, climb);
+			if (climb.crossed.remove(before)) {
+				climb.crossed.add(after);
+			}
 			changed = true;
 		}
 		return changed;
@@ -348,8 +353,22 @@ public final class SandRamps {
 			if (!crossing(mob, site) && paths < MAX_PATHS && (mob.getNavigation().isDone() || now - storm.sentAt.getOrDefault(id, 0L) > 60)
 				&& (mob.blockPosition().distSqr(to) > (up ? 0 : 4) || !up && inTheWay(level, mob, site))) {
 				storm.sentAt.put(id, now);
-				mob.getNavigation().moveTo(mob.getNavigation().createPath(to, 0, 64), 1.0);
+				Path path = mob.getNavigation().createPath(to, 0, 64);
 				paths++;
+				if (!up && endsOnRamp(level, site, path)) {
+					// The spot can't be reached (a ledge or a player's blocks out there) and the nearest it gets is on a block
+					// still to be piled, where it would hold the sand back for good (B591, B726): it waits beside the ramp.
+					Direction side = site.into.getClockWise();
+					for (int k : new int[] {2, -2}) {
+						Path beside = mob.getNavigation().createPath(site.foot.relative(site.into, -(site.height - 1)).relative(side, k), 0, 64);
+						paths++;
+						if (beside != null && !endsOnRamp(level, site, beside)) {
+							path = beside;
+							break;
+						}
+					}
+				}
+				mob.getNavigation().moveTo(path, 1.0);
 			}
 		}
 		storm.assigned.keySet().removeIf(id -> {
@@ -408,6 +427,21 @@ public final class SandRamps {
 		net.minecraft.world.phys.AABB box = mob.getRootVehicle().getBoundingBox();
 		for (BlockPos pos : site.blocks()) {
 			if (!sandy(level, pos) && box.intersects(new net.minecraft.world.phys.AABB(pos))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Whether {@code path} is none, or ends on a block of {@code site}'s ramp that is still to be piled. */
+	private static boolean endsOnRamp(ServerLevel level, Site site, @Nullable Path path) {
+		Node end = path == null ? null : path.getEndNode();
+		if (end == null) {
+			return true;
+		}
+		BlockPos at = end.asBlockPos();
+		for (BlockPos pos : site.blocks()) {
+			if (pos.equals(at) && !sandy(level, pos)) {
 				return true;
 			}
 		}
@@ -585,6 +619,18 @@ public final class SandRamps {
 		return (mob.getX() - (site.foot.getX() + 0.5)) * site.into.getStepX() + (mob.getZ() - (site.foot.getZ() + 0.5)) * site.into.getStepZ();
 	}
 
+	/**
+	 * Whether the wall {@code site}'s ramp leans on runs as far along as where {@code mob} is: something stands on the
+	 * wall's line beside the mob, at the foot's height or one above. A raider in from the foot with the wall there is
+	 * behind it; one farther along than the wall goes is outside, past its end or round a corner of the walls (B726).
+	 */
+	private static boolean behindTheWall(ServerLevel level, Mob mob, Site site) {
+		BlockPos wall = site.foot.relative(site.into);
+		BlockPos beside = site.into.getAxis() == Direction.Axis.Z ? new BlockPos(mob.getBlockX(), wall.getY(), wall.getZ())
+			: new BlockPos(wall.getX(), wall.getY(), mob.getBlockZ());
+		return blocked(level, beside) || blocked(level, beside.above());
+	}
+
 	/** Whether {@code mob} is on top of the ramp by the wall, or past it over the wall. */
 	private static boolean crossing(Mob mob, Site site) {
 		double aside = Math.abs((mob.getX() - (site.foot.getX() + 0.5)) * site.into.getStepZ() + (mob.getZ() - (site.foot.getZ() + 0.5)) * site.into.getStepX());
@@ -646,7 +692,11 @@ public final class SandRamps {
 			// Let go once down inside: a raider still up on the wall is pushed on. One standing wholly in or past the column
 			// it drops into is let go whatever its height: the ground there may be higher than a step (B331: on a terrace two
 			// above the foot it was "up", and pushed for good toward the spot it stood on).
-			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && (!up(mob, site) || landed(mob, site, inward))) {
+			// Only one that came over this ramp, or has the ramp's wall beside it (B726: the check looked only at how far in
+			// the raider was, not where along the wall, so a climber walking round a corner of the walls to its ramp, past the
+			// end of the ramp's wall on the outside, counted as over it: it left the ramp a few blocks high and never came back).
+			if (inward >= 1.5 && inward < site.inside + 3 && grounded(mob) && (!up(mob, site) || landed(mob, site, inward))
+				&& (site.crossed.contains(mob.getUUID()) || behindTheWall((ServerLevel) mob.level(), mob, site))) {
 				site.storm.over(mob.getUUID());
 				CLIMBS.remove(mob.getUUID());
 				return;
@@ -654,6 +704,7 @@ public final class SandRamps {
 			if (!crossing(mob, site)) {
 				return; // (walking to the ramp: the tick sends it)
 			}
+			site.crossed.add(mob.getUUID());
 			mob.getNavigation().stop();
 			mob.getMoveControl().setWantedPosition(site.foot.getX() + 0.5 + site.into.getStepX() * (site.inside + 1), site.foot.getY(),
 				site.foot.getZ() + 0.5 + site.into.getStepZ() * (site.inside + 1), 1.0);

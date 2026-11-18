@@ -1,0 +1,10 @@
+{
+  "name": "prisoner_cage",
+  "private": true,
+  "type": "module",
+  "description": "The Prisoner Cage (legend/prisoner_cage), the Cage Wagon, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/prisoner_cage.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Build output goes to build/rebuild/prisoner_cage/out; until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/prisoner_cage/out --data-version 3955 && python3 ../../rebuild.py prisoner_cage legend/prisoner_cage --candidate --nbt ../../../../build/rebuild/prisoner_cage/out/prisoner-cage.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/prisoner_cage/out --data-version 3955"
+  }
+}

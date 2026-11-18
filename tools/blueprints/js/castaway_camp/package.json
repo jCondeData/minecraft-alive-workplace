@@ -1,0 +1,10 @@
+{
+  "name": "castaway_camp",
+  "private": true,
+  "type": "module",
+  "description": "The Castaway Camp (legend/castaway_camp), the Upturned Boat, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/castaway_camp.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Build output goes to build/rebuild/castaway_camp/out; until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/castaway_camp/out --data-version 3955 && python3 ../../rebuild.py castaway_camp legend/castaway_camp --candidate --nbt ../../../../build/rebuild/castaway_camp/out/castaway-camp.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/castaway_camp/out --data-version 3955"
+  }
+}

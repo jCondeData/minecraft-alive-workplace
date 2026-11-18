@@ -1,0 +1,10 @@
+{
+  "name": "shift-bell",
+  "private": true,
+  "type": "module",
+  "description": "The Shift Bell (story/shift_bell), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/shift_bell.md, REBUILD.md): the Anvil Lantern. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/shift_bell/out --data-version 3955 && python3 ../../rebuild.py shift_bell shift_bell --candidate --nbt ../../../../build/rebuild/shift_bell/out/shift-bell.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/shift_bell/out --data-version 3955"
+  }
+}

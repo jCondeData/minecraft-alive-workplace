@@ -43,3 +43,19 @@ export function antlerPair(c, [x, y, zL], beam, id, gap = 0) {
     c.set(x + dx, y + dy, zR - dz, id)
   }
 }
+
+/** brimHat: a broad-brimmed hat on a figure's head (grown from the Founder's Statue, 49). The crown sits on the head at
+ *  [x, y, z]; the brim is a ring of closed bottom trapdoors round the crown at the same layer, on the four sides
+ *  (and the corners too when `corners`), so the brim reads at the hat's foot from every side. `crown` and `brim` are
+ *  the caller's ids (a block and a trapdoor). Returns the brim's cells. */
+export function brimHat(c, [x, y, z], crown, brim, corners = false) {
+  c.set(x, y, z, crown)
+  const ring = [[1, 0, 'east'], [-1, 0, 'west'], [0, 1, 'south'], [0, -1, 'north']]
+  if (corners) ring.push([1, 1, 'east'], [-1, 1, 'west'], [1, -1, 'east'], [-1, -1, 'west'])
+  const drawn = []
+  for (const [dx, dz, facing] of ring) {
+    c.set(x + dx, y, z + dz, brim, { facing, half: 'bottom', open: 'false', powered: 'false', waterlogged: 'false' })
+    drawn.push([x + dx, y, z + dz])
+  }
+  return drawn
+}

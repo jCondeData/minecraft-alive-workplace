@@ -20,6 +20,7 @@
 //   sundials  cradleProfile, cradle, rod, pylon                     (sundials: a cylinder dial and its rod's pylons)
 //   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
+//   tents     discEdge, coneTent, waymark                     (a stepped hide tipi with its poles; a cairn with a cap)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -42,7 +43,7 @@ export * from './fires.mjs'
 export * from './planters.mjs'
 export * from './sundials.mjs'
 export * from './pavilions.mjs' // octLevel, tentRoof, faceRun, sideBench (gazebos and round pavilions)
-export * from './statues.mjs' // profileFigure, legs, antlerPair (animal statues: a side profile swept, legs, antlers)
+export * from './statues.mjs' // profileFigure, legs, antlerPair, brimHat (statues: a profile swept, legs, antlers, a figure's broad-brimmed hat)
 export * from './topiary.mjs' // clip, hedgeRun, hedgeArch, tieredTopiary, leafColumn (clipped leaves: hedges, arches, standards)
 export * from './carpenter.mjs'
 export * from './mason.mjs'
@@ -75,3 +76,7 @@ export * from './winery.mjs' // perron, casks, logCaskRack, trellisRow, fruiting
 export * from './wayshrine.mjs' // squareRing, inwardFacing, hipCourse, armedBench (open-centred square roofs, benches with stone arms)
 export * from './shrines.mjs' // roundArch, twinFlight (shrines: a round-headed arch in one plane, an altar's twin flights to a middle landing)
 export * from './watermill_lucam.mjs' // raisedPond, overshotWheel, driveToMillstone, hurst, lucam, sluiceGate (watermills: a raised mill pond, a launder over an overshot wheel into a closed pit, the millstone on its hurst, a gable's sack-hoist hood)
+export * from './bells.mjs' // facedDais, flaredHead, bellChamber (bells and stone lanterns: a dais stepped on every face, a head flared out on corbels, an open bell chamber; the Shift Bell, 49)
+export * from './wagons.mjs' // cartWheel, cartBed, barCage, cageLid, shafts, ridgeTent, warStandard (cage wagons and raiders' camps: a disc wheel, a barred cage between posts, a stepped canvas tent, a standard)
+export * from './shore.mjs' // upturnedHull, mast, raggedCloth (shores: a boat turned keel-up as a roof, a mast and its yard, a torn sail hung from a beam; the Castaway Camp, 49)
+export * from './tents.mjs' // discEdge, coneTent, waymark (the Traveler's Camp, 49: a stepped hide tipi, its poles out of the smoke hole; a wayfarer's cairn)

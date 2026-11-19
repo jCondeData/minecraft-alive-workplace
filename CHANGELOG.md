@@ -27,6 +27,21 @@ asks for the steps, `latest.log` and any crash report).
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
 ### Changed
+- **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
+  cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
+  gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
+  glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
+  skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
+  loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
+  Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on
+  trays behind the loft's louvers beside his bed and order desk, and a store lean-to behind holds the chests. Workshops
+  already standing keep their old drawing until refreshed; village ball workshops keep their look.
+- **The Trainer's House, rebuilt from scratch** as "the Battle Court" (with Cobblemon, 50.12): a gateway of two banner-hung
+  stone piers onto a marked turf court with the Training Post at its head, a covered bench stand where neighbors watch
+  the battles, a sparring yard with dummies, and a spruce-framed clubhouse with the Trainer's den and his bedroom in a
+  loft that looks down the court. Houses already standing keep their old drawing until refreshed; village trainer's
+  houses keep their look.
 - **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
   tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
   at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop

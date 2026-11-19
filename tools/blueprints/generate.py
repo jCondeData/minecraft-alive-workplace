@@ -174,9 +174,23 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # js/sifting_shed (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then
            # modded_library.py quarry sifting_shed sifting_shed_2)
            "quarry", "sifting_shed", "sifting_shed_2",
+           # 50.12, the Trainer's House ("the Battle Court"; the buildable only: the five village trainer's houses keep
+           # their own looks, village.py and village_looks.py): js/trainers_house (MC_BUILDER=..., sh build.sh writes the
+           # candidate; LIVE=1 sh build.sh the live one; then modded_library.py trainers_house)
+           "trainers_house",
            # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
            # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
-           "crushing_mill", "windmill"}
+           "crushing_mill", "windmill",
+           # 50.12, the Ball Workshop ("the Drying Loft"; the buildable only: the five village ball workshops keep their
+           # own looks, village.py and village_looks.py): js/ball_workshop (MC_BUILDER=..., sh build.sh writes the
+           # candidate; LIVE=1 sh build.sh the live one; then modded_library.py ball_workshop); workplaces.py's
+           # ball_workshop_build is the old drawing, kept in blueprint_history/
+           "ball_workshop",
+           # 50.12, the Research Lab (I-III, "the Strata Lab"; III with its 4-deep Dig): js/research_lab (MC_BUILDER=...,
+           # sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones, III with --basement 4 --cellar
+           # out/cellar.txt; then modded_library.py research_lab research_lab_2 research_lab_3); starter.research_lab*
+           # and cellars.research_lab_3 are the old drawings, kept in blueprint_history/
+           "research_lab", "research_lab_2", "research_lab_3"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -264,8 +278,10 @@ if __name__ == "__main__":
     for name, draw in (("berry_farm", berry_farm), ("berry_farm_2", berry_farm_2)):
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
-    research_lab().save(MAIN_STRUCTURES, "research_lab")
-    research_lab_2().save(MAIN_STRUCTURES, "research_lab_2")
+    # ROADMAP 50.12: the Research Lab comes from the rebuild kit (REBUILT); starter.research_lab* are the old drawings
+    for name, draw in (("research_lab", research_lab), ("research_lab_2", research_lab_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 49.6: the Terrace (I-II) comes from the rebuild kit (tools/blueprints/js/terrace/build.sh, then
     # rebuild.py terrace <id>); its old Python drawing in starter.py is no longer saved
     inn().save(MAIN_STRUCTURES, "inn")
@@ -377,7 +393,7 @@ if __name__ == "__main__":
     # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
     # is the old drawing, kept in blueprint_history/
     for name, draw in LEVEL_3:  # ROADMAP 36.7: Level IIIs with a cellar for the builds that stopped at II
-        if name not in REBUILT:  # ROADMAP 50.4 and 50.7: winery_3 and jewellers_workshop_3 come from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 50.4, 50.7 and 50.12: winery_3, jewellers_workshop_3 and research_lab_3 come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/

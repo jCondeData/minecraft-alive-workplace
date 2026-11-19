@@ -2,16 +2,22 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 17 wide, 19 deep, 15 high
 Tiers: one
 Houses: a Trainer at the Training Post
 Where to get it: Blueprint Table (with Cobblemon)
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: spruce logs, deepslate tile stairs, birch planks, stone bricks, spruce planks, moss blocks
 categories: Builds, Pokémon
 related: pokemon.md, leaders-hall-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Training Post**: everything one worker needs to live and work in the same place.
+The Battle Court: a gateway of two stone piers, hung with a red and a blue banner, opens from the street onto a
+marked turf court, with the **Training Post** at its head in the red home box and a blue box for the challenger at the
+gate end. Along the west side neighbors watch from a covered bench stand; on the east is a sparring yard with two
+dummies. At the head of the court stands the Trainer's clubhouse, pale birch boards in a spruce frame under a slate
+roof: a den downstairs with the hearth, an armchair, a table for two and a chest, and his bedroom in the loft above,
+jettied out over the porch so he can look down the court (rebuilt from scratch; a Trainer's House already standing
+keeps its old look until refreshed).
 
 ## Getting the blueprint
 

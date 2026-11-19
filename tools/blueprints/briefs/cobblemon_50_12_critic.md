@@ -77,3 +77,20 @@ Notes: 1 windows set into the shell, a cracked-shell lip; 2 furnish both eggs (t
 3 drop the light-blue concrete and brown glass, 60/30/10; 4 a feature on the back; 5 Level II under 1,000 blocks, the
 dirt-path L made a yard or dropped. Round 2 redrawn by the same designer (sheets `daycare_r2_sheet.png`,
 `daycare_2_r2_sheet.png`).
+
+## Daycare (I, II): BACK (round 2), to the owner as it stands
+| Score | I | II |
+|---|---|---|
+| Silhouette | 3 -> 4 | 3 -> 4 |
+| Depth | 3 -> 3 | 3 -> 3 |
+| Interior | 3 -> 3 | 3 -> 3 |
+| Detail | 3 -> 3 | 3 -> 3 |
+
+Brief: no miss. Notes: 1 push the log bands out and set windows in with sills (every face flat); 2 furnish the plank
+ring round each nest (seat, table with lamp, storage; egg II too); 3 a few large deliberate spots per face, one base
+course instead of hay bands on the back; 4 a path to egg II's east door, tidy loose planks and fences on the lawn;
+5 round the stepped crown. Two rounds spent: the old drawing stays live.
+
+## Ship note
+Arena and Habitat Garden are held on `wip/lane-c-50.12`: both move spots the code reads at fixed positions, which would
+break standing old buildings on the live server (ROADMAP Notes, 2026-11-19 lane-c-1119-0653).

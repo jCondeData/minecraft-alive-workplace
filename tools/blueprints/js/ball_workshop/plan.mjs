@@ -112,11 +112,12 @@ export const OPENINGS = {
     { name: 'store back west', cells: [[5, 2, 15], [5, 3, 15]], out: 'south', pot: null },
     { name: 'store back east', cells: [[7, 2, 15], [7, 3, 15]], out: 'south', pot: null },
   ],
-  // the loft: louvres in the wide bays, glass in the narrow ones (the taking-in window over the door)
+  // the loft: louvres in the wide bays, glass in the narrow ones (the taking-in window over the door); the front's
+  // bays full height, the sides one band of slats at y 7 (an accent, the critic's note: red cladding above and below)
   louvres: [
     { cells: 'x', line: 1, from: 2, to: 4, out: 'north' }, { cells: 'x', line: 1, from: 8, to: 10, out: 'north' },
-    { cells: 'z', line: 1, from: 2, to: 5, out: 'west' }, { cells: 'z', line: 1, from: 9, to: 11, out: 'west' },
-    { cells: 'z', line: 11, from: 2, to: 5, out: 'east' }, { cells: 'z', line: 11, from: 9, to: 11, out: 'east' },
+    { cells: 'z', line: 1, from: 2, to: 5, out: 'west', rows: [7] }, { cells: 'z', line: 1, from: 9, to: 11, out: 'west', rows: [7] },
+    { cells: 'z', line: 11, from: 2, to: 5, out: 'east', rows: [7] }, { cells: 'z', line: 11, from: 9, to: 11, out: 'east', rows: [7] },
   ],
   loftGlass: [
     [6, 6, 1], [6, 7, 1], // the taking-in window under the hoist

@@ -122,12 +122,12 @@ public final class StarterBlueprints {
 	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(13, 12, 13)); // ROADMAP 50.9: rebuilt
 	/** Level II roofs the garden in a rafter lattice hung with glow berries and opens a second bed cloister behind the lodge. */
 	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(13, 12, 17)); // ROADMAP 50.9: rebuilt
-	/** A stone lab with Cobblemon's Fossil Analyzer: a fossil scientist works there. */
-	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
-	/** A museum hall beside it with a big skeleton on show. */
-	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
-	/** A lower lab dug under the lab (36.7). */
-	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(18, 10, 11), 4);
+	/** The Strata Lab: a tall steep-gabled lab in banded stone (deepslate, tuff, terracotta, sandstone) with a pointed Great Window over Cobblemon's Fossil Analyzer, where a fossil scientist works, and a Prep Room beside it (rebuilt 50.12). */
+	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(13, 13, 13));
+	/** The Gallery: a museum hall under a glass vault on copper ribs, a bone skeleton standing on its dais. */
+	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(23, 13, 15));
+	/** The Dig under the Gallery (36.7): a boardwalk round a sunken pit with a skeleton still lying in it, down a hatch. */
+	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(23, 13, 15), 4);
 
 	/**
 	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
@@ -774,12 +774,21 @@ public final class StarterBlueprints {
 	public static final Entry CLINIC = workplace("clinic", 15, 14, 12); // ROADMAP 50.8: rebuilt
 	/** A ferry station with a boarded landing under a canopy (rebuilt in ROADMAP 50.5); the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
 	public static final Entry FERRY_HOUSE = workplace("ferry_house", 15, 17, 11); // ROADMAP 50.5: rebuilt
-	/** A long low dojo with a deep veranda and a fenced sparring ring. */
-	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
+	/**
+	 * The Battle Court (rebuilt from scratch in ROADMAP 50.12, tools/blueprints/js/trainers_house): a gateway of two
+	 * stone piers onto a marked turf court with the Training Post at its head, a covered bench stand along the west side,
+	 * and a spruce-framed clubhouse with a jettied loft (the Trainer's bed) at the back, a sparring yard on the east.
+	 */
+	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 17, 15, 19); // ROADMAP 50.12: rebuilt
 	/** The Challenge Hall: a buttressed stone nave behind a gate-porch, benches facing a sparring ring, the Training Post on a dais (rebuilt 51.5). */
 	public static final Entry LEADERS_HALL = workplace("leaders_hall", 15, 15, 17);
-	/** A round apricorn-drying tower under a copper cone and a low workshop wing. */
-	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
+	/**
+	 * The Drying Loft (rebuilt from scratch in ROADMAP 50.12, tools/blueprints/js/ball_workshop): a white plaster
+	 * workshop with the smithing table and the forge, under a red loft jettied out over the front where the apricorns dry
+	 * on trays (the Ball Smith's bed up there), a black beam band between them with a white boss over the door, a brick
+	 * forge stack up the east side and a store lean-to behind with the chests.
+	 */
+	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 15, 18, 17); // ROADMAP 50.12: rebuilt
 	/** The Ball Tower: a timber-framed counting hall with a round corner tower, the Trader's bed in the tower room (rebuilt 51.5). */
 	public static final Entry TRADE_HALL = workplace("trade_hall", 18, 18, 19);
 	/** The Half Court: a gatehouse onto a sparring ring round the tutor's post, a cloister and the Tutor's hall behind (rebuilt 51.4). */

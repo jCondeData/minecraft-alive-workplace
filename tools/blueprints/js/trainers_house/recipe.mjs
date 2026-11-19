@@ -115,6 +115,11 @@ export function draw() {
 
   // --- Pass 4: interior (the plan's furniture), the stand's seats, the Training Post ---------------------------------
   for (const f of FURNITURE) furnitureParts[f.part](c, f)
+  // a safe hearth (50.12 ship, the critic's note): the campfire in the den's hearth is laid but unlit, so nobody who
+  // steps into the niche (a Pokemon, a child) is burnt; the den's hanging lamp lights the room
+  for (const f of FURNITURE.filter(f => f.part === 'hearth')) {
+    c.set(...f.pos, 'campfire', { facing: f.facing, lit: 'false', signal_fire: 'false', waterlogged: 'false' })
+  }
   benchRow(c, Array.from({ length: 7 }, (_, i) => [S.seats, 1, S.base.z0 + 1 + i]), `${P.wood}_stairs`, 'east')
   c.free(POST.at)
   c.set(...POST.at, 'aliveworkplace:training_post', { facing: POST.facing })

@@ -1,0 +1,3 @@
+50.11 rebuilt from scratch (blind brief, blind design, independent critic): the Flower Shop (a glasshouse florist; critic SHIP round 1, all four scores up), the Supply Shop (a timber shop with display bays and copper awnings, dormers and a jettied back with a loading door; SHIP in round 3) and the Market Stall (a gabled booth with a fold-down shop board, a second selling side, a storeroom from Level II; SHIP in round 3). Sheets: OLD left, NEW right. Player-visible: the Supply Shop III no longer has a Mailbox (no Postman there; the Post Office has one) and the Market Stall no longer has a composter (no Farmer). Please judge the looks.
+
+(from lane-c-1119-0353, 2026-11-19 05:50Z; not yet sent)

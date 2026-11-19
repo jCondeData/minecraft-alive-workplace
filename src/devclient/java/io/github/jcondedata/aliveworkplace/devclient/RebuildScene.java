@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
+import io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -51,7 +52,10 @@ final class RebuildScene {
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "fletchers_lodge", "tailors_shop", "print_shop",
 		"glassblowers_workshop", "jewellers_workshop", "crafters_workshop", "workshop", "trail", "bandit_camp", "raiders_stockade",
 		"bandit_fort", "caravan_wreck", "chapel", "market_cross", "market_corner", "market_square", "leaders_hall", "trade_hall",
-		"starter_cottage_looks", "stone_house_looks", "townhouse_looks", "clinic", "physicians_house", "healing_center");
+		"starter_cottage_looks", "stone_house_looks", "townhouse_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
+		"gatehouse", "lookout_tower", "royal_hall", "observatory", "lighthouse");
+	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
+	static final Set<String> WONDERS = Set.of("observatory", "lighthouse");
 	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */
 	static final String LOOKS_SUFFIX = "_looks";
 	private static final BlockPos AT = new BlockPos(0, -60, 0);
@@ -74,7 +78,8 @@ final class RebuildScene {
 	RebuildScene(String family) {
 		this.family = family;
 		String override = System.getenv("REBUILD_BLUEPRINT");
-		this.blueprint = override != null && !override.isBlank() ? AliveWorkplace.id(override) : AliveWorkplace.id(family);
+		this.blueprint = override != null && !override.isBlank() ? AliveWorkplace.id(override)
+			: WONDERS.contains(family) ? WonderBlueprints.idOf(AliveWorkplace.id(family)) : AliveWorkplace.id(family);
 	}
 
 	void tick(Minecraft mc, MinecraftServer server) {

@@ -37,9 +37,9 @@ final class WonderGalleryScene {
 
 	private static final List<Wonder> WONDERS = List.of(
 		new Wonder("great_cathedral", new Vec3i(39, 53, 55), -1), // 35.9
-		new Wonder("lighthouse", new Vec3i(25, 46, 33), 11), // 35.11: the mole, the jetty and the boathouse in the sea
+		new Wonder("lighthouse", new Vec3i(25, 46, 33), 9), // 35.11, rebuilt in 52.6: the mole, the landings and the jetty in the sea past the quay
 		new Wonder("great_library", new Vec3i(41, 34, 41), -1), // 35.13
-		new Wonder("observatory", new Vec3i(31, 43, 31), -1), // 35.17
+		new Wonder("observatory", new Vec3i(31, 43, 31), -1), // 35.17; rebuilt in 52.6 at the same size
 		new Wonder("great_wall", new Vec3i(97, 25, 15), -1), // 35.15: front (z = 0) is the village side
 		new Wonder("hanging_gardens", new Vec3i(47, 33, 44), -1), // 35.19
 		new Wonder("colossus", new Vec3i(29, 47, 29), -1), // 35.21: the road runs front to back through its arch

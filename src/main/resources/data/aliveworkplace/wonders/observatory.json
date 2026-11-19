@@ -70,7 +70,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/observatory/stage_2_0",
-          "offset": [7, 4, 12]
+          "offset": [5, 1, 1]
         }
       ],
       "goods": [
@@ -122,7 +122,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/observatory/stage_3_0",
-          "offset": [10, 34, 15]
+          "offset": [4, 6, 13]
         }
       ],
       "goods": [
@@ -176,7 +176,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/observatory/stage_4_0",
-          "offset": [14, 4, 4]
+          "offset": [7, 17, 14]
         }
       ],
       "goods": [
@@ -233,5 +233,5 @@
       "type": "forecast"
     }
   ],
-  "drawing": "drawn_863ce8da8"
+  "drawing": "drawn_ce9116fe7"
 }

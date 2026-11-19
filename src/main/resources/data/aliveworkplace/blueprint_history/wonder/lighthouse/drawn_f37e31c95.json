@@ -1,0 +1,248 @@
+{
+  "name": "wonder.aliveworkplace.lighthouse.name",
+  "description": "wonder.aliveworkplace.lighthouse.description",
+  "icon": "minecraft:sea_lantern",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:merchant_prince",
+      "stand_in": [
+        {
+          "type": "caravan_routes",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "type": "coastal"
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:heart_of_the_sea",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:coast_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:emerald_brooch",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_2_0",
+          "offset": [1, 0, 1]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:trident",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:sponge",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:angler_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_3_0",
+          "offset": [6, 19, 18]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:tide_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "minecraft:conduit",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:illuminated_book",
+          "count": 2,
+          "job": "aliveworkplace:printer"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.lighthouse.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/lighthouse/stage_4_0",
+          "offset": [3, 1, 3]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "minecraft:elytra",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 45,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:ghast_tear",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "caravan_range",
+      "factor": 2
+    },
+    {
+      "type": "caravan_speed",
+      "factor": 0.5
+    },
+    {
+      "type": "ferry_fares",
+      "factor": 0.5
+    },
+    {
+      "type": "early_warning"
+    }
+  ],
+  "drawing": "drawn_f37e31c95"
+}

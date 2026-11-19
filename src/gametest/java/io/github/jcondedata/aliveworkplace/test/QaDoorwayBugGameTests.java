@@ -49,18 +49,18 @@ public class QaDoorwayBugGameTests implements FabricGameTest {
 		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_3", Rotation.NONE, new BlockPos(9, 2, 4), new int[] {6, 0, 23}, new int[] {6, 1, 15}, new int[] {6, 1, 19});
 	}
 
-	/** Royal Hall II: from outside its east door (16,1,17) onto the hall floor right inside it (15,2,17). */
+	/** Royal Hall II: from outside its east door (25,1,14), on the step (26,1,14), into the treasury (23,1,15) (51.9's drawing). */
 	//$ gametest_ticks_batch AREA '500' '"qaB173RoyalHallEast"'
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaB173RoyalHallEast")
 	public void aVillagerWalksInByRoyalHallIIsEastDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {19, 1, 17}, new int[] {15, 2, 17}, new int[] {16, 1, 17});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {26, 1, 14}, new int[] {23, 1, 15}, new int[] {25, 1, 14});
 	}
 
-	/** B487: the Royal Hall, from the vault (9,1,21) out by its door (11,2,19, a block up) onto the dais (13,2,17). */
+	/** B487: the Royal Hall, from the vault (2,2,16) out by its door (3,2,17) onto the dais (6,2,17) (51.9's drawing: the vault's floor is level with the dais). */
 	//$ gametest_ticks_batch AREA '500' '"b487RoyalHallVault"'
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "b487RoyalHallVault")
 	public void aVillagerWalksOutOfTheRoyalHallsVaultOntoTheDais(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.NONE, new BlockPos(5, 2, 2), new int[] {9, 1, 21}, new int[] {13, 2, 17}, new int[] {11, 2, 19});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.NONE, new BlockPos(5, 2, 2), new int[] {2, 2, 16}, new int[] {6, 2, 17}, new int[] {3, 2, 17});
 	}
 
 	/** The Pokemon Center lodge look II: from the path in by the front door (6,1,10) to (6,1,8). */

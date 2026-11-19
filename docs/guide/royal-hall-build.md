@@ -4,31 +4,35 @@
 type: Build
 expansion: M33
 image: https://jcondedata.github.io/minecraft-alive-workplace/realm_builds/still-2.jpg
-caption: The Royal Hall: a stone great hall with a gabled porch and a rose window
+caption: The Royal Hall: a brick palace hall between two gate towers with green copper caps
 Kind: the realm's hall
-Size: 19 wide, 16 tall, 25 deep; Royal Hall II 27 wide, 22 tall
+Size: 19 wide, 25 tall, 25 deep; Royal Hall II 27 wide, 25 tall
 Get it: the capital's Realm tab, with a Blank Blueprint
 Where: within 32 blocks of the capital's hall
 Does: doubles the realm treasury's cap; the Royal Hall II triples it
-Upgrade: Royal Hall II, a keep tower and a treasury wing
+Upgrade: Royal Hall II, an east range with the treasury, the council chamber and a belfry
 categories: Builds, Village Hall
 related: capital.md, realm-treasury.md, realms.md, builder.md
 ```
 
-A realm deserves a seat. The Royal Hall is a great stone hall by the [capital](capital.md), with a throne, banners and a
-vault behind the dais.
+A realm deserves a seat. The Royal Hall is a brick palace by the [capital](capital.md), with a throne, banners and a
+vault off the dais.
 
 ## What it looks like
 
-A stone great hall with pilasters and buttresses, tall windows four to a side, and a deepslate roof with a rose window
-in the front gable over a gabled porch hung with red-and-gold banners. Inside, a red runner leads to a two-step dais and
-the seat of state under banners, with benches down the hall, a minstrels' gallery over the door and lanterns hanging
-from the beams. Behind the dais, a lower annex is the vault, with four chests.
+A red-brick palace hall with stone dressings, entered between two gate towers whose green copper caps stand on corbelled
+rings. Between the towers, an open arcade leads to the door, and over it is the **proclamation balcony**, where the
+ruler appears before the town under a stepped brick gable carrying the realm's banner. The hall has a hipped slate
+roof with a louver on the ridge. Inside, two long feast tables run down the hall under hanging lamps, a red runner leads
+to the dais, and the seat of state sits in a bay pushed out of the back wall, between two standards. Off the dais, a
+door on the west opens into the **vault**, a battlemented strongroom with four chests and barred slits. Its twin on the
+east is the steward's room, with a desk and a cupboard.
 
-**Royal Hall II** adds a four-floor keep tower with a crenellated top and the realm's banner on a pole, and a treasury
-wing with chests along both walls, a counting table and barred windows.
+**Royal Hall II** grows out of the steward's room: an east range of two floors, with the **treasury** below (eight
+chests and a counting table, and its own east door) and the **council chamber** above (a long council table, reached
+by a stair). A brick belfry with a bell and a copper cap rises at its back corner.
 
-![Royal Hall II from behind: the keep tower, the treasury wing and the vault](https://jcondedata.github.io/minecraft-alive-workplace/realm_builds/still-3.jpg)
+![Royal Hall II from behind: the throne bay, the east range and its belfry](https://jcondedata.github.io/minecraft-alive-workplace/realm_builds/still-3.jpg)
 
 ## Getting the blueprint
 

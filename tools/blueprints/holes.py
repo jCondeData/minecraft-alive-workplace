@@ -94,6 +94,11 @@ ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's
 ALLOW.update({(n, (2, 1, 2)): "the open underside of the cage wagon's bed between its wheels, not a room"
               for n in ("prisoner_cage", "legend/prisoner_cage")})
 
+# The Royal Hall (51.9 rebuild, "the Brick Palace") is entered through an open arcade between its two gate towers, under
+# the proclamation balcony: a porch, not a room ("royal_hall" a rebuild candidate, "realm/royal_hall" the shipped one)
+ALLOW.update({(n, (6, 1, 2)): "the Royal Hall's open entrance arcade under the balcony, between the gate towers, not a room"
+              for n in ("royal_hall", "royal_hall_2", "realm/royal_hall", "realm/royal_hall_2")})
+
 # The Clinic (49 rebuild) has a sun veranda on purpose: the ward's west slope runs on as a catslide over an open deck on
 # posts, where the mending sit out in the sun on seats under the windows; the air under it is a porch, not a room
 ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide, not a walled room"

@@ -133,11 +133,13 @@ export const FURNITURE = [
   { room: 'Guard room', kind: 'picture', part: 'picture', pos: [2, 3, 3], facing: 'east', wood: 'spruce', colour: 'red', mirror: true },
   { room: 'Guard room', kind: 'picture', part: 'picture', pos: [6, 3, 3], facing: 'west', wood: 'spruce', colour: 'red', mirror: true },
   { room: 'Guard room', kind: 'lamp', part: 'hangingLamp', pos: [4, 3, 3], facing: 'north', wood: 'spruce', mirror: true },
-  // Bunk room: two bunks heads to the west wall, a nightstand between, footlockers at their feet, the hearth
-  { room: 'Bunk room', kind: 'bed', part: 'bed', pos: [3, 1, 7], facing: 'west', colour: 'red', mirror: true },
+  // Bunk room: two bunks side by side, heads to the west wall, a nightstand at the head of the first, footlockers at
+  // their feet, the hearth. (Ship step: the bunks moved from z 7 and 9 to z 8 and 9, the nightstand from z 8 to z 7: a
+  // refresh keeps a job block, and 0.145-0.151's Barracks had its grindstone at (3, 1, 7), under the old first bunk's foot)
+  { room: 'Bunk room', kind: 'bed', part: 'bed', pos: [3, 1, 8], facing: 'west', colour: 'red', mirror: true },
   { room: 'Bunk room', kind: 'bed', part: 'bed', pos: [3, 1, 9], facing: 'west', colour: 'red', mirror: true },
-  { room: 'Bunk room', kind: 'nightstand', part: 'nightstand', pos: [2, 1, 8], facing: 'east', wood: 'spruce', mirror: true },
-  { room: 'Bunk room', kind: 'fixture', part: 'footlocker', pos: [4, 1, 7], facing: 'east', mirror: true },
+  { room: 'Bunk room', kind: 'nightstand', part: 'nightstand', pos: [2, 1, 7], facing: 'east', wood: 'spruce', mirror: true },
+  { room: 'Bunk room', kind: 'fixture', part: 'footlocker', pos: [4, 1, 8], facing: 'east', mirror: true },
   { room: 'Bunk room', kind: 'fixture', part: 'footlocker', pos: [4, 1, 9], facing: 'east', mirror: true },
   { room: 'Bunk room', kind: 'clock', part: 'clock', pos: [2, 1, 10], facing: 'east', wood: 'spruce', mirror: true },
   { room: 'Bunk room', kind: 'cupboard', part: 'cupboard', pos: [6, 1, 10], facing: 'west', wood: 'spruce', mirror: true },

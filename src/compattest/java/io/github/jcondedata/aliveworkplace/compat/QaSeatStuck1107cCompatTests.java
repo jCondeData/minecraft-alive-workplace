@@ -214,7 +214,9 @@ public class QaSeatStuck1107cCompatTests implements FabricGameTest {
 						.filter(w -> w.getTarget().currentBlockPosition().equals(chair)).isPresent()) {
 					broken[0] = "the villager still walks to the chair " + (helper.getTick() - at[0]) + " ticks after the switch went off; "
 						+ FurnitureSeats.describe(level, v);
-				} else if (helper.getTick() - at[0] > 40 && !FurnitureSeats.free(level, chair, null)) {
+				} else if (helper.getTick() - at[0] > 40 && (chair.equals(FurnitureSeats.walkingTo(v)) || !FurnitureSeats.free(level, chair, v))) {
+					// Held for him (his own claim) or by anything else; not his body, which a stroll past the chair can rest
+					// against (B1337: 5 of 200 runs, he stood at its edge, touching its block, with no claim on it).
 					broken[0] = "the chair was still held " + (helper.getTick() - at[0]) + " ticks after the switch went off; "
 						+ FurnitureSeats.describe(level, v);
 				}

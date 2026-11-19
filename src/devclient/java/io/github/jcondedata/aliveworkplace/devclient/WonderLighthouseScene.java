@@ -21,12 +21,16 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * the lantern's redstone lamps lit; its powers on (twice the caravans' reach) and the jetty's post on the network.
  */
 final class WonderLighthouseScene {
-	/** The template's size (25 x 46 x 33), its front at z 0; the jetty runs out along x 22-24 to z 32. */
+	/** The template's size (25 x 46 x 33), its front (the quay, z 0-8) at z 0; the mole runs out to the bastion at z 24. */
 	private static final int WIDTH = 25;
 	private static final int DEPTH = 33;
-	/** The sea begins this far into the template (behind the keeper's house) and runs past its back and right side. */
-	private static final int SEA_FROM_Z = 11;
-	private static final int SEA_FROM_X = 15;
+	/**
+	 * The sea begins this far into the template (52.6: past the quay, round the mole, the Ferry Landing and its jetty on
+	 * the east, the Fish Stage on the west) and runs on past its back and right side; the Travel Post stands at the jetty's
+	 * end on the plot's east edge (24, 2, 13).
+	 */
+	private static final int SEA_FROM_Z = 9;
+	private static final int SEA_FROM_X = 0;
 	private static final int OUT = 14;
 
 	static WonderTimelapse create() {

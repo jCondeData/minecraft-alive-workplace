@@ -6,23 +6,25 @@ expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/defences/anim.gif
 caption: The walls and gates, and the answering jobs' houses
 Kind: defense
-Size: 11 wide, 13 tall, 11 deep
+Size: 15 wide, 18 tall, 16 deep
 Job block: a grindstone, for the Firewarden
-Inside: a water basin to fill buckets at, buckets on racks, a ladder up to the watch loft
+Inside: a water trough to fill buckets at, buckets on racks, a ladder up the hose tower to the lookout
 Upgrade: none
 Where: the Blueprint Table
 categories: Builds, Disasters, Defense
 related: firewarden.md, fire.md, builder.md, blueprint-table.md
 ```
 
-The Fire Station is the [Firewarden](firewarden.md)'s home: a stone engine room with water on tap, and a lookout loft
+The Fire Station is the [Firewarden](firewarden.md)'s home: a stone engine room with water on tap, and a hose tower
 to watch the roofs from.
 
 ## What it looks like
 
-A stone ground floor on a cobbled plinth, with buttresses down the sides and a wide red door under a chiseled lintel,
-lamp posts either side. Inside, the Firewarden's grindstone stands at the back, a water basin fills one corner and
-buckets hang on two racks. A ladder climbs to a timber watch loft with windows on every side, under a dark oak roof.
+The Hose Tower: a stone-brick engine house with its gable to the street, a timber watch loft jettied out over the
+engine doors and one steep red tile roof. A tall square hose tower stands at the front corner and rises five blocks
+past the ridge to a lookout gallery on corbels under a hipped cap, a lightning rod on top. Inside the engine bay the
+Firewarden's grindstone stands by the water trough, buckets hang on racks, and a ladder climbs the tower past the loft
+to the lookout.
 
 ## Building it
 

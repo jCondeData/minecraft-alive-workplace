@@ -22,6 +22,11 @@ asks for the steps, `latest.log` and any crash report).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
 
+### Dev
+- The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
+  Palisade's mud and oak are in their chests (its first segment waited for them every night since 52.3), and a new
+  GameTest has the Steward's palisade go up whole and its gate shut at night (B1400).
+
 ## 0.157.0 — 2026-11-18
 
 ### Added

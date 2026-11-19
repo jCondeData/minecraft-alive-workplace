@@ -319,19 +319,31 @@ Wine (Vintner).
 
 Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,600 blocks, on
-a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
-diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
-the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
-reading halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow
-copper dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on
-top. Each wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the
-walls under a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under
-the windows, reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The
-rotunda has three rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by
-fifteen bookshelves, open towards the door, with the librarian's lectern before it and four reading desks round it. A
-lectern for a scholar stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round
-a cartography table. Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*.
+**The Great Library** (35.13, rebuilt from scratch in 52.6: "the Scroll Rotunda") is a round drum of books at the
+center of a cross of four short gabled wings, 41 by 41 and 34 high, about 15,000 blocks (14,967). It stands on a podium of
+stone bricks (y 0-2) behind a polished diorite balustrade, with two steps round its foot, the front steps across the
+portico's width, lamp posts at the steps and corners and a raised garden bed in each corner court (a smooth-stone kerb,
+flowers and a small oak). The four wings (the Stacks; front and back 13 by 7, west and east 9 by 13) have pale walls of
+polished diorite and smooth stone, a ground floor (y 3-8) with tall windows between proud smooth-stone pilasters, each
+under a sill and a hood, a trim band at the upper-floor line, and a gallery floor (y 11-12) under an open copper roof
+from the eave at y 13 to the ridge at y 20. Inside, books line every wall between the windows; the front wing is the Map
+Room (the cartography table and a lectern), the west and east wings have three desks with chairs under their windows
+and a lectern, the back wing a desk and a lectern, and in each a dark oak flight climbs to the gallery through a hatch
+folded back against the wall; the galleries hold shelf rows, desks and reading tables. The drum (center (20, 22), 23
+across, three thick) rises from the court between the wings to a cornice at y 23: a wall of bookshelves two deep lines
+it all the way up, and a walkway of dark oak slabs climbs two full turns up the books from the back door to y 19, lit by
+lanterns at every quarter turn, with a band of windows riding just above it, so outside the drum's four open quarters
+carry a spiral of glass winding up toward the dome, and a ring of clerestory windows runs round it above the wing
+ridges. Its inner ceiling is coffered round a glass oculus, hung with four chandeliers. At the center the Enchanting
+Table (20, 3, 22) in a ring of bookshelves open toward the front door (26 shelves count for it), the center lectern
+behind it. Over the drum a ribbed copper dome with twelve ribs and a glass lantern on top (it weathers green), and at
+the front a portico of six quartz columns with bases and capitals under an entablature, a coffered soffit and a copper
+gable with a quartz pediment. Its stages: I *The Stacks* (the podium, the four wings' ground floors round an open court,
+the gardens), II *The Galleries* (each wing's upper floor and copper roof), III *The Rotunda* (the drum, its wall of
+books, the helix walk and its spiral of windows, the table), IV *The Dome and the Portico*. Every stage stands on its
+own and only adds to the ones before. A Great Library begun before 52.6 keeps the 35.13 drawing (a rotunda of three
+rings of bookshelves with two galleries under a shallow dome, wings under deepslate-tile roofs, a terrace of smooth
+stone): it is counted, repaired and finished from that drawing (`WonderDrawings`, `blueprint_history/wonder/great_library/`).
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Heart
 Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days); made: an Illuminated
 Book (Printer); II an Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days),
@@ -849,10 +861,9 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
 - The Lighthouse's lamps are redstone lamps, each with an inverted daylight detector on top of it open to the sky (52.6:
   the hood's eave of 28), so each lights at night and is dark by day with no clock and no other power. The lamps' lit
   state is not checked as damage.
-- The Great Library's walls are two leaves (35.13), diorite outside and smooth stone inside, with deep windows, and it
-  stands on a solid terrace three high.
-- The Great Library's sixteenth bookshelf place round the Enchanting Table is left open towards the door (35.13), so the
-  librarian can walk in; fifteen shelves still give the table its full power.
+- The Great Library stands on a solid podium three high (35.13, kept by the 52.6 rebuild), its drum's wall three thick.
+- The Great Library's ring of bookshelves round the Enchanting Table is left open toward the door (35.13, kept by the
+  52.6 rebuild), so the scholar can walk in and stand facing the table; the shelves still give the table its full power.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
@@ -1113,7 +1124,7 @@ whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWon
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
-leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,175 and Observatory 8,504 since their 52.6 rebuilds, Library 14,574, Wall 12,338)
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,175 and Observatory 8,504 since their 52.6 rebuilds, Library 14,967 since its 52.6 rebuild, Wall 12,338)
 and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
 refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
 hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the

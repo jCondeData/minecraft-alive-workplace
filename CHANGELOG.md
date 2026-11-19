@@ -110,6 +110,13 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Library is rebuilt from scratch** (52.6): "the Scroll Rotunda", a round drum of books at the center of
+  four copper-roofed wings on a stone podium, with a garden in each corner, a ribbed copper dome with a glass lantern
+  over the drum and a portico of six quartz columns at the front. Inside, a walkway climbs twice round a wall of
+  bookshelves with a band of windows riding just above it, so from outside a spiral of glass winds up the drum; the
+  enchanting table stands at its heart, the map room is in the front wing, and each wing has an upper gallery of books
+  and reading tables. Same stage names. A Great Library already begun or finished keeps the old drawing: it still counts
+  as standing, and is repaired and finished as it was first drawn.
 - **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
   buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
   whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story

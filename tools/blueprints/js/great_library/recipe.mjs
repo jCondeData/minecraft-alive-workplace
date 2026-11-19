@@ -236,7 +236,9 @@ export function draw() {
       })
     }
     // round 2, depth on the outer gable: a projecting cornice across its base (the pilasters run into it) and a
-    // raking edge of quartz slabs under the roof's overhang along both slopes
+    // raking edge of quartz under the roof's overhang along both slopes: upside-down stairs like the cornice's (ship
+    // step, 52.6: a top-half slab there sat level with the roof's lowest step beside it, which reads as a chair at a
+    // table, QaChairFacingGameTests)
     {
       const oLine = w[outerEnd], step = outerEnd.endsWith('0') ? -1 : 1, line = oLine + step
       const face = axisZ ? (step < 0 ? 'south' : 'north') : (step < 0 ? 'east' : 'west')
@@ -244,7 +246,7 @@ export function draw() {
         const [x, z] = axisZ ? [u, line] : [line, u]
         if (!c.get(x, WY.eave, z)) stair(c, x, WY.eave, z, P.corniceStairs, face, 'top')
         const top = (under[u] ?? WY.eave + 1) - 1
-        if (u >= lo && u <= hi && top > WY.eave && !c.get(x, top, z)) slab(c, x, top, z, P.rakeSlab, 'top')
+        if (u >= lo && u <= hi && top > WY.eave && !c.get(x, top, z)) stair(c, x, top, z, P.corniceStairs, face, 'top')
       }
     }
     // Pass 4, interior: walls of books between the windows, a lamp from the ridge, a reading table

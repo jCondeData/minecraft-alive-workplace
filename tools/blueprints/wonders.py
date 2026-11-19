@@ -1986,6 +1986,8 @@ def stage_g4(b):
 
 
 def great_library():
+    """The 35.x Great Library, replaced by great_library_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (great_library_stage, great_library_section)."""
     b = StagedBuild(GW, GH, GD)
     b.begin(1)
     stage_g1(b)
@@ -1996,6 +1998,17 @@ def great_library():
     b.begin(4)
     stage_g4(b)
     return b
+
+
+def great_library_drawn():
+    """The new Great Library (ROADMAP 52.6, rebuilt from scratch, "the Scroll Rotunda"): js/great_library/recipe.mjs, its
+    four stage snapshots joined by js/great_library/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_library", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_library_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def great_library_stage(stage=None):
@@ -5141,7 +5154,7 @@ WONDERS = {
         ],
     },
     "great_library": {
-        "draw": great_library,
+        "draw": great_library_drawn,  # 52.6: rebuilt from scratch (js/great_library/)
         "icon": "minecraft:enchanting_table",
         "crew": 12,
         "requirements": [

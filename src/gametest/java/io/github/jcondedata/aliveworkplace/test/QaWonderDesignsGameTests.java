@@ -228,7 +228,8 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				near(wrong, "the Travel Post's x (the plot's sea-side edge)", post[0], 24, 0);
 			}
 			case "great_library" -> {
-				// "about 41 x 41 and 34 high: a rotunda 19 across"
+				// 52.6, rebuilt (briefs/great_library.md, js/great_library/plan.mjs): "41 x 41 and 34 high", the brief kept the 35.13
+				// size, so these pins stand
 				near(wrong, "its width", w, 41, 1);
 				near(wrong, "its length", l, 41, 1);
 				near(wrong, "its height", h, 34, 1);
@@ -409,15 +410,20 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				new Feature("the Fish Stage's drying rack", 1, "minecraft:dried_kelp_block"),
 				new Feature("a Travel Post at the Ferry Jetty's end", 1, "aliveworkplace:travel_post"),
 				new Feature("the Jetty, the Landing and the Fish Stage of spruce", 50, "minecraft:spruce_log", "minecraft:spruce_planks", "minecraft:spruce_fence"));
-			case "great_library" -> List.of(new Feature("an enchanting table", 1, "minecraft:enchanting_table"),
-				new Feature("a lectern at the centre and four in the wings", 5, "minecraft:lectern"),
-				new Feature("a map room's cartography table", 1, "minecraft:cartography_table"),
-				new Feature("bookshelf galleries", 200, "minecraft:bookshelf"),
-				new Feature("a copper dome", 100, "minecraft:copper_block", "minecraft:cut_copper", "minecraft:cut_copper_stairs"),
-				new Feature("a quartz portico", 20, "minecraft:quartz_block", "minecraft:quartz_pillar", "minecraft:chiseled_quartz_block", "minecraft:smooth_quartz"),
-				new Feature("polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
-				new Feature("dark oak floors", 200, "minecraft:dark_oak_planks"),
-				new Feature("a glass lantern", 1, "minecraft:glass_pane", "minecraft:glass"));
+			case "great_library" -> List.of( // 52.6: the rebuilt Great Library's named parts (js/great_library/plan.mjs, "the Scroll Rotunda")
+				new Feature("the enchanting table at the Rotunda's heart", 1, "minecraft:enchanting_table"),
+				new Feature("a lectern at the Rotunda's center and one in each wing's stacks", 5, "minecraft:lectern"),
+				new Feature("the Map Room's cartography table", 1, "minecraft:cartography_table"),
+				new Feature("the Rotunda's wall of books and the Stacks' and Galleries' shelves", 1500, "minecraft:bookshelf"),
+				new Feature("the ribbed copper dome and the wings' copper roofs", 1000, "minecraft:copper_block", "minecraft:cut_copper", "minecraft:cut_copper_stairs"),
+				new Feature("the quartz portico", 100, "minecraft:quartz_block", "minecraft:quartz_pillar", "minecraft:chiseled_quartz_block", "minecraft:smooth_quartz"),
+				new Feature("the portico's six quartz columns", 30, "minecraft:quartz_pillar"),
+				new Feature("pale walls of polished diorite and smooth stone", 4000, "minecraft:polished_diorite", "minecraft:smooth_stone"),
+				new Feature("the stone-brick podium and its steps", 1000, "minecraft:stone_bricks", "minecraft:stone_brick_stairs"),
+				new Feature("dark oak floors", 400, "minecraft:dark_oak_planks"),
+				new Feature("the helix walk of dark oak slabs", 100, "minecraft:dark_oak_slab"),
+				new Feature("the drum's spiral of glass and the dome's lantern", 200, "minecraft:glass"),
+				new Feature("a tree in each corner garden", 40, "minecraft:oak_leaves"));
 			case "great_wall" -> List.of( // 52.6: the rebuilt Great Wall's named parts (js/great_wall/plan.mjs, "the Pass Gate")
 				new Feature("the Great Gate's portcullis and the towers' barred loops", 6, "minecraft:iron_bars"),
 				new Feature("the Great Gate's inner leaves", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate"),

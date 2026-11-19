@@ -2035,6 +2035,14 @@ SCENES = [
            ("02_outside_back", "From the field: the battlements on their corbels, the buttresses, and the Barbican pushed out behind the gate with its outer gate"),
            ("03_outside_west", "From the west: the broken, mossy end where the wall goes on, the end tower's signal-fire lookout under its spruce cap"),
            ("04_outside_east", "From the east: the walk running through the towers to the Gate Pavilion's two dark-tiled roofs")], furniture=True),
+    # ROADMAP 52.6: the Great Library rebuilt from scratch (REBUILD.md), "the Scroll Rotunda", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_library", "Build families", "The Great Library, rebuilt: from four sides",
+      "the Great Library's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Library from the front: the steps up the stone podium to the quartz portico and its pediment, the front wing behind it and the copper dome over the drum"),
+           ("02_outside_back", "From the back: the back wing's gable between two corner gardens, the drum rising behind it with its ring of windows under the cornice"),
+           ("03_outside_west", "From the west: the cross of four copper-roofed wings round the drum, the spiral of glass winding up its open quarters toward the ribbed dome and its glass lantern"),
+           ("04_outside_east", "From the east: the east wing's pilastered face and tall windows, the portico's columns at the front, a tree in each corner garden")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

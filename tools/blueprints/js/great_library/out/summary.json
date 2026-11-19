@@ -1,19 +1,19 @@
 {
-  "name": "great-library-s4-cut20",
+  "name": "great-library-s4",
   "dataVersion": 3955,
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 165
+    "updatedBlocks": 169
   },
-  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_library/out/great-library-s4-cut20.nbt",
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_library/out/great-library-s4.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_library/out/summary.json",
   "size": [
     41,
     34,
     41
   ],
-  "blockCount": 13247,
-  "paletteCount": 73,
+  "blockCount": 14967,
+  "paletteCount": 75,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_library/recipe.mjs"
 }

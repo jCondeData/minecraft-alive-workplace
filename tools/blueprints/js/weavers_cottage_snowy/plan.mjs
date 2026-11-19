@@ -83,6 +83,13 @@
 //        deepslate tiles. Checks after it: rebuild.py no CHECK line, holes.py 0 at both levels, look_spots SAME
 //        BUILDING, II keeps 98 % of I, about 46 / 67 stacks, blocks 831 / 1078. Renders for build/rebuild/wc_r4 NOT
 //        yet taken (waiting for the Gradle build's render go-ahead): the round-2 changes are unseen.
+//  Round 3 (2026-11-19, the critic's round-2 notes): 1 no loose snow before the fold's kerb (16..17, 0, 1 kept bare);
+//        2 the dormer's apex notch closed with deepslate tiles at (4, 8, 1), no birch above the face; 3 the drying wall's
+//        slits (x 2, 5, 6, 9, y 1..2 in z 16) framed with a stone-brick head at y 3 (the plinth their sill) and a bolt of
+//        wool behind each (x, 1..2, 15) in its banner's dye (yellow, light blue, red, magenta), hung from the rail to the
+//        ground, so the back road sees colour, not gravel. Checks: rebuild.py no CHECK line, holes.py 0 at both levels
+//        (open included), look_spots SAME BUILDING (14/14 at each level), blocks 830 / 1085. Cutaways in
+//        build/rebuild/r3_wc_snowy (wc_snowy_<1|2>_cut<3|7>); renders not yet taken.
 //  Open for the critic: the stack clears the ridge by one course only (the 14-high plot: the ridge is at y 11, its
 //        snow at y 12, the fire at y 13); the west gable's loft lights sit right under the rake with no head; the storm
 //        porch is a narrow pointed gable (3 wide) that may read as a white column; the drying wall is four high and

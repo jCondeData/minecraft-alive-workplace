@@ -65,6 +65,8 @@ export function draw(level = 1) {
     if (!c.get(x, y + 1, z)?.id.includes('deepslate')) c.set(x, y + 1, z, P.lintel)
   }
   frontDormer(c, DORMER, P.roof, { cheek: P.post, infill: P.dormerFace, glass: P.glass, verge: P.verge, vergeTop: P.vergeTop, snow: P.snow })
+  // round 3 (critic note 2): close the verge's apex notch under its ridge (4, 8, 1), so no birch shows above the face
+  if (!c.get(DORMER.cx, DORMER.y0 + 3, DORMER.face - 1)) c.set(DORMER.cx, DORMER.y0 + 3, DORMER.face - 1, P.vergeTop)
   const st = OPENINGS.stairs
   for (const [x, y, z] of st.well) c.clear(x, y, z)
   flight(c, st.flight, st.rises, P.wood, P.floor)
@@ -129,7 +131,7 @@ export function draw(level = 1) {
       const pier = G.piers.some(([px, pz]) => px === x && pz === z) && z === G.back.z
       c.set(x, 0, z, P.plinth)
       const slit = z === G.back.z && G.slits.includes(x) // round 2 (note 4): slits under the hood, the cloth and the house seen through
-      for (let y = 1; y < top; y++) if (!(slit && y <= 2)) c.set(x, y, z, pier ? stack : P.wall)
+      for (let y = 1; y < top; y++) if (!(slit && y <= 2)) c.set(x, y, z, pier ? stack : slit && y === 3 ? P.quoin : P.wall)
       c.set(x, top, z, P.coping)
     }
     for (let z = G.walk.z0; z <= G.walk.z1; z++) c.set(G.walk.x, 0, z, P.gravel)
@@ -146,6 +148,9 @@ export function draw(level = 1) {
       stair(c, x, G.hood.y, G.hood.z, P.roof.stairs, 'south')
       c.set(x, G.rail.y, G.rail.z, 'stripped_spruce_log', { axis: 'x' })
       c.set(x, G.rail.y, G.rail.z - 1, `${G.cloth[(x - G.hood.x0) % G.cloth.length]}_wall_banner`, { facing: 'north' })
+      // round 3 (critic note 3): behind each slit a bolt of the same dye hangs from the rail to the ground, so the back
+      // road sees colour through the slit (a stone-brick head over it, the plinth its sill)
+      if (G.slits.includes(x)) for (let y = 1; y < G.rail.y; y++) c.set(x, y, G.rail.z, `${G.cloth[(x - G.hood.x0) % G.cloth.length]}_wool`)
     }
     c.set(8, 3, 9, 'lantern', { hanging: 'true', waterlogged: 'false' }) // under the back eave, by the garden door
   }
@@ -160,7 +165,7 @@ export function draw(level = 1) {
     if (coped(x, y, z) && !(STACK.xs.includes(x) && STACK.zs.includes(z))) c.set(x, y + 1, z, P.snow, { layers: '2' })
   for (let x = OPENINGS.weaverWindow.x0; x <= OPENINGS.weaverWindow.x1; x++) c.set(x, 2, 1, P.snow, { layers: '1' })
   for (let z = WOODPILE.z0; z <= WOODPILE.z1; z++) c.set(WOODPILE.x, WOODPILE.top, z, P.snow, { layers: '1' })
-  const bare = [[9, 0], [8, 0], [10, 0], [14, 1], [13, 1], [15, 1], [11, 0], [12, 0], [11, 1], [12, 1]] // round 2: no loose layers by the step and the fold's corner
+  const bare = [[9, 0], [8, 0], [10, 0], [14, 1], [13, 1], [15, 1], [11, 0], [12, 0], [11, 1], [12, 1], [16, 1], [17, 1]] // rounds 2 and 3: no loose layers by the step or before the fold's kerb
   snowSkirt(c, P.snow, bare)
   return c
 }

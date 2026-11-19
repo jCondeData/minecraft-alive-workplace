@@ -29,7 +29,9 @@ import net.minecraft.world.phys.Vec3;
  * afternoon: the visiting trainers in the two boxes, the village's off-work villagers walking into the stands and
  * sitting down ({@code 21_wonder_stadium_stands}), a bout between the village's Expert and a visitor settled in chat and
  * the chronicle, and the player challenging a visitor to a real Cobblemon battle from the field
- * ({@code 22_wonder_stadium_battle}). Its checks: two to four visitors in the boxes, the stands full (at least
+ * ({@code 22_wonder_stadium_battle}). Its checks: two to four visitors in the boxes before the challenge, and after it
+ * every visitor but the challenged one still in its box while the challenged one battles the player near its own (B643:
+ * the battle sends Pokémon out beside it, so it alone is not held to its box's spot), the stands full (at least
  * {@link #FULL} seated), the bout in the chronicle, the battle under way, and both powers on.
  */
 final class WonderStadiumScene {
@@ -37,6 +39,10 @@ final class WonderStadiumScene {
 	static final int FANS = 48;
 	/** Seated villagers that make the stands "full" for the check. */
 	static final int FULL = 30;
+	/** How near its box's spot a visitor stands to count as in its box. */
+	static final double IN_BOX = 2.5;
+	/** How near its box the challenged visitor stays while it battles: the leash {@code StadiumDays.keep} walks it back within. */
+	static final double NEAR_BOX = 10;
 	private static volatile long stadiumDay;
 	private static volatile Villager challenged;
 
@@ -71,6 +77,7 @@ final class WonderStadiumScene {
 			ScreenshotHarness.shot(mc, "21_wonder_stadium_stands");
 			server.execute(() -> {
 				ServerLevel level = server.overworld();
+				boxes(server); // as the stands' shot shows them, before the bout and the challenge
 				// the first bout, an hour on: the village's Expert against the first visitor
 				level.setDayTime((stadiumDay - 1) * 24000L + StadiumDays.FIRST_BOUT);
 				StadiumDays.tick(level, stadiumDay, StadiumDays.FIRST_BOUT);
@@ -164,6 +171,27 @@ final class WonderStadiumScene {
 		Trainers.challenge(player, visitor);
 	}
 
+	/** How far {@code v} stands from its box's spot. */
+	private static double fromBox(StadiumDays.Spots spots, Villager v) {
+		BlockPos spot = spots.boxes().get(Math.floorMod(StadiumDays.visitor(v).spot(), spots.boxes().size()));
+		return v.position().distanceTo(Vec3.atBottomCenterOf(spot));
+	}
+
+	/** Before the bout and the challenge: two to four visitors, every one in its box. */
+	private static void boxes(MinecraftServer server) {
+		ServerLevel level = server.overworld();
+		WonderSite site = site(level).orElse(null);
+		if (site == null) {
+			return;
+		}
+		StadiumDays.Spots spots = StadiumDays.spots(level, site).orElseThrow();
+		List<Villager> visitors = StadiumDays.visitors(level, site, spots);
+		long inBoxes = visitors.stream().filter(v -> fromBox(spots, v) < IN_BOX).count();
+		Showcase.check(visitors.size() >= 2 && visitors.size() <= 4 && inBoxes == visitors.size(),
+			"a Stadium Day: " + visitors.size() + " visiting trainers, " + inBoxes + " in the boxes ("
+				+ visitors.stream().map(v -> Trainers.title(v).getString()).toList() + ")");
+	}
+
 	private static void checks(MinecraftServer server) {
 		ServerLevel level = server.overworld();
 		WonderSite site = site(level).orElse(null);
@@ -172,10 +200,12 @@ final class WonderStadiumScene {
 		}
 		StadiumDays.Spots spots = StadiumDays.spots(level, site).orElseThrow();
 		List<Villager> visitors = StadiumDays.visitors(level, site, spots);
-		long inBoxes = visitors.stream().filter(v -> v.position().closerThan(Vec3.atBottomCenterOf(spots.boxes().get(StadiumDays.visitor(v).spot())), 2.5)).count();
-		Showcase.check(visitors.size() >= 2 && visitors.size() <= 4 && inBoxes == visitors.size(),
-			"a Stadium Day: " + visitors.size() + " visiting trainers, " + inBoxes + " in the boxes ("
-				+ visitors.stream().map(v -> Trainers.title(v).getString()).toList() + ")");
+		// B643: the challenged visitor is in the battle (its Pokémon sent out beside it), so it is counted apart; the others stay put
+		List<Villager> others = visitors.stream().filter(v -> challenged == null || !v.getUUID().equals(challenged.getUUID())).toList();
+		long othersIn = others.stream().filter(v -> fromBox(spots, v) < IN_BOX).count();
+		Showcase.check(visitors.size() >= 2 && visitors.size() <= 4 && others.size() == visitors.size() - 1 && othersIn == others.size(),
+			"after the challenge: " + visitors.size() + " visiting trainers, " + othersIn + " of the " + others.size()
+				+ " not challenged still in the boxes (" + others.stream().map(v -> Trainers.title(v).getString()).toList() + ")");
 		int seated = CupDays.seated(level, spots.ring()).size();
 		Showcase.check(seated >= FULL, "the stands full: " + seated + " villagers off work sitting down to watch");
 		long bouts = level.getBlockEntity(site.hall()) instanceof io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity entity
@@ -184,6 +214,10 @@ final class WonderStadiumScene {
 		ServerPlayer player = player(server);
 		boolean fighting = com.cobblemon.mod.common.battles.BattleRegistry.getBattleByParticipatingPlayer(player) != null;
 		Showcase.check(fighting, "the player's battle against " + (challenged == null ? "a visitor" : Trainers.title(challenged).getString()) + " under way");
+		Villager there = challenged == null ? null : visitors.stream().filter(v -> v.getUUID().equals(challenged.getUUID())).findFirst().orElse(null);
+		double away = there == null ? -1 : fromBox(spots, there);
+		Showcase.check(there != null && away < NEAR_BOX, "the challenged visitor battles from its box, not gone off ("
+			+ (there == null ? "not at the Stadium" : String.format(java.util.Locale.ROOT, "%.1f blocks from its spot", away)) + ")");
 		Showcase.check(TournamentHostPower.at(level, site.hall()).isPresent() && StadiumDays.power(level, site) != null,
 			"its powers are on: Stadium Days every second afternoon, the Festival Cup held here");
 	}

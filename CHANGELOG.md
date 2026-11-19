@@ -22,6 +22,22 @@ asks for the steps, `latest.log` and any crash report).
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
   with the treasury (eight chests, its own east door), a council chamber upstairs and a belfry with a bell. Halls already
   standing keep their old drawing until refreshed.
+- **The Observatory is rebuilt from scratch** (52.6): a stepped monument of dark stone, "the Observatory of the Great
+  Gnomon". The Star Terrace with the Chart Hall inside it (a cartography table, lecterns and an amethyst star in the
+  floor) goes up first; then a giant sundial's blade with a stair up its sloping edge and a smooth stone quadrant scale
+  on each side; then the drum and its Observing Room; and last the copper dome with the great telescope reaching out
+  through its glazed shutter. New stage names to match. An Observatory already begun or finished keeps the old drawing:
+  it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Lighthouse is rebuilt from scratch** (52.6): "the Mole Light", a stone arm running out to sea from the quay to a
+  round bastion, the tower at its end climbing from a mossy foot to a pale shaft, a gallery on corbels and a glazed
+  lantern under a hood of 28 lamps that light by themselves at night. The keeper's cottage and a net shed stand on the
+  quay; a ferry landing with a jetty out to the Travel Post (now at the sea-side edge) and a fish stage with a drying
+  rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
+  stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
+  is repaired and finished as it was first drawn.
+### Fixed
+- A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
+  village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
 
 ## 0.157.0 — 2026-11-18
 

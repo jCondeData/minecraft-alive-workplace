@@ -4,16 +4,18 @@
 type: Wonder
 expansion: M35
 Needs: a Town, the Seer (or a Master Cleric), the Master Architect
-Size: 31 by 31, 42 high to the dome's vane
-Stages: The Terrace and the Courtyard; The Tower; The Dome; The Great Telescope and the Orrery
+Size: 31 by 31, 43 high to the dome's crown
+Stages: The Star Terrace and the Chart Hall; The Great Gnomon and the Quadrants; The Drum and the Observing Room; The Copper Dome and the Great Telescope
 While it stands: the Seer charts the land around the village and reads the coming days
 categories: Wonders
 related: wonders.md, jobs-land.md, village-hall.md
 ```
 
-A round tower under a copper dome on a raised terrace, its great telescope leaning out of a slit of tinted glass. Round
-it: a star-chart room, the Seer's lodging, and a courtyard with a sundial and an orrery, a gold sun with five planets
-hung round it on chains.
+A stepped monument of dark stone. A stair climbs the sloping edge of a giant sundial, past its quadrant scales and
+over the Chart Hall, where the cartographer's table and the readers' lecterns stand around an amethyst star in the
+floor, up to a round drum under a copper dome. From the drum's Observing Room, a great telescope reaches out through
+the dome's glazed shutter. An Observatory your village began before this design keeps building, and is repaired, as
+it was first drawn.
 
 ## What it needs
 
@@ -24,10 +26,10 @@ asks for nothing else. See [Wonders](wonders.md) for drawing up the plans.
 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
-| The Terrace and the Courtyard | A Heart of the Sea (the Merchant Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 spyglasses (Toolsmith) |
-| The Tower | An Echo Shard (the Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate, 18 days) | 2 Illuminated Books (Printer) |
-| The Dome | An Ominous Trial Key (the Golem Smith, 14 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweler) |
-| The Great Telescope and the Orrery | A Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the Beastmaster, 9 days) | 2 Noble Robes (Tailor) |
+| The Star Terrace and the Chart Hall | A Heart of the Sea (the Merchant Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days) | 2 spyglasses (Toolsmith) |
+| The Great Gnomon and the Quadrants | An Echo Shard (the Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate, 18 days) | 2 Illuminated Books (Printer) |
+| The Drum and the Observing Room | An Ominous Trial Key (the Golem Smith, 14 days), a Totem of Undying (the Merchant Prince, 22 days), a Wither Skeleton Skull (a Master Netherworker, 14 days) | 2 Gold Circlets (Jeweler) |
+| The Copper Dome and the Great Telescope | A Nether Star (the Golem Smith, 36 days), an Elytra (the Pathfinder, 45 days), a Shulker Shell (the Beastmaster, 9 days) | 2 Noble Robes (Tailor) |
 
 ## While it stands
 

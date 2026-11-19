@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8, 50.11
 
 ## 1. What a player sees
 
@@ -33,6 +33,19 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8
   front end holds the brewing stand, the remedy chest, a medicine cupboard and her desk. The west slope runs on as a
   catslide over a sun veranda on log posts, its ends closed in boards, with seats under the windows and a door in from
   the ward. Its ridge is closed under a slab cap. 15 x 14 x 12; standing Clinics keep their old drawing until refreshed.
+- **Flower Shop** (rebuilt from scratch in 50.11, "the glasshouse florist"): a glazed gable to the street on a red brick
+  dwarf wall, the Florist's grass beds either side of the aisle that leads to her composter, a small brick parlor with
+  the counter and a shop window, and a fenced cutting yard behind. Level II closes the yard with a second, lower glass
+  range and puts a vented lantern on the ridge. 13 x 12 x 13 (II 17 x 12 x 15).
+- **Supply Shop** (rebuilt from scratch in 50.11): a timber-framed shop on a stone plinth, two display bays under
+  copper awnings either side of the door, a dormer on each roof slope and a loading door in the back gable. The Shop
+  Counter stands before a stock wall of chests and casks. Level II adds the shopkeeper's room behind, Level III a feed
+  and hardware room on the east side, Level IV a stocked cellar. Level III no longer has a Mailbox, so it no longer
+  gives a Postman (the Post Office does). 11 x 11 x 11 at Level I.
+- **Market Stall** (rebuilt from scratch in 50.11): a gabled spruce booth whose shop board folds down as a counter
+  under a red and white canopy, selling from a second side too. Level II puts the Shop Counter in the booth's counter
+  and adds a lock-up storeroom next door, Level III runs it back with more chests. It no longer has a composter, so it
+  no longer gives a Farmer. 8 x 8 x 6 at Level I.
 - **Ferry House** (rebuilt from scratch in 50.5): a ferry station. A stone waiting room with a stove, a table, a bench
   and the station clock under a white plastered upper floor (the Ferryman's bedroom, up a stair inside) and a slate roof
   with a lookout cupola carrying the ferry light; a boarded landing the whole width of the front under a canopy with a

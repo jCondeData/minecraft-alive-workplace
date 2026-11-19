@@ -7011,7 +7011,7 @@ once 49.1 has landed; the other lanes join when their own milestones are empty.
   **Greenhouse** and **Compost Yard**.
 - [ ] **50.10** **Quarry**, **Sifting Shed**, **Crushing Mill**, **Gem
   Grotto** and **Windmill**.
-- [ ] **50.11** **Flower Shop**, **Supply Shop** (4 levels) and **Market
+- [x] **50.11** (review: pending 2026-11-19) **Flower Shop**, **Supply Shop** (4 levels) and **Market
   Stall** (3).
 - [ ] **50.12** **Pokémon Center**, **Trainer's House**, **Daycare**,
   **Ball Workshop**, **Habitat Garden**, **Research Lab** and **Arena** (Cobblemon's; the mod absent, nothing changes).

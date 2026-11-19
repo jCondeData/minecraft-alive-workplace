@@ -2462,7 +2462,20 @@ def stage_o4(b):
     o_orrery(b)
 
 
+def observatory_drawn():
+    """The new Observatory (ROADMAP 52.6, rebuilt from scratch): js/observatory/recipe.mjs, its four stage snapshots
+    joined by js/observatory/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "observatory", "stages.py")
+    spec = importlib.util.spec_from_file_location("observatory_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
+
+
 def observatory():
+    """The 35.x Observatory, replaced by observatory_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (observatory_stage, observatory_section)."""
     b = StagedBuild(OW, OH, OD)
     b.begin(1)
     stage_o1(b)
@@ -5104,7 +5117,7 @@ WONDERS = {
         ],
     },
     "observatory": {
-        "draw": observatory,
+        "draw": observatory_drawn,  # 52.6: rebuilt from scratch (js/observatory/)
         "icon": "minecraft:spyglass",
         "crew": 12,
         "requirements": [

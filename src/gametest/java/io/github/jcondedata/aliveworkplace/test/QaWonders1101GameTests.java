@@ -268,7 +268,7 @@ public class QaWonders1101GameTests implements FabricGameTest {
 			case "lighthouse" -> List.of("The Mole and the Quay", "The Tower", "The Gallery", "The Lantern and the Keeper's House");
 			case "great_library" -> List.of("The Stacks", "The Galleries", "The Rotunda", "The Dome and the Portico");
 			case "great_wall" -> List.of("The Great Gate", "The West Run", "The East Run", "The Walk and the Towers' Crowns");
-			case "observatory" -> List.of("The Terrace and the Courtyard", "The Tower", "The Dome", "The Great Telescope and the Orrery");
+			case "observatory" -> List.of("The Star Terrace and the Chart Hall", "The Great Gnomon and the Quadrants", "The Drum and the Observing Room", "The Copper Dome and the Great Telescope"); // 52.6: the rebuilt stages
 			default -> throw new IllegalArgumentException(id);
 		};
 		List<String> read = w.stages().stream().map(s -> Component.translatable(s.name()).getString()).toList();

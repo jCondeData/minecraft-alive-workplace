@@ -355,21 +355,23 @@ the rest to nothing, bags take no new stacks past 27 (nothing in them is lost), 
 ("Scholarship waits for the Great Library to be repaired") and the row reads "Needs the Great Library" again, "the
 levels are kept". Realm members get only the first tier's levels from their capital.
 
-**The Observatory** (35.17) is drawn: a round tower 15 across and 30 high under a copper dome, on a raised terrace 31
-by 31 (42 high to the dome's vane, about 8,400 blocks) of deepslate bricks behind a polished blackstone balustrade, a
-wide stair up its front. The tower is deepslate bricks and tiles with polished blackstone bands at its floors, eight
-blackstone pilasters up its height and tall windows; inside, a dark oak spiral stair climbs past the Seer's study
-(bookshelves and a lectern), a store of chests and barrels and the instrument room (a cartography table, a lectern) to
-the top, where a walk behind a blackstone parapet runs round the dome: the viewing platform. The dome, of cut copper
-on a blackstone drum (it weathers green), has a slit of tinted glass three wide from its foot to its crown on the
-courtyard side and a door onto the walk at the back; the great telescope, a cut copper barrel 12 long on a blackstone
-mount, leans up and out of the slit over the courtyard. Two low wings under hipped deepslate-tile roofs flank the
-tower: the star-chart room (a cartography table on a carpet chart of the night sky, a lectern, chart shelves) and the
-Seer's lodging (a bed, a brewing stand, a barrel). The courtyard is paved in deepslate tiles ruled by blackstone, with
-amethyst set in it: a compass star round the sundial (a round stone face and its gnomon), studs along the path and a
-ring round the tower's foot. Opposite the sundial stands the orrery: a gold sun on a chain under a blackstone frame,
-with five planets (iron, copper, lapis, redstone and raw gold) hung on chains round it. Its stages: I *The Terrace and
-the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the Orrery*. Its goods (found, with the
+**The Observatory** (35.17, rebuilt from scratch in 52.6: "the Observatory of the Great Gnomon") is a stepped
+monument of deepslate 31 by 31 and 43 high to the dome's crown, about 8,500 blocks. The village first reads the sun's
+shadow on stone, then climbs that same shadow line to read the night. A paved court with lamp posts and flowered front
+corners leads to the Star Terrace (stage I), a deepslate podium 5 high with a parapet and twin flights up its front
+corners; inside it is the Chart Hall, reached by two doors at the front: a cartography table between two lecterns at the
+back under the bookshelves, reading tables and chairs in both aisles, lanterns hung from the deck and an amethyst star set
+in the floor. Stage II is the Great Gnomon: a sundial's blade 7 wide that rises one block up for each block back from
+the court to y 16, a deepslate stair climbing its sloping edge, with a blind arch at its foot, gold noon marks along it
+and a quarter-circle scale of smooth stone ruled in blackstone against each side. Stage III is the upper terrace and the
+drum, 13 across and two blocks thick, its door at the top of the gnomon's stair and tall glass windows all round; inside,
+the Observing Room has a bench round the back wall, lanterns on posts and a lectern. Stage IV is the copper dome, a glazed
+shutter strip of tinted glass down its east side, the great telescope of cut copper with gold bands reaching out through
+it, and two chandeliers on chains inside. Every stage stands, grounded and tidy, on its own. Its stages: I *The Star
+Terrace and the Chart Hall*, II *The Great Gnomon and the Quadrants*, III *The Drum and the Observing Room*, IV *The
+Copper Dome and the Great Telescope*. An Observatory begun before 52.6 keeps the 35.17 drawing (a round tower 15 across
+under a copper dome on a raised terrace, with an orrery in the courtyard): it is counted, repaired and finished from
+that drawing (`WonderDrawings`, `blueprint_history/wonder/observatory/`). Its goods (found, with the
 rare worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Merchant
 Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 spyglasses (Toolsmith); II an Echo Shard (the
 Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate,
@@ -1089,7 +1091,7 @@ whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWon
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
-leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,011, Library 14,574, Wall 12,338, Observatory 8,438)
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,011, Library 14,574, Wall 12,338, Observatory 8,504 since its 52.6 rebuild)
 and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
 refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
 hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the

@@ -16,6 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **The Observatory is rebuilt from scratch** (52.6): a stepped monument of dark stone, "the Observatory of the Great
+  Gnomon". The Star Terrace with the Chart Hall inside it (a cartography table, lecterns and an amethyst star in the
+  floor) goes up first; then a giant sundial's blade with a stair up its sloping edge and a smooth stone quadrant scale
+  on each side; then the drum and its Observing Room; and last the copper dome with the great telescope reaching out
+  through its glazed shutter. New stage names to match. An Observatory already begun or finished keeps the old drawing:
+  it still counts as standing, and is repaired and finished as it was first drawn.
+
 ## 0.157.0 — 2026-11-18
 
 ### Added

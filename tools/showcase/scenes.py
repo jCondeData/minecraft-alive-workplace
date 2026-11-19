@@ -1195,9 +1195,9 @@ SCENES = [
        ("14_wonder_great_wall_stage_4", "The Walk and the Towers' Crowns: the Wall finished"), ("20_wonder_great_wall_night", "Midnight: the raid gathers on the open side, the sentries on the walk")]),
     # The Observatory (ROADMAP 35.18): its time-lapse, then the Sky Chart in hand and the Coming days page
     S("wonder_observatory", "Wonders", "The Observatory: its time-lapse, the Sky Chart and the Coming days",
-      "a crew of twelve raised the Observatory stage by stage on a sped-up server, the terrace and courtyard first, then the tower, the copper dome and the great telescope with the orrery; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
-      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"),
-       ("14_wonder_observatory_stage_4", "The Great Telescope and the Orrery: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
+      "a crew of twelve raised the Observatory stage by stage on a sped-up server, the Star Terrace and the Chart Hall first, then the great gnomon with its quadrants, the drum and the copper dome with the great telescope; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
+      [("11_wonder_observatory_stage_1", "Stage I, the Star Terrace and the Chart Hall, up"),
+       ("14_wonder_observatory_stage_4", "The Copper Dome and the Great Telescope: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
        ("21_wonder_observatory_coming_days", "The hall's calendar with the Coming days")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
@@ -1866,6 +1866,14 @@ SCENES = [
            ("03_outside_west", "From the west: the little gabled wall dormer breaking the eave, herb pots on the ledges"),
            ("04_outside_east", "From the east: the second dormer gable, a framed window lit in it"),
            ("10_room_1", "Inside at eye level: the waiting benches facing each other, or the counter with the brewing stand and its chest behind it")], furniture=True),
+    # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
+    # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",
+      "the Observatory's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Observatory from the front: the stair up the great gnomon's sloping edge to the drum, the Chart Hall's doors either side of its foot"),
+           ("02_outside_back", "From the back: the stepped terraces under the drum"),
+           ("03_outside_west", "From the west: the quadrant scale against the gnomon, the copper dome over the drum"),
+           ("04_outside_east", "From the east: the great telescope reaching out through the dome's glazed shutter")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

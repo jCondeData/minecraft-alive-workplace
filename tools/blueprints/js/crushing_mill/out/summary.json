@@ -1,0 +1,19 @@
+{
+  "name": "crushing-mill-cut5",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 21
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crushing_mill/out/crushing-mill-cut5.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crushing_mill/out/summary.json",
+  "size": [
+    14,
+    18,
+    12
+  ],
+  "blockCount": 394,
+  "paletteCount": 42,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/crushing_mill/recipe.mjs"
+}

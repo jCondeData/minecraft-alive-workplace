@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Changed
+- **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
+  tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
+  at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
+  II** adds the shopkeeper's back room in a lower range behind, **III** a seed and hardware wing under its own little
+  street gable (it no longer has a Mailbox: the Post Office has one), and **IV** a cool cellar under the wing. The Market
+  Stall is now "the shop board": a steep timber booth with its gable to the street, whose front boards fold down into a
+  counter laid with cloth and prop up into a canopy under a red-and-white valance. The **Market Stall II** builds a
+  lock-up shop beside it with the Shop Counter in the booth's counter, and **III** runs the lock-up back into a
+  storeroom with a back door. Builds already standing keep their old drawing until refreshed.
 - **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
   wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
   to her composter, shelves and hanging pots of flowers, a brick parlour with the counter, a chimney from the stove that

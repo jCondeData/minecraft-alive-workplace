@@ -1,0 +1,10 @@
+{
+  "name": "market-stall",
+  "private": true,
+  "type": "module",
+  "description": "The Market Stall (ROADMAP 49): the Shop Board booth (a gable to the street, a fold-down counter, a propped canopy) and, in II and III, the lock-up shop and storeroom beside and behind it. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

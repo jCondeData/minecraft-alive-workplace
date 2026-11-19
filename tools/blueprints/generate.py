@@ -163,7 +163,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "flower_shop", "flower_shop_2",
            # 50.11, the Supply Shop (I-IV, "the hoist house"; IV with its cellar): js/supply_shop (MC_BUILDER=..., sh
            # build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
-           "supply_shop", "supply_shop_2", "supply_shop_3", "supply_shop_4"}
+           "supply_shop", "supply_shop_2", "supply_shop_3", "supply_shop_4",
+           # 50.11, the Market Stall (I-III, "the shop board"): js/market_stall (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py market_stall market_stall_2 market_stall_3)
+           "market_stall", "market_stall_2", "market_stall_3"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -224,9 +227,11 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 if __name__ == "__main__":
     # ROADMAP 49.3: the Starter Cottage (I-IV) comes from the rebuild kit (tools/blueprints/js/starter_cottage_b/build.sh,
     # LIVE=1 to save the live drawings); its old Python drawing in starter.py and basements.py is no longer saved
-    market_stall().save(MAIN_STRUCTURES, "market_stall")
-    market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
-    market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")
+    # ROADMAP 50.11: the Market Stall comes from the rebuild kit (REBUILT); starter.market_stall* are the old drawings,
+    # kept in blueprint_history/
+    for name, draw in (("market_stall", market_stall), ("market_stall_2", market_stall_2), ("market_stall_3", market_stall_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("lookout_tower", lookout_tower), ("lookout_tower_2", lookout_tower_2), ("lookout_tower_3", lookout_tower_3)):
         if name not in REBUILT:  # ROADMAP 51.8: the Lookout Tower comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)

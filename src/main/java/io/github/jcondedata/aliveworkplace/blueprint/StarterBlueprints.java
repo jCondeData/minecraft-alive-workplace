@@ -69,11 +69,13 @@ public final class StarterBlueprints {
 	public static final Entry VILLAGE_HALL_2 = new Entry(AliveWorkplace.id("village_hall_2"), new Vec3i(19, 13, 13));
 	/** A stone bell-and-clock tower at the end of the meeting room: the grand civic hall. */
 	public static final Entry VILLAGE_HALL_3 = new Entry(AliveWorkplace.id("village_hall_3"), new Vec3i(24, 24, 13));
-	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 7, 6));
-	/** A second stall alongside, with a Shop Counter. */
-	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 7, 6));
-	/** A storeroom shed behind the stalls. */
-	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 9, 13));
+	/** The Shop Board: a steep timber booth, gable to the street, its front opening on two hinged boards (the counter
+	 *  ledge folded down with cloth on it, the canopy propped up under a red-and-white valance) (rebuilt 50.11). */
+	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 8, 6));
+	/** A lock-up shop beside the booth under a lower gable, the Shop Counter in the booth's sill and the stock chests next door. */
+	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 8, 8));
+	/** The lock-up run back into a storeroom of chests behind a partition, with a back door for deliveries. */
+	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 8, 12));
 	/** The Hoarded Watchtower: a slim stone shaft on a battered foot under a timber watch gallery jettied out on
 	 *  corbels, open on every side under a steep slate hat (rebuilt 51.8). */
 	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(9, 16, 9));

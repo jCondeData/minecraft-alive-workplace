@@ -1847,6 +1847,13 @@ SCENES = [
            ("02_outside_back", "From the back: the loading door high in the back gable with its hoist beam"),
            ("04_outside_east", "From the east: the timber frame standing proud of the pale walls, a dormer in the long roof"),
            ("10_room_1", "Inside at eye level: the Shop Counter across the room between two counters, the stock wall of chests and barrels behind")], furniture=True),
+    # ROADMAP 50.11: the Market Stall rebuilt from scratch ("the shop board")
+    S("rebuild_market_stall", "Build families", "The Market Stall, rebuilt: from four sides and at eye level inside",
+      "the Market Stall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Stall from the front: the steep timber booth with its gable to the street, the counter board folded down with cloth on it, the canopy propped up under a red-and-white valance"),
+           ("02_outside_back", "From the back: the limewashed panels between the spruce posts and the shutters"),
+           ("03_outside_west", "From the west: the side hatch open over its sill, a ledge of cloth and flowers outside it"),
+           ("10_room_1", "Inside at eye level: the trader's strip behind the counter, goods stacked on the shelf, a lantern hung from the eave")], furniture=True),
     S("rebuild_tailors_shop", "Build families", "The Tailor's Shop, rebuilt: from four sides and at eye level inside",
       "the Tailor's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
       40, [("01_outside_front", "The Tailor's Shop from the front: the jettied gable over the glazed shopfront, bolts of cloth on show"),

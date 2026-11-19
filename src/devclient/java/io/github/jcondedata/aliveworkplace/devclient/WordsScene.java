@@ -1,5 +1,6 @@
 package io.github.jcondedata.aliveworkplace.devclient;
 
+import io.github.jcondedata.aliveworkplace.work.Money;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -47,7 +48,7 @@ final class WordsScene {
 			new Line("message.aliveworkplace.shop.owner_sale", "Steve", 28, "Spruce Planks", "4 Emeralds"),
 			new Line("message.aliveworkplace.shop.log.line", 12, "Steve", 28, "Spruce Planks", "4 Emeralds")),
 		List.of(
-			new Line("message.aliveworkplace.shop.placed"),
+			new Line("message.aliveworkplace.shop.placed", Money.grouped(Money.DOLLARS_PER_EMERALD)),
 			new Line("message.aliveworkplace.travel.placed", "Thornholm"),
 			new Line("message.aliveworkplace.travel.found", "Ashford", 2),
 			new Line("message.aliveworkplace.travel.known", "Ashford", 2),

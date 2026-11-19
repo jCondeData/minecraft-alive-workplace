@@ -66,6 +66,9 @@ asks for the steps, `latest.log` and any crash report).
   keep the Crow-Step Row (49.10c).
 - **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
   looks count as one (49.10b).
+- In Festival Cup and Stadium bouts, a Pokémon with no attacking move (a Wobbuffet, a Ditto) now struggles against a
+  Ghost as in the games, instead of doing nothing until the clock ran out, which could hand a Master's bout to a
+  Novice (B1403).
 
 ### Dev
 - The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt

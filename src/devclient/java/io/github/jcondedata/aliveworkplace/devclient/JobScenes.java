@@ -2757,19 +2757,38 @@ final class JobScenes {
 				.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(List.of(new BlockPos(0, 0, -4), new BlockPos(0, 0, -18)),
 					io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "", true))
 				.withWall(wall.approvedWith("palisade")));
+			// B1400: the benches hold what the wall line's drawings are made of, counted from the drawings as they are now
+			// (a quarter over, shared round the three chests), not a list of the old palisade's blocks: after the 52.3
+			// rebuild its mud and oak were in no chest and the first segment waited for ever
+			java.util.Map<net.minecraft.world.item.Item, Integer> need = new java.util.LinkedHashMap<>();
+			for (var piece : io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt)) {
+				for (var e : io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, piece.blueprint()).orElseThrow().blocks()) {
+					net.minecraft.world.item.Item item = e.state().getBlock().asItem();
+					if (!e.state().isAir() && item != Items.AIR) {
+						need.merge(item, 1, Integer::sum);
+					}
+				}
+			}
+			need.merge(Items.DIRT, 64, Integer::sum); // the foundation's fill
+			List<ItemStack> stacks = new ArrayList<>();
+			for (var n : need.entrySet()) {
+				for (int left = n.getValue() * 5 / 4 + 1; left > 0; left -= 64) {
+					stacks.add(new ItemStack(n.getKey(), Math.min(64, left)));
+				}
+			}
 			for (int i = 0; i < 3; i++) {
 				// East of the hall, clear of the cottage (B94: at z=10 the tables and their builders stood inside its floor)
 				BlockPos table = STATION.offset(7, 0, -7 + i * 5);
 				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
-				chest(level, table.south(), new ItemStack(Items.SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_LOG, 64),
-					new ItemStack(Items.STRIPPED_SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_FENCE, 64), new ItemStack(Items.SPRUCE_SLAB, 64),
-					new ItemStack(Items.SPRUCE_PLANKS, 64), new ItemStack(Items.SPRUCE_FENCE_GATE, 16), new ItemStack(Items.DARK_OAK_STAIRS, 64),
-					new ItemStack(Items.DARK_OAK_SLAB, 16), new ItemStack(Items.DARK_OAK_PLANKS, 16), new ItemStack(Items.LADDER, 32),
-					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
-					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64),
-					// and the street's (B94: the builders waited for its Coarse Dirt, Gravel and Cobblestone Stairs)
+				List<ItemStack> mine = new ArrayList<>(List.of(
+					// the street's (B94: the builders waited for its Coarse Dirt, Gravel and Cobblestone Stairs)
 					new ItemStack(Items.COARSE_DIRT, 64), new ItemStack(Items.GRAVEL, 32), new ItemStack(Items.COBBLESTONE_STAIRS, 16),
-					new ItemStack(Items.COBBLESTONE_SLAB, 16));
+					new ItemStack(Items.COBBLESTONE_SLAB, 16)));
+				for (int k = i; k < stacks.size(); k += 3) {
+					mine.add(stacks.get(k).copy());
+				}
+				Showcase.check(mine.size() <= 27, "the wall's materials fit the benches' chests (" + mine.size() + " stacks in one)");
+				chest(level, table.south(), mine.subList(0, Math.min(27, mine.size())).toArray(ItemStack[]::new));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
 				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);

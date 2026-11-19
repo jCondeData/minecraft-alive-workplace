@@ -1,0 +1,10 @@
+{
+  "name": "terrace-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Terrace, the snowy look (ROADMAP 49.10c): the shipped row as the Snowbound Row, a steep snow-capped white gable a home over a thick ground storey with deep reveals, a broad stack up every back gable. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

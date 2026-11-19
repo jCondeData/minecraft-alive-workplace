@@ -8,7 +8,7 @@ board, the list menus (the Move Tutor, the shops, the job menus), the Blueprint 
 cards and the Pokémon Trader. Each screen is then laid out like its own board (Milestones 44, 47 and 48). Part of
 Milestone 47 (Copperline, the new look).
 
-Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4, B1353
+Roadmap items: 47.1, 44.1, 44.2, 44.3, 44.4, 48.1, 48.2, 48.3, 48.4, B1353, B1394
 
 ## What a player sees
 
@@ -218,7 +218,8 @@ holds, the open one copper-marked; a click lists only that kind (every entry kin
 `Chronicle.Group`), and Back is at the column's foot. At 320x180 the column is icons with their counts and the whisper line
 names them. On the right the entries, newest first, under **day headers** ("DAY 47 · AUTUMN 5" over a rule, the season
 and its day worked out with the server's season length); each entry is a chevron, its icon and its text on one line, and
-a click **opens** it to its whole text (a copper-edged box) and closes it again. The mouse wheel scrolls the list. The
+a click **opens** it to its whole text (a copper-edged box) and a click anywhere on it closes it again, even on an
+entry taller than the list wheeled past its top row (B1394). The mouse wheel scrolls the list. The
 whisper line says when an entry was written and that a click reads all of it, what a filter shows, or the page's hint.
 
 **The list menus** (ROADMAP 42, `ChoiceTableScreen` in list mode: the Move Tutor, the daycares and their keeper, the
@@ -334,12 +335,13 @@ new sentences in the lang file), with `TrainerScreenGameTests`, `TrainerScreenBu
 `QaTrainerScreen1111dGameTests` still passing. Scene: `copperline_trainer` (with Cobblemon: the mouse on Challenge and
 on Trade, then at 320x180).
 
-48.4: `CopperlineChronicleGameTests` (3: the Chronicle's column, filters, Back and list at 427x240, 480x270, 640x360 and
+48.4: `CopperlineChronicleGameTests` (4: the Chronicle's column, filters, Back and list at 427x240, 480x270, 640x360 and
 320x180 with group words one and three times as long, the rows apart and an open entry taller, scrolling only when
 needed; a real hall's Chronicle page: newest first with dates, every kind in exactly one group, the filters' counts, a
 filter's click showing only its group, an empty group's line, All bringing every entry back, Back still first; the list
 menus' rail with no, 1, 6 and 12 tabs, the list beside it and the page arrows in the whisper line; the Trader's book on
-the lintel clear of the plaque and the close X; the new sentences), with `CopperlineShellGameTests`,
+the lintel clear of the plaque and the close X; the new sentences; B1394: an open entry taller than the list takes a
+click on any row still in view at every scroll, and only inside the list), with `CopperlineShellGameTests`,
 `PokemonTradeLayoutGameTests`, `QaTradeRows1109dGameTests`, the hall page tests and the list menu tests still passing.
 Scene: `copperline_chronicle` (the Chronicle with the raid's entry open, Show: Defense, at 320x180, then the Research
 list menu with its tab on the rail).

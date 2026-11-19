@@ -1,0 +1,10 @@
+{
+  "name": "stone-house-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Stone House, the taiga look (ROADMAP 49.10b): the shipped house as a forester's lodge, fieldstone below and spruce logs above under a broad slate gable. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

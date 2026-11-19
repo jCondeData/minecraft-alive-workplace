@@ -228,8 +228,9 @@ final class ChronicleView {
 				String text = CopperStyle.trim(font, icon.getHoverName().getString(), right - tx - 2);
 				g.drawString(font, text, tx, y + 3, entry ? CopperStyle.QUARTZ : CopperStyle.TUFF, false);
 			}
-			if (entry && ChronicleLayout.shown(list, y, Math.min(h, ChronicleLayout.ENTRY_H))) {
-				hits.add(new int[]{1, slot, list[0], y, right - list[0], h});
+			int[] part = entry ? ChronicleLayout.clickable(list, y, h, isOpen) : null;
+			if (part != null) {
+				hits.add(new int[]{1, slot, list[0], part[0], right - list[0], part[1]});
 			}
 			if (over) {
 				whisper = Component.translatable(isOpen ? "screen.aliveworkplace.hall.chronicle.close_whisper"

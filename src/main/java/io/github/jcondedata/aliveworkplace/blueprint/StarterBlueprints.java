@@ -276,6 +276,26 @@ public final class StarterBlueprints {
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
 	/** A third house on the east end, the same again: six beds. */
 	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
+	/**
+	 * The Terrace's biome looks (ROADMAP 49.10c, {@code tools/blueprints/js/terrace_<culture>}; see {@link BlueprintLooks}):
+	 * both levels drawn again in a village culture's climate, with the same homes, beds, doors, ladders, furniture spots
+	 * and size as the level drawn. A desert, savanna, snowy or taiga village builds its own look; plains the Terrace as
+	 * drawn. Each list holds a culture's two levels, Level I first.
+	 */
+	public static final List<Entry> TERRACE_DESERT = terraceLook("desert");
+	public static final List<Entry> TERRACE_SAVANNA = terraceLook("savanna");
+	public static final List<Entry> TERRACE_SNOWY = terraceLook("snowy");
+	public static final List<Entry> TERRACE_TAIGA = terraceLook("taiga");
+	/** Every look of the Terrace, both levels. */
+	public static final List<Entry> TERRACE_LOOKS = java.util.stream.Stream.of(TERRACE_DESERT, TERRACE_SAVANNA, TERRACE_SNOWY, TERRACE_TAIGA)
+		.flatMap(List::stream).toList();
+
+	/** A culture's look of the Terrace's two levels, each the size of the level drawn (ids spelt out, as {@code stoneHouseLook}'s). */
+	private static List<Entry> terraceLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(TERRACE, TERRACE_2)
+			.map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 	/** A tavern below, three guest rooms with six beds above. */
 	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
 	/** A stable on the side with a Feed Trough: a rancher moves in. */
@@ -331,6 +351,30 @@ public final class StarterBlueprints {
 	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(13, 16, 14));
 	/** Stone House III with a store cellar under the hall, down a ladder by the hearth (26.15, 49.4). */
 	public static final Entry STONE_HOUSE_4 = new Entry(AliveWorkplace.id("stone_house_4"), new Vec3i(13, 16, 14), 4);
+	/**
+	 * The Stone House's biome looks (ROADMAP 49.10b, {@code tools/blueprints/js/stone_house_<culture>}; see
+	 * {@link BlueprintLooks}): every level drawn again in a village culture's climate, with the same rooms, beds, job
+	 * blocks and size as the level drawn. A desert, savanna or taiga village builds its own look; plains and snowy (whose
+	 * look the critic sent back three times, left to the owner) the Stone House as drawn. Each list holds a culture's
+	 * four levels, Level I first; Level IV has the same cellar as the Stone House's.
+	 */
+	public static final List<Entry> STONE_HOUSE_DESERT = stoneHouseLook("desert");
+	public static final List<Entry> STONE_HOUSE_SAVANNA = stoneHouseLook("savanna");
+	public static final List<Entry> STONE_HOUSE_TAIGA = stoneHouseLook("taiga");
+	/** Every look of the Stone House, every level. */
+	public static final List<Entry> STONE_HOUSE_LOOKS = java.util.stream.Stream.of(STONE_HOUSE_DESERT, STONE_HOUSE_SAVANNA,
+		STONE_HOUSE_TAIGA).flatMap(List::stream).toList();
+
+	/**
+	 * A culture's look of the Stone House's four levels, each the size of the level drawn (every look is 16 tall, like
+	 * the drawing). The id is spelt out here, not through {@code BlueprintLooks.look}, so this class's set-up never
+	 * starts BlueprintLooks', which reads this class's entries.
+	 */
+	private static List<Entry> stoneHouseLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(STONE_HOUSE, STONE_HOUSE_2, STONE_HOUSE_3, STONE_HOUSE_4)
+			.map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 
 	/**
 	 * The Daub House (ROADMAP 36.23, the owner's pick of two; 49.2): a Level I home of mud-brick daub in a dark oak frame
@@ -362,6 +406,28 @@ public final class StarterBlueprints {
 	public static final Entry TOWNHOUSE_3 = new Entry(AliveWorkplace.id("townhouse_3"), new Vec3i(19, 26, 19));
 	/** Townhouse III with a vaulted cellar of casks under the shop, down a ladder (26.15). */
 	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(19, 26, 19), 4);
+	/**
+	 * The Townhouse's biome looks (ROADMAP 49.10b, {@code tools/blueprints/js/townhouse_<culture>}; see
+	 * {@link BlueprintLooks}): every level drawn again in a village culture's climate, with the same rooms, beds, job
+	 * blocks and plot as the level drawn, under a flat or low roof (Levels I and II are 20 tall, not 22). A desert or
+	 * savanna village builds its own look; plains, snowy and taiga (whose looks the critic sent back three times, left
+	 * to the owner) the Townhouse as drawn. Each list holds a culture's four levels, Level I first; Level IV has the
+	 * same cellar as the Townhouse's.
+	 */
+	public static final List<Entry> TOWNHOUSE_DESERT = townhouseLook("desert");
+	public static final List<Entry> TOWNHOUSE_SAVANNA = townhouseLook("savanna");
+	/** Every look of the Townhouse, every level. */
+	public static final List<Entry> TOWNHOUSE_LOOKS = java.util.stream.Stream.of(TOWNHOUSE_DESERT, TOWNHOUSE_SAVANNA)
+		.flatMap(List::stream).toList();
+
+	/** A culture's look of the Townhouse's four levels, as wide and deep as the level drawn (ids spelt out as {@link #stoneHouseLook}'s). */
+	private static List<Entry> townhouseLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return List.of(new Entry(AliveWorkplace.id(folder + "townhouse"), new Vec3i(11, 20, 14)),
+			new Entry(AliveWorkplace.id(folder + "townhouse_2"), new Vec3i(18, 20, 14)),
+			new Entry(AliveWorkplace.id(folder + "townhouse_3"), new Vec3i(19, 26, 19)),
+			new Entry(AliveWorkplace.id(folder + "townhouse_4"), new Vec3i(19, 26, 19), 4));
+	}
 	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}; rebuilt in 49.7): a brick hall under a porch tower, a
 	 *  crow-gabled west wing of parlour, kitchen and two chambers, a grand stair to the Long Gallery. */
 	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(21, 18, 17));
@@ -863,8 +929,8 @@ public final class StarterBlueprints {
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
-		// 49.10a: the biome looks of a Level IV, each with its level's basement
-		STARTER_COTTAGE_LOOKS.stream().filter(e -> e.basement() > 0)).toList();
+		// 49.10a/b: the biome looks of a Level IV, each with its level's basement
+		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS).flatMap(List::stream).filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);

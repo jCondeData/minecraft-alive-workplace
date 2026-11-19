@@ -108,6 +108,20 @@ public final class ChronicleLayout {
 		return y >= list[1] && y + h <= list[1] + list[3];
 	}
 
+	/**
+	 * The part of an entry from {@code y}, {@code h} tall, that takes clicks, as [top, height], or null for none. A closed
+	 * entry takes clicks only when it is wholly inside the list ({@link #shown}); an open one takes them on whatever part
+	 * of it is inside, so an entry taller than the list still folds after its top row is scrolled away (B1394).
+	 */
+	public static int[] clickable(int[] list, int y, int h, boolean open) {
+		if (!open) {
+			return shown(list, y, h) ? new int[]{y, h} : null;
+		}
+		int top = Math.max(y, list[1]);
+		int bottom = Math.min(y + h, list[1] + list[3]);
+		return bottom > top ? new int[]{top, bottom - top} : null;
+	}
+
 	private ChronicleLayout() {
 	}
 }

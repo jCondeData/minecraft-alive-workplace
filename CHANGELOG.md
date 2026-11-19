@@ -16,6 +16,16 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
+  every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
+  one great pyramid of golden thatch, a forester's lodge of mossy fieldstone and spruce logs gable-on to the road), with
+  the same rooms and furniture. Plains and snowy villages keep the rubble house; the Blueprint Table lists every look
+  (49.10b).
+- **The Townhouse in its village's culture**: desert and savanna villages now build their own look of it at every
+  level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
+  under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
+  and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
 ### Changed
 - **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
   Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
@@ -68,8 +78,22 @@ asks for the steps, `latest.log` and any crash report).
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
 ### Fixed
+- A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
+  after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
+- **The Terrace in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of both
+  levels (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
+  granite and mud with a veranda; pale calcite gables under steep deepslate roofs, snow on the eaves; a long range of
+  spruce logs under a slate roof with a porch on log posts), with the same homes, beds and furniture. Plains villages
+  keep the Crow-Step Row (49.10c).
+- **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
+  looks count as one (49.10b).
+
+### Dev
+- The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
+  Palisade's mud and oak are in their chests (its first segment waited for them every night since 52.3), and a new
+  GameTest has the Steward's palisade go up whole and its gate shut at night (B1400).
 
 ## 0.157.0 — 2026-11-18
 

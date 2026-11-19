@@ -1,0 +1,19 @@
+{
+  "name": "windmill",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 36
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/windmill/out/windmill.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/windmill/out/summary.json",
+  "size": [
+    15,
+    18,
+    14
+  ],
+  "blockCount": 566,
+  "paletteCount": 51,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/windmill/recipe.mjs"
+}

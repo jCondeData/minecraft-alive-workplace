@@ -69,11 +69,13 @@ public final class StarterBlueprints {
 	public static final Entry VILLAGE_HALL_2 = new Entry(AliveWorkplace.id("village_hall_2"), new Vec3i(19, 13, 13));
 	/** A stone bell-and-clock tower at the end of the meeting room: the grand civic hall. */
 	public static final Entry VILLAGE_HALL_3 = new Entry(AliveWorkplace.id("village_hall_3"), new Vec3i(24, 24, 13));
-	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 7, 6));
-	/** A second stall alongside, with a Shop Counter. */
-	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 7, 6));
-	/** A storeroom shed behind the stalls. */
-	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 9, 13));
+	/** The Shop Board: a steep timber booth, gable to the street, its front opening on two hinged boards (the counter
+	 *  ledge folded down with cloth on it, the canopy propped up under a red-and-white valance) (rebuilt 50.11). */
+	public static final Entry MARKET_STALL = new Entry(AliveWorkplace.id("market_stall"), new Vec3i(8, 8, 6));
+	/** A lock-up shop beside the booth under a lower gable, the Shop Counter in the booth's sill and the stock chests next door. */
+	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 8, 8));
+	/** The lock-up run back into a storeroom of chests behind a partition, with a back door for deliveries. */
+	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 8, 12));
 	/** The Hoarded Watchtower: a slim stone shaft on a battered foot under a timber watch gallery jettied out on
 	 *  corbels, open on every side under a steep slate hat (rebuilt 51.8). */
 	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(9, 16, 9));
@@ -94,13 +96,15 @@ public final class StarterBlueprints {
 	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(21, 16, 26)); // ROADMAP 50.8: rebuilt
 	/** Level IV adds the Cistern under the Spring Hall: the spring's source pool and the still room's chests (26.15). */
 	public static final Entry HEALING_CENTER_4 = new Entry(AliveWorkplace.id("healing_center_4"), new Vec3i(21, 16, 26), 4); // ROADMAP 50.8: rebuilt
-	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 10));
-	/** A storeroom and the shopkeeper's bedroom upstairs. */
+	/** The Hoist House: a tall street gable jettied over two glass shop bays, a copper sign band and a hoist at the apex;
+	 *  the Shop Counter across the shop room, the stock wall behind (rebuilt 50.11). */
+	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 11));
+	/** A lower house range behind: the shopkeeper's back room with his bed, desk and chest. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 11, 16));
 
-	/** A post office annex with a Postal Desk. */
+	/** A seed and hardware wing beside the shop under its own little street gable. */
 	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 11, 16));
-	/** Supply Shop III with a stockroom under the shop, down a ladder behind the counter (26.15). */
+	/** Supply Shop III with a cool cellar of chests and casks under the wing, down a ladder (26.15). */
 	public static final Entry SUPPLY_SHOP_4 = new Entry(AliveWorkplace.id("supply_shop_4"), new Vec3i(17, 11, 16), 4);
 
 	/** A granary (stone below, a loft with a hoist above) with a Storehouse and eight chests: a porter moves in. */
@@ -237,7 +241,9 @@ public final class StarterBlueprints {
 	 * build's and the builder digs the basement out (the blueprint's air there is ground to clear).
 	 */
 	public static Blueprint withBasement(Blueprint blueprint) {
-		int depth = basement(blueprint.id());
+		FormerBasement former = FORMER_BASEMENTS.get(blueprint.id());
+		// (an older drawing in Refreshes' history, drawn with a basement this build no longer has: matched by its size)
+		int depth = former != null && former.size().equals(blueprint.size()) ? former.depth() : basement(blueprint.id());
 		if (depth <= 0 || blueprint.size().getY() <= depth || blueprint.basement() > 0) {
 			return blueprint;
 		}
@@ -248,6 +254,18 @@ public final class StarterBlueprints {
 		Vec3i size = blueprint.size();
 		return new Blueprint(blueprint.id(), new Vec3i(size.getX(), size.getY() - depth, size.getZ()), blocks, entities);
 	}
+
+	/** An older drawing's basement: a file of exactly {@code size} (its basement included) had {@code depth} of it underground. */
+	private record FormerBasement(Vec3i size, int depth) {
+	}
+
+	/**
+	 * Builds whose basement a rebuild dropped, so their older drawings in the history (Refreshes) still come out with
+	 * the basement under the ground: the Quarry (50.10) was 17 x 9 x 12 with 5 below, a 17 x 14 x 12 file. Matched by
+	 * the file's size, so a later drawing without the basement is never moved.
+	 */
+	private static final java.util.Map<ResourceLocation, FormerBasement> FORMER_BASEMENTS = java.util.Map.of(
+		AliveWorkplace.id("quarry"), new FormerBasement(new Vec3i(17, 14, 12), 5));
 
 	/** How deep the basement of the shipped build {@code id} is (0: none), going by {@link Entry#basement}. */
 	public static int basement(ResourceLocation id) {
@@ -316,10 +334,10 @@ public final class StarterBlueprints {
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(13, 9, 13)); // ROADMAP 50.9: rebuilt
 	/** Level II: the colony swarms: a daughter skep at the east end with more smoked hives, and a meadow under a cherry. */
 	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 9, 13)); // ROADMAP 50.9: rebuilt
-	/** A little shop with a Flower Stand and an awning. */
-	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
-	/** A glass greenhouse on the side. */
-	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(15, 11, 9));
+	/** The glasshouse florist: a glazed gable on a brick dwarf wall, her beds either side of the aisle to the composter, a brick parlor with the counter and a fenced cutting yard (rebuilt 50.11). */
+	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(13, 12, 13));
+	/** A second, lower glass range across the yard and a glazed lantern on the big ridge. */
+	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(17, 12, 15));
 	/** The Lantern Yard: a walled churchyard through a lychgate, a lantern tower over the chapel with the Undertaker's Table (rebuilt 51.6). */
 	public static final Entry GRAVEYARD = new Entry(AliveWorkplace.id("graveyard"), new Vec3i(13, 16, 13));
 	/** The same yard a generation on: tall yews, lanterns on the piers, stone crosses, an iron-railed front, benches. */
@@ -331,7 +349,7 @@ public final class StarterBlueprints {
 	 * chamber upstairs.
 	 */
 	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 16, 11));
-	/** A lower parlour wing on the east gable with a third bed. */
+	/** A lower parlor wing on the east gable with a third bed. */
 	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(13, 16, 11));
 	/** The back roof carried down over a rear room with two more beds. */
 	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(13, 16, 14));
@@ -415,7 +433,7 @@ public final class StarterBlueprints {
 			new Entry(AliveWorkplace.id(folder + "townhouse_4"), new Vec3i(19, 26, 19), 4));
 	}
 	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}; rebuilt in 49.7): a brick hall under a porch tower, a
-	 *  crow-gabled west wing of parlour, kitchen and two chambers, a grand stair to the Long Gallery. */
+	 *  crow-gabled west wing of parlor, kitchen and two chambers, a grand stair to the Long Gallery. */
 	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(21, 18, 17));
 	/** A walled formal garden behind: four box-edged knots round a lamp, clipped yews and a bench (3 beauty for the people who live there). */
 	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(21, 18, 25));
@@ -587,14 +605,22 @@ public final class StarterBlueprints {
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden (52.4, rebuilt). */
 	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 16, 14));
 
-	/** An open timber shed with compost bays and the Compost Bin, a fenced yard in front. */
-	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(11, 8, 10));
-	/** A third bay and a potting shed at the end. */
-	public static final Entry COMPOST_YARD_2 = new Entry(AliveWorkplace.id("compost_yard_2"), new Vec3i(15, 8, 10));
-	/** A timber shed on a stone footing over the Sieve, with bins of gravel and sand. */
-	public static final Entry SIFTING_SHED = new Entry(AliveWorkplace.id("sifting_shed"), new Vec3i(9, 9, 9));
-	/** Twice the depth with a second Sieve, a side door and a lean-to over stone bins. */
-	public static final Entry SIFTING_SHED_2 = new Entry(AliveWorkplace.id("sifting_shed_2"), new Vec3i(11, 9, 13));
+	/**
+	 * The Bin Barn (rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/compost_yard): a steep straw-thatched barn whose
+	 * front opens on the yard as three bins, green to black, under a jettied hoist gable; the composter and the scrap chest
+	 * stand under its overhang, a turning aisle behind.
+	 */
+	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(13, 12, 13)); // ROADMAP 50.9: rebuilt
+	/** Level II: a riddling shed under the barn's east rake, with more chests, the riddle pile and a potting bench. */
+	public static final Entry COMPOST_YARD_2 = new Entry(AliveWorkplace.id("compost_yard_2"), new Vec3i(15, 12, 13)); // ROADMAP 50.9: rebuilt
+	/**
+	 * The Tipple (rebuilt from scratch in ROADMAP 50.10, tools/blueprints/js/sifting_shed): a timber hopper loft on stone legs
+	 * under a steep slate gable with its hoist beam, the gravel tipped through a chute into the Sieve's cauldron below, the
+	 * gravel and sand bays under an east lean-to.
+	 */
+	public static final Entry SIFTING_SHED = new Entry(AliveWorkplace.id("sifting_shed"), new Vec3i(10, 15, 9)); // ROADMAP 50.10: rebuilt
+	/** Level II: a covered incline gallery climbing into the loft from the back yard, the second Sieve in its shelter. */
+	public static final Entry SIFTING_SHED_2 = new Entry(AliveWorkplace.id("sifting_shed_2"), new Vec3i(10, 15, 14)); // ROADMAP 50.10: rebuilt
 
 	/** A two-storey guildhall (stone below, timber above) with a long table, the charter framed over the hearth and banners by the door. */
 	public static final Entry GUILDHALL = new Entry(AliveWorkplace.id("guildhall"), new Vec3i(19, 15, 14));
@@ -675,11 +701,12 @@ public final class StarterBlueprints {
 
 	/**
 	 * The Create-powered builds (ROADMAP 39.4; tools/blueprints/create_builds.py): the Watermill (a water wheel turning a
-	 * millstone), the Windmill (a windmill bearing with 24 sails over a millstone) and the Workshop (a water wheel driving
+	 * millstone), the Windmill (rebuilt in ROADMAP 50.10, tools/blueprints/js/windmill: a windmill bearing with four long sails over a
+	 * millstone) and the Workshop (a water wheel driving
 	 * a belt to a depot under a mechanical press). Workplaces for 39.3's machine work.
 	 */
 	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(17, 16, 17)); // ROADMAP 50.5: rebuilt
-	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
+	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(15, 18, 14)); // ROADMAP 50.10: rebuilt, "the Stage Mill"
 	/**
 	 * The Workshop, rebuilt from scratch in ROADMAP 50.7 (tools/blueprints/js/workshop): "the head-tank works", a timber
 	 * plate shop with a water tower whose head tank pours onto the wheel, a glazed press gable over the press and the
@@ -691,12 +718,12 @@ public final class StarterBlueprints {
 	/**
 	 * More Create builds (ROADMAP 39.8; tools/blueprints/create_builds.py): the Brass Foundry (a water wheel geared up to
 	 * 32 RPM turning a mechanical mixer over a basin and a blaze burner, a belt out to a depot), the Sawmill (a water
-	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (a water wheel turning a pair of
-	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
+	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (rebuilt in ROADMAP 50.10, tools/blueprints/js/crushing_mill: a fall tower's water
+	 * wheel turning a pair of crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
 	 */
 	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(19, 21, 16));
 	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 14));
-	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
+	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 18, 12)); // ROADMAP 50.10: rebuilt, "the Fall House"
 	/**
 	 * The Greenhouse (the Leat House, rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/greenhouse: a ridge-and-furrow
 	 * glasshouse whose leat turns an undershot wheel, its belt running along the west wall under the harvester and the plough
@@ -780,10 +807,12 @@ public final class StarterBlueprints {
 	public static final Entry SCHOOL = workplace("school", 17, 12, 18);
 
 	/**
-	 * A pit the Miner works like a farm (36.12, {@code mine/QuarryBuilds}): a curbed, fenced rim round the ground it digs,
-	 * steps cut down its east side, a hoist, and the Miner's shed with their blast furnace. The pit isn't in the file.
+	 * A pit the Miner works like a farm (36.12, {@code mine/QuarryBuilds}). The Headframe (rebuilt from scratch in ROADMAP
+	 * 50.10, tools/blueprints/js/quarry): a curbed, fenced rim round the ground the Miner digs, a tall timber headframe over
+	 * it, and the hoist house with the blast furnace under its brick stack. The pit isn't in the file, and since 50.10 there
+	 * is no basement (the old drawing's 5 are {@link #FORMER_BASEMENTS}).
 	 */
-	public static final Entry QUARRY = workplace("quarry", 17, 9, 12, 5);
+	public static final Entry QUARRY = workplace("quarry", 19, 17, 14); // ROADMAP 50.10: rebuilt
 
 	/** The workplaces in the Blueprint Table for everyone. */
 	public static final List<Entry> WORKPLACES = List.of(BUILDERS_WORKSHOP, CARPENTERS_WORKSHOP, KITCHEN, POST_OFFICE, GUARD_HOUSE, CLINIC, FERRY_HOUSE);
@@ -924,7 +953,7 @@ public final class StarterBlueprints {
 	public static final List<Entry> WITH_BASEMENTS = java.util.stream.Stream.concat(java.util.stream.Stream.of(STARTER_COTTAGE_4,
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
-		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY),
+		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
 		// 49.10a/b/f: the biome looks of a Level IV, each with its level's basement
 		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS).flatMap(List::stream)
 			.filter(e -> e.basement() > 0)).toList();

@@ -28,9 +28,10 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * SCENE=wonder_hanging_gardens (ROADMAP 35.20): the Hanging Gardens' time-lapse and its festival's fireworks, then the
- * next morning with the falls running from the crown's cistern down the east side into the pool, and four farmers on the
- * terraces: one at each farm corner's composter, each taking on that terrace's fields by themselves and harvesting
- * them. Its checks: the falls' water stands, all four took on a terrace's farm, and both powers are on.
+ * next morning with its water standing (52.6, rebuilt: the shaft, the cistern under the Water Pavilion, the fields'
+ * channels and the pools at the foot), and four farmers on the terraces: one at each farm corner's composter, each taking
+ * on that terrace's fields by themselves and harvesting them. Its checks: the water stands, all four took on a terrace's
+ * farm, and both powers are on.
  */
 final class WonderGardensScene {
 	private static final ResourceLocation GARDENS = AliveWorkplace.id("hanging_gardens");
@@ -56,7 +57,7 @@ final class WonderGardensScene {
 		return Vec3.atBottomCenterOf(at);
 	}
 
-	/** The next morning: a farmer at each terrace's composter, the camera south-east of the falls. */
+	/** The next morning: a farmer at each terrace's composter, the camera off the front's east corner (52.6: the terraces step back from the front). */
 	static void farmers(ServerLevel level) {
 		WonderSite site = site(level);
 		Showcase.check(site != null && site.placement().isPresent(), "the Hanging Gardens finished");
@@ -74,10 +75,10 @@ final class WonderGardensScene {
 			FARMERS.add(farmer);
 		}
 		BlueprintData.Placement placement = site.placement().get();
-		ScreenshotHarness.hoverLookingAt(level.getServer().getPlayerList().getPlayers().get(0), placed(placement, 64, 26, 44), placed(placement, 25, 12, 22));
+		ScreenshotHarness.hoverLookingAt(level.getServer().getPlayerList().getPlayers().get(0), placed(placement, 60, 32, -18), placed(placement, 23, 14, 22));
 	}
 
-	/** The falls run, the four farmers took on the terraces' farms, and both powers are on. */
+	/** The water stands, the four farmers took on the terraces' farms, and both powers are on. */
 	static void checks(ServerLevel level) {
 		WonderSite site = site(level);
 		if (site == null) {
@@ -85,7 +86,7 @@ final class WonderGardensScene {
 		}
 		List<WonderUpkeep.Block> water = WonderUpkeep.blocks(level, site).stream().filter(b -> b.state().is(Blocks.WATER)).toList();
 		long wet = water.stream().filter(b -> level.getFluidState(b.pos()).is(FluidTags.WATER)).count();
-		Showcase.check(!water.isEmpty() && wet * 10 >= water.size() * 9, "the falls run from the cistern to the pool (" + wet + " of " + water.size() + " water blocks)");
+		Showcase.check(!water.isEmpty() && wet * 10 >= water.size() * 9, "the water stands in the shaft, the cistern, the channels and the pools (" + wet + " of " + water.size() + " water blocks)");
 		long farming = FARMERS.stream().filter(f -> {
 			FieldJob job = ModAttachments.FARM_FIELD.get(f);
 			return job != null && job.adopted();

@@ -132,6 +132,21 @@ public final class MaterialRules {
 	private static final Map<String, String> PLACED_WITH = Map.of("create:belt", "create:belt_connector",
 		"create:small_bogey", "create:railway_casing"); // 39.7b: a bogey is train casing used on the track
 
+	/**
+	 * Blocks of other mods whose own item is a technical one no player can get, built from the item a player has, by id
+	 * (B1068): Create's Backtank set down is the backtank a player wears (its block's item, "copper_backtank_placeable",
+	 * has no recipe and is in no creative tab), as Create's own Schematicannon asks for it.
+	 */
+	private static final Map<String, String> BUILT_FROM = Map.of("create:copper_backtank", "create:copper_backtank",
+		"create:netherite_backtank", "create:netherite_backtank");
+
+	/** The item a player has for {@code block} (see {@link #BUILT_FROM}), or air if it is built from its own item. */
+	private static Item builtFromAnotherItem(Block block) {
+		String from = BUILT_FROM.get(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block).toString());
+		return from == null ? Items.AIR
+			: io.github.jcondedata.aliveworkplace.mc.Lookup.value(net.minecraft.core.registries.BuiltInRegistries.ITEM, net.minecraft.resources.ResourceLocation.parse(from));
+	}
+
 	/** Whether {@code state} is laid in one piece with its neighbours of the same block (Create's belt): see BuilderWork. */
 	public static boolean laidWhole(BlockState state) {
 		return "create:belt".equals(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
@@ -458,6 +473,10 @@ public final class MaterialRules {
 		}
 		if (item == Items.AIR) {
 			item = placedByAnotherItem(block);
+		}
+		Item had = builtFromAnotherItem(block);
+		if (had != Items.AIR) {
+			item = had;
 		}
 		if (item == Items.AIR) {
 			return Optional.empty();

@@ -618,7 +618,7 @@ SCENES = [
     S("refresh_old_house", "Village Hall", "Refresh an old house to its latest look",
       "A Stone House built from its drawing before B260 (as on the live server) was offered Refresh to the latest look on the "
       "hall's Repairs page; a click showed what changes, the button sent Bram, and he took the old leftovers away and put the "
-      "new pieces in, nothing doubled", 230,
+      "new pieces in, nothing doubled", 350,
       [("01_old_house", "Before: the Stone House as its drawing before B260 built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
        ("03_what_changes", "What changes, and the Refresh to the latest look button"), ("04_after", "After: the house in its latest look")]),
     # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
@@ -1168,10 +1168,10 @@ SCENES = [
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # The Hanging Gardens (ROADMAP 35.20): its time-lapse, ending the next morning with the falls running and farmers on the terraces
     S("wonder_hanging_gardens", "Wonders", "The Hanging Gardens: its time-lapse, and farmers on its terraces",
-      "a crew of ten raised the Hanging Gardens terrace by terrace on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (a quarter more harvest across the realm, babies on 12 meals and two a day), and after the festival's fireworks, the next morning the falls ran from the crown's cistern into the pool and a farmer at each of the four farm corners took on that terrace's fields by themselves", 860,
-      [("11_wonder_hanging_gardens_stage_1", "Stage I, the First Terrace and the Cistern Vaults, up"), ("frame_*@middle", "The crew at work, the camera going round"),
-       ("14_wonder_hanging_gardens_stage_4", "The Crown Garden and the Falls: the Gardens finished"),
-       ("20_wonder_hanging_gardens_terraces", "The next morning: the falls running, farmers on the terraces")]),
+      "a crew of ten raised the Hanging Gardens terrace by terrace on a sped-up server, each stage's goods handed in at the stone: the Vaults and the Lower Terrace, the Gallery and the Middle Terrace, the Upper Terrace and its hall, and last the Crown Garden with the Water Pavilion over its cistern; once finished its powers came on (a quarter more harvest across the realm, babies on 12 meals and two a day), and after the festival's fireworks, the next morning its water stood in the shaft, the cistern, the fields' channels and the pools, and a farmer at each of the four farm corners took on that terrace's fields by themselves", 860,
+      [("11_wonder_hanging_gardens_stage_1", "Stage I, the Vaults and the Lower Terrace, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_hanging_gardens_stage_4", "The Crown Garden and the Water Pavilion: the Gardens finished"),
+       ("20_wonder_hanging_gardens_terraces", "The next morning: the terraces from the front, farmers at their farms")]),
     # The Great Library (ROADMAP 35.14): its time-lapse, ending in the rotunda on the scholar's screen with the second tier
     S("wonder_great_library", "Wonders", "The Great Library: its time-lapse, and the second research tier",
       "a crew of ten raised the Great Library stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its power came on and, after the festival's fireworks, inside the rotunda by the enchanting table a scholar's research screen showed the Great Library's row open: Swift Hands IV-V, Scholarship, Engineering, Cartography, Trade Law and Pharmacy", 840,
@@ -1833,6 +1833,27 @@ SCENES = [
            ("03_outside_west", "From the west: the stone chimney up the gable"),
            ("02_outside_back", "From the back: the log walls and the long roof"),
            ("10_room_1", "Inside at eye level: the fletching table and the chest beside it")], furniture=True),
+    # ROADMAP 50.11: the Flower Shop rebuilt from scratch ("the glasshouse florist")
+    S("rebuild_flower_shop", "Build families", "The Flower Shop, rebuilt: from four sides and at eye level inside",
+      "the Flower Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Flower Shop from the front: the tall glazed gable on its brick dwarf wall, green copper glazing bars, the brick parlour's shop window beside it"),
+           ("02_outside_back", "From the back: the solid brick gable and the boiler's chimney up it"),
+           ("04_outside_east", "From the east: the parlour's copper roof and the fenced cutting yard with its pond"),
+           ("10_room_1", "Inside at eye level: the aisle between the raised beds of tall flowers, hanging pots, the composter at the end")], furniture=True),
+    # ROADMAP 50.11: the Supply Shop rebuilt from scratch ("the hoist house")
+    S("rebuild_supply_shop", "Build families", "The Supply Shop, rebuilt: from four sides and at eye level inside",
+      "the Supply Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Supply Shop from the front: the tall street gable jettied over two glass shop bays, the copper sign band, the hoist and its lantern at the apex"),
+           ("02_outside_back", "From the back: the loading door high in the back gable with its hoist beam"),
+           ("04_outside_east", "From the east: the timber frame standing proud of the pale walls, a dormer in the long roof"),
+           ("10_room_1", "Inside at eye level: the Shop Counter across the room between two counters, the stock wall of chests and barrels behind")], furniture=True),
+    # ROADMAP 50.11: the Market Stall rebuilt from scratch ("the shop board")
+    S("rebuild_market_stall", "Build families", "The Market Stall, rebuilt: from four sides and at eye level inside",
+      "the Market Stall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Stall from the front: the steep timber booth with its gable to the street, the counter board folded down with cloth on it, the canopy propped up under a red-and-white valance"),
+           ("02_outside_back", "From the back: the limewashed panels between the spruce posts and the shutters"),
+           ("03_outside_west", "From the west: the side hatch open over its sill, a ledge of cloth and flowers outside it"),
+           ("10_room_1", "Inside at eye level: the trader's strip behind the counter, goods stacked on the shelf, a lantern hung from the eave")], furniture=True),
     S("rebuild_tailors_shop", "Build families", "The Tailor's Shop, rebuilt: from four sides and at eye level inside",
       "the Tailor's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
       40, [("01_outside_front", "The Tailor's Shop from the front: the jettied gable over the glazed shopfront, bolts of cloth on show"),
@@ -1925,6 +1946,42 @@ SCENES = [
            ("03_outside_west", "From the west: the leat in its stone trough and the undershot wheel under its little hood"),
            ("02_outside_back", "From the back: the brick boiler and its tall stack"),
            ("10_room_1", "Inside at eye level: the beds either side of the walk, the belt along the west wall under the harvester and the plough")], furniture=True, create=True),
+    # ROADMAP 50.9: the Compost Yard rebuilt from scratch (REBUILD.md), "the Bin Barn" (Level I filmed)
+    S("rebuild_compost_yard", "Build families", "The Compost Yard, rebuilt: from four sides",
+      "the Compost Yard's blueprint stands on a cleared lawn; it has no furniture spots and no rooms (the barn is three open bins and a turning aisle), so it is filmed from four sides",
+      40, [("01_outside_front", "The Compost Yard from the front: the straw-thatched barn's three bins, green to black, under the jettied hoist gable, the composter and the scrap chest in the dry beneath it"),
+           ("02_outside_back", "From the back: the turning aisle's lower roof under the barn's steep thatch, slatted vents in its wall"),
+           ("03_outside_west", "From the west: the aisle door with its lamp post, the hoist gable's ridge running back into the main ridge"),
+           ("04_outside_east", "From the east: the barn's gable end over its rubble plinth, the scrap heap of pumpkins, hay and melons in the yard")], furniture=True),
+    # ROADMAP 50.10: the Quarry rebuilt from scratch (REBUILD.md), "the Headframe" (one level, no basement)
+    S("rebuild_quarry", "Build families", "The Quarry, rebuilt: from four sides and at eye level inside",
+      "the Quarry's blueprint stands on a cleared lawn (its pit is the ground under it); every furniture spot holds its piece and the hoist house gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Quarry from the front: the tall dark oak headframe over the pit with its spoked sheave, the hoist house beside it with the brick stack through its ridge"),
+           ("02_outside_back", "From the back: the spoil heap behind the pit, ore showing in the rubble"),
+           ("03_outside_west", "From the west: the headframe's legs stepping in halfway up, the skip and a lantern hanging on chains over the pit"),
+           ("04_outside_east", "From the east: the hoist house's boarded gable and deepslate roof, the stack rising from the blast furnace"),
+           ("10_room_1", "Inside at eye level: the blast furnace under the stack, the drop-off chest by it, the lamps and the winch drum")], furniture=True),
+    # ROADMAP 50.10: the Sifting Shed rebuilt from scratch (REBUILD.md), "the Tipple" (Level I filmed)
+    S("rebuild_sifting_shed", "Build families", "The Sifting Shed, rebuilt: from four sides",
+      "the Sifting Shed's blueprint stands on a cleared lawn; it has no furniture spots (the cauldron and the chest are the job's own blocks), so it is filmed from four sides",
+      40, [("01_outside_front", "The Sifting Shed from the front: the timber loft on its legs under the steep slate gable, the hoist beam's lantern under the ridge, the door under its hood"),
+           ("02_outside_back", "From the back: the loft's frame proud of its pale boards over the stone-walled screen room"),
+           ("03_outside_west", "From the west: the sieves hung drying on their rail under the loft's shuttered windows"),
+           ("04_outside_east", "From the east: the gravel and sand heaps in their board bays under the lean-to")], furniture=True),
+    # ROADMAP 50.10: the Crushing Mill rebuilt from scratch (REBUILD.md), "the Fall House" (Create only)
+    S("rebuild_crushing_mill", "Build families", "The Crushing Mill, rebuilt: from four sides and at eye level inside",
+      "the Crushing Mill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Crushing Mill from the front: the stone hall's gable to the street, the timber-framed glazed bay showing the two crushing wheels"),
+           ("03_outside_west", "From the west: the long stone wall framed in dark oak posts, the tower's glass slot showing the falling water"),
+           ("04_outside_east", "From the east: the brick stack over the blast furnace rising past the hall's roof"),
+           ("10_room_1", "Inside at eye level: the crushing wheels over the drain, the belt feeding them, the blast furnace and its chest by the hearth")], furniture=True, create=True),
+    # ROADMAP 50.10: the Windmill rebuilt from scratch (REBUILD.md), "the Stage Mill" (Create only)
+    S("rebuild_windmill", "Build families", "The Windmill, rebuilt: from four sides and at eye level inside",
+      "the Windmill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and each floor gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Windmill from the front: four long white sails on the bearing in the cap's nose, the tarred smock over the brick drum"),
+           ("02_outside_back", "From the back: the tail pole raking down from the cap to the reefing stage"),
+           ("03_outside_west", "From the west: the stage on its brackets round the drum's top, the smock stepping in twice"),
+           ("10_room_1", "The meal floor at eye level: the millstone, the Farmer's composter and his store chest, sacks of grain")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",
@@ -1941,6 +1998,22 @@ SCENES = [
            ("02_outside_back", "From the sea: the round bastion and its rip-rap, the tower climbing from its mossy foot to the pale shaft"),
            ("03_outside_west", "From the west: the fish stage and its drying rack off the mole, the gallery on its corbels"),
            ("04_outside_east", "From the east: the ferry landing and the jetty with the Travel Post at its end, the hood's ring of lamps")], furniture=True),
+    # ROADMAP 52.6: the Hanging Gardens rebuilt from scratch (REBUILD.md), "the Terraced Mount", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_hanging_gardens", "Build families", "The Hanging Gardens, rebuilt: from four sides",
+      "the Hanging Gardens' whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Hanging Gardens from the front: the Processional Stair between the Reflecting Pools, the terraces stepping back in green tiers to the Water Pavilion"),
+           ("02_outside_back", "From the back: the terraces' backs rising nearly sheer, a cliff of mud brick"),
+           ("03_outside_west", "From the west: the terraces stepping up toward the back, their arcades glazed under the blue frieze, leaves and vines spilling over every edge"),
+           ("04_outside_east", "From the east: the stairs climbing each terrace's face, the palms of the Palm Basin and the crown, the Cypress Walk")], furniture=True),
+    # ROADMAP 52.6: the Great Wall rebuilt from scratch (REBUILD.md), "the Pass Gate", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_wall", "Build families", "The Great Wall, rebuilt: from four sides",
+      "the Great Wall's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Wall from the village side: the long gray curtain on its dark foot, the four watchtowers, the Gate Pavilion over the Great Gate and the two Horse Stairs either side"),
+           ("02_outside_back", "From the field: the battlements on their corbels, the buttresses, and the Barbican pushed out behind the gate with its outer gate"),
+           ("03_outside_west", "From the west: the broken, mossy end where the wall goes on, the end tower's signal-fire lookout under its spruce cap"),
+           ("04_outside_east", "From the east: the walk running through the towers to the Gate Pavilion's two dark-tiled roofs")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",
@@ -1993,7 +2066,7 @@ SCENES = [
     # pack's furniture mods builds them
     S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of the four workplaces holds the piece this server chose, pieces of at least two mods, and each keeps only its own chests and barrels as storage",
-      80, [("01_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
+      80, [("01_shop_counter", "Inside the rebuilt shop: Handcrafted counters either side of the Shop Counter, the stock wall of chests and barrels behind, a hanging lamp"),
            ("02_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
            ("03_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
            ("04_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),

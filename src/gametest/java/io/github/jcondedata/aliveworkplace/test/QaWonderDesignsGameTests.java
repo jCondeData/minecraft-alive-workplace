@@ -234,7 +234,8 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				near(wrong, "its height", h, 34, 1);
 			}
 			case "great_wall" -> {
-				// "97 long, 7 thick and 12 high ... five towers (9 x 9, 18 high, hipped roofs) ... a 17-wide gatehouse"
+				// 52.6, rebuilt (briefs/great_wall.md, js/great_wall/plan.mjs): "97 long; the runs 12 high and 7 thick at y 6; four
+				// watchtowers 9 x 9, 18 high in stone under spruce hip caps; the Great Gate's middle at x 48"
 				near(wrong, "its length", w, 97, 0);
 				for (int[] run : new int[][] {{31, 36}, {79, 84}}) {
 					int[] wall = box(all, p -> p.getX() >= run[0] && p.getX() <= run[1]);
@@ -279,13 +280,25 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				near(wrong, "the gnomon stair's top, at the drum's door floor", stair[4], floor, 1);
 			}
 			case "hanging_gardens" -> {
-				// "four terraces (39, 31, 23 and 15 across, 6 high each)"
-				int[] across = {39, 31, 23, 15};
+				// 52.6, rebuilt (briefs/hanging_gardens.md, js/hanging_gardens/plan.mjs): "the Terraced Mount", a plot 47 x 44 and
+				// 33 high; four terraces of mud brick 6 high each (45, 35, 27 and 19 wide, 47, 37, 29 and 21 with their piers), set
+				// back toward the rear, so the front falls in steps (fronts at z 4, 14, 22 and 30) and the back rises nearly sheer
+				// (backs at z 42, 41, 40 and 39). The same kinds of check as the 35.19 pins: the plot, each terrace's width in its
+				// walls' stone, how it steps, and a village farm's chest and composter on each terrace's top.
+				near(wrong, "its width", w, 47, 1);
+				near(wrong, "its length", l, 44, 1);
+				near(wrong, "its height", h, 33, 1);
+				int[] across = {47, 37, 29, 21};
+				int[] fronts = {4, 14, 22, 30};
+				int[] backs = {42, 41, 40, 39};
+				Predicate<BlockState> brick = is("minecraft:mud_bricks", "minecraft:packed_mud");
 				for (int k = 0; k < 4; k++) {
 					final int y = 6 * k + 3;
-					int[] t = box(all, p -> p.getY() == y && name(all.get(p)).contains("sandstone"));
-					int narrow = Math.min(t[3] - t[0], t[5] - t[2]) + 1;
-					near(wrong, "terrace " + (k + 1) + "'s width (y " + y + ")", narrow, across[k], 1);
+					int[] t = box(all, p -> p.getY() == y && brick.test(all.get(p)));
+					near(wrong, "terrace " + (k + 1) + "'s width (y " + y + ")", t[3] - t[0] + 1, across[k], 1);
+					int[] bay = box(all, p -> p.getY() == y && p.getX() >= 16 && p.getX() <= 18 && brick.test(all.get(p))); // the bay between the piers at x 15 and 19
+					near(wrong, "terrace " + (k + 1) + "'s front (z, y " + y + ")", bay[2], fronts[k], 0);
+					near(wrong, "terrace " + (k + 1) + "'s back (z, y " + y + ")", bay[5], backs[k], 0);
 					final int top = 6 * k + 7;
 					int chests = count(filter(all, p -> p.getY() == top), is("minecraft:chest"));
 					int composters = count(filter(all, p -> p.getY() == top), is("minecraft:composter"));
@@ -405,15 +418,19 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				new Feature("polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
 				new Feature("dark oak floors", 200, "minecraft:dark_oak_planks"),
 				new Feature("a glass lantern", 1, "minecraft:glass_pane", "minecraft:glass"));
-			case "great_wall" -> List.of(new Feature("a portcullis of iron bars", 6, "minecraft:iron_bars"),
-				new Feature("a gateway of fence gates", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate", "minecraft:dark_oak_fence_gate"),
-				new Feature("braziers along the walk", 4, "minecraft:campfire"),
-				new Feature("a grindstone for each tower's guard", 4, "minecraft:grindstone"),
-				new Feature("banners on the towers", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
-				new Feature("a deepslate-brick plinth", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
-				new Feature("mossy and cracked stone low down", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
-				new Feature("spruce roofs", 100, "minecraft:spruce_stairs"),
-				new Feature("stairs inside the towers", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
+			case "great_wall" -> List.of( // 52.6: the rebuilt Great Wall's named parts (js/great_wall/plan.mjs, "the Pass Gate")
+				new Feature("the Great Gate's portcullis and the towers' barred loops", 6, "minecraft:iron_bars"),
+				new Feature("the Great Gate's inner leaves", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate"),
+				new Feature("the Barbican's outer gate", 2, "minecraft:dark_oak_fence_gate"),
+				new Feature("a signal fire on each tower's Crown", 4, "minecraft:campfire"),
+				new Feature("a grindstone in each tower's guard room", 4, "minecraft:grindstone"),
+				new Feature("banners on the towers and the gate", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
+				new Feature("the curtain's dark battered foot", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
+				new Feature("aged stone on the curtain and towers", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
+				new Feature("the towers' spruce hip caps", 100, "minecraft:spruce_stairs"),
+				new Feature("the Gate Pavilion's tile roofs", 100, "minecraft:deepslate_tile_stairs"),
+				new Feature("a ladder up each guard room to its Crown", 4, "minecraft:ladder"),
+				new Feature("the Horse Stairs up the village face", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
 			case "observatory" -> List.of( // 52.6: the rebuilt Observatory's named parts (js/observatory/plan.mjs)
 				new Feature("the dome's tinted shutter and lens", 20, "minecraft:tinted_glass"),
 				new Feature("a dome and telescope of cut copper", 300, "minecraft:cut_copper"),
@@ -427,17 +444,29 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				new Feature("the quadrants' smooth stone scales", 30, "minecraft:smooth_stone_slab", "minecraft:smooth_stone"),
 				new Feature("the drum's glazed windows", 100, "minecraft:glass", "minecraft:glass_pane"),
 				new Feature("the Chart Hall's books", 20, "minecraft:bookshelf"));
-			case "hanging_gardens" -> List.of(new Feature("a chest on each terrace", 4, "minecraft:chest"),
-				new Feature("a composter on each terrace", 4, "minecraft:composter"),
+			case "hanging_gardens" -> List.of( // 52.6: the rebuilt Gardens' named parts (js/hanging_gardens/plan.mjs)
+				new Feature("a chest at each terrace's farm corner", 4, "minecraft:chest"),
+				new Feature("a composter at each terrace's farm corner", 4, "minecraft:composter"),
 				new Feature("wheat", 1, "minecraft:wheat"), new Feature("carrots", 1, "minecraft:carrots"),
-				new Feature("beetroots", 1, "minecraft:beetroots"), new Feature("water channels and the falls", 20, "minecraft:water"),
-				new Feature("sweet berry beds", 1, "minecraft:sweet_berry_bush"),
-				new Feature("glow berries hanging over the arches", 1, "minecraft:cave_vines", "minecraft:cave_vines_plant"),
-				new Feature("vines over the arches", 10, "minecraft:vine"),
+				new Feature("beetroots", 1, "minecraft:beetroots"),
+				new Feature("the Shaft, the Cistern, the pools and the fields' water", 20, "minecraft:water"),
+				new Feature("lily pads on the Reflecting Pools", 1, "minecraft:lily_pad"),
+				new Feature("glow berries on the Pergola", 1, "minecraft:cave_vines", "minecraft:cave_vines_plant"),
+				new Feature("the Hanging Curtains' vines", 100, "minecraft:vine"),
+				new Feature("the Hanging Curtains' leaves", 200, "minecraft:azalea_leaves", "minecraft:flowering_azalea_leaves", "minecraft:oak_leaves"),
 				new Feature("flowering azaleas", 1, "minecraft:flowering_azalea", "minecraft:flowering_azalea_leaves"),
-				new Feature("oaks", 1, "minecraft:oak_log"), new Feature("beehives", 1, "minecraft:beehive", "minecraft:bee_nest"),
-				new Feature("sandstone arcades", 1000, "minecraft:smooth_sandstone", "minecraft:cut_sandstone", "minecraft:chiseled_sandstone"),
-				new Feature("terracotta trim", 50, "minecraft:terracotta"));
+				new Feature("palms of jungle wood with dates", 20, "minecraft:jungle_log"), new Feature("the palms' dates", 1, "minecraft:cocoa"),
+				new Feature("the Cypress Walk", 10, "minecraft:spruce_log"),
+				new Feature("the Gallery's orangery of potted azaleas", 20, "minecraft:potted_azalea_bush", "minecraft:potted_flowering_azalea_bush"),
+				new Feature("the Vaults' nursery of potted saplings", 20, "minecraft:potted_oak_sapling", "minecraft:potted_birch_sapling",
+					"minecraft:potted_jungle_sapling", "minecraft:potted_acacia_sapling", "minecraft:potted_cherry_sapling"),
+				new Feature("the Vaults' seed store of hay", 10, "minecraft:hay_block"),
+				new Feature("lanterns hung in the halls and on the piers", 30, "minecraft:lantern"),
+				new Feature("the arcades' glazed windows", 50, "minecraft:glass_pane"),
+				new Feature("terrace walls of mud brick", 3000, "minecraft:mud_bricks", "minecraft:packed_mud"),
+				new Feature("a baked-brick plinth", 300, "minecraft:bricks", "minecraft:brick_stairs"),
+				new Feature("sandstone dressings, floors and parapets", 1000, "minecraft:smooth_sandstone", "minecraft:cut_sandstone", "minecraft:chiseled_sandstone"),
+				new Feature("the frieze of blue glazed tiles under every cornice", 200, "minecraft:blue_glazed_terracotta"));
 			case "colossus" -> List.of(new Feature("a lantern of glowstone", 1, "minecraft:glowstone"),
 				new Feature("the lantern's glass cage", 4, "minecraft:glass_pane", "minecraft:glass"),
 				new Feature("braziers round the plinth", 4, "minecraft:campfire"),
@@ -779,8 +808,8 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 		TITLES.put("great_library", List.of("Great Library", "The Stacks", "The Galleries", "The Rotunda", "The Dome and the Portico"));
 		TITLES.put("great_wall", List.of("Great Wall", "The Great Gate", "The West Run", "The East Run", "The Walk and the Towers' Crowns"));
 		TITLES.put("observatory", List.of("Observatory", "The Star Terrace and the Chart Hall", "The Great Gnomon and the Quadrants", "The Drum and the Observing Room", "The Copper Dome and the Great Telescope"));
-		TITLES.put("hanging_gardens", List.of("Hanging Gardens", "The First Terrace and the Cistern Vaults", "The Second Terrace", "The Third Terrace",
-			"The Crown Garden and the Falls"));
+		TITLES.put("hanging_gardens", List.of("Hanging Gardens", "The Vaults and the Lower Terrace", "The Gallery and the Middle Terrace",
+			"The Upper Terrace and its Hall", "The Crown Garden and the Water Pavilion")); // 52.6: the rebuilt stages
 		TITLES.put("colossus", List.of("Colossus", "The Plinth and the Road Arch", "The Robes", "The Arms and the Cloak", "The Head and the Lantern"));
 		// 35.23: "Grand Stadium" only if M28 shipped a smaller Stadium; it shipped the Arena (ROADMAP Notes), so "Stadium"
 		TITLES.put("stadium", List.of("Stadium", "The Field", "The Lower Stands", "The Upper Stands and the Covered Stand", "The Gate and the Floodlights"));

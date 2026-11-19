@@ -1,0 +1,19 @@
+{
+  "name": "great-wall-s4",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 94
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_wall/out/great-wall-s4.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_wall/out/summary.json",
+  "size": [
+    97,
+    26,
+    27
+  ],
+  "blockCount": 13293,
+  "paletteCount": 85,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_wall/recipe.mjs"
+}

@@ -73,7 +73,7 @@ def compost_front(b, x1, gate_x):
 
 
 def compost_yard():
-    """11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, a
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/compost_yard; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, a
     composter and a chest under the eaves, a fenced yard with a gate, lamp posts and a flower bed."""
     b = Build(11, 8, 10)
     compost_shed(b, 1, 9)
@@ -91,7 +91,7 @@ def compost_yard():
 
 
 def compost_yard_2():
-    """15 x 8 x 10: a third bay (the shed runs on to the east) and a potting shed at that end — a door, a window with
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/compost_yard; this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 8 x 10: a third bay (the shed runs on to the east) and a potting shed at that end — a door, a window with
     a flower box, a workbench, pots and a second chest."""
     base = compost_yard()
     b = base.grow(15, 8, 10)
@@ -152,7 +152,7 @@ def sifting_hall(b, depth):
 
 
 def sifting_shed():
-    """9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the sifter's cauldron inside,
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/sifting_shed; this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the sifter's cauldron inside,
     bins of gravel and sand, a chest for the finds, a lantern on a chain from the tie beam."""
     b = Build(9, 9, 9)
     sifting_hall(b, 7)
@@ -172,7 +172,7 @@ def sifting_shed():
 
 
 def sifting_shed_2():
-    """11 x 9 x 13: the shed run back to twice the depth with a second cauldron for a second sifter, a side door, and a
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/sifting_shed; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 9 x 13: the shed run back to twice the depth with a second cauldron for a second sifter, a side door, and a
     catslide lean-to down the east side over stone-walled bins of sand and gravel."""
     b = sifting_shed().grow(11, 9, 13)
     b.clear(1, 1, 7, 7, 8, 7)  # the old back wall and gable come down

@@ -1,0 +1,10 @@
+{
+  "name": "supply-shop",
+  "private": true,
+  "type": "module",
+  "description": "The Supply Shop (ROADMAP 49): the Hoist House, a white shop under one tall jettied street gable with a copper sign band and a goods hoist; II the shopkeeper's range behind, III the seed room's little gable beside it, IV its cellar. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070
 
 ## What a player sees
 
@@ -50,8 +50,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   stone pit, and the wheel's shaft runs through the wall to a gearbox under the millstone on the meal floor; a sack
   hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
   and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
-  keep their old drawing until refreshed); the **Windmill**, a seven-square stone tower with a windmill bearing and
-  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop** (rebuilt from scratch in
+  keep their old drawing until refreshed); the **Windmill** (rebuilt from scratch in 50.10, "the Stage Mill",
+  15 x 18 x 14), a tarred timber smock tower stepping in twice out of a round brick drum, a reefing stage on brackets
+  round the drum's top and a slate boat cap whose nose holds the windmill bearing and four long sails (44 sail blocks),
+  a tail pole raking down to the stage; the upright shaft drops through both floors to a gearbox under the meal floor
+  that turns the millstone, with the farmer's composter and store chest beside it (standing Windmills keep their old
+  drawing until refreshed); and the **Workshop** (rebuilt from scratch in
   50.7, "the head-tank works"), a timber plate shop on a stone dado between two verticals: on the west a stone water
   tower banded in dark tiles, whose hooped head tank pours one source down the tower's corner onto a water wheel, its
   axle through the wall into a stack of cogwheels that turns the belt and the mechanical press over its depot; on the
@@ -66,9 +70,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   its wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
   large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
   job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
-  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
-  ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
-  (blast furnace); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
+  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill** (rebuilt from scratch in 50.10, "the Fall
+  House", 14 x 18 x 12), a stone crushing hall with its gable to the street and a timber-framed glazed bay that shows
+  the two crushing wheels from the road, a tall fall tower behind whose tank pours down a shaft (a glass slot shows the
+  water) onto the wheel in its face, the drive running through gearboxes to wheels that turn the opposite ways, Create's
+  crusher working in the gap under a feed belt, a pit and an item drain below, and a brick stack up the east side over
+  the blast furnace and the miner's chest (standing Crushing Mills keep their old drawing until refreshed); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
   glasshouse of three glass gables with a raised nave, a brick boiler and stack behind; the leat in an open stone trough
   on its west side turns an undershot wheel whose shaft drives a belt along the inside of the west wall to a depot in a
   front-wall hatch, a mechanical harvester and a mechanical plough standing over the belt (Create's harvester and plough
@@ -345,6 +352,14 @@ order is finished, the positions of its blocks with a `Speed` in their saved dat
 (a wheel's water takes a moment to fall), then the parts that don't turn (`Speed` 0, or gone) are kept with the
 finished building (`not_turning`) and the owner is told.
 
+A built Create block is a freshly placed one (`BlockEntityData`), from a scan, an uploaded file or a Create schematic
+alike. A **Blaze Burner** is built with no fuel: never creative, never with the heat its blueprint's burner had left
+(B1067; its goggles and train hat stay, they are looks). A **Copper or Netherite Backtank** set down costs the backtank
+a player wears (`MaterialRules.BUILT_FROM`; Create's own "placeable" item can't be had in survival, B1068) and is built
+plain and empty: no enchantments, no air, and a right-click takes a plain backtank off it (B1069). No built block keeps
+the item components its blueprint's block was placed with, so a **Clipboard** (or any block that gives them back on the
+item it drops) drops a plain one, whatever a hand-written file says (B1070).
+
 Everything goes by Create's ids alone: block and item ids, block state names, block entity data read by name (a
 machine's `Speed`, a belt's length), recipe types such as `create:milling`, and the schematic item's data components.
 The mod has no Create classes and compiles without it, so Create stays optional: it's in the mod's `suggests`, never
@@ -445,9 +460,9 @@ The planned fields of later items, each with its default, are listed in the desi
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
 - Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
-  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (9 x 17 x 9) and
-  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`;
-  the windmill in `tools/blueprints/create_builds.py`), unlocked from the start and
+  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (15 x 18 x 14 since its 50.10 rebuild,
+  drawn by the rebuild kit in `tools/blueprints/js/windmill`) and
+  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`), unlocked from the start and
   listed only with Create (`mechanic/CreateBuilds`).
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the
@@ -573,7 +588,12 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
   and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
   deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
-  built holding nothing. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
+  built holding nothing. `QaCreateFileClipboard1108eCompatTests` (B1070): a Clipboard from an uploaded file whose data
+  carries Sharpness 255 and +1000 attack damage as item components is built from a plain clipboard and drops a plain
+  one. `QaCreateSchematicBacktank1108eCompatTests` (2, B1068, B1069): a schematic of a player's Protection IV, Mending
+  Copper Backtank asks for one Copper Backtank, is built from a plain one, and taking the built one gives a plain
+  backtank. `QaCreateSchematicBurner1108eCompatTests` (B1067): a schematic of a creative Blaze Burner and of one
+  superheated for years is built from two Blaze Burners with no fuel. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
   `QaCreateSchematicFluidsCompatTests` (B486): a fluid tank, spout, basin and item drain holding lava, scanned or
   uploaded as a schematic, are built empty. `QaCreateTankKeptCompatTests` (lane E's QA of B486): a two-tall tank of lava
   is built empty but still one tall tank (it takes more than one tank block holds), and a player's bucket of lava in a

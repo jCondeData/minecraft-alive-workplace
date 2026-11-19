@@ -34,6 +34,21 @@ asks for the steps, `latest.log` and any crash report).
   mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
   furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
+  tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
+  at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
+  II** adds the shopkeeper's back room in a lower range behind, **III** a seed and hardware wing under its own little
+  street gable (it no longer has a Mailbox: the Post Office has one), and **IV** a cool cellar under the wing. The Market
+  Stall is now "the shop board": a steep timber booth with its gable to the street, whose front boards fold down into a
+  counter laid with cloth and prop up into a canopy under a red-and-white valance. The **Market Stall II** builds a
+  lock-up shop beside it with the Shop Counter in the booth's counter, and **III** runs the lock-up back into a
+  storeroom with a back door. Builds already standing keep their old drawing until refreshed.
+- **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
+  wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
+  to her composter, shelves and hanging pots of flowers, a brick parlor with the counter, a chimney from the stove that
+  warms the glass, and a fenced cutting yard with a pond. The **Flower Shop II** adds a second glass range across the
+  yard and a glazed lantern on the ridge. Shops already standing keep their old drawing until refreshed; village flower
+  shops keep their look.
 - **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
   Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
   the composter and the harvest chest under its porch; Level II roofs the whole garden in a lattice hung with glow
@@ -43,6 +58,29 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Compost Yard is rebuilt from scratch** (50.9) as "the Bin Barn": a steep straw-thatched barn on a rubble plinth
+  whose front opens on the yard as three bins, the heaps graded from fresh green through turning brown to ripe black, under
+  a jettied hoist gable with its loft door and lantern arm; the composter and the scrap chest stand in the dry under that
+  gable, and a turning aisle behind the bins holds the straw and a bone-meal chest. **Compost Yard II** leans a riddling
+  shed on the barn's east side: two more chests, a pile of fine compost, a potting bench of potted saplings and a bed of
+  ferns and lilies grown in the finished compost. Yards already standing keep their old drawing until refreshed.
+- **The Quarry is rebuilt from scratch** (50.10) as "the Headframe": a tall dark oak headframe over the pit, its legs
+  stepping in halfway up to a spoked sheave wheel, a skip and a lantern hanging on chains over the hole, the rail open
+  between its legs where the Miner steps down; beside it a stone hoist house under a deepslate roof, the brick stack
+  rising through its ridge from the blast furnace, with two double chests, lamps and the winch inside, and a spoil heap
+  behind the pit. It no longer has a basement (19 by 14, 17 tall); the pit and the furnace are where they always were.
+- **The Sifting Shed is rebuilt from scratch** (50.10) as "the Tipple": a timber hopper loft on dark oak legs over a
+  stone screen room, under a steep slate gable with a hoist beam, the gravel tipped through a chute into the cauldron
+  below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
+  climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
+  in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
+  House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
+  tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack
+  over the blast furnace and its chest (14 by 12, 18 tall). The Windmill is "the Stage Mill": a dark timber tower out of
+  a round brick base, a walkway stage round it on brackets, four long sails on a slate cap with a tail pole, and the
+  millstone, composter and chest on the round ground floor (15 by 14, 18 tall). Buildings already standing keep their
+  old drawing until refreshed.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
@@ -61,7 +99,29 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
+  buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
+  whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story
+  timber pavilion under dark tile roofs, a walled barbican with a second gate on the field side, and two broad stairs up
+  the village side. Its sentries now stand on the open walk, one on each stretch between the towers. Same stage names. A
+  Great Wall already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
+- **The Hanging Gardens are rebuilt from scratch** (52.6): "the Terraced Mount", four mud-brick terraces on vaulted
+  halls, set back toward the rear so the gardens fall to the front in green tiers hung with leaves and vines while the
+  back rises as a sheer brick cliff. A grand stair climbs from a forecourt between two reflecting pools, and a stair up
+  each terrace's face leads past a farm on every level (still four village farms, a composter and a chest at each) to
+  the crown, where the Water Pavilion stands over the cistern that a shaft of water fills from the vaults. Inside are the
+  Vaults with their nursery and seed store, the Gallery's orangery and the Upper Hall. New stage names to match.
+  Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
+  finished as they were first drawn.
 ### Fixed
+- With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
+  placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
+  Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
+  block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
+  drops a plain one (B1070).
+- With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
+  instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
   after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
@@ -73,6 +133,9 @@ asks for the steps, `latest.log` and any crash report).
   keep the Crow-Step Row (49.10c).
 - **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
   looks count as one (49.10b).
+- In Festival Cup and Stadium bouts, a Pokémon with no attacking move (a Wobbuffet, a Ditto) now struggles against a
+  Ghost as in the games, instead of doing nothing until the clock ran out, which could hand a Master's bout to a
+  Novice (B1403).
 
 ### Dev
 - The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
@@ -2394,7 +2457,7 @@ asks for the steps, `latest.log` and any crash report).
   blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
   rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
   the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
-  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  of its lintel, since the grand stair starts right inside; the parlor rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
@@ -3126,7 +3189,7 @@ asks for the steps, `latest.log` and any crash report).
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
 - **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
-  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlor, two
   bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
   walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
   where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward

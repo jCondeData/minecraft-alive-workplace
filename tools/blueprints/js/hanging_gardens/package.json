@@ -1,0 +1,10 @@
+{
+  "name": "hanging_gardens",
+  "private": true,
+  "type": "module",
+  "description": "The Hanging Gardens Wonder, rebuilt (ROADMAP 52.6): the Terraced Mount. MC_BUILDER = the minecraft-builder skill's folder. STAGE=1..4 picks the stage; stages.py saves all four as candidates in build/rebuild/hanging_gardens/.",
+  "scripts": {
+    "build": "python3 stages.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

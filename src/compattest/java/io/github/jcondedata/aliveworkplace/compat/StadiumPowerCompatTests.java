@@ -99,8 +99,24 @@ public class StadiumPowerCompatTests {
 		return StadiumDays.spots(helper.getLevel(), site).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("no spots"));
 	}
 
-	private static Villager trainer(GameTestHelper helper, BlockPos at, String name, int tier) {
-		Villager v = helper.spawn(EntityType.VILLAGER, at);
+	/**
+	 * A trainer with a fixed UUID (from its name): a bout's teams and seed come from the two trainers' UUIDs, so a fresh
+	 * spawn's random UUID would make every run a different bout (B1403). A leftover with that UUID goes first.
+	 */
+	private static Villager fixedTrainer(GameTestHelper helper, BlockPos at, String name, int tier) {
+		ServerLevel level = helper.getLevel();
+		UUID id = UUID.nameUUIDFromBytes(("aliveworkplace:stadium-" + name.toLowerCase(java.util.Locale.ROOT)).getBytes(java.nio.charset.StandardCharsets.UTF_8));
+		if (level.getEntity(id) != null) {
+			level.getEntity(id).discard();
+		}
+		Villager v = EntityType.VILLAGER.create(level);
+		v.setUUID(id);
+		v.moveTo(helper.absoluteVec(net.minecraft.world.phys.Vec3.atBottomCenterOf(at)));
+		helper.assertTrue(level.addFreshEntity(v), "couldn't add " + name);
+		return trainer(helper, v, name, tier);
+	}
+
+	private static Villager trainer(GameTestHelper helper, Villager v, String name, int tier) {
 		v.setNoAi(true);
 		v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.TRAINER).setLevel(tier));
 		v.setVillagerXp(Math.max(1, net.minecraft.world.entity.npc.VillagerData.getMinXpPerLevel(tier)));
@@ -163,7 +179,7 @@ public class StadiumPowerCompatTests {
 	}
 
 	/**
-	 * A bout goes by rank and team strength (the day's seed fixed): a Master of the village beats a visiting Novice, and a
+	 * A bout goes by rank and team strength (the trainers' UUIDs, so their teams and the bout's seed, fixed): a Master of the village beats a visiting Novice, and a
 	 * visiting Master beats the village's Novice; both gain battle XP (8 for the win, 5 for the loss) and a battle each,
 	 * and the result is in the chronicle and the bouts come one at a time from the afternoon.
 	 */
@@ -175,8 +191,8 @@ public class StadiumPowerCompatTests {
 		StadiumDays.Spots spots = spots(helper, site);
 		long day = stadiumDay(level);
 		BlockPos hall = site.hall();
-		Villager ash = trainer(helper, new BlockPos(15, 2, 8), "Ash", 5);
-		Villager novice = trainer(helper, new BlockPos(6, 2, 15), "Nell", 1);
+		Villager ash = fixedTrainer(helper, new BlockPos(15, 2, 8), "Ash", 5);
+		Villager novice = fixedTrainer(helper, new BlockPos(6, 2, 15), "Nell", 1);
 		ModAttachments.STADIUM_VISITOR.set(novice, new StadiumDays.Visitor(hall, site.id(), Optional.empty(), new UUID(0, 0), day, false, 0));
 		int ashXp = ash.getVillagerXp();
 		int nellXp = novice.getVillagerXp();
@@ -191,8 +207,8 @@ public class StadiumPowerCompatTests {
 		List<String> lines = entity.chronicle().stream().map(e -> e.text().getString()).toList();
 		helper.assertTrue(lines.stream().anyMatch(l -> l.startsWith("At the Stadium, Master Trainer Ash beat ") && l.contains("Nell")), "chronicle: " + lines);
 		// the other way round: the visitor the Master
-		Villager visitingMaster = trainer(helper, new BlockPos(24, 2, 15), "Vera", 5);
-		Villager homeNovice = trainer(helper, new BlockPos(16, 2, 8), "Ned", 1);
+		Villager visitingMaster = fixedTrainer(helper, new BlockPos(24, 2, 15), "Vera", 5);
+		Villager homeNovice = fixedTrainer(helper, new BlockPos(16, 2, 8), "Ned", 1);
 		ModAttachments.STADIUM_VISITOR.set(visitingMaster, new StadiumDays.Visitor(hall, site.id(), Optional.empty(), new UUID(0, 0), day, false, 1));
 		StadiumDays.Bout back = StadiumDays.bout(level, hall, spots, homeNovice, visitingMaster, day);
 		helper.assertTrue(back.winner() == visitingMaster && back.winnerXp() == 8 && back.loserXp() == 5, "the visiting Master lost to a Novice");

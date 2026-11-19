@@ -81,8 +81,9 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"windmill_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "windmill_build")
 	public void aBuilderBuildsTheWindmillAndStartsIt(GameTestHelper helper) {
-		build(helper, StarterBlueprints.WINDMILL, List.of(at(2, 1, 6, "minecraft:composter"), at(4, 9, 1, "create:windmill_bearing")),
-			new BlockPos(4, 2, 5));
+		// ROADMAP 50.10: the rebuilt Stage Mill (composter, bearing and millstone moved with the drawing)
+		build(helper, StarterBlueprints.WINDMILL, List.of(at(9, 1, 4, "minecraft:composter"), at(7, 11, 1, "create:windmill_bearing")),
+			new BlockPos(9, 1, 7));
 	}
 
 	/** The Workshop: the wheel drives the belt, and the belt's far pulley the press over the depot. */

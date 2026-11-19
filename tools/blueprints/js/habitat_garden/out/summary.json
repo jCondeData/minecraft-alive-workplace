@@ -1,0 +1,19 @@
+{
+  "name": "habitat-garden-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 24
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/habitat_garden/out/habitat-garden-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/habitat_garden/out/summary.json",
+  "size": [
+    19,
+    13,
+    25
+  ],
+  "blockCount": 1236,
+  "paletteCount": 78,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/habitat_garden/recipe.mjs"
+}

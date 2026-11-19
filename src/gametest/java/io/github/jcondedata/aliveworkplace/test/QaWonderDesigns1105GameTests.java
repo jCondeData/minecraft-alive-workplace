@@ -180,7 +180,11 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** "A cistern at the top pours a waterfall down one side into a pool": water on the crown, on every ledge between, and at the foot. */
+	/**
+	 * "A cistern at the top pours a waterfall down one side into a pool" (35.19); since the 52.6 rebuild the Shaft lifts the
+	 * water from the Vaults to the Cistern under the Water Pavilion, and the Reflecting Pools lie at the foot: water on the
+	 * crown, on every terrace between (its field's channels), and at the foot.
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFallsRunFromTheCisternToThePool(GameTestHelper helper) {
@@ -208,7 +212,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The wiki: "on a 39 by 39 foot" (the first terrace; the whole site with the ramp's foot and the pool is 47 by 43), "31 high to its treetops". */
+	/**
+	 * The wiki: "on a 45 by 39 foot" (the Lower Terrace's walls; the whole site with the Forecourt's pools and stair is 47 by
+	 * 44), "33 high to the Water Pavilion's roof" (52.6, rebuilt; the 35.19 Gardens were 39 by 39 on a 47 by 43 site, 31 high).
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFootAndHeightAsTheWikiSays(GameTestHelper helper) {
@@ -217,11 +224,16 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		int w = b[3] - b[0] + 1;
 		int l = b[5] - b[2] + 1;
 		int h = b[4] + 1;
-		int[] first = box(all, p -> p.getY() == 3 && name(all.get(p)).contains("sandstone") && !name(all.get(p)).contains("stairs"));
-		int fw = Math.min(first[3] - first[0], first[5] - first[2]) + 1; // the ramp's balustrade runs out along the front
-		helper.assertTrue(Math.abs(fw - 39) <= 1, "the first terrace is " + fw + " across, not 39");
-		helper.assertTrue(Math.abs(w - 47) <= 1 && Math.abs(l - 43) <= 1 && Math.abs(h - 31) <= 1,
-			"the Gardens' site is " + w + " x " + l + " and " + h + " high, not 47 x 43 and 31 high");
+		// the Lower Terrace's walls (mud brick and packed mud) at y 3, across a bay (z 23) and from front to back through one
+		// (x 18), between the piers that stand one out
+		java.util.function.Predicate<BlockPos> wall = p -> p.getY() == 3 && name(all.get(p)).matches("minecraft:(mud_bricks|packed_mud)");
+		int[] across = box(all, p -> p.getZ() == 23 && wall.test(p));
+		int[] along = box(all, p -> p.getX() == 18 && wall.test(p));
+		int fw = across[3] - across[0] + 1;
+		int fl = along[5] - along[2] + 1;
+		helper.assertTrue(Math.abs(fw - 45) <= 1 && Math.abs(fl - 39) <= 1, "the Lower Terrace is " + fw + " by " + fl + ", not 45 by 39");
+		helper.assertTrue(Math.abs(w - 47) <= 1 && Math.abs(l - 44) <= 1 && Math.abs(h - 33) <= 1,
+			"the Gardens' site is " + w + " x " + l + " and " + h + " high, not 47 x 44 and 33 high");
 		helper.succeed();
 	}
 

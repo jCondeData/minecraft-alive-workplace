@@ -1,0 +1,11 @@
+{
+  "name": "windmill",
+  "private": true,
+  "type": "module",
+  "description": "The Windmill (the Stage Mill, ROADMAP 49 / 50.10): a smock mill on a brick drum whose Create sails drive the Farmer's millstone. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate (build/rebuild/windmill/) until the critic says SHIP; STANDIN=1 on 'cut' draws Create's blocks as vanilla look-alikes for renders.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/windmill.nbt"
+  }
+}

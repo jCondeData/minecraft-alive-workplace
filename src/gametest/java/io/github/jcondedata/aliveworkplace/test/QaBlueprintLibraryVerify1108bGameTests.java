@@ -294,7 +294,8 @@ public class QaBlueprintLibraryVerify1108bGameTests implements net.fabricmc.fabr
 			List<ResourceLocation> rares = new ArrayList<>();
 			for (ResourceLocation id : BlueprintLibrary.list(level.getServer(), false)) {
 				State s = BlueprintUnlocks.state(level, hall, id);
-				if (s == State.LOCKED && !keep.contains(id)) {
+				// a biome look counts as its base build (49.10a), so unlocking looks/desert/stone_house_3 unlocks Stone House III
+				if (s == State.LOCKED && !keep.contains(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.base(id))) {
 					BlueprintUnlocks.unlock(level, hall, id, List.of());
 				} else if (s == State.HIDDEN) {
 					rares.add(id);

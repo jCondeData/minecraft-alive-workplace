@@ -1,0 +1,19 @@
+{
+  "name": "terrace-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 62
+  },
+  "nbtPath": "/home/claude/wt-49.10c/tools/blueprints/js/terrace_taiga/out/terrace-2.nbt",
+  "summaryPath": "/home/claude/wt-49.10c/tools/blueprints/js/terrace_taiga/out/summary.json",
+  "size": [
+    18,
+    16,
+    10
+  ],
+  "blockCount": 1153,
+  "paletteCount": 50,
+  "recipePath": "/home/claude/wt-49.10c/tools/blueprints/js/terrace_taiga/recipe.mjs"
+}

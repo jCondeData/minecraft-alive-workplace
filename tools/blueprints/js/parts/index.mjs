@@ -21,6 +21,7 @@
 //   brickwork quoinsLS, plinthCourse, courseOut, faceCells, mullionWindow, kneeler, bayWindow (brick with stone dressings)
 //   camps     campPot, grainBed                                (the Camp Cook's pot, a raised watered grain bed)
 //   tents     discEdge, coneTent, waymark                     (a stepped hide tipi with its poles; a cairn with a cap)
+//   climate_desert windcatcher, screenOriel, archBay                 (desert stone houses)
 // Grow it: a part a new family needs that another could use goes here, with its palette passed in, never hard-coded.
 export * from './canvas.mjs'
 export * from './frames.mjs'
@@ -101,6 +102,7 @@ export * from './glass_cone.mjs' // coneStage, glassCone, bullseye, kilnSiege, e
 export * from './jw_vault.mjs' // jwBarrelVault, jwButtress, jwButton, jwVitrine (the Jeweler's Workshop, 50.7: a stone barrel vault from its section, stepped buttresses, a stone button, a glass case out in the street)
 export * from './crafters_sawtooth.mjs' // sawHeights, sawtoothRoof, clerestory, sawTrim, twinFlue, proudPosts, wallShelf (the Crafter's Workshop, 50.7: a north-light saw-tooth roof, its glazed faces, a twin-flue stack, a wall shelf)
 export * from './workshop_press.mjs' // pressOverDepot, spoutTank, weatheredSkirt (the Workshop, 50.7: Create's press over its depot, a head tank with its spout box, a weathered plinth skirt)
+export * from './climate_desert.mjs' // windcatcher, screenOriel, archBay (desert stone houses: a slotted windcatcher tower, a lattice oriel, a round-headed bay)
 export * from './fort_walls.mjs' // wallWalk, fightingStage, bretesche, pennant, bedroll (fort walls: a raised walk on posts and braces, a roofed fighting stage, a timber box over a door, a pennant on an apex, a bedroll; the Bandit Fort, 49 round 2)
 export * from './stockade_face.mjs' // proudFace, bareHoops, groundCloth (stockades: proud posts and a stepped bank before a stake wall, a wagon's bare hoops, a cloth spread on the ground; the Raiders' Stockade, 49 round 2)
 export * from './wrecks.mjs' // sideWagon, underGear, sideBonnet, spokeWheel, flatWheel, scatter (wrecks: a wagon on its side with its gear upright on the underside, a covered wagon's bonnet on its side sagging between its hoops, a wheel with its felloes smashed off, a wheel lying flat, a list of props; the Caravan Wreck, 49)
@@ -109,7 +111,10 @@ export * from './lighthouse_light.mjs' // roundCells, shellCells, railCells, tow
 export * from './observatory_instruments.mjs' // StagedCanvas, roundWall, roundCourse, skyDome, lineTube, quadrantBowl, gnomonStair (staged Wonders and sky instruments: a stage-by-stage canvas, round drums, a voxel dome, a telescope tube along any line, a sundial's quadrant and gnomon stair)
 export * from './lighthouse_stair.mjs' // wallRing, spiralStair, lampHood (a stair winding up a round tower's inside wall through its floors, a lantern's hooded eave of night lamps under a stepped cap; the Lighthouse, 49, round 2)
 export * from './climate_roofs.mjs' // hipRoof, flatRoof (hot climates: a low hipped roof with deep eaves; a flat mud roof with parapet and toron)
+export * from './hot_townhouse.mjs' // rawshan, qaaLantern, badgirHead, datePalm, acaciaTree, slabPent, verandaEave (hot-country merchant houses, 49.10b: a lattice front over the street, a clerestory on a flat roof, a big windcatcher's slotted head, a date palm, a flat-topped acacia, a low slab veranda roof, a veranda's thatch eave with returns)
 export * from './market_cross.mjs' // edgeRing8, vertexCells, mercatDrum, crossShaft (market crosses: an outline joined round an octagon, its vertex cells, an octagonal mercat drum with pilasters and a parapet, a cross shaft with a lamp-hung capital and a flag; the Market Cross, 49)
+export * from './cold_homes.mjs' // snowLoad, snowSkirt, stormPorch, frontDormer, pentPorch, beamEnds (cold homes, 49.10b: a stepped slate roof with snow on every tread, a drift skirt, a closed storm porch, a steep front dormer, a lodge's front pent on posts, log ends)
+export * from './cold_townhouse.mjs' // deepWindow, oriel, sideDormer, wideStack (cold townhouses, 49.10b: panes set back in a thick wall under a lintel with snow on the reveal, a glazed bay over a porch, a broad stack of several flues)
 export * from './ph_still_ward.mjs' // hollowPyramid, wardScreens, bayTies, brewingStand, recessedWindow (the Physician's House, 49: a hollow pyramid cap to a louvre, linen screens between ward beds, tie beams across a room, the brewing stand, a window set into a stone wall)
 export * from './clinic_ward.mjs' // cappedGableRoof, wardBeds, lampBeam, benchRecess (the Clinic, 49: a 45-degree gable with a closed slab-capped ridge and an optional catslide, beds heads to a wall, a tie beam with its lamp, a seat in a wall's recess)
 export * from './healing_spring.mjs' // unionGableRoof, gableFill, glazedLantern, crossWindow, springPool (the Spring Infirmary healing center, 49: gables joined into one roof with valleys, a glazed copper lantern on a ridge, a glass-cross gable window, a rimmed pool)
@@ -124,3 +129,5 @@ export * from './apiary_skep.mjs' // fairMix, skepDome, smokedHive, beeBole, bee
 export * from './compost_thatch.mjs' // steepUnionRoof, overhangTrim, compostBin (thatched barns: steep gables joined in a T with a straw ridge, trim under an overhang, a compost bin's graded heap behind its board; the Compost Yard, 49)
 export * from './greenhouse_glass.mjs' // ridgeSpans, glassRidges, axisOf, glassGable, undershotLeat, deliveryHatch (glasshouses: a ridge-and-furrow glass roof with a raised nave, its glazed gable ends, an undershot wheel in an open leat that starts itself, a depot hatch in a wall; the Greenhouse, 49/50.9)
 export * from './great_wall_gate.mjs' // staged, snapshot, wallSection, ridgedHip, pavilionSkirt, archway, portcullis, horseStair, doorIn (long walls and gate pavilions: stage-tagged drawing, a battered section, a flared hip, a skirt roof, an arched passage, portcullis teeth, a broad stair up a wall's face)
+export * from './hot_terrace.mjs' // rowPilasters, rowParapet, paintedBand, stoop (hot-country row houses, the Terrace's desert and savanna looks, 49.10c: proud piers on the party walls, a flat roof's parapet carried over every party wall, a painted trim, a front stoop)
+export * from './cold_terrace.mjs' // rakeVerge, evenRoof45, ridgeStack, skinWall, logEnds (cold terraces, 49.10c: a clean steep rake edge, a 45-degree even-span roof, a stack through the ridge, a thick ground storey's outer skin with deep reveals, notched log ends)

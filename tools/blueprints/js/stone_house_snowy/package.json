@@ -1,0 +1,10 @@
+{
+  "name": "stone-house-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Stone House, the snowy look (ROADMAP 49.10b): the shipped house as a pale stone house under steep snow-laden slate. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

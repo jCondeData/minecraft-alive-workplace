@@ -148,7 +148,9 @@ public class QaBlueprintLibrary1103bGameTests implements net.fabricmc.fabric.api
 			VillageHalls.forgetNearest();
 			ServerLevel level = helper.getLevel();
 			BlockPos hall = helper.absolutePos(HALL);
-			List<ResourceLocation> locked = with(states(level, hall), State.LOCKED);
+			// a biome look locks and unlocks with its base build (49.10a), so count each build once, as drawn
+			List<ResourceLocation> locked = new ArrayList<>(with(states(level, hall), State.LOCKED).stream()
+				.map(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks::base).distinct().toList());
 			helper.assertTrue(locked.size() > 2, "only " + locked.size() + " locked to begin with");
 			// Unlock all but the last two in the spec's order (the highest tiers), so the two left are not the first ones.
 			locked.sort((a, b) -> before(a, b) ? -1 : before(b, a) ? 1 : 0);

@@ -642,7 +642,8 @@ TR_RING = Mix((5, "sand"), (2, "smooth_sandstone"), (1, "sandstone"), seed=371)
 
 
 def trainers_house_build():
-    """13 x 10 x 13: the trainer's dojo and sparring ring."""
+    """The OLD drawing (ROADMAP 50.12: the live trainers_house.nbt now comes from the rebuild kit, tools/blueprints/js/trainers_house;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 10 x 13: the trainer's dojo and sparring ring."""
     b = Build(13, 10, 13)
     plinth(b, 2, 5, 10, 11, STONE_MIX, floor="spruce_planks")
     walls(b, 2, 8, 10, 11, 1, 4, TR_BOARDS)

@@ -164,7 +164,7 @@ export const TREE = {
   roots: [[13, 1, 12, 'x'], [15, 1, 12, 'x'], [14, 1, 11, 'z']], // the flare at its foot
   branches: [[13, 5, 12, 'x'], [12, 5, 12, 'x'], [15, 5, 12, 'x'], [16, 5, 12, 'x'], [14, 5, 13, 'z'], [14, 5, 14, 'z'], [14, 5, 11, 'z']],
   lantern: [14, 4, 14], // hung under the south branch
-  layers: [[5, 2.9], [6, 3.3], [7, 4.2], [8, 4.4], [9, 4.0], [10, 3.3], [11, 2.3], [12, 1.2]], // [y, radius]: over the branches
+  layers: [[5, 2.9], [6, 3.3], [7, 4.2], [8, 4.4], [9, 4.0], [10, 3.3], [11, 2.3]], // [y, radius]: over the branches (no y 12 cap: hollowed under it, it floated out of the builder's reach over Level II's pond)
   pin: [14, 1, 12],
 }
 

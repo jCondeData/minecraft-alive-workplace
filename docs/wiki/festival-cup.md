@@ -25,13 +25,16 @@ passes. While they hold the Cup, every villager there has the mood reason "our v
 Three tiers, each an upgrade of the one before, in the Blueprint Table only when Cobblemon is installed; an Expert
 Trainer Leader sells the first one's blueprint (no Leader below Expert does).
 
-- **Arena** (25 × 19): a 15 × 9 battle ring of packed mud inside a white line, with a half-way line and a center
-  circle; a trainer's box on a dais at each end with a lamp post; benches for 12 along the back; two banner poles and
-  a notice board at the front.
-- **Arena II** (25 × 29): stands on both long sides (30 seats), a gate arch, lanterns round the ring, and a fair lane
-  with two striped kiosks behind the back stand.
-- **Arena III** (25 × 29): a covered grandstand on stone terraces (52 seats), a trainers' room at each end with a
-  Healing Machine, and the champion's pole before the gate.
+Rebuilt from scratch in 50.12 as "the Market Stadium" (an Arena already standing keeps its old look until it is
+refreshed; the Cup reads the new drawing's spots):
+
+- **Arena** (25 × 19): a 15 × 9 pitch of coarse earth marked in chalk (a halfway line, a center circle and a line all
+  round); a red box and a blue box on daises under little canopies at its ends, each with a lantern and a flag; 12
+  seats along the back wall; a low front wall with the notice board on the gate's west pier.
+- **Arena II** (25 × 19): a colonnaded stand along the front (30 seats in all) over the fair lane, a covered walk where
+  the Cup's traders stand, and a judges' loggia over the gate.
+- **Arena III** (25 × 23): a brick-roofed grandstand on stepped rows (54 seats), a trainers' tower at each end with a
+  Healing Machine, and the champion's pole (a tall mast) before the gate.
 
 The hall's "What next?" suggests an Arena to a Cobblemon village of Village rank or more that has a grown-up Trainer
 Leader and no Arena yet (not before the 1.2 expansion is switched on).

@@ -16,24 +16,27 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 /**
  * The village's Arena (ROADMAP 28.16), where the Festival Cup is fought: a finished Arena (any of its three tiers, any
  * style) in the village (its claimed area), and the spots in it the Cup uses. The spots are known offsets in our own templates
- * (tools/blueprints/arena.py; {@code ArenaGameTests} checks them against the files), turned with the build's rotation
- * and mirror, like {@link MarketDays#square}.
+ * (tools/blueprints/js/arena/plan.mjs, SPOTS and SEATS; {@code ArenaGameTests} checks them against the files), turned with the
+ * build's rotation and mirror, like {@link MarketDays#square}. ROADMAP 50.12 redrew the Arena ("the Market Stadium") and moved
+ * every spot; an Arena standing from the old drawing (tools/blueprints/arena.py, blueprint_history/arena*) is read with the
+ * new spots until it is refreshed.
  */
 public final class Arenas {
 	/** Template spots (x, y, z from the template's origin; y 0 sits on the clicked block). Feet spots: where one stands. */
-	public static final BlockPos RING_CENTRE = new BlockPos(12, 1, 9);
-	/** The two trainer's boxes, west and east (where the trainer stands, on the dais). */
-	public static final List<BlockPos> BOXES = List.of(new BlockPos(2, 2, 9), new BlockPos(22, 2, 9));
-	/** The middle of the fair lane (Arena II and III). */
-	public static final BlockPos FAIR_LANE = new BlockPos(12, 1, 24);
-	/** The top of the champion's pole, where the Cup banner goes (Arena III). */
-	public static final BlockPos CHAMPION_POLE = new BlockPos(12, 6, 0);
-	/** The notice board's panel (its signs face the street). */
-	public static final BlockPos NOTICE_BOARD = new BlockPos(2, 2, 1);
+	public static final BlockPos RING_CENTRE = new BlockPos(12, 1, 11);
+	/** The two trainer's boxes, west (red) and east (blue): where the trainer stands, on the dais. */
+	public static final List<BlockPos> BOXES = List.of(new BlockPos(2, 2, 11), new BlockPos(22, 2, 11));
+	/** The middle of the fair lane (Arena II and III): the walk under the colonnade. */
+	public static final BlockPos FAIR_LANE = new BlockPos(8, 1, 4);
+	/** The top of the champion's mast, where the Cup banner goes (Arena III). */
+	public static final BlockPos CHAMPION_POLE = new BlockPos(12, 12, 0);
+	/** The notice board's panel in the west gate pier (its sign faces the street). */
+	public static final BlockPos NOTICE_BOARD = new BlockPos(10, 2, 2);
 
-	private static final int[] BENCH_X = {9, 10, 11, 13, 14, 15};
-	private static final int[] FRONT_X = {7, 8, 9, 15, 16, 17};
-	private static final int[] GRAND_X = {7, 8, 9, 10, 11, 13, 14, 15, 16, 17};
+	/** A row of the back stand: 12 seats, the middle (x 11 to 13) left for the podium and the Leader's box. */
+	private static final int[] BACK_X = {5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19};
+	/** The colonnade's deck (Arena II): 18 seats, the gate's loggia (x 11 to 13) between its halves. */
+	private static final int[] FRONT_X = {2, 3, 4, 5, 6, 7, 8, 9, 10, 14, 15, 16, 17, 18, 19, 20, 21, 22};
 
 	/** A finished Arena: its blueprint, tier (1-3) and placement, and its spots in the world. */
 	public record Arena(ResourceLocation structure, int tier, BlueprintData.Placement placement, BlockPos ring, List<BlockPos> boxes,
@@ -52,31 +55,29 @@ public final class Arenas {
 	}
 
 	/**
-	 * The seats of a tier, as template spots (the stair a villager sits on): Arena I's two rows of six benches at the back;
-	 * II's two rows of six at the front and three of six at the back (30); III's front rows and the grandstand's four rows
-	 * of ten.
+	 * The seats of a tier, as template spots (the stair a villager sits on): Arena I's row of 12 along the back wall (12);
+	 * II adds 18 on the colonnade's deck along the front, facing the ring (30); III's grandstand adds two more rows of 12
+	 * behind the first (54).
 	 */
 	public static List<BlockPos> seats(int tier) {
 		List<BlockPos> out = new ArrayList<>();
-		if (tier >= 2) {
-			rows(out, FRONT_X, 2, -1, 3);
+		if (tier >= 1) {
+			row(out, BACK_X, 1, 17);
 		}
-		switch (tier) {
-			case 1 -> rows(out, BENCH_X, 2, 1, 16);
-			case 2 -> rows(out, BENCH_X, 3, 1, 16);
-			case 3 -> rows(out, GRAND_X, 4, 1, 16);
-			default -> {
-			}
+		if (tier >= 2) {
+			row(out, FRONT_X, 5, 5);
+		}
+		if (tier >= 3) {
+			row(out, BACK_X, 2, 18);
+			row(out, BACK_X, 3, 19);
 		}
 		return out;
 	}
 
-	/** {@code count} rows from z {@code z0}, each a block up and {@code dz} on from the one before, seats at {@code xs}. */
-	private static void rows(List<BlockPos> out, int[] xs, int count, int dz, int z0) {
-		for (int r = 0; r < count; r++) {
-			for (int x : xs) {
-				out.add(new BlockPos(x, 1 + r, z0 + r * dz));
-			}
+	/** A row of seats at height {@code y} and depth {@code z}, at {@code xs}. */
+	private static void row(List<BlockPos> out, int[] xs, int y, int z) {
+		for (int x : xs) {
+			out.add(new BlockPos(x, y, z));
 		}
 	}
 

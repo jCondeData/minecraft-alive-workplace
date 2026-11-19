@@ -122,12 +122,12 @@ public final class StarterBlueprints {
 	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(13, 12, 13)); // ROADMAP 50.9: rebuilt
 	/** Level II roofs the garden in a rafter lattice hung with glow berries and opens a second bed cloister behind the lodge. */
 	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(13, 12, 17)); // ROADMAP 50.9: rebuilt
-	/** A stone lab with Cobblemon's Fossil Analyzer: a fossil scientist works there. */
-	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
-	/** A museum hall beside it with a big skeleton on show. */
-	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(18, 10, 11));
-	/** A lower lab dug under the lab (36.7). */
-	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(18, 10, 11), 4);
+	/** The Strata Lab: a tall steep-gabled lab in banded stone (deepslate, tuff, terracotta, sandstone) with a pointed Great Window over Cobblemon's Fossil Analyzer, where a fossil scientist works, and a Prep Room beside it (rebuilt 50.12). */
+	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(13, 13, 13));
+	/** The Gallery: a museum hall under a glass vault on copper ribs, a bone skeleton standing on its dais. */
+	public static final Entry RESEARCH_LAB_2 = new Entry(AliveWorkplace.id("research_lab_2"), new Vec3i(23, 13, 15));
+	/** The Dig under the Gallery (36.7): a boardwalk round a sunken pit with a skeleton still lying in it, down a hatch. */
+	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(23, 13, 15), 4);
 
 	/**
 	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
@@ -152,15 +152,17 @@ public final class StarterBlueprints {
 	public static final List<Entry> POKEMON_CENTER_2_LOOKS = List.of(POKEMON_CENTER_2, POKEMON_CENTER_LODGE_2, POKEMON_CENTER_PLAZA_2);
 
 	/**
-	 * With Cobblemon only (ROADMAP 28.16; tools/blueprints/arena.py): a 15 x 9 battle ring (packed mud, white lines, a
-	 * centre circle), a trainer's box on a dais at each end, benches for 12, banner poles and a notice board. The spots
-	 * the mod uses (the ring centre, the boxes, the seats...) are {@code hall.Arenas}'.
+	 * With Cobblemon only (ROADMAP 28.16; rebuilt 50.12, "the Market Stadium", tools/blueprints/js/arena): a chalk-marked
+	 * 15 x 9 pitch (coarse earth, a halfway line and centre circle, a chalk boundary round it), a red box and a blue box on
+	 * daises under little canopies at its ends, a flag behind each, 12 seats along the back wall and a low front wall whose
+	 * gate pier carries the notice board. The spots the mod uses (the ring centre, the boxes, the seats...) are
+	 * {@code hall.Arenas}'.
 	 */
-	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 8, 19));
-	/** Stands on both long sides (30 seats), a gate arch, lanterns round the ring and a fair lane with two striped kiosks. */
-	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 9, 29));
-	/** A covered grandstand on stone terraces, a trainers' room with a Healing Machine at each end, the champion's pole. */
-	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 12, 29));
+	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 9, 19));
+	/** A colonnaded stand along the front (30 seats in all) over the Cup's fair lane, with the judges' loggia over the gate. */
+	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 13, 19));
+	/** A brick-roofed grandstand along the back (54 seats), a trainers' tower with a Healing Machine at each end, the champion's mast. */
+	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 14, 23));
 	/** The Arena's three tiers. */
 	public static final List<Entry> ARENAS = List.of(ARENA, ARENA_2, ARENA_3);
 
@@ -183,17 +185,18 @@ public final class StarterBlueprints {
 	public static final Entry DAYCARE_2 = new Entry(AliveWorkplace.id("daycare_2"), new Vec3i(19, 11, 27));
 
 	/**
-	 * A wild garden in a hedge round a mossy centre stone ({@link #HABITAT_GARDEN_CENTRE}), a pond, a Saccharine tree and
-	 * the Habitat Keeper's Pasture Block in the hedge.
+	 * The Stone Ring: a hedged clearing round an old ring of standing stones with the mossy centre stone at its heart
+	 * ({@link #HABITAT_GARDEN_CENTRE}), a reed-edged pond, the keeper's bower with her chest and the Pasture Block under
+	 * its eave, and the old Saccharine honey tree (rebuilt 50.12).
 	 */
-	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(15, 8, 15));
-	/** The garden runs on behind to a second pond and a keeper's hide on stilts. */
-	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(15, 11, 25));
+	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(19, 13, 17));
+	/** The walk runs on through the trilithon to a second pond and the keeper's hide on stilts beside it. */
+	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(19, 13, 25));
 	/**
 	 * The Habitat Garden's mossy centre stone, a template spot of both tiers (ROADMAP 28.14 puts the village's habitat
-	 * under it; HABITAT_CENTRE in pokemon_jobs.py).
+	 * under it; the Centre in js/habitat_garden/plan.mjs; (7, 0, 7) before the 50.12 rebuild).
 	 */
-	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
+	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(9, 0, 8);
 	/**
 	 * A stone shed over a lava pool behind glass, ledges round it for tumblestones, the Gem Grower's stonecutter and an
 	 * amethyst niche. All vanilla, like her job: in the table without Cobblemon too.
@@ -774,12 +777,21 @@ public final class StarterBlueprints {
 	public static final Entry CLINIC = workplace("clinic", 15, 14, 12); // ROADMAP 50.8: rebuilt
 	/** A ferry station with a boarded landing under a canopy (rebuilt in ROADMAP 50.5); the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
 	public static final Entry FERRY_HOUSE = workplace("ferry_house", 15, 17, 11); // ROADMAP 50.5: rebuilt
-	/** A long low dojo with a deep veranda and a fenced sparring ring. */
-	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 13, 10, 13);
+	/**
+	 * The Battle Court (rebuilt from scratch in ROADMAP 50.12, tools/blueprints/js/trainers_house): a gateway of two
+	 * stone piers onto a marked turf court with the Training Post at its head, a covered bench stand along the west side,
+	 * and a spruce-framed clubhouse with a jettied loft (the Trainer's bed) at the back, a sparring yard on the east.
+	 */
+	public static final Entry TRAINERS_HOUSE = workplace("trainers_house", 17, 15, 19); // ROADMAP 50.12: rebuilt
 	/** The Challenge Hall: a buttressed stone nave behind a gate-porch, benches facing a sparring ring, the Training Post on a dais (rebuilt 51.5). */
 	public static final Entry LEADERS_HALL = workplace("leaders_hall", 15, 15, 17);
-	/** A round apricorn-drying tower under a copper cone and a low workshop wing. */
-	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 14, 17, 11);
+	/**
+	 * The Drying Loft (rebuilt from scratch in ROADMAP 50.12, tools/blueprints/js/ball_workshop): a white plaster
+	 * workshop with the smithing table and the forge, under a red loft jettied out over the front where the apricorns dry
+	 * on trays (the Ball Smith's bed up there), a black beam band between them with a white boss over the door, a brick
+	 * forge stack up the east side and a store lean-to behind with the chests.
+	 */
+	public static final Entry BALL_WORKSHOP = workplace("ball_workshop", 15, 18, 17); // ROADMAP 50.12: rebuilt
 	/** The Ball Tower: a timber-framed counting hall with a round corner tower, the Trader's bed in the tower room (rebuilt 51.5). */
 	public static final Entry TRADE_HALL = workplace("trade_hall", 18, 18, 19);
 	/** The Half Court: a gatehouse onto a sparring ring round the tutor's post, a cloister and the Tutor's hall behind (rebuilt 51.4). */

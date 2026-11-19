@@ -58,3 +58,13 @@ shelved clusters); (2) Level II core chamber: a kerb or inlay ring per core in t
 between the pairs, a worktop by the chest at (3,1,18); (3) Level I back and left: still unbanded rubble with random
 calcite, tuff and mossy speckle: a banded cut face with a window on the back (z 13) as Level II has, continuous bands
 on the left; (4) film eye-level shots; (5) Level I is 861 blocks (old 638): run the timed build.
+
+## Gem Grotto round 3 (the designer's last): BACK, so it goes to the owner as it stands
+Fresh critic, sheets `briefs/gem_grotto{,_2}_r3{,_cut}_sheet.png`, candidates `briefs/candidates_50_10/gem_grotto{,_2}.nbt`
+(860 / 1,112 blocks, 15x13x15 / 15x13x20). Silhouette 3/4, depth 3/4, interior 3/3, detail 3/3: two wins, no loss;
+no brief requirement missed. Its notes, should a fresh designer take it: (1) Level I cut3_top: the floor behind and
+beside the basin (x 3-11, z 8-11) still reads empty from above: back counter with a lamp on it, shelved clusters at
+x 2-3, a second worktop at x 9-11 (stone, metal, glass); (2) Level II core chamber: floor-level lights between each pair
+of cores, a worktop or anvil by the chest at (3,1,18); (3) left and right, both levels: one continuous calcite course
+instead of a lone amethyst block and random specks; (4) Level II left and back: the core wing is a low lump: a raised
+course with spires or its own arched window; (5) film eye-level shots and run the timed Level I build before shipping.

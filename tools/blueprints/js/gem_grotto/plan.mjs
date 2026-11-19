@@ -33,17 +33,18 @@
 //   Cluster   (Level II) a second, lower egg fused to the back: centre (6, 0, 16), radii 5.5 across, 7 up, 6 deep;
 //             z to 21. Its round room holds the four cores; a wide arch where the two eggs meet.
 
-export const SIZE = { 1: [15, 13, 15], 2: [15, 13, 22] }
+export const SIZE = { 1: [15, 13, 15], 2: [15, 13, 20] }
 
-// Palette (60/30/10): dark crust (smooth basalt with cobbled deepslate and a little tuff, mossier low down) / calcite (the middle band, the
+// Palette (60/30/10): dark crust (smooth basalt in strata: cobbled deepslate at the foot, tuff courses) / calcite (the middle band, the
 // mullions, the collars, pale floor inlay) / amethyst (the lining, crystals and spires). Why: they are the game's own
 // geode layers, so the building reads as one; the crust is dark so the bands and the window glow against it. The
 // floor and the crucible are tuff and deepslate (cool grey under the purple). The only wood is nether wood (crimson),
 // which never burns, at the door.
 export const PALETTE = {
-  crust: [['smooth_basalt', 6], ['cobbled_deepslate', 2], ['tuff', 1]], // cool dark grey: the bands glow against it
-  crustLow: [['cobbled_deepslate', 4], ['tuff', 2], ['smooth_basalt', 2], ['mossy_cobblestone', 1]], // y 1-2 weathering
-  band: [['calcite', 9], ['diorite', 1]],
+  // the crust in level strata, not speckle: cobbled deepslate at the foot (y 1-2), a tuff course at y 3 and y 7,
+  // smooth basalt between (cool dark grey: the bands at the cut faces glow against it)
+  crust: { foot: 'cobbled_deepslate', course: 'tuff', body: 'smooth_basalt', footTop: 2, courses: [3, 7] }, // y 1-2 weathering
+  band: [['calcite', 1]],
   lining: [['amethyst_block', 5], ['calcite', 1]],
   crystal: 'amethyst_block',
   bud: 'amethyst_cluster',
@@ -62,12 +63,21 @@ export const PALETTE = {
   bench: 'polished_tuff_slab',
   benchBase: 'polished_deepslate',
   boulder: [['tuff', 2], ['calcite', 1], ['cobbled_deepslate', 1]],
+  inlay: 'calcite', // the ring inlaid round each core
+  kerbSlab: 'polished_diorite_slab', // a raised pale kerb on the four sides of each core
+  counter: 'polished_deepslate',
+  anvil: 'anvil',
+  smallBud: 'medium_amethyst_bud',
+  worktop: 'polished_tuff', // the core chamber's worktop: a stone block, a bud set out on it (no job block)
+  floorLight: 'pearlescent_froglight', // floor lights between the cores (stone-hard, never burns)
 }
 
 export const MASSES = {
   geode: { c: [7, 0, 6], r: [7.5, 10, 8.5] },
   cluster: { c: [6, 0, 16], r: [5.5, 7, 6] }, // Level II
   cutZ: 0, // everything at z <= cutZ above the floor is sliced off: the face is z = 1
+  cutEast: 14, // ... and at x >= cutEast: a second cut face on the east flank (x = 13), glazed, the bands round it
+  cutBack: { 1: 14, 2: 20 }, // ... and at z >= cutBack: the back's cut face (Level I: z = 13, glazed; Level II: the Cluster's, z = 19, lighting the cores)
   shell: 2, // layers 1..2 are walls (crust, lining); deeper is the room
   faceBand: 2, // ... except at z <= faceBand, where a third layer shows the cut face's three bands
 }
@@ -84,6 +94,8 @@ export const OPENINGS = {
   arch: 'where the eggs meet (Level II): the shells open into one another',
 }
 
+export const CHAMBER_CHEST = [3, 1, 18]
+
 export const JOB = {
   stonecutter: [4, 1, 2],
   lava: [[5, 5], [6, 5], [7, 5], [5, 6], [6, 6], [7, 6]], // [x, z] at y 1
@@ -95,13 +107,31 @@ export const JOB = {
 // Every piece the room holds (fixtures: the game uses each as itself; no furniture spots, so nothing is swapped).
 export const FURNITURE = [
   { room: 'Grotto', kind: 'fixture', part: 'stonecutter', pos: [4, 1, 2], facing: 'north', note: 'the job block, by the door' },
-  { room: 'Grotto', kind: 'fixture', part: 'chest', pos: [12, 1, 7], facing: 'west', note: "her chest, against the east wall, 8 across of the cutter" },
-  { room: 'Grotto', kind: 'fixture', part: 'chest', pos: [12, 1, 8], facing: 'west', note: 'a second chest beside it' },
-  { room: 'Grotto', kind: 'fixture', part: 'bench', cells: [[12, 1, 5], [12, 1, 6]], note: 'a sorting bench: polished tuff slabs on deepslate, lantern-lit' },
-  { room: 'Grotto', kind: 'lamp', part: 'hanging', pos: [10, 7, 7], chain: 'from the lining', note: 'over the chests' },
-  { room: 'Grotto', kind: 'lamp', part: 'hanging', pos: [3, 6, 4], chain: 'from the lining', note: 'over the cutter' },
-  { room: 'Core chamber', kind: 'lamp', part: 'hanging', pos: [6, 5, 15], chain: 'from the crown', note: 'between the cores (Level II)' },
+  { room: 'Grotto', kind: 'fixture', part: 'chest', pos: [3, 1, 3], facing: 'south', note: 'her chest, a step from the cutter, its back to the lining' },
+  { room: 'Grotto', kind: 'fixture', part: 'chest', pos: [2, 1, 4], facing: 'east', note: 'her second chest, turned the other way so the two stay single' },
+  { room: 'Grotto', kind: 'fixture', part: 'bench', level: 1, cells: [[5, 1, 2]], note: 'a worktop beside the cutter: polished tuff slab on deepslate' },
+  { room: 'Grotto', kind: 'fixture', part: 'bench', level: 1, cells: [[12, 1, 5], [12, 1, 6], [12, 1, 7]], note: 'a sorting bench under the east window' },
+  { room: 'Grotto', kind: 'fixture', part: 'plinth', pos: [3, 1, 9], note: 'a specimen plinth past the niche, a crystal on it' },
+  { room: 'Grotto', kind: 'lamp', part: 'sideTable', level: 1, pos: [3, 1, 10], note: 'a lantern on a slab side table' },
+  { room: 'Grotto', kind: 'lamp', part: 'hanging', pos: [10, 4, 7], note: 'on a chain from the lining, over the bench' },
+  { room: 'Grotto', kind: 'lamp', part: 'hanging', pos: [3, 4, 4], note: 'over the cutter and the chests' },
+  { room: 'Core chamber', kind: 'fixture', part: 'chest', level: 2, pos: CHAMBER_CHEST, facing: 'east', note: 'the Type Gem Blocks, by the cores' },
+  { room: 'Core chamber', kind: 'lamp', part: 'sideTable', level: 2, pos: [3, 1, 17], note: 'a lantern on a slab side table by the chest' },
+  { room: 'Core chamber', kind: 'fixture', part: 'worktop', level: 2, pos: [4, 1, 18], note: 'a stone worktop beside the chest, a bud laid on it' },
+  // Level I only (Level II opens the back into the Cluster): the back counter under the back window, an anvil in it,
+  // gems laid out and a lantern standing on it; an L of counter in the east-back corner with buds set out to sort
+  { room: 'Grotto', kind: 'fixture', part: 'counter', only: 1, cells: [[6, 1, 12], [8, 1, 12], [9, 1, 12], [12, 1, 9], [11, 1, 10], [11, 1, 11]], note: 'stone counters' },
+  { room: 'Grotto', kind: 'fixture', part: 'anvil', only: 1, pos: [7, 1, 12], facing: 'east', note: 'the anvil in the back counter' },
+  { room: 'Grotto', kind: 'lamp', part: 'sideTable', only: 1, pos: [5, 1, 12], note: "the counter's end: a slab with a lantern standing on it" },
+  { room: 'Grotto', kind: 'fixture', part: 'gems', only: 1, cells: [[9, 2, 12], [8, 2, 12], [11, 2, 10], [12, 2, 9]], note: 'clusters and buds laid out on the counters' },
+  { room: 'Grotto', kind: 'fixture', part: 'rack', only: 1, cells: [[11, 2, 11]], note: 'a chain rack: chains hung from the lining down to the counter' },
+  { room: 'Core chamber', kind: 'fixture', part: 'plinth', level: 2, pos: [8, 1, 18], note: 'a specimen plinth by the back window' },
+  { room: 'Core chamber', kind: 'fixture', part: 'kerb', level: 2, cells: [[3, 1, 14], [9, 1, 14]], note: 'the kerbs run on to the walls between the core pairs' },
+  { room: 'Core chamber', kind: 'lamp', part: 'hanging', pos: [6, 4, 15], note: 'between the cores (Level II)' },
 ]
+
+// Floor lights between the cores (Level II), and the core kerbs: a calcite ring inlaid round each core.
+export const FLOOR_LIGHTS = [[6, 0, 12], [6, 0, 13], [6, 0, 14], [6, 0, 15], [6, 0, 16], [6, 0, 17]] // a lit aisle down the middle
 
 // The walking line: the step -> the door -> past the cutter -> round the crucible on every side (the grower's ledges)
 // -> the chests -> (Level II) through the arch -> round the cores.

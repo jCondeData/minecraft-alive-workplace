@@ -67,6 +67,12 @@ asks for the steps, `latest.log` and any crash report).
   below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
   climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
   in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Train Station, rebuilt from scratch** (50.13, with Create) as "the Trainshed": a long brick train shed with
+  the track running right through it under a dark slate roof, both ends open under timber portals with glazed fans and
+  a glazed lantern along the ridge; the station stands on the platform's edge among benches and hanging lanterns. On
+  the street, a booking hall with a round window in its gable, benches, a route map and a barred ticket window into the
+  clerk's office, and a clock tower with three clock faces under a green copper cap (19 by 17, 18 tall). Stations
+  already standing keep their old drawing until refreshed.
 - **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
   House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
   tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack

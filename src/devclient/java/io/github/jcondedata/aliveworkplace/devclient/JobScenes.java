@@ -1592,7 +1592,9 @@ final class JobScenes {
 		// 39.7d: Thornholm has a Conductor (maroon cap and tunic) at its station as well as the jobless villager: he takes
 		// the seat, and calls the stop when the train comes in at Ashford.
 		SCENES.put("village_train", new Job("Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
-			4000, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
+			// ROADMAP 50.13: the rebuilt Trainshed runs the track through its shed (z 12), so the camera looks down the line
+			// from past the east station's open end, through both sheds
+			4000, new Vec3(32.5, -55.0, 16.5), new Vec3(-8.0, -58.0, 16.5), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
 				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live()
@@ -1603,10 +1605,10 @@ final class JobScenes {
 				level.getStructureManager().get(StarterBlueprints.TRAIN_STATION.id()).orElseThrow().placeInWorld(level, at, at,
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
 			}
-			BlockState track = level.getBlockState(west.offset(0, 1, 6));
-			for (int x = west.getX() + 13; x < east.getX(); x++) { // the track laid between the two stations
-				level.setBlockAndUpdate(new BlockPos(x, west.getY(), west.getZ() + 6), Blocks.GRAVEL.defaultBlockState());
-				level.setBlockAndUpdate(new BlockPos(x, west.getY() + 1, west.getZ() + 6), track);
+			BlockState track = level.getBlockState(west.offset(0, 1, 12)); // 50.13: the rebuilt station's track (x 0..18, z 12)
+			for (int x = west.getX() + 19; x < east.getX(); x++) { // the track laid between the two stations
+				level.setBlockAndUpdate(new BlockPos(x, west.getY(), west.getZ() + 12), Blocks.GRAVEL.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(x, west.getY() + 1, west.getZ() + 12), track);
 			}
 			BlockPos thornholm = STATION.offset(-10, 0, -6);
 			BlockPos ashford = STATION.offset(14, 0, -6);
@@ -1617,7 +1619,7 @@ final class JobScenes {
 				level.setBlockAndUpdate(hall.east(3).north(2), Blocks.CHEST.defaultBlockState());
 				data.remove(hall);
 			}
-			for (BlockPos platform : List.of(west.offset(4, 1, 3), east.offset(8, 1, 3))) { // a villager waiting on each platform
+			for (BlockPos platform : List.of(west.offset(5, 1, 10), east.offset(12, 1, 10))) { // a villager waiting on each platform (50.13: z 8..11)
 				Villager waiting = EntityType.VILLAGER.spawn(level, platform, MobSpawnType.COMMAND);
 				waiting.setNoAi(true);
 			}
@@ -1634,7 +1636,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, thornholm, data); // both stations known (B193)
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, ashford, data);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
-			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(6, 1, 3), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor
+			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(9, 1, 10), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor (50.13: beside the station at 9,1,11)
 			conductor.setNoAi(true);
 			io.github.jcondedata.aliveworkplace.work.Stations.assign(level, conductor, data.stations(thornholm).get(0),
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CONDUCTOR);

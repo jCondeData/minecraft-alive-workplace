@@ -176,7 +176,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "quarry", "sifting_shed", "sifting_shed_2",
            # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
            # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
-           "crushing_mill", "windmill"}
+           "crushing_mill", "windmill",
+           # 50.13, the Train Station ("the Trainshed"), Create only: js/train_station (MC_BUILDER=..., sh build.sh writes
+           # the candidate; LIVE=1 sh build.sh the live one)
+           "train_station"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -305,7 +308,8 @@ if __name__ == "__main__":
             continue  # ROADMAP 50.2, 50.3, 50.5 and 50.7: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 50.13: drawn by the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
     # ROADMAP 38.7 mega_shrine and 41.1 waystone_plaza (all five looks) come from the rebuild kit since 52.4
     # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then

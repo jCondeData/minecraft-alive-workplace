@@ -607,7 +607,7 @@ BALLAST = Mix((5, "gravel"), (3, "andesite"), (2, "cobblestone"), seed=397)
 
 
 def train_station():
-    """13 x 9 x 8: the Train Station (ROADMAP 39.7), a village's stop for the caravans' train. A straight run of Create
+    """The OLD drawing (ROADMAP 50.13: the live .nbt now comes from the rebuild kit, tools/blueprints/js/train_station; this one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 9 x 8: the Train Station (ROADMAP 39.7), a village's stop for the caravans' train. A straight run of Create
     track along the back (z 6, the whole width, on a ballast bed of gravel and andesite) with a Create station block on
     the platform's edge beside it (z 4, the middle); the platform of polished andesite under a dark oak shelter on
     spruce posts, closed on the street side by a birch-and-spruce wall with a doorway in the middle (a step before it)

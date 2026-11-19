@@ -114,8 +114,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   A Schematic written without its size (by a command or another mod) gets it from its file when it is used on the
   table, so holding it afterwards can't crash Create (B189).
 
-- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (13 x 9 x 8): a Create station
-  on the edge of a platform beside a straight run of Create track, under a timber shelter with benches and lanterns.
+- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (19 x 18 x 17; rebuilt from scratch in
+  50.13 as "the Trainshed"): a Create station on the edge of a platform beside a straight run of Create track through
+  a brick train shed, open at both ends under timber portals, with a glazed lantern along its ridge, benches and hung
+  lanterns on the platform, a booking hall on the street with benches, a route map and a barred ticket window into the
+  clerk's office, and a clock tower with three faces under a green copper cap (standing stations keep their old drawing
+  until refreshed).
   When two villages with a caravan route both have a Create station within their hall's reach (the Train Station's, or
   any a player placed) and a village's half of the road between them is built (27.17), one of its idle builders takes
   a "Railway" site and lays Create track down the middle of that half, from the village's store like any material;
@@ -448,7 +452,8 @@ The planned fields of later items, each with its default, are listed in the desi
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
-- Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
+- Blueprint (39.7): `aliveworkplace:train_station` (19 x 18 x 17), drawn by the rebuild kit in `tools/blueprints/js/train_station`
+  (50.13; the old 13 x 9 x 8 drawing in `create_builds.py` is kept in `blueprint_history/`),
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
 - Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in

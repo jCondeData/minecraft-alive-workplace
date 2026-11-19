@@ -21,8 +21,9 @@ villages' caravans take the train instead of walking.
 
 1. **A trade route.** Set one up on the Village Hall's Trade Routes page, as for any caravan. The villages build the
    road to each other as they always do.
-2. **A Train Station in each village.** It's at the Blueprint Table: a short run of Create track with a Create
-   station beside it, a platform with benches and a timber shelter. Any Create station near the Village Hall counts, so
+2. **A Train Station in each village.** It's at the Blueprint Table: a brick train shed with a run of Create
+   track through it and a Create station on the platform's edge, benches and lanterns on the platform, a booking hall
+   with a ticket window on the street and a clock tower with a green copper cap. Any Create station near the Village Hall counts, so
    one you placed yourself works too. It doesn't have to stand by the road: when the track along the road is laid, the
    builders join the station's own track to it with a curved spur (up to about thirty blocks away), heading towards
    the other village.

@@ -1982,6 +1982,13 @@ SCENES = [
            ("02_outside_back", "From the back: the tail pole raking down from the cap to the reefing stage"),
            ("03_outside_west", "From the west: the stage on its brackets round the drum's top, the smock stepping in twice"),
            ("10_room_1", "The meal floor at eye level: the millstone, the Farmer's composter and his store chest, sacks of grain")], furniture=True, create=True),
+    # ROADMAP 50.13: the Train Station rebuilt from scratch (REBUILD.md), "the Trainshed" (Create only)
+    S("rebuild_train_station", "Build families", "The Train Station, rebuilt: from four sides and at eye level inside",
+      "the Train Station's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Train Station from the front: the booking hall's gable and round window on the street, the clock tower's green copper cap at its corner"),
+           ("02_outside_back", "From the back: the long brick train shed, a window in every bay, the glazed lantern along its ridge on dark oak posts"),
+           ("03_outside_west", "From the west: the shed's open end, the track running out under the tie beam and its glazed fan"),
+           ("10_room_1", "Inside at eye level: the booking hall's benches, the ticket window and the route map by the door")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

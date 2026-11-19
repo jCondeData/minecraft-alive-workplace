@@ -1,0 +1,19 @@
+{
+  "name": "train-station",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 114
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/train_station/out/train-station.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/train_station/out/summary.json",
+  "size": [
+    19,
+    18,
+    17
+  ],
+  "blockCount": 1471,
+  "paletteCount": 77,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/train_station/recipe.mjs"
+}

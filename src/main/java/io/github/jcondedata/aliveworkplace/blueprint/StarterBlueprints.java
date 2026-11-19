@@ -718,11 +718,12 @@ public final class StarterBlueprints {
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
 	public static final List<Entry> CREATE_ONLY = java.util.stream.Stream.concat(FIRST_CREATE_BUILDS.stream(), MORE_CREATE_BUILDS.stream()).toList();
 	/**
-	 * The Train Station (ROADMAP 39.7; tools/blueprints/create_builds.py): a Create station beside a straight run of
-	 * track, a platform and a shelter. A village with one sends its caravans by train to another with one, once track is
+	 * The Train Station (ROADMAP 39.7; rebuilt in ROADMAP 50.13, tools/blueprints/js/train_station, "the Trainshed"): a
+	 * Create station on a platform's edge beside a straight run of track through a brick train shed, a booking hall and a
+	 * clock tower on the street. A village with one sends its caravans by train to another with one, once track is
 	 * laid along the road between them (city/CaravanTrains).
 	 */
-	public static final Entry TRAIN_STATION = new Entry(AliveWorkplace.id("train_station"), new Vec3i(13, 9, 8));
+	public static final Entry TRAIN_STATION = new Entry(AliveWorkplace.id("train_station"), new Vec3i(19, 18, 17)); // ROADMAP 50.13: rebuilt, "the Trainshed"
 	/** Built of Create's blocks for trains: listed only with Create and {@code villageTrains} on (city/CaravanTrains). */
 	public static final List<Entry> TRAINS_ONLY = List.of(TRAIN_STATION);
 

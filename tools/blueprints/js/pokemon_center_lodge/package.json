@@ -1,0 +1,10 @@
+{
+  "name": "pokemon-center-lodge",
+  "private": true,
+  "type": "module",
+  "description": "The Pokémon Center (ROADMAP 49): the Mountain Lodge look: the lodge (I), its Trader's wing and paddock (II). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -1797,6 +1797,20 @@ SCENES = [
            ("03_outside_west", "From the west: the sun veranda under the catslide, seats under the windows, its ends closed in boards"),
            ("04_outside_east", "From the east: a window and a sill pot in every bay, the little dormer breaking the eave"),
            ("10_room_1", "The ward at eye level: six white beds heads to the walls, the Nurse's brewing stand and desk at the front end")], furniture=True),
+    # ROADMAP 50.8: the Physician's House rebuilt from scratch (REBUILD.md), "the still-tower and ward"
+    S("rebuild_physicians_house", "Build families", "The Physician's House, rebuilt: from four sides and at eye level inside",
+      "the Physician's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Physician's House from the front: the stone still-room tower with its lit vent, the white ward's gable, the physic garden between"),
+           ("03_outside_west", "From the west: the ward's frame bays, a window and a sill pot in each"),
+           ("04_outside_east", "From the east: the tower's quoins and pyramid cap, the ward behind it"),
+           ("10_room_1", "Inside at eye level: four beds between white linen screens, or the still room's brewing stand and chest")], furniture=True),
+    # ROADMAP 50.8: the Healing Center rebuilt from scratch (REBUILD.md), "the Spring Infirmary" (Level I filmed)
+    S("rebuild_healing_center", "Build families", "The Healing Center, rebuilt: from four sides and at eye level inside",
+      "the Healing Center's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Healing Center from the front: a white front-gabled Dispensary under a steep red roof, a vent on the ridge, lamp posts by the step"),
+           ("03_outside_west", "From the west: the little gabled wall dormer breaking the eave, herb pots on the ledges"),
+           ("04_outside_east", "From the east: the second dormer gable, a framed window lit in it"),
+           ("10_room_1", "Inside at eye level: the waiting benches facing each other, or the counter with the brewing stand and its chest behind it")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

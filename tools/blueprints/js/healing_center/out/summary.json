@@ -1,0 +1,19 @@
+{
+  "name": "healing-center-4",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 142
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/healing_center/out/healing-center-4.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/healing_center/out/summary.json",
+  "size": [
+    21,
+    20,
+    26
+  ],
+  "blockCount": 2348,
+  "paletteCount": 91,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/healing_center/recipe.mjs"
+}

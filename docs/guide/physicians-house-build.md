@@ -6,24 +6,29 @@ expansion: M32
 image: https://jcondedata.github.io/minecraft-alive-workplace/defences/anim.gif
 caption: The walls and gates, and the answering jobs' houses
 Kind: care
-Size: 13 wide, 11 tall, 13 deep
+Size: 16 wide, 14 tall, 14 deep
 Job block: a brewing stand, for the Physician
 Inside: the quarantine ward, four beds between white screens
-Outside: a herb garden either side of the path
+Outside: a physic garden of herbs and ferns between the tower and the ward
 Upgrade: none
 Where: the Blueprint Table
 categories: Builds, Disasters
 related: physician.md, plague.md, clinic-build.md, builder.md
 ```
 
-The Physician's House is a white ward for the plague days, with the [Physician](physician.md)'s brewing stand at the
-back.
+The Physician's House is a stone still room and a white ward for the plague days, with the
+[Physician](physician.md)'s brewing stand in the still room.
 
 ## What it looks like
 
-A white plastered ward in a spruce frame under a dark oak roof. Inside is the quarantine ward: four beds, two down each
-side, each between white wool screens, and at the back the Physician's brewing stand on a counter of herbs. Out front, a
-herb garden either side of the path and lamp posts at the gate.
+Two buildings in an L round a physic garden (rebuilt from scratch; a Physician's House already standing keeps its old
+look until refreshed). At the front corner stands the **still-room tower**, square and of stone brick with quoined
+corners, its slate pyramid cap ending in an open vent with a lantern lit in it, so you can find the house from a field
+away at night. Inside, the tower is open up to that vent: the Physician's **brewing stand**, the chest for his Remedies
+beside it and his recipes. Behind it runs the **ward**, white plaster in a spruce frame under a steep slate roof, its
+gable to the street. Each frame bay is a bed bay: four beds, two down each side of the aisle, each between white linen
+screens hung under the tie beams, a window and a pot of herbs by every bed and a night desk at the far end. In the
+crook of the L, the physic garden: two raised beds of herbs and ferns either side of the path to the ward door.
 
 ## Building it
 
@@ -32,9 +37,9 @@ table with what its tooltip lists. See [The Builder and blueprints](builder.md).
 
 ## Putting it to work
 
-Stand a villager by its brewing stand and sneak-right-click them with a **glistering melon slice**: the village has its
-Physician. The house has the brewing stand and no other job block. Put a chest by the stand for their
-[Remedies](remedy.md).
+Stand a villager by its brewing stand (in the tower, by its own front door) and sneak-right-click them with a **glistering melon slice**: the village has its
+Physician. The house has the brewing stand and no other job block, and the chest beside the stand is
+where the Physician keeps his [Remedies](remedy.md).
 
 ## How it fits in
 

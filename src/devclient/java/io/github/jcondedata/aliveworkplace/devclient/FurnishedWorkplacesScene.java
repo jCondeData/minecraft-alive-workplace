@@ -52,7 +52,8 @@ final class FurnishedWorkplacesScene {
 		new View("03_schoolroom", new Vec3(5.5, 3.2, 4.5), new Vec3(5.5, 1.5, 10), SCHOOL),
 		// B194: the camera's feet on the clinic's floor (y 1; its eye 1.62 above, under the tie beams at y 4), with night
 		// vision for the shot. At feet 2.7 the eye sat in the beam log at (7, 4, 3): a black still on GitHub. The aim is
-		// worked out from the feet, so the target sits 1.6 lower than the bench it frames.
+		// worked out from the feet, so the target sits 1.6 lower than the bench it frames. 50.8: the rebuilt Healing Center's
+		// waiting room (x 2-10, z 3-6) has its benches on both side walls; from beside the rug this frames the west one.
 		new View("04_clinic_benches", new Vec3(7.5, 1.0, 3.2), new Vec3(2.5, -0.1, 4.5), CLINIC));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;

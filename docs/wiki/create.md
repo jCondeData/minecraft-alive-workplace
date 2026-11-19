@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13
 
 ## What a player sees
 
@@ -83,9 +83,13 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   Clock", 15 x 26 x 15), a slender stone shaft under a jettied timber clock chamber with a cuckoo clock on every face and
   a bell-cast copper spire: water poured into a spout pier's cup falls down the tower's front corner past the wheel by
   the door, whose drive runs in through the wall, up a corner shaft (seen through a slit) and out through the chamber's
-  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House**, a small brick house
-  where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
-  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
+  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House** (18 x 17 x 13; rebuilt
+  from scratch in 50.13 as "the Tanner's Water Tower"), a stone water tower under a steep green copper cap: water poured
+  into a stone cup on its flank falls past the wheel into a trough, the wheel's cogwheel turns a mechanical pump over a
+  four-source cistern at the tower's foot (it refills; seen through the front windows), and a riser climbs the tower to
+  a two-high fluid tank in a glazed belvedere, a door out onto the gallery round it; the Leatherworker's tannery leans
+  on the tower under a deepslate gable (his cauldron between two chests, a cutting table, a stitching desk, hides;
+  standing pump houses keep their old drawing until refreshed). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
   handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels
   still turn into the gap. Switching `createBuilds` off while one is going up only takes them off the table: the build
   under way is finished and turns.
@@ -114,8 +118,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   A Schematic written without its size (by a command or another mod) gets it from its file when it is used on the
   table, so holding it afterwards can't crash Create (B189).
 
-- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (13 x 9 x 8): a Create station
-  on the edge of a platform beside a straight run of Create track, under a timber shelter with benches and lanterns.
+- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (19 x 18 x 17; rebuilt from scratch in
+  50.13 as "the Trainshed"): a Create station on the edge of a platform beside a straight run of Create track through
+  a brick train shed, open at both ends under timber portals, with a glazed lantern along its ridge, benches and hung
+  lanterns on the platform, a booking hall on the street with benches, a route map and a barred ticket window into the
+  clerk's office, and a clock tower with three faces under a green copper cap (standing stations keep their old drawing
+  until refreshed).
   When two villages with a caravan route both have a Create station within their hall's reach (the Train Station's, or
   any a player placed) and a village's half of the road between them is built (27.17), one of its idle builders takes
   a "Railway" site and lays Create track down the middle of that half, from the village's store like any material;
@@ -456,7 +464,8 @@ The planned fields of later items, each with its default, are listed in the desi
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
-- Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
+- Blueprint (39.7): `aliveworkplace:train_station` (19 x 18 x 17), drawn by the rebuild kit in `tools/blueprints/js/train_station`
+  (50.13; the old 13 x 9 x 8 drawing in `create_builds.py` is kept in `blueprint_history/`),
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
 - Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in

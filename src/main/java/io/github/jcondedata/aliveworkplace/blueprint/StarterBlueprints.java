@@ -462,6 +462,27 @@ public final class StarterBlueprints {
 	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(29, 18, 25));
 	/** Manor III with a vaulted wine cellar under the kitchen and the hall, down a hatch ladder from the kitchen (26.15). */
 	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(29, 18, 25), 4);
+	/**
+	 * The Manor's biome looks (ROADMAP 49.10f, {@code tools/blueprints/js/manor_<culture>}; see {@link BlueprintLooks}):
+	 * every level drawn again in a village culture's climate, with the same rooms, beds, doors, job blocks, ballroom,
+	 * furniture spots and size as the level drawn. Desert, savanna, snowy and taiga villages each build their own look;
+	 * plains the Manor as drawn. Each list holds a culture's four levels, Level I first; Level IV has the same 4-deep
+	 * cellar as the Manor's.
+	 */
+	public static final List<Entry> MANOR_DESERT = manorLook("desert");
+	public static final List<Entry> MANOR_SAVANNA = manorLook("savanna");
+	public static final List<Entry> MANOR_SNOWY = manorLook("snowy");
+	public static final List<Entry> MANOR_TAIGA = manorLook("taiga");
+	/** Every look of the Manor, every level. */
+	public static final List<Entry> MANOR_LOOKS = java.util.stream.Stream.of(MANOR_DESERT, MANOR_SAVANNA, MANOR_SNOWY, MANOR_TAIGA)
+		.flatMap(List::stream).toList();
+
+	/** A culture's look of the Manor's four levels, each the size of the level drawn (ids spelt out, as {@link #stoneHouseLook}'s). */
+	private static List<Entry> manorLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(MANOR, MANOR_2, MANOR_3, MANOR_4)
+			.map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 
 	/** The Gate Ward: a square stone gate tower with a vaulted passage and a watch lantern, a barrack range beside it
 	 *  with two grindstones and two bunks, a Training Dummy in the court behind (rebuilt 51.8). */
@@ -743,22 +764,25 @@ public final class StarterBlueprints {
 	 * The Greenhouse (the Leat House, rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/greenhouse: a ridge-and-furrow
 	 * glasshouse whose leat turns an undershot wheel, its belt running along the west wall under the harvester and the plough
 	 * to a depot in the front wall), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
-	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
+	 * and the Pump House (rebuilt from scratch in ROADMAP 50.13, tools/blueprints/js/pump_house, "the Tanner's Water Tower": a
+	 * stone water tower whose waterfall turns a wheel on its flank, the wheel's cogwheel turning a mechanical pump over a
+	 * cistern at its foot, a riser to a two-high fluid tank in a glazed belvedere under a copper cap, a tannery behind it).
 	 */
 	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(18, 13, 14)); // ROADMAP 50.9: rebuilt
 	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
 	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
-	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
+	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(18, 17, 13)); // ROADMAP 50.13: rebuilt, "the Tanner's Water Tower"
 	/** The builds of 39.8, in the order the Table shows them. */
 	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */
 	public static final List<Entry> CREATE_ONLY = java.util.stream.Stream.concat(FIRST_CREATE_BUILDS.stream(), MORE_CREATE_BUILDS.stream()).toList();
 	/**
-	 * The Train Station (ROADMAP 39.7; tools/blueprints/create_builds.py): a Create station beside a straight run of
-	 * track, a platform and a shelter. A village with one sends its caravans by train to another with one, once track is
+	 * The Train Station (ROADMAP 39.7; rebuilt in ROADMAP 50.13, tools/blueprints/js/train_station, "the Trainshed"): a
+	 * Create station on a platform's edge beside a straight run of track through a brick train shed, a booking hall and a
+	 * clock tower on the street. A village with one sends its caravans by train to another with one, once track is
 	 * laid along the road between them (city/CaravanTrains).
 	 */
-	public static final Entry TRAIN_STATION = new Entry(AliveWorkplace.id("train_station"), new Vec3i(13, 9, 8));
+	public static final Entry TRAIN_STATION = new Entry(AliveWorkplace.id("train_station"), new Vec3i(19, 18, 17)); // ROADMAP 50.13: rebuilt, "the Trainshed"
 	/** Built of Create's blocks for trains: listed only with Create and {@code villageTrains} on (city/CaravanTrains). */
 	public static final List<Entry> TRAINS_ONLY = List.of(TRAIN_STATION);
 
@@ -846,12 +870,13 @@ public final class StarterBlueprints {
 	/**
 	 * The storage builds (ROADMAP 37.17; tools/blueprints/storage_halls.py), each a Storehouse: the Storage Hall (27 chests
 	 * and barrels round an inventory connector, terminals on a counter by the door, filing cabinets), the Terminal Nook
-	 * (a connector, six chests and a terminal; it fits beside a house) and the Warehouse (two floors of racks, a crafting
+	 * (rebuilt in ROADMAP 50.13, tools/blueprints/js/terminal_nook, "the Staddle Granary": a store room on staddle stones,
+	 * a connector, eight chests and a terminal in its Tom's copy; nine chests and two barrels without; it fits beside a house) and the Warehouse (two floors of racks, a crafting
 	 * terminal, a loading bay with a handcart). Each has a Tom's Simple Storage copy in the modded library (37.12), built in
 	 * its place when Tom's is installed; without it, chests and barrels and no terminal.
 	 */
 	public static final Entry STORAGE_HALL = new Entry(AliveWorkplace.id("storage_hall"), new Vec3i(13, 14, 14));
-	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(9, 10, 9));
+	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(11, 15, 12)); // ROADMAP 50.13: rebuilt, "the Staddle Granary"
 	public static final Entry WAREHOUSE = new Entry(AliveWorkplace.id("warehouse"), new Vec3i(19, 16, 16));
 	public static final List<Entry> STORAGE_HALLS = List.of(STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 
@@ -969,8 +994,9 @@ public final class StarterBlueprints {
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
-		// 49.10a/b: the biome looks of a Level IV, each with its level's basement
-		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS).flatMap(List::stream).filter(e -> e.basement() > 0)).toList();
+		// 49.10a/b/f: the biome looks of a Level IV, each with its level's basement
+		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS).flatMap(List::stream)
+			.filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);

@@ -38,6 +38,9 @@ public final class BlueprintLooks {
 		StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna"),
 		// 49.10c: the Terrace likewise (tools/blueprints/js/terrace_<culture>), all four (snowy passed its critic in round 3)
 		StarterBlueprints.TERRACE.id(), CULTURES,
+		// 49.10f: the Manor likewise (tools/blueprints/js/manor_<culture>), every level, all four (snowy passed its critic in
+		// round 3, taiga in round 2); the ballroom stays in the same cells, so the Noble's Ball finds it in any look
+		StarterBlueprints.MANOR.id(), CULTURES,
 		// 49.10d: the Weaver's Cottage (both levels) and the Daub House likewise (tools/blueprints/js/weavers_cottage_<culture>,
 		// house_t1_b_<culture>); the cultures each has a look for are listed beside its entry in StarterBlueprints
 		StarterBlueprints.WEAVERS_COTTAGE.id(), StarterBlueprints.WEAVERS_COTTAGE_CULTURES,

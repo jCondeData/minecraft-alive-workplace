@@ -1,0 +1,19 @@
+{
+  "name": "terminal-nook-toms",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 19
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/terminal_nook/out/terminal-nook-toms.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/terminal_nook/out/summary.json",
+  "size": [
+    11,
+    15,
+    12
+  ],
+  "blockCount": 657,
+  "paletteCount": 49,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/terminal_nook/recipe.mjs"
+}

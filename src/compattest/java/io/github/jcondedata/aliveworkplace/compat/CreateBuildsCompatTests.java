@@ -163,13 +163,16 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 			new BlockPos(7, 15, 3));
 	}
 
-	/** The Pump House (39.8): the wheel's cogwheel turns the pump beside it, between the sump's pipe and the fluid tank. */
+	/**
+	 * The Pump House (39.8; rebuilt in 50.13 as a water tower, 18 x 17 x 13): the wheel's cogwheel turns the pump over the
+	 * cistern, between its two pipes, under the riser up to the two-high tank in the tower's top.
+	 */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"pump_house_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "pump_house_build")
 	public void aBuilderBuildsThePumpHouseAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.PUMP_HOUSE, List.of(at(10, 1, 2, "minecraft:cauldron"), at(6, 1, 4, "create:mechanical_pump"),
-			at(5, 1, 4, "create:fluid_pipe"), at(7, 1, 4, "create:fluid_pipe"), at(8, 1, 4, "create:fluid_tank"),
-			at(8, 2, 4, "create:fluid_tank"), at(6, 1, 5, "create:cogwheel")), new BlockPos(6, 1, 4));
+		build(helper, StarterBlueprints.PUMP_HOUSE, List.of(at(7, 1, 10, "minecraft:cauldron"), at(13, 2, 3, "create:mechanical_pump"),
+			at(12, 2, 3, "create:fluid_pipe"), at(14, 2, 3, "create:fluid_pipe"), at(13, 8, 3, "create:fluid_tank"),
+			at(13, 9, 3, "create:fluid_tank"), at(13, 2, 4, "create:cogwheel")), new BlockPos(13, 2, 3));
 	}
 
 	/** The saved {@code Speed} of the block entity at {@code pos}, read by name (0 if there's none). */

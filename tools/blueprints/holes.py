@@ -109,6 +109,9 @@ ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide,
 # shed's west wall and the headframe's back legs, under the eave and the frame's beams, is a covered landing, not a room
 ALLOW.update({(n, (9, 1, 6)): "the Quarry's open Gap to the pit under the headframe and the hoist house's eave, not a room"
               for n in ("quarry", "modded/quarry")})
+# The Train Station (49/50.13 rebuild, "the Trainshed") is a train shed on purpose: the track runs through it from edge
+# to edge, so both gable ends are open portals under their tie beams (the brief: the line runs on past both sides)
+ALLOW[("train_station", (2, 6, 8))] = "the Train Station's open shed ends, where the track runs in and out, not a walled room"
 # The Trainer's House (49 rebuild, "the Battle Court") has a covered bench stand along the court's west side on purpose:
 # seats under a lean-to between posts on the curb, open to the field so neighbours watch the battles; not a room
 ALLOW.update({(n, (2, 2, 7)): "the Trainer's House's open bench stand facing the court, not a walled room"

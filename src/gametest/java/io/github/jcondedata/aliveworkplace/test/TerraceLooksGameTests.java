@@ -39,9 +39,8 @@ import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.state.properties.BedPart;
 
 /**
- * The Terrace's biome looks (ROADMAP 49.10c, as the Terrace's in 49.10b): a desert, savanna or taiga village builds
- * the Terrace in its culture's look, plains as drawn, and snowy as drawn too (its look went back to the critic and isn't
- * shipped); where the village's own look doesn't fit, the others are tried after it. Every look of a level is that
+ * The Terrace's biome looks (ROADMAP 49.10c, as the Townhouse's in 49.10b): a desert, savanna, snowy or taiga village
+ * builds the Terrace in its culture's look, plains as drawn; where the village's own look doesn't fit, the others are tried after it. Every look of a level is that
  * level to everything else (its base, its upgrade, its lock on the Blueprint Table), with the same size, beds and job
  * blocks, and a builder builds it to DONE.
  */
@@ -49,11 +48,11 @@ public class TerraceLooksGameTests {
 	private static final String BIG_AREA = "aliveworkplace_test:big_area";
 	private static final List<StarterBlueprints.Entry> LEVELS = List.of(StarterBlueprints.TERRACE, StarterBlueprints.TERRACE_2);
 	private static final Map<String, List<StarterBlueprints.Entry>> LOOKS = Map.of("desert", StarterBlueprints.TERRACE_DESERT,
-		"savanna", StarterBlueprints.TERRACE_SAVANNA, "taiga", StarterBlueprints.TERRACE_TAIGA);
+		"savanna", StarterBlueprints.TERRACE_SAVANNA, "snowy", StarterBlueprints.TERRACE_SNOWY, "taiga", StarterBlueprints.TERRACE_TAIGA);
 
 	/**
 	 * Each culture's village picks its own look of every level, wherever its hall stands; a plains village the Terrace
-	 * as drawn, and a snowy one too (no snowy look ships), even when it is handed another look.
+	 * as drawn, even when it is handed a look.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -69,12 +68,11 @@ public class TerraceLooksGameTests {
 					helper.assertTrue(got.equals(want), "a " + look.getKey() + " village at " + hall + " picked " + got + " for " + drawn + ", not " + want);
 					// asked with a look in hand (an upgrade of one), the same answer
 					helper.assertTrue(BlueprintLooks.pick(want, look.getKey(), hall).equals(want), "a look of " + drawn + " asked again changed: " + want);
-					// a snowy village handed this look builds the drawing: the Terrace has no snowy look
-					helper.assertTrue(BlueprintLooks.pick(want, "snowy", hall).equals(drawn),
-						"a snowy village handed " + want + " should build " + drawn + " as drawn");
+					// a plains village handed this look builds the drawing
+					helper.assertTrue(BlueprintLooks.pick(want, "plains", hall).equals(drawn),
+						"a plains village handed " + want + " should build " + drawn + " as drawn");
 				}
 				helper.assertTrue(BlueprintLooks.pick(drawn, "plains", hall).equals(drawn), "a plains village should build " + drawn + " as drawn");
-				helper.assertTrue(BlueprintLooks.pick(drawn, "snowy", hall).equals(drawn), "a snowy village should build " + drawn + " as drawn");
 				helper.assertTrue(BlueprintLooks.pick(drawn, "jungle", hall).equals(drawn), "a culture with no look should build " + drawn + " as drawn");
 			}
 		}
@@ -83,7 +81,7 @@ public class TerraceLooksGameTests {
 
 	/**
 	 * Where the village's own look doesn't fit, the steward tries every other look of that level (as drawn first), each
-	 * once; the snowy look isn't among them, and no snowy Terrace is in the library.
+	 * once, and every look is in the library.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
@@ -95,14 +93,14 @@ public class TerraceLooksGameTests {
 			List<ResourceLocation> tried = BlueprintLooks.forVillage(helper.getLevel(), drawn, hall);
 			helper.assertTrue(tried.get(0).equals(BlueprintLooks.pick(drawn, culture, hall)),
 				"a " + culture + " village should try " + BlueprintLooks.pick(drawn, culture, hall) + " first, not " + tried.get(0));
-			helper.assertTrue(tried.size() == 4 && new java.util.HashSet<>(tried).size() == 4, "every look of " + drawn + " once: " + tried);
+			helper.assertTrue(tried.size() == 5 && new java.util.HashSet<>(tried).size() == 5, "every look of " + drawn + " once: " + tried);
 			helper.assertTrue(tried.contains(drawn), "the Terrace as drawn should be a fallback: " + tried);
 			for (List<StarterBlueprints.Entry> look : LOOKS.values()) {
 				helper.assertTrue(tried.contains(look.get(level).id()), "missing " + look.get(level).id() + " from " + tried);
 			}
-			ResourceLocation snowy = BlueprintLooks.look(drawn, "snowy");
-			helper.assertFalse(tried.contains(snowy), "the snowy look isn't shipped, yet a village would try it: " + tried);
-			helper.assertTrue(BlueprintLibrary.get(helper.getLevel(), snowy).isEmpty(), snowy + " is in the library, but the critic never passed it");
+			for (List<StarterBlueprints.Entry> look : LOOKS.values()) {
+				helper.assertTrue(BlueprintLibrary.get(helper.getLevel(), look.get(level).id()).isPresent(), look.get(level).id() + " isn't in the library");
+			}
 		}
 		helper.succeed();
 	}
@@ -172,6 +170,14 @@ public class TerraceLooksGameTests {
 	public void buildsTheSavannaTerrace(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		BuilderGameTests.buildStarter(helper, StarterBlueprints.TERRACE_SAVANNA.get(0), new BlockPos(9, 2, 9));
+	}
+
+	/** And the snowy look (passed its critic in round 3). */
+	//$ gametest_ticks_batch BIG_AREA '30000' '"terrace_looks_snowy"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "terrace_looks_snowy")
+	public void buildsTheSnowyTerrace(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		BuilderGameTests.buildStarter(helper, StarterBlueprints.TERRACE_SNOWY.get(0), new BlockPos(9, 2, 9));
 	}
 
 	/** And the taiga look. */

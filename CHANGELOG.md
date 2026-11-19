@@ -48,10 +48,13 @@ asks for the steps, `latest.log` and any crash report).
 ### Fixed
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
-- **The Terrace in its village's culture**: desert, savanna and taiga villages now build their own look of both levels
-  (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
-  granite and mud with a veranda; a long range of spruce logs under a slate roof with a porch on log posts), with the same
-  homes, beds and furniture. Plains and snowy villages keep the Crow-Step Row (49.10c).
+- **The Terrace in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of both
+  levels (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
+  granite and mud with a veranda; pale calcite gables under steep deepslate roofs, snow on the eaves; a long range of
+  spruce logs under a slate roof with a porch on log posts), with the same homes, beds and furniture. Plains villages
+  keep the Crow-Step Row (49.10c).
+- **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
+  looks count as one (49.10b).
 
 ## 0.157.0 — 2026-11-18
 

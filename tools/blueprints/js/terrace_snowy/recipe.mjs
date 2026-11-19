@@ -98,25 +98,27 @@ export function drawLevel(level) {
   }
 
   // --- Pass 6: snow, the verges, the stacks and the ground --------------------------------------------------------
-  const ridgeY = HOUSE.eaveY + 4
-  const innerEave = (x, y) => (x === west || x === east) && y === HOUSE.eaveY // the stair over the wall: one snow line, on the lip
-  // round 2 (critic note 2): on the rake rows the eave's overhang stays a stair, so each end's verge runs down onto the lip
-  const rake = z => HOUSE.roofAlong.includes(z)
-  snowLoad(c, P.roof, P.snow, { eaves: true, tread: (x, y) => y === ridgeY,
-    eaveSkip: (x, y, z) => innerEave(x, y) || ((x === west - 1 || x === east + 1) && rake(z)) })
-  for (const z of HOUSE.roofAlong) rakeVerge(c, P.roof, 'z', z, [0, c.size[0] - 1])
-  // round 2 (critic note 1): every gable comes to a point. On the rake rows the ridge is one course of stairs back to back
-  // (ridgeY) over air, and the calcite gable behind is carried up through ridgeY - 1 under it. The snow lies on the full
-  // ridge behind (a snow layer can't rest on a stair's sloped top in the game).
-  for (const h of homes) for (const z of HOUSE.roofAlong) {
-    const gz = z === HOUSE.roofAlong[0] ? z0 : z1
-    for (const [u, rise] of [[2, 'east'], [3, 'west']]) {
-      const x = at(h, u)
-      c.clear(x, ridgeY - 1, z); c.clear(x, ridgeY + 1, z)
-      stair(c, x, ridgeY, z, P.roof.stairs, rise)
-      c.set(x, ridgeY - 1, gz, wall)
+  // round 3 (critic notes 1 and 3): every gable comes to a point. The ridge is one course at ridgeY (eaveY + 3, the old
+  // ridge's lower course; nothing above it): on the gable rows (the rakes z 0 / 9 and the gable walls z 1 / 8) two stairs
+  // back to back, so each gable ends in a peak closed by them over the calcite (which stops at ridgeY - 1); behind, z 2..7,
+  // full blocks carrying the ridge's snow (a snow layer can't rest on a stair's sloped top in the game), set two rows back
+  // so it reads as the ridge running away from the peak, not as a cap on it.
+  const ridgeY = HOUSE.eaveY + 3
+  const gableRow = z => z <= HOUSE.walls.z0 || z >= HOUSE.walls.z1
+  for (const h of homes) for (const [u, rise] of [[2, 'east'], [3, 'west']]) {
+    const x = at(h, u)
+    for (let z = HOUSE.roofAlong[0]; z <= HOUSE.roofAlong[1]; z++) {
+      c.clear(x, ridgeY + 1, z)
+      if (z <= HOUSE.walls.z0 + 1 || z >= HOUSE.walls.z1 - 1) stair(c, x, ridgeY, z, P.roof.stairs, rise)
+      else c.set(x, ridgeY, z, P.roof.full)
     }
   }
+  const innerEave = (x, y) => (x === west || x === east) && y === HOUSE.eaveY // the stair over the wall: one snow line, on the lip
+  // round 3 (critic note 2): at each row end the eave's overhang stays a stair on the rake rows and the gable-wall rows
+  // (z 0..1, 8..9), so each verge runs down onto a stair foot and the lip's snow starts a block in from the gable (z 2..7)
+  snowLoad(c, P.roof, P.snow, { eaves: true, ridge: '2', tread: () => false,
+    eaveSkip: (x, y, z) => innerEave(x, y) || y === ridgeY || ((x === west - 1 || x === east + 1) && gableRow(z)) })
+  for (const z of HOUSE.roofAlong) rakeVerge(c, P.roof, 'z', z, [0, c.size[0] - 1])
   for (const h of homes) {
     const S = HOUSE.stack
     for (const z of S.zs) ridgeStack(c, S.us.map(u => [at(h, u), z]), S.y0, S.y1, stack, { cap: P.capSlab })

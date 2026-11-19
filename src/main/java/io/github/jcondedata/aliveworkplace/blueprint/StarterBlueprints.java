@@ -261,14 +261,15 @@ public final class StarterBlueprints {
 	/**
 	 * The Terrace's biome looks (ROADMAP 49.10c, {@code tools/blueprints/js/terrace_<culture>}; see {@link BlueprintLooks}):
 	 * both levels drawn again in a village culture's climate, with the same homes, beds, doors, ladders, furniture spots
-	 * and size as the level drawn. A desert, savanna or taiga village builds its own look; plains and snowy (whose look
-	 * the critic sent back) the Terrace as drawn. Each list holds a culture's two levels, Level I first.
+	 * and size as the level drawn. A desert, savanna, snowy or taiga village builds its own look; plains the Terrace as
+	 * drawn. Each list holds a culture's two levels, Level I first.
 	 */
 	public static final List<Entry> TERRACE_DESERT = terraceLook("desert");
 	public static final List<Entry> TERRACE_SAVANNA = terraceLook("savanna");
+	public static final List<Entry> TERRACE_SNOWY = terraceLook("snowy");
 	public static final List<Entry> TERRACE_TAIGA = terraceLook("taiga");
 	/** Every look of the Terrace, both levels. */
-	public static final List<Entry> TERRACE_LOOKS = java.util.stream.Stream.of(TERRACE_DESERT, TERRACE_SAVANNA, TERRACE_TAIGA)
+	public static final List<Entry> TERRACE_LOOKS = java.util.stream.Stream.of(TERRACE_DESERT, TERRACE_SAVANNA, TERRACE_SNOWY, TERRACE_TAIGA)
 		.flatMap(List::stream).toList();
 
 	/** A culture's look of the Terrace's two levels, each the size of the level drawn (ids spelt out, as {@code stoneHouseLook}'s). */

@@ -31,11 +31,11 @@
 //  Skin     z 0, y 1..4 across the row, its cap a row of stone-brick stairs at y 5 rising to the wall; the door's reveal
 //           (u 4, y 1..3) under a grey andesite lintel, a lantern hung in it, a stone step; the front room's window
 //           (u 1..2, y 2..3) deep in its reveal under an andesite lintel, snow on the sill.
-//  Roofs    one steep gable per home (evenGableRoof: ridge two stairs at y 13 over u 2..3, eaves y 9), running z 0..9
+//  Roofs    one steep gable per home (evenGableRoof: eaves y 9; round 3: the ridge one course at y 12), running z 0..9
 //           (a rake one block over each gable), a gutter (full block and slab) over every party wall, the row's ends
 //           eaves with their overhang at x L-1. Every rake row (z 0 and 9) a verge: the block under each stair an
 //           upside-down stair facing the eave (rakeVerge), so each rake is one clean edge.
-//  Gables   pale calcite to the roof, a pair of panes (u 2..3, y 10) in each gable under a calcite course. Bedroom
+//  Gables   plain pale calcite to the peak (round 3: no panes). Bedroom
 //           windows on the front (u 1..2 and u 4, y 6..7) on the band, an andesite lintel in the wall over each (y 8).
 //  Piers    every party wall stands a pale pier at z 0 (y 5..8, over the skin) and at z 9 (y 1..8), the gutter's end on it.
 //  Stacks   each home's broad stack astride its ridge: u 2..3 x z 4..5, y 12..14 (stone bricks), the bedroom lamp's
@@ -66,6 +66,15 @@
 //           end's verge runs x 0 y 8, x 1 y 9, x 2 y 10..11, x 3 y 13 down onto the lip; 3 the end walls carry two
 //           shuttered windows a storey (z 3 and 6) instead of one. Blocks 970/1377; look_spots SAME BUILDING, holes.py 0,
 //           no CHECK line.
+//  Round 3 (2026-11-19, the critic's round-2 notes): 1 the ridge is one course at y 12 (the two-high y 12..13 ridge is
+//           gone): two deepslate stairs back to back over u 2..3 on the gable rows (z 0..2 and 7..9), so each gable's pale
+//           calcite (to y 11) ends in a dark peak closed by them; full blocks only at z 3..6 round the stack, carrying the
+//           ridge's snow (2 layers at y 13; a snow layer can't rest on a stair in the game), set back so the snow reads as
+//           lying on the ridge behind the peak, not as a cap on it; the gable panes (y 10) dropped, which read as dark
+//           holes under the peak; 2 each row end's eave lip stays a stair at z 0..1 and 8..9 (x 0 / x 12, y 8), its snow
+//           only z 2..7, so the verge runs down onto a stair foot, not a snowy shelf; 3 rechecked after 1: the rake reads
+//           x 0 y 8, x 1 y 9, x 2 y 10..11, x 3 y 12, every home the same, an even verge to the peak. Blocks 926/1313;
+//           look_spots SAME BUILDING, holes.py 0. 4 (optional) not taken: the band already rings the end walls.
 //  Open for the critic: a steep 2:1 rake is a stair over an upside-down stair per step (rakeVerge), the Townhouse's
 //           accepted verge; from three-quarter views it still shows the 2:1 rhythm. The front room's window sits in a
 //           reveal, so the front's glass is set back a block from the street.
@@ -104,10 +113,8 @@ export const OPENINGS = {
   windows: [
     { name: 'bedroom front', us: [1, 2], ys: [6, 7], z: 1, lintel: 8 },
     { name: 'bedroom over the door', us: [4], ys: [6, 7], z: 1, lintel: 8 },
-    { name: 'front gable', us: [2, 3], ys: [10], z: 1 },
     { name: 'kitchen back', us: [2], ys: [2, 3], z: 8 },
     { name: 'bedroom back', us: [1, 2], ys: [7, 8], z: 8, lintel: 9 },
-    { name: 'back gable', us: [2, 3], ys: [10], z: 8 },
   ],
 }
 

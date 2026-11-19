@@ -37,7 +37,9 @@ Roadmap items: 49.6, B281, B304, B640, B641, B925
   savanna village as the Veranda Row (one long golden thatch hip, red granite below packed mud, a veranda on acacia
   posts, each home's window trim painted); a taiga village as the Logging Row (dark spruce logs on a mossy cobble
   footing under one slate roof, a veranda on log posts, a stack on every party wall). The homes, beds, doors, ladders
-  and furniture are the same. Plains and snowy villages build the Crow-Step Row. The Blueprint Table lists the looks.
+  and furniture are the same. A snowy village builds the Snowbound Row (pale calcite gables, each a point under a steep
+  deepslate roof, shuttered windows in deep reveals, an andesite band, snow on the eaves and drifted at the foot).
+  Plains villages build the Crow-Step Row. The Blueprint Table lists the looks.
 
 ## 2. How it works
 

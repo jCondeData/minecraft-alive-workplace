@@ -36,9 +36,8 @@ public final class BlueprintLooks {
 		// 49.10b: the Townhouse likewise (tools/blueprints/js/townhouse_<culture>); its snowy and taiga looks went back to
 		// the critic three times and wait for the owner, so those villages build it as drawn
 		StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna"),
-		// 49.10c: the Terrace likewise (tools/blueprints/js/terrace_<culture>); its snowy look went back to the critic, so a
-		// snowy village builds it as drawn until a look passes
-		StarterBlueprints.TERRACE.id(), List.of("desert", "savanna", "taiga"));
+		// 49.10c: the Terrace likewise (tools/blueprints/js/terrace_<culture>), all four (snowy passed its critic in round 3)
+		StarterBlueprints.TERRACE.id(), CULTURES);
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

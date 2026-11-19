@@ -1,0 +1,10 @@
+{
+  "name": "great_wall",
+  "private": true,
+  "type": "module",
+  "description": "The Great Wall Wonder, rebuilt (ROADMAP 52.6): the Pass Gate. MC_BUILDER = the minecraft-builder skill's folder. STAGE=1..4 picks the stage; stages.py saves all four as candidates in build/rebuild/great_wall/.",
+  "scripts": {
+    "build": "python3 stages.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

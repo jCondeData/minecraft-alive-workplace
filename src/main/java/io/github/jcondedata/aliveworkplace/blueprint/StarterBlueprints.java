@@ -441,6 +441,27 @@ public final class StarterBlueprints {
 	public static final Entry MANOR_3 = new Entry(AliveWorkplace.id("manor_3"), new Vec3i(29, 18, 25));
 	/** Manor III with a vaulted wine cellar under the kitchen and the hall, down a hatch ladder from the kitchen (26.15). */
 	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(29, 18, 25), 4);
+	/**
+	 * The Manor's biome looks (ROADMAP 49.10f, {@code tools/blueprints/js/manor_<culture>}; see {@link BlueprintLooks}):
+	 * every level drawn again in a village culture's climate, with the same rooms, beds, doors, job blocks, ballroom,
+	 * furniture spots and size as the level drawn. Desert, savanna, snowy and taiga villages each build their own look;
+	 * plains the Manor as drawn. Each list holds a culture's four levels, Level I first; Level IV has the same 4-deep
+	 * cellar as the Manor's.
+	 */
+	public static final List<Entry> MANOR_DESERT = manorLook("desert");
+	public static final List<Entry> MANOR_SAVANNA = manorLook("savanna");
+	public static final List<Entry> MANOR_SNOWY = manorLook("snowy");
+	public static final List<Entry> MANOR_TAIGA = manorLook("taiga");
+	/** Every look of the Manor, every level. */
+	public static final List<Entry> MANOR_LOOKS = java.util.stream.Stream.of(MANOR_DESERT, MANOR_SAVANNA, MANOR_SNOWY, MANOR_TAIGA)
+		.flatMap(List::stream).toList();
+
+	/** A culture's look of the Manor's four levels, each the size of the level drawn (ids spelt out, as {@link #stoneHouseLook}'s). */
+	private static List<Entry> manorLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(MANOR, MANOR_2, MANOR_3, MANOR_4)
+			.map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 
 	/** The Gate Ward: a square stone gate tower with a vaulted passage and a watch lantern, a barrack range beside it
 	 *  with two grindstones and two bunks, a Training Dummy in the court behind (rebuilt 51.8). */
@@ -937,8 +958,9 @@ public final class StarterBlueprints {
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
-		// 49.10a/b: the biome looks of a Level IV, each with its level's basement
-		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS).flatMap(List::stream).filter(e -> e.basement() > 0)).toList();
+		// 49.10a/b/f: the biome looks of a Level IV, each with its level's basement
+		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS).flatMap(List::stream)
+			.filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);

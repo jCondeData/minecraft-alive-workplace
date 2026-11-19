@@ -15,6 +15,8 @@ import org.jetbrains.annotations.Nullable;
  * The items in storage blocks, read and moved the loader's way, so modded storage (Sophisticated Storage chests and
  * barrels, Tom's filing cabinets...) works like a chest. On Fabric it's the transfer API. Positions without storage
  * are skipped; lists of positions are gone through in order. See {@code build/SupplyContainers} for how the jobs use it.
+ * The counts over a list ({@link #count}, {@link #countMatching}, {@link #contents}, {@link #slots}, {@link #freeSlots},
+ * {@link #room}) read a slot once when two stores of the list show the same container (B1358).
  */
 public interface ItemStores {
 	/** Whether the block at {@code pos} stores items. */

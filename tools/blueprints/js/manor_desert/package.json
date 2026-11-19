@@ -1,0 +1,10 @@
+{
+  "name": "manor-desert",
+  "private": true,
+  "type": "module",
+  "description": "Noble's Manor, the desert look (ROADMAP 49.10f): the shipped Manor drawn again as a qasr: flat-roofed sandstone and mud-brick masses at three heights behind crenellated parapets, the porch tower a slotted windcatcher with an iwan, lattice rawshans, a palm garden round a fountain (II), the ballroom under a clerestory lantern (III), a ribbed cellar (IV). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

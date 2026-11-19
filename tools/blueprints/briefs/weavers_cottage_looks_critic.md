@@ -185,3 +185,41 @@ Notes (all small, all named cells):
 
 Under REBUILD.md's "twice at most" this is the snowy look's second BACK: if the lane answers these three, the look goes
 to the owner as it stands after round 3 (or to a third critic, as the lane decides).
+
+## Round 3 (2026-11-19, a fresh critic)
+
+Renders `build/rebuild/r3_wc_snowy/renders/` (`wc_snowy_r3_<L>_*`, cutaways `wc-snowy-<L>-cut3/cut7_*`), OLD from
+`build/rebuild/r2_1910d/renders/old_wc_<L>_*`; blocks read from `build/rebuild/r3_wc_snowy/in/*.nbt`. Sheets:
+`weavers_cottage_looks/snowy_<L>_r3_vs_old.png` (OLD left, NEW right: front, back, left, right, top, low). Same standard.
+
+| Look | Silhouette | Depth | Interior | Detail | Reads as its culture | Verdict |
+|---|---|---|---|---|---|---|
+| OLD (as drawn) | 4 | 4 | 4 | 4 | - | - |
+| Snowy | 4 | 4 | 4 | 4 | yes: pale calcite under a steep deepslate roof, snow on ridge, lips, sills and wall copings, the closed storm porch; clearly not taiga | SHIP |
+
+Round-2 notes checked:
+1. Loose ground snow: answered. No snow at (16, 0, 1) / (17, 0, 1) or anywhere along the fold's kerb; the only ground
+   snow is the drift along the wall foot (x 0..7, z 0..2). The white slab at the front's bottom left is gone
+   (wc_snowy_r3_1_low against round 2's wc_snowy_1_low).
+2. Dormer apex: answered. (4, 8, 1) is `deepslate_tiles` (and (4, 9, 1..2) above it), so the verge closes to a point
+   and the birch stick is gone; what shows is the dormer's birch-plank pediment at y 7, which reads as its board face
+   (wc_snowy_r3_1_front, wc_snowy_r3_1_low).
+3. Drying wall: answered (the note's second option). Each slit at x 2, 5..6 and 9 now has a stone-brick head at y 3
+   and a stone-brick sill at y 0, and wool hangs behind it at z 15, y 1..2 (yellow; light blue and red; magenta), so the
+   back road sees colour, not gravel (wc_snowy_r3_2_back). The wall stays four high, but it now reads as a dye yard
+   wall with windows on the cloth, not a blank box.
+
+Scores:
+- Silhouette 4: the steep two-to-one deepslate roof, the stack astride the ridge, the dormer and the pointed porch gable
+  (wc_snowy_r3_1_front, left, right); L2's back is still mostly wall, now with something to look at.
+- Depth 4: mullioned weaver's window on a deep sill, quoins, the andesite course, eave lips, the porch, the framed slits
+  (wc_snowy_r3_1_front, wc_snowy_r3_2_back).
+- Interior 4: unchanged; workroom with loom, chest, table, hearth and flight, the loft with chest, tables and wool under
+  the steep roof (wc-snowy-2-cut3_top, wc-snowy-1-cut7_top).
+- Detail 4: one palette, snow with discipline, the woodpile as one wood, dyed cloth in the yard and through the slits;
+  nothing left on the front that breaks the eye and no breach of the owner's furniture rules seen.
+
+Verdict: SHIP. Equal to OLD on every score, none worse, clearly snowy and not taiga, and all three round-2 notes fixed.
+
+Optional polish (no critic needed): the wool behind the slits stands on bare gravel; a stripped-spruce rail or fence
+post under it would show it as cloth hung to dry rather than a stacked block.

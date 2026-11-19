@@ -173,7 +173,7 @@ public final class WonderGoods {
 
 	/** The goods lines of {@code site}'s current stage (empty once finished, or for a Wonder no longer loaded). */
 	public static List<Wonder.Good> goods(WonderSite site) {
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.recorded(null, site);
 		if (wonder == null || site.done() || site.stage() < 1 || site.stage() > wonder.stages().size()) {
 			return List.of();
 		}
@@ -579,7 +579,7 @@ public final class WonderGoods {
 		if (!Wonders.ENABLED || site.started() || !site.goingUp() || site.stone().isEmpty() || site.placement().isEmpty() || !isDay(level)) {
 			return false;
 		}
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.of(level, site);
 		List<Line> lines = lines(level, site);
 		if (wonder == null || !lines.stream().allMatch(Line::full)) {
 			return false;

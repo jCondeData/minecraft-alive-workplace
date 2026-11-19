@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 52.4
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 52.4
 
 ## 1. What a player sees
 
@@ -307,6 +307,14 @@ shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to t
 `blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
 `aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
 `rebuild_clock_tower`.
+
+**51.7: the Market Square, Market Cross and Market Corner** (critics SHIP; sheets
+`tools/blueprints/briefs/market_{cross,corner,square}_sheet.png`, scorecards in `markets_51_7_critic.md`). Recipes
+`tools/blueprints/js/{market_cross,market_corner,market_square}/`. `market_square` ("the Market House") is 13 x 16 x 13,
+754 blocks: a paved forecourt with a rosette and a jettied timber hall on an open stone undercroft, 79 trader cells in
+the middle 9 x 9. The new square has no bell (the brief made one optional), so a village whose only bell was its square
+loses that meeting point after a refresh. The Market Cross ("the Mercat Drum") and Market Corner are 9 x 8 x 9 (see
+[More decorations](more-decorations.md)). The old drawings are in `blueprint_history/` as v0.145.0.
 
 **51.6: the Chapel** (critic SHIP, round 3). Recipe `tools/blueprints/js/chapel/` (`npm run cut`), then
 `rebuild.py chapel chapel --nbt build/rebuild/chapel/out/chapel.nbt`. `chapel` ("the Blossom Court") is now 13 x 16 x 17

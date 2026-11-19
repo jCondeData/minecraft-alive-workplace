@@ -64,7 +64,7 @@ of thing:
 - **Fire Pit**: a campfire sunk in a round stone dais, standing stones round it, a lintelled trilithon at the back, benches and a woodpile.
 - **Sundial**: a stone half-cylinder dial with hour lines on a raised sandstone dais, its chain gnomon held by two pylons.
 - **Topiary Garden**: a green room of clipped yew: a hedge archway in, a tiered standard in the middle, urns and a bench.
-- **Market Corner**: crates, sacks, hay and produce under a striped awning.
+- **Market Corner**: an L of market counters on a paved court under two striped canvases, a banner mast on the street corner, a little booth at the front.
 - **Footbridge**: a little plank bridge over a channel of water with lily pads.
 
 The rest start locked at the Blueprint Table: a traveling trader on [market day](market-days.md) may sell any of them,

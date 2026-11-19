@@ -120,7 +120,7 @@ public class CaravanTrailGameTests implements FabricGameTest {
 		humpAndHole(helper);
 		ArcState.ArcPlace p = build(helper, CaravanTrail.WRECK.toString(), MIDDLE);
 		helper.assertTrue(p.origin.equals(helper.absolutePos(new BlockPos(9, 3, 9))), "the wreck's corner: " + helper.relativePos(p.origin));
-		lies(helper, p.origin, 13, 12);
+		lies(helper, p.origin, 13, 13);
 		is(helper, p.origin, new BlockPos(6, 2, 5), Blocks.SPRUCE_PLANKS, "the wagon's floor");
 		is(helper, p.origin, new BlockPos(2, 1, 5), Blocks.WHITE_WOOL, "the canvas");
 		is(helper, p.origin, new BlockPos(7, 4, 3), Blocks.STRIPPED_DARK_OAK_LOG, "the upper wheel's hub");

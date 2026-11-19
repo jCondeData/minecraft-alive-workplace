@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.157.0 — 2026-11-18
+
 ### Added
 - **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
   every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
@@ -114,6 +116,30 @@ asks for the steps, `latest.log` and any crash report).
   free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
   broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
   they are.
+- **The Lost Caravan's five trail marks are rebuilt from scratch** (52.5): the captive carter ties strips of the
+  wagon's white cover high wherever he can, so every mark is a piece of the same wagon standing up with white cloth on
+  it, easy to spot from the last one. A lantern pole with the carter's lantern, a cross-tree with the lost wheel and a
+  burst barrel, the torn cover slumped over its hoop under the settlers' banner, the cart levered up on its tail with
+  its shafts to the sky, and the raiders' arrow-shot crates and black standard over the last rag. Marks already
+  placed stay as they are.
+- **The Lost Caravan's wreck and the raiders' stockade are rebuilt from scratch** (52.5). The wreck: the settlers'
+  wagon rolled onto its side, arrows in its underside, a bare-spoked wheel still on top and the other flung onto the
+  road, the white cover lying slashed along the far side with a hollow you can step into, the load picked over, and a
+  second cart's ruts leading away toward the stockade. The stockade: a ragged ring of dark oak stakes behind spiked
+  posts and a rubble bank, a gate tower, a fighting perch over the west wall, and a tall lookout under a black banner
+  whose foot is the carter's cage, so you see where he is from far off; inside, the caravan's own cover is spread on
+  the ground with the loot being shared out, its cart stripped of its wheels. Sites already placed stay as they are.
+- **The Bandit King's fort is rebuilt from scratch** (52.5), all three stages: a ring of stakes in panels between
+  taller posts with a wall-walk and three roofed fighting stages, a roofed gatehouse, gray tents round the fire and
+  the King's black-skirted pavilion; then two watchtowers on log legs and a stable; then the King's keep, the only
+  stone in the fort, with a throne hall, a chamber up the stair, a war loft under the roof, and the postern deep in a
+  stone porch at its back. A finished fort stays as it is; one still rising takes the new look whole at its next
+  stage.
+- **The Bandit Camp is rebuilt from scratch** (52.5): the Lookout Camp. Two low bunk tents of patched, stolen cloth sit
+  round the fire, with the chief's black-and-red tent across the back holding his bed, his seat and the loot chest. A
+  crow's nest on four legs rises over the camp to a red flag, a stolen bell hung under its deck, and a handcart heaped
+  with plunder stands by the way in. The Bandit King's camps and bounty hideouts get the same look. Camps already
+  standing keep their old look, and still come down whole when their chief falls.
 - **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
   the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
   Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
@@ -167,6 +193,19 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Market Square is rebuilt from scratch** (51.7, "the Market House", 13 x 13, 16 high). The square is paved
+  round a rosette in its middle, with flowering azaleas in its front corners, and across its back a timber-framed
+  Market Court stands on an open stone undercroft under a steep brick-tile roof, a cross gable and a lantern cupola. A
+  balcony looks out over the middle of the square, an outside stair climbs the east side to the court's door, and a
+  striped stall sells produce on the west. Traders gather on the square and under the undercroft's arches; upstairs
+  the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
+  market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
+  already standing keep their look until you refresh them.
+- **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
+  of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
+  canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying
+  two banners. Pots, a cake, melons, pumpkins and hay sit on the counters, with lanterns hung over the aisle. Market
+  Corners already standing keep their look until you refresh them.
 - **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
   with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
   lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow

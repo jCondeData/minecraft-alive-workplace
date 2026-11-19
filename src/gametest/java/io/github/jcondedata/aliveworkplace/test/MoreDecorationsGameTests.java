@@ -145,8 +145,9 @@ public class MoreDecorationsGameTests implements FabricGameTest {
 		BuilderGameTests.buildStarter(helper, StarterBlueprints.TOPIARY_GARDEN, ORIGIN);
 	}
 
-	//$ gametest_ticks_batch BIG_AREA '9000' '"decorations_2614b"'
-	@GameTest(template = BIG_AREA, timeoutTicks = 9000, batch = "decorations_2614b")
+	// 51.7: the rebuilt corner is 317 blocks, more than the Topiary Garden's 271, so it gets the garden's time
+	//$ gametest_ticks_batch BIG_AREA '12000' '"decorations_2614b"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 12000, batch = "decorations_2614b")
 	public void buildsMarketCorner(GameTestHelper helper) {
 		BuilderGameTests.buildStarter(helper, StarterBlueprints.MARKET_CORNER, ORIGIN);
 	}

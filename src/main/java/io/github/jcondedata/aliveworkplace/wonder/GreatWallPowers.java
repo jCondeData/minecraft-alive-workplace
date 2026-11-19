@@ -59,7 +59,7 @@ public final class GreatWallPowers {
 		if (known != null) {
 			return Optional.of(known);
 		}
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.of(level, site);
 		if (wonder == null || site.placement().isEmpty()) {
 			return Optional.empty();
 		}

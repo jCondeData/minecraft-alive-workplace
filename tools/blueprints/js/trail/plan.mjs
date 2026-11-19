@@ -65,7 +65,7 @@ export const PALETTE = {
 }
 
 // Every mark's footprint (w x h x d), its masses (named parts), its ruts and the tall thing a player looks for.
-// The heights climb with the story: 6, 7, 5 (the banner pin holds it low; the white cover makes up for it), 10, 9.
+// The heights climb with the story: 6, 6, 6 (the white cover on a hoop raised to y 6), 10, 9.
 export const MARKS = {
   1: {
     name: 'The Lantern Pole', size: [3, 7, 5],
@@ -81,19 +81,21 @@ export const MARKS = {
     barrel: [1, 1, 1], staves: [[0, -1, 'north', true], [-1, 0, 'west', true], [-1, 1, 'south', false], [1, -1, 'east', false]],
     sack: [0, 1, 3], // the split sack of grain (a hay bale lying on its side)
     wheel: { hub: [4, 2, 3], axle: 'x' }, // the lost wheel standing on the outside, propped on the stake, broadside to the east (a pale stripped hub, the rim of planks)
-    stake: { at: [3, 1, 3], height: 4, tip: 2, rags: ['north', 'south'] },
+    // the stake the carter lashed the wheel to: a cross-tree, not mark 1's lone pole (critic note 1): a pale post with a
+    // spar lashed across its top, a rag hung from each end of the spar on opposite faces, a splinter above
+    stake: { at: [3, 1, 3], height: 4, tip: 1, spar: { y: 5, x0: 2, x1: 4 }, rags: [[2, 5, 2, 'north'], [4, 5, 4, 'south']] },
     ruts: { axis: 'z', a: 1, gauge: 2, along: [0, 4] },
-    sightline: 'the wheel broadside from east and west, the two rags broadside from north and south, tip at y 6',
+    sightline: 'a cross-tree (a T, where mark 1 is a lone pole) at y 5-6, a rag at each end of its spar; the wheel broadside from east and west',
   },
   3: {
-    name: 'The Torn Banner', size: [5, 6, 7],
+    name: 'The Torn Banner', size: [5, 8, 7],
     pole: { fence: [1, 1, 1], lash: [1, 2, 1], banner: [1, 3, 1], rotation: 6 }, // pins: fence, holder, banner
-    hoop: { x0: 0, x1: 4, z: 4, y0: 1, top: 4, slump: 'south', steps: 2, foot: 1 }, // the cover over its one standing hoop, its hem on the ground
-    torn: [[1, 3, 5], [3, 1, 6], [4, 1, 6], [4, 2, 6], [0, 1, 6], [2, 1, 6]], // holes hacked in the slumped canvas, [x, y, z]
+    hoop: { x0: 0, x1: 4, z: 4, y0: 1, top: 6, slump: 'south', steps: 2, foot: 1 }, // the cover over its one standing hoop, its hem on the ground
+    torn: [[1, 5, 5], [3, 4, 6], [3, 1, 6], [4, 1, 6], [4, 2, 6], [0, 1, 6], [2, 1, 6]], // holes hacked in the slumped canvas, [x, y, z]
     ribs: [[0, 1, 3], [4, 1, 2]], // a fallen hoop's broken ribs (slabs lying)
     scraps: [[2, 1, 2], [3, 1, 1], [0, 1, 0]], // cut canvas on the ground
     ruts: { axis: 'z', a: 1, gauge: 2, along: [0, 6] },
-    sightline: 'a wall of white canvas 5 wide, 3 tall, from every side; the banner over it from the front',
+    sightline: 'a wall of white canvas 5 wide, 5 tall (the hoop raised 2, critic note 2), from every side; the banner before it from the front',
   },
   4: {
     name: 'The Drag', size: [5, 10, 9],

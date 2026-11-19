@@ -539,8 +539,9 @@ public final class StarterBlueprints {
 	/** The Blossom Court: a stone chapel with a central bell tower over a long buttressed nave, where the village's
 	 *  couples marry (rebuilt 51.6). */
 	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(13, 16, 17));
-	/** A paved square with a fountain, kiosks, benches and the village bell. */
-	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
+	/** The Market House: a paved square with a timber-framed Market Court on an open stone undercroft at its back, a
+	 *  balcony over the square's middle, an outside stair and a striped stall (rebuilt 51.7). */
+	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 16, 13));
 	/*
 	 * More decorations (ROADMAP 26.14; tools/blueprints/decor.py, MORE_DECORATIONS): small builds that aren't houses, none
 	 * with a villager's job block.
@@ -574,8 +575,9 @@ public final class StarterBlueprints {
 	/** A green room of clipped yew: a hedge archway in, a tiered standard on a paved ring, urns, pencil yews and a
 	 *  bench under the back hedge's exedra (52.2). */
 	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 8, 9));
-	/** Crates, sacks and produce under a striped awning. */
-	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(5, 5, 5));
+	/** An L of market counters on a paved court under two striped canvases stepping down to the court, a banner mast
+	 *  on the street corner and a little booth at the front (rebuilt 51.7). */
+	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(9, 8, 9));
 	/** A humpback stone footbridge over a bending stream, a little lantern gate at its crown (52.1). */
 	public static final Entry FOOTBRIDGE = new Entry(AliveWorkplace.id("footbridge"), new Vec3i(9, 8, 7));
 	/** The decorations of 26.14, in the order the Table and the gallery show them. */

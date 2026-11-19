@@ -67,6 +67,11 @@ function flightOf(w) {
 // --- hidden by a wing (no spiral window behind a roof) ----------------------------------------------------------------
 const nearWing = (x, z, pad = 1) => Object.values(WINGS).some(w => x >= w.x0 - pad && x <= w.x1 + pad && z >= w.z0 - pad && z <= w.z1 + pad)
 const inWing = (x, z) => Object.values(WINGS).some(w => x > w.x0 && x < w.x1 && z > w.z0 && z < w.z1)
+const clerestory = (x, y, z) => {
+  if (y < R.clerestory[0] || y > R.clerestory[1]) return false
+  const a = helixAngle(x, z, { cx: R.cx, cz: R.cz }) % 30
+  return a >= 6 && a < 24
+}
 const inDoorway = (x, y, z) => R.doors.some(d => x === d.at[0] && d.through.includes(z) && y >= 3 && y <= 4)
 
 export function draw() {
@@ -124,6 +129,18 @@ export function draw() {
     if (f.face === INNER[name] || !isPost(f)) continue
     const [ox, oz] = f.out
     for (let y = WY.wall0; y <= WY.parapet; y++) c.add(f.x + ox, y, f.z + oz, P.course)
+  }
+  // round 2: every ground-floor window gets a projecting sill and hood, and a trim band runs round every outer face at
+  // the upper-floor line (y 9), between the pilasters
+  for (const [name, w] of Object.entries(WINGS)) for (const f of faces(w)) {
+    if (f.face === INNER[name]) continue
+    const [ox, oz] = f.out, x = f.x + ox, z = f.z + oz
+    const toward = ox ? (ox < 0 ? 'east' : 'west') : (oz < 0 ? 'south' : 'north')
+    if (!c.get(x, WY.deck, z)) stair(c, x, WY.deck, z, P.corniceStairs, toward, 'top')
+    if (isWindow(f) && !isPost(f) && !doorCol(w, f.x, f.z)) {
+      if (!c.get(x, 3, z)) slab(c, x, 3, z, P.sillSlab, 'top')
+      if (!c.get(x, 7, z)) stair(c, x, 7, z, P.corniceStairs, toward, 'top')
+    }
   }
   // Pass 4, interior: each wing's flight, its stacks, desks and lecterns, lanterns
   for (const w of Object.values(WINGS)) for (const [x, y, z] of flightOf(w).cells) stair(c, x, y, z, `${P.wood}_stairs`, w.flight.facing)
@@ -218,6 +235,18 @@ export function draw() {
         return outer ? P.course : P.wall
       })
     }
+    // round 2, depth on the outer gable: a projecting cornice across its base (the pilasters run into it) and a
+    // raking edge of quartz slabs under the roof's overhang along both slopes
+    {
+      const oLine = w[outerEnd], step = outerEnd.endsWith('0') ? -1 : 1, line = oLine + step
+      const face = axisZ ? (step < 0 ? 'south' : 'north') : (step < 0 ? 'east' : 'west')
+      for (let u = lo - 1; u <= hi + 1; u++) {
+        const [x, z] = axisZ ? [u, line] : [line, u]
+        if (!c.get(x, WY.eave, z)) stair(c, x, WY.eave, z, P.corniceStairs, face, 'top')
+        const top = (under[u] ?? WY.eave + 1) - 1
+        if (u >= lo && u <= hi && top > WY.eave && !c.get(x, top, z)) slab(c, x, top, z, P.rakeSlab, 'top')
+      }
+    }
     // Pass 4, interior: walls of books between the windows, a lamp from the ridge, a reading table
     const clear = new Set([...fl.cells.map(([x, , z]) => `${x},${z}`), `${fl.exit[0]},${fl.exit[1]}`])
     for (let x = w.x0 + 1; x < w.x1; x++) for (let z = w.z0 + 1; z < w.z1; z++) {
@@ -237,6 +266,15 @@ export function draw() {
     furnitureParts.table(c, { pos: [tx, 10, tz], facing: f, wood: P.wood, colour: 'green' })
     furnitureParts.chair(c, { pos: [cx2, 10, cz2], facing: f, wood: P.wood })
   }
+  // round 2, the galleries furnished: shelf rows across each room (lamps standing on their tops), more desks
+  const row = (x0, x1, z0, z1) => { for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) for (let y = 10; y <= 12; y++) c.add(x, y, z, P.books) }
+  row(4, 6, 19, 19); row(4, 6, 25, 25); row(34, 36, 19, 19); row(34, 36, 25, 25) // side galleries, across the wing
+  row(17, 17, 9, 10); row(22, 22, 9, 10); row(17, 17, 34, 35); row(22, 22, 34, 35) // front and back galleries
+  for (const [x, z] of [[5, 19], [5, 25], [35, 19], [35, 25], [17, 9], [22, 10], [17, 35], [22, 34]]) lantern(c, x, 13, z)
+  for (const [tx, tz, cx2, cz2, f] of [[5, 23, 6, 23, 'west'], [35, 23, 34, 23, 'east'], [19, 10, 19, 9, 'south'], [19, 34, 19, 35, 'north'], [5, 21, 6, 21, 'west'], [35, 21, 34, 21, 'east']]) {
+    furnitureParts.table(c, { pos: [tx, 10, tz], facing: f, wood: P.wood, colour: 'green' })
+    furnitureParts.chair(c, { pos: [cx2, 10, cz2], facing: f, wood: P.wood })
+  }
 
   // === Stage III: The Rotunda: the drum, its wall of books, the helix walk and its spiral of windows, the table ======
   c.begin(3)
@@ -248,15 +286,15 @@ export function draw() {
     if (r > shell.inner2 && r <= shell.outer2) for (let y = shell.y0; y <= shell.y1; y++) {
       if (inDoorway(x, y, z) || (inWing(x, z) && y <= WY.eave + 7)) continue // never into a wing's rooms (under its ridge)
       const hidden = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dz]) => (c.stageOf.get(c.key(x + dx, y, z + dz)) ?? 9) < 3)
+      // round 2: a full ring of clerestory windows above the wing ridges, glass through the wall's whole depth
+      if (!hidden && clerestory(x, y, z)) { c.add(x, y, z, P.ribbon); continue }
       if (!hidden && band(x, y, z) && y < shell.y1 - 1) { if (r > 100) c.add(x, y, z, P.ribbon); continue }
-      // the ribbon's binding: a copper course under and over the glass, so the spiral reads from afar like the
-      // bands on a scroll's rod; the quartz sill only where a band starts or ends
-      const edge = !hidden && r > 100 && !band(x, y, z) && (band(x, y + 1, z) || band(x, y - 1, z))
-      c.add(x, y, z, edge ? P.binding : y === shell.y0 || y === WY.eave || y === shell.y1 ? P.course : P.wall)
+      c.add(x, y, z, y === shell.y0 || y === WY.eave || y === shell.y1 || y === R.clerestory[0] - 1 ? P.course : P.wall)
     }
     if (r > lining.inner2 && r <= lining.outer2) for (let y = lining.y0; y <= lining.y1; y++) {
       if (inDoorway(x, y, z)) continue
       if (band(x, y, z) && y < shell.y1 - 1) continue // the spiral's reveal (a niche where a wing stands outside)
+      if (clerestory(x, y, z)) continue // the clerestory's reveal
       c.add(x, y, z, P.books)
     }
     // Pass 3, depth: the cornice ring a block out at the drum's top; pilasters on the four open quarters
@@ -328,6 +366,11 @@ export function draw() {
   // Pass 2, the portico: six quartz columns, the entablature, a coffered soffit, the copper gable and its pediment
   const pt = PORTICO
   columnRow(c, pt.columns.map(x => [x, pt.z0]), pt.y0, pt.capital, { base: P.colBase, shaft: P.column, capital: P.capital })
+  // round 2: each column's base and capital spread a block on three sides (never forward: the porch stays shallow)
+  for (const x of pt.columns) for (const [dx, dz, f] of [[-1, 0, 'east'], [1, 0, 'west'], [0, 1, 'north']]) {
+    if (!c.get(x + dx, pt.y0, pt.z0 + dz)) stair(c, x + dx, pt.y0, pt.z0 + dz, P.baseStairs, f)
+    if (!c.get(x + dx, pt.capital, pt.z0 + dz)) stair(c, x + dx, pt.capital, pt.z0 + dz, P.baseStairs, f, 'top')
+  }
   for (let x = pt.x0; x <= pt.x1; x++) for (let z = pt.z0; z <= pt.z1; z++) {
     const beam = z === pt.z0 || x === pt.x0 || x === pt.x1
     c.add(x, pt.beam, z, beam ? P.beam : (x + z) % 2 ? P.course : P.wall)

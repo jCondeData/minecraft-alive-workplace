@@ -234,6 +234,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHallCustomScreenGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallScreenBugTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
+			"io.github.jcondedata.aliveworkplace.test.StarterCottageLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArenaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BerryChainsGameTests",
@@ -354,6 +355,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderCrewCarryBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperLeftoversGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHelperLeftoversBugTests",
+			"io.github.jcondedata.aliveworkplace.test.HelperBagsB645GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperBags1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMutants1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderInvariants1031GameTests",
@@ -1877,6 +1880,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateFixes1115cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverCrateDrops1114gB1259BugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3GameTests",
+			"io.github.jcondedata.aliveworkplace.test.ShortLineOwnWaysGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLogsSlot1115e3BugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.MixedTagSlotGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMixedTagSlot1115cGameTests",
@@ -1911,7 +1915,8 @@
 			"io.github.jcondedata.aliveworkplace.test.B1321GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperTrades1117cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests"
 		]
 	},
 	"depends": {

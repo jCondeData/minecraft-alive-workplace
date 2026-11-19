@@ -120,10 +120,10 @@ SCENES = [
       "a Signpost at a crossroads between two villages had its four boards written as it was finished: Millford east, Ashford west, the Well south, Welcome north", 40,
       [("01_signpost_crossroads", "The signpost at the crossroads"), ("02_board_east", "East: the next village"),
        ("03_board_west", "West: a village further off"), ("04_board_south", "South: the Well")]),
-    # 36.5: a long entry read without clicking it: held while the mouse goes into the pane, scrolled there
-    S("hall_reading", "Village Hall", "Reading a long entry without clicking it",
-      "a long chronicle entry was hovered, stayed read out as the mouse moved into the pane and scrolled there to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
-      [("01_chronicle_hovered", "A long entry hovered"), ("02_chronicle_held", "Held with the mouse in the pane"),
+    # 36.5 in Copperline (48.4, B1344): a long entry opened with one click in the list and scrolled to its end
+    S("hall_reading", "Village Hall", "Reading a long entry",
+      "a long chronicle entry was pointed at, opened to its whole text with one click and scrolled to its last line; on the Storehouse board every line of a row showed in its icon's tooltip", 45,
+      [("01_chronicle_hovered", "A long entry pointed at"), ("02_chronicle_held", "Opened to its whole text with one click"),
        ("03_chronicle_last_line", "Scrolled to its last line"), ("05_board_tooltip", "The Storehouse board: a row's every line in its icon's tooltip")]),
     # 36.1: a build with a basement in the table's 3D preview: the cellar under a faint ground plane, fitted whole
     S("table_basement", "Builder", "Blueprint Table: basements in the preview",
@@ -1732,6 +1732,21 @@ SCENES = [
       40, [("01_outside_front", "The Market Cross from the front: the stair cut into the octagonal drum, the white shaft and its lantern-hung head over the parapet"),
            ("02_outside_back", "From the back: the drum's stone faces and pilasters, a bench against them"), ("03_outside_west", "From the west"),
            ("04_outside_east", "From the east: the market flag flying from the head, flowering azaleas in the plinth's corners")], furniture=True),
+    # ROADMAP 51.7: the Market Corner rebuilt from scratch (round 2)
+    S("rebuild_market_corner", "Build families", "The rebuilt Market Corner from four sides",
+      "the Market Corner's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: an open market court) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Corner from the front: two striped canvases stepping down over the L of counters, the little booth at the front, the court open in the middle"),
+           ("02_outside_back", "From the back: dark oak posts standing proud of the board screens, the canvas running on as an eave"),
+           ("03_outside_west", "From the west: the booth's canvas over its goods, lanterns hung over the walk"),
+           ("04_outside_east", "From the east: the banner mast on the street corner, open hatches with their shutters folded back")], furniture=True),
+    # ROADMAP 51.7: the Market Square rebuilt from scratch ("the Market House")
+    S("rebuild_market_square", "Build families", "The Market Square, rebuilt: from four sides and at eye level inside",
+      "the Market Square's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Market Square from the front: the paved square, the balcony over its middle, the jettied Market Court under its brick-tile roof and cupola"),
+           ("02_outside_back", "From the back: the long tile roof over the Market Court's shuttered windows"),
+           ("03_outside_west", "From the west: the striped stall with produce on its counter, the open undercroft behind"),
+           ("04_outside_east", "From the east: the outside stair up to the Market Court's door, a lamp post at its foot"),
+           ("10_room_1", "The Market Court at eye level: the reeve's tables either side of the aisle to the balcony door, the cupboards of standard weights, two lamps hung from the tie beams")], furniture=True),
     # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
     S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
       "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -1830,6 +1845,14 @@ SCENES = [
            ("02_outside_back", "From the back: the gabled ledger bay out of the long roof"),
            ("04_outside_east", "From the east: the tower on its stone skirt, the chimney up the gable"),
            ("10_room_1", "The trading floor at eye level: the waiting tables by the shop windows, the Shop Counter facing the door")], furniture=True),
+    # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
+    # drawn), Level I of each built furnished side by side
+    S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",
+      "the Starter Cottage as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("11_desert", "Desert: a mud-brick block under a flat roof and parapet, its door in a shaded loggia"),
+           ("12_savanna", "Savanna: the veranda house under one golden thatched hip, deep eaves on every side"),
+           ("13_snowy", "Snowy: a log cabin under a steep snow-laden roof, an entry porch before the door"),
+           ("14_taiga", "Taiga: a spruce cabin on a stone course, a pair of steep gables to the road")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

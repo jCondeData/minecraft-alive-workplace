@@ -1,0 +1,10 @@
+{
+  "name": "starter-cottage-desert",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, the desert look (ROADMAP 49.10a): Version B drawn again in mud brick under flat roofs, with a shaded loggia. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

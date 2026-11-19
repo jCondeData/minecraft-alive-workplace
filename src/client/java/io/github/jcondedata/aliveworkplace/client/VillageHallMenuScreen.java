@@ -867,6 +867,16 @@ public class VillageHallMenuScreen extends ChoiceTableScreen {
 		chronicleView.open(slot);
 	}
 
+	/** The chronicle entry that is open, or -1 (the screenshot harness). */
+	public int chronicleOpen() {
+		return chronicle() ? chronicleView.openSlot() : -1;
+	}
+
+	/** How far the chronicle's list is scrolled, and how far it can go (the screenshot harness). */
+	public int[] chronicleScroll() {
+		return chronicle() ? chronicleView.scroll() : new int[]{0, 0};
+	}
+
 	/** The section the screen draws itself on the main page (People, Overview, and the Map once its view came), or null. */
 	private Section board() {
 		if (!hasSidebar() || !onMain()) {

@@ -53,7 +53,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 	private static final BlockPos MATES_CHEST = new BlockPos(14, 2, 4);
 
 	/** A lead with a hut under way (owned by {@code owner}), two idle builders nearby, the lead's chest holding twice its materials. */
-	private record Run(ServerLevel level, Villager[] lead, Villager[] mates, UUID site, Map<Item, Integer> materials, Container chest,
+	record Run(ServerLevel level, Villager[] lead, Villager[] mates, UUID site, Map<Item, Integer> materials, Container chest,
 		Container matesChest) {
 		BuildSite live() {
 			return BuildSiteManager.get(level).get(site);
@@ -71,7 +71,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 		}
 	}
 
-	private static Run setup(GameTestHelper helper, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.player.Player owner) {
+	static Run setup(GameTestHelper helper, @org.jetbrains.annotations.Nullable net.minecraft.world.entity.player.Player owner) {
 		QaHelperLeftoversGameTests.prepare(helper);
 		ServerLevel level = helper.getLevel();
 		helper.setBlock(TABLE, ModBlocks.BUILDERS_BENCH);
@@ -106,7 +106,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 		return new Run(level, new Villager[]{lead}, mates, id, materials, chest, helper.getBlockEntity(MATES_CHEST));
 	}
 
-	private static Map<Item, Integer> bag(Villager v) {
+	static Map<Item, Integer> bag(Villager v) {
 		Map<Item, Integer> out = new LinkedHashMap<>();
 		for (ItemStack s : ModAttachments.BUILDER_BAG.getOrCreate(v).stacks()) {
 			if (!s.isEmpty()) {
@@ -116,7 +116,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 		return out;
 	}
 
-	private static Map<Item, Integer> chestOf(Container c, Map<Item, Integer> materials) {
+	static Map<Item, Integer> chestOf(Container c, Map<Item, Integer> materials) {
 		Map<Item, Integer> out = new LinkedHashMap<>();
 		for (Item item : materials.keySet()) {
 			out.put(item, c.countItem(item));
@@ -124,7 +124,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 		return out;
 	}
 
-	private static Map<Item, Integer> ground(GameTestHelper helper, Map<Item, Integer> materials) {
+	static Map<Item, Integer> ground(GameTestHelper helper, Map<Item, Integer> materials) {
 		Map<Item, Integer> out = new LinkedHashMap<>();
 		for (Item item : materials.keySet()) {
 			out.put(item, 0);
@@ -138,7 +138,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 	}
 
 	/** The hut's materials not yet built: both chests, every bag and the ground. */
-	private static Map<Item, Integer> total(GameTestHelper helper, Run r) {
+	static Map<Item, Integer> total(GameTestHelper helper, Run r) {
 		Map<Item, Integer> out = new LinkedHashMap<>();
 		for (Item item : r.materials().keySet()) {
 			int n = r.chest().countItem(item) + r.matesChest().countItem(item) + bag(r.lead()[0]).getOrDefault(item, 0);
@@ -151,11 +151,11 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 		return out;
 	}
 
-	private static int sum(Map<Item, Integer> m) {
+	static int sum(Map<Item, Integer> m) {
 		return m.values().stream().mapToInt(Integer::intValue).sum();
 	}
 
-	private static String state(GameTestHelper helper, Run r) {
+	static String state(GameTestHelper helper, Run r) {
 		BuildSite site = r.live();
 		StringBuilder b = new StringBuilder(site == null ? "(site gone)" : site.stage() + " " + site.status());
 		for (Villager mate : r.mates()) {
@@ -166,7 +166,7 @@ public class QaHelperBags1031GameTests implements net.fabricmc.fabric.api.gamete
 	}
 
 	/** After the build ended: every helper idle with an empty bag, and none of the materials in the helpers' own chest. */
-	private static void assertHelpersBack(GameTestHelper helper, Run r, String when) {
+	static void assertHelpersBack(GameTestHelper helper, Run r, String when) {
 		for (Villager mate : r.mates()) {
 			helper.assertTrue(!Builders.isHelping(mate), when + ": a helper is still helping: " + state(helper, r));
 			helper.assertTrue(bag(mate).isEmpty(), when + ": a helper still carries " + bag(mate) + ": " + state(helper, r));

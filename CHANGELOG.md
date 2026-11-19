@@ -16,7 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.157.0 — 2026-11-18
+
 ### Added
+- **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
+  of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound
+  log cabin with a mudroom, a spruce cabin under steep gables), with the same rooms and furniture. Plains keep the saltbox;
+  the Blueprint Table lists every look (49.10a).
 - **The Daub House**, a new Level I home (the owner's pick of 36.23's two): mud-brick daub in a dark oak frame under a
   steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
   In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
@@ -182,6 +188,19 @@ asks for the steps, `latest.log` and any crash report).
   in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
   two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
   you press Refresh on the hall's Repairs page (49.6).
+- **The Market Square is rebuilt from scratch** (51.7, "the Market House", 13 x 13, 16 high). The square is paved
+  round a rosette in its middle, with flowering azaleas in its front corners, and across its back a timber-framed
+  Market Court stands on an open stone undercroft under a steep brick-tile roof, a cross gable and a lantern cupola. A
+  balcony looks out over the middle of the square, an outside stair climbs the east side to the court's door, and a
+  striped stall sells produce on the west. Traders gather on the square and under the undercroft's arches; upstairs
+  the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
+  market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
+  already standing keep their look until you refresh them.
+- **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
+  of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
+  canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying
+  two banners. Pots, a cake, melons, pumpkins and hay sit on the counters, with lanterns hung over the aisle. Market
+  Corners already standing keep their look until you refresh them.
 - **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
   with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
   lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow
@@ -261,6 +280,15 @@ asks for the steps, `latest.log` and any crash report).
   standing keep the drawing they were built from until you refresh them.
 
 ### Fixed
+- With the pack's mods, a crafter's "short of" line keeps to the thing's own recipe when nothing in the chest leads
+  another way: a chest, hopper or TNT minecart is short of 1 Minecart and a furnace minecart of its furnace's
+  cobblestone and a Minecart, never of Create's Minecart Contraption, and a slimeball is never read down to Create's
+  Wheat Flour. A Minecart Contraption in the chest is still used. With the earlier fixes for the smoker's logs and
+  Chipped's planks, all 47 such lines found across every job-made item now read right (B1289).
+- A Builder helping on another Builder's build always brings the materials it fetched back to that Builder's
+  chests, also when the build ended while the helper was away (its chunk unloaded, or the server restarted in
+  between). Before, such a helper emptied its bag into its own chest, and the other Builder's next build could wait
+  forever for materials you had stocked by his bench (B645).
 - A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
   visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
   list, so the afternoon no longer stutters the server (B644).

@@ -34,6 +34,7 @@ export * from './railings.mjs'
 export * from './furniture.mjs'
 export * from './water.mjs'
 export * from './cellars.mjs'
+export * from './climate.mjs' // flatDeck, parapet, vigas, logCourse, mudroom (biome looks: desert and snowy homes)
 export * from './bridges.mjs'
 export * from './garden.mjs'
 export * from './seats.mjs' // benchRun, raisedBed (outdoor seats and the beds behind them)
@@ -106,4 +107,11 @@ export * from './bandit_camp_lair.mjs' // patchwork, pitchedTent, ridgePole, mar
 export * from './lighthouse_light.mjs' // roundCells, shellCells, railCells, towardCentre, lightDrum, corbelCourse, weathering, lanternRoom, lampCrown, causeway, bollard (lighthouses: a round drum, a gallery's corbels, a weathering ledge, a glazed lantern, a crown of night lamps under inverted daylight detectors, a stone mole, bollards; the Lighthouse, 49)
 export * from './observatory_instruments.mjs' // StagedCanvas, roundWall, roundCourse, skyDome, lineTube, quadrantBowl, gnomonStair (staged Wonders and sky instruments: a stage-by-stage canvas, round drums, a voxel dome, a telescope tube along any line, a sundial's quadrant and gnomon stair)
 export * from './lighthouse_stair.mjs' // wallRing, spiralStair, lampHood (a stair winding up a round tower's inside wall through its floors, a lantern's hooded eave of night lamps under a stepped cap; the Lighthouse, 49, round 2)
+export * from './climate_roofs.mjs' // hipRoof, flatRoof (hot climates: a low hipped roof with deep eaves; a flat mud roof with parapet and toron)
 export * from './market_cross.mjs' // edgeRing8, vertexCells, mercatDrum, crossShaft (market crosses: an outline joined round an octagon, its vertex cells, an octagonal mercat drum with pilasters and a parapet, a cross shaft with a lamp-hung capital and a flag; the Market Cross, 49)
+export * from './guard_house_watch.mjs' // insetStorey, archFace, alarmBell (the Gate Watch guard house, 49: a storey framed on the outer line with its infill a block back, an arch's stone face with its keystone, a bell under an overhang)
+export * from './market_awning.mjs' // cornerDepth, lAwning, valance (market stalls: a cell's depth in from a back corner, an L of striped canvas stepping down from a corner, its banner valance; the Market Corner, 49)
+export * from './lookout_gallery.mjs' // rimCells, watchGallery, shedRoof, fenceLamp (lookout towers: a rim's cells in order, an open watch gallery on a jettied deck with braces and a beam ring, a lean-to roof off a wall, a lantern on a fence bracket)
+export * from './gatehouse_gate.mjs' // steepHip, archHead, leafDoorway, loggia, murderDeck (gatehouses: a steep hipped cap on any rectangle, a gateway's arched head, open plank leaves that are no door block, an open fighting loggia, a deck with murder holes; the Gatehouse, 49)
+export * from './fire_station_watch.mjs' // pailRack, trough, downpipe, segmentalArch, hoseReel, lookoutGallery (fire stations and watchtowers: a two-tier pail rack, a rimmed trough, a copper downpipe and spout, a low arch over a three-wide doorway, a hose reel on wheels, a corbelled lookout gallery under a hip cap; the Fire Station, 49)
+export * from './barracks_ward.mjs' // mirrorX, gateArch, wallButtress, footlocker, weaponRack (the Barracks, 49: a wing drawn again as its mirror image, a round-headed gate arch, a stone buttress, a footlocker at a bed's foot, a spear rack)

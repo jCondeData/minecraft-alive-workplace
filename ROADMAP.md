@@ -6982,7 +6982,7 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
   Done when: GameTests (a desert, savanna, snowy and taiga village each start their own look; plains the drawing; a look
   that doesn't fit falls back; a save mid-build of a look reloads), each look's build-to-DONE test, renders, scene
   `rebuild_starter_cottage_looks`, wiki, CHANGELOG.
-- [ ] **49.10b** **The biome looks, 2:** the Stone House and the Townhouse, every level, as 49.10a.
+- [x] **49.10b** (review: pending 2026-11-19) **The biome looks, 2:** the Stone House and the Townhouse, every level, as 49.10a.
 - [ ] **49.10c** **The biome looks, 3:** the Terrace and the Manor, every level, as 49.10a.
 - [ ] **49.10d** **The biome looks, 4:** the Artisan's House, the Weaver's Cottage and the Daub House, as 49.10a.
 - [ ] **49.10e** **The biome looks, 5:** the Farmstead and the Ranch, every level, as 49.10a.

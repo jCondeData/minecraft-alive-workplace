@@ -148,6 +148,9 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- Villagers can walk through the Pump House's upper door again: the railing in front of it, out on the gallery, is now
+  a flat panel against the edge instead of a fence post, so a villager steps out onto the gallery standing up (B1405,
+  B1406).
 - A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
   carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
   he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the

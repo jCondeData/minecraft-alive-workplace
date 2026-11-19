@@ -26,6 +26,10 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Terrace in its village's culture**: desert, savanna and taiga villages now build their own look of both levels
+  (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
+  granite and mud with a veranda; a long range of spruce logs under a slate roof with a porch on log posts), with the same
+  homes, beds and furniture. Plains and snowy villages keep the Crow-Step Row (49.10c).
 
 ## 0.157.0 — 2026-11-18
 

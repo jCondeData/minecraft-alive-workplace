@@ -1299,6 +1299,8 @@ def stage_l4(b):
 
 
 def lighthouse():
+    """The 35.x Lighthouse, replaced by lighthouse_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (lighthouse_at_sea)."""
     b = StagedBuild(LW, LH, LD)
     b.begin(1)
     stage_l1(b)
@@ -1309,6 +1311,17 @@ def lighthouse():
     b.begin(4)
     stage_l4(b)
     return b
+
+
+def lighthouse_drawn():
+    """The new Lighthouse (ROADMAP 52.6, rebuilt from scratch): js/lighthouse/recipe.mjs, its four stage snapshots joined
+    by js/lighthouse/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "lighthouse", "stages.py")
+    spec = importlib.util.spec_from_file_location("lighthouse_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def lighthouse_at_sea(stage=None):
@@ -5084,7 +5097,7 @@ WONDERS = {
         ],
     },
     "lighthouse": {
-        "draw": lighthouse,
+        "draw": lighthouse_drawn,  # 52.6: rebuilt from scratch (js/lighthouse/)
         "icon": "minecraft:sea_lantern",
         "crew": 12,
         "requirements": [

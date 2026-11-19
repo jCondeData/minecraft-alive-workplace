@@ -23,6 +23,13 @@ asks for the steps, `latest.log` and any crash report).
   on each side; then the drum and its Observing Room; and last the copper dome with the great telescope reaching out
   through its glazed shutter. New stage names to match. An Observatory already begun or finished keeps the old drawing:
   it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Lighthouse is rebuilt from scratch** (52.6): "the Mole Light", a stone arm running out to sea from the quay to a
+  round bastion, the tower at its end climbing from a mossy foot to a pale shaft, a gallery on corbels and a glazed
+  lantern under a hood of 28 lamps that light by themselves at night. The keeper's cottage and a net shed stand on the
+  quay; a ferry landing with a jetty out to the Travel Post (now at the sea-side edge) and a fish stage with a drying
+  rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
+  stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
+  is repaired and finished as it was first drawn.
 
 ## 0.157.0 — 2026-11-18
 

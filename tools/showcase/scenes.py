@@ -1162,9 +1162,9 @@ SCENES = [
        ("22_wonder_stadium_battle", "The player's battle against a visiting trainer")], cobblemon=True),
     # The Lighthouse (ROADMAP 35.12): its time-lapse beside a sea the harness digs, ending at night with the lamps lit
     S("wonder_lighthouse", "Wonders", "The Lighthouse: its time-lapse by the sea, lit at night",
-      "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled, the jetty running out over the water; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the lantern's redstone lamps shone over the sea", 780,
-      [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"),
-       ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
+      "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled: the quay, the mole and the bastion first, then the keeper's cottage with the ferry landing and its jetty out over the water, the shaft and the gallery, and last the lantern under its hood of lamps; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the hood's ring of redstone lamps shone over the sea", 780,
+      [("11_wonder_lighthouse_stage_1", "Stage I, the Quay, the Mole and the Bastion, by the sea"),
+       ("14_wonder_lighthouse_stage_4", "The Lantern and the Hood: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # The Hanging Gardens (ROADMAP 35.20): its time-lapse, ending the next morning with the falls running and farmers on the terraces
     S("wonder_hanging_gardens", "Wonders", "The Hanging Gardens: its time-lapse, and farmers on its terraces",
@@ -1874,6 +1874,14 @@ SCENES = [
            ("02_outside_back", "From the back: the stepped terraces under the drum"),
            ("03_outside_west", "From the west: the quadrant scale against the gnomon, the copper dome over the drum"),
            ("04_outside_east", "From the east: the great telescope reaching out through the dome's glazed shutter")], furniture=True),
+    # ROADMAP 52.6: the Lighthouse rebuilt from scratch (REBUILD.md), "the Mole Light", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_lighthouse", "Build families", "The Lighthouse, rebuilt: from four sides",
+      "the Lighthouse's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Lighthouse from the quay: the keeper's cottage, the steps up onto the mole and the tower's door straight ahead"),
+           ("02_outside_back", "From the sea: the round bastion and its rip-rap, the tower climbing from its mossy foot to the pale shaft"),
+           ("03_outside_west", "From the west: the fish stage and its drying rack off the mole, the gallery on its corbels"),
+           ("04_outside_east", "From the east: the ferry landing and the jetty with the Travel Post at its end, the hood's ring of lamps")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

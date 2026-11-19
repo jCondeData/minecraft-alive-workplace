@@ -505,6 +505,64 @@ public class WonderDrawingsGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * 52.6 shipped the rebuilt Lighthouse: one begun with the 35.11 drawing (the key its file named until then) is still
+	 * counted, repaired and continued by that drawing, read from the shipped history. Finished, it is counted against
+	 * the old drawing's blocks, not today's; half-built at stage 2, its next stage is the old stage 2 part (the B656
+	 * tower) at its old offset, its blocks as the old part had them; a Wonder recorded with today's key goes by today's
+	 * drawing.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"wonderDrawingsLighthouse"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "wonderDrawingsLighthouse")
+	public void aLighthouseOfThe3511DrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ResourceLocation lighthouse = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "lighthouse");
+		String old = "drawn_e886920ac"; // the 35.11 drawing (with B656's tower), the one standing on servers before 52.6
+		Wonder today = Wonders.loaded().get(lighthouse);
+		helper.assertTrue(today != null, "the Lighthouse isn't loaded: " + Wonders.problems());
+		helper.assertTrue(!Wonders.drawing(lighthouse).equals(old), "the Lighthouse's file still names the 35.11 drawing");
+		helper.assertTrue(WonderDrawings.olderKeys(level.getServer(), lighthouse).contains(old), "the 35.11 drawing isn't in the history: "
+			+ WonderDrawings.olderKeys(level.getServer(), lighthouse));
+		List<Wonder.Stage> oldStages = WonderDrawings.stages(level.getServer(), lighthouse, old).orElseThrow();
+		List<BlockPos> offsets = oldStages.stream().map(st -> st.parts().get(0).offset()).toList();
+		helper.assertTrue(oldStages.size() == 4 && offsets.equals(List.of(BlockPos.ZERO, new BlockPos(5, 3, 14), new BlockPos(6, 30, 15), new BlockPos(9, 0, 0))),
+			"the 35.11 drawing's stages: " + oldStages.size() + " at " + offsets);
+
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), helper.absolutePos(new BlockPos(1, 2, 1)), Rotation.NONE, Mirror.NONE);
+		WonderSite finishedOld = new WonderSite(UUID.randomUUID(), lighthouse, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		WonderSite finishedNew = new WonderSite(UUID.randomUUID(), lighthouse, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE,
+			Optional.of(Wonders.drawing(lighthouse)));
+		helper.assertTrue(WonderDrawings.older(level, finishedOld) && !WonderDrawings.older(level, finishedNew), "which drawing each goes by");
+		int oldCount = WonderUpkeep.blocks(level, finishedOld).size();
+		int newCount = WonderUpkeep.blocks(level, finishedNew).size();
+		// the counts WonderUpkeep keeps (structure and decoration steps; a few of each drawing's 5,011 and 5,175 blocks are
+		// the plan's foundation or landscape steps, which the count leaves out for every Wonder)
+		helper.assertTrue(oldCount == OLD_LIGHTHOUSE_COUNT && newCount == NEW_LIGHTHOUSE_COUNT, "an old Lighthouse is counted against " + oldCount
+			+ " blocks (the 35.11 drawing: " + OLD_LIGHTHOUSE_COUNT + "), today's against " + newCount + " (" + NEW_LIGHTHOUSE_COUNT + ")");
+		for (WonderUpkeep.Part part : WonderUpkeep.parts(level, finishedOld)) {
+			Optional<WonderDrawings.Older> o = WonderDrawings.parse(BlueprintStyles.base(part.structure()));
+			helper.assertTrue(o.isPresent() && o.get().key().equals(old), "an old Lighthouse's part (repaired by it) is today's: " + part.structure());
+		}
+
+		WonderSite halfOld = new WonderSite(UUID.randomUUID(), lighthouse, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 2, 1L,
+			Optional.empty(), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, false, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		Wonder.Part next = WonderDrawings.of(level, halfOld).stages().get(1).parts().get(0);
+		ResourceLocation todaysPart = today.stages().get(1).parts().get(0).part();
+		helper.assertTrue(next.part().equals(WonderDrawings.olderId(todaysPart, old)) && next.offset().equals(new BlockPos(5, 3, 14)),
+			"a half-built old Lighthouse's stage 2 is " + next);
+		helper.assertTrue(!today.stages().get(1).parts().get(0).offset().equals(next.offset()), "today's stage 2 part stands where the old one did");
+		Optional<Blueprint> oldPart = BlueprintLibrary.get(level, next.part());
+		Optional<Blueprint> newPart = BlueprintLibrary.get(level, todaysPart);
+		helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty() && newPart.isPresent()
+			&& !new HashSet<>(oldPart.get().blocks()).equals(new HashSet<>(newPart.get().blocks())), "the old stage 2 part didn't load as the old one");
+		helper.succeed();
+	}
+
+	/** The block counts {@link #aLighthouseOfThe3511DrawingKeepsItsOldStages} pins (WonderUpkeep's, of the 35.11 and 52.6 drawings). */
+	private static final int OLD_LIGHTHOUSE_COUNT = 5006, NEW_LIGHTHOUSE_COUNT = 5171;
+
+	/**
 	 * The record is saved: a site and the whole manager written and read back keep it; a site saved before it reads with
 	 * none (and everything else as it was); a record naming a drawing that isn't shipped goes by today's; an older
 	 * drawing's part is read from the history under its own id, and today's parts as before.

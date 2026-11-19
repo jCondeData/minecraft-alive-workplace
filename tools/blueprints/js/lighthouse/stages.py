@@ -4,6 +4,9 @@ stands after that stage), loads each into a kit Build, checks each stage standin
 wonders.save_wonder does (check.py, the owner's rules included), saves the stage parts with kit.wonder_stages and each
 whole stage as <id>.nbt, all into build/rebuild/lighthouse/ (never src/main/resources). Then run holes.py on the wholes.
     MC_BUILDER=<skill> python3 stages.py
+
+Shipped (52.6): wonders.WONDERS["lighthouse"]["draw"] is staged() below, so the mod's parts and data file are saved with
+    MC_BUILDER=<minecraft-builder skill> python3 -c "import sys; sys.path.insert(0, 'tools/blueprints'); import wonders; wonders.save_wonder('lighthouse')"
 """
 import os
 import subprocess
@@ -15,7 +18,7 @@ sys.path.insert(0, BP)
 
 from check import check  # noqa: E402
 from holes import load  # noqa: E402
-from kit import ROOT, Build, wonder_stages  # noqa: E402
+from kit import ROOT, Build, StagedBuild, wonder_stages  # noqa: E402
 
 OUT = os.path.join(ROOT, "build", "rebuild", "lighthouse")
 
@@ -30,6 +33,22 @@ def stage_build(n):
     for (x, y, z), name in cells.items():
         if name and name != "minecraft:air":
             b.set(x, y, z, name, **states[(x, y, z)])
+    return b
+
+
+def staged():
+    """The Lighthouse as a kit StagedBuild, one stage per recipe snapshot: wonders.WONDERS["lighthouse"]["draw"] (52.6,
+    shipped with wonders.save_wonder; needs node and MC_BUILDER). The recipe never replaces an earlier stage's block, so
+    each snapshot only adds to the one before."""
+    snapshots = [stage_build(n) for n in range(1, 5)]
+    last = snapshots[-1]
+    b = StagedBuild(last.w, last.h, last.d)
+    for n, s in enumerate(snapshots, 1):
+        b.begin(n)
+        for pos, block in s.blocks.items():
+            if block[0] == "minecraft:air" or pos in b.blocks:
+                continue
+            b.blocks[pos] = block
     return b
 
 

@@ -52,9 +52,9 @@ final class RebuildScene {
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "fletchers_lodge", "tailors_shop", "print_shop",
 		"glassblowers_workshop", "jewellers_workshop", "crafters_workshop", "workshop", "trail", "bandit_camp", "raiders_stockade",
 		"bandit_fort", "caravan_wreck", "chapel", "market_cross", "market_corner", "market_square", "leaders_hall", "trade_hall",
-		"starter_cottage_looks", "clinic", "physicians_house", "healing_center", "observatory");
+		"starter_cottage_looks", "clinic", "physicians_house", "healing_center", "observatory", "lighthouse");
 	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
-	static final Set<String> WONDERS = Set.of("observatory");
+	static final Set<String> WONDERS = Set.of("observatory", "lighthouse");
 	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */
 	static final String LOOKS_SUFFIX = "_looks";
 	private static final BlockPos AT = new BlockPos(0, -60, 0);

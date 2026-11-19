@@ -23,7 +23,7 @@ import net.minecraft.world.phys.Vec3;
  * SCENE=storage_hall (ROADMAP 37.17), filmed with -Pfurniture=true -Pcobblemon=true (Tom's Simple Storage comes with the
  * furniture mods): the Storage Hall, the Terminal Nook and the Warehouse from their Tom's copies, and the vanilla Storage
  * Hall beside them for comparison. Checks each Tom's copy is chosen, its connector joins the inventories drawn for it
- * (29, 6 and 60), and the vanilla hall has no block of Tom's.
+ * (29, 8 and 60), and the vanilla hall has no block of Tom's.
  */
 final class StorageHallScene {
 	private record Site(ResourceLocation id, boolean toms, BlockPos origin, BlockPos connector, int members) {
@@ -31,7 +31,7 @@ final class StorageHallScene {
 
 	private static final Site HALL = new Site(StarterBlueprints.STORAGE_HALL.id(), true, new BlockPos(0, -60, 0), new BlockPos(6, 1, 8), 29);
 	private static final Site VANILLA_HALL = new Site(StarterBlueprints.STORAGE_HALL.id(), false, new BlockPos(-18, -60, 0), null, 0);
-	private static final Site NOOK = new Site(StarterBlueprints.TERMINAL_NOOK.id(), true, new BlockPos(18, -60, 0), new BlockPos(4, 1, 6), 6);
+	private static final Site NOOK = new Site(StarterBlueprints.TERMINAL_NOOK.id(), true, new BlockPos(18, -60, 0), new BlockPos(5, 3, 9), 8); // 50.13: the rebuilt Nook
 	private static final Site WAREHOUSE = new Site(StarterBlueprints.WAREHOUSE.id(), true, new BlockPos(32, -60, 0), new BlockPos(9, 1, 6), 60);
 
 	/** The stills (inside, the camera's feet on the floor: its eye 1.62 above): a name, where the camera is and what it looks at (relative to a building's origin), which building. */
@@ -42,7 +42,7 @@ final class StorageHallScene {
 		new View("01_halls", new Vec3(-3, 10, -18), new Vec3(-3, 4, 6), HALL),
 		new View("02_hall_counter", new Vec3(6.5, 1, 3.6), new Vec3(6.5, 1, 9), HALL),
 		new View("03_hall_island", new Vec3(2.5, 1, 4.5), new Vec3(6.5, 1.5, 9), HALL),
-		new View("04_nook_inside", new Vec3(4.5, 1, 3.5), new Vec3(4.5, 1.2, 6.5), NOOK),
+		new View("04_nook_inside", new Vec3(5.5, 3, 4.5), new Vec3(5.5, 3.2, 8.5), NOOK), // 50.13: the room is one level up
 		new View("05_warehouse", new Vec3(9.5, 8, -12), new Vec3(9.5, 4, 8), WAREHOUSE),
 		new View("06_warehouse_inside", new Vec3(13.5, 1, 5.5), new Vec3(6, 1.5, 11), WAREHOUSE));
 	private static final int FIRST = 80;

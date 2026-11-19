@@ -253,7 +253,7 @@ public class QaBuilderStockGameTests implements net.fabricmc.fabric.api.gametest
 		net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template = level.getStructureManager().get(nook.id()).orElseThrow();
 		BlockPos origin = helper.absolutePos(new BlockPos(18, 2, 18));
 		template.placeInWorld(level, origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1024L), 2);
-		BlockPos board = origin.offset(2, 1, 4);
+		BlockPos board = origin.offset(2, 3, 4); // 50.13: the rebuilt Nook's Storehouse, one level up
 		helper.assertTrue(level.getBlockState(board).is(ModBlocks.STOREHOUSE), "no Storehouse in the placed Terminal Nook: " + level.getBlockState(board));
 		ensurePoi(level, board);
 		List<BlockPos> stores = io.github.jcondedata.aliveworkplace.build.SupplyContainers.find(level, board, null);

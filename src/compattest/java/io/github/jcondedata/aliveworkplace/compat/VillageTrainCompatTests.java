@@ -578,13 +578,14 @@ public class VillageTrainCompatTests implements FabricGameTest {
 			helper.assertTrue(unfinished.isEmpty(), unfinished.size() + " wrong, e.g. " + unfinished.stream().limit(12)
 				.map(p -> p.subtract(placement.origin()).toShortString() + "=" + level.getBlockState(p)).toList());
 			helper.assertTrue(site.skipped() == 0, site.skipped() + " skipped");
-			helper.assertTrue(CaravanTrains.isStation(level.getBlockState(placement.origin().offset(6, 1, 4))), "no station at 6,1,4");
-			for (int x = 0; x < 13; x++) {
-				helper.assertTrue(CaravanTrains.isTrack(level.getBlockState(placement.origin().offset(x, 1, 6))), "no track at " + x + ",1,6");
+			// ROADMAP 50.13: the rebuilt Trainshed (19 x 18 x 17): the station on the platform's edge, the track through the shed
+			helper.assertTrue(CaravanTrains.isStation(level.getBlockState(placement.origin().offset(9, 1, 11))), "no station at 9,1,11");
+			for (int x = 0; x < 19; x++) {
+				helper.assertTrue(CaravanTrains.isTrack(level.getBlockState(placement.origin().offset(x, 1, 12))), "no track at " + x + ",1,12");
 			}
 			// A hall by it notes the station
 			BlockPos hall = helper.absolutePos(new BlockPos(14, 2, 26));
-			helper.assertTrue(CaravanTrains.find(level, hall).contains(placement.origin().offset(6, 1, 4)), "the station isn't found from a hall nearby");
+			helper.assertTrue(CaravanTrains.find(level, hall).contains(placement.origin().offset(9, 1, 11)), "the station isn't found from a hall nearby");
 		});
 	}
 

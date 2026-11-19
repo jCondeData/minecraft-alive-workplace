@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024, 50.13
 
 ## 1. What a player sees
 
@@ -195,14 +195,17 @@ Storehouse block takes a porter, and the village and the Village Map count it as
 14: a long stone-and-birch hall with a porch, 27 chests and barrels in an island round an inventory connector, a
 counter by the door with a storage terminal and a crafting terminal either side of the Storehouse and the Carpenter's
 crafting table, two filing cabinets
-for the paper and maps on the back wall), the **Terminal Nook** (9 x 10 x 9: a small room that fits beside a house, six
-chests round a connector along its back wall, a storage terminal before it) and the **Warehouse** (19 x 16 x 16: two
+for the paper and maps on the back wall), the **Terminal Nook** (11 x 15 x 12; rebuilt from scratch in 50.13 as "the Staddle
+Granary": a store room of pale boards on a dark oak frame, lifted on nine stone staddles under a bell-cast slate roof
+with a louver on its ridge, a stone flight along the front up to a railed landing; inside, the Storehouse at the
+porter's desk by the door, eight chests round a connector along the back wall with a storage terminal before it,
+barrels and hay along the sides; standing nooks keep their old drawing until refreshed) and the **Warehouse** (19 x 16 x 16: two
 floors under a long roof, four racks of chests and barrels below and two in the loft, 60 in all, a crafting terminal and a
 crafting table at the packing counter by the loading doors, a lean-to loading bay with a handcart). With Tom's Simple Storage installed
 they are built of Tom's blocks and every chest, barrel and cabinet is on the connector's network: the Storehouse reads
 them through it (each item once) and the terminals show them in Tom's own screen. Without Tom's (or with
 `moddedLibrary` or `furnishedBuilds` off) they are the vanilla builds: a chest where the connector stands, a counter
-stair for the crafting terminal, a counter block (or nothing, in the Nook) for the storage terminal, boards and spruce
+stair for the crafting terminal, a counter block (in the Nook a dark oak post, the tally desk) for the storage terminal, boards and spruce
 logs for the cables and trims, chests for the filing cabinets; every chest and barrel is then the Storehouse's own store. The crafting table is in
 both versions at the same spot (B388: a crafting terminal is no job site, so the copies once took the Carpenter's).
 

@@ -1,0 +1,11 @@
+{
+  "name": "terminal-nook",
+  "private": true,
+  "type": "module",
+  "description": "Terminal Nook (the Staddle Granary, 49 / 50.13): one plan drawn twice, the vanilla build and (TOMS=1) its Tom's Simple Storage copy. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes both candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && TOMS=1 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py terminal_nook terminal_nook --candidate --nbt out/terminal-nook.nbt && mkdir -p ../../../../build/rebuild/terminal_nook/modded && python3 ../../rebuild.py terminal_nook modded/terminal_nook --candidate --nbt out/terminal-nook-toms.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/terminal-nook.nbt"
+  }
+}

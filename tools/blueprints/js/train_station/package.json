@@ -1,0 +1,10 @@
+{
+  "name": "train-station",
+  "private": true,
+  "type": "module",
+  "description": "The Train Station (49/50.13, \"the Trainshed\"): rebuilt with the rebuild kit (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py train_station train_station --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -1,0 +1,3 @@
+51.9: the Royal Hall rebuilt from scratch ('the Brick Palace'): a red-brick hall entered between two copper-capped gate towers with a balcony over the arcade, a feasting hall with the throne in its own bay behind the dais, the vault and the steward's room either side. Level II adds an east wing with the treasury, a council chamber upstairs and a belfry. Independent critic: SHIP (silhouette 3->4, depth 3->4, interior 2->4, detail 3->3). For you to judge: the change from a stone hall to a brick palace, now 25 tall; the design was not fully blind (its designer had read the old drawing's one-line description). Next-pass notes: the back is the plainest side, three roof materials.
+
+(from lane-c-1119-0053, 2026-11-19 01:24Z; not yet sent)

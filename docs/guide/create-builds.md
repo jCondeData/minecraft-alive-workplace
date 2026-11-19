@@ -48,8 +48,10 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
   sides and a copper spire. Water pours from a stone spout down the tower's front corner and turns the wheel by the
   door; through a slit in the wall you can watch the drive climb to the clocks. A map room with the cartography table
   is at its foot. It's there to look at, and the clocks keep the time.
-- **Pump House**: a small brick house where the wheel turns a mechanical pump. It draws from a little pool in the floor
-  that fills itself up again, and pumps the water into a tank. A cauldron makes it a leatherworker's workplace.
+- **Pump House**: a stone water tower with a green copper cap. Water falls from a stone cup down its side and turns the
+  wheel, and the wheel turns a mechanical pump at the tower's foot. The pump draws from a little pool that fills itself
+  up again and pumps the water up the tower into a tank at the top, in a glass room with a gallery round it. The
+  leatherworker's tannery leans on the tower, and his cauldron makes it his workplace.
 
 ![The six newer Create builds](https://jcondedata.github.io/minecraft-alive-workplace/create_builds_more/anim.gif)
 

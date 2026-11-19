@@ -119,8 +119,9 @@ public class QaCreateBuildsTurnedCompatTests implements FabricGameTest {
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa_pump_house_270")
 	public void aPumpHouseTurnedTheOtherWayStillPumps(GameTestHelper helper) {
 		Run run = start(helper, StarterBlueprints.PUMP_HOUSE, Rotation.COUNTERCLOCKWISE_90, Mirror.NONE);
-		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(10, 1, 2), "minecraft:cauldron",
-			List.of(new BlockPos(6, 1, 4), new BlockPos(6, 1, 5))));
+		// ROADMAP 50.13: the rebuilt water tower's cauldron, pump and cogwheel
+		helper.succeedWhen(() -> assertBuiltAndTurning(helper, run, new BlockPos(7, 1, 10), "minecraft:cauldron",
+			List.of(new BlockPos(13, 2, 3), new BlockPos(13, 2, 4))));
 	}
 
 	/**

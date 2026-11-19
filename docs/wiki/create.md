@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, 50.13
 
 ## What a player sees
 
@@ -83,9 +83,13 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   Clock", 15 x 26 x 15), a slender stone shaft under a jettied timber clock chamber with a cuckoo clock on every face and
   a bell-cast copper spire: water poured into a spout pier's cup falls down the tower's front corner past the wheel by
   the door, whose drive runs in through the wall, up a corner shaft (seen through a slit) and out through the chamber's
-  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House**, a small brick house
-  where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
-  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
+  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House** (18 x 17 x 13; rebuilt
+  from scratch in 50.13 as "the Tanner's Water Tower"), a stone water tower under a steep green copper cap: water poured
+  into a stone cup on its flank falls past the wheel into a trough, the wheel's cogwheel turns a mechanical pump over a
+  four-source cistern at the tower's foot (it refills; seen through the front windows), and a riser climbs the tower to
+  a two-high fluid tank in a glazed belvedere, a door out onto the gallery round it; the Leatherworker's tannery leans
+  on the tower under a deepslate gable (his cauldron between two chests, a cutting table, a stitching desk, hides;
+  standing pump houses keep their old drawing until refreshed). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
   handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels
   still turn into the gap. Switching `createBuilds` off while one is going up only takes them off the table: the build
   under way is finished and turns.

@@ -1560,7 +1560,7 @@ final class JobScenes {
 			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
 				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
 				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(7, 15, 3),
-				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
+				StarterBlueprints.PUMP_HOUSE, new BlockPos(13, 2, 3)); // 50.13: the rebuilt water tower's pump
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			for (int row = 0; row < 2; row++) {
 				List<StarterBlueprints.Entry> builds = StarterBlueprints.MORE_CREATE_BUILDS.subList(row * 3, row * 3 + 3);

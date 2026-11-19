@@ -545,7 +545,7 @@ PUMP_BRICK = Mix((8, "bricks"), (2, "granite"), seed=403)
 
 
 def pump_house():
-    """14 x 10 x 9 (ROADMAP 39.8): the Pump House. A small nine-by-seven brick house framed in spruce under a dark oak
+    """The OLD drawing (ROADMAP 50.13: the live .nbt now comes from the rebuild kit, tools/blueprints/js/pump_house; this one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 10 x 9 (ROADMAP 39.8): the Pump House. A small nine-by-seven brick house framed in spruce under a dark oak
     gable, a lean-to store on its east side; the water wheel on its west wall (header tank and mill race as the
     Watermill's). Inside, the wheel's shaft ends in a cogwheel turning a mechanical pump beside it; the pump draws from
     a sump of four water sources in the floor (so it refills) through an intake pipe and pushes up a pipe into a fluid

@@ -67,6 +67,12 @@ asks for the steps, `latest.log` and any crash report).
   below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
   climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
   in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Pump House, rebuilt from scratch** (50.13, with Create) as "the Tanner's Water Tower": a stone water tower
+  under a steep green copper cap, water falling from a stone cup down its flank past the wheel, which turns the
+  mechanical pump over a cistern at its foot (seen through its windows). A pipe climbs the tower to the tank, which
+  stands in a glazed room at the top with a door out onto the gallery round it. The Leatherworker's tannery leans on
+  the tower under a deepslate roof, with his cauldron between two chests, a cutting table, a stitching desk and hides
+  on the walls (18 by 13, 17 tall). Pump houses already standing keep their old drawing until refreshed.
 - **The Train Station, rebuilt from scratch** (50.13, with Create) as "the Trainshed": a long brick train shed with
   the track running right through it under a dark slate roof, both ends open under timber portals with glazed fans and
   a glazed lantern along the ridge; the station stands on the platform's edge among benches and hanging lanterns. On

@@ -1989,6 +1989,13 @@ SCENES = [
            ("02_outside_back", "From the back: the long brick train shed, a window in every bay, the glazed lantern along its ridge on dark oak posts"),
            ("03_outside_west", "From the west: the shed's open end, the track running out under the tie beam and its glazed fan"),
            ("10_room_1", "Inside at eye level: the booking hall's benches, the ticket window and the route map by the door")], furniture=True, create=True),
+    # ROADMAP 50.13: the Pump House rebuilt from scratch (REBUILD.md), "the Tanner's Water Tower" (Create only)
+    S("rebuild_pump_house", "Build families", "The Pump House, rebuilt: from four sides and at eye level inside",
+      "the Pump House's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Pump House from the front: the stone water tower under its green copper cap, the tannery's gable and hooded door beside it"),
+           ("02_outside_back", "From the back: the tannery's deepslate roof leaning on the tower, the gallery round the tower's top"),
+           ("04_outside_east", "From the east: water falling from the stone cup down the tower's flank past the water wheel into its trough"),
+           ("10_room_1", "The tannery at eye level: the soaking vat between the two chests, the cutting table, the stitching desk and the hides")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

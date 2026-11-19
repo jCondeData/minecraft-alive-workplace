@@ -707,12 +707,14 @@ public final class StarterBlueprints {
 	 * The Greenhouse (the Leat House, rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/greenhouse: a ridge-and-furrow
 	 * glasshouse whose leat turns an undershot wheel, its belt running along the west wall under the harvester and the plough
 	 * to a depot in the front wall), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
-	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
+	 * and the Pump House (rebuilt from scratch in ROADMAP 50.13, tools/blueprints/js/pump_house, "the Tanner's Water Tower": a
+	 * stone water tower whose waterfall turns a wheel on its flank, the wheel's cogwheel turning a mechanical pump over a
+	 * cistern at its foot, a riser to a two-high fluid tank in a glazed belvedere under a copper cap, a tannery behind it).
 	 */
 	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(18, 13, 14)); // ROADMAP 50.9: rebuilt
 	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
 	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
-	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));
+	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(18, 17, 13)); // ROADMAP 50.13: rebuilt, "the Tanner's Water Tower"
 	/** The builds of 39.8, in the order the Table shows them. */
 	public static final List<Entry> MORE_CREATE_BUILDS = List.of(BRASS_FOUNDRY, SAWMILL, CRUSHING_MILL, GREENHOUSE, CLOCK_TOWER, PUMP_HOUSE);
 	/** Built of Create's blocks: in the Blueprint Table (and the creative tab) only with Create and {@code createBuilds} on (mechanic/CreateBuilds). */

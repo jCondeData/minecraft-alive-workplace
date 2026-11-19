@@ -179,7 +179,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "crushing_mill", "windmill",
            # 50.13, the Train Station ("the Trainshed"), Create only: js/train_station (MC_BUILDER=..., sh build.sh writes
            # the candidate; LIVE=1 sh build.sh the live one)
-           "train_station"}
+           "train_station",
+           # 50.13, the Pump House ("the Tanner's Water Tower"), Create only: js/pump_house (MC_BUILDER=..., sh build.sh
+           # writes the candidate; LIVE=1 sh build.sh the live one)
+           "pump_house"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -305,7 +308,7 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2, 50.3, 50.5 and 50.7: drawn by the rebuild kit
+            continue  # ROADMAP 50.2, 50.3, 50.5, 50.7 and 50.13: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
         if name not in REBUILT:  # ROADMAP 50.13: drawn by the rebuild kit

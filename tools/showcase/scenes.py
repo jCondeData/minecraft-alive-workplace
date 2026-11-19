@@ -1833,6 +1833,13 @@ SCENES = [
            ("03_outside_west", "From the west: the stone chimney up the gable"),
            ("02_outside_back", "From the back: the log walls and the long roof"),
            ("10_room_1", "Inside at eye level: the fletching table and the chest beside it")], furniture=True),
+    # ROADMAP 50.11: the Flower Shop rebuilt from scratch ("the glasshouse florist")
+    S("rebuild_flower_shop", "Build families", "The Flower Shop, rebuilt: from four sides and at eye level inside",
+      "the Flower Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Flower Shop from the front: the tall glazed gable on its brick dwarf wall, green copper glazing bars, the brick parlour's shop window beside it"),
+           ("02_outside_back", "From the back: the solid brick gable and the boiler's chimney up it"),
+           ("04_outside_east", "From the east: the parlour's copper roof and the fenced cutting yard with its pond"),
+           ("10_room_1", "Inside at eye level: the aisle between the raised beds of tall flowers, hanging pots, the composter at the end")], furniture=True),
     S("rebuild_tailors_shop", "Build families", "The Tailor's Shop, rebuilt: from four sides and at eye level inside",
       "the Tailor's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
       40, [("01_outside_front", "The Tailor's Shop from the front: the jettied gable over the glazed shopfront, bolts of cloth on show"),

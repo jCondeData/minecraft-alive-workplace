@@ -17,6 +17,12 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Changed
+- **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
+  wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
+  to her composter, shelves and hanging pots of flowers, a brick parlour with the counter, a chimney from the stove that
+  warms the glass, and a fenced cutting yard with a pond. The **Flower Shop II** adds a second glass range across the
+  yard and a glazed lantern on the ridge. Shops already standing keep their old drawing until refreshed; village flower
+  shops keep their look.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range

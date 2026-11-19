@@ -152,7 +152,11 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4",
            # 51.9, the Royal Hall ("the Brick Palace"): js/royal_hall (MC_BUILDER=...; sh build.sh writes candidates,
            # LIVE=1 sh build.sh saves realm/royal_hall and realm/royal_hall_2)
-           "royal_hall", "royal_hall_2"}
+           "royal_hall", "royal_hall_2",
+           # 50.11, the Flower Shop ("the glasshouse florist"; the buildables only: the five village flower shops keep
+           # their own looks, village.py and village_looks.py): js/flower_shop (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py flower_shop flower_shop_2)
+           "flower_shop", "flower_shop_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -246,8 +250,11 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
     apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
-    flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
-    flower_shop_building_2().save(MAIN_STRUCTURES, "flower_shop_2")
+    # ROADMAP 50.11: the Flower Shop comes from the rebuild kit (REBUILT); starter.flower_shop_building* are the old
+    # drawings, kept in blueprint_history/
+    for name, draw in (("flower_shop", flower_shop_building), ("flower_shop_2", flower_shop_building_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("graveyard", graveyard), ("graveyard_2", graveyard_2)):
         if name not in REBUILT:  # ROADMAP 51.6: the Graveyard comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)

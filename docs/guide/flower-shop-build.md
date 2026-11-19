@@ -2,16 +2,20 @@
 
 ```infobox
 type: Build
-Size: 9 by 9, 11 high (II: 15 by 9)
-Tiers: I, II (a glass greenhouse)
+Size: 13 by 13, 12 high (II: 17 by 15)
+Tiers: I, II (a second glass range across the yard)
 Houses: a Florist at the composter
 Where to get it: Blueprint Table
-Main materials: dark oak stairs, birch planks, bricks, stripped birch logs, glass panes
+Main materials: bricks, waxed oxidized cut copper stairs, stone bricks, dark oak logs, glass panes, glass
 categories: Builds
 related: jobs-land.md, compost-yard-build.md, apiary-garden-build.md
 ```
 
-A little brick and birch shop with an awning over the window, a composter and a chest inside.
+The glasshouse florist: the shop is a glasshouse. A tall glazed gable faces the street on a low brick wall, with
+green copper glazing bars and a copper ridge; inside, one aisle runs from the front door to the composter between two
+raised beds of tall flowers, with shelves of potted flowers, hanging pots and lanterns. A brick parlour with the counter
+and a chest stands against the front corner, the stove that keeps the glass warm sends its chimney up the brick back
+wall, and a fenced cutting yard with a little pond lies behind the parlour.
 
 ## Getting the blueprint
 
@@ -25,7 +29,8 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Flower Shop, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Flower Shop II** adds a glass greenhouse on the side.
+- **Flower Shop II** adds a second, lower glass range across the yard, closing it into a courtyard of beds, with its own
+  doors and a glazed lantern on the big ridge.
 
 ## What it does for the village
 

@@ -289,10 +289,10 @@ public final class StarterBlueprints {
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
 	/** The meadow runs on with four more hives. */
 	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 8, 11));
-	/** A little shop with a Flower Stand and an awning. */
-	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
-	/** A glass greenhouse on the side. */
-	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(15, 11, 9));
+	/** The glasshouse florist: a glazed gable on a brick dwarf wall, her beds either side of the aisle to the composter, a brick parlour with the counter and a fenced cutting yard (rebuilt 50.11). */
+	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(13, 12, 13));
+	/** A second, lower glass range across the yard and a glazed lantern on the big ridge. */
+	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(17, 12, 15));
 	/** The Lantern Yard: a walled churchyard through a lychgate, a lantern tower over the chapel with the Undertaker's Table (rebuilt 51.6). */
 	public static final Entry GRAVEYARD = new Entry(AliveWorkplace.id("graveyard"), new Vec3i(13, 16, 13));
 	/** The same yard a generation on: tall yews, lanterns on the piers, stone crosses, an iron-railed front, benches. */

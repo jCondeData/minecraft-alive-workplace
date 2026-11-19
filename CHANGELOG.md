@@ -110,6 +110,13 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
+  buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
+  whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story
+  timber pavilion under dark tile roofs, a walled barbican with a second gate on the field side, and two broad stairs up
+  the village side. Its sentries now stand on the open walk, one on each stretch between the towers. Same stage names. A
+  Great Wall already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
 - **The Hanging Gardens are rebuilt from scratch** (52.6): "the Terraced Mount", four mud-brick terraces on vaulted
   halls, set back toward the rear so the gardens fall to the front in green tiers hung with leaves and vines while the
   back rises as a sheer brick cliff. A grand stair climbs from a forecourt between two reflecting pools, and a stair up
@@ -119,6 +126,13 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
+  placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
+  Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
+  block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
+  drops a plain one (B1070).
+- With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
+  instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
   after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
@@ -130,6 +144,9 @@ asks for the steps, `latest.log` and any crash report).
   keep the Crow-Step Row (49.10c).
 - **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
   looks count as one (49.10b).
+- In Festival Cup and Stadium bouts, a Pokémon with no attacking move (a Wobbuffet, a Ditto) now struggles against a
+  Ghost as in the games, instead of doing nothing until the clock ran out, which could hand a Master's bout to a
+  Novice (B1403).
 
 ### Dev
 - The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt

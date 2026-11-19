@@ -41,10 +41,6 @@
   "wonder/great_library/stage_2_0": 8,
   "wonder/great_library/stage_3_0": 2,
   "wonder/great_library/stage_4_0": 2,
-  "wonder/great_wall/stage_1_0": 2,
-  "wonder/great_wall/stage_1_1": 2,
-  "wonder/great_wall/stage_2_0": 2,
-  "wonder/great_wall/stage_3_0": 2,
   "wonder/stadium/stage_3_0": 6
  },
  "why": "Blueprints drawn before the owner's three rules (ROADMAP 49.1). Their owner-rule problems are reported as one line until their rebuild (Milestones 49-52), which removes them from this list. Never add a new blueprint here."

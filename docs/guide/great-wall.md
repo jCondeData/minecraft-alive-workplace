@@ -4,7 +4,7 @@
 type: Wonder
 expansion: M35
 Needs: a Town, a finished Gatehouse, the Golem Smith (or 4 iron golems and a Master Tinkerer), the Master Architect
-Size: 97 long, 12 high, four towers and the Great Gate
+Size: 97 long, 12 high, four watchtowers and the Great Gate
 Stages: The Great Gate; The West Run; The East Run; The Walk and the Towers' Crowns
 While it stands: no raid gathers behind it, and four iron golem sentries keep its walk
 categories: Wonders, Defense
@@ -13,10 +13,13 @@ related: wonders.md, defence.md, builder.md
 
 ![The Great Wall going up, then a night raid gathering on the open side while its sentries watch](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_wall/anim.gif)
 
-A curtain of stone 97 long and 12 high on a battered plinth, with a crenellated walk lit by braziers and lanterns, four
-towers under spruce roofs, and the **Great Gate** at its center, its portcullis over a gate of fence gates. The towers are
-solid stone up to the walk, on buttressed deepslate bases hung with banners, so you go in from the walk: climb one of the
-two stairs on the village side by the gate. Banners hang in every bay on the field side, under arrow slits.
+A long gray wall 97 long and 12 high, its stone stepping in over a dark deepslate foot, with buttresses on the field side,
+a walk on top behind battlements and lantern posts, and four square **watchtowers**. Each tower is solid stone up to the
+walk; the walk runs through a guard room (a grindstone, a barrel, a table by the arrow loops) with a ladder up to the
+lookout, where a signal fire burns under a spruce roof. At the center stands the **Great Gate**: a gatehouse with a
+timber pavilion on top under dark tile roofs, its passage shut by spruce gates under an iron portcullis, and behind it on
+the field side a walled **barbican** court with a second, outer gate. Two broad stairs climb the village side either side
+of the gate, up to the walk. The wall's two ends are broken off and mossed over, as if it went on into the hills.
 
 ## What it needs
 
@@ -38,9 +41,10 @@ its stairs are on your side. See [Wonders](wonders.md) for drawing up the plans.
 - **No raid gathers behind it.** Seen from the Village Hall, the Wall covers part of the compass. Raiders (night raids,
   bandits and the rest) gather outside that part, plus 10 degrees either side, so they come from the open side. A
   siege can't lean ladders on it or ram the Great Gate.
-- **Four iron golem sentries** keep its walk. They come when it's finished and stand in the alcoves of the four towers.
-  A sentry fights anything within 16 blocks of the wall, then goes back to its alcove. When raiders are about further
-  off, it steps out onto the walk and watches them. Knocked off the wall, it climbs back up.
+- **Four iron golem sentries** keep its walk. They come when it's finished and stand on the walk, one on each stretch
+  between the towers. A sentry fights anything within 16 blocks of the wall, then goes back to its post. When raiders
+  are about further off, it steps out onto the walk and watches them. Knocked off the wall, it walks back up the stairs
+  by the gate, or climbs the wall's face.
 - **A lost sentry is replaced** the next morning by the village's Golem Smith (or a Tinkerer), if the Wonder's stockpile
   (the chests round the Foundation Stone) holds **4 iron blocks and a pumpkin**.
 - **The Great Gate shuts at night** and opens in the morning, like the village's gates.

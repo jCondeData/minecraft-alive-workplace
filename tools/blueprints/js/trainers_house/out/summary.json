@@ -1,0 +1,19 @@
+{
+  "name": "trainers-house",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 56
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/trainers_house/out/trainers-house.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/trainers_house/out/summary.json",
+  "size": [
+    17,
+    15,
+    19
+  ],
+  "blockCount": 858,
+  "paletteCount": 78,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/trainers_house/recipe.mjs"
+}

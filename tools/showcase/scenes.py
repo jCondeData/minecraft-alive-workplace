@@ -618,7 +618,7 @@ SCENES = [
     S("refresh_old_house", "Village Hall", "Refresh an old house to its latest look",
       "A Stone House built from its drawing before B260 (as on the live server) was offered Refresh to the latest look on the "
       "hall's Repairs page; a click showed what changes, the button sent Bram, and he took the old leftovers away and put the "
-      "new pieces in, nothing doubled", 230,
+      "new pieces in, nothing doubled", 350,
       [("01_old_house", "Before: the Stone House as its drawing before B260 built it"), ("02_repairs_page", "The Repairs page: the house, to refresh"),
        ("03_what_changes", "What changes, and the Refresh to the latest look button"), ("04_after", "After: the house in its latest look")]),
     # Upgrade a built home from the Village Hall (ROADMAP 36.14): the Upgrades page, a blocked row, and a click sending a Builder
@@ -2027,6 +2027,14 @@ SCENES = [
            ("02_outside_back", "From the back: the terraces' backs rising nearly sheer, a cliff of mud brick"),
            ("03_outside_west", "From the west: the terraces stepping up toward the back, their arcades glazed under the blue frieze, leaves and vines spilling over every edge"),
            ("04_outside_east", "From the east: the stairs climbing each terrace's face, the palms of the Palm Basin and the crown, the Cypress Walk")], furniture=True),
+    # ROADMAP 52.6: the Great Wall rebuilt from scratch (REBUILD.md), "the Pass Gate", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_wall", "Build families", "The Great Wall, rebuilt: from four sides",
+      "the Great Wall's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Wall from the village side: the long gray curtain on its dark foot, the four watchtowers, the Gate Pavilion over the Great Gate and the two Horse Stairs either side"),
+           ("02_outside_back", "From the field: the battlements on their corbels, the buttresses, and the Barbican pushed out behind the gate with its outer gate"),
+           ("03_outside_west", "From the west: the broken, mossy end where the wall goes on, the end tower's signal-fire lookout under its spruce cap"),
+           ("04_outside_east", "From the east: the walk running through the towers to the Gate Pavilion's two dark-tiled roofs")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

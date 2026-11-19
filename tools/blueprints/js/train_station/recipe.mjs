@@ -9,7 +9,7 @@ import { SIZE, PALETTE, TRACK, STATION, MASSES, OPENINGS, FURNITURE, OUTSIDE } f
 import {
   Canvas, mix, stair, slab, plinth, floor, post, wallPanel, window, door, gableRoof, gableWall, bargeTrim, pyramidRoof,
   quoins, stringCourse, flowerBed, raisedBed, plantFlower, lampPost, furnitureParts,
-  trackRun, shedTruss, ridgeLantern, clockFace, waitingBench, pediment,
+  trackRun, shedTruss, ridgeLantern, clockFace, waitingBench, stationPediment,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -129,7 +129,7 @@ export function draw() {
 
   // --- Pass 3: depth and detail ---------------------------------------------------------------------------------
   // the front door's pediment on its two pilasters, a lantern hung under it
-  pediment(c, fd.at[0], H.courseY, fd.at[2] - 1, { full: P.dressing, stairs: dressStairs })
+  stationPediment(c, fd.at[0], H.courseY, fd.at[2] - 1, { full: P.dressing, stairs: dressStairs })
   c.set(fd.at[0], H.courseY - 1, fd.at[2] - 1, 'lantern', { hanging: 'true', waterlogged: 'false' })
   // stone lintels over the shed's back windows
   for (const x of [3, 7, 11, 15]) for (let dx = -1; dx <= 1; dx++) c.set(x + dx, S.wallTop, S.back, P.dressing)

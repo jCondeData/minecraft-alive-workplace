@@ -3125,6 +3125,8 @@ def stage_w4(b):
 
 
 def great_wall():
+    """The 35.x Great Wall, replaced by great_wall_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (great_wall_stage, great_wall_piece, great_wall_eye)."""
     b = StagedBuild(WW, WH, WD)
     b.begin(1)
     stage_w1(b)
@@ -3137,6 +3139,17 @@ def great_wall():
     b.begin(4)
     stage_w4(b)
     return b
+
+
+def great_wall_drawn():
+    """The new Great Wall (ROADMAP 52.6, rebuilt from scratch, "the Pass Gate"): js/great_wall/recipe.mjs, its four stage
+    snapshots joined by js/great_wall/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_wall", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_wall_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def great_wall_stage(stage=None):
@@ -5158,7 +5171,7 @@ WONDERS = {
         ],
     },
     "great_wall": {
-        "draw": great_wall,
+        "draw": great_wall_drawn,  # 52.6: rebuilt from scratch (js/great_wall/)
         "icon": "minecraft:stone_brick_wall",
         "crew": 12,
         "requirements": [
@@ -5171,9 +5184,10 @@ WONDERS = {
         "goods": GOODS["great_wall"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
-            # 35.16: a sentry in each tower's alcove (the cell on the walk's side, at the walk), west to east
+            # 52.6: a sentry on the walk of each of the four runs, west to east (js/great_wall/plan.mjs POSTS; its
+            # verify() checks each post and walk spot holds a golem on solid floor)
             {"type": "sentries", "count": 4, "range": 16,
-             "posts": [[t + 8, W_WALK + 1, 8] for t in W_TOWERS] + [[WW - 1 - (t + 8), W_WALK + 1, 8] for t in reversed(W_TOWERS)]},
+             "posts": [[15, 10, 7], [34, 10, 7], [62, 10, 7], [81, 10, 7]]},
         ],
     },
     "hanging_gardens": {

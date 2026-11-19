@@ -73,7 +73,7 @@ export function waitingBench(c, cells, facing, { seat, back = null, wood = null 
 
 /** pediment: a little gabled hood over a door in a wall along x: stairs at x - 1 and x + 1 rising to a full block over
  *  the door at y, one out (z) from the wall. */
-export function pediment(c, x, y, z, { full, stairs }) {
+export function stationPediment(c, x, y, z, { full, stairs }) {
   stair(c, x - 1, y, z, stairs, 'east')
   stair(c, x + 1, y, z, stairs, 'west')
   c.set(x, y, z, full)

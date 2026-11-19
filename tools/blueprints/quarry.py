@@ -15,7 +15,7 @@ SHED_FOOT = Mix((5, "cobblestone"), (3, "stone_bricks"), (2, "andesite"), seed=3
 
 
 def quarry():
-    """17 x 9 x 12 (+5 below ground): a 8 x 9 pit (x 1-8, z 2-10) inside a curb of cobblestone and stone brick with a
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/quarry; this one is kept in blueprint_history/ and no longer saved by generate.py). 17 x 9 x 12 (+5 below ground): a 8 x 9 pit (x 1-8, z 2-10) inside a curb of cobblestone and stone brick with a
     spruce fence on it, a gap at the north for the hoist and an open gate on the east (the Miner's way down the steps); inside the gate a flight of stone steps
     cut down the pit's east side (x 9) to a landing four deep, walled on the far side; a spruce hoist frame over the north
     rim with a lantern on a chain; and east of the pit the Miner's shed (x 11-15, z 3-9): a cobblestone footing,

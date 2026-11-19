@@ -1932,6 +1932,21 @@ SCENES = [
            ("02_outside_back", "From the back: the turning aisle's lower roof under the barn's steep thatch, slatted vents in its wall"),
            ("03_outside_west", "From the west: the aisle door with its lamp post, the hoist gable's ridge running back into the main ridge"),
            ("04_outside_east", "From the east: the barn's gable end over its rubble plinth, the scrap heap of pumpkins, hay and melons in the yard")], furniture=True),
+    # ROADMAP 50.10: the Quarry rebuilt from scratch (REBUILD.md), "the Headframe" (one level, no basement)
+    S("rebuild_quarry", "Build families", "The Quarry, rebuilt: from four sides and at eye level inside",
+      "the Quarry's blueprint stands on a cleared lawn (its pit is the ground under it); every furniture spot holds its piece and the hoist house gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Quarry from the front: the tall dark oak headframe over the pit with its spoked sheave, the hoist house beside it with the brick stack through its ridge"),
+           ("02_outside_back", "From the back: the spoil heap behind the pit, ore showing in the rubble"),
+           ("03_outside_west", "From the west: the headframe's legs stepping in halfway up, the skip and a lantern hanging on chains over the pit"),
+           ("04_outside_east", "From the east: the hoist house's boarded gable and deepslate roof, the stack rising from the blast furnace"),
+           ("10_room_1", "Inside at eye level: the blast furnace under the stack, the drop-off chest by it, the lamps and the winch drum")], furniture=True),
+    # ROADMAP 50.10: the Sifting Shed rebuilt from scratch (REBUILD.md), "the Tipple" (Level I filmed)
+    S("rebuild_sifting_shed", "Build families", "The Sifting Shed, rebuilt: from four sides",
+      "the Sifting Shed's blueprint stands on a cleared lawn; it has no furniture spots (the cauldron and the chest are the job's own blocks), so it is filmed from four sides",
+      40, [("01_outside_front", "The Sifting Shed from the front: the timber loft on its legs under the steep slate gable, the hoist beam's lantern under the ridge, the door under its hood"),
+           ("02_outside_back", "From the back: the loft's frame proud of its pale boards over the stone-walled screen room"),
+           ("03_outside_west", "From the west: the sieves hung drying on their rail under the loft's shuttered windows"),
+           ("04_outside_east", "From the east: the gravel and sand heaps in their board bays under the lean-to")], furniture=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

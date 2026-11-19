@@ -1,0 +1,19 @@
+{
+  "name": "quarry",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 46
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/out/quarry.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/out/summary.json",
+  "size": [
+    19,
+    17,
+    14
+  ],
+  "blockCount": 686,
+  "paletteCount": 72,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/recipe.mjs"
+}

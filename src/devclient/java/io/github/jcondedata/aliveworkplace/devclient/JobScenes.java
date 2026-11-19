@@ -3286,8 +3286,9 @@ final class JobScenes {
 				level.dimension().location(), origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
 			net.minecraft.world.level.levelgen.structure.BoundingBox pit = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pit(placement);
 			net.minecraft.util.RandomSource rock = net.minecraft.util.RandomSource.create(3612);
-			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit
-			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 17, origin.getY() - 1, origin.getZ() + 12)) {
+			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit (50.10: under the
+			// rebuilt Headframe's whole 19 x 14 footprint and a block round it)
+			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 19, origin.getY() - 1, origin.getZ() + 14)) {
 				boolean inPit = pit.isInside(p);
 				BlockState state;
 				if (inPit) {
@@ -3299,7 +3300,7 @@ final class JobScenes {
 				level.setBlock(p, state, 2);
 			}
 			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT).orElseThrow().placeInWorld(level,
-				origin.below(5), origin.below(5), new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+				origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
 			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT,
 				placement, player.getUUID());
 			io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = 1200; // a block every second, for the film

@@ -23,7 +23,8 @@
 //
 // Pinned (saves): the pit stays at x 1-8, z 2-10, y -1 to -10 (QuarryBuilds.PIT_MIN / PIT_MAX: 8 x 9 x 10 = 720
 // blocks), the blast furnace stays at (14, 1, 7) (QuarryBuilds.FURNACE). Nothing moves; no code change needed.
-// The test ground's chest at FURNACE two blocks north, (14, 1, 5), is drawn here too (half of the shed's double chest).
+// The test ground lays its own chest at FURNACE two blocks north, (14, 1, 5); the drawing's drop-off double chest stands
+// against the east wall at (16, 1, 4-5) (ship step: furniture.py wants a chest's back to a wall).
 //
 // Masses (named parts the owner's feedback can point at):
 //   Pit         the ground left as it lies, x 1-8, z 2-10: nothing drawn at or below y 1 over it (air at y 0-1).
@@ -103,7 +104,9 @@ export const OPENINGS = {
 
 // Furniture: chests and the furnace are fixtures (no spot); the lamps and the foreman's side table are spots.
 export const CHESTS = [
-  { cells: [[14, 4], [14, 5]], facing: 'west' }, // the drop-off by the furnace: (14, 1, 5) is the test ground's chest
+  // the drop-off by the furnace, its back to the east wall (furniture.py: a chest stands against a wall; at x 14 it stood
+  // loose in the room); the test ground keeps its own chest at (14, 1, 5)
+  { cells: [[16, 4], [16, 5]], facing: 'west' },
   { cells: [[12, 9], [12, 10]], facing: 'east' }, // stores: pickaxes, torches, ladders (against the pit wall)
 ]
 export const WINCH = { x0: 14, x1: 16, y: 1, z: 10, crank: [13, 1, 10] } // the hoist drum in the back corner, its crank
@@ -115,8 +118,8 @@ export const FURNITURE = [
   { room: 'Hoist House', kind: 'lamp', part: 'tableLamp', pos: [16, 1, 7], facing: 'west', cells: [[0, 0, 0], [0, 1, 0]], wood: 'spruce' },
 ]
 
-// The walking line: the front (z 0) -> path slabs (12-13, 0, 0-1) -> the step (13, 0, 2) -> the front door (13, 1, 3)
-// -> along x 13 (z 4-6) past the drop-off chest -> (13, 1, 7), the cell west of the furnace where the Miner stands
+// The walking line: the front (z 0) -> the grass -> the step (13, 0, 2) -> the front door (13, 1, 3)
+// -> along x 13 (z 4-6), the drop-off chest at hand to the east -> (13, 1, 7), the cell west of the furnace where the Miner stands
 // (JobScenes spawns there) -> (12, 1, 7) -> the pit door (11, 1, 7) -> the plinth course (10, 0, 7) -> the lip slab in
 // the Gap (9, 0, 7) -> the pit's top, edge cell (8, -1, 7), the cell nearest the furnace, where the stairs start.
 // Every step is level or one down; nothing over 1 high, no gate. The stores chest is reached from (13, 1, 9).

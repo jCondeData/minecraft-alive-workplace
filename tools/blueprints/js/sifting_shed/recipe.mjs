@@ -100,6 +100,7 @@ export function draw(level = LEVEL) {
     const y0 = hp.y ?? 1
     for (const [x, z] of hp.base) if (y0 > 0 && !c.get(x, y0 - 1, z)) c.set(x, y0 - 1, z, stone(x, y0 - 1, z))
     heap(c, y0, hp.base, hp.crown, P.heaps[hp.block])
+    if (hp.boards) for (const [x, y, z] of hp.boards.cells) trapdoor(c, x, y, z, `${P.wood}_trapdoor`, hp.boards.facing, 'bottom', true)
   }
 
   // --- Pass 6: Level II, the incline gallery and the second sieve at its foot -----------------------------------------

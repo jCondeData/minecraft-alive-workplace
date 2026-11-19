@@ -152,7 +152,7 @@ def sifting_hall(b, depth):
 
 
 def sifting_shed():
-    """9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the sifter's cauldron inside,
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/sifting_shed; this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 9 x 9: a timber shed on a stone footing, gable to the street and open in front: the sifter's cauldron inside,
     bins of gravel and sand, a chest for the finds, a lantern on a chain from the tie beam."""
     b = Build(9, 9, 9)
     sifting_hall(b, 7)
@@ -172,7 +172,7 @@ def sifting_shed():
 
 
 def sifting_shed_2():
-    """11 x 9 x 13: the shed run back to twice the depth with a second cauldron for a second sifter, a side door, and a
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/sifting_shed; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 9 x 13: the shed run back to twice the depth with a second cauldron for a second sifter, a side door, and a
     catslide lean-to down the east side over stone-walled bins of sand and gravel."""
     b = sifting_shed().grow(11, 9, 13)
     b.clear(1, 1, 7, 7, 8, 7)  # the old back wall and gable come down

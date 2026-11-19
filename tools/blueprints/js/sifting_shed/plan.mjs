@@ -108,9 +108,12 @@ export const FURNITURE = []
 export const HEAPS = [
   { name: 'gravel bay', block: 'gravel', base: [[7, 2], [8, 2], [7, 3], [8, 3]], crown: [[7, 2, 2]] },
   { name: 'sand bay', block: 'sand', base: [[7, 5], [8, 5], [7, 6], [8, 6]], crown: [[7, 2, 5]] },
-  // Level II's heaps lie in the open yard straight on the ground (y 0), tipped from the barrows
-  { name: 'red sand heap', block: 'red', y: 0, base: [[8, 11], [9, 11], [8, 12], [9, 12], [8, 13]], crown: [[8, 1, 11], [8, 1, 12], [9, 1, 12]], level: 2 },
-  { name: 'soul sand heap', block: 'soul', y: 0, base: [[0, 11], [1, 11], [0, 12], [1, 12], [0, 10]], crown: [[0, 1, 11], [1, 1, 12], [0, 1, 12]], level: 2 },
+  // Level II's heaps lie in the open yard straight on the ground (y 0), tipped from the barrows: low heaps (one block
+  // crowning each) in board bays, a row of upright boards (open trapdoors) along each bay's outer side (critic polish)
+  { name: 'red sand heap', block: 'red', y: 0, base: [[8, 11], [9, 11], [8, 12], [9, 12], [8, 13]], crown: [[8, 1, 12]], level: 2,
+    boards: { cells: [[9, 1, 11], [9, 1, 12], [9, 1, 13]], facing: 'west' } },
+  { name: 'soul sand heap', block: 'soul', y: 0, base: [[0, 11], [1, 11], [0, 12], [1, 12], [0, 10]], crown: [[1, 1, 11]], level: 2,
+    boards: { cells: [[0, 1, 10], [0, 1, 11], [0, 1, 12]], facing: 'east' } },
 ]
 
 // The walking line: the street -> the front door -> the standing spot -> the chest; in II on under the back

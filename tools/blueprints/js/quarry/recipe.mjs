@@ -104,8 +104,11 @@ export function draw() {
   for (const f of FURNITURE) (furnitureParts[f.part] ?? kitchenParts[f.part])(c, f)
 
   // --- Pass 5: ground -----------------------------------------------------------------------------------------------
-  const pathMix = fairMix(P.path.map(id => [id, 1]), 13)
-  for (const [x, z] of [[12, 0], [13, 0], [13, 1], [12, 1]]) slab(c, x, 0, z, pathMix(x, 0, z))
+  // flashing: a run of tile slabs where the headframe's back beam meets the hoist house's west eave (holes.py read the
+  // gap between them as a pit in the roof)
+  for (let z = 4; z <= 8; z++) if (!c.get(10, 6, z)) slab(c, 10, 6, z, P.roof.slab)
+  // (the 2 x 2 patch of path slabs before the shed door is gone: the critic read it as a stray pale patch; the door's
+  // stone step at (13, 0, 2) is the way in from the grass)
   spoilHeap(c, MASSES.spoil, 0, spoil, [[2, 0, 13, 'coal_ore'], [6, 0, 12, 'iron_ore'], [3, 1, 13, 'copper_ore']])
 
   // Guard: nothing at y 0-1 over the pit (the Miner stands there), nothing below y 0 at all

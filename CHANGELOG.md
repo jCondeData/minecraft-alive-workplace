@@ -55,6 +55,13 @@ asks for the steps, `latest.log` and any crash report).
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
 ### Fixed
+- With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
+  placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
+  Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
+  block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
+  drops a plain one (B1070).
+- With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
+  instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
   after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the

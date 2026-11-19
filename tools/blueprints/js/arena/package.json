@@ -1,0 +1,7 @@
+{
+  "name": "arena",
+  "private": true,
+  "type": "module",
+  "description": "The Arena (ROADMAP 49 rebuild): the Market Stadium, a chalk-marked battle pitch with a red and a blue trainer's box, a colonnaded front stand over the fair lane (II) and a roofed grandstand between the trainers' towers (III). LEVEL=1..3 picks the level; build.sh builds and saves all three. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": { "build": "sh build.sh" }
+}

@@ -91,6 +91,8 @@ export function draw() {
   snowLoad(c, P.roof, P.snow, { eaves: true, tread: () => false, eaveSkip: (x, y, z) => dormer(x, y, z) || !eave(x, y, z),
     skip: (x, y, z) => dormer(x, y, z) || (rake(x, y, z) && c.name(x, y, z) === roofStairs) })
   snowSkirt(c, P.snow, OUTSIDE.bare)
+  // 49.10d critic round 2: close the dormer's apex notch, so the birch behind it doesn't show above the dormer
+  if (c.name(MASSES.dormer.cx, 8, 0) === 'minecraft:air') c.set(MASSES.dormer.cx, 8, 0, P.roof.full)
   return c
 }
 

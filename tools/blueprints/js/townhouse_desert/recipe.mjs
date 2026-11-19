@@ -187,6 +187,14 @@ export function drawLevel(level) {
   }
   if (level >= 2) datePalm(c, OUTSIDE.terracePalm, { ...P.palm, height: 6, reach: 3, skip: (x, y, z) => z < L.z0 }) // no frond out over the street: it would roof the loggia
   if (level >= 3) for (const [x, z] of C.palms) datePalm(c, [x, 0, z], { ...P.palm, height: 8, reach: 3 })
+  if (dug) {
+    // With a cellar the drawing reaches below ground, so a pot (potted plant or decorated pot) on the ground must stand
+    // on a drawn block: a sandstone footing under each one with nothing under it (FloatingFurnishingsGameTests).
+    for (let x = 0; x < SIZES[level][0]; x++) for (let z = 0; z < SIZES[level][2]; z++) {
+      const at = c.get(x, 0, z)
+      if (at && /pot/.test(String(at.id)) && !c.get(x, -1, z)) c.set(x, -1, z, 'smooth_sandstone')
+    }
+  }
   return { c, dug }
 }
 

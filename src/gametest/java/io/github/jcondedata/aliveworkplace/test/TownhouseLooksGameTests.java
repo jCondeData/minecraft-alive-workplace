@@ -103,9 +103,9 @@ public class TownhouseLooksGameTests {
 			for (List<StarterBlueprints.Entry> look : LOOKS.values()) {
 				helper.assertTrue(tried.contains(look.get(level).id()), "missing " + look.get(level).id() + " from " + tried);
 			}
-			for (String culture : List.of("snowy", "taiga")) {
-				ResourceLocation unshipped = BlueprintLooks.look(drawn, culture);
-				helper.assertFalse(tried.contains(unshipped), "the " + culture + " look isn't shipped, yet a village would try it: " + tried);
+			for (String other : List.of("snowy", "taiga")) {
+				ResourceLocation unshipped = BlueprintLooks.look(drawn, other);
+				helper.assertFalse(tried.contains(unshipped), "the " + other + " look isn't shipped, yet a village would try it: " + tried);
 				helper.assertTrue(BlueprintLibrary.get(helper.getLevel(), unshipped).isEmpty(), unshipped + " is in the library, but the critic never passed it");
 			}
 		}
@@ -243,11 +243,14 @@ public class TownhouseLooksGameTests {
 			.filter(e -> e.state().getBlock() instanceof BedBlock && e.state().getValue(BedBlock.PART) == BedPart.HEAD).count();
 	}
 
-	/** The job blocks (every POI but a bed's), by POI type. */
+	/**
+	 * The job blocks (every POI but a bed's and a lightning rod's, which no villager works at: the drawn tower's rod is a
+	 * roof finish the looks may leave out), by POI type.
+	 */
 	private static Map<String, Integer> jobBlocks(Blueprint blueprint) {
 		Map<String, Integer> out = new TreeMap<>();
 		for (Blueprint.Entry e : blueprint.blocks()) {
-			PoiTypes.forState(e.state()).filter(p -> !p.is(PoiTypes.HOME))
+			PoiTypes.forState(e.state()).filter(p -> !p.is(PoiTypes.HOME) && !p.is(PoiTypes.LIGHTNING_ROD))
 				.ifPresent(p -> out.merge(p.unwrapKey().map(k -> k.location().toString()).orElse("?"), 1, Integer::sum));
 		}
 		return out;

@@ -142,6 +142,14 @@ export function drawLevel(level) {
     for (const p of OUTSIDE.hay[l] ?? []) if (!c.get(...p)) c.set(...p, 'hay_block', { axis: 'y' })
   }
   if (level >= 3) acaciaTree(c, MASSES.yard.tree, P.tree)
+  if (dug) {
+    // With a cellar the drawing reaches below ground, so a pot (potted plant or decorated pot) on the ground must stand on a drawn block: a terracotta
+    // footing under each one that has nothing under it (FloatingFurnishingsGameTests; as the Stone House's desert IV).
+    for (let x = 0; x < SIZES[level][0]; x++) for (let z = 0; z < SIZES[level][2]; z++) {
+      const at = c.get(x, 0, z)
+      if (at && /pot/.test(String(at.id)) && !c.get(x, -1, z)) c.set(x, -1, z, 'terracotta')
+    }
+  }
   return { c, dug }
 }
 

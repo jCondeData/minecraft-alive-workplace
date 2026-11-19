@@ -1,0 +1,10 @@
+{
+  "name": "manor-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Noble's Manor, the taiga look (ROADMAP 49.10f): the shipped H as the Boyar's Lodge, dark spruce logs notched on a mossy fieldstone footing under one broad slate roof, verandas on log posts, fieldstone stacks, a log-fenced kitchen garden (II), the ballroom wing (III) and the cellar (IV). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

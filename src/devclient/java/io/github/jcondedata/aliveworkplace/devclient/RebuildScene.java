@@ -52,7 +52,7 @@ final class RebuildScene {
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "fletchers_lodge", "tailors_shop", "print_shop",
 		"glassblowers_workshop", "jewellers_workshop", "crafters_workshop", "workshop", "trail", "bandit_camp", "raiders_stockade",
 		"bandit_fort", "caravan_wreck", "chapel", "market_cross", "market_corner", "market_square", "leaders_hall", "trade_hall",
-		"starter_cottage_looks", "stone_house_looks", "townhouse_looks", "terrace_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
+		"starter_cottage_looks", "stone_house_looks", "townhouse_looks", "terrace_looks", "manor_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
 		"gatehouse", "lookout_tower", "royal_hall", "observatory", "lighthouse", "berry_farm",
 		"apiary_garden", "greenhouse", "flower_shop", "supply_shop", "market_stall", "compost_yard", "quarry",
 		"sifting_shed", "crushing_mill", "windmill", "hanging_gardens", "great_wall", "train_station", "pump_house", "terminal_nook");

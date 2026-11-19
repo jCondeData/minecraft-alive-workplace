@@ -2067,6 +2067,15 @@ SCENES = [
            ("12_savanna", "Savanna: one long golden thatch hip over the row, red granite below packed mud, a veranda on acacia posts, painted window trims"),
            ("13_snowy", "Snowy: the Snowbound Row, a pale calcite gable to a point for every home under steep deepslate roofs, snow on the eaves and drifted at the foot"),
            ("14_taiga", "Taiga: one long range of dark spruce logs on a mossy cobble footing, a slate roof, a veranda on log posts, a stack on every party wall")], furniture=True),
+    # ROADMAP 49.10f: the Noble's Manor in each village culture's climate (desert, savanna, snowy and taiga; plains as
+    # drawn), Level I of each side by side
+    S("rebuild_manor_looks", "Build families", "The Noble's Manor in every village culture: plains, desert, savanna, snowy and taiga",
+      "the Manor as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the brick hall under its porch tower, the crow-stepped west wing"),
+           ("11_desert", "Desert: the Qasr of the Windcatcher, flat sandstone and mud-brick masses behind crenellated parapets, the porch tower a slotted windcatcher"),
+           ("12_savanna", "Savanna: the Great House under One Thatch, one broad golden hip over the whole house, a colonnade of acacia posts, the tower rising through it"),
+           ("13_snowy", "Snowy: the White Hall, pale calcite walls under one steep slate roof, tall pointed gables, the tower under a slate pyramid with snow on its point"),
+           ("14_taiga", "Taiga: the Boyar's Lodge, dark spruce logs on a mossy fieldstone footing under broad slate roofs, verandas on log posts, two fieldstone stacks")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

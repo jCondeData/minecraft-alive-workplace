@@ -2,16 +2,21 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 15 by 17, 18 high
 Tiers: one
 Houses: a Ball Smith at the smithing table
 Where to get it: Blueprint Table (with Cobblemon)
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: dark oak logs, deepslate tile stairs, white concrete, bricks, mangrove planks and trapdoors
 categories: Builds, Pokémon
 related: pokemon.md, tinkers-workshop-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **smithing table**, an anvil and a chest: everything one worker needs to live and work in the same place.
+The Drying Loft: from the street it reads like a Poké Ball, red over a black band over white. The white plaster
+workshop below holds the **smithing table**, an anvil, a workbench and the forge, whose brick stack climbs the east side
+past the ridge. Over it a red loft is jettied out on brackets, its front slatted with louvers where the apricorns dry
+on trays; up there, by the stairs, are a sorting table, the Ball Smith's order desk at the window under the hoist, and
+his bed. The black beam band between the two halves carries a white boss with a button over the door, and a low store
+lean-to behind keeps the chests of apricorns and finished balls.
 
 ## Getting the blueprint
 

@@ -180,7 +180,7 @@ def lower_lab(b, x0, z0, x1, z1, ladder):
 
 
 def research_lab_3():
-    """Upgrade of the Research Lab II: a lower lab under the lab, down a ladder by its front wall. 18 x 10 x 11, 4
+    """The OLD drawing (ROADMAP 50.12: kept in blueprint_history/, no longer saved). Upgrade of the Research Lab II: a lower lab under the lab, down a ladder by its front wall. 18 x 10 x 11, 4
     below."""
     from starter import research_lab_2
     b = research_lab_2().grow(18, 10, 11, basement=BASEMENT)

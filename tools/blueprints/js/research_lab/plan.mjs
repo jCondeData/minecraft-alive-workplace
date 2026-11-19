@@ -59,6 +59,13 @@ export const PALETTE = {
     [8, 'terracotta'],
     [9, 'smooth_sandstone'],
   ],
+  // the back gables' infill (ship polish, the critic's note): plain tuff with the rust band carried across at y 8, so
+  // the pale top band doesn't narrow into an arrow up the gable; the front gable keeps its sandstone round the Great Window
+  gableStrata: [
+    [0, [['tuff_bricks', 6], ['polished_tuff', 2], ['tuff', 1]]],
+    [8, 'terracotta'],
+    [9, [['tuff_bricks', 6], ['polished_tuff', 2], ['tuff', 1]]],
+  ],
   // the cellar's walls: the real ground, darkest at the bottom
   cellarStrata: [
     [-4, 'cobbled_deepslate'],
@@ -69,6 +76,7 @@ export const PALETTE = {
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
   capStair: 'tuff_brick_stairs', // buttress weathering
   sill: 'smooth_sandstone_stairs', // window sills, the Great Window's heads
+  plinthSill: 'deepslate_brick_stairs', // a ground-floor window's sill, where it sits on the plinth: one with the plinth, not a loose pale stub
   coping: { stairs: 'tuff_brick_stairs', full: 'tuff_bricks', apex: 'chiseled_tuff_bricks' }, // the gables' coping
   cornice: 'tuff_bricks', // the vault's feet and its two end arches
   key: 'chiseled_tuff_bricks', // keystones, the carved panel over the Gallery door

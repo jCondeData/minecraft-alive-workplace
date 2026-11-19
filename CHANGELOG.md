@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
+  village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
+
 ## 0.157.0 — 2026-11-18
 
 ### Added

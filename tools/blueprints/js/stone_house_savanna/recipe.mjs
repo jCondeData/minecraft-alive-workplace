@@ -162,6 +162,14 @@ export function draw(level = 1) {
   if (level >= 2) levelTwo(c)
   if (level >= 3) levelThree(c)
   const dug = level >= 4 ? levelFour(c) : null
+  if (level >= 4) {
+    // With a cellar the drawing reaches below ground, so a pot on the ground must stand on a drawn block: a footing
+    // under each one that has nothing under it (FloatingFurnishingsGameTests; as the desert cottage's Level IV, 49.10a).
+    for (let x = 0; x < SIZES[4][0]; x++) for (let z = 0; z < SIZES[4][2]; z++) {
+      const at = c.get(x, 0, z)
+      if (at && String(at.id).includes('potted_') && !c.get(x, -1, z)) c.set(x, -1, z, 'polished_granite')
+    }
+  }
   return { c, dug }
 }
 

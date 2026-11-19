@@ -94,6 +94,11 @@ ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's
 ALLOW.update({(n, (2, 1, 2)): "the open underside of the cage wagon's bed between its wheels, not a room"
               for n in ("prisoner_cage", "legend/prisoner_cage")})
 
+# The Clinic (49 rebuild) has a sun veranda on purpose: the ward's west slope runs on as a catslide over an open deck on
+# posts, where the mending sit out in the sun on seats under the windows; the air under it is a porch, not a room
+ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide, not a walled room"
+              for n in ("clinic", "modded/clinic")})
+
 
 def load(path, props=False):
     """(size, cells): cells maps (x, y, z) to a block id, or to None for a structure void (left out of the file).

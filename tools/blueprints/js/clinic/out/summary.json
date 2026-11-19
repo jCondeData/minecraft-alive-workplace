@@ -1,0 +1,19 @@
+{
+  "name": "clinic",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 34
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/clinic/out/clinic.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/clinic/out/summary.json",
+  "size": [
+    15,
+    14,
+    12
+  ],
+  "blockCount": 646,
+  "paletteCount": 55,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/clinic/recipe.mjs"
+}

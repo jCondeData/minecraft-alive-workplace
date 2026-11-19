@@ -1387,10 +1387,10 @@ SCENES = [
     # rooms; the harness still films the cottage's 02_dining, 03_bedroom, 05_sitting and 06_vanilla_dining
     # B679: the card shows four stills (the selftest's limit); the harness still films 08_stone_attic and 09_terrace_west
     S("furnished_home", "Build families", "Furnished homes: the Stone House's doorway and attic bedroom, the Terrace's two lit kitchens and the Clinic's ward (Handcrafted, Beautify, CobbleFurnies)",
-      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has four whole beds and nothing open under its ridges",
+      "every furniture spot of Starter Cottage II holds the piece this server chose, pieces of at least two furniture mods; nothing stands in the Stone House's way in and none of its pieces floats; both Terrace kitchens hold modded pieces; the Clinic's ward has at least four whole beds and nothing open under its ridges",
       110, [("07_stone_doorway", "The Stone House from inside: a clear way from the door to the ladder, the table by the west window, the clock by the bed"),
            ("10_terrace_east", "The Terrace's east kitchen: its own mods' table and chair, and its own lantern over the table"),
-           ("11_clinic_ward", "The Clinic's ward: four white beds, heads to the back wall (B639: no more cots of slab and carpet)"),
+           ("11_clinic_ward", "The Clinic's ward, rebuilt in 50.8: six white beds, heads to the long walls (B639: no more cots of slab and carpet)"),
            ("12_clinic_ceiling", "The Clinic's ward ceiling: closed where the two stair runs meet at the ridge (B639)")],
       cobblemon=True, furniture=True),
     # The rebuild kit (ROADMAP 49.1, tools/blueprints/REBUILD.md): SCENE=rebuild_<family> films any blueprint from four sides
@@ -1845,6 +1845,27 @@ SCENES = [
            ("02_outside_back", "From the back: the gabled ledger bay out of the long roof"),
            ("04_outside_east", "From the east: the tower on its stone skirt, the chimney up the gable"),
            ("10_room_1", "The trading floor at eye level: the waiting tables by the shop windows, the Shop Counter facing the door")], furniture=True),
+    # ROADMAP 50.8: the Clinic rebuilt from scratch (REBUILD.md), "the pavilion ward"
+    S("rebuild_clinic", "Build families", "The Clinic, rebuilt: from four sides and at eye level inside",
+      "the Clinic's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Clinic from the front: the white ward's gable under the steep slate roof, the ventilator on the ridge, herb beds by the step"),
+           ("03_outside_west", "From the west: the sun veranda under the catslide, seats under the windows, its ends closed in boards"),
+           ("04_outside_east", "From the east: a window and a sill pot in every bay, the little dormer breaking the eave"),
+           ("10_room_1", "The ward at eye level: six white beds heads to the walls, the Nurse's brewing stand and desk at the front end")], furniture=True),
+    # ROADMAP 50.8: the Physician's House rebuilt from scratch (REBUILD.md), "the still-tower and ward"
+    S("rebuild_physicians_house", "Build families", "The Physician's House, rebuilt: from four sides and at eye level inside",
+      "the Physician's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Physician's House from the front: the stone still-room tower with its lit vent, the white ward's gable, the physic garden between"),
+           ("03_outside_west", "From the west: the ward's frame bays, a window and a sill pot in each"),
+           ("04_outside_east", "From the east: the tower's quoins and pyramid cap, the ward behind it"),
+           ("10_room_1", "Inside at eye level: four beds between white linen screens, or the still room's brewing stand and chest")], furniture=True),
+    # ROADMAP 50.8: the Healing Center rebuilt from scratch (REBUILD.md), "the Spring Infirmary" (Level I filmed)
+    S("rebuild_healing_center", "Build families", "The Healing Center, rebuilt: from four sides and at eye level inside",
+      "the Healing Center's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Healing Center from the front: a white front-gabled Dispensary under a steep red roof, a vent on the ridge, lamp posts by the step"),
+           ("03_outside_west", "From the west: the little gabled wall dormer breaking the eave, herb pots on the ledges"),
+           ("04_outside_east", "From the east: the second dormer gable, a framed window lit in it"),
+           ("10_room_1", "Inside at eye level: the waiting benches facing each other, or the counter with the brewing stand and its chest behind it")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

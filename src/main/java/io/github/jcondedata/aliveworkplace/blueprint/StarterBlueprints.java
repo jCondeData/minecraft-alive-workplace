@@ -81,14 +81,17 @@ public final class StarterBlueprints {
 	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(14, 23, 7));
 	/** Lookout Tower III with an armoury and a lock-up under the tower and guardroom (26.15). */
 	public static final Entry LOOKOUT_TOWER_4 = new Entry(AliveWorkplace.id("lookout_tower_4"), new Vec3i(14, 23, 7), 4);
-	/** Has a Cobblemon Healing Machine on the counter; without Cobblemon that spot stays empty. */
-	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(11, 10, 10));
-	/** A ward with four beds behind the counter. */
-	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(11, 10, 16));
-	/** A berry garden behind the ward with a Fruit Basket. */
-	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(11, 10, 22));
-	/** Healing Center III with a cool store of herbs and remedies under the front (26.15). */
-	public static final Entry HEALING_CENTER_4 = new Entry(AliveWorkplace.id("healing_center_4"), new Vec3i(11, 10, 22), 4);
+	/**
+	 * The Spring Infirmary (rebuilt from scratch in ROADMAP 50.8, tools/blueprints/js/healing_center): a white Dispensary
+	 * under a steep gable, a waiting room by the door and the brewing stand and its chest behind the counter.
+	 */
+	public static final Entry HEALING_CENTER = new Entry(AliveWorkplace.id("healing_center"), new Vec3i(13, 16, 13)); // ROADMAP 50.8: rebuilt
+	/** Level II adds the Spring Hall across the back: a warm pool with benches round it, a tea table and a couch. */
+	public static final Entry HEALING_CENTER_2 = new Entry(AliveWorkplace.id("healing_center_2"), new Vec3i(21, 16, 21)); // ROADMAP 50.8: rebuilt
+	/** Level III adds the Consulting Room beside the front and the walled Herb Garth behind the hall. */
+	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(21, 16, 26)); // ROADMAP 50.8: rebuilt
+	/** Level IV adds the Cistern under the Spring Hall: the spring's source pool and the still room's chests (26.15). */
+	public static final Entry HEALING_CENTER_4 = new Entry(AliveWorkplace.id("healing_center_4"), new Vec3i(21, 16, 26), 4); // ROADMAP 50.8: rebuilt
 	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 10));
 	/** A storeroom and the shopkeeper's bedroom upstairs. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 11, 16));
@@ -497,8 +500,12 @@ public final class StarterBlueprints {
 	/** An open pavilion round a well on a stone cistern podium, under a cross-gabled roof with a louvre, and a stone
 	 *  channel running out east on arches to the Well Keeper's cauldron (52.1). */
 	public static final Entry WELL_HOUSE = new Entry(AliveWorkplace.id("well_house"), new Vec3i(17, 15, 13));
-	/** A white ward with the Physician's brewing stand, four beds behind screens (the quarantine ward) and a herb garden. */
-	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(13, 12, 13));
+	/**
+	 * A stone still-room tower and a screened ward round a physic garden (rebuilt from scratch in ROADMAP 50.8,
+	 * tools/blueprints/js/physicians_house): the Physician's brewing stand and chest in the still room, the quarantine
+	 * ward's beds behind screens.
+	 */
+	public static final Entry PHYSICIANS_HOUSE = new Entry(AliveWorkplace.id("physicians_house"), new Vec3i(16, 14, 14)); // ROADMAP 50.8: rebuilt
 	/**
 	 * The Crafter's Workshop (ROADMAP 37.14; rebuilt from scratch in 50.7, tools/blueprints/js/crafters_workshop): "the
 	 * Saw-Tooth Shop", a brick workroom under three glazed saw teeth with a twin-flue forge stack and a porch. The job is
@@ -698,8 +705,12 @@ public final class StarterBlueprints {
 	public static final Entry POST_OFFICE = workplace("post_office", 17, 15, 15);
 	/** A stone blockhouse with a battlemented roof and a watch hut on it. */
 	public static final Entry GUARD_HOUSE = workplace("guard_house", 11, 13, 11);
-	/** A white pavilion with a ward wing across the back and cross-mullioned windows. */
-	public static final Entry CLINIC = workplace("clinic", 13, 11, 12);
+	/**
+	 * The pavilion ward (rebuilt from scratch in ROADMAP 50.8, tools/blueprints/js/clinic): one tall white ward under a
+	 * steep slate gable with a ventilator lantern on its ridge, six white beds heads to the long walls, the Nurse's
+	 * brewing stand and remedy chest at its front end, and a sun veranda under the catslide on its west side.
+	 */
+	public static final Entry CLINIC = workplace("clinic", 15, 14, 12); // ROADMAP 50.8: rebuilt
 	/** A ferry station with a boarded landing under a canopy (rebuilt in ROADMAP 50.5); the Steward builds it on the shore (water within 4 blocks of its front, see city/Plots). */
 	public static final Entry FERRY_HOUSE = workplace("ferry_house", 15, 17, 11); // ROADMAP 50.5: rebuilt
 	/** A long low dojo with a deep veranda and a fenced sparring ring. */

@@ -1,0 +1,19 @@
+{
+  "name": "physicians-house",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 35
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/physicians_house/out/physicians-house.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/physicians_house/out/summary.json",
+  "size": [
+    16,
+    14,
+    14
+  ],
+  "blockCount": 800,
+  "paletteCount": 70,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/physicians_house/recipe.mjs"
+}

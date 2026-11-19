@@ -6,7 +6,7 @@ freezer, the Smith's coal store, the Cook's cold larder and the Storehouse's vau
 should also get basements in a new Level 4 version, but some buildings should get basements in general at any level,
 like a butcher maybe has a freezer").
 
-Roadmap items: 26.15, B923, B924, B958
+Roadmap items: 26.15, B923, B924, B958, 50.8
 
 ## 1. What a player sees
 
@@ -23,7 +23,7 @@ floor above, and has a ladder or a stone stair down from inside.
 | Noble's Manor IV | a vaulted wine cellar under the kitchen and the hall (49.7): casks along both ends, the family's chests between decorated pots, a spine wall with two doorways | ladder through a hatch in the kitchen floor |
 | Supply Shop IV | a stockroom: chests two high, bolts of cloth, crates, a packing table | ladder behind the counter |
 | Library IV | an archive: bookshelves round the walls, chests of old ledgers, a reading table | stair along the back of the reading room |
-| Healing Center IV | a cool store: shelves of potted herbs and fungi, kelp and moss, chests of remedies | ladder in the back room |
+| Healing Center IV | the Cistern (rebuilt in 50.8): the spring's source pool, the still room's chests and herb shelves, treatment benches | stone stair from the Spring Hall's west end |
 | Lookout Tower IV | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the guardroom door |
 
 Cellars from Level 1:

@@ -76,7 +76,7 @@ Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify 
 hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
 CobbleFurnies is in the list (the owner's answer), in every style too: a city zone's style or one picked at the Table
 swaps only the wood and stone (B903). No piece ever stands on a job block, a bed or a chest: the
-workplaces' beds (the Healing Center's ward, the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
+workplaces' beds (the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
 its block and exactly its own chests and barrels, because the furniture mods' pieces that hold items (Handcrafted's
 counters, desks, shelves, drawers, cupboards, nightstands and side tables, Cozy Home's storage counters, CobbleFurnies'
 cabinets) are never read as chests while furnished builds are on.

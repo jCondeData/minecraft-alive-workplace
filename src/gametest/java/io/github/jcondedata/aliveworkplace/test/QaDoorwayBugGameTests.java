@@ -39,11 +39,14 @@ public class QaDoorwayBugGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The Healing Center III: from its back garden in by the garden door (5,1,14) to the ward (5,1,13). */
+	/**
+	 * The Healing Center III: from its back garden in by the garden door to the hall. Since the rebuild (50.8) the Herb
+	 * Garth's path (6,0,23) leads up to the Spring Hall's back door (6,1,19), and the hall's floor runs on to (6,1,15).
+	 */
 	//$ gametest_ticks_batch AREA '500' '"qaB173HealingGarden"'
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaB173HealingGarden")
 	public void aVillagerWalksInFromTheHealingCenterIIIsGarden(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_3", Rotation.NONE, new BlockPos(9, 2, 4), new int[] {5, 1, 18}, new int[] {5, 1, 12}, new int[] {5, 1, 14});
+		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_3", Rotation.NONE, new BlockPos(9, 2, 4), new int[] {6, 0, 23}, new int[] {6, 1, 15}, new int[] {6, 1, 19});
 	}
 
 	/** Royal Hall II: from outside its east door (16,1,17) onto the hall floor right inside it (15,2,17). */

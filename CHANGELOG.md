@@ -40,6 +40,21 @@ asks for the steps, `latest.log` and any crash report).
   Steward for a hamlet three beds short (49.2).
 
 ### Changed
+- **The Physician's House and the Healing Center are rebuilt from scratch** (50.8). The Physician's House is now a
+  square stone still-room tower, its slate pyramid cap ending in a vent with a lantern lit in it, where the Physician
+  keeps his brewing stand and his Remedy chest, and a white ward behind it in a spruce frame: four beds each between
+  white linen screens in their own frame bays, with a physic garden of herbs and ferns in the crook of the two. The
+  Healing Center is now "the Spring Infirmary": a white Dispensary under a steep red roof with a dormer gable on each
+  side, the waiting benches inside the door and the brewing stand and its chest behind the counter (I); the Spring Hall
+  across the back with its warm pool (II); a Consulting Room beside the front and a walled herb garden behind (III); and
+  the Cistern dug under the hall, the spring's source with the still room's chests (IV). Buildings already standing keep
+  the drawing they were built from until you refresh them.
+- **The Clinic is rebuilt from scratch** (50.8). It is now "the pavilion ward": one tall white ward with its gable to
+  the street under a steep slate roof, a louvered lantern ventilator on the ridge and a small dormer on its east side.
+  Six white beds stand heads to the long walls with a window between each pair, and the Nurse's station across the
+  front end holds her brewing stand and remedy chest, a medicine cupboard and her desk. The west roof runs on over a
+  sun veranda with seats under the windows and a door in from the ward. Clinics already standing keep the drawing they
+  were built from until you refresh them; the village clinics are unchanged.
 - **The Glassblower's Workshop, the Jeweler's Workshop, the Crafter's Workshop and the Workshop are rebuilt from
   scratch** (50.7). The Glassblower's Workshop is a brick glass cone 18 blocks tall over the Glass Kiln, narrowing in
   three even courses to a smoking lip, with a timber-framed glass shop in front (a crown-glass bullseye in its gable)

@@ -568,7 +568,7 @@ def clinic_garden_front(b):
 
 
 def healing_center():
-    """11 x 10 x 10: a white clinic under a red roof, dark posts, a gabled porch with a red heart over the door (with
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 10 x 10: a white clinic under a red roof, dark posts, a gabled porch with a red heart over the door (with
     Cobblemon the counter holds a Healing Machine; without, that block loads as air and the builder skips it)."""
     b = Build(11, 10, 10)
     clinic_hall(b)
@@ -620,7 +620,7 @@ def clinic_ward(b):
 
 
 def healing_center_2():
-    """Upgrade of the Healing Center: a ward with four beds behind the hall under its own lower roof, a chimney beside
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Healing Center: a ward with four beds behind the hall under its own lower roof, a chimney beside
     it. 11 x 10 x 16."""
     b = healing_center().grow(11, 10, 16)
     clinic_ward(b)
@@ -630,7 +630,7 @@ def healing_center_2():
 
 # --- Healing Center III: a berry garden behind the ward -------------------------------------------------
 def healing_center_3():
-    """Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a
     composter and a chest (hand the villager there sweet berries and they become the orchard keeper and pick the
     berries), lamps and benches, and a back door out of the ward. 11 x 10 x 22."""
     b = healing_center_2().grow(11, 10, 22)

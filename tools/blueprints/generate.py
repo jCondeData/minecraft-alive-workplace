@@ -133,7 +133,15 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
            # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
            # staffed house)
-           "leaders_hall", "trade_hall"}
+           "leaders_hall", "trade_hall",
+           # 50.8, the Clinic ("the pavilion ward"; the buildable only: the village clinics stay village.py's staffed
+           # house): js/clinic (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh build.sh the live one; then
+           # modded_library.py clinic)
+           "clinic",
+           # 50.8, the Physician's House ("the still room and ward round a physic garden") and the Healing Center (I-IV,
+           # "the Spring Infirmary", IV with its Cistern cellar): js/physicians_house and js/healing_center (MC_BUILDER=...,
+           # sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
+           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -200,9 +208,12 @@ if __name__ == "__main__":
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
     lookout_tower_2().save(MAIN_STRUCTURES, "lookout_tower_2")
     lookout_tower_3().save(MAIN_STRUCTURES, "lookout_tower_3")
-    healing_center().save(MAIN_STRUCTURES, "healing_center")
-    healing_center_2().save(MAIN_STRUCTURES, "healing_center_2")
-    healing_center_3().save(MAIN_STRUCTURES, "healing_center_3")
+    # ROADMAP 50.8: the Healing Center (I-IV) comes from the rebuild kit (REBUILT); starter.healing_center* and
+    # basements.healing_center_4 are the old drawings, kept in blueprint_history/
+    for name, draw in (("healing_center", healing_center), ("healing_center_2", healing_center_2),
+                       ("healing_center_3", healing_center_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
     supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
@@ -310,9 +321,10 @@ if __name__ == "__main__":
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
+        if name not in REBUILT:  # ROADMAP 50.8: the Physician's House comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
-        if name not in REBUILT:  # ROADMAP 51.4: library_4 comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 51.4 and 50.8: library_4 and healing_center_4 come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
     # is the old drawing, kept in blueprint_history/
@@ -346,7 +358,7 @@ if __name__ == "__main__":
         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         if name in REBUILT:
-            continue  # ROADMAP 50.2 and 50.5: drawn by the rebuild kit (below)
+            continue  # ROADMAP 50.2, 50.5 and 50.8: drawn by the rebuild kit (below)
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
         save_wonder(wonder_id)

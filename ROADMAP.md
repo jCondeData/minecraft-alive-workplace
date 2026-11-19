@@ -6966,11 +6966,11 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
   the lamp on its table, the plates in the kitchen) from `wip/house-t1-furnished`: a Level I home in the village
   plans and the Blueprint Table, its village and modded variants, its GameTests; the Hearthstead (A) stays unused on
   `wip/house-t1`.
-- [x] **49.3** (picked: B, 2026-11-17) (review: pending 2026-11-18) **Starter Cottage** (4 levels; flagship: A and B).
+- [x] **49.3** (picked: B, 2026-11-17) (approved 2026-11-19) **Starter Cottage** (4 levels; flagship: A and B).
 - [x] **49.4** (review: pending 2026-11-18) **Stone House** (4 levels).
 - [x] **49.5** (review: pending 2026-11-18) **Townhouse** (4 levels).
 - [x] **49.6** (approved 2026-11-18) **Terrace** (2 levels).
-- [x] **49.7** (review: pending 2026-11-18) **Manor** (4 levels).
+- [x] **49.7** (approved 2026-11-19) **Manor** (4 levels).
 - [x] **49.8** (review: pending 2026-11-18) **Artisan's House** (3 levels) and **Weaver's Cottage** (2).
 - [x] **49.9** (review: pending 2026-11-18) **Farmstead** (3 levels) and **Ranch** (2).
 - [x] **49.10a** (review: pending 2026-11-18) **The biome looks, 1: the homes' looks by village culture, and the Starter Cottage's.** (Split from
@@ -7025,7 +7025,7 @@ Same method (Milestone 49). Lane C builds it once Milestone 47 is done.
 - [ ] **51.2** (blocked: waits for the owner's pick of A or B, review package 2026-11-18) **Inn** (3 levels; flagship: A and B).
 - [ ] **51.3** (blocked: waits for the owner's pick of A or B, review package 2026-11-18) **Storehouse** (3 levels; flagship: A and B), **Storage
   Hall** and **Warehouse**.
-- [x] **51.4** (review: pending 2026-11-18) **Library** (4 levels), **School** and **Schoolhouse**.
+- [x] **51.4** (approved 2026-11-19) **Library** (4 levels), **School** and **Schoolhouse**.
 - [x] **51.5** (review: pending 2026-11-18) **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
   and **Map Room**.
 - [x] **51.6** (review: pending 2026-11-18) **Chapel**, **Graveyard**, **Clock Tower** and **Post Office**.

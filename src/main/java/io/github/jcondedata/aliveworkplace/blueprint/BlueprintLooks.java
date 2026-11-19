@@ -32,7 +32,10 @@ public final class BlueprintLooks {
 		StarterBlueprints.STARTER_COTTAGE.id(), CULTURES,
 		// 49.10b: the Stone House likewise (tools/blueprints/js/stone_house_<culture>); its snowy look went back to the
 		// critic three times and waits for the owner, so a snowy village builds it as drawn
-		StarterBlueprints.STONE_HOUSE.id(), List.of("desert", "savanna", "taiga"));
+		StarterBlueprints.STONE_HOUSE.id(), List.of("desert", "savanna", "taiga"),
+		// 49.10b: the Townhouse likewise (tools/blueprints/js/townhouse_<culture>); its snowy and taiga looks went back to
+		// the critic three times and wait for the owner, so those villages build it as drawn
+		StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna"));
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

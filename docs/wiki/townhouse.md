@@ -33,6 +33,12 @@ Roadmap items: 34.15, 26.15, 49.5
   lanterns hung from them.
 - Beds: 3, 5, 6 and 6. Every piece is a furniture spot, so a builder with the furniture mods builds the mods' pieces in
   their places (37.2); with the building mods its modded copy dresses the floors and chests (37.12).
+- **In its village's culture** (49.10b): a desert village builds every level in sandstone below mud brick, a
+  terracotta frieze at the floor line, flat roofs behind a smooth coping, spruce beam ends, arcades and lattice for
+  shade; a savanna village builds a red granite shop storey on a terracotta plinth, mud between grey acacia posts above,
+  a veranda along the street and one great golden thatch hipped on every side, with a thatched lookout tower from III.
+  The rooms, beds, job blocks and furniture are the same; Levels I and II stand 20 tall (flat or hipped roofs, not the
+  steep gable). Plains, snowy and taiga villages build the jettied timber house. The Blueprint Table lists the looks.
 - A house standing in an older drawing keeps it until its owner presses **Refresh** on the hall's Repairs page (36.21);
   with this redraw a refresh is close to a whole rebuild.
 
@@ -45,6 +51,14 @@ Roadmap items: 34.15, 26.15, 49.5
   runs check.py's checks with the owner's rules, `finish()` and writes `blueprint_furniture/<id>.json`.
 - The old Python drawing (`houses.py`, `basements.py`) is no longer saved by `generate.py`; `history.py` ships the old
   drawings in `blueprint_history/townhouse*/` (and `modded/townhouse*/`) for refreshes.
+- The culture looks (49.10b) are drawn in `tools/blueprints/js/townhouse_<culture>/` from the brief and the house's plan
+  (its furniture spots cell for cell; `look_spots.py` says SAME BUILDING at every level); `SHIP=1 build.sh` saves them
+  as `structure/looks/<culture>/townhouse[_n]` (`rebuild.py --look`). Critics passed savanna in round 1 and desert in
+  round 2; snowy and taiga were sent back three times (ragged gable verges, a stepped valley where the wing meets the
+  main roof) and stay candidates (`tools/blueprints/briefs/townhouse_looks_critic.md`). `BlueprintLooks` lists the
+  Townhouse's two looks, so it is built by `VillageWaystones.culture` (a culture with no look as drawn);
+  `StarterBlueprints.TOWNHOUSE_DESERT` and `_SAVANNA` list each look's levels, Level IV with the cellar. Scene:
+  `rebuild_townhouse_looks`.
 - `StarterBlueprints.TOWNHOUSE` .. `TOWNHOUSE_4` carry the new sizes. Modded copies: `modded_library.py townhouse
   townhouse_2 townhouse_3 townhouse_4`. Village looks: the styles (`BlueprintStyles`) are applied to the drawing at play
   time, as before; nothing is drawn per style. The chimney (a campfire on the stack's solid column) stays whole in
@@ -80,7 +94,9 @@ keep their drawing until a refresh. Its grade still comes from `homes/townhouse.
 
 ## 7. Known limits
 
-- The showcase scene `rebuild_townhouse` is filmed on GitHub, not in this session.
+- The showcase scenes `rebuild_townhouse` and `rebuild_townhouse_looks` are filmed on GitHub, not in this session.
+- No snowy or taiga look: the critic sent both back three times; they wait for the owner. Only Level I of each look is
+  built to DONE by a test; Levels II-IV are checked for size, beds, job blocks and furniture spots.
 - check.py's "upper floor with no stairs or ladder" lines for `modded/townhouse_3` and `_4` are the known false alarm
   for modded copies (their ladders are Carved Wood's). Its two crockery lines for `modded/townhouse_4` are a false
   alarm too: check.py's loader reads the furniture spots of a drawing with a basement 4 blocks off, so the chairs at
@@ -97,4 +113,6 @@ keep their drawing until a refresh. Its grade still comes from `homes/townhouse.
 `BuilderGameTests.buildsTownhouse`, `buildsTownhouseII`, `buildsTownhouseIII`,
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `StyleGameTests.chimneysStayWholeInEveryStyle`,
 `QaWindowsAndWards1028GameTests.qaABuiltTownhousesGlassJoinsAfterAReloadMidStructure`, `FurnishedHomesGameTests`,
-`B648GameTests`, `QaRefreshFurnishedGameTests`, the basement tests. Scene `rebuild_townhouse`.
+`B648GameTests`, `QaRefreshFurnishedGameTests`, the basement tests, `TownhouseLooksGameTests` (culture pick at every level,
+fallbacks, base/upgrade/lock per look, plot, beds and job blocks, Level I of each look built to DONE, a desert site saved
+mid-build reloads as desert). Scenes `rebuild_townhouse`, `rebuild_townhouse_looks`.

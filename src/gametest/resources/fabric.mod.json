@@ -236,6 +236,7 @@
 			"io.github.jcondedata.aliveworkplace.test.PokemonCenterGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StarterCottageLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoneHouseLooksGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TownhouseLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArenaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonBuildsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BerryChainsGameTests",

@@ -16,14 +16,20 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
-## 0.157.0 — 2026-11-18
-
 ### Added
 - **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
   every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
   one great pyramid of golden thatch, a forester's lodge of mossy fieldstone and spruce logs gable-on to the road), with
   the same rooms and furniture. Plains and snowy villages keep the rubble house; the Blueprint Table lists every look
   (49.10b).
+- **The Townhouse in its village's culture**: desert and savanna villages now build their own look of it at every
+  level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
+  under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
+  and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+
+## 0.157.0 — 2026-11-18
+
+### Added
 - **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
   of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound
   log cabin with a mudroom, a spruce cabin under steep gables), with the same rooms and furniture. Plains keep the saltbox;

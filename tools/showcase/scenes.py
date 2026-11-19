@@ -1861,6 +1861,13 @@ SCENES = [
            ("11_desert", "Desert: a sandstone cube under a flat roof and parapet, a lattice oriel over the door and a low windcatcher"),
            ("12_savanna", "Savanna: a red granite ground storey and mud between acacia posts under one golden pyramid of thatch"),
            ("14_taiga", "Taiga: a forester's lodge gable-on to the road, mossy fieldstone below dark spruce logs, a porch on log posts")], furniture=True),
+    # ROADMAP 49.10b: the Townhouse in each village culture's climate (desert, savanna; plains as drawn, and snowy and
+    # taiga too: their looks went back to the critic three times and wait for the owner), Level I of each side by side
+    S("rebuild_townhouse_looks", "Build families", "The Townhouse in its village's culture: plains, desert and savanna",
+      "the Townhouse as drawn and its two culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the jettied gable-end merchant's house, a stone shop below a timber floor and a steep attic"),
+           ("11_desert", "Desert: coursed sandstone below mud brick, a terracotta frieze, flat roofs behind a coping, arcades and lattice for shade"),
+           ("12_savanna", "Savanna: a red granite shop storey, mud between acacia posts, a veranda along the street under one great golden thatch")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

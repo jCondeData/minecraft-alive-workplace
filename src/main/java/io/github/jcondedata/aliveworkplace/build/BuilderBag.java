@@ -78,6 +78,20 @@ public final class BuilderBag {
 		return out;
 	}
 
+	/**
+	 * Whether any stack in the bag passes {@code test}. The stacks themselves are shown, not copies as {@link #stacks}
+	 * makes (a farmer asks twice a tick, B455): {@code test} must only read them.
+	 */
+	public boolean any(java.util.function.Predicate<ItemStack> test) {
+		for (int i = 0; i < items.getContainerSize(); i++) {
+			ItemStack s = items.getItem(i);
+			if (!s.isEmpty() && test.test(s)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public int count(Item item) {
 		return items.countItem(item);
 	}

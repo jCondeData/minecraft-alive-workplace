@@ -1,0 +1,10 @@
+{
+  "name": "manor-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Noble's Manor, the snowy look (ROADMAP 49.10f): the shipped H as the White Hall, pale calcite under one steep slate roof whose three pointed gables carry snow, a slate needle spire on the porch tower, a walled winter garden (II), the ballroom wing (III) and the cellar (IV). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

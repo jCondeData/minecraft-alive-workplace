@@ -26,7 +26,29 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
+  porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden
+  hip over the whole house on a colonnade of acacia posts, the tower rising through it); the White Hall (pale calcite
+  under one steep slate roof, tall pointed gables, snow on the ridges); and the Boyar's Lodge (dark spruce logs on a
+  mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
+  furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
+  cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
+  gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
+  glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
+  skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
+  loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
+  Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on
+  trays behind the loft's louvers beside his bed and order desk, and a store lean-to behind holds the chests. Workshops
+  already standing keep their old drawing until refreshed; village ball workshops keep their look.
+- **The Trainer's House, rebuilt from scratch** as "the Battle Court" (with Cobblemon, 50.12): a gateway of two banner-hung
+  stone piers onto a marked turf court with the Training Post at its head, a covered bench stand where neighbors watch
+  the battles, a sparring yard with dummies, and a spruce-framed clubhouse with the Trainer's den and his bedroom in a
+  loft that looks down the court. Houses already standing keep their old drawing until refreshed; village trainer's
+  houses keep their look.
 - **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
   tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
   at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
@@ -133,11 +155,21 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- Villagers can walk through the Pump House's upper door again: the railing in front of it, out on the gallery, is now
+  a flat panel against the edge instead of a fence post, so a villager steps out onto the gallery standing up (B1405,
+  B1406).
+- A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
+  carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
+  he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the
+  edicts' checks every villager makes every tick (work stopped by a raid, Curfew's bedtime) are quicker too (B455).
 - With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
   placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
   Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
   block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
   drops a plain one (B1070).
+- With Tom's Simple Storage, a chest cut off from the Storehouse's Inventory Connector by breaking a cable no longer
+  counts twice for the second it takes the connector to notice: the Village Hall, the Storehouse and a builder's
+  shortage check count each item once at every moment (B1358).
 - With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
   instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even

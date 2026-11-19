@@ -1107,7 +1107,8 @@ def berry_farm_2():
 
 # --- Research Lab: the fossil scientist's -------------------------------------------------------------
 def research_lab():
-    """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
+    """The OLD drawing (ROADMAP 50.12: the live research_lab.nbt now comes from the rebuild kit, tools/blueprints/js/research_lab;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
     porch, Cobblemon's Fossil Analyzer at the back (hand the villager there a fossil and they become the fossil scientist,
     ROADMAP 21.1c; without Cobblemon the spot stays empty), bookshelves, a glass case and a bone skeleton on show."""
     b = Build(11, 9, 11)
@@ -1160,7 +1161,7 @@ def research_lab():
 
 
 def research_lab_2():
-    """Upgrade of the Research Lab: a museum hall to the east through a doorway, under a glass roof on stone ribs, with
+    """The OLD drawing (ROADMAP 50.12: kept in blueprint_history/, no longer saved). Upgrade of the Research Lab: a museum hall to the east through a doorway, under a glass roof on stone ribs, with
     a big skeleton of bone blocks and cases either side. 18 x 10 x 11."""
     b = research_lab().grow(18, 10, 11)
     b.clear(10, 0, 0, 10, 9, 10)

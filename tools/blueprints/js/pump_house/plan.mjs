@@ -70,6 +70,9 @@ export const MASSES = {
     gallery: { x0: 10, x1: 16, z0: 0, z1: 6, y: 7 }, beltTop: 10, cap: { cx: 13, cz: 3, r: 3, y0: 10 },
     door: { at: [14, 1, 1], step: [14, 0, 0] }, // the way in: onto the one dry floor cell (14, 1, 2), the ladder's foot
     galleryDoor: [13, 8, 1], // the critic's polish (50.13 ship): from the belvedere out onto the gallery, to the street
+    // B1405: the rail panel in front of that door is an open trapdoor flat against the deck's outer edge, not a fence,
+    // so the door opens onto a railed landing (a fence there put a villager's feet 1.5 up, under the belvedere's head)
+    galleryLanding: [13, 8, 0],
     ladder: { x: 14, z: 2, y0: 1, top: 7, facing: 'west' }, // up the east wall to a hatch in the gallery deck
     // corbels left out: over the cup's source, and where the gallery rests on the tannery's roof
     corbelSkip: [[16, 6, 3], [10, 6, 4], [10, 6, 5], [10, 6, 6]] },

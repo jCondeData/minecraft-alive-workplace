@@ -1840,6 +1840,27 @@ SCENES = [
            ("02_outside_back", "From the back: the solid brick gable and the boiler's chimney up it"),
            ("04_outside_east", "From the east: the parlour's copper roof and the fenced cutting yard with its pond"),
            ("10_room_1", "Inside at eye level: the aisle between the raised beds of tall flowers, hanging pots, the composter at the end")], furniture=True),
+    # ROADMAP 50.12: the Trainer's House rebuilt from scratch ("the Battle Court")
+    S("rebuild_trainers_house", "Build families", "The Trainer's House, rebuilt: from four sides and at eye level inside",
+      "the Trainer's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Trainer's House from the front: the gate between two stone piers, the marked turf court with the Training Post at its head, the clubhouse gable behind"),
+           ("03_outside_west", "From the west: the covered bench stand along the court and the stone chimney up the clubhouse eave"),
+           ("04_outside_east", "From the east: the sparring yard with its two dummies, the lamp posts and the dormer on the slate roof"),
+           ("10_room_1", "Inside at eye level: the den, its hearth in the west wall with the armchair and rug, the table for two")], furniture=True),
+    # ROADMAP 50.12: the Ball Workshop rebuilt from scratch ("the Drying Loft")
+    S("rebuild_ball_workshop", "Build families", "The Ball Workshop, rebuilt: from four sides and at eye level inside",
+      "the Ball Workshop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ball Workshop from the front: red loft over a black band over white plaster, like a Poké Ball, the white boss and button over the door"),
+           ("04_outside_east", "From the east: the brick forge stack climbing past the ridge, the band of louvers in the loft"),
+           ("02_outside_back", "From the back: the store lean-to with the chests under its single pitch"),
+           ("10_room_1", "Inside at eye level: the smithing table in the middle of the workshop, the anvil and the forge's mouth")], furniture=True),
+    # ROADMAP 50.12: the Research Lab rebuilt from scratch ("the Strata Lab"; Level I filmed, the Gallery and the Dig come with II and III)
+    S("rebuild_research_lab", "Build families", "The Research Lab, rebuilt: from four sides and at eye level inside",
+      "the Research Lab's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Research Lab from the front: the tall coped gable in bands of stone like a cliff face, the pointed Great Window over the door's hood, lightning rods on the gables"),
+           ("02_outside_back", "From the back: the plain banded back gable with its lancet, buttresses on the deepslate plinth"),
+           ("03_outside_west", "From the west: the steep tile roof with the skylight stepping up its slope"),
+           ("10_room_1", "Inside at eye level: the tall lab open to the roof under its tie beams, the scientist's desk and cupboards, the Fossil Analyzer on the back wall (with Cobblemon)")], furniture=True),
     # ROADMAP 50.11: the Supply Shop rebuilt from scratch ("the hoist house")
     S("rebuild_supply_shop", "Build families", "The Supply Shop, rebuilt: from four sides and at eye level inside",
       "the Supply Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -2075,6 +2096,15 @@ SCENES = [
            ("12_savanna", "Savanna: one long golden thatch hip over the row, red granite below packed mud, a veranda on acacia posts, painted window trims"),
            ("13_snowy", "Snowy: the Snowbound Row, a pale calcite gable to a point for every home under steep deepslate roofs, snow on the eaves and drifted at the foot"),
            ("14_taiga", "Taiga: one long range of dark spruce logs on a mossy cobble footing, a slate roof, a veranda on log posts, a stack on every party wall")], furniture=True),
+    # ROADMAP 49.10f: the Noble's Manor in each village culture's climate (desert, savanna, snowy and taiga; plains as
+    # drawn), Level I of each side by side
+    S("rebuild_manor_looks", "Build families", "The Noble's Manor in every village culture: plains, desert, savanna, snowy and taiga",
+      "the Manor as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the brick hall under its porch tower, the crow-stepped west wing"),
+           ("11_desert", "Desert: the Qasr of the Windcatcher, flat sandstone and mud-brick masses behind crenellated parapets, the porch tower a slotted windcatcher"),
+           ("12_savanna", "Savanna: the Great House under One Thatch, one broad golden hip over the whole house, a colonnade of acacia posts, the tower rising through it"),
+           ("13_snowy", "Snowy: the White Hall, pale calcite walls under one steep slate roof, tall pointed gables, the tower under a slate pyramid with snow on its point"),
+           ("14_taiga", "Taiga: the Boyar's Lodge, dark spruce logs on a mossy fieldstone footing under broad slate roofs, verandas on log posts, two fieldstone stacks")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -108,6 +108,10 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
+  carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
+  he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the
+  edicts' checks every villager makes every tick (work stopped by a raid, Curfew's bedtime) are quicker too (B455).
 - With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
   placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
   Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other

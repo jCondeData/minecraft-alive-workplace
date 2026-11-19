@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
@@ -387,9 +386,14 @@ public final class CivicEffects {
 		private final List<Active> all;
 		private final List<Active> paces = new ArrayList<>();
 		private final List<Active> moods = new ArrayList<>();
+		/** Curfew's two rules, worked out once: every villager's brain asks {@link #stayIn} every tick of the night (B455). */
+		private final boolean safeNights;
+		private final boolean stayIn;
 
 		public Sum(List<Active> effects) {
 			this.all = List.copyOf(effects);
+			this.safeNights = all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.safeNights());
+			this.stayIn = all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.stayIn());
 			for (Active a : all) {
 				if (a.effect() instanceof WorkPace) {
 					paces.add(a);
@@ -597,12 +601,12 @@ public final class CivicEffects {
 
 		/** Whether the village's nights count as safe ({@code curfew} with {@code safe_nights}). */
 		public boolean safeNights() {
-			return all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.safeNights());
+			return safeNights;
 		}
 
 		/** Whether the village stays in from dusk to dawn ({@code curfew} with {@code stay_in}). */
 		public boolean stayIn() {
-			return all.stream().anyMatch(a -> a.effect() instanceof CurfewRules c && c.stayIn());
+			return stayIn;
 		}
 
 		/** The village's militia: the highest damage and range its {@code militia} effects name, or null without one. */
@@ -660,10 +664,14 @@ public final class CivicEffects {
 		return effect.jobs().contains(job);
 	}
 
-	private record Kept(@Nullable VillageHallBlockEntity hall, long until) {
+	/** A villager's hall as last looked up; {@code round} is {@link #forgotten} at the time (an older one is asked again). */
+	private record Kept(@Nullable VillageHallBlockEntity hall, long until, int round) {
 	}
 
-	private static final Map<Villager, Kept> HALLS = new WeakHashMap<>();
+	/** Counts {@link #forget}: every answer kept before it is stale. */
+	private static volatile int forgotten;
+	/** How often a villager's nearest hall was looked up afresh (for tests, B455). */
+	public static long hallLooks;
 
 	/** The effects in force where {@code villager} lives (none outside a village with a hall, or with edicts off). */
 	public static Sum of(Villager villager) {
@@ -693,18 +701,18 @@ public final class CivicEffects {
 	@Nullable
 	private static VillageHallBlockEntity hall(ServerLevel level, Villager villager) {
 		long now = level.getGameTime();
-		Kept kept;
-		synchronized (HALLS) {
-			kept = HALLS.get(villager);
-		}
-		if (kept != null && now < kept.until() && (kept.hall() == null || !kept.hall().isRemoved())) {
+		// kept on the villager (CivicMemo): this is asked for every villager every tick, and the shared map it used to be
+		// in (a WeakHashMap under a lock) was 0.35% of a City's tick by itself (B455)
+		CivicMemo memo = (CivicMemo) villager;
+		int round = forgotten;
+		if (memo.aliveworkplace$hallKept() instanceof Kept kept && kept.round() == round && now < kept.until()
+			&& (kept.hall() == null || !kept.hall().isRemoved())) {
 			return kept.hall();
 		}
+		hallLooks++;
 		VillageHallBlockEntity hall = VillageHalls.nearest(level, villager.blockPosition())
 			.map(pos -> level.getBlockEntity(pos) instanceof VillageHallBlockEntity entity ? entity : null).orElse(null);
-		synchronized (HALLS) {
-			HALLS.put(villager, new Kept(hall, now + HALL_TICKS));
-		}
+		memo.aliveworkplace$hallKept(new Kept(hall, now + HALL_TICKS, round));
 		return hall;
 	}
 
@@ -728,9 +736,7 @@ public final class CivicEffects {
 
 	/** Forget the villagers' halls (tests). */
 	public static void forget() {
-		synchronized (HALLS) {
-			HALLS.clear();
-		}
+		forgotten++;
 	}
 
 	private CivicEffects() {

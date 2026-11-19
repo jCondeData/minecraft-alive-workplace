@@ -1103,27 +1103,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 		return best;
 	}
 
-	/** Moves the mouse into the middle of {@code screen}'s reading pane, as a player crossing over from the list. */
-	private static void intoPane(Minecraft mc, io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
-		double scale = mc.getWindow().getGuiScale();
-		int[] at = screen.paneCentre();
-		setMouse(mc, at[0] * scale, at[1] * scale);
-	}
-
-	/** Turns the wheel down over the pane until the reading's last line shows (at most 40 notches). */
-	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
-		int[] at = screen.paneCentre();
-		for (int i = 0; i < 40 && screen.readingScroll()[0] < screen.readingScroll()[1]; i++) {
-			screen.mouseScrolled(at[0], at[1], 0, -1);
+	/** Turns the wheel down over the chronicle until its last line shows (at most 40 notches; the next frame stops it at the end). */
+	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hall, int[] at) {
+		for (int i = 0; i < 40 && hall.chronicleScroll()[0] < hall.chronicleScroll()[1]; i++) {
+			hall.mouseScrolled(at[0], at[1], 0, -1);
 		}
 	}
 
 	private int readingSlot = -1;
 
 	/**
-	 * 36.5: reading a long entry without clicking it. In the hall's chronicle a long entry (a war party's victory naming
-	 * every guard) is hovered, the mouse moves into the pane and it stays read out, and the wheel there scrolls to its
-	 * last line; then the Storehouse board does the same with its longest row. Nothing is clicked.
+	 * 36.5, as Copperline has it (48.4, B1344): reading a long entry. The hall's chronicle has no reading pane any more:
+	 * a long entry (a war party's victory naming every guard) is pointed at, one click opens it to its whole text in the
+	 * list, and the wheel scrolls the list to its last line; then the Storehouse board shows its longest row in its
+	 * icon's tooltip.
 	 */
 	private void hallReadingScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -1192,22 +1185,24 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 185) {
 			Showcase.check(screen != null && readingSlot >= 0, "the chronicle page opened with entries (" + (screen == null ? "no screen" : screen.listSlots()) + ")");
 			shot(mc, "01_chronicle_hovered");
-			if (screen != null) {
-				intoPane(mc, screen);
+			if (screen != null && readingSlot >= 0) {
+				int[] at = screen.centre(readingSlot); // the player's own click, where the mouse already is
+				screen.mouseClicked(at[0], at[1], 0);
 			}
 		}
+		io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hallScreen =
+			screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h ? h : null;
 		if (tick == 200) {
-			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
-			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot && screen.pinned() < 0,
-				"the hovered entry stays read out with the mouse in the pane, nothing clicked (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			Showcase.check(hallScreen != null && readingSlot >= 0 && hallScreen.chronicleOpen() == readingSlot,
+				"one click opened the long entry to its whole text (" + (hallScreen == null ? "no hall screen" : hallScreen.chronicleOpen() + " of " + readingSlot) + ")");
 			shot(mc, "02_chronicle_held");
-			if (screen != null) {
-				scrollToEnd(screen);
+			if (hallScreen != null && readingSlot >= 0) {
+				scrollToEnd(hallScreen, hallScreen.centre(readingSlot));
 			}
 		}
 		if (tick == 215) {
-			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
-			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel in the pane scrolled the long entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			int[] scroll = hallScreen == null ? new int[]{-1, -1} : hallScreen.chronicleScroll();
+			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel over the chronicle scrolled the open entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
 			shot(mc, "03_chronicle_last_line");
 			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), storehouse));
 		}

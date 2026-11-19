@@ -39,6 +39,28 @@ public final class StarterBlueprints {
 	/** Cottage III with a store cellar under the hall, down a ladder through a hatch (26.15, 49.3). */
 	public static final Entry STARTER_COTTAGE_4 = new Entry(AliveWorkplace.id("starter_cottage_4"), new Vec3i(18, 12, 12), 4);
 	/**
+	 * The Starter Cottage's biome looks (ROADMAP 49.10a, {@code tools/blueprints/js/starter_cottage_<culture>}; see
+	 * {@link BlueprintLooks}): every level drawn again in a village culture's climate, with the same rooms, beds, job
+	 * blocks and footprint. A desert village builds the desert look, and so on; plains the cottage as drawn. Each list
+	 * holds a culture's four levels, Level I first; Level IV has the same cellar as the cottage's.
+	 */
+	public static final List<Entry> STARTER_COTTAGE_DESERT = cottageLook("desert", 9, 12, 12, 12);
+	public static final List<Entry> STARTER_COTTAGE_SAVANNA = cottageLook("savanna", 9, 13, 13, 13);
+	public static final List<Entry> STARTER_COTTAGE_SNOWY = cottageLook("snowy", 13, 15, 15, 15);
+	public static final List<Entry> STARTER_COTTAGE_TAIGA = cottageLook("taiga", 11, 14, 14, 14);
+	/** Every look of the Starter Cottage, every level. */
+	public static final List<Entry> STARTER_COTTAGE_LOOKS = java.util.stream.Stream.of(STARTER_COTTAGE_DESERT, STARTER_COTTAGE_SAVANNA,
+		STARTER_COTTAGE_SNOWY, STARTER_COTTAGE_TAIGA).flatMap(List::stream).toList();
+
+	/** A culture's look of the cottage's four levels, each as wide and deep as the level drawn, {@code h1..h4} tall. */
+	private static List<Entry> cottageLook(String culture, int h1, int h2, int h3, int h4) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return List.of(new Entry(AliveWorkplace.id(folder + "starter_cottage"), new Vec3i(9, h1, 12)),
+			new Entry(AliveWorkplace.id(folder + "starter_cottage_2"), new Vec3i(13, h2, 12)),
+			new Entry(AliveWorkplace.id(folder + "starter_cottage_3"), new Vec3i(18, h3, 12)),
+			new Entry(AliveWorkplace.id(folder + "starter_cottage_4"), new Vec3i(18, h4, 12), 4));
+	}
+	/**
 	 * A timber hall with the Village Hall block inside (tools/blueprints/village_hall.py): finished, it is a placed Village
 	 * Hall like any other, owned by the player who handed over the blueprint. The bell hangs under its porch.
 	 */
@@ -500,8 +522,9 @@ public final class StarterBlueprints {
 	/** The Blossom Court: a stone chapel with a central bell tower over a long buttressed nave, where the village's
 	 *  couples marry (rebuilt 51.6). */
 	public static final Entry CHAPEL = new Entry(AliveWorkplace.id("chapel"), new Vec3i(13, 16, 17));
-	/** A paved square with a fountain, kiosks, benches and the village bell. */
-	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 5, 13));
+	/** The Market House: a paved square with a timber-framed Market Court on an open stone undercroft at its back, a
+	 *  balcony over the square's middle, an outside stair and a striped stall (rebuilt 51.7). */
+	public static final Entry MARKET_SQUARE = new Entry(AliveWorkplace.id("market_square"), new Vec3i(13, 16, 13));
 	/*
 	 * More decorations (ROADMAP 26.14; tools/blueprints/decor.py, MORE_DECORATIONS): small builds that aren't houses, none
 	 * with a villager's job block.
@@ -535,8 +558,9 @@ public final class StarterBlueprints {
 	/** A green room of clipped yew: a hedge archway in, a tiered standard on a paved ring, urns, pencil yews and a
 	 *  bench under the back hedge's exedra (52.2). */
 	public static final Entry TOPIARY_GARDEN = new Entry(AliveWorkplace.id("topiary_garden"), new Vec3i(9, 8, 9));
-	/** Crates, sacks and produce under a striped awning. */
-	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(5, 5, 5));
+	/** An L of market counters on a paved court under two striped canvases stepping down to the court, a banner mast
+	 *  on the street corner and a little booth at the front (rebuilt 51.7). */
+	public static final Entry MARKET_CORNER = new Entry(AliveWorkplace.id("market_corner"), new Vec3i(9, 8, 9));
 	/** A humpback stone footbridge over a bending stream, a little lantern gate at its crown (52.1). */
 	public static final Entry FOOTBRIDGE = new Entry(AliveWorkplace.id("footbridge"), new Vec3i(9, 8, 7));
 	/** The decorations of 26.14, in the order the Table and the gallery show them. */
@@ -796,9 +820,12 @@ public final class StarterBlueprints {
 	}
 
 	/** Every shipped build with a basement or a cellar (26.15): the Level 4s and the cellars from Level 1. */
-	public static final List<Entry> WITH_BASEMENTS = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
-		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2, STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN,
-		INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3, JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY);
+	public static final List<Entry> WITH_BASEMENTS = java.util.stream.Stream.concat(java.util.stream.Stream.of(STARTER_COTTAGE_4,
+		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
+		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
+		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3, QUARRY),
+		// 49.10a: the biome looks of a Level IV, each with its level's basement
+		STARTER_COTTAGE_LOOKS.stream().filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,
 		LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4);

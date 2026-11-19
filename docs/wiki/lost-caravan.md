@@ -39,22 +39,41 @@ Roadmap items: 31.19, 31.20
   village with nothing (a plain villager by its hall, no head start), the goods are gone from the chest, and the arc
   fails; both villages are told. Once his cage is open he has been rescued: he keeps following, however long the
   walk home takes (B624).
-- **The wreck** (`story/caravan_wreck`, 13 x 12): the settlers' covered wagon lies on its side a third of the way along
-  the caravan's road (or 150 blocks out from the village when the road there is water or rough ground). Its floor
-  stands up like a wall, its white canvas arches out torn at the back with a hoop showing, one upper wheel lies flat in
-  the air and the other is broken in the grass. Crates, barrels, hay, a sack and a pumpkin have spilled out of its open
-  end, and the lantern that lit their way lies in the grass behind. Ruts show where it slid off the road.
-- **The trail**: five marks, about 3 x 3 each, evenly spaced between the wreck and the stockade: trampled coarse dirt
-  and a dropped lantern; a smashed barrel with its staves and lid scattered; a torn white banner on a fence post; cart
-  ruts of path blocks; a crate stuck with arrows.
+- **The wreck** (`story/caravan_wreck`, 13 x 13, 5 tall; "Rolled and Robbed", rebuilt in 52.5): the settlers'
+  covered wagon lies on its side a third of the way along the caravan's road (or 150 blocks out from the village when
+  the road there is water or rough ground). It ran off the road and rolled: its floor stands up like a wall toward
+  the road, its underside stuck with the raiders' arrows, one top wheel still on its axle with its spokes bare against
+  the sky and the other flung back onto the road. The white cover lies along the far side like a gutted sail, slashed
+  where the raiders cut their way in, and you can step into the hollow under it from the open tail. Crates, barrels,
+  hay and a red blanket are thrown out and picked over, the lantern lies in the grass, and the clue is on the ground:
+  a second cart's ruts, hoofprints between them, turn off the road and lead away the other way, toward the stockade.
+- **The trail**: five marks ("the Carter's Rags", rebuilt in 52.5), evenly spaced between the wreck and the stockade.
+  The captive carter tears strips off the wagon's white cover and ties them high wherever he can, so each mark is a
+  piece of the same wagon standing up with white cloth on it, easy to spot from the last mark 20 to 30 blocks away,
+  from any side. Each lies on a patch of trodden earth with the wagon's ruts running through it:
+  1. **The Lantern Pole** (3 x 5, 7 tall): the wagon's lantern pole stuck upright, two rags at its top, the carter's
+     lantern hanging low on a hook, a snapped shaft along the rut.
+  2. **The Lost Wheel** (5 x 5, 7 tall): a cross-tree with a rag at each end of its spar, the lost wheel propped
+     against it, a burst barrel with its staves round it and a split sack of grain.
+  3. **The Torn Banner** (5 x 7, 8 tall): the cover thrown over its one standing hoop, a wall of white canvas five
+     blocks tall slumping to the ground, hacked through; the settlers' white banner jammed on a splintered pole.
+  4. **The Drag** (5 x 9, 10 tall): the cart levered up on its tail, both wheels on its axle, shafts to the sky, a rag
+     on the upturned bed; a wide scar of path where the goods were dragged off on a sledge.
+  5. **The Shot Crate** (5 x 7, 9 tall): the raiders' camp edge: two crates stuck with arrows, a smoking fire in a
+     ring of stones, their black standard over the carter's last rag torn down into the dirt, and their stakes, one
+     capped with a skull.
 - **Following the tracks** (`follow_trail`): walk up to the marks in order. At each, the action bar says where the
   tracks go next ("The tracks go on to the north-east"), and after the last, towards the stockade. A mark reached out
   of turn counts nothing: you have to find them in order. The quest's line is "Follow the tracks", counting 0 to 5.
-- **The raiders' stockade** (`story/raiders_stockade`, 19 x 17): 120 to 180 blocks on from the wreck, on the side away
-  from the villages. A palisade of sharpened dark oak round a trampled yard, its gate standing open under the ominous
-  banner, a lookout platform on the front corner, a gray tent with a bedroll, a fire ringed with log seats and the
-  banner on a pole, a loot chest with barrels of plunder, an archery target, and a cage of iron bars with an iron
-  gate, a lever outside it and straw inside (the captive's, 31.20).
+- **The raiders' stockade** (`story/raiders_stockade`, 19 x 17, 14 tall; "the Lock-up Under the Lookout", rebuilt in
+  52.5): 120 to 180 blocks on from the wreck, on the side away from the villages. A ragged ring of sharpened dark oak
+  stakes behind taller spiked posts and a bank of rubble, skulls by the way in; a squat gate tower over the open
+  gates, a fighting perch hung out over the west wall under the caravan's captured red banner, and in the back corner
+  the tall lookout under a black banner, seen from far off, whose foot is the cage: the carter sits behind iron bars
+  and an iron gate under the guards' boots, with straw, water and a bedroll, the lever on the jamb outside (31.20).
+  Inside the ring: a fire with log benches, the caravan's own white-and-red cover spread on the ground with the loot
+  being shared out on it, its cart stripped of its wheels, a tent sewn from the same canvas, an armory under the
+  perch, and the plunder piled at the back with the loot chest.
 - Each piece is built only when a player comes within 96 blocks of it. It lies on the land as it is: a hump in its
   footprint is cut away and a hollow filled, and it is never put over anything a player built.
 
@@ -78,8 +97,9 @@ Renders: [the wreck](../media/caravan-wreck.png), [the stockade](../media/raider
   195, and at least one; a step of one is cut or filled); no tree trunk; no section a player built in
   (`PlayerBuilt`) from 4 below its ground to its top, and only natural ground, plants and trees in its box
   (`BanditFort.natural`). The build is tried on the arc's column, then round it out to 32 blocks; once placed, what
-  stood above its ground is cleared and the ground under it filled as a camp's is. Its bottom layer is drawn only
-  where it changes the ground (paths, trampled earth), so the world's own ground stays elsewhere.
+  stood above its ground is cleared and the ground under it filled as a camp's is. Its bottom layer is the ground
+  itself (since 52.5 drawn in every cell: trampled earth, ruts and paths, grass at the edges), set in place of the top
+  ground block.
 - **`follow_trail`** (`CaravanTrail.FollowTrail`): `{"type": "follow_trail", "trail": "trail", "then": "stockade"}`.
   Its count is the number of marks the arc placed (`count`, 5 by default). Every 2 seconds `QuestTracker` calls
   `CaravanTrail.check` for each player: the next mark of each open `follow_trail` counts when the player is within 6
@@ -91,8 +111,9 @@ Renders: [the wreck](../media/caravan-wreck.png), [the stockade](../media/raider
 ## Items, blocks, jobs, commands
 
 - Blueprints `aliveworkplace:story/caravan_wreck`, `aliveworkplace:story/raiders_stockade` and
-  `aliveworkplace:story/trail_1` to `aliveworkplace:story/trail_5` (drawn in `tools/blueprints/caravan.py`; not in the
-  blueprint library).
+  `aliveworkplace:story/trail_1` to `aliveworkplace:story/trail_5` (drawn since 52.5 in
+  `tools/blueprints/js/caravan_wreck/`, `js/raiders_stockade/` and `js/trail/`, their y = 0 layer the ground itself,
+  the old drawings kept in `blueprint_history/story/`; not in the blueprint library).
 - The stockade's chest uses the bandit camps' loot table `aliveworkplace:chests/bandit_camp`.
 - Arc `aliveworkplace:lost_caravan` (`arcs/lost_caravan.json`), its effect `lost_caravan` (steps `overdue`, `ending`)
   and the objective `deliver_goods` (`{"type": "deliver_goods"}`; the village's name is filled in when it's posted).
@@ -188,4 +209,4 @@ every objective's.
   Tobin's catch-up past 32 and wait past 64, Journeyman with and without a free workstation, save and reload of Tobin
   and the trail, the chest holding exactly what left the store, the delivery paying once and only at the receiving
   hall, only helpers thanked, and the day-7 failure (nothing on day 6).
-- Showcase scenes: `caravan_trail`, `lost_caravan`.
+- Showcase scenes: `caravan_trail`, `lost_caravan`, `rebuild_trail` (the third mark from four sides).

@@ -1,0 +1,268 @@
+{
+  "name": "wonder.aliveworkplace.great_wall.name",
+  "description": "wonder.aliveworkplace.great_wall.description",
+  "icon": "minecraft:stone_brick_wall",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:golem_smith",
+      "stand_in": [
+        {
+          "type": "iron_golems",
+          "count": 4
+        },
+        {
+          "type": "job_level",
+          "job": "aliveworkplace:tinkerer",
+          "level": 5,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "type": "finished",
+      "blueprint": "aliveworkplace:gatehouse",
+      "count": 1
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_0",
+          "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_1",
+          "offset": [48, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_1_2",
+          "offset": [96, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:sentry_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 9,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:ghast_tear",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:emerald_brooch",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_2_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "minecraft:ominous_trial_key",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:rib_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_3_0",
+          "offset": [57, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_3_1",
+          "offset": [96, 0, 2]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:wither_skeleton_skull",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:netherite_upgrade_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:vex_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_wall.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_4_0",
+          "offset": [1, 9, 2]
+        },
+        {
+          "part": "aliveworkplace:wonder/great_wall/stage_4_1",
+          "offset": [57, 9, 2]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:heavy_core",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 32,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:netherite_ingot",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "raid_barrier",
+      "margin_degrees": 10
+    },
+    {
+      "type": "sentries",
+      "count": 4,
+      "range": 16,
+      "posts": [
+        [10, 10, 8],
+        [28, 10, 8],
+        [68, 10, 8],
+        [86, 10, 8]
+      ]
+    }
+  ],
+  "drawing": "drawn_f59e145e6"
+}

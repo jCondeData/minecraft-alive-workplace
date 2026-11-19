@@ -211,7 +211,7 @@ public final class WonderStages {
 			return Component.translatable("message.aliveworkplace.wonder.status.none").withStyle(ChatFormatting.GRAY);
 		}
 		WonderSite site = found.get();
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.of(level, site);
 		MutableComponent text = Component.empty();
 		text.append(Component.translatable("message.aliveworkplace.wonder.status.header", Wonders.name(site.wonder()), VillageHalls.name(level, site.hall()))
 			.withStyle(ChatFormatting.GOLD));
@@ -419,7 +419,7 @@ public final class WonderStages {
 
 	/** Creates the build sites of {@code site}'s current stage, and records them on the Wonder. */
 	static List<BuildSite> startStage(ServerLevel level, WonderSite site, @Nullable UUID builder) {
-		Optional<Wonder> wonder = Optional.ofNullable(Wonders.loaded().get(site.wonder()));
+		Optional<Wonder> wonder = Optional.ofNullable(WonderDrawings.of(level, site));
 		if (wonder.isEmpty() || site.placement().isEmpty() || site.stage() < 1 || site.stage() > wonder.get().stages().size()) {
 			return List.of();
 		}
@@ -474,7 +474,7 @@ public final class WonderStages {
 			return Optional.empty();
 		}
 		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
-		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		Wonder wonder = site.map(s -> WonderDrawings.of(level, s)).orElse(null);
 		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
 			return Optional.empty();
 		}
@@ -493,7 +493,7 @@ public final class WonderStages {
 			return Optional.empty();
 		}
 		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
-		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		Wonder wonder = site.map(s -> WonderDrawings.of(level, s)).orElse(null);
 		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
 			return Optional.empty();
 		}
@@ -511,7 +511,7 @@ public final class WonderStages {
 			return Optional.empty();
 		}
 		Optional<WonderSite> site = WonderManager.get(level).site(part.wonder());
-		Wonder wonder = site.map(s -> Wonders.loaded().get(s.wonder())).orElse(null);
+		Wonder wonder = site.map(s -> WonderDrawings.of(level, s)).orElse(null);
 		if (wonder == null || site.get().stage() < 1 || site.get().stage() > wonder.stages().size()) {
 			return Optional.empty();
 		}
@@ -562,7 +562,7 @@ public final class WonderStages {
 	/** {@code site}'s stage is done: the next one starts (its builders kept), or the Wonder is finished. */
 	static void advance(ServerLevel level, WonderSite site) {
 		WonderManager manager = WonderManager.get(level);
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.of(level, site);
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		UUID builder = site.builder().orElse(null); // the one it was handed to (a finished part's site is gone)
 		for (UUID part : site.parts()) {

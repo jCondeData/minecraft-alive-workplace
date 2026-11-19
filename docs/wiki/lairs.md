@@ -4,7 +4,7 @@ ROADMAP 32.3. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids themselves are
 on [Raids and threats](raids.md).
 
-Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072
+Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072, 52.5
 
 ## What a player sees
 
@@ -12,6 +12,15 @@ Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072
   blocks from the hall, on dry, fairly flat, open ground. Today that is the bandits; any raider culture whose file has a
   `lair` does the same. One lair stands by a village at a time. While it stands the village's night raids come from it,
   twice as often.
+- **The bandits' camp: the Lookout Camp** (`camp/bandit_camp`, rebuilt in 52.5 from `tools/blueprints/js/bandit_camp`).
+  It is set down turned any way round, 15 by 13 blocks. A lit fire in a ring of rough stone is its middle, with a log
+  bench and two stumps round it and open trodden ground where the band stands. Two low bunk tents of patched, stolen
+  cloth stand in the west corners, two beds in each. The chief's black tent with red stripes runs across the back, open
+  at the front where he stands, with his bed, his seat, the loot chest and his standard. A crow's nest on four spruce
+  legs rises in the south-east corner to a red flag, with a stolen bell under its deck and the camp's stash (a second
+  chest and a barrel) below. A stolen handcart heaped with plunder stands by the way in, between two trophy stakes. The
+  fire, the chief's spot and the band's spots are where they always were. The same camp is the Bandit King's three
+  camps and a bounty captain's hideout.
 - **The captain has a name.** "Chief Harl Ashgrave": one of his culture's twenty, picked when the camp is made. It
   floats over his head and is in every line about the camp: the chat message when it is made, the raid's horn message,
   the chronicle ("Chief Harl Ashgrave and a band of bandits made camp 92 blocks north-east", "5 of Chief Harl
@@ -29,6 +38,9 @@ Roadmap items: 32.3, B208, B209, B211, B216, B225, B288, B708, B709, B720, B1072
   camp's own blocks still as the blueprint set them (`MaterialRules.matches`) go: a block a player put there or changed
   stays, and the trampled ground stays. A chest's or barrel's items spill out as items. The camp's turn isn't saved: it
   is found by matching the blueprint round the camp's middle in each of the four turns (at least a quarter must match).
+  Nor is its drawing (52.5): a camp set down before the Bandit Camp was rebuilt is matched against the older drawings
+  the mod ships (`blueprint_history/camp/bandit_camp/`, through `Refreshes.olderKeys`) as well as today's, and the
+  drawing that matches the most of itself is the one taken down. A camp of the old drawing still comes down whole.
   A camp whose ground isn't loaded waits; the list is saved, so a restart mid-clearing carries on. A lair that leaves
   in peace (`/workplace threat clear`, a quiet village) packs up the same way. A ship sinks or sails off as before.
 - **The land comes back** (B225, `threat/CampGround`). A lair on land records the ground it covers when it is made

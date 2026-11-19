@@ -7,7 +7,7 @@ on the builder's shortage line. This replaced the Crafter, a separate job that m
 37.14a, owner 2026-10-21: "each job should craft what the builder or other villagers need when they need it"). Part of
 Furnished homes and modded storage (2.1), behind its expansion gate (`Expansions.M37`).
 
-Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1290, B1293, B1301, B1311, B1334, B1349, B1378, 50.7
+Roadmap items: 37.14, 37.14a, 37.15, 37.16, 37.16a, B396, B426, B696, B721, B760, B773, B778, B916, B920, B931, B1018, B1111, B1112, B1151, B1170, B1171, B1267, B1268, B1273, B1277, B1278, B1279, B1288, B1289, B1290, B1293, B1301, B1311, B1334, B1349, B1378, 50.7
 
 ## 1. What a player sees
 
@@ -83,7 +83,11 @@ the one short of the Raw Zinc a player mines, never the Crushed Raw Zinc (B1279)
 ingredient is itself what's short when its only ways are another mod's (a sticky piston names the Slimeball, never Create's
 Dough and Wheat Flour, B1277), pack several of one thing into one (a book or bookshelves with no leather at all name
 Leather, not Rabbit Hide; with some hide there it still names the rest of the hide, B1278) or need an ore (a piston names
-Redstone Dust, not Redstone Ore). Of an ingredient's options the base game's come first: with Chipped loaded a torch's
+Redstone Dust, not Redstone Ore). Another mod's way that uses nothing there never comes before the thing's own mod's way,
+even when that one is short of a block: a furnace minecart names its furnace's cobblestone and the minecart's iron, and
+a chest, hopper or TNT minecart 1 Minecart, never Create's Minecart Contraption; and a thing its own mod only unpacks
+from a storage block is gathered, so a slimeball asked for itself is never read down to Create's Wheat Flour (B1289).
+Of an ingredient's options the base game's come first: with Chipped loaded a torch's
 sticks go down to oak logs or bamboo, never Chipped's decorative planks that no crafting recipe makes (B1273). A thing
 whose only recipes unpack a storage form counts as raw: with Carved Wood's log bundles a smoker names 4 of Minecraft's logs, never
 Cobblemon's Apricorn Logs through Apricorn Wood (B1288). A stripped block is never raw (a player strips it from its
@@ -382,6 +386,13 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
 - `QaShortLineSweep1115e3CompatTests` (1, B489/B1267/B1277/B1279 with the whole compat pack): every item a job makes
   (about 3,200), read from an empty chest the way that job's shortage line reads it, names no ore (`c:ores`) and no
   Create crushed raw metal. Kills a mutant dropping the ore rule and one dropping B1279's raw-metal rank.
+- `ShortLineOwnWaysCompatTests` (7, B1289 with the whole compat pack): every item a job makes, from an empty chest, names
+  no Chipped thing no recipe makes, no other mod's log (but for a thing of that wood), nothing of another mod's for a
+  Minecraft thing with a Minecraft recipe and no Wheat Flour outside Create; a smoker from 8 cobblestone lacks 4 of one
+  Minecraft log, also through the builder's line with a Carpenter; the four minecarts name no Minecart Contraption (one
+  in the chest is still used); a slimeball is never read down to Wheat Flour; Tom's Storage's things name no Chipped plank.
+- `ShortLineOwnWaysGameTests` (3, B1289 in the base game): the smoker's 4 logs, a chest minecart's 1 Minecart, a furnace
+  minecart's cobblestone and Minecart, and a slimeball with no way at all read as before.
 - `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
   base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
   slot are B1293's.

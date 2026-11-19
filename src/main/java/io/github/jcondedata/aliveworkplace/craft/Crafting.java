@@ -541,6 +541,11 @@ public final class Crafting {
 		// B1277, B1278, B1279: an ingredient's ways that are no way to say what's short when nothing there leads to them
 		boolean ingredient = lenient && depth < pool.budget.topDepth;
 		boolean ownWay = !ingredient || hasOwnWay(level, kind, target, ways, pool.budget);
+		// B1289: the thing asked for itself, when its own mod only unpacks it from its storage block (a slimeball from a slime
+		// block): it is gathered, not made, so another mod's way that uses nothing there is no way to say what's short of
+		// it (Create's Dough and lime dye, down to the Wheat Flour only a millstone makes)
+		boolean gathered = lenient && !ingredient && ownOnlyUnpacks(level, kind, target, ways, pool.budget);
+		boolean bestOwn = false;
 		if (lenient && ways.size() > 1) {
 			// B1267: the thing's own mod's ways are tried first, so the plan's trials (B101) go to them before the rest (the
 			// pack's many other ways to an iron nugget); the ways that loop back still come last (B1255)
@@ -572,6 +577,11 @@ public final class Crafting {
 			// short when none of that thing is there: the line names the Leather a player gathers, not the hide nobody has
 			Item packed = ingredient ? packs(level, recipe, out) : null;
 			if (packed != null && pool.have(packed) <= 0) {
+				if (fromOwnMod(holder, target)) {
+					// B1289: its own mod's way is a packing of what isn't there, so the thing itself is what's short, never
+					// another mod's way round it (a chest minecart's Minecart of 5 iron ingots, not Create's Minecart Contraption)
+					ownWay = false;
+				}
 				continue;
 			}
 			if (!pool.budget.tryOne()) {
@@ -630,6 +640,12 @@ public final class Crafting {
 					continue;
 				}
 			}
+			if (fit < 2 && !fromOwnMod(holder, target) && (bestOwn || gathered)) {
+				// B1289: using nothing that's there, another mod's way never outranks the thing's own mod's way that worked out
+				// (a furnace minecart is a furnace and a minecart, not Create's Furnace Minecart Contraption: before, a way
+				// short of items beat one short of a block, the furnace's cobblestone), nor says what's short of a gathered thing
+				continue;
+			}
 			// B1279: then, of two ways that fit as well and are both the thing's own mod's, the one short only of raw metal a
 			// player mines (Create's Raw Zinc, not the Crushed Raw Zinc only a crushing wheel makes)
 			int rank = fit * 4 + (fromOwnMod(holder, target) ? 2 : 0) + (rawOnly(trial) ? 1 : 0);
@@ -639,6 +655,7 @@ public final class Crafting {
 				bestStep = step;
 				bestMade = (long) out.getCount() * times;
 				bestRank = rank;
+				bestOwn = fromOwnMod(holder, target);
 			}
 			if (rank >= RANK_ALL_THERE * 4) {
 				break;
@@ -817,6 +834,23 @@ public final class Crafting {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * B1289: whether {@code target}'s own mod has ways among {@code ways} (those this plan may use) and each one only
+	 * unpacks a storage block of it: a thing a player gathers.
+	 */
+	private static boolean ownOnlyUnpacks(ServerLevel level, Kind kind, Item target, List<RecipeHolder<?>> ways, Budget budget) {
+		boolean any = false;
+		for (RecipeHolder<?> holder : ways) {
+			if (budget.types.test(holder.value().getType()) && fromOwnMod(holder, target)) {
+				if (!unpacks(level, kind, holder.value(), target)) {
+					return false;
+				}
+				any = true;
+			}
+		}
+		return any;
 	}
 
 	/** The base game's options first (B1273: oak planks before Chipped's mosaic planks in the planks tag), else in order. */

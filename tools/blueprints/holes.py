@@ -51,7 +51,7 @@ TENT = "inside a tent: a low space by the bed or the hay"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
-    ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT,
+    ("camp/colony_camp", (2, 2, 5)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",
 }
@@ -83,6 +83,10 @@ ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not 
 # (round 3: its west stall's stock chest stands at (2, 1, 6) against the pier, so the opening is reported one up)
 ALLOW.update({(n, (2, 2, 6)): "the Guildhall's open market arcade under the closed hall, not a walled room"
               for n in ("guildhall", "guildhall_2", "guildhall_3")})
+# The Market Square (51.7 rebuild, "the Market House") stands its Market Court on an open stone undercroft: the
+# market's covered trading floor, trader and banquet ground inside the square's 9x9, which glazing would cut off
+ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's covered trading floor under the "
+              "Market Court, not a walled room" for n in ("market_square",)})
 
 # The Prisoner Cage (49 rebuild) is a cage wagon on purpose: its bed rides on four wheels at wheel-top height, open
 # underneath between them but for the axles; the air under the bed is under a cart, not a room ("prisoner_cage" is how

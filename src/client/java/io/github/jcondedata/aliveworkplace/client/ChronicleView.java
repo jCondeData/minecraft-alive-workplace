@@ -30,6 +30,8 @@ final class ChronicleView {
 	private int openSlot = -1;
 	private String openText = "";
 	private int scroll;
+	/** How far the last frame's list could scroll (the screenshot harness reads it). */
+	private int maxScroll;
 	/** What the last frame drew, for clicks: [kind (0 filter, 1 entry, 2 back), slot, x, y, w, h]. */
 	private final List<int[]> hits = new ArrayList<>();
 	private Component whisper;
@@ -176,6 +178,7 @@ final class ChronicleView {
 		int content = tops[rows.size()];
 		int max = ChronicleLayout.maxScroll(list, content);
 		scroll = Math.max(0, Math.min(max, scroll));
+		maxScroll = max;
 		tops = ChronicleLayout.rows(list, header, heights, scroll);
 		g.enableScissor(list[0] + 1, list[1] + 1, list[0] + list[2] - 1, list[1] + list[3] - 1);
 		int right = list[0] + list[2] - ChronicleLayout.BAR - 2;
@@ -284,6 +287,16 @@ final class ChronicleView {
 			}
 		}
 		return null;
+	}
+
+	/** The open entry's slot, or -1 (the screenshot harness). */
+	int openSlot() {
+		return openSlot;
+	}
+
+	/** How far the list is scrolled, and how far the last frame let it go (the screenshot harness). */
+	int[] scroll() {
+		return new int[]{scroll, maxScroll};
 	}
 
 	/** Opens the entry in {@code slot} as a click on it would (the screenshot harness). */

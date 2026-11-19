@@ -1459,8 +1459,9 @@ public class BuilderGameTests implements FreshPlanning {
 		buildStarter(helper, StarterBlueprints.GAZEBO);
 	}
 
-	//$ gametest_ticks_batch BIG_AREA '20000' '"decorations"'
-	@GameTest(template = BIG_AREA, timeoutTicks = 20000, batch = "decorations")
+	// 51.7: the Market House (13x16x13, 754 blocks) gets the Inn's and Town Hall's time, like the other 13x16x13 starters
+	//$ gametest_ticks_batch BIG_AREA '30000' '"decorations"'
+	@GameTest(template = BIG_AREA, timeoutTicks = 30000, batch = "decorations")
 	public void buildsMarketSquare(GameTestHelper helper) {
 		buildStarter(helper, StarterBlueprints.MARKET_SQUARE);
 	}

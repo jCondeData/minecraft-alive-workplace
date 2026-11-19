@@ -17,6 +17,9 @@ B661/B662: B639 redrew the Clinic without a run of this tool, and the next run (
 commits were then merged under new hashes) shipped only the in-between drawing, so the Clinic's released drawing was
 missing. The release tag's drawing is now copied directly, and --check catches a release drawing that is missing.
 
+52.6: --check also runs wonder_history.py --check (every Wonder's drawing archived with its stage layout and named in its
+data file); wonder_history.py, which wonders.save_wonder runs, writes those.
+
 B680: the modded library's copies (structure/modded/<path>, 37.12) were skipped, so a modded build (whose older drawings
 Refreshes.historyId looks up under blueprint_history/modded/<path>) was never offered the refresh, and --check, which
 looked only at the newest release, passed. Every blueprint is covered now, modded copies included, and --check
@@ -101,7 +104,11 @@ def main():
         print(f"{len({n for n, _ in missing})} blueprints lack a drawing of a release since {args.since} ({len(tags)} releases checked)")
         if missing:
             print("Fix: run python3 tools/blueprints/history.py and commit what it writes under blueprint_history")
-        sys.exit(1 if missing else 0)
+        # 52.6: every Wonder's drawing is archived (blueprint_history/wonder/<id>/<key>.json and its parts) and named in its
+        # data file, so a Wonder begun with it is still counted, repaired and continued with it after a redraw
+        import wonder_history
+        wonders_ok = wonder_history.check()
+        sys.exit(1 if missing or not wonders_ok else 0)
     release = args.release or (git("describe", "--tags", "--abbrev=0", "--match", "v*", "HEAD") or "").strip() or None
     tags = releases(args.since)
     written = 0

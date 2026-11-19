@@ -290,6 +290,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonJobSitesVerify1031",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ArenaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.OldArenaWatchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BerryBreederCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFarSiteBerryCompatTests",

@@ -70,7 +70,7 @@ public class CupDayGameTests implements FabricGameTest {
 			ResourceLocation.withDefaultNamespace("pumpkin_pie"), List.of(0xFF0000, 0x00FF00), ResourceLocation.withDefaultNamespace("music_disc_cat"));
 	}
 
-	/** The host (a Village with Arena I on record, ring at (15, 2, 10), benches at z 17 and 18), the test theme, Cobblemon assumed. */
+	/** The host (a Village with Arena I on record, ring at (15, 2, 12), its row of seats at z 18), the test theme, Cobblemon assumed. */
 	private static Setup host(GameTestHelper helper) {
 		Setup s = new Setup();
 		ServerLevel level = helper.getLevel();
@@ -152,7 +152,7 @@ public class CupDayGameTests implements FabricGameTest {
 			Villager mira = villager(helper, new BlockPos(3, 2, 25), ModVillagers.TRAINER_LEADER, 4, "Mira");
 			villager(helper, new BlockPos(4, 2, 25), ModVillagers.TRAINER, 2, "Pip");
 			List<Villager> crowd = new ArrayList<>();
-			for (int x = 12; x <= 14; x++) {
+			for (int x = 9; x <= 11; x++) { // by the stands: Arena I's row of seats is x 8 to 13 (and 17 to 22) at z 18 (50.12)
 				crowd.add(villager(helper, new BlockPos(x, 2, 17), null, 1, null));
 			}
 			Cups.round(level, s.hall, s.entity);

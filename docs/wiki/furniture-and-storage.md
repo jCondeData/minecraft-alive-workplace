@@ -175,8 +175,7 @@ vanilla chests and barrels underneath).
 
 **Two build libraries** (37.12). Every blueprint as it ships is the **vanilla library**, never changed. The **modded
 library** is a copy of every home and workshop (130 builds: every tier of the homes, workshops, job builds and the
-Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none, and the open-air Habitat Garden
-has nothing to dress) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
+Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
 building mods: the plaster and the birch infill of the timber frames are Supplementaries daub, with a brace in a
 panel's bottom corner beside a post; covered wooden floors are Chipped herringbone boards of the same wood; polished
 andesite is Rechiseled andesite tiles and covered cobblestone floors Rechiseled cobblestone brick paving; chests,

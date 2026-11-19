@@ -65,21 +65,21 @@ public class ArenaGameTests implements FabricGameTest {
 
 	// --- a builder finishes each tier -----------------------------------------------------------------------------
 
-	/** Arena (25 x 19): the ring, both boxes, the benches, the poles and the board, from bare ground. */
+	/** Arena (25 x 19): the pitch, both boxes, the back row of seats, the flags and the board, from bare ground. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"arena_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "arena_build")
 	public void aBuilderBuildsTheArena(GameTestHelper helper) {
 		build(helper, StarterBlueprints.ARENA);
 	}
 
-	/** Arena II (25 x 29): the stands, the gate arch, the lanterns and the fair lane. */
+	/** Arena II (25 x 19): the colonnade's stand over the fair lane and the judges' loggia over the gate. */
 	//$ gametest_ticks_batch HUGE_AREA '45000' '"arena_2_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 45000, batch = "arena_2_build")
 	public void aBuilderBuildsArenaII(GameTestHelper helper) {
 		build(helper, StarterBlueprints.ARENA_2);
 	}
 
-	/** Arena III (25 x 29, so it fits the huge area): the grandstand, the trainers' rooms and the champion's pole. */
+	/** Arena III (25 x 23, so it fits the huge area): the grandstand, the trainers' towers and the champion's mast. */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"arena_3_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "arena_3_build")
 	public void aBuilderBuildsArenaIII(GameTestHelper helper) {
@@ -97,6 +97,8 @@ public class ArenaGameTests implements FabricGameTest {
 		Villager builder = helper.spawn(EntityType.VILLAGER, new BlockPos(27, 2, 3));
 		Builders.employ(level, builder, helper.absolutePos(BENCH));
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), helper.absolutePos(ORIGIN), Rotation.NONE, Mirror.NONE);
+		// the finished Arena is saved world data: forget it after, or a later batch's Cup test at this spot finds it as its village's Arena
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
 		BoundingBox box = BlueprintOutline.bounds(placement, entry.size());
 		helper.assertTrue(box.getXSpan() <= 29 && box.getZSpan() <= 29, entry.id() + " is bigger than 29 x 29: " + box);
 		BuildSite site = Builders.start(level, builder, null, entry.id(), placement);
@@ -138,9 +140,9 @@ public class ArenaGameTests implements FabricGameTest {
 
 	/**
 	 * Every tier placed in each of the four rotations, plain and mirrored (front to back, as the Blueprint Table mirrors):
-	 * {@link Arenas#find} gives the spots where the blocks really are — the centre spot under the ring centre, the
-	 * daises under the boxes, every seat a stair with its back away from the ring, the lane under the fair lane, the log
-	 * of the champion's pole under its gold cap, the notice board.
+	 * {@link Arenas#find} gives the spots where the blocks really are — the centre spot under the ring centre, the red
+	 * and the blue box on their daises, every seat a stair with its back away from the ring, the lane under the fair lane,
+	 * the champion's mast under its lantern, the notice board.
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '400' '"arena_spots"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 400, batch = "arena_spots")
@@ -216,7 +218,7 @@ public class ArenaGameTests implements FabricGameTest {
 		} finally {
 			used.forEach(sites::forgetFinished);
 		}
-		helper.assertTrue(Arenas.seats(1).size() == 12 && Arenas.seats(2).size() == 30 && Arenas.seats(3).size() == 52,
+		helper.assertTrue(Arenas.seats(1).size() == 12 && Arenas.seats(2).size() == 30 && Arenas.seats(3).size() == 54,
 			"seats: " + Arenas.seats(1).size() + ", " + Arenas.seats(2).size() + ", " + Arenas.seats(3).size());
 		helper.succeed();
 	}
@@ -225,16 +227,19 @@ public class ArenaGameTests implements FabricGameTest {
 	private static void assertSpots(GameTestHelper helper, Arenas.Arena arena) {
 		ServerLevel level = helper.getLevel();
 		String what = arena.structure() + " " + arena.placement().rotation() + " " + arena.placement().mirror();
-		helper.assertTrue(level.getBlockState(arena.ring().below()).is(Blocks.WHITE_GLAZED_TERRACOTTA) && level.getBlockState(arena.ring()).isAir(),
+		// (50.12: the marker blocks are the rebuilt Arena's, tools/blueprints/js/arena/plan.mjs's palette)
+		helper.assertTrue(level.getBlockState(arena.ring().below()).is(Blocks.CHISELED_STONE_BRICKS) && level.getBlockState(arena.ring()).isAir(),
 			what + ": the ring centre at " + helper.relativePos(arena.ring()) + " stands on " + level.getBlockState(arena.ring().below()));
 		helper.assertTrue(arena.boxes().size() == 2, what + ": " + arena.boxes().size() + " boxes");
-		for (BlockPos box : arena.boxes()) {
-			helper.assertTrue(level.getBlockState(box.below()).is(Blocks.POLISHED_ANDESITE) && level.getBlockState(box).isAir()
-				&& level.getBlockState(box.below(2)).is(net.minecraft.tags.BlockTags.STONE_BRICKS),
+		for (int b = 0; b < arena.boxes().size(); b++) {
+			BlockPos box = arena.boxes().get(b);
+			// the red box (west) and the blue box (east): the team's terracotta, in the middle of a polished andesite dais
+			boolean dais = net.minecraft.core.Direction.Plane.HORIZONTAL.stream().allMatch(d -> level.getBlockState(box.below().relative(d)).is(Blocks.POLISHED_ANDESITE));
+			helper.assertTrue(level.getBlockState(box.below()).is(b == 0 ? Blocks.RED_TERRACOTTA : Blocks.BLUE_TERRACOTTA) && level.getBlockState(box).isAir() && dais,
 				what + ": no dais under the box at " + helper.relativePos(box) + ": " + level.getBlockState(box.below()));
 			helper.assertTrue(box.distManhattan(arena.ring()) == 11, what + ": the box at " + helper.relativePos(box) + " isn't at the ring's end");
 		}
-		int expected = arena.tier() == 1 ? 12 : arena.tier() == 2 ? 30 : 52;
+		int expected = arena.tier() == 1 ? 12 : arena.tier() == 2 ? 30 : 54;
 		helper.assertTrue(arena.seats().size() == expected && new HashSet<>(arena.seats()).size() == expected,
 			what + ": " + arena.seats().size() + " seats, not " + expected);
 		Vec3 ring = Vec3.atCenterOf(arena.ring());
@@ -255,8 +260,8 @@ public class ArenaGameTests implements FabricGameTest {
 				what + ": the fair lane at " + helper.relativePos(lane) + " is on " + under);
 		});
 		helper.assertTrue(arena.championPole().isPresent() == (arena.tier() >= 3), what + ": champion's pole " + arena.championPole());
-		arena.championPole().ifPresent(pole -> helper.assertTrue(level.getBlockState(pole).is(Blocks.STRIPPED_SPRUCE_LOG)
-			&& level.getBlockState(pole.above()).is(Blocks.GOLD_BLOCK), what + ": the champion's pole at " + helper.relativePos(pole) + " is "
+		arena.championPole().ifPresent(pole -> helper.assertTrue(level.getBlockState(pole).is(Blocks.SPRUCE_LOG)
+			&& level.getBlockState(pole.above()).is(Blocks.LANTERN), what + ": the champion's pole at " + helper.relativePos(pole) + " is "
 			+ level.getBlockState(pole)));
 		helper.assertTrue(level.getBlockState(arena.noticeBoard()).is(Blocks.DARK_OAK_PLANKS),
 			what + ": the notice board at " + helper.relativePos(arena.noticeBoard()) + " is " + level.getBlockState(arena.noticeBoard()));

@@ -26,6 +26,9 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+### Fixed
+- A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
+  village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
 
 ## 0.157.0 — 2026-11-18
 

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, B1067, B1068, B1069, B1070
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070
 
 ## What a player sees
 
@@ -50,8 +50,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   stone pit, and the wheel's shaft runs through the wall to a gearbox under the millstone on the meal floor; a sack
   hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
   and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
-  keep their old drawing until refreshed); the **Windmill**, a seven-square stone tower with a windmill bearing and
-  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop** (rebuilt from scratch in
+  keep their old drawing until refreshed); the **Windmill** (rebuilt from scratch in 50.10, "the Stage Mill",
+  15 x 18 x 14), a tarred timber smock tower stepping in twice out of a round brick drum, a reefing stage on brackets
+  round the drum's top and a slate boat cap whose nose holds the windmill bearing and four long sails (44 sail blocks),
+  a tail pole raking down to the stage; the upright shaft drops through both floors to a gearbox under the meal floor
+  that turns the millstone, with the farmer's composter and store chest beside it (standing Windmills keep their old
+  drawing until refreshed); and the **Workshop** (rebuilt from scratch in
   50.7, "the head-tank works"), a timber plate shop on a stone dado between two verticals: on the west a stone water
   tower banded in dark tiles, whose hooped head tank pours one source down the tower's corner onto a water wheel, its
   axle through the wall into a stack of cogwheels that turns the belt and the mechanical press over its depot; on the
@@ -66,9 +70,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   its wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
   large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
   job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
-  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
-  ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
-  (blast furnace); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
+  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill** (rebuilt from scratch in 50.10, "the Fall
+  House", 14 x 18 x 12), a stone crushing hall with its gable to the street and a timber-framed glazed bay that shows
+  the two crushing wheels from the road, a tall fall tower behind whose tank pours down a shaft (a glass slot shows the
+  water) onto the wheel in its face, the drive running through gearboxes to wheels that turn the opposite ways, Create's
+  crusher working in the gap under a feed belt, a pit and an item drain below, and a brick stack up the east side over
+  the blast furnace and the miner's chest (standing Crushing Mills keep their old drawing until refreshed); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
   glasshouse of three glass gables with a raised nave, a brick boiler and stack behind; the leat in an open stone trough
   on its west side turns an undershot wheel whose shaft drives a belt along the inside of the west wall to a depot in a
   front-wall hatch, a mechanical harvester and a mechanical plough standing over the belt (Create's harvester and plough
@@ -453,9 +460,9 @@ The planned fields of later items, each with its default, are listed in the desi
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
 - Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
-  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (9 x 17 x 9) and
-  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`;
-  the windmill in `tools/blueprints/create_builds.py`), unlocked from the start and
+  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (15 x 18 x 14 since its 50.10 rebuild,
+  drawn by the rebuild kit in `tools/blueprints/js/windmill`) and
+  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`), unlocked from the start and
   listed only with Create (`mechanic/CreateBuilds`).
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the

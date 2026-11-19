@@ -104,6 +104,12 @@ ALLOW.update({(n, (6, 1, 2)): "the Royal Hall's open entrance arcade under the b
 ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide, not a walled room"
               for n in ("clinic", "modded/clinic")})
 
+# The Quarry (50.10 rebuild, "the Headframe") leaves the Gap in its pit rail open on purpose: the Miner's way from the
+# hoist house's pit door down to the pit (QuarrySite.planStairs starts at the pit's edge there); the walk between the
+# shed's west wall and the headframe's back legs, under the eave and the frame's beams, is a covered landing, not a room
+ALLOW.update({(n, (9, 1, 6)): "the Quarry's open Gap to the pit under the headframe and the hoist house's eave, not a room"
+              for n in ("quarry", "modded/quarry")})
+
 
 def load(path, props=False):
     """(size, cells): cells maps (x, y, z) to a block id, or to None for a structure void (left out of the file).

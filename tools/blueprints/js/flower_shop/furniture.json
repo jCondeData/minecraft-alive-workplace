@@ -1,0 +1,14 @@
+{"spots": [
+  {"kind":"counter","pos":[2,1,9],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"counter","pos":[3,1,9],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[4,4,3],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0],[0,3,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[4,4,7],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0],[0,3,0]],"wood":"dark_oak","colour":null},
+  {"kind":"hanging_pot","pos":[2,5,4],"facing":"north","cells":[[0,0,0],[0,-1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"hanging_pot","pos":[6,5,4],"facing":"north","cells":[[0,0,0],[0,-1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"hanging_pot","pos":[2,5,7],"facing":"north","cells":[[0,0,0],[0,-1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"hanging_pot","pos":[6,5,7],"facing":"north","cells":[[0,0,0],[0,-1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"counter","pos":[9,1,4],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"counter","pos":[10,1,4],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[9,3,3],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[13,4,10],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0]],"wood":"dark_oak","colour":null}
+]}

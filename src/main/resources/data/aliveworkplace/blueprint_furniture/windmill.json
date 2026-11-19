@@ -1,0 +1,5 @@
+{"spots": [
+  {"kind": "lamp", "pos": [8, 3, 5], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [8, 3, 9], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [8, 9, 7], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]}
+]}

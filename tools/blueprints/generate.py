@@ -156,7 +156,27 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "berry_farm", "berry_farm_2", "apiary_garden", "apiary_garden_2", "greenhouse",
            # 51.9, the Royal Hall ("the Brick Palace"): js/royal_hall (MC_BUILDER=...; sh build.sh writes candidates,
            # LIVE=1 sh build.sh saves realm/royal_hall and realm/royal_hall_2)
-           "royal_hall", "royal_hall_2"}
+           "royal_hall", "royal_hall_2",
+           # 50.11, the Flower Shop ("the glasshouse florist"; the buildables only: the five village flower shops keep
+           # their own looks, village.py and village_looks.py): js/flower_shop (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py flower_shop flower_shop_2)
+           "flower_shop", "flower_shop_2",
+           # 50.11, the Supply Shop (I-IV, "the hoist house"; IV with its cellar): js/supply_shop (MC_BUILDER=..., sh
+           # build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
+           "supply_shop", "supply_shop_2", "supply_shop_3", "supply_shop_4",
+           # 50.11, the Market Stall (I-III, "the shop board"): js/market_stall (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py market_stall market_stall_2 market_stall_3)
+           "market_stall", "market_stall_2", "market_stall_3",
+           # 50.9, the Compost Yard (I-II, "the Bin Barn"): js/compost_yard (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py compost_yard compost_yard_2)
+           "compost_yard", "compost_yard_2",
+           # 50.10, the Quarry ("the Headframe", no basement) and the Sifting Shed (I-II, "the Tipple"): js/quarry and
+           # js/sifting_shed (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then
+           # modded_library.py quarry sifting_shed sifting_shed_2)
+           "quarry", "sifting_shed", "sifting_shed_2",
+           # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
+           # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
+           "crushing_mill", "windmill"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -217,9 +237,11 @@ def test_area(name, w, h, d, folder=TEST_AREAS):
 if __name__ == "__main__":
     # ROADMAP 49.3: the Starter Cottage (I-IV) comes from the rebuild kit (tools/blueprints/js/starter_cottage_b/build.sh,
     # LIVE=1 to save the live drawings); its old Python drawing in starter.py and basements.py is no longer saved
-    market_stall().save(MAIN_STRUCTURES, "market_stall")
-    market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
-    market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")
+    # ROADMAP 50.11: the Market Stall comes from the rebuild kit (REBUILT); starter.market_stall* are the old drawings,
+    # kept in blueprint_history/
+    for name, draw in (("market_stall", market_stall), ("market_stall_2", market_stall_2), ("market_stall_3", market_stall_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("lookout_tower", lookout_tower), ("lookout_tower_2", lookout_tower_2), ("lookout_tower_3", lookout_tower_3)):
         if name not in REBUILT:  # ROADMAP 51.8: the Lookout Tower comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
@@ -229,9 +251,11 @@ if __name__ == "__main__":
                        ("healing_center_3", healing_center_3)):
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
-    supply_shop().save(MAIN_STRUCTURES, "supply_shop")
-    supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
-    supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
+    # ROADMAP 50.11: the Supply Shop (I-IV) comes from the rebuild kit (REBUILT); starter.supply_shop* and
+    # basements.supply_shop_4 are the old drawings, kept in blueprint_history/
+    for name, draw in (("supply_shop", supply_shop), ("supply_shop_2", supply_shop_2), ("supply_shop_3", supply_shop_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     storehouse().save(MAIN_STRUCTURES, "storehouse")
     storehouse_2().save(MAIN_STRUCTURES, "storehouse_2")
     storehouse_3().save(MAIN_STRUCTURES, "storehouse_3")
@@ -254,8 +278,11 @@ if __name__ == "__main__":
     for name, draw in (("apiary_garden", apiary_garden), ("apiary_garden_2", apiary_garden_2)):
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
-    flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
-    flower_shop_building_2().save(MAIN_STRUCTURES, "flower_shop_2")
+    # ROADMAP 50.11: the Flower Shop comes from the rebuild kit (REBUILT); starter.flower_shop_building* are the old
+    # drawings, kept in blueprint_history/
+    for name, draw in (("flower_shop", flower_shop_building), ("flower_shop_2", flower_shop_building_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for name, draw in (("graveyard", graveyard), ("graveyard_2", graveyard_2)):
         if name not in REBUILT:  # ROADMAP 51.6: the Graveyard comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
@@ -336,7 +363,8 @@ if __name__ == "__main__":
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         if name not in REBUILT:  # ROADMAP 50.6 and 50.7: the Print Shop and the Jeweler's Workshop come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
-    quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
+    if "quarry" not in REBUILT:  # ROADMAP 50.10: the Quarry comes from the rebuild kit; quarry.quarry is the old drawing
+        quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     # ROADMAP 37.14 crafters_workshop and 46.6 glassblowers_workshop come from the rebuild kit since 50.7 (REBUILT);
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
@@ -353,10 +381,15 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
-    compost_yard().save(MAIN_STRUCTURES, "compost_yard")
-    compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
-    sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")
-    sifting_shed_2().save(MAIN_STRUCTURES, "sifting_shed_2")
+    # ROADMAP 50.9: the Compost Yard comes from the rebuild kit (REBUILT); yards.compost_yard* are the old drawings,
+    # kept in blueprint_history/
+    for name, draw in (("compost_yard", compost_yard), ("compost_yard_2", compost_yard_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
+    # ROADMAP 50.10: the Sifting Shed comes from the rebuild kit (REBUILT); sifting_shed* here are the old drawings
+    for name, draw in (("sifting_shed", sifting_shed), ("sifting_shed_2", sifting_shed_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     pokemon_center().save(MAIN_STRUCTURES, "pokemon_center")
     pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
     for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks

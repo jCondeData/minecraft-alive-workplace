@@ -1,0 +1,6 @@
+{
+  "name": "crushing-mill",
+  "private": true,
+  "type": "module",
+  "description": "The Crushing Mill (Create build, 49/50.10): the Fall House. MC_BUILDER = the minecraft-builder skill folder; ./build.sh writes a candidate."
+}

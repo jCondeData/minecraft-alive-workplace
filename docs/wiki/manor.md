@@ -4,7 +4,7 @@ Milestone 49, item 49.7: the grade III home for Nobles (34.16), and where the No
 scratch with the rebuild kit (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/manor.md`), a
 blind design, and a critic who scored old and new side by side (2/2/2/2 against 4/4/4/4) and said SHIP
 (`tools/blueprints/briefs/manor_critic.md`).
-Roadmap items: 34.16, 34.7, 26.15, 49.7
+Roadmap items: 34.16, 34.7, 26.15, 49.7, 49.10f
 
 ## 1. What a player sees
 
@@ -45,6 +45,18 @@ Roadmap items: 34.16, 34.7, 26.15, 49.7
   with this redraw a refresh is close to a whole rebuild. The new drawing keeps the cells where the older Manors kept
   their chests, barrels, beds, the jukebox and the cellar's pots free of doors and stairs.
 
+- **In its village's culture** (49.10f): every level is drawn again for each village culture. A desert village builds
+  the Qasr of the Windcatcher (flat sandstone and mud-brick masses at three heights behind crenellated parapets, the
+  porch tower a slotted windcatcher with a lattice oriel, a palm garden round a fountain at II, a clerestory lantern on
+  the ballroom at III); a savanna village the Great House under One Thatch (one broad golden hip over the whole house,
+  a colonnade of acacia posts under its eaves, red granite below packed mud, the tower rising through the thatch under
+  its own steep pyramid); a snowy village the White Hall (pale calcite with gray dressed stone under one steep slate
+  roof, the wings standing forward as tall pointed gables, snow on the ridges and eaves, a closed storm porch); a taiga
+  village the Boyar's Lodge (dark spruce logs on a mossy fieldstone footing under broad slate roofs, verandas on log
+  posts, two fieldstone stacks). The rooms, beds, doors, the grand stair, the ballroom, the cellar and every furniture
+  spot are in the same cells, and each look is the same size as its level, so the Noble's Ball is held in any look's
+  ballroom. Plains villages build the brick Manor. The Blueprint Table lists the looks.
+
 ## 2. How it works
 
 - Drawn in JavaScript with the rebuild kit: `tools/blueprints/js/manor/` (`plan.mjs`: three concepts, story, palette,
@@ -58,6 +70,16 @@ Roadmap items: 34.16, 34.7, 26.15, 49.7
   of its declared size, (10, 1, 8) in I and (10, 1, 12) in II, both on the hall's chequer. Modded copies:
   `modded_library.py manor manor_2 manor_3 manor_4`. Village looks: the styles (`BlueprintStyles`) are applied at play
   time, as before; the two chimneys (a campfire on each stack's solid column) stay whole in every style.
+
+- The culture looks (49.10f) are drawn in `tools/blueprints/js/manor_<culture>/` from the brief and the shipped plan
+  (they draw its rooms and furniture in with `parts/noble_house.mjs`; `look_spots.py` says SAME BUILDING for all 16);
+  `SHIP=1 build.sh` saves them as `structure/looks/<culture>/manor[_2.._4]`, IV with the same 4-deep cellar. The critic
+  passed all four (`tools/blueprints/briefs/manor_looks_critic.md`: snowy in round 3, taiga in round 2).
+  `BlueprintLooks` lists the Manor by culture; `StarterBlueprints.MANOR_DESERT`, `_SAVANNA`, `_SNOWY` and `_TAIGA` list
+  each look's levels, and their Level IVs are among `WITH_BASEMENTS`. The Noble's Ball finds a look by its family
+  (`StewardConditions.family`), and every look keeps the ballroom's middle at (23, 1, 8). Scene: `rebuild_manor_looks`.
+- At the ship step the savanna hall's front windows got a lintel over their deep inner reveal: the hall's blinds hang
+  there, and with the reveal open to the top they had nothing to hang on (furniture check).
 
 ## 3. Switches
 
@@ -102,4 +124,6 @@ door and onto the grand stair's first step), `QaGranderHomes1107GameTests.everyB
 `QaGranderHomes1107bGameTests`, `BuilderGameTests.buildsManor`, `buildsManorII`, `buildsManorIII`,
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `StyleGameTests.chimneysStayWholeInEveryStyle`,
 `QaChairFacingGameTests.turningOneOfTheManorsChairsRoundIsCaught`, `FurnishedHomesGameTests`, `QaBuildReachGameTests`,
-`B648GameTests`, the basement and refresh tests. Scene `rebuild_manor`.
+`B648GameTests`, the basement and refresh tests. Scene `rebuild_manor`. `ManorLooksGameTests` (culture pick at every
+level, fallbacks, base/upgrade/lock/basement and the ball's family per look, sizes, beds and job blocks, Level I of each
+look built to DONE, a desert site saved mid-build reloads as desert). Scene `rebuild_manor_looks`.

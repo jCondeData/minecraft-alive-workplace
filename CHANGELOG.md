@@ -26,6 +26,13 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
+  porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden
+  hip over the whole house on a colonnade of acacia posts, the tower rising through it); the White Hall (pale calcite
+  under one steep slate roof, tall pointed gables, snow on the ridges); and the Boyar's Lodge (dark spruce logs on a
+  mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
+  furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the

@@ -135,7 +135,7 @@ function drawLevel(level) {
 
   // --- Pass 4: interior (the plan's furniture, level by level) ----------------------------------------------------------
   for (const f of FURNITURE) if (at(f.level)) furnitureParts[f.part](c, f)
-  for (const p of POSTS) if (at(p.level)) { c.free(p.at); c.set(...p.at, 'aliveworkplace:guard_post', { facing: p.facing }) }
+  for (const p of POSTS) if (at(p.level)) { c.free(p.at); c.set(...p.at, 'grindstone', { face: 'floor', facing: p.facing }) } // 51.8 ship: a grindstone, not the Guard Post (no recipe since the Guard moved to the grindstone, so a builder could never be stocked with one)
 
   // --- Pass 5: the armory (IV) --------------------------------------------------------------------------------------------
   let dug = null

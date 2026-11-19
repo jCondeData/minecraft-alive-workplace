@@ -329,17 +329,17 @@ public class QaBuilderFixes1027bGameTests implements FabricGameTest {
 		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.COUNTERCLOCKWISE_90, new BlockPos(4, 2, 25), new int[] {6, 1, 8}, new int[] {6, 1, 13}, new int[] {6, 1, 10});
 	}
 
-	/** Royal Hall II: from the hall floor (15,2,17) out by the east door (16,1,17) to (19,1,17). */
+	/** Royal Hall II: from the treasury (23,1,15) out by the east door (25,1,14) to its step (26,1,14) (51.9's drawing). */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487RoyalHallEastOut"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487RoyalHallEastOut")
 	public void aVillagerWalksOutByRoyalHallIIsEastDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {15, 2, 17}, new int[] {19, 1, 17}, new int[] {16, 1, 17});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {23, 1, 15}, new int[] {26, 1, 14}, new int[] {25, 1, 14});
 	}
 
-	/** The Royal Hall turned half round: from the dais (13,2,17) into the vault (9,1,21) by its door (11,2,19). */
+	/** The Royal Hall turned half round: from the dais (6,2,17) into the vault (2,2,16) by its door (3,2,17) (51.9's drawing). */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487VaultInTurned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487VaultInTurned")
 	public void aVillagerWalksIntoTheTurnedRoyalHallsVaultFromTheDais(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.CLOCKWISE_180, new BlockPos(23, 2, 27), new int[] {13, 2, 17}, new int[] {9, 1, 21}, new int[] {11, 2, 19});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.CLOCKWISE_180, new BlockPos(23, 2, 27), new int[] {6, 2, 17}, new int[] {2, 2, 16}, new int[] {3, 2, 17});
 	}
 }

@@ -180,9 +180,10 @@ public class RealmBuildsGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** ROADMAP 33.14: a builder puts up the Royal Hall from bare ground with the materials stocked. */
-	//$ gametest_ticks_batch AREA '80000' '"realmBuildsRoyalHall"'
-	@GameTest(template = AREA, timeoutTicks = 80000, batch = "realmBuildsRoyalHall")
+	/** ROADMAP 33.14: a builder puts up the Royal Hall from bare ground with the materials stocked (51.9's palace is
+	 *  25 tall with two towers, so it gets the Royal Hall II's tall area and time). */
+	//$ gametest_ticks_batch TALL '140000' '"realmBuildsRoyalHall"'
+	@GameTest(template = TALL, timeoutTicks = 140000, batch = "realmBuildsRoyalHall")
 	public void buildsTheRoyalHall(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		BuilderGameTests.buildStarter(helper, StarterBlueprints.ROYAL_HALL, new BlockPos(5, 2, 5));

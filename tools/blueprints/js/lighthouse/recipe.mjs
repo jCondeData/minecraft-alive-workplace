@@ -38,7 +38,7 @@ function tower(c, P, y0, y1) {
   for (let y = Math.max(y0, L.deck + 1); y <= y1; y++) {
     const r = radiusAt(y)
     const body = r === TOWER.foot ? sea : r === TOWER.waist ? waist : lime
-    const course = r !== TOWER.foot && (L.floors.includes(y) || (r === TOWER.shaft && L.bands.includes(y)))
+    const course = r !== TOWER.foot && (L.floors.includes(y) || L.bands.includes(y))
     for (const [x, z] of solid(r)) {
       if (x === door[0] && z < cz && (y === L.deck + 1 || y === L.deck + 2)) continue // the doorway through the wall
       c.set(x, y, z, course ? (r === TOWER.shaft ? P.band : P.course) : body)
@@ -48,6 +48,13 @@ function tower(c, P, y0, y1) {
       const [, , dx, dz] = WINDOW_AT[side]
       c.set(cx + dx * r, y, cz + dz * r, P.glass)
       for (let k = r - 1; k >= 1; k--) { const ix = cx + dx * k, iz = cz + dz * k; if (isInterior(ix, iz)) break; c.clear(ix, y, iz) }
+      // round 2 (the plain drum): each window framed proud of the wall, a dark sill under it and a drip hood over it,
+      // one cell out, so every landing reads on the outside as a lit opening with a shadow line (skipped where a ledge,
+      // a corbel or the doorway already holds the cell)
+      const ox = cx + dx * (r + 1), oz = cz + dz * (r + 1), out = towardCentre(ox, oz, cx, cz)
+      const low = !winRows.has(y - 1), high = !winRows.has(y + 1)
+      if (low && y - 1 > L.deck + 2 && !c.get(ox, y - 1, oz)) slab(c, ox, y - 1, oz, `${P.band}_slab`, 'top')
+      if (high && y + 1 < L.shaftTop - 1 && !c.get(ox, y + 1, oz)) stair(c, ox, y + 1, oz, `${P.band}_stairs`, out, 'top')
     }
   }
   // the floors and the stair winding up the inside wall through them, to the gallery floor
@@ -56,7 +63,20 @@ function tower(c, P, y0, y1) {
 // the ring cells the stair needs open through the gallery floor (the two steps under it)
 const stairAt = y => RING[((y - LEVELS.stairFrom) % RING.length + RING.length) % RING.length]
 
+// draw(n): the Wonder as it stands after stage n. A later stage never replaces a block an earlier one laid (52.6: a
+// builder would have to break finished work; the cottage's floor, the landings' boards and the quay's paving are laid
+// over stage 1's ground), so every block of stage n is the block the finished Wonder has there: the footprints of the
+// stage-2 floors are laid with stage 1's ground.
 export function draw(stage = 4) {
+  const c = drawn(stage)
+  if (stage < 4) {
+    const whole = drawn(4)
+    for (const k of c.cells.keys()) if (whole.cells.has(k)) c.cells.set(k, whole.cells.get(k))
+  }
+  return c
+}
+
+function drawn(stage) {
   const c = new Canvas(SIZE)
   const P = PALETTE, L = LEVELS
   const sea = mix(P.sea, 3), quayMix = mix(P.quay, 4), deckMix = mix(P.deck, 6), plinthMix = mix(P.plinth, 8)
@@ -239,6 +259,7 @@ export function verify() {
   for (let n = 1; n <= 4; n++) {
     const c = draw(n)
     for (const [k, v] of seen) if (!c.cells.has(k)) throw new Error(`stage ${n} takes away ${v.id} at ${k}`)
+    for (const [k, v] of seen) if (c.cells.get(k).id !== v.id) throw new Error(`stage ${n} replaces ${v.id} at ${k} with ${c.cells.get(k).id}`)
     // grounded: flood from y 0 through face, edge and corner neighbours
     const reach = new Set([...c.cells.keys()].filter(k => k.split(',')[1] === '0'))
     const todo = [...reach]

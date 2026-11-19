@@ -15,6 +15,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.wonder.Wonder;
 import io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints;
+import io.github.jcondedata.aliveworkplace.wonder.WonderDrawings;
 import io.github.jcondedata.aliveworkplace.wonder.Wonders;
 import static io.github.jcondedata.aliveworkplace.test.QaWindowsAndWards1028GameTests.endsInAir;
 import static io.github.jcondedata.aliveworkplace.test.QaWindowsAndWards1028GameTests.glass;
@@ -58,9 +59,11 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
  * <li>have a builder really build Sunny Plaza I, and Sunny Plaza II turned and mirrored, and read the glass in the
  * world after the game's neighbour updates;</li>
  * <li>judge both plaza looks in every turn and mirror a player can place them in, through the builder's own plan;</li>
- * <li>check every Lighthouse window cell by cell (one column, nothing out in front, a ledge under it), and that the
- * same check finds the lone panes in the drawing before the fix (v0.151.0);</li>
- * <li>compare the redrawn tower part with v0.151.0: the same size and offset, changed only at the two window rows.</li>
+ * <li>check every Lighthouse window cell by cell (one column, nothing out in front), and that the same check finds
+ * the lone panes in the drawing before the fix (v0.151.0);</li>
+ * <li>compare the redrawn tower part with v0.151.0: the same size and offset, changed only at the two window rows.
+ * Since 52.6 rebuilt the Lighthouse, that tower is the 35.11 drawing's ({@link #OLD}), which a Lighthouse begun
+ * before 52.6 is still built and repaired by.</li>
  * </ul>
  */
 public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
@@ -71,10 +74,13 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 	private static final List<BlockPos> KEYSTONES = List.of(new BlockPos(3, 3, 2), new BlockPos(9, 3, 2));
 	private static final ResourceLocation LIGHTHOUSE = AliveWorkplace.id("lighthouse");
 	private static final ResourceLocation TOWER = AliveWorkplace.id("wonder/lighthouse/stage_2_0");
-	/** The tower's middle in the whole Lighthouse (wonders.py LC), and each window's lower row (L_WINDOWS). */
-	private static final int CX = 12, CZ = 21;
-	private static final int[] WINDOWS = {9, 16, 26};
-	/** The rows B656 redrew: where the tower narrows past a whole block between a window's two rows. */
+	/** The tower's middle in the whole Lighthouse (52.6, js/lighthouse/plan.mjs TOWER), and each window's lower row (LEVELS.windows). */
+	private static final int CX = 12, CZ = 24;
+	private static final int[] WINDOWS = {6, 14, 22, 30, 33};
+	/** The 35.11 drawing (the one B656 fixed), kept for Lighthouses begun before 52.6: its tower's middle (wonders.py LC). */
+	private static final String OLD = "drawn_e886920ac";
+	private static final int OLD_CX = 12, OLD_CZ = 21;
+	/** The rows B656 redrew in the 35.11 tower: where it narrows past a whole block between a window's two rows. */
 	private static final Set<Integer> REDRAWN = Set.of(9, 26);
 	private static final int[][] SIDES = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
 
@@ -144,10 +150,11 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 	}
 
 	/**
-	 * Every two-tall window of the whole Lighthouse (rows 9, 16 and 26, all four sides): its two panes stand in one
-	 * column in the tower wall, joined by the game to the wall at both sides, with no glass and no block out in front
-	 * at the lower row and a ledge under the cell in front. The same check finds the 8 lone panes in the tower part as
-	 * drawn before B656 (v0.151.0), so it would catch them coming back.
+	 * Every two-tall window of the whole Lighthouse (52.6: rows 6, 14, 22, 30 and 33, all four sides): its two panes stand
+	 * in one column in the tower wall, joined by the game to the wall at both sides, with no glass and no block out in
+	 * front at the lower row but a weathering ledge (the round-2 sill and hood sit under and over the window). The same
+	 * check finds the 8 lone panes in the 35.11 tower part as drawn before B656 (v0.151.0), laid in the 35.11 drawing's
+	 * whole, so it would catch them coming back.
 	 */
 	//$ gametest_ticks EMPTY_STRUCTURE '200'
 	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
@@ -160,25 +167,25 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 		List<String> problems = new ArrayList<>();
 		for (int y : WINDOWS) {
 			for (int[] d : SIDES) {
-				String why = window(now, y, d);
+				String why = window(now, CX, CZ, y, d, false);
 				if (why != null) {
 					problems.add(why);
 				}
 			}
 		}
-		// The drawing before the fix, laid in the whole at the tower part's offset: the check must find its lone panes
-		Wonder.Part tower = towerPart();
+		// The drawing before the fix, laid in the 35.11 whole at the tower part's offset: the check must find its lone panes
+		Wonder.Part tower = towerPart(level);
 		Blueprint old = Refreshes.olderDrawing(level.getServer(), TOWER, "v0.151.0")
 			.orElseThrow(() -> new IllegalStateException("no v0.151.0 drawing of " + TOWER + " in blueprint_history"));
-		Map<BlockPos, BlockState> before = new HashMap<>(now);
+		Map<BlockPos, BlockState> before = oldWhole(level);
 		old.blocks().forEach(e -> before.put(e.pos().offset(tower.offset()), e.state()));
 		int caught = 0;
 		for (int y : REDRAWN) {
 			for (int[] d : SIDES) {
-				caught += window(before, y, d) != null ? 1 : 0;
+				caught += window(before, OLD_CX, OLD_CZ, y, d, true) != null ? 1 : 0;
 			}
 		}
-		LOGGER.info("QA B656: the Lighthouse's 12 windows, {} wrong now; the check finds {} of 8 in the v0.151.0 tower", problems.size(), caught);
+		LOGGER.info("QA B656: the Lighthouse's 20 windows, {} wrong now; the check finds {} of 8 in the v0.151.0 tower", problems.size(), caught);
 		helper.assertTrue(caught == 8, "the window check finds only " + caught + " of the 8 lone panes in the tower drawn before B656");
 		helper.assertTrue(problems.isEmpty(), "B656: the Lighthouse's windows: " + problems.size() + " wrong, e.g. "
 			+ String.join("; ", problems.subList(0, Math.min(4, problems.size()))));
@@ -186,17 +193,18 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 	}
 
 	/**
-	 * The redrawn tower part (Lighthouse stage II) keeps the size and the offset of the drawing before B656 (v0.151.0),
-	 * the size it shares with no gap or overlap against the stage parts on either side, and every block that changed
-	 * lies at the two redrawn window rows on the four window rays: a stage half built on a server lines up with it.
+	 * The redrawn tower part (the 35.11 Lighthouse's stage II, which a Lighthouse begun before 52.6 is still built and
+	 * repaired by) keeps the size and the offset of the drawing before B656 (v0.151.0), the size it shares with no gap or
+	 * overlap against the stage parts on either side, and every block that changed lies at the two redrawn window rows
+	 * on the four window rays: a stage half built on a server lines up with it.
 	 */
 	//$ gametest_ticks EMPTY_STRUCTURE '200'
 	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 200)
 	public void qaTheRedrawnLighthouseTowerKeepsItsSizeAndPlace(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		Wonder.Part tower = towerPart();
+		Wonder.Part tower = towerPart(level);
 		helper.assertTrue(tower.offset().equals(new BlockPos(5, 3, 14)), "the tower part's offset moved: " + tower.offset().toShortString());
-		Blueprint now = BlueprintLibrary.get(level.getServer(), TOWER).orElseThrow(() -> new IllegalStateException("no " + TOWER));
+		Blueprint now = Refreshes.olderDrawing(level.getServer(), TOWER, OLD).orElseThrow(() -> new IllegalStateException("no " + OLD + " drawing of " + TOWER));
 		Blueprint old = Refreshes.olderDrawing(level.getServer(), TOWER, "v0.151.0")
 			.orElseThrow(() -> new IllegalStateException("no v0.151.0 drawing of " + TOWER));
 		helper.assertTrue(now.size().equals(old.size()), "the tower part's size changed: " + old.size().toShortString() + " -> " + now.size().toShortString());
@@ -209,8 +217,8 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 		BlockState air = Blocks.AIR.defaultBlockState();
 		List<String> stray = new ArrayList<>();
 		int changed = 0;
-		int cx = CX - tower.offset().getX();
-		int cz = CZ - tower.offset().getZ();
+		int cx = OLD_CX - tower.offset().getX();
+		int cz = OLD_CZ - tower.offset().getZ();
 		for (BlockPos p : all) {
 			BlockState was = a.getOrDefault(p, air);
 			BlockState is = b.getOrDefault(p, air);
@@ -226,7 +234,7 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 			}
 		}
 		// Its neighbours in the Wonder stand where they stood: every part still fits inside the whole Wonder
-		Blueprint whole = WonderBlueprints.whole(level.getServer(), WonderBlueprints.idOf(LIGHTHOUSE)).orElseThrow();
+		Blueprint whole = WonderBlueprints.whole(level.getServer(), WonderBlueprints.idOf(LIGHTHOUSE)).orElseThrow(); // the plot is the same 25 x 46 x 33
 		Vec3i far = new Vec3i(tower.offset().getX() + now.size().getX(), tower.offset().getY() + now.size().getY(), tower.offset().getZ() + now.size().getZ());
 		helper.assertTrue(far.getX() <= whole.size().getX() && far.getY() <= whole.size().getY() && far.getZ() <= whole.size().getZ(),
 			"the tower part reaches " + far.toShortString() + " past the whole Lighthouse's " + whole.size().toShortString());
@@ -238,23 +246,38 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 		helper.succeed();
 	}
 
-	/** The Lighthouse's tower (stage II) part. */
-	private static Wonder.Part towerPart() {
-		Wonder wonder = Wonders.get(LIGHTHOUSE).orElseThrow(() -> new IllegalStateException("no Lighthouse Wonder loaded"));
-		return wonder.stages().stream().flatMap(s -> s.parts().stream()).filter(p -> p.part().equals(TOWER)).findFirst()
-			.orElseThrow(() -> new IllegalStateException("the Lighthouse has no part " + TOWER));
+	/** The 35.11 Lighthouse's tower (stage II) part, as its drawing in the history places it. */
+	private static Wonder.Part towerPart(ServerLevel level) {
+		List<Wonder.Stage> stages = WonderDrawings.stages(level.getServer(), LIGHTHOUSE, OLD)
+			.orElseThrow(() -> new IllegalStateException("the 35.11 Lighthouse " + OLD + " isn't in the history"));
+		return stages.stream().flatMap(s -> s.parts().stream()).filter(p -> p.part().equals(TOWER)).findFirst()
+			.orElseThrow(() -> new IllegalStateException("the 35.11 Lighthouse has no part " + TOWER));
+	}
+
+	/** The 35.11 Lighthouse whole, its parts as the history has them, each at its offset. */
+	private static Map<BlockPos, BlockState> oldWhole(ServerLevel level) {
+		Map<BlockPos, BlockState> out = new HashMap<>();
+		for (Wonder.Stage stage : WonderDrawings.stages(level.getServer(), LIGHTHOUSE, OLD).orElseThrow()) {
+			for (Wonder.Part part : stage.parts()) {
+				Blueprint b = Refreshes.olderDrawing(level.getServer(), part.part(), OLD)
+					.orElseThrow(() -> new IllegalStateException("no " + OLD + " drawing of " + part.part()));
+				b.blocks().forEach(e -> out.put(e.pos().offset(part.offset()), e.state()));
+			}
+		}
+		return out;
 	}
 
 	/**
-	 * One window of the whole Lighthouse (lower row y, side d): null when its two panes stand in one column in the wall,
-	 * each joined at both sides by the game to a block, nothing out in front at the lower row and a ledge under that.
+	 * One window of the whole Lighthouse (tower middle cx, cz; lower row y, side d): null when its two panes stand in one
+	 * column in the wall, each joined at both sides by the game to a block, nothing out in front at the lower row and (with
+	 * {@code ledge}, the 35.11 tower's narrowing steps) a ledge under that.
 	 */
-	private static String window(Map<BlockPos, BlockState> blocks, int y, int[] d) {
+	private static String window(Map<BlockPos, BlockState> blocks, int cx, int cz, int y, int[] d, boolean ledge) {
 		String where = "the window at y " + y + " facing " + d[0] + "," + d[1];
 		BlockGetter getter = over(blocks);
 		BlockPos upper = null;
 		for (int k = 12; k >= 1; k--) {
-			BlockPos p = new BlockPos(CX + d[0] * k, y + 1, CZ + d[1] * k);
+			BlockPos p = new BlockPos(cx + d[0] * k, y + 1, cz + d[1] * k);
 			if (glass(blocks.getOrDefault(p, Blocks.AIR.defaultBlockState()))) {
 				upper = p;
 				break;
@@ -274,10 +297,15 @@ public class QaLonePanes1031GameTests implements net.fabricmc.fabric.api.gametes
 				return where + ": a pane " + k + " out in front of the wall at " + lower.relative(out, k).toShortString();
 			}
 		}
-		if (!getter.getBlockState(lower.relative(out)).isAir()) {
+		BlockState inFront = getter.getBlockState(lower.relative(out));
+		// 52.6: the rebuilt tower's waist window stands just over the foot's weathering ledge, a stair course, in front of
+		// its lower pane (a ledge, not a block standing out of the wall); the 35.11 check (ledge) keeps the cell open
+		boolean weathering = !ledge && (inFront.getBlock() instanceof net.minecraft.world.level.block.StairBlock
+			|| inFront.getBlock() instanceof net.minecraft.world.level.block.SlabBlock);
+		if (!inFront.isAir() && !weathering) {
 			return where + ": the cell in front of the lower pane isn't open: " + getter.getBlockState(lower.relative(out)).getBlock();
 		}
-		if (getter.getBlockState(lower.relative(out).below()).isAir()) {
+		if (ledge && getter.getBlockState(lower.relative(out).below()).isAir()) {
 			return where + ": no ledge under the cell in front of the glass";
 		}
 		Direction side = out.getClockWise();

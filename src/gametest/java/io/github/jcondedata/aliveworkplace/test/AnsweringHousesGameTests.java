@@ -76,7 +76,7 @@ public class AnsweringHousesGameTests implements net.fabricmc.fabric.api.gametes
 
 	static List<House> houses() {
 		return List.of(
-			new House(StarterBlueprints.FIRE_STATION, ModVillagers.FIREWARDEN, Blocks.GRINDSTONE, new ItemStack(Items.WATER_BUCKET), new BlockPos(5, 1, 6)),
+			new House(StarterBlueprints.FIRE_STATION, ModVillagers.FIREWARDEN, Blocks.GRINDSTONE, new ItemStack(Items.WATER_BUCKET), new BlockPos(4, 1, 5)),  // 51.8: the trough's rim, 2 from the grindstone (2, 1, 5)
 			new House(StarterBlueprints.WELL_HOUSE, ModVillagers.WELL_KEEPER, Blocks.CAULDRON, new ItemStack(Items.IRON_SHOVEL), new BlockPos(8, 3, 5)),
 			new House(StarterBlueprints.PHYSICIANS_HOUSE, ModVillagers.PHYSICIAN, Blocks.BREWING_STAND, new ItemStack(Items.GLISTERING_MELON_SLICE), new BlockPos(12, 1, 3))); // 50.8: the still room by the stand (12, 1, 4)
 	}

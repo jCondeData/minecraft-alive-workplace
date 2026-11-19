@@ -2,15 +2,15 @@
 
 ```infobox
 type: Build
-Size: 11 wide, 5 deep, 9 high (II: 10 deep)
+Size: 11 wide, 5 deep, 16 high (II: 10 deep)
 Tiers: I, II (a barbican)
 Where to get it: Blueprint Table
-Main materials: stone bricks, cobblestone, stone brick slabs, ladders, spruce fence gates
+Main materials: stone bricks, polished andesite, cobblestone, ladders, spruce fence gates, iron bars
 categories: Builds, Defense
 related: stone-wall-build.md, wall-tower-build.md, defence.md
 ```
 
-A stone gatehouse for the road into a walled village, with fence gates in its arch and ladders up to the top.
+A stone gatehouse for the road into a walled village: two stout towers clasp the road, their outer corners cut back so they read as half-drums from the field, each under a crenellated fighting top. Between them, over the portcullis and the fence gates, a gabled fighting loggia gives the archers their stations, reached by ladders inside the towers.
 
 ## Getting the blueprint
 
@@ -24,7 +24,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Gatehouse, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Gatehouse II** adds a barbican in front: a second gate and portcullis, and murder holes over the gateway.
+- **Gatehouse II** throws a barbican forward: a walled passage with a second gate and portcullis, a deck over it with murder holes and archers' stations, and a crenellated front.
 
 ## What it does for the village
 

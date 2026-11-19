@@ -1,0 +1,10 @@
+{
+  "name": "stone-house-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Stone House, the savanna look (ROADMAP 49.10b): the shipped Stone House drawn again with a red granite ground storey and a mud upper storey under a square pyramid of thatch, a parlour wing under a low hip over a veranda, a back room under another. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

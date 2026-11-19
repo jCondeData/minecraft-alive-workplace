@@ -52,7 +52,7 @@ final class RebuildScene {
 		"nether_gate", "waystone_plaza", "mega_shrine", "founder_statue", "fletchers_lodge", "tailors_shop", "print_shop",
 		"glassblowers_workshop", "jewellers_workshop", "crafters_workshop", "workshop", "trail", "bandit_camp", "raiders_stockade",
 		"bandit_fort", "caravan_wreck", "chapel", "market_cross", "market_corner", "market_square", "leaders_hall", "trade_hall",
-		"starter_cottage_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
+		"starter_cottage_looks", "stone_house_looks", "townhouse_looks", "terrace_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
 		"gatehouse", "lookout_tower", "royal_hall", "observatory", "lighthouse", "berry_farm",
 		"apiary_garden", "greenhouse", "flower_shop", "supply_shop", "market_stall");
 	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
@@ -184,14 +184,18 @@ final class RebuildScene {
 	}
 
 	/**
-	 * SCENE=rebuild_&lt;family&gt;_looks (49.10a): the family's first level as drawn (plains) and in each village culture's
-	 * look ({@link BlueprintLooks#CULTURES}), furnished, side by side in that order; filmed as a row from the front, then
-	 * each from its front corner. Passes when every look is there and every furniture spot holds its piece.
+	 * SCENE=rebuild_&lt;family&gt;_looks (49.10a): the family's first level as drawn (plains) and in each look it has
+	 * ({@link BlueprintLooks#of}: the village cultures it is drawn in, 49.10b), furnished, side by side in that order;
+	 * filmed as a row from the front, then each from its front corner, named by its look and numbered by its culture's
+	 * place in {@link BlueprintLooks#CULTURES} (10_plains, 11_desert ... 14_taiga), so a culture the family has no look
+	 * for leaves its number out. Passes when every look is there and every furniture spot holds its piece.
 	 */
 	private void placeLooks(ServerLevel level, ResourceLocation family) {
-		List<ResourceLocation> ids = new ArrayList<>();
-		ids.add(family);
-		BlueprintLooks.CULTURES.forEach(c -> ids.add(BlueprintLooks.look(family, c)));
+		List<ResourceLocation> ids = BlueprintLooks.of(family); // as drawn first, then only the looks the family has
+		if (ids.size() < 2) {
+			wrong.add(family + " has no looks");
+			return;
+		}
 		List<Blueprint> drawn = new ArrayList<>();
 		int width = 0;
 		int depth = 0;
@@ -242,12 +246,15 @@ final class RebuildScene {
 		double back = Math.max(width, depth) * 0.9 + 6;
 		for (int i = 0; i < ids.size(); i++) {
 			double cx = i * step + width / 2.0;
-			String name = i == 0 ? "plains" : BlueprintLooks.CULTURES.get(i - 1);
-			views.add(new View(String.format("%02d_%s", 10 + i, name), new Vec3(cx - back * 0.45, height * 0.45 + 2, cz - back * 0.85),
+			String name = i == 0 ? "plains" : BlueprintLooks.lookOf(ids.get(i)).orElse(ids.get(i).getPath());
+			int culture = BlueprintLooks.CULTURES.indexOf(name);
+			int number = i == 0 ? 10 : culture >= 0 ? 11 + culture : 10 + i;
+			views.add(new View(String.format("%02d_%s", number, name), new Vec3(cx - back * 0.45, height * 0.45 + 2, cz - back * 0.85),
 				new Vec3(cx, mid, cz), 70));
 		}
 		AliveWorkplace.LOG.info("REBUILD_SCENE {}: {} looks, {} furniture pieces", this.family, ids.size(), pieces);
-		summary = this.family + ": " + family.getPath() + " as drawn and in " + String.join(", ", BlueprintLooks.CULTURES) + ", "
+		summary = this.family + ": " + family.getPath() + " as drawn and in "
+			+ String.join(", ", ids.subList(1, ids.size()).stream().map(id -> BlueprintLooks.lookOf(id).orElse(id.getPath())).toList()) + ", "
 			+ pieces + " furniture pieces placed";
 	}
 

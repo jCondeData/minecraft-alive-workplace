@@ -1970,6 +1970,30 @@ SCENES = [
            ("12_savanna", "Savanna: the veranda house under one golden thatched hip, deep eaves on every side"),
            ("13_snowy", "Snowy: a log cabin under a steep snow-laden roof, an entry porch before the door"),
            ("14_taiga", "Taiga: a spruce cabin on a stone course, a pair of steep gables to the road")], furniture=True),
+    # ROADMAP 49.10b: the Stone House in each village culture's climate (desert, savanna, taiga; plains as drawn, and
+    # snowy too: its look went back to the critic three times and waits for the owner), Level I of each side by side
+    S("rebuild_stone_house_looks", "Build families", "The Stone House in its village's culture: plains, desert, savanna and taiga",
+      "the Stone House as drawn and its three culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the two-storey rubble house with dressed quoins and an end stack"),
+           ("11_desert", "Desert: a sandstone cube under a flat roof and parapet, a lattice oriel over the door and a low windcatcher"),
+           ("12_savanna", "Savanna: a red granite ground storey and mud between acacia posts under one golden pyramid of thatch"),
+           ("14_taiga", "Taiga: a forester's lodge gable-on to the road, mossy fieldstone below dark spruce logs, a porch on log posts")], furniture=True),
+    # ROADMAP 49.10b: the Townhouse in each village culture's climate (desert, savanna; plains as drawn, and snowy and
+    # taiga too: their looks went back to the critic three times and wait for the owner), Level I of each side by side
+    S("rebuild_townhouse_looks", "Build families", "The Townhouse in its village's culture: plains, desert and savanna",
+      "the Townhouse as drawn and its two culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the jettied gable-end merchant's house, a stone shop below a timber floor and a steep attic"),
+           ("11_desert", "Desert: coursed sandstone below mud brick, a terracotta frieze, flat roofs behind a coping, arcades and lattice for shade"),
+           ("12_savanna", "Savanna: a red granite shop storey, mud between acacia posts, a veranda along the street under one great golden thatch")], furniture=True),
+    # ROADMAP 49.10c: the Terrace in each village culture's climate (desert, savanna, taiga; plains as drawn, and snowy
+    # too until its look passes the critic), Level I of each side by side
+    S("rebuild_terrace_looks", "Build families", "The Terrace in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Terrace as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: the Crow-Step Row, narrow brick houses each under its own steep roof"),
+           ("11_desert", "Desert: sandstone below mud brick, a lattice rawshan over each door, flat roofs behind a parapet, a windcatcher per home"),
+           ("12_savanna", "Savanna: one long golden thatch hip over the row, red granite below packed mud, a veranda on acacia posts, painted window trims"),
+           ("13_snowy", "Snowy: the Snowbound Row, a pale calcite gable to a point for every home under steep deepslate roofs, snow on the eaves and drifted at the foot"),
+           ("14_taiga", "Taiga: one long range of dark spruce logs on a mossy cobble footing, a slate roof, a veranda on log posts, a stack on every party wall")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

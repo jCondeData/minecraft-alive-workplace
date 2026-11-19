@@ -14,8 +14,10 @@ families); the round sheets were in `build/rebuild/sheets/` (not kept). No OLD c
 | Berry Nursery I | 1, 2 | 2->4 | 2->4 | 2->3 | 2/3->4 | (passes alone) |
 | Berry Nursery II | 1 | 3->3 | 3->3 | 2->3 | 3->3 | BACK |
 | Berry Nursery II | 2 | 3->4 | 3->4 | 3->3 | 3->3 | BACK |
+| Berry Nursery I | 3 | 2->4 | 2->4 | 2->3 | 3->3 | (passes alone) |
+| Berry Nursery II | 3 | 3->4 | 3->4 | 3->3 | 3->3 | BACK: to the owner as it stands |
 
-Berry Nursery round 3 (the last designer round) is drawn (`js/berry_nursery`), not yet judged.
+Berry Nursery round 3 (the last designer round) judged BACK: Level II's glass wing adds beds but no better interior or detail. Per REBUILD.md it goes to the owner as it stands (sheets `briefs/berry_nursery_sheet.png`, `berry_nursery_2_sheet.png`; candidate = `js/berry_nursery` build.sh). Round 3 notes: (1) the wing holds only beds, water and a chest: add the breeder's fittings; (2) the back chimney is the tallest thing, a plain column: cut it or cap it; (3) cottage and wing read as two houses: a covered walk along one garden wall; (4) nothing from the front says berry nursery; (5) Level I 622 and II 1,038 blocks, a little over budget.
 
 Requirements: no critic found a brief requirement missed. Old drawings' faults the rebuilds remove (briefs): the old
 Berry Farm and Compost Yard are reached only through a fence gate (villagers don't open them); old Apiary Garden II's

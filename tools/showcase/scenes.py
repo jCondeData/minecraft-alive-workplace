@@ -1945,11 +1945,12 @@ SCENES = [
            ("12_savanna", "Savanna: a red granite shop storey, mud between acacia posts, a veranda along the street under one great golden thatch")], furniture=True),
     # ROADMAP 49.10c: the Terrace in each village culture's climate (desert, savanna, taiga; plains as drawn, and snowy
     # too until its look passes the critic), Level I of each side by side
-    S("rebuild_terrace_looks", "Build families", "The Terrace in its village's culture: plains, desert, savanna and taiga",
-      "the Terrace as drawn and its three culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+    S("rebuild_terrace_looks", "Build families", "The Terrace in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Terrace as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
       45, [("10_plains", "Plains, as drawn: the Crow-Step Row, narrow brick houses each under its own steep roof"),
            ("11_desert", "Desert: sandstone below mud brick, a lattice rawshan over each door, flat roofs behind a parapet, a windcatcher per home"),
            ("12_savanna", "Savanna: one long golden thatch hip over the row, red granite below packed mud, a veranda on acacia posts, painted window trims"),
+           ("13_snowy", "Snowy: the Snowbound Row, a pale calcite gable to a point for every home under steep deepslate roofs, snow on the eaves and drifted at the foot"),
            ("14_taiga", "Taiga: one long range of dark spruce logs on a mossy cobble footing, a slate roof, a veranda on log posts, a stack on every party wall")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",

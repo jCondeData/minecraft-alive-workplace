@@ -1,0 +1,11 @@
+{
+  "name": "trainers-house",
+  "private": true,
+  "type": "module",
+  "description": "The Trainer's House (the Battle Court), rebuilt blind for ROADMAP 49. MC_BUILDER = the minecraft-builder skill's folder. build writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py trainers_house trainers_house --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/trainers-house.nbt"
+  }
+}

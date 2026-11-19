@@ -1,0 +1,19 @@
+{
+  "name": "hanging-gardens-s4",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 1
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/hanging_gardens/out/hanging-gardens-s4.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/hanging_gardens/out/summary.json",
+  "size": [
+    47,
+    33,
+    44
+  ],
+  "blockCount": 15623,
+  "paletteCount": 98,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/hanging_gardens/recipe.mjs"
+}

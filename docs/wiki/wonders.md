@@ -468,30 +468,36 @@ their marks for when it's repaired, and nobody is replaced.
 Damaged (or with Wonders off) both are paused: the search waits, the map button draws only the village map and the
 calendar has no Coming days; what was found stays in the hall.
 
-**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot (a 47 by 43 site with the ramp's foot and the pool), 31 high to its treetops,
-about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
-round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
-cut sandstone coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries
-hanging in the arch heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns
-round a pool with a chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof:
-a hedge of azalea and oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet
-berry beds, glow berry arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and
-a farm corner with a composter and a chest on each level (four village farms). Vines hang down the columns and over
-the arches. A ramp spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the
-second terrace's east face, the third's back and the crown's west face. On the crown a cistern with a fountain pours
-down a channel to the east edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads
-at the foot, past a blind, mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The
-Second Terrace*, III *The Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the
-last ramp and the water, poured from buckets). Its goods (found, with the rare worker who finds each and in how many
+**The Hanging Gardens** (35.19, rebuilt from scratch in 52.6: "the Terraced Mount") are a man-made mountain of
+gardens on a 45 by 39 foot (a 47 by 44 site with the Forecourt), 33 high to the Water Pavilion's roof, about 15,600
+blocks. Four terraces of mud brick, 6 high each (45, 35, 27 and 19 wide), each a vaulted hall under a garden, are set
+back toward the rear: to the front the gardens fall in deep green steps to the Forecourt, and the back rises nearly
+sheer, a cliff of brick. Every face stands on a plinth of baked brick, with piers every four blocks, glazed arcade
+windows, a frieze of blue glazed tiles under a sandstone cornice and a sandstone parapet; leaves of azalea and oak spill
+over the edge in every other bay, with vines hanging below them (the Hanging Curtains). Stage I is the Vaults and the
+Lower Terrace: the Forecourt's Processional Stair up the axis between two Reflecting Pools with lily pads, the Vaults
+inside (brick piers with capitals, hanging lamps, the nursery of potted saplings, the seed store of hay and the Well of
+the Shaft, two doors from the Forecourt), and on top Farm I (wheat), the Palm Basin, palms, cypresses and lawns. Stage
+II, the Gallery and the Middle Terrace: the Gallery Stair up the second terrace's face, the Gallery inside (an orangery
+of potted azaleas behind the glazed arcade, its door from the Lower Terrace), and on top Farm II (carrots), the
+Glow-Berry Pergola and the Lily Basin. Stage III, the Upper Terrace and its Hall: the Cistern Stair, the Upper Hall
+inside and on top Farm III (beetroots) and the Cypress Walk. Stage IV, the Crown Garden and the Water Pavilion: the Crown
+Stair, Farm IV (all three crops) and crown palms, and the Water Pavilion, a colonnade of sandstone with an open oculus
+over the Cistern at the top of the Shaft, a column of still water from the Vaults' floor, seen through a window in every
+hall. Each terrace's farm corner is a village farm: a composter, a chest beside it and a field round a channel of water,
+six apart in height, so no field joins another. Every stage stands on its own, and no stage replaces a block an
+earlier one laid; a player walks from the ground up every stair to the crown. Its stages: I *The Vaults and the Lower
+Terrace*, II *The Gallery and the Middle Terrace*, III *The Upper Terrace and its Hall*, IV *The Crown Garden and the
+Water Pavilion*. Hanging Gardens begun before 52.6 keep the 35.19 drawing (four sandstone terraces of arcades round a
+spiral ramp, the falls down the east side): they are counted, repaired and finished from that drawing (`WonderDrawings`,
+`blueprint_history/wonder/hanging_gardens/`). Its goods (found, with the rare worker who finds each and in how many
 days; then what a workshop makes): I a Sniffer Egg (the Beastmaster, 14 days), a Wild Armor Trim Template (the
 Pathfinder, 11 days); made: 2 Berry Wine (Vintner); II a Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds
 (the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days); made: 2 Vintage Wine (Vintner); III an
 Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate,
 18 days); made: 2 Gold Circlets (Jeweler); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
 Golem Smith, 36 days), a Conduit (the Founder, 18 days); made: 2 Noble Robes (Tailor). It needs a Town and the Grand
-Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). The crown has a field of its own by
-its farm corner (wheat and carrots either side of a channel, 35.20), so all four farm corners have a field in a
-farmer's reach.
+Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off).
 
 **The Hanging Gardens' powers** (35.20), while they are finished and stand (`wonderStanding`):
 
@@ -961,7 +967,7 @@ is skipped quietly (not on the page, no mistake logged), and the colors style an
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens are filmed from the front, where their terraces step back; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).
 
 GameTests in `WonderFinishedGameTests` (35.8): the folly raised through its plan has its test mood (+4, "proud of the
 Test Folly" among a villager's reasons) and beauty (+2) on; 15% of it broken, the next day's count turns them off, the
@@ -1043,7 +1049,7 @@ two are born in a day with two free beds, not a third sooner; damaged, both off,
 built in the area, each of its four farm corners has a chest and a field in reach, and a farmer at the first terrace's
 composter takes on its field by themselves, harvests it and brings in the extra; the file's numbers and the page's
 lines. Showcase scene `wonder_hanging_gardens` (group Wonders): the Gardens' time-lapse with a crew of ten, the
-festival's fireworks, then the next morning the falls running and a farmer at each farm corner taking on its terrace.
+festival's fireworks, then the next morning its water standing and a farmer at each farm corner taking on its terrace.
 
 GameTests in `GreatWallPowerGameTests` (35.16): the Great Wall placed north of a hall covers about 195 degrees of its
 compass with the margin; 50 raids started with a fixed random gather outside it, none of their raiders behind the

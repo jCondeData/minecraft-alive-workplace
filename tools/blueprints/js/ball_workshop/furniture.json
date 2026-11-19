@@ -1,0 +1,20 @@
+{"spots": [
+  {"kind":"counter","pos":[3,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"counter","pos":[4,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"counter","pos":[5,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"chair","pos":[4,1,9],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"shelf","pos":[9,3,9],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[5,4,5],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[7,4,9],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,5,14],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"bed","pos":[9,6,10],"facing":"south","cells":[[0,0,0],[0,0,1]],"wood":null,"colour":"red"},
+  {"kind":"nightstand","pos":[10,6,11],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"desk","pos":[6,6,2],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"chair","pos":[6,6,3],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"table","pos":[6,6,7],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"red"},
+  {"kind":"table","pos":[7,6,7],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"yellow"},
+  {"kind":"chair","pos":[6,6,6],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"chair","pos":[7,6,8],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[5,8,8],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[8,8,6],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null}
+]}

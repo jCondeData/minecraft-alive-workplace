@@ -1,0 +1,10 @@
+{
+  "name": "research-lab",
+  "private": true,
+  "type": "module",
+  "description": "The Research Lab (ROADMAP 49): the Strata Lab, its glass-vaulted Gallery (II) and the Dig under it (III). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

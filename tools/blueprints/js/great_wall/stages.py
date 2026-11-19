@@ -57,7 +57,12 @@ def main():
     before = set()
     problems = 0
     for n, s in enumerate(stages, 1):
+        drawn = sum(1 for block in s.blocks.values() if block[0] != "minecraft:air")
         s.fill_air()
+        sealed = sum(1 for block in s.blocks.values() if block[0] != "minecraft:air") - drawn
+        if sealed:  # kit.seal_slots / seal_peeks filled a slot the recipe left: draw it there, so verify() counts it too
+            print(f"  CHECK wonder/great_wall stage {n}: kit.fill_air added {sealed} blocks the recipe doesn't draw")
+            problems += 1
         mine = {p for p, block in s.blocks.items() if block[0] != "minecraft:air"} - before
         for problem in check(s, only=mine, whole=n == len(stages)):
             print(f"  CHECK wonder/great_wall stage {n}: {problem}")

@@ -1,0 +1,16 @@
+{"spots": [
+  {"kind":"side_table","pos":[4,1,11],"facing":"east","cells":[[0,0,0]],"wood":"dark_oak","colour":"white"},
+  {"kind":"lamp","pos":[4,2,11],"facing":"east","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
+  {"kind":"desk","pos":[4,1,12],"facing":"west","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
+  {"kind":"chair","pos":[5,1,12],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"couch","pos":[6,1,15],"facing":"north","cells":[[0,0,0],[-1,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"couch","pos":[7,1,15],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"couch","pos":[8,1,15],"facing":"north","cells":[[0,0,0],[1,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"cupboard","pos":[10,1,12],"facing":"west","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
+  {"kind":"couch","pos":[10,1,20],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"couch","pos":[10,1,21],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"couch","pos":[10,1,22],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"table","pos":[11,1,21],"facing":"west","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"lime"},
+  {"kind":"side_table","pos":[11,1,23],"facing":"west","cells":[[0,0,0]],"wood":"dark_oak","colour":"white"},
+  {"kind":"lamp","pos":[11,2,23],"facing":"west","cells":[[0,0,0]],"wood":"dark_oak","colour":null}
+]}

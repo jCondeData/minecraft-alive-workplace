@@ -34,9 +34,12 @@ and the windmill's sails start as soon as the builder gives its bearing a push.
   through two mechanical saws to a depot, and the Lumberjack's fletching table is in the lodge beside it.
 - **Crushing Mill**: two crushing wheels turning towards each other, fed by a belt over the gap. What they crush drops
   into a pit with an item drain in front. A blast furnace stands by the door.
-- **Greenhouse**: a glass house with beds of wheat, carrots and potatoes, watered by two channels. A belt runs down
-  the aisle to a depot, with a little cart on it carrying a mechanical harvester and a mechanical plough. Glue the cart
-  to a contraption of your own and it will reap the beds. The farmer's composter is in the back corner.
+- **Greenhouse** (the Leat House, rebuilt from scratch): a ridge-and-furrow glasshouse, three glass gables to the
+  street with the tall nave in the middle and a brick boiler and stack behind. The village leat runs past its west
+  side in an open stone trough, turning an undershot water wheel; its shaft drives a belt along the inside of the west
+  wall, under a mechanical harvester and a mechanical plough hung there like tools on a rack, to a depot in a hatch in
+  the front wall. Beds of wheat, carrots and potatoes lie either side of the walk, and the farmer's composter and chest
+  are at the walk's head.
 - **Clock Tower**: a slender stone tower with a timber clock room at the top, a cuckoo clock on each of its four
   sides and a copper spire. Water pours from a stone spout down the tower's front corner and turns the wheel by the
   door; through a slit in the wall you can watch the drive climb to the clocks. A map room with the cartography table

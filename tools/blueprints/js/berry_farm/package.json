@@ -1,0 +1,10 @@
+{
+  "name": "berry-farm",
+  "private": true,
+  "type": "module",
+  "description": "Berry Farm (the Lantern Arbor, 49): both levels from plan.mjs and recipe.mjs (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. ./build.sh writes candidates; LIVE=1 ./build.sh the live drawings.",
+  "scripts": {
+    "build": "./build.sh",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/berry-farm.nbt"
+  }
+}

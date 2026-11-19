@@ -1,0 +1,10 @@
+{
+  "name": "berry-nursery",
+  "private": true,
+  "type": "module",
+  "description": "Berry Nursery (the Rill Garden, ROADMAP 49): both levels from the rebuild kit (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates; LIVE=1 ./build.sh the live drawings once the critic says SHIP.",
+  "scripts": {
+    "build": "./build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

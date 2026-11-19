@@ -1,0 +1,19 @@
+{
+  "name": "apiary-garden-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 0
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/apiary_garden/out/apiary-garden-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/apiary_garden/out/summary.json",
+  "size": [
+    17,
+    9,
+    13
+  ],
+  "blockCount": 630,
+  "paletteCount": 45,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/apiary_garden/recipe.mjs"
+}

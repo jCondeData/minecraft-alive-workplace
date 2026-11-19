@@ -110,10 +110,14 @@ public final class StarterBlueprints {
 	/** A stone warehouse behind the bays with sixteen more chests. */
 	public static final Entry STOREHOUSE_3 = new Entry(AliveWorkplace.id("storehouse_3"), new Vec3i(16, 10, 16), 4);
 
-	/** A fenced garden of sweet berry bushes with a Fruit Basket: an orchard keeper moves in. */
-	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(11, 5, 9));
-	/** A pergola behind it, glow berries hanging from its roof. */
-	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(11, 6, 15));
+	/**
+	 * The Lantern Arbor (rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/berry_farm): a hedged garden of sweet
+	 * berry beds in log curbs either side of an arbor walk to a steep-gabled picking lodge, the composter and the
+	 * harvest chest under its porch: an orchard keeper moves in.
+	 */
+	public static final Entry BERRY_FARM = new Entry(AliveWorkplace.id("berry_farm"), new Vec3i(13, 12, 13)); // ROADMAP 50.9: rebuilt
+	/** Level II roofs the garden in a rafter lattice hung with glow berries and opens a second bed cloister behind the lodge. */
+	public static final Entry BERRY_FARM_2 = new Entry(AliveWorkplace.id("berry_farm_2"), new Vec3i(13, 12, 17)); // ROADMAP 50.9: rebuilt
 	/** A stone lab with Cobblemon's Fossil Analyzer: a fossil scientist works there. */
 	public static final Entry RESEARCH_LAB = new Entry(AliveWorkplace.id("research_lab"), new Vec3i(11, 9, 11));
 	/** A museum hall beside it with a big skeleton on show. */
@@ -285,10 +289,13 @@ public final class StarterBlueprints {
 	public static final Entry RANCH = new Entry(AliveWorkplace.id("ranch"), new Vec3i(13, 16, 13));
 	/** A feed and bunk wing on the east, and a fenced paddock behind with a man-gap, a double gate and a run-in shelter. */
 	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(21, 16, 21));
-	/** Beehives on posts in a meadow, and a honey shed with the Apiary. */
-	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(11, 8, 11));
-	/** The meadow runs on with four more hives. */
-	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 8, 11));
+	/**
+	 * The Skep Wall (rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/apiary_garden): a stone wall of bee boles,
+	 * each a hive smoked by a campfire, round a great straw skep that holds the honey chests, and a bee garden round a font.
+	 */
+	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(13, 9, 13)); // ROADMAP 50.9: rebuilt
+	/** Level II: the colony swarms: a daughter skep at the east end with more smoked hives, and a meadow under a cherry. */
+	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 9, 13)); // ROADMAP 50.9: rebuilt
 	/** A little shop with a Flower Stand and an awning. */
 	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(9, 11, 9));
 	/** A glass greenhouse on the side. */
@@ -604,11 +611,12 @@ public final class StarterBlueprints {
 	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 14));
 	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
 	/**
-	 * The Greenhouse (a glass house whose water wheel turns a belt down the aisle between farmland beds, a casing cart on
-	 * it with a harvester and a plough), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
+	 * The Greenhouse (the Leat House, rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/greenhouse: a ridge-and-furrow
+	 * glasshouse whose leat turns an undershot wheel, its belt running along the west wall under the harvester and the plough
+	 * to a depot in the front wall), the Clock Tower (a water wheel turning a cuckoo clock in the belfry through shafts up the tower)
 	 * and the Pump House (a water wheel's cogwheel turning a mechanical pump, pipes from a sump to a fluid tank).
 	 */
-	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(15, 11, 13));
+	public static final Entry GREENHOUSE = new Entry(AliveWorkplace.id("greenhouse"), new Vec3i(18, 13, 14)); // ROADMAP 50.9: rebuilt
 	/** The Water Clock: a stone shaft, a jettied clock chamber with a face on every side, a copper spire (rebuilt 51.6). */
 	public static final Entry CLOCK_TOWER = new Entry(AliveWorkplace.id("clock_tower"), new Vec3i(15, 26, 15));
 	public static final Entry PUMP_HOUSE = new Entry(AliveWorkplace.id("pump_house"), new Vec3i(14, 10, 9));

@@ -17,6 +17,15 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Changed
+- **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
+  Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
+  the composter and the harvest chest under its porch; Level II roofs the whole garden in a lattice hung with glow
+  berries and opens a second bed cloister behind the lodge. The Apiary Garden is now "the Skep Wall": a stone wall of
+  bee boles, each a hive over a smoking campfire, round a great straw skep that holds the honey, and a bee garden round
+  a stone font; at Level II a daughter skep settles at the east end with more smoked hives, and a meadow opens under a
+  cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
+  undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
+  wall. Buildings already standing keep the drawing they were built from until you refresh them.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range

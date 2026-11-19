@@ -151,32 +151,50 @@ final class RebuildScene {
 			level.setBlock(AT.offset(e.pos()), e.state(), 2 | 16);
 		}
 		Map<String, Integer> perMod = new TreeMap<>();
+		Set<BlockPos> furniture = new HashSet<>();
 		for (FurnitureChoice.Placed piece : choice.spots().values()) {
 			perMod.merge(piece.mod(), 1, Integer::sum);
 			for (Map.Entry<BlockPos, BlockState> cell : piece.cells().entrySet()) {
-				BlockState there = level.getBlockState(AT.offset(piece.pos()).offset(cell.getKey()));
-				if (!there.is(cell.getValue().getBlock()) && !cell.getValue().isAir()) {
-					wrong.add(piece.kind() + " at " + piece.pos().offset(cell.getKey()).toShortString() + " is "
-						+ BuiltInRegistries.BLOCK.getKey(there.getBlock()) + ", not " + BuiltInRegistries.BLOCK.getKey(cell.getValue().getBlock()));
+				BlockPos at = piece.pos().offset(cell.getKey());
+				furniture.add(at);
+				if (cell.getValue().isAir()) {
+					continue;
+				}
+				BlockPos found = standing(level, at, cell.getValue());
+				if (found == null) {
+					BlockState there = level.getBlockState(AT.offset(at));
+					wrong.add(piece.kind() + " at " + at.toShortString() + " is " + BuiltInRegistries.BLOCK.getKey(there.getBlock()) + ", not "
+						+ BuiltInRegistries.BLOCK.getKey(cell.getValue().getBlock()));
+				} else {
+					furniture.add(found);
 				}
 			}
 		}
 		List<FurnitureSpot> spots = BlueprintFurniture.of(blueprint);
+		for (FurnitureSpot s : spots) {
+			furniture.addAll(s.positions());
+		}
 		if (!spots.isEmpty() && !BuiltInRegistries.BLOCK.containsKey(ResourceLocation.parse("handcrafted:oak_chair"))) {
 			wrong.add("the furniture mods aren't loaded: film this scene with -Pfurniture=true");
 		}
 		outside(size);
-		List<List<FurnitureSpot>> rooms = rooms(spots);
+		Map<FurnitureSpot, Integer> floors = new java.util.HashMap<>();
+		for (FurnitureSpot s : spots) {
+			floors.put(s, floorOf(level, s, furniture, base.basement()));
+		}
+		List<List<FurnitureSpot>> rooms = rooms(spots, floors);
 		int filmed = 0;
 		for (int i = 0; i < rooms.size(); i++) {
-			View view = roomView(level, rooms.get(i), size, i);
+			View view = roomView(level, rooms.get(i), floors, furniture, size, i);
 			if (view == null) {
 				wrong.add("room " + (i + 1) + " (" + rooms.get(i).size() + " pieces at y " + rooms.get(i).get(0).pos().getY()
-					+ ") has no free floor cell with a clear view of its furniture");
+					+ ", floor " + roomFloor(rooms.get(i), floors) + ") has no free floor cell with a clear view of its furniture");
 			} else {
 				views.add(view);
 				filmed++;
 			}
+			AliveWorkplace.LOG.info("REBUILD_SCENE room {}: floor {}, pieces {}, camera {}", i + 1, roomFloor(rooms.get(i), floors),
+				rooms.get(i).stream().map(s -> s.kind().id() + "@" + s.pos().toShortString()).toList(), view == null ? "none" : view.eye());
 		}
 		AliveWorkplace.LOG.info("REBUILD_SCENE {} ({}): {} spots, {} rooms, {} filmed, pieces per mod {}", family, blueprint, spots.size(),
 			rooms.size(), filmed, perMod);
@@ -272,8 +290,26 @@ final class RebuildScene {
 		views.add(new View("04_outside_east", new Vec3(cx + back * 0.9, up, cz - back * 0.35), new Vec3(cx, mid, cz), 70));
 	}
 
-	/** The spots grouped into rooms: the same floor (y within 1) and within 5 blocks of another spot of the room. */
-	static List<List<FurnitureSpot>> rooms(List<FurnitureSpot> spots) {
+	/**
+	 * Where the piece chosen for a cell stands: at its cell, or (B1386) set down straight below it onto the piece under it
+	 * with nothing but air between, as {@code Resting.reseat} puts a lamp or crockery when the counter or table under it
+	 * became a lower modded piece (the builder builds it there too). Null when it is in neither place.
+	 */
+	private static BlockPos standing(ServerLevel level, BlockPos at, BlockState want) {
+		for (BlockPos p = at; at.getY() - p.getY() <= 3; p = p.below()) {
+			BlockState there = level.getBlockState(AT.offset(p));
+			if (there.is(want.getBlock())) {
+				return p;
+			}
+			if (!there.isAir()) {
+				return null;
+			}
+		}
+		return null;
+	}
+
+	/** The spots grouped into rooms: the same floor (within 1) and within 5 blocks of another spot of the room. */
+	static List<List<FurnitureSpot>> rooms(List<FurnitureSpot> spots, Map<FurnitureSpot, Integer> floors) {
 		List<List<FurnitureSpot>> rooms = new ArrayList<>();
 		Set<FurnitureSpot> done = new HashSet<>();
 		for (FurnitureSpot seed : spots) {
@@ -287,7 +323,7 @@ final class RebuildScene {
 				FurnitureSpot s = todo.remove(todo.size() - 1);
 				room.add(s);
 				for (FurnitureSpot o : spots) {
-					if (!done.contains(o) && Math.abs(floorOf(o) - floorOf(s)) <= 1
+					if (!done.contains(o) && Math.abs(floors.get(o) - floors.get(s)) <= 1
 						&& Math.abs(o.pos().getX() - s.pos().getX()) <= 5 && Math.abs(o.pos().getZ() - s.pos().getZ()) <= 5) {
 						done.add(o);
 						todo.add(o);
@@ -299,48 +335,88 @@ final class RebuildScene {
 		return rooms;
 	}
 
-	/** The floor a piece stands on: its own y, but a lamp, picture or shelf up a wall counts at the room's floor below. */
-	private static int floorOf(FurnitureSpot s) {
-		return switch (s.kind()) {
-			case LAMP, PICTURE, SHELF, CROCKERY, BLINDS, HANGING_POT -> s.pos().getY() - 2;
-			default -> s.pos().getY();
-		};
+	/**
+	 * The floor a piece's room stands on, measured in the built world (B1386): the level of the feet over the first solid
+	 * block under the spot that isn't furniture. A chair stands on it; a lamp hanging from a ceiling, a picture or shelf up a
+	 * wall, a lamp or crockery on a counter all look down past the furniture to the same floor, whatever their height, and a
+	 * cellar's floor is as far under y 0 as the build goes. (It used to be guessed from the kind, as y - 2 for a lamp, and
+	 * kept at 0 or over: a cellar's lamps looked for a camera on the ground floor and a lamp hung low over an upper floor
+	 * looked for one in the ceiling under it.)
+	 */
+	private static int floorOf(ServerLevel level, FurnitureSpot s, Set<BlockPos> furniture, int basement) {
+		for (BlockPos p = s.pos(); p.getY() >= -basement - 1 && s.pos().getY() - p.getY() <= 8; p = p.below()) {
+			BlockPos world = AT.offset(p);
+			if (!furniture.contains(p) && !level.getBlockState(world).getCollisionShape(level, world).isEmpty()) {
+				return p.getY() + 1;
+			}
+		}
+		return s.pos().getY();
 	}
 
-	private View roomView(ServerLevel level, List<FurnitureSpot> room, Vec3i size, int index) {
-		int floor = Integer.MAX_VALUE;
+	/** A room's floor: the one most of its pieces stand over (the lowest of equals; a shelf over a workbench reads one high). */
+	private static int roomFloor(List<FurnitureSpot> room, Map<FurnitureSpot, Integer> floors) {
+		Map<Integer, Integer> count = new TreeMap<>();
+		room.forEach(s -> count.merge(floors.get(s), 1, Integer::sum));
+		int best = floors.get(room.get(0));
+		int most = 0;
+		for (Map.Entry<Integer, Integer> e : count.entrySet()) {
+			if (e.getValue() > most) {
+				most = e.getValue();
+				best = e.getKey();
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * The room's eye-level shot: from a free floor cell ({@link #standable}, not by a seat) of the room's floor with a clear
+	 * line to the middle of its pieces, the farthest such cell; looked for within 3 blocks of the pieces, then (a lone lamp
+	 * in a narrow corner) within 6. A room's other floors are tried after its own (a piece read one high). Null: no such cell.
+	 */
+	private View roomView(ServerLevel level, List<FurnitureSpot> room, Map<FurnitureSpot, Integer> floors, Set<BlockPos> furniture, Vec3i size,
+						  int index) {
 		double tx = 0;
+		double ty = 0;
 		double tz = 0;
 		int minX = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, minZ = Integer.MAX_VALUE, maxZ = Integer.MIN_VALUE;
-		Set<BlockPos> seats = new HashSet<>();
 		for (FurnitureSpot s : room) {
-			floor = Math.min(floor, Math.max(0, floorOf(s)));
 			tx += s.pos().getX() + 0.5;
+			ty += s.pos().getY() + 0.5;
 			tz += s.pos().getZ() + 0.5;
 			minX = Math.min(minX, s.pos().getX());
 			maxX = Math.max(maxX, s.pos().getX());
 			minZ = Math.min(minZ, s.pos().getZ());
 			maxZ = Math.max(maxZ, s.pos().getZ());
 		}
-		Vec3 target = new Vec3(tx / room.size(), floor + 0.9, tz / room.size());
-		View best = null;
-		double bestDistance = -1;
-		for (int x = Math.max(0, minX - 3); x <= Math.min(size.getX() - 1, maxX + 3); x++) {
-			for (int z = Math.max(0, minZ - 3); z <= Math.min(size.getZ() - 1, maxZ + 3); z++) {
-				BlockPos feet = AT.offset(x, floor, z);
-				if (!standable(level, feet) || nearSeat(level, feet)) {
-					continue;
+		int own = roomFloor(room, floors);
+		List<Integer> levels = new ArrayList<>(List.of(own));
+		room.stream().map(floors::get).distinct().sorted((a, b) -> Math.abs(a - own) - Math.abs(b - own)).filter(f -> f != own).forEach(levels::add);
+		for (int reach : new int[] {3, 6}) {
+			for (int floor : levels) {
+				Vec3 target = new Vec3(tx / room.size(), Math.max(floor + 0.5, Math.min(floor + 2.5, ty / room.size())), tz / room.size());
+				View best = null;
+				double bestDistance = -1;
+				for (int x = Math.max(0, minX - reach); x <= Math.min(size.getX() - 1, maxX + reach); x++) {
+					for (int z = Math.max(0, minZ - reach); z <= Math.min(size.getZ() - 1, maxZ + reach); z++) {
+						BlockPos feet = AT.offset(x, floor, z);
+						if (!standable(level, feet) || nearSeat(level, feet)) {
+							continue;
+						}
+						Vec3 eye = new Vec3(x + 0.5, floor + EYE, z + 0.5);
+						double distance = eye.distanceTo(target);
+						if (distance < 2.0 || distance <= bestDistance || !clearLine(level, eye, target, furniture)) {
+							continue;
+						}
+						bestDistance = distance;
+						best = new View(String.format("%02d_room_%d", 10 + index, index + 1), eye, target, 80);
+					}
 				}
-				Vec3 eye = new Vec3(x + 0.5, floor + EYE, z + 0.5);
-				double distance = eye.distanceTo(target);
-				if (distance < 2.0 || distance <= bestDistance || !clearLine(level, eye, target)) {
-					continue;
+				if (best != null) {
+					return best;
 				}
-				bestDistance = distance;
-				best = new View(String.format("%02d_room_%d", 10 + index, index + 1), eye, target, 80);
 			}
 		}
-		return best;
+		return null;
 	}
 
 	/** Air (no collision) at the feet and the eye, and a floor under the feet: the camera is never inside a wall. */
@@ -361,16 +437,26 @@ final class RebuildScene {
 		return false;
 	}
 
-	/** Nothing solid on the straight line from the eye to the target (sampled every tenth of a block). */
-	private static boolean clearLine(ServerLevel level, Vec3 eye, Vec3 target) {
+	/**
+	 * Nothing in the way on the straight line from the eye to the target (sampled every tenth of a block): no point of it
+	 * inside a block's collision shape, a glass pane or a fence as much as a wall (B1386: only full blocks counted, so the
+	 * farthest cell could be outside, looking in through a window), except the room's own furniture, which the shot is of.
+	 */
+	private static boolean clearLine(ServerLevel level, Vec3 eye, Vec3 target, Set<BlockPos> furniture) {
 		Vec3 a = Vec3.atLowerCornerOf(AT).add(eye);
 		Vec3 b = Vec3.atLowerCornerOf(AT).add(target);
 		int steps = (int) Math.ceil(a.distanceTo(b) * 10);
 		for (int i = 1; i < steps - 5; i++) {
-			BlockPos p = BlockPos.containing(a.lerp(b, i / (double) steps));
-			BlockState state = level.getBlockState(p);
-			if (!state.getCollisionShape(level, p).isEmpty() && state.isCollisionShapeFullBlock(level, p)) {
-				return false;
+			Vec3 point = a.lerp(b, i / (double) steps);
+			BlockPos p = BlockPos.containing(point);
+			if (furniture.contains(p.subtract(AT))) {
+				continue;
+			}
+			Vec3 local = point.subtract(p.getX(), p.getY(), p.getZ());
+			for (AABB box : level.getBlockState(p).getCollisionShape(level, p).toAabbs()) {
+				if (box.contains(local)) {
+					return false;
+				}
 			}
 		}
 		return true;

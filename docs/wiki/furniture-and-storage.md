@@ -197,7 +197,7 @@ counter by the door with a storage terminal and a crafting terminal either side 
 crafting table, two filing cabinets
 for the paper and maps on the back wall), the **Terminal Nook** (11 x 15 x 12; rebuilt from scratch in 50.13 as "the Staddle
 Granary": a store room of pale boards on a dark oak frame, lifted on nine stone staddles under a bell-cast slate roof
-with a louvre on its ridge, a stone flight along the front up to a railed landing; inside, the Storehouse at the
+with a louver on its ridge, a stone flight along the front up to a railed landing; inside, the Storehouse at the
 porter's desk by the door, eight chests round a connector along the back wall with a storage terminal before it,
 barrels and hay along the sides; standing nooks keep their old drawing until refreshed) and the **Warehouse** (19 x 16 x 16: two
 floors under a long roof, four racks of chests and barrels below and two in the loft, 60 in all, a crafting terminal and a

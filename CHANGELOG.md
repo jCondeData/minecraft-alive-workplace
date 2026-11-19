@@ -44,6 +44,14 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Hanging Gardens are rebuilt from scratch** (52.6): "the Terraced Mount", four mud-brick terraces on vaulted
+  halls, set back toward the rear so the gardens fall to the front in green tiers hung with leaves and vines while the
+  back rises as a sheer brick cliff. A grand stair climbs from a forecourt between two reflecting pools, and a stair up
+  each terrace's face leads past a farm on every level (still four village farms, a composter and a chest at each) to
+  the crown, where the Water Pavilion stands over the cistern that a shaft of water fills from the vaults. Inside are the
+  Vaults with their nursery and seed store, the Gallery's orangery and the Upper Hall. New stage names to match.
+  Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
+  finished as they were first drawn.
 ### Fixed
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).

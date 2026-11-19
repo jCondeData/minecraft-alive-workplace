@@ -52,7 +52,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		new Design("great_library", 16_000), // 35.13
 		new Design("observatory", 9_000), // 35.17
 		new Design("great_wall", 12_300), // 35.15, with 35.15a's solid tower bases (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
-		new Design("hanging_gardens", 15_000), // 35.19
+		new Design("hanging_gardens", 15_000), // 35.19; rebuilt in 52.6 (15,623)
 		new Design("colossus", 9_000)); // 35.21
 	// The Stadium (35.23) needs Cobblemon for its file and its Healing Machine: the same checks are compat StadiumCompatTests.
 
@@ -255,7 +255,9 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 
 	/**
 	 * No retired job block, no calcite, nothing a player can't get (still water counts: a builder pours it from a bucket,
-	 * as {@link MaterialRules#requirement} says).
+	 * as {@link MaterialRules#requirement} says; a potted plant counts too: a builder pays a flower pot and the plant, as
+	 * {@link MaterialRules#requirements} says, which is what the builders use; the 52.6 Hanging Gardens are the first
+	 * Wonder with them).
 	 */
 	static void materials(GameTestHelper helper, Design d) {
 		List<Block> retired = StationsSpecGameTests.gone();
@@ -273,7 +275,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 						wrong.add(name + " (a retired job block)");
 					} else if (block == Blocks.CALCITE) {
 						wrong.add(name);
-					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR && MaterialRules.requirement(state).isEmpty()) {
+					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR && MaterialRules.requirements(state, null).isEmpty()) {
 						wrong.add(name + " (no player can get it)");
 					}
 				}

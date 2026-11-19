@@ -128,6 +128,14 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # npm run live the live camp/bandit_camp through its ship.py: the loot chest's table, the undrawn ground left
            # out); its old drawing in bandits.py is no longer saved
            "bandit_camp",
+           # 51.8, the defences: js/barracks and js/lookout_tower (MC_BUILDER=..., sh build.sh; LIVE=1 for the barracks'
+           # live drawings, III with --basement 4 --cellar out/cellar.txt; the Lookout Tower's IV the same way),
+           # js/guard_house, js/fire_station and js/gatehouse (npm run cut, LEVEL=2 for gatehouse_2), then rebuild.py
+           # <family> <id> --nbt out/<id with dashes>.nbt. The old drawings (defence.py, starter.py, cellars.py,
+           # basements.py, workplaces.py, answering.py) ship in blueprint_history/; the Guard House's village pieces keep
+           # their own looks (village.py's staffed house)
+           "barracks", "barracks_2", "barracks_3", "guard_house", "fire_station", "gatehouse", "gatehouse_2",
+           "lookout_tower", "lookout_tower_2", "lookout_tower_3", "lookout_tower_4",
            # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
            # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
            # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
@@ -205,9 +213,9 @@ if __name__ == "__main__":
     market_stall().save(MAIN_STRUCTURES, "market_stall")
     market_stall_2().save(MAIN_STRUCTURES, "market_stall_2")
     market_stall_3().save(MAIN_STRUCTURES, "market_stall_3")
-    lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
-    lookout_tower_2().save(MAIN_STRUCTURES, "lookout_tower_2")
-    lookout_tower_3().save(MAIN_STRUCTURES, "lookout_tower_3")
+    for name, draw in (("lookout_tower", lookout_tower), ("lookout_tower_2", lookout_tower_2), ("lookout_tower_3", lookout_tower_3)):
+        if name not in REBUILT:  # ROADMAP 51.8: the Lookout Tower comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 50.8: the Healing Center (I-IV) comes from the rebuild kit (REBUILT); starter.healing_center* and
     # basements.healing_center_4 are the old drawings, kept in blueprint_history/
     for name, draw in (("healing_center", healing_center), ("healing_center_2", healing_center_2),
@@ -321,7 +329,7 @@ if __name__ == "__main__":
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
-        if name not in REBUILT:  # ROADMAP 50.8: the Physician's House comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 51.8 / 50.8: the Fire Station and the Physician's House come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
         if name not in REBUILT:  # ROADMAP 51.4 and 50.8: library_4 and healing_center_4 come from the rebuild kit

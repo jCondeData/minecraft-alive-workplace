@@ -74,13 +74,15 @@ public final class StarterBlueprints {
 	public static final Entry MARKET_STALL_2 = new Entry(AliveWorkplace.id("market_stall_2"), new Vec3i(15, 7, 6));
 	/** A storeroom shed behind the stalls. */
 	public static final Entry MARKET_STALL_3 = new Entry(AliveWorkplace.id("market_stall_3"), new Vec3i(15, 9, 13));
-	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(7, 14, 7));
-	/** A Guard Post at the foot of the ladder and a bell under a pointed roof. */
-	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(7, 23, 7));
-	/** A guardhouse beside the tower: a second Guard Post and two bunks. */
-	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(14, 23, 7));
-	/** Lookout Tower III with an armoury and a lock-up under the tower and guardroom (26.15). */
-	public static final Entry LOOKOUT_TOWER_4 = new Entry(AliveWorkplace.id("lookout_tower_4"), new Vec3i(14, 23, 7), 4);
+	/** The Hoarded Watchtower: a slim stone shaft on a battered foot under a timber watch gallery jettied out on
+	 *  corbels, open on every side under a steep slate hat (rebuilt 51.8). */
+	public static final Entry LOOKOUT_TOWER = new Entry(AliveWorkplace.id("lookout_tower"), new Vec3i(9, 16, 9));
+	/** A timber gear shed against the tower's flank: a guard's grindstone, and the alarm bell under its eave. */
+	public static final Entry LOOKOUT_TOWER_2 = new Entry(AliveWorkplace.id("lookout_tower_2"), new Vec3i(13, 16, 9));
+	/** A crenellated guardhouse at the shed's end: a second grindstone, two bunks and a lower fighting roof. */
+	public static final Entry LOOKOUT_TOWER_3 = new Entry(AliveWorkplace.id("lookout_tower_3"), new Vec3i(19, 16, 9));
+	/** Lookout Tower III with an armory and a lock-up dug under the guardhouse (26.15). */
+	public static final Entry LOOKOUT_TOWER_4 = new Entry(AliveWorkplace.id("lookout_tower_4"), new Vec3i(19, 16, 9), 4);
 	/**
 	 * The Spring Infirmary (rebuilt from scratch in ROADMAP 50.8, tools/blueprints/js/healing_center): a white Dispensary
 	 * under a steep gable, a waiting room by the door and the brewing stand and its chest behind the counter.
@@ -349,12 +351,13 @@ public final class StarterBlueprints {
 	/** Manor III with a vaulted wine cellar under the kitchen and the hall, down a hatch ladder from the kitchen (26.15). */
 	public static final Entry MANOR_4 = new Entry(AliveWorkplace.id("manor_4"), new Vec3i(29, 18, 25), 4);
 
-	/** A stone barracks with two Guard Posts, bunks and training dummies. */
-	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 10, 11));
-	/** A wing with two more Guard Posts. */
-	public static final Entry BARRACKS_2 = new Entry(AliveWorkplace.id("barracks_2"), new Vec3i(19, 10, 11));
-	/** An armoury and lock-up dug under the barracks (36.7). */
-	public static final Entry BARRACKS_3 = new Entry(AliveWorkplace.id("barracks_3"), new Vec3i(19, 10, 11), 4);
+	/** The Gate Ward: a square stone gate tower with a vaulted passage and a watch lantern, a barrack range beside it
+	 *  with two grindstones and two bunks, a Training Dummy in the court behind (rebuilt 51.8). */
+	public static final Entry BARRACKS = new Entry(AliveWorkplace.id("barracks"), new Vec3i(13, 13, 13));
+	/** A second range on the tower's other side: two more grindstones and two more bunks. */
+	public static final Entry BARRACKS_2 = new Entry(AliveWorkplace.id("barracks_2"), new Vec3i(21, 13, 13));
+	/** An armory and lock-up dug under the barracks (36.7). */
+	public static final Entry BARRACKS_3 = new Entry(AliveWorkplace.id("barracks_3"), new Vec3i(21, 13, 13), 4);
 
 	/** The Tinker's Tower (rebuilt in 50.3): a workshop with a smithing table at its forge, the Tinkerer's job site. */
 	public static final Entry TINKERS_WORKSHOP = new Entry(AliveWorkplace.id("tinkers_workshop"), new Vec3i(13, 11, 13));
@@ -447,10 +450,11 @@ public final class StarterBlueprints {
 
 	/**
 	 * The houses of the jobs that answer a disaster (ROADMAP 32.19, tools/blueprints/answering.py), each with its job's
-	 * block and no other. The Fire Station: a stone ground floor with the Firewarden's grindstone, a water basin and
-	 * buckets on racks, under a timber watch loft.
+	 * block and no other. The Fire Station ("the Hose Tower", rebuilt 51.8): a stone engine house with the Firewarden's
+	 * grindstone, a water basin and buckets on racks under a timber watch loft, and a tall hose tower at its front corner
+	 * with a lookout gallery.
 	 */
-	public static final Entry FIRE_STATION = new Entry(AliveWorkplace.id("fire_station"), new Vec3i(11, 14, 11));
+	public static final Entry FIRE_STATION = new Entry(AliveWorkplace.id("fire_station"), new Vec3i(15, 18, 16));
 	/** An open pavilion round a well on a stone cistern podium, under a cross-gabled roof with a louvre, and a stone
 	 *  channel running out east on arches to the Well Keeper's cauldron (52.1). */
 	public static final Entry WELL_HOUSE = new Entry(AliveWorkplace.id("well_house"), new Vec3i(17, 15, 13));
@@ -634,8 +638,9 @@ public final class StarterBlueprints {
 	/** A stone tower for a wall's end or corner: a battered foot, a furnished guardroom, a crenelated top with 16
 	 *  stations (52.3, rebuilt). */
 	public static final Entry WALL_TOWER = new Entry(AliveWorkplace.id("wall_tower"), new Vec3i(5, 10, 5));
-	/** A stone gatehouse (its gates shut at night). */
-	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 9, 5));
+	/** A stone gatehouse: two towers clasping the road, a fighting loggia over the portcullis between them (its gates
+	 *  shut at night; rebuilt 51.8). */
+	public static final Entry GATEHOUSE = new Entry(AliveWorkplace.id("gatehouse"), new Vec3i(11, 16, 5));
 	/** The defences' upgrades (32.20): a fighting step and a ditch of dripstone stakes (52.3, rebuilt: the bank built
 	 *  out into a walk three wide, 19 stations, seven dripstone stakes in a ditch of turned earth outside). */
 	public static final Entry PALISADE_2 = new Entry(AliveWorkplace.id("palisade_2"), new Vec3i(7, 4, 5));
@@ -644,7 +649,7 @@ public final class StarterBlueprints {
 	/** A roofed top with an archers' gallery, two stations a side (52.3, rebuilt). */
 	public static final Entry WALL_TOWER_2 = new Entry(AliveWorkplace.id("wall_tower_2"), new Vec3i(5, 12, 5));
 	/** A barbican in front: a second gate and portcullis, murder holes over the gateway. */
-	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 9, 10));
+	public static final Entry GATEHOUSE_2 = new Entry(AliveWorkplace.id("gatehouse_2"), new Vec3i(11, 16, 10));
 
 	// The workplaces (ROADMAP 27.11), one per job the Steward asks for: the job's block, a bed, no villager (the worker who
 	// wants it moves in). Each its own build since ROADMAP 26.11, drawn by tools/blueprints/workplaces.py.
@@ -657,8 +662,9 @@ public final class StarterBlueprints {
 	public static final Entry KITCHEN = workplace("kitchen", 11, 12, 11, 4);
 	/** The Signal Tower: a brick tower with a slate spire standing forward of a long counter hall (rebuilt 51.6). */
 	public static final Entry POST_OFFICE = workplace("post_office", 17, 15, 15);
-	/** A stone blockhouse with a battlemented roof and a watch hut on it. */
-	public static final Entry GUARD_HOUSE = workplace("guard_house", 11, 13, 11);
+	/** The Gate Watch: two stone piers with a road arch between them, the guard's timber room bridging over both on a
+	 *  jetty under one steep slate gable (rebuilt 51.8). */
+	public static final Entry GUARD_HOUSE = workplace("guard_house", 15, 15, 11);
 	/**
 	 * The pavilion ward (rebuilt from scratch in ROADMAP 50.8, tools/blueprints/js/clinic): one tall white ward under a
 	 * steep slate gable with a ventilator lantern on its ridge, six white beds heads to the long walls, the Nurse's

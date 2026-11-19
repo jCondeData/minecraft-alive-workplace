@@ -338,3 +338,21 @@ Hall; a second tower window, the loft and the back gable on the Trade Hall) wait
 drawings (and their modded copies) are in `blueprint_history/` as v0.145.0; the village houses `<style>_leaders_hall`
 and `<style>_trade_hall` keep their own looks (`village.py`'s staffed house). Scenes `rebuild_leaders_hall`,
 `rebuild_trade_hall`.
+
+**51.8: the defenses** (all five critics SHIP, `tools/blueprints/briefs/defense_51_8_critic.md`). Recipes
+`tools/blueprints/js/{barracks,guard_house,fire_station,gatehouse,lookout_tower}/`; the barracks and lookout tower
+through `build.sh` (LIVE=1 for the barracks; III / IV with `--basement 4 --cellar` from `out/cellar.txt`), the others
+`npm run cut` (LEVEL=2 for `gatehouse_2`), then `rebuild.py <family> <id> --nbt out/<id with dashes>.nbt`. Sizes:
+`barracks` 13 x 13 x 13 (was 13 x 10 x 11), `barracks_2` and `barracks_3` 21 x 13 x 13 (III + 4 below; was 19 x 10 x
+11); `guard_house` 15 x 15 x 11 (was 11 x 13 x 11); `fire_station` 15 x 18 x 16 (was 11 x 14 x 11); `gatehouse` 11 x 16
+x 5 and `gatehouse_2` 11 x 16 x 10 (was 9 high; every gate and portcullis cell is where it was); `lookout_tower` 9 x 16
+x 9, `_2` 13 x 16 x 9, `_3` and `_4` 19 x 16 x 9 (IV + 4 below; was 7 x 14 x 7 to 14 x 23 x 7). Two changes at the ship
+step: the Lookout Tower's two job blocks, drawn as Guard Posts, are grindstones (the Guard Post has no recipe, so no
+builder could be stocked with one), and the Barracks' straw targets are `hay_block` (the recipe had a block id that
+doesn't exist). The Barracks' bunks stand at z 8 and 9 (drawn at z 7 and 9): a refresh keeps a job block, and the
+old Barracks' grindstone at (3, 1, 7) sat under the first bunk's foot, so a refreshed Barracks III lost that bunk
+(`qaReleaseRefresh_barracks_3`). The Fire Station's standing spot in `answeringHouseBuilt_fire_station` moves to (4, 1, 5), two from the
+grindstone (2, 1, 5). The fire station and gatehouses leave `owner_rules_baseline.json`. The old drawings and their
+modded copies are in `blueprint_history/`; the Guard House's village pieces (`village/<style>_guard_house`) keep their
+own looks (`village_looks.py` not redrawn). Scenes `rebuild_barracks`, `rebuild_guard_house`, `rebuild_fire_station`,
+`rebuild_gatehouse`, `rebuild_lookout_tower`.

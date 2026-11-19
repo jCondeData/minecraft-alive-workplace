@@ -1,19 +1,19 @@
 {
-  "name": "stadium-s4",
+  "name": "stadium-s4-cut15",
   "dataVersion": 3955,
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 0
+    "updatedBlocks": 72
   },
-  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stadium/out/stadium-s4.nbt",
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stadium/out/stadium-s4-cut15.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stadium/out/summary.json",
   "size": [
     59,
-    20,
+    26,
     49
   ],
-  "blockCount": 12587,
-  "paletteCount": 51,
+  "blockCount": 11162,
+  "paletteCount": 67,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stadium/recipe.mjs"
 }

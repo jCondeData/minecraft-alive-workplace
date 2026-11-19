@@ -34,7 +34,7 @@ Roadmap items: 26.15, 49.4, 49.10b
   - **Desert:** a cube of coursed sandstone under a flat roof behind a coped parapet, a terracotta frieze, a dark
     lattice oriel over the door and a low slotted windcatcher; II adds the parlor as a lower mud-brick block fronted by
     an arcade of two round arches, III the back room as a mud-brick block whose roof is a terrace under a pergola.
-  - **Savanna:** a ground story of red granite and an upper story of packed mud between grey acacia posts, under one
+  - **Savanna:** a ground story of red granite and an upper story of packed mud between gray acacia posts, under one
     square pyramid of golden thatch with a clay pot at its point; II the parlor under a low hip that runs on over a
     veranda, III the back room under a second low hip.
   - **Taiga:** a forester's lodge gable-on to the road, mossy fieldstone below and dark spruce logs above under a broad

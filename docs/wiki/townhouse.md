@@ -35,7 +35,7 @@ Roadmap items: 34.15, 26.15, 49.5
   their places (37.2); with the building mods its modded copy dresses the floors and chests (37.12).
 - **In its village's culture** (49.10b): a desert village builds every level in sandstone below mud brick, a
   terracotta frieze at the floor line, flat roofs behind a smooth coping, spruce beam ends, arcades and lattice for
-  shade; a savanna village builds a red granite shop storey on a terracotta plinth, mud between grey acacia posts above,
+  shade; a savanna village builds a red granite shop story on a terracotta plinth, mud between gray acacia posts above,
   a veranda along the street and one great golden thatch hipped on every side, with a thatched lookout tower from III.
   The rooms, beds, job blocks and furniture are the same; Levels I and II stand 20 tall (flat or hipped roofs, not the
   steep gable). Plains, snowy and taiga villages build the jettied timber house. The Blueprint Table lists the looks.

@@ -1,0 +1,10 @@
+{
+  "name": "house-t1-b-desert",
+  "private": true,
+  "type": "module",
+  "description": "Daub House, the desert look (ROADMAP 49.10d): the shipped Daub House drawn again as a little kasbah: a two-storey mud block with a tower at every corner, a level coped parapet, an arched door niche under a lattice oriel, beam ends, a terracotta frieze, and the kitchen under a Nubian mud vault. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

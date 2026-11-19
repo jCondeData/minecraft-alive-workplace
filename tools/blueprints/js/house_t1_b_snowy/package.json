@@ -1,0 +1,10 @@
+{
+  "name": "house-t1-b-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Daub House, the snowy look (ROADMAP 49.10d): the shipped Daub House drawn again as a snow-roof house: its long side to the road under a 45-degree slate roof down to the ground storey, calcite walls on a stone foot, a dormer, a storm porch, deep windows, a lower kitchen gable and a broad stack through the back slope. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

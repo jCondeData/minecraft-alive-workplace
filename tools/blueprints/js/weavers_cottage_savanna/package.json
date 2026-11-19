@@ -1,0 +1,10 @@
+{
+  "name": "weavers-cottage-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Weaver's Cottage, the savanna look (ROADMAP 49.10d): the shipped Weaver's Cottage drawn again as a herder-weaver's house: one golden thatch hip over red granite and packed mud with a painted band, a veranda on acacia posts before the weaver's window, the flock in a kraal with its own little thatched shelter and (II) a walled dye garden with a drying frame and an acacia. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

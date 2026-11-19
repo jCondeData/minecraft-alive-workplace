@@ -54,6 +54,10 @@ export const PALETTE = {
   capital: 'chiseled_quartz_block',
   beam: 'quartz_block',
   sill: 'smooth_quartz',
+  sillSlab: 'smooth_quartz_slab',
+  corniceStairs: 'smooth_quartz_stairs', // round 2: cornices, hoods and the trim band
+  rakeSlab: 'smooth_quartz_slab',
+  baseStairs: 'quartz_stairs', // the columns' bases and capitals
   tympanum: 'smooth_quartz',
   pane: 'glass_pane',
   ribbon: 'glass', // the drum's spiral: a ribbon on a curve, where a pane run can't join from cell to cell diagonally
@@ -71,6 +75,7 @@ export const ROTUNDA = {
   lining: { inner2: 42, outer2: 72, y0: 3, y1: 22 }, // books up the whole inside, two deep
   walk: { inner2: 16, outer2: 42 }, // the helix
   helix: { cx: 20, cz: 22, start: 0, dir: 1, y0: 3, rise: 8, top: 19 }, // from the back door, east first, two turns
+  clerestory: [21, 22], // round 2: a ring of windows round the drum above the wing ridges (y 20), between the pilasters
   band: [1, 2], // the window band rides 1-2 blocks over the walkway's surface: eye height for the climbing reader
   cornice: { inner2: 121, outer2: 144, y: 23 },
   dome: { y0: 24, R: 9.5, t: 2.2, squash: 0.78, ribs: 12 },

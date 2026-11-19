@@ -32,3 +32,22 @@ NEW beats OLD by one point on silhouette, depth and interior and ties on detail;
 Notes for a later pass (not blocking): 1. front view: the hall's front eave over the balcony reads as a dark flap
 between the towers; 2. left/right views: give the hall's hip roof a ridge or dormers so it is less of a pyramid;
 3. cutaway y5: the hall has no hearth.
+
+## Independent critic (lane-c-1119-0053, a fresh agent that neither designed nor wrote the brief)
+
+The scorecard above was written by the same agent that wrote the brief and drew the design (that run had no way to
+start fresh agents, and it had read the old drawing's header in `realm.py` before designing, so the design is not fully
+blind). A fresh critic then scored the same sheets, cropped, plus both versions' `.nbt`s read in Python:
+
+| Score | OLD | NEW | Evidence |
+|---|---|---|---|
+| Silhouette | 3 | 4 | Front views: twin copper-capped towers flanking a balcony read in outline; the old reads as a cross-gabled chapel. Back view is NEW's weak side. |
+| Depth | 3 | 4 | Side views: quoins, string courses, corbelled rings under the spires, a battlemented vault block; recessed entrance arcade. |
+| Interior | 2 | 4 | Cutaway y5: feasting hall with long tables, runner to the raised dais, throne bay, vault and steward's rooms; II's council chamber and treasury. Old: carpet, banners, lanterns, chests, no furniture spots. |
+| Detail | 3 | 3 | Flower boxes, banners, lantern posts, finials, a bell in II; three roof materials read busier, not better. |
+
+Brief: nothing missing (19x25x25 and 27x25x25; front door at (9,1,6); dais one up with the throne at (9,2,22); 4 vault
+chests behind a door onto the dais; II 12 chests and an east door; `holes.py` 0 findings). **Verdict: SHIP.**
+Next-pass notes: (1) back view of I and II is the plainest side, give it the front's string course and framed windows;
+(2) one roof family for hall and belfry, copper only on the towers; (3) film eye-level shots; the two tower rooms are bare
+ladder shafts.

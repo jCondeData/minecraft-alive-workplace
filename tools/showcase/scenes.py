@@ -1777,6 +1777,14 @@ SCENES = [
       40, [("01_outside_front", "The Lookout Tower from the front: the rubble shaft on its battered foot, the timber watch gallery jettied out on corbels under the slate hat"),
            ("02_outside_back", "From the back: arrow loops up the shaft under the open gallery"),
            ("04_outside_east", "From the east: the gallery's knee braces and the copper lightning rod on the hat")], furniture=True),
+    # ROADMAP 51.9: the Royal Hall rebuilt from scratch ("the Brick Palace"; realm/royal_hall, REBUILD_BLUEPRINT: its id
+    # has a folder)
+    S("rebuild_royal_hall", "Build families", "The Royal Hall, rebuilt: from four sides and at eye level inside",
+      "the Royal Hall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Brick Palace from the front: two brick gate towers under green copper caps, the proclamation balcony over the entrance arcade, the realm's banner on the stepped gable"),
+           ("02_outside_back", "From the back: the throne bay pushed out of the hall under its own hipped roof, the louver on the ridge"),
+           ("03_outside_west", "From the west: the battlemented vault with its barred slits"),
+           ("04_outside_east", "From the east: the steward's room, its twin")], env={"REBUILD_BLUEPRINT": "realm/royal_hall"}, furniture=True),
     # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
     S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
       "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -1964,8 +1972,8 @@ SCENES = [
     S("realm_builds", "Realm builds", "The Colony Camp, the Royal Hall and the Royal Hall II, and all three in the five styles",
       "the Colony Camp, the Royal Hall and the Royal Hall II stand as drawn and in the five styles, the camp with its table and chest, each hall with its vault and on the map as a hall",
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),
-           ("12_royal_hall", "The Royal Hall: a stone great hall with a gabled porch and a rose window"),
-           ("15_royal_hall_2_back", "Royal Hall II from behind: the keep tower, the treasury wing and the vault")]),
+           ("12_royal_hall", "The Royal Hall: a brick palace hall between two gate towers with green copper caps, the balcony over its arcade"),
+           ("15_royal_hall_2_back", "Royal Hall II from behind: the throne bay, the east range and its belfry")]),
     # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
     S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
       # each Wonder from the front (even) and from behind (odd): 10 the Great Cathedral, 12 the Lighthouse, 14 the Great

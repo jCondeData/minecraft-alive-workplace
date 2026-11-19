@@ -149,7 +149,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.8, the Physician's House ("the still room and ward round a physic garden") and the Healing Center (I-IV,
            # "the Spring Infirmary", IV with its Cistern cellar): js/physicians_house and js/healing_center (MC_BUILDER=...,
            # sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
-           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4"}
+           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4",
+           # 51.9, the Royal Hall ("the Brick Palace"): js/royal_hall (MC_BUILDER=...; sh build.sh writes candidates,
+           # LIVE=1 sh build.sh saves realm/royal_hall and realm/royal_hall_2)
+           "royal_hall", "royal_hall_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -298,8 +301,9 @@ if __name__ == "__main__":
     blackstone_outpost().save(os.path.join(MAIN_STRUCTURES, "camp"), "blackstone_outpost")  # ROADMAP 32.10
     coven_hut().save(os.path.join(MAIN_STRUCTURES, "camp"), "coven_hut")  # ROADMAP 32.11
     colony_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "colony_camp")  # ROADMAP 33.14
-    royal_hall().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall")  # ROADMAP 33.14
-    royal_hall_2().save(os.path.join(MAIN_STRUCTURES, "realm"), "royal_hall_2")
+    for name, draw in (("royal_hall", royal_hall), ("royal_hall_2", royal_hall_2)):  # ROADMAP 33.14
+        if name not in REBUILT:  # 51.9: the Royal Hall comes from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "realm"), name)
     for name, draw in (("traveller_camp", traveller_camp), ("prisoner_cage", prisoner_cage), ("castaway_camp", castaway_camp),
                        ("hermit_hut", hermit_hut), ("founder_statue", founder_statue)):
         if name not in REBUILT:  # 52.5: all but the Hermit's Hut come from the rebuild kit

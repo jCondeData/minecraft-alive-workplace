@@ -16,6 +16,13 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
+  green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
+  vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
+  with the treasury (eight chests, its own east door), a council chamber upstairs and a belfry with a bell. Halls already
+  standing keep their old drawing until refreshed.
+
 ## 0.157.0 — 2026-11-18
 
 ### Added

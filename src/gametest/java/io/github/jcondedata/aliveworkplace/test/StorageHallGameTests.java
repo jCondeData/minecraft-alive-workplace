@@ -106,7 +106,7 @@ public class StorageHallGameTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"storage_nook_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "storage_nook_build")
 	public void aBuilderBuildsTheTerminalNookAsAStorehouse(GameTestHelper helper) {
-		build(helper, StarterBlueprints.TERMINAL_NOOK, new BlockPos(2, 1, 4), 8);
+		build(helper, StarterBlueprints.TERMINAL_NOOK, new BlockPos(2, 3, 4), 11); // 50.13: the rebuilt Nook (9 chests, 2 barrels)
 	}
 
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"storage_hall_build"'

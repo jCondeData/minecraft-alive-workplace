@@ -67,6 +67,12 @@ asks for the steps, `latest.log` and any crash report).
   below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
   climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
   in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Terminal Nook, rebuilt from scratch** (50.13) as "the Staddle Granary": a little store room of pale boards on
+  a dark oak frame, lifted on nine stone staddles under a bell-cast slate roof with a louvre on its ridge, and a stone
+  flight along the front up to a railed landing with a lamp. Inside, the Storehouse at the porter's desk by the door,
+  chests along the back wall round the tally, barrels and hay along the sides, and lanterns on the tie beam. Without
+  Tom's Simple Storage it holds 9 chests and 2 barrels; with it, 8 chests on the connector and the
+  storage terminal before it (11 by 12, 15 tall). Nooks already standing keep their old drawing until refreshed.
 - **The Pump House, rebuilt from scratch** (50.13, with Create) as "the Tanner's Water Tower": a stone water tower
   under a steep green copper cap, water falling from a stone cup down its flank past the wheel, which turns the
   mechanical pump over a cistern at its foot (seen through its windows). A pipe climbs the tower to the tank, which

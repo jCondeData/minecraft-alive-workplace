@@ -1996,6 +1996,13 @@ SCENES = [
            ("02_outside_back", "From the back: the tannery's deepslate roof leaning on the tower, the gallery round the tower's top"),
            ("04_outside_east", "From the east: water falling from the stone cup down the tower's flank past the water wheel into its trough"),
            ("10_room_1", "The tannery at eye level: the soaking vat between the two chests, the cutting table, the stitching desk and the hides")], furniture=True, create=True),
+    # ROADMAP 50.13: the Terminal Nook rebuilt from scratch (REBUILD.md), "the Staddle Granary"
+    S("rebuild_terminal_nook", "Build families", "The Terminal Nook, rebuilt: from four sides and at eye level inside",
+      "the Terminal Nook's blueprint stands on a cleared lawn; every furniture spot holds its piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Terminal Nook from the front: the granary on its stone staddles, the flight up to the railed landing and the door under the gable"),
+           ("02_outside_back", "From the back: the boarded store between its dark oak frame, the bell-cast slate roof and the louvre on the ridge"),
+           ("03_outside_west", "From the west: the room lifted clear of the ground on its staddles, a shuttered window in the side"),
+           ("10_room_1", "Inside at eye level: the chests along the back wall round the tally, barrels and hay along the sides")], furniture=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

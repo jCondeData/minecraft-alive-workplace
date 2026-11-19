@@ -66,12 +66,15 @@ public class StorageHallsCompatTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The Terminal Nook: six chests round the connector, the storage terminal before it. */
+	/**
+	 * The Terminal Nook (rebuilt in 50.13 as a granary on staddle stones, its room one level up): eight chests round the
+	 * connector in the back wall, the storage terminal before it.
+	 */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"toms_nook_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "toms_nook_build")
 	public void aBuilderBuildsTheTerminalNookOnTomsNetwork(GameTestHelper helper) {
-		build(helper, StarterBlueprints.TERMINAL_NOOK, new BlockPos(2, 1, 4), new BlockPos(4, 1, 6), 6,
-			new BlockPos(4, 1, 5), Direction.NORTH, "storage_terminal");
+		build(helper, StarterBlueprints.TERMINAL_NOOK, new BlockPos(2, 3, 4), new BlockPos(5, 3, 9), 8,
+			new BlockPos(5, 3, 8), Direction.NORTH, "storage_terminal");
 	}
 
 	/** The Storage Hall: 27 chests and barrels round the connector, two filing cabinets on its cable, terminals on the counter. */

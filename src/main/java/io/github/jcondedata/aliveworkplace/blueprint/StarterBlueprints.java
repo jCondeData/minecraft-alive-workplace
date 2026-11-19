@@ -813,12 +813,13 @@ public final class StarterBlueprints {
 	/**
 	 * The storage builds (ROADMAP 37.17; tools/blueprints/storage_halls.py), each a Storehouse: the Storage Hall (27 chests
 	 * and barrels round an inventory connector, terminals on a counter by the door, filing cabinets), the Terminal Nook
-	 * (a connector, six chests and a terminal; it fits beside a house) and the Warehouse (two floors of racks, a crafting
+	 * (rebuilt in ROADMAP 50.13, tools/blueprints/js/terminal_nook, "the Staddle Granary": a store room on staddle stones,
+	 * a connector, eight chests and a terminal in its Tom's copy; nine chests and two barrels without; it fits beside a house) and the Warehouse (two floors of racks, a crafting
 	 * terminal, a loading bay with a handcart). Each has a Tom's Simple Storage copy in the modded library (37.12), built in
 	 * its place when Tom's is installed; without it, chests and barrels and no terminal.
 	 */
 	public static final Entry STORAGE_HALL = new Entry(AliveWorkplace.id("storage_hall"), new Vec3i(13, 14, 14));
-	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(9, 10, 9));
+	public static final Entry TERMINAL_NOOK = new Entry(AliveWorkplace.id("terminal_nook"), new Vec3i(11, 15, 12)); // ROADMAP 50.13: rebuilt, "the Staddle Granary"
 	public static final Entry WAREHOUSE = new Entry(AliveWorkplace.id("warehouse"), new Vec3i(19, 16, 16));
 	public static final List<Entry> STORAGE_HALLS = List.of(STORAGE_HALL, TERMINAL_NOOK, WAREHOUSE);
 

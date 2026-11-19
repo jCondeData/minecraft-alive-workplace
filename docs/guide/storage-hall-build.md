@@ -6,9 +6,9 @@ expansion: M37
 image: https://jcondedata.github.io/minecraft-alive-workplace/storage_hall/still-1.jpg
 caption: The Storage Hall without Tom's Simple Storage (left) and with it (right)
 Kind: trade
-Size: Storage Hall 13 wide, 14 tall, 14 deep; Terminal Nook 9 by 9, 10 tall; Warehouse 19 wide, 16 tall, 16 deep
+Size: Storage Hall 13 wide, 14 tall, 14 deep; Terminal Nook 11 wide, 15 tall, 12 deep; Warehouse 19 wide, 16 tall, 16 deep
 Job block: a Storehouse in each, for a Porter
-Inside: Storage Hall 27 chests and barrels and two filing cabinets; Terminal Nook 6 chests; Warehouse 60 chests and barrels on two floors
+Inside: Storage Hall 27 chests and barrels and two filing cabinets; Terminal Nook 9 chests and 2 barrels (8 chests on the connector with Tom's); Warehouse 60 chests and barrels on two floors
 Upgrade: none
 Where: the Blueprint Table
 categories: Builds
@@ -26,8 +26,10 @@ of plain chests and barrels, and work like any Storehouse.
   Inventory Connector, a counter by the door holds a Storage Terminal and a Crafting Terminal either side of the
   Storehouse, and two Filing Cabinets for paper and maps stand against the back wall. A cable under the floor links
   them all.
-- **Terminal Nook**: a small room that fits beside a house: six chests round a connector along the back wall and a
-  Storage Terminal in front of it.
+- **Terminal Nook**: a little granary that fits beside a house, a store room on stone stilts (so the damp and the rats
+  stay under it) under a tall slate roof. Climb the stone steps along the front to the landing and the door. Inside, the
+  Storehouse stands at the porter's desk by the door, eight chests stand round a connector along the back wall with a
+  Storage Terminal in front of it, and barrels and hay line the sides. Without Tom's, the connector is a ninth chest.
 - **Warehouse**: a big two-story store with four racks of chests and barrels below and two more in the loft, a
   Crafting Terminal at the packing counter inside the loading doors, and a loading bay with a handcart out front. The
   racks stand on Inventory Trim in the floor, which links them to the connector.

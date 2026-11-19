@@ -182,7 +182,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "train_station",
            # 50.13, the Pump House ("the Tanner's Water Tower"), Create only: js/pump_house (MC_BUILDER=..., sh build.sh
            # writes the candidate; LIVE=1 sh build.sh the live one)
-           "pump_house"}
+           "pump_house",
+           # 50.13, the Terminal Nook ("the Staddle Granary"), both drawings: js/terminal_nook (MC_BUILDER=..., sh build.sh
+           # writes the candidates, the vanilla build and its Tom's copy in modded/; LIVE=1 sh build.sh the live ones)
+           "terminal_nook"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -374,7 +377,8 @@ if __name__ == "__main__":
         quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     # ROADMAP 37.14 crafters_workshop and 46.6 glassblowers_workshop come from the rebuild kit since 50.7 (REBUILT);
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
-    save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
+    # ROADMAP 37.17: with their Tom's copies (50.13: the Terminal Nook's two come from the rebuild kit)
+    save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"), skip=REBUILT)
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         if name not in REBUILT:  # ROADMAP 51.8 / 50.8: the Fire Station and the Physician's House come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19

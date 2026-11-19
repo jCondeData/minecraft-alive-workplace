@@ -4,7 +4,7 @@ Milestone 49, item 49.2 (the owner's pick of 36.23's two new Level I houses, 202
 House"), with his three changes (36.23a-c): the loft railing joined at its corners, the short lamp on a side table, the
 plates in the kitchen. A new home for a village's first families, the first building made with the rebuild kit
 (`tools/blueprints/REBUILD.md`).
-Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, B1367
+Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, 49.10d, B1367
 
 ## 1. What a player sees
 
@@ -29,6 +29,16 @@ Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, B1367
 - **The Steward** plans one: a Hamlet three or more beds short asks for a Daub House (four beds) in a Homes zone, before
   a Stone House. Two short still asks for a Stone House; a Village three short still asks for a Terrace.
 - On the Village Map it is a home.
+- **In its village's culture** (49.10d): when a village's builder builds one, a desert village gets the Kasbah (a
+  two-story house of mud with a square tower at each corner over a level coped parapet, each with a stepped crown, an
+  arched door niche under a dark lattice oriel, the kitchen under a low mud vault); a savanna village the Veranda House
+  (mud in a gray acacia frame under one great golden thatch hip with a clay pot on the ridge, a thatched veranda across
+  the front, the kitchen under a lower thatch); a snowy village the Snow-Roof House (pale calcite under a long slate
+  roof sweeping down to the ground floor, a dormer, a stone storm porch, a broad stack, snow on the ridges and a drift
+  round the walls); a taiga village the Log Lodge (spruce logs on a mossy fieldstone footing, its slate gable to the
+  road over a recessed porch, the kitchen a lower log cross-wing). The hall, kitchen, loft, four beds, crafting table,
+  door and every furniture spot are the same. Plains villages build the Daub House as drawn. The Blueprint Table lists
+  the looks.
 
 ## 2. How it works
 
@@ -43,6 +53,11 @@ Roadmap items: 36.23, 36.23a, 36.23b, 36.23c, 49.2, B1367
   hall floor (4, 0, 5) for a jobless villager. `world/VillageHouses.HOMES` adds them to the five house pools (and Repurposed
   Structures' villages) when the server starts; they are not staffed houses: their one job block is the kitchen's crafting table (a Carpenter's, so the villager who
   moves in may take that job).
+- The culture looks (49.10d) are drawn in `tools/blueprints/js/house_t1_b_<culture>/` from the brief and the shipped
+  plan (the kept insides from `parts/daub_looks.mjs`; `look_spots.py` says SAME BUILDING); `SHIP=1 build.sh` saves
+  them as `structure/looks/<culture>/house_t1_b` with their furniture spots. `StarterBlueprints.DAUB_HOUSE_CULTURES`
+  lists the cultures that have a look (`BlueprintLooks` reads it; take a culture out to hold its look back),
+  `daubHouseLook(culture)` each look and `DAUB_HOUSE_LOOKS` all of them. Scene: `rebuild_house_t1_b_looks`.
 - Modded copy: `structure/modded/house_t1_b.nbt` (`modded_library.py house_t1_b`).
 - Steward rule `steward_rules/homes_house_t1_b.json` (priority 90: beds short 3+, below Village rank, no upgrade adds
   beds). Built advancement `advancement/built/house_t1_b.json` (`tools/questbook/generate.py`).
@@ -75,8 +90,8 @@ Nothing new. A new blueprint id (`aliveworkplace:house_t1_b`) and new village te
 
 ## 7. Known limits
 
-- The village pieces are the blueprint in other materials, not separate designs; the biome looks of 49.10 may redraw
-  them.
+- The village pieces vanilla villages grow are still the blueprint in other materials, not the culture looks: the
+  looks (49.10d) are what a village's builder builds.
 - The showcase scene `rebuild_house_t1_b` is filmed on GitHub, not in this session.
 
 ## 8. Proof
@@ -86,3 +101,6 @@ railing corner, the standing lamp on a side table, the plates only in the kitche
 on the map, its modded copy and built advancement; in every village style's house pool with the street's jigsaw, a
 jobless villager's spawn, four beds and at most one job block; the Steward's plan for a Hamlet three beds short (not two,
 not a Village); a builder building it to DONE with the railing joined. Scene `rebuild_house_t1_b`.
+`DaubHouseLooksGameTests` (culture pick, fallbacks, base, one tier, lock and map kind per look, size, four beds, job
+blocks and every furniture spot of the drawing, each look built to DONE, a desert site saved mid-build reloads as
+desert). Scene `rebuild_house_t1_b_looks`.

@@ -2046,6 +2046,23 @@ SCENES = [
            ("12_savanna", "Savanna: one long golden thatch hip over the row, red granite below packed mud, a veranda on acacia posts, painted window trims"),
            ("13_snowy", "Snowy: the Snowbound Row, a pale calcite gable to a point for every home under steep deepslate roofs, snow on the eaves and drifted at the foot"),
            ("14_taiga", "Taiga: one long range of dark spruce logs on a mossy cobble footing, a slate roof, a veranda on log posts, a stack on every party wall")], furniture=True),
+    # ROADMAP 49.10d: the Weaver's Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
+    # drawn), Level I of each side by side
+    S("rebuild_weavers_cottage_looks", "Build families", "The Weaver's Cottage in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Weaver's Cottage as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: a two-story stone range with a long weaver's window, a wool loft under slate and a sheep fold on the east gable"),
+           ("11_desert", "Desert: the Dyer's Roof, sandstone below mud brick under a flat roof, an arcade shading the weaver's window, dyed cloth drying on the roof"),
+           ("12_savanna", "Savanna: one golden thatch hip over the house, a veranda on acacia posts along the street, the flock in a kraal with its own little thatched shelter"),
+           ("13_snowy", "Snowy: the Snowbound Loomhouse, white calcite under a steep snow-laden slate roof, a dormer over the loom and a stone storm porch"),
+           ("14_taiga", "Taiga: a deep-eaved log lodge on a mossy fieldstone course, a veranda the whole length of the front, a split-rail paddock for the sheep")], furniture=True),
+    # ROADMAP 49.10d: the Daub House in each village culture's climate (desert, savanna, snowy, taiga; plains as drawn)
+    S("rebuild_house_t1_b_looks", "Build families", "The Daub House in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Daub House as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: mud-brick daub in a dark oak frame under a steep brick roof, a low stone kitchen on the east side"),
+           ("11_desert", "Desert: a little kasbah of mud, a square tower at each corner over a coped parapet, the kitchen under a low mud vault"),
+           ("12_savanna", "Savanna: a mud house in a gray acacia frame under one great golden thatch hip, a thatched veranda across the front"),
+           ("13_snowy", "Snowy: pale calcite under a long slate roof sweeping down to the ground floor, a dormer, a storm porch, snow on the ridges"),
+           ("14_taiga", "Taiga: a spruce log lodge, its slate gable to the road over a recessed porch, the kitchen a lower log cross-wing")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

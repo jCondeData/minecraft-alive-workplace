@@ -37,7 +37,11 @@ public final class BlueprintLooks {
 		// the critic three times and wait for the owner, so those villages build it as drawn
 		StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna"),
 		// 49.10c: the Terrace likewise (tools/blueprints/js/terrace_<culture>), all four (snowy passed its critic in round 3)
-		StarterBlueprints.TERRACE.id(), CULTURES);
+		StarterBlueprints.TERRACE.id(), CULTURES,
+		// 49.10d: the Weaver's Cottage (both levels) and the Daub House likewise (tools/blueprints/js/weavers_cottage_<culture>,
+		// house_t1_b_<culture>); the cultures each has a look for are listed beside its entry in StarterBlueprints
+		StarterBlueprints.WEAVERS_COTTAGE.id(), StarterBlueprints.WEAVERS_COTTAGE_CULTURES,
+		StarterBlueprints.DAUB_HOUSE.id(), StarterBlueprints.DAUB_HOUSE_CULTURES);
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

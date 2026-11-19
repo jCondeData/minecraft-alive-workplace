@@ -58,6 +58,7 @@
 		"VillagerGoalPackagesMixin",
 		"VillagerMixin",
 		"VillagerPanicTriggerMixin",
+		"VillagerCivicMemoMixin",
 		"VillagerSeatMixin",
 		"VillageFireMixin",
 		"WalkNodeEvaluatorMixin",

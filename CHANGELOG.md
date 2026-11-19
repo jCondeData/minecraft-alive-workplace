@@ -26,6 +26,13 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
+  porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden
+  hip over the whole house on a colonnade of acacia posts, the tower rising through it); the White Hall (pale calcite
+  under one steep slate roof, tall pointed gables, snow on the ridges); and the Boyar's Lodge (dark spruce logs on a
+  mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
+  furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
 - **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
   cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
@@ -141,11 +148,18 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
+  carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
+  he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the
+  edicts' checks every villager makes every tick (work stopped by a raid, Curfew's bedtime) are quicker too (B455).
 - With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
   placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
   Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
   block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
   drops a plain one (B1070).
+- With Tom's Simple Storage, a chest cut off from the Storehouse's Inventory Connector by breaking a cable no longer
+  counts twice for the second it takes the connector to notice: the Village Hall, the Storehouse and a builder's
+  shortage check count each item once at every moment (B1358).
 - With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
   instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even

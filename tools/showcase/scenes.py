@@ -1925,6 +1925,13 @@ SCENES = [
            ("03_outside_west", "From the west: the leat in its stone trough and the undershot wheel under its little hood"),
            ("02_outside_back", "From the back: the brick boiler and its tall stack"),
            ("10_room_1", "Inside at eye level: the beds either side of the walk, the belt along the west wall under the harvester and the plough")], furniture=True, create=True),
+    # ROADMAP 50.9: the Compost Yard rebuilt from scratch (REBUILD.md), "the Bin Barn" (Level I filmed)
+    S("rebuild_compost_yard", "Build families", "The Compost Yard, rebuilt: from four sides",
+      "the Compost Yard's blueprint stands on a cleared lawn; it has no furniture spots and no rooms (the barn is three open bins and a turning aisle), so it is filmed from four sides",
+      40, [("01_outside_front", "The Compost Yard from the front: the straw-thatched barn's three bins, green to black, under the jettied hoist gable, the composter and the scrap chest in the dry beneath it"),
+           ("02_outside_back", "From the back: the turning aisle's lower roof under the barn's steep thatch, slatted vents in its wall"),
+           ("03_outside_west", "From the west: the aisle door with its lamp post, the hoist gable's ridge running back into the main ridge"),
+           ("04_outside_east", "From the east: the barn's gable end over its rubble plinth, the scrap heap of pumpkins, hay and melons in the yard")], furniture=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

@@ -156,7 +156,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "berry_farm", "berry_farm_2", "apiary_garden", "apiary_garden_2", "greenhouse",
            # 51.9, the Royal Hall ("the Brick Palace"): js/royal_hall (MC_BUILDER=...; sh build.sh writes candidates,
            # LIVE=1 sh build.sh saves realm/royal_hall and realm/royal_hall_2)
-           "royal_hall", "royal_hall_2"}
+           "royal_hall", "royal_hall_2",
+           # 50.9, the Compost Yard (I-II, "the Bin Barn"): js/compost_yard (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py compost_yard compost_yard_2)
+           "compost_yard", "compost_yard_2"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -353,8 +356,11 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
-    compost_yard().save(MAIN_STRUCTURES, "compost_yard")
-    compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
+    # ROADMAP 50.9: the Compost Yard comes from the rebuild kit (REBUILT); yards.compost_yard* are the old drawings,
+    # kept in blueprint_history/
+    for name, draw in (("compost_yard", compost_yard), ("compost_yard_2", compost_yard_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")
     sifting_shed_2().save(MAIN_STRUCTURES, "sifting_shed_2")
     pokemon_center().save(MAIN_STRUCTURES, "pokemon_center")

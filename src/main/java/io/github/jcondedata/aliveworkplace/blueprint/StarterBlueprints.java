@@ -500,10 +500,14 @@ public final class StarterBlueprints {
 	/** A gatehouse roof over the portal, a storehouse and a nether wart garden (52.4, rebuilt). */
 	public static final Entry NETHER_GATE_2 = new Entry(AliveWorkplace.id("nether_gate_2"), new Vec3i(15, 16, 14));
 
-	/** An open timber shed with compost bays and the Compost Bin, a fenced yard in front. */
-	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(11, 8, 10));
-	/** A third bay and a potting shed at the end. */
-	public static final Entry COMPOST_YARD_2 = new Entry(AliveWorkplace.id("compost_yard_2"), new Vec3i(15, 8, 10));
+	/**
+	 * The Bin Barn (rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/compost_yard): a steep straw-thatched barn whose
+	 * front opens on the yard as three bins, green to black, under a jettied hoist gable; the composter and the scrap chest
+	 * stand under its overhang, a turning aisle behind.
+	 */
+	public static final Entry COMPOST_YARD = new Entry(AliveWorkplace.id("compost_yard"), new Vec3i(13, 12, 13)); // ROADMAP 50.9: rebuilt
+	/** Level II: a riddling shed under the barn's east rake, with more chests, the riddle pile and a potting bench. */
+	public static final Entry COMPOST_YARD_2 = new Entry(AliveWorkplace.id("compost_yard_2"), new Vec3i(15, 12, 13)); // ROADMAP 50.9: rebuilt
 	/** A timber shed on a stone footing over the Sieve, with bins of gravel and sand. */
 	public static final Entry SIFTING_SHED = new Entry(AliveWorkplace.id("sifting_shed"), new Vec3i(9, 9, 9));
 	/** Twice the depth with a second Sieve, a side door and a lean-to over stone bins. */

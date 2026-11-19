@@ -26,6 +26,12 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Compost Yard is rebuilt from scratch** (50.9) as "the Bin Barn": a steep straw-thatched barn on a rubble plinth
+  whose front opens on the yard as three bins, the heaps graded from fresh green through turning brown to ripe black, under
+  a jettied hoist gable with its loft door and lantern arm; the composter and the scrap chest stand in the dry under that
+  gable, and a turning aisle behind the bins holds the straw and a bone-meal chest. **Compost Yard II** leans a riddling
+  shed on the barn's east side: two more chests, a pile of fine compost, a potting bench of potted saplings and a bed of
+  ferns and lilies grown in the finished compost. Yards already standing keep their old drawing until refreshed.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range

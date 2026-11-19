@@ -73,7 +73,7 @@ def compost_front(b, x1, gate_x):
 
 
 def compost_yard():
-    """11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, a
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/compost_yard; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 8 x 10: an open timber shed on a mossy cobble plinth, two slatted compost bays under a dark oak roof, a
     composter and a chest under the eaves, a fenced yard with a gate, lamp posts and a flower bed."""
     b = Build(11, 8, 10)
     compost_shed(b, 1, 9)
@@ -91,7 +91,7 @@ def compost_yard():
 
 
 def compost_yard_2():
-    """15 x 8 x 10: a third bay (the shed runs on to the east) and a potting shed at that end — a door, a window with
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/compost_yard; this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 8 x 10: a third bay (the shed runs on to the east) and a potting shed at that end — a door, a window with
     a flower box, a workbench, pots and a second chest."""
     base = compost_yard()
     b = base.grow(15, 8, 10)

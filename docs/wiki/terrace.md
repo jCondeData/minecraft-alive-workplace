@@ -4,7 +4,7 @@ Milestone 49, item 49.6: the village's cheap way to many beds, several household
 with the rebuild kit (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/terrace.md`), a blind
 design, and a critic who scored old and new side by side, sent it back once and then said SHIP
 (`tools/blueprints/briefs/terrace_critic.md`).
-Roadmap items: 49.6, B281, B304, B640, B641, B925
+Roadmap items: 49.6, 49.10c, B281, B304, B640, B641, B925
 
 ## 1. What a player sees
 

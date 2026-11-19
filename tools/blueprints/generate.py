@@ -163,7 +163,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.10, the Quarry ("the Headframe", no basement) and the Sifting Shed (I-II, "the Tipple"): js/quarry and
            # js/sifting_shed (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then
            # modded_library.py quarry sifting_shed sifting_shed_2)
-           "quarry", "sifting_shed", "sifting_shed_2"}
+           "quarry", "sifting_shed", "sifting_shed_2",
+           # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
+           # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
+           "crushing_mill", "windmill"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------

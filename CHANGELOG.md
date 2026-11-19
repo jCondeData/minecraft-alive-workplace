@@ -42,6 +42,13 @@ asks for the steps, `latest.log` and any crash report).
   below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
   climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
   in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
+  House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
+  tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack
+  over the blast furnace and its chest (14 by 12, 18 tall). The Windmill is "the Stage Mill": a dark timber tower out of
+  a round brick base, a walkway stage round it on brackets, four long sails on a slate cap with a tail pole, and the
+  millstone, composter and chest on the round ground floor (15 by 14, 18 tall). Buildings already standing keep their
+  old drawing until refreshed.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range

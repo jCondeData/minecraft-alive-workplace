@@ -32,7 +32,8 @@
 //            of stairs on the step: the taper), the white curb band at y 10 the cap turns on.
 //   Cap      the boat cap, a 45-degree slate gable 5 wide along z from z 1 to z 10 (ridge y 13), its nose hooding the
 //            windmill bearing at (7, 11, 1). First drawing had it 7 wide over a fatter tower: it read squat, all cap.
-//   Sails    four common sails in a pinwheel on the hub at (7, 11, 0): sail-frame stocks 6 long, white cloth 2 wide.
+//   Sails    four common sails in a pinwheel on the hub at (7, 11, 0): sail-frame stocks 5 long, white cloth 2 wide to 4 out (the bare tip of
+//            the stock runs on past it; longer, the east sail's tip is out of the builder's reach).
 //   Tail     the tail beam out of the cap's back and its post down to the stage rim, where the miller winds the cap.
 
 export const SIZE = [15, 18, 14] // w, h, d (limit 20 x 18 x 27)
@@ -42,8 +43,8 @@ export const SIZE = [15, 18, 14] // w, h, d (limit 20 x 18 x 27)
 // Why: a dark smock is what makes white sails read from the street; the brick drum warms the foot; the white trim ties
 // the sails to the body.
 export const PALETTE = {
-  plinth: [['stone_bricks', 5], ['cobblestone', 3], ['andesite', 2], ['mossy_stone_bricks', 1]],
-  brick: [['bricks', 9], ['granite', 1], ['mud_bricks', 1]],
+  plinth: [['stone_bricks', 1]], // critic polish: the drum in bricks plus one stone, not seven
+  brick: [['bricks', 1]],
   boards: [['spruce_planks', 7], ['dark_oak_planks', 3]], // the tarred smock, weathered patchy (fairMix)
   smockStairs: 'spruce_stairs',
   deck: 'spruce_planks',
@@ -73,12 +74,12 @@ export const MASSES = {
 
 // The machine: the bearing in the cap's nose faces north (sails at z = 0); the windshaft runs back to a gearbox over the
 // tower's centre, the upright shaft drops through both floors to a foot gearbox in the meal floor, and a shaft runs
-// two blocks east under the floor boards to the gearbox that turns the millstone up over it. 64 sails: 8 RPM.
+// two blocks east under the floor boards to the gearbox that turns the millstone up over it. 44 sails: 5 RPM.
 export const MACHINE = {
   hub: [7, 11, 0],
   bearing: [7, 11, 1], facing: 'north',
   head: [7, 11, 7], footY: 0, out: 'east', run: 2, // millstone at (9, 1, 7)
-  sails: { arm: 6, width: 2, gap: 1 },
+  sails: { arm: 5, width: 2, gap: 1, cloth: 4 }, // stocks 5, cloth to 4: the builder reaches every sail from the stage and the cap
 }
 
 export const ROOMS = [
@@ -125,10 +126,10 @@ export const WALK = [
   [7, 5, 5], [7, 5, 4], [7, 5, 3], [4, 5, 4], [3, 5, 7],
 ]
 
-// Outside: a lamp post by the door (off the sail plane), hay stacked against the drum's flanks, the tail pole.
+// Outside: a lamp post by the door (off the sail plane) and the tail pole (critic polish: no loose hay on the grass).
 export const OUTSIDE = {
   lampPost: [10, 0, 1],
-  hay: [[2, 0, 9], [2, 0, 10], [2, 1, 9], [12, 0, 5], [12, 0, 6]],
+  hay: [],
   tail: [[7, 10, 10, 'z'], [7, 10, 11, 'z'], [7, 10, 12, 'z'], [7, 9, 12, 'y'], [7, 8, 12, 'y'], [7, 7, 12, 'y'], [7, 6, 12, 'y'], [7, 5, 12, 'y']],
   tailBrace: [7, 9, 11],
 }

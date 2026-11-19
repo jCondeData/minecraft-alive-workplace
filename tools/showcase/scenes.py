@@ -1947,6 +1947,20 @@ SCENES = [
            ("02_outside_back", "From the back: the loft's frame proud of its pale boards over the stone-walled screen room"),
            ("03_outside_west", "From the west: the sieves hung drying on their rail under the loft's shuttered windows"),
            ("04_outside_east", "From the east: the gravel and sand heaps in their board bays under the lean-to")], furniture=True),
+    # ROADMAP 50.10: the Crushing Mill rebuilt from scratch (REBUILD.md), "the Fall House" (Create only)
+    S("rebuild_crushing_mill", "Build families", "The Crushing Mill, rebuilt: from four sides and at eye level inside",
+      "the Crushing Mill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Crushing Mill from the front: the stone hall's gable to the street, the timber-framed glazed bay showing the two crushing wheels"),
+           ("03_outside_west", "From the west: the long stone wall framed in dark oak posts, the tower's glass slot showing the falling water"),
+           ("04_outside_east", "From the east: the brick stack over the blast furnace rising past the hall's roof"),
+           ("10_room_1", "Inside at eye level: the crushing wheels over the drain, the belt feeding them, the blast furnace and its chest by the hearth")], furniture=True, create=True),
+    # ROADMAP 50.10: the Windmill rebuilt from scratch (REBUILD.md), "the Stage Mill" (Create only)
+    S("rebuild_windmill", "Build families", "The Windmill, rebuilt: from four sides and at eye level inside",
+      "the Windmill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and each floor gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Windmill from the front: four long white sails on the bearing in the cap's nose, the tarred smock over the brick drum"),
+           ("02_outside_back", "From the back: the tail pole raking down from the cap to the reefing stage"),
+           ("03_outside_west", "From the west: the stage on its brackets round the drum's top, the smock stepping in twice"),
+           ("10_room_1", "The meal floor at eye level: the millstone, the Farmer's composter and his store chest, sacks of grain")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

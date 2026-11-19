@@ -1485,9 +1485,9 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
-			// ROADMAP 50.5: the rebuilt Watermill is 17 wide, so the row (17 + 3 + 9 + 3 + 14) starts further west and the
-			// camera stands further back to take it all in
-			int x = -23;
+			// ROADMAP 50.5: the rebuilt Watermill is 17 wide, so the row starts further west and the camera stands further
+			// back to take it all in; 50.10: the rebuilt Windmill is 15 wide, so the row (17 + 3 + 15 + 3 + 15) starts at -27
+			int x = -27;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
 				BlockPos at = STATION.offset(x, 0, 4);
 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
@@ -1497,7 +1497,7 @@ final class JobScenes {
 				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
 				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
 				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(5, 3, 9) // ROADMAP 50.5: the rebuilt mill's millstone
-					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
+					: entry == StarterBlueprints.WINDMILL ? new BlockPos(9, 1, 7) : new BlockPos(4, 3, 2))); // 50.10: the rebuilt windmill's millstone
 				x += entry.size().getX() + 3;
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));

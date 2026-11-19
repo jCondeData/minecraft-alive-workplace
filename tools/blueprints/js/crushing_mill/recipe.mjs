@@ -31,6 +31,8 @@ export function draw() {
     for (let z = H.z0; z <= H.z1; z++) { c.set(H.x0, y, z, stone); c.set(H.x1, y, z, stone) }
   }
   quoins(c, [[H.x0, H.z0], [H.x1, H.z0], [H.x0, H.z1], [H.x1, H.z1]], 1, H.wallTop, P.dressed)
+  // critic polish: dark oak posts framing the long west wall's two windows, up to the wall plate
+  for (const z of [2, 4, 5, 7]) for (let y = 1; y <= H.wallTop; y++) c.set(H.x0, y, z, P.frame, { axis: 'y' })
   // the dark oak wall plate round the top, the tie beams across the hall
   for (let x = H.x0; x <= H.x1; x++) for (const z of [H.z0, H.z1]) if (!inTower(x, z)) c.set(x, H.plateY, z, P.frame, { axis: 'x' })
   for (let z = H.z0 + 1; z < H.z1; z++) for (const x of [H.x0, H.x1]) if (!inStack(x, z)) c.set(x, H.plateY, z, P.frame, { axis: 'z' })

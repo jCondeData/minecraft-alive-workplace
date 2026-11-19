@@ -75,7 +75,7 @@ export function reefingStage(c, deck, y, { floor, fence, bracket }, { every = 2,
  *  the bearing behind the hub faces `facing`). Each arm is a `stock` spine `arm` long from the hub, with a `width`-wide
  *  `cloth` blade on its trailing side starting `gap` cells out (a sail-frame lattice edge where `lattice` is set: the
  *  outer row of each blade). The hub is `hub` (any movable block). Returns every sail cell (for sailPlaneCheck). */
-export function commonSails(c, [hx, hy, hz], facing, { arm = 6, width = 2, gap = 1, lattice = false }, { stock, cloth, hub, hubProps = {} }) {
+export function commonSails(c, [hx, hy, hz], facing, { arm = 6, width = 2, gap = 1, lattice = false, cloth: clothTo = arm }, { stock, cloth, hub, hubProps = {} }) {
   if (facing !== 'north' && facing !== 'south') throw new Error('commonSails: north or south bearings only')
   const props = { facing, waterlogged: 'false' }
   c.set(hx, hy, hz, hub, hubProps)
@@ -83,7 +83,8 @@ export function commonSails(c, [hx, hy, hz], facing, { arm = 6, width = 2, gap =
   // the up arm in (u, v) = (x, y) offsets, then turned a quarter at a time: (u, v) -> (v, -u)
   const up = []
   for (let v = 1; v <= arm; v++) up.push([0, v, stock])
-  for (let v = gap + 1; v <= arm; v++) for (let u = 1; u <= width; u++) up.push([u, v, lattice && u === width ? stock : cloth])
+  for (let v = gap + 1; v <= clothTo; v++) for (let u = 1; u <= width; u++)  // clothTo < arm: the stock's bare tip runs on past the cloth
+    up.push([u, v, lattice && u === width ? stock : cloth])
   let shape = up
   for (let q = 0; q < 4; q++) {
     for (const [u, v, id] of shape) { c.set(hx + u, hy + v, hz, id, props); cells.push([hx + u, hy + v, hz]) }

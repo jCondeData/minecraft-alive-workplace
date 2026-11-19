@@ -610,11 +610,12 @@ public final class StarterBlueprints {
 
 	/**
 	 * The Create-powered builds (ROADMAP 39.4; tools/blueprints/create_builds.py): the Watermill (a water wheel turning a
-	 * millstone), the Windmill (a windmill bearing with 24 sails over a millstone) and the Workshop (a water wheel driving
+	 * millstone), the Windmill (rebuilt in ROADMAP 50.10, tools/blueprints/js/windmill: a windmill bearing with four long sails over a
+	 * millstone) and the Workshop (a water wheel driving
 	 * a belt to a depot under a mechanical press). Workplaces for 39.3's machine work.
 	 */
 	public static final Entry WATERMILL = new Entry(AliveWorkplace.id("watermill"), new Vec3i(17, 16, 17)); // ROADMAP 50.5: rebuilt
-	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(9, 17, 9));
+	public static final Entry WINDMILL = new Entry(AliveWorkplace.id("windmill"), new Vec3i(15, 18, 14)); // ROADMAP 50.10: rebuilt, "the Stage Mill"
 	/**
 	 * The Workshop, rebuilt from scratch in ROADMAP 50.7 (tools/blueprints/js/workshop): "the head-tank works", a timber
 	 * plate shop with a water tower whose head tank pours onto the wheel, a glazed press gable over the press and the
@@ -626,12 +627,12 @@ public final class StarterBlueprints {
 	/**
 	 * More Create builds (ROADMAP 39.8; tools/blueprints/create_builds.py): the Brass Foundry (a water wheel geared up to
 	 * 32 RPM turning a mechanical mixer over a basin and a blaze burner, a belt out to a depot), the Sawmill (a water
-	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (a water wheel turning a pair of
-	 * crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
+	 * wheel driving a belt through two mechanical saws to a depot) and the Crushing Mill (rebuilt in ROADMAP 50.10, tools/blueprints/js/crushing_mill: a fall tower's water
+	 * wheel turning a pair of crushing wheels the opposite ways, a belt over the gap, a pit and an item drain under it).
 	 */
 	public static final Entry BRASS_FOUNDRY = new Entry(AliveWorkplace.id("brass_foundry"), new Vec3i(19, 21, 16));
 	public static final Entry SAWMILL = new Entry(AliveWorkplace.id("sawmill"), new Vec3i(15, 11, 14));
-	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 12, 11));
+	public static final Entry CRUSHING_MILL = new Entry(AliveWorkplace.id("crushing_mill"), new Vec3i(14, 18, 12)); // ROADMAP 50.10: rebuilt, "the Fall House"
 	/**
 	 * The Greenhouse (the Leat House, rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/greenhouse: a ridge-and-furrow
 	 * glasshouse whose leat turns an undershot wheel, its belt running along the west wall under the harvester and the plough

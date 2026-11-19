@@ -91,7 +91,7 @@ export function drawLevel(level) {
   // its dark verge (a full tile under every stair) and the gable and its rake read as one slope
   const S = T.spire
   // round 3: a needle spire on the tower's walls: eaves at y 12 (two out from the middle), a second ring at y 14, a one-
-  // block shaft to y 15, a lightning rod finial at y 16, each ring a full course over the one below (steep, no 2x2 top)
+  // block shaft to y 15, an end rod finial at y 16, each ring a full course over the one below (steep, no 2x2 top)
   const ringAt = (r, y) => {
     for (let dx = -r; dx <= r; dx++) for (let dz = -r; dz <= r; dz++) {
       const x = S.cx + dx, z = S.cz + dz
@@ -102,7 +102,7 @@ export function drawLevel(level) {
   ringAt(2, S.y0); ringAt(1, S.y0 + 2)
   // where the hall's slope meets the tower's sides one course over its eave, a tile closes the corner
   for (const x of [T.walls.x0 - 1, T.walls.x1 + 1]) { const t = top(x, T.walls.z1); if (t && !c.get(x, t.y + 1, T.walls.z1)) c.set(x, t.y + 1, T.walls.z1, P.roof.full) }
-  c.set(S.cx, S.y0 + 4, S.cz, P.finial, { facing: 'up', powered: 'false', waterlogged: 'false' })
+  c.set(S.cx, S.y0 + 4, S.cz, P.finial, { facing: 'up' })
 
   // --- Pass 3: openings ----------------------------------------------------------------------------------------------
   const O = OPENINGS

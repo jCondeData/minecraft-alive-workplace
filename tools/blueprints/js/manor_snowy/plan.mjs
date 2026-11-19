@@ -76,7 +76,7 @@
 //          the wings and ballroom, y 6 on the hall; ridges 13, 11, 14), so each gable's white wall steps one block under
 //          one clean stair verge to a single ridge tile with snow on it; the gallery's lamps hang from the ridge on the
 //          shipped chains, the ballroom's from a tie under its ridge; 2 the spire a needle: a ring at y 12, a ring at y 14
-//          each over a full course, a 1x1 shaft to y 15, a lightning rod finial; 3 the snow lips stop a block short of
+//          each over a full course, a 1x1 shaft to y 15, an end rod finial; 3 the snow lips stop a block short of
 //          every gable, so no lip stands out beside a rake's foot; 4 the valleys are the 45-degree union's (as the taiga
 //          look's, which shipped). Only the true eave course takes a lip (at 45 degrees no tile stands under a tread).
 import {
@@ -99,7 +99,7 @@ export const PALETTE = {
   stack: [['stone_bricks', 5], ['cracked_stone_bricks', 1]],
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
   // round 2: the tower's spire in verdigris copper (waxed: it keeps its colour), so it reads against the slate behind it
-  finial: 'lightning_rod',
+  finial: 'end_rod', // 49.10f: not a lightning rod, whose POI counts as a job block
   spire: { full: 'waxed_oxidized_cut_copper', stairs: 'waxed_oxidized_cut_copper_stairs', slab: 'waxed_oxidized_cut_copper_slab' },
   snow: 'snow',
   door: 'dark_oak', joinery: 'dark_oak', shutter: 'spruce', collar: 'stripped_spruce_log',

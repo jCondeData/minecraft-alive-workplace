@@ -13,9 +13,9 @@ related: jobs-land.md, compost-yard-build.md, apiary-garden-build.md
 
 The glasshouse florist: the shop is a glasshouse. A tall glazed gable faces the street on a low brick wall, with
 green copper glazing bars and a copper ridge; inside, one aisle runs from the front door to the composter between two
-raised beds of tall flowers, with shelves of potted flowers, hanging pots and lanterns. A brick parlour with the counter
+raised beds of tall flowers, with shelves of potted flowers, hanging pots and lanterns. A brick parlor with the counter
 and a chest stands against the front corner, the stove that keeps the glass warm sends its chimney up the brick back
-wall, and a fenced cutting yard with a little pond lies behind the parlour.
+wall, and a fenced cutting yard with a little pond lies behind the parlor.
 
 ## Getting the blueprint
 

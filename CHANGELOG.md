@@ -28,7 +28,7 @@ asks for the steps, `latest.log` and any crash report).
   storeroom with a back door. Builds already standing keep their old drawing until refreshed.
 - **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
   wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
-  to her composter, shelves and hanging pots of flowers, a brick parlour with the counter, a chimney from the stove that
+  to her composter, shelves and hanging pots of flowers, a brick parlor with the counter, a chimney from the stove that
   warms the glass, and a fenced cutting yard with a pond. The **Flower Shop II** adds a second glass range across the
   yard and a glazed lantern on the ridge. Shops already standing keep their old drawing until refreshed; village flower
   shops keep their look.
@@ -2378,7 +2378,7 @@ asks for the steps, `latest.log` and any crash report).
   blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
   rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
   the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
-  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  of its lintel, since the grand stair starts right inside; the parlor rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
@@ -3110,7 +3110,7 @@ asks for the steps, `latest.log` and any crash report).
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
 - **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
-  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlor, two
   bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
   walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
   where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward

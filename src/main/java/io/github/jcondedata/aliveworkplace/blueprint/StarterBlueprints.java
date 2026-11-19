@@ -300,7 +300,7 @@ public final class StarterBlueprints {
 	public static final Entry APIARY_GARDEN = new Entry(AliveWorkplace.id("apiary_garden"), new Vec3i(13, 9, 13)); // ROADMAP 50.9: rebuilt
 	/** Level II: the colony swarms: a daughter skep at the east end with more smoked hives, and a meadow under a cherry. */
 	public static final Entry APIARY_GARDEN_2 = new Entry(AliveWorkplace.id("apiary_garden_2"), new Vec3i(17, 9, 13)); // ROADMAP 50.9: rebuilt
-	/** The glasshouse florist: a glazed gable on a brick dwarf wall, her beds either side of the aisle to the composter, a brick parlour with the counter and a fenced cutting yard (rebuilt 50.11). */
+	/** The glasshouse florist: a glazed gable on a brick dwarf wall, her beds either side of the aisle to the composter, a brick parlor with the counter and a fenced cutting yard (rebuilt 50.11). */
 	public static final Entry FLOWER_SHOP = new Entry(AliveWorkplace.id("flower_shop"), new Vec3i(13, 12, 13));
 	/** A second, lower glass range across the yard and a glazed lantern on the big ridge. */
 	public static final Entry FLOWER_SHOP_2 = new Entry(AliveWorkplace.id("flower_shop_2"), new Vec3i(17, 12, 15));
@@ -315,7 +315,7 @@ public final class StarterBlueprints {
 	 * chamber upstairs.
 	 */
 	public static final Entry STONE_HOUSE = new Entry(AliveWorkplace.id("stone_house"), new Vec3i(11, 16, 11));
-	/** A lower parlour wing on the east gable with a third bed. */
+	/** A lower parlor wing on the east gable with a third bed. */
 	public static final Entry STONE_HOUSE_2 = new Entry(AliveWorkplace.id("stone_house_2"), new Vec3i(13, 16, 11));
 	/** The back roof carried down over a rear room with two more beds. */
 	public static final Entry STONE_HOUSE_3 = new Entry(AliveWorkplace.id("stone_house_3"), new Vec3i(13, 16, 14));
@@ -353,7 +353,7 @@ public final class StarterBlueprints {
 	/** Townhouse III with a vaulted cellar of casks under the shop, down a ladder (26.15). */
 	public static final Entry TOWNHOUSE_4 = new Entry(AliveWorkplace.id("townhouse_4"), new Vec3i(19, 26, 19), 4);
 	/** The Noble's Manor (34.16, a grade III home: {@code homes/manor.json}; rebuilt in 49.7): a brick hall under a porch tower, a
-	 *  crow-gabled west wing of parlour, kitchen and two chambers, a grand stair to the Long Gallery. */
+	 *  crow-gabled west wing of parlor, kitchen and two chambers, a grand stair to the Long Gallery. */
 	public static final Entry MANOR = new Entry(AliveWorkplace.id("manor"), new Vec3i(21, 18, 17));
 	/** A walled formal garden behind: four box-edged knots round a lamp, clipped yews and a bench (3 beauty for the people who live there). */
 	public static final Entry MANOR_2 = new Entry(AliveWorkplace.id("manor_2"), new Vec3i(21, 18, 25));

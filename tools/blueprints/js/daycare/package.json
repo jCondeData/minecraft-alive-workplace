@@ -1,0 +1,11 @@
+{
+  "name": "daycare",
+  "private": true,
+  "type": "module",
+  "description": "The Daycare (daycare, daycare_2), the Clutch: rebuilt blind for ROADMAP 49 (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. build.sh writes both levels as candidates; LEVEL=1|2 picks one.",
+  "scripts": {
+    "build": "./build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/daycare.nbt"
+  }
+}

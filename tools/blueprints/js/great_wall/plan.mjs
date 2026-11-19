@@ -37,7 +37,13 @@
 //   Towers        four watchtowers at x 2, 20, 68, 86 (each x t..t+8, z 3..11), solid to y 8, a guard room y 10..12
 //                 the walk runs through, and the Crown: a lookout y 14..15 on stone piers, a breast wall and propped spruce shutters, a stone cornice at
 //                 y 16 and a spruce hip cap y 16..20 with a lightning rod; the signal fire in the middle.
-//   Walk          floor y 9 between a plain inner parapet (z 4, y 10) and the field parapet (z 10, y 10) with merlons
+//   Round 2 (critic BACK): buttresses (field) and pilasters (village) on the runs at x 13, 17, 31, 35, 61, 65, 79, 83
+//                 (no pilaster at the landings 35, 61), a drip course at y 7 on both faces, the field parapet carried
+//                 out to z 11 on corbels; lantern posts on the walk, both flights, the landings, the passage and the
+//                 barbican yard; three-light windows and tall loops on sills in every guard room; the gate hall
+//                 furnished (table with chairs and benches, windlass, stores, anvil); the broken ends lose their pale
+//                 stair step and the end towers' drip course runs round their open side.
+//   Walk          floor y 9 between a plain inner parapet (z 4, y 10) and the field parapet (z 11 on corbels, y 10) with merlons
 //                 (y 11) on every other cell; spouts under the village edge.
 export const SIZE = [97, 26, 27] // w, h, d
 export const STAGES = { gate: 1, west: 2, east: 3, walk: 4 }
@@ -63,6 +69,9 @@ export const PALETTE = {
   beam: 'stripped_spruce_log',
   boards: 'spruce_planks',
   roof: { stairs: 'spruce_stairs', full: 'spruce_planks', slab: 'spruce_slab' },
+  // the Gate Pavilion's two roofs: dark tile over the timber hall, so the hero roof reads apart from its own walls and
+  // the towers' timber caps, and ties back to the dark foot (polish pass, 52.6)
+  tile: { stairs: 'deepslate_tile_stairs', full: 'deepslate_tiles', slab: 'deepslate_tile_slab' },
   rail: 'spruce_fence',
   shutter: 'spruce_trapdoor',
   innerGate: 'spruce_fence_gate',
@@ -103,7 +112,7 @@ export const ROOMS = [
   { name: 'Barbican court', use: 'the killing ground between the gates', box: [42, 1, 15, 54, 6, 22] },
   { name: 'Gate hall', use: 'the pavilion\'s lower hall: the captain\'s table, the walk passing through', box: [42, 10, 5, 54, 14, 11] },
   { name: 'Lantern room', use: 'the upper room: windows all round over both fields', box: [43, 16, 6, 53, 19, 10] },
-  ...TOWERS.map((t, i) => ({ name: `Guard room ${i + 1}`, use: 'a grindstone, the walk through, a ladder to the crown', box: [t + 1, 10, 4, t + 7, 12, 10] })),
+  ...TOWERS.map((t, i) => ({ name: `Guard room ${i + 1}`, use: 'a grindstone, a barrel, a table and a chair by the loops, the walk through, a ladder to the crown', box: [t + 1, 10, 4, t + 7, 12, 10] })),
   ...TOWERS.map((t, i) => ({ name: `Crown ${i + 1}`, use: 'the lookout and its signal fire', box: [t + 1, 14, 4, t + 7, 15, 10] })),
 ]
 
@@ -113,6 +122,10 @@ export const FURNITURE = [
   ...TOWERS.map(t => ({ kind: 'ladder', cells: [[t + 6, 10, 4], [t + 6, 13, 4]], facing: 'south' })),
   ...TOWERS.map(t => ({ kind: 'campfire', cells: [[t + 4, 14, 7]], facing: 'south' })),
   ...TOWERS.map(t => ({ kind: 'lantern', cells: [[t + 4, 12, 9]], hanging: true })),
+  ...TOWERS.map(t => ({ kind: 'barrel', cells: [[t + 1, 10, 10]], facing: 'up' })),
+  ...TOWERS.map(t => ({ kind: 'table', cells: [[t + 6, 10, 10], [t + 7, 10, 10]] })),
+  ...TOWERS.map(t => ({ kind: 'chair', cells: [[t + 6, 10, 9]], facing: 'north' })),
+  ...TOWERS.map(t => ({ kind: 'candle', cells: [[t + 7, 10, 10]] })),
   { kind: 'table', cells: [[46, 10, 10], [47, 10, 10], [48, 10, 10], [49, 10, 10], [50, 10, 10]], facing: 'north' },
   { kind: 'bench', cells: [[46, 10, 11], [47, 10, 11], [48, 10, 11], [49, 10, 11], [50, 10, 11]], facing: 'south' },
   { kind: 'ladder', cells: [[54, 10, 11], [54, 15, 11]], facing: 'west' },

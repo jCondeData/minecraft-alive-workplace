@@ -1,0 +1,11 @@
+{
+  "name": "ball-workshop",
+  "private": true,
+  "type": "module",
+  "description": "The Ball Workshop (50.12): the Drying Loft, rebuilt from its brief (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic passes it, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py ball_workshop ball_workshop --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/ball-workshop.nbt"
+  }
+}

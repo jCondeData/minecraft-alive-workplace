@@ -34,6 +34,15 @@ asks for the steps, `latest.log` and any crash report).
   mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
   furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
+  Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
+  the composter and the harvest chest under its porch; Level II roofs the whole garden in a lattice hung with glow
+  berries and opens a second bed cloister behind the lodge. The Apiary Garden is now "the Skep Wall": a stone wall of
+  bee boles, each a hive over a smoking campfire, round a great straw skep that holds the honey, and a bee garden round
+  a stone font; at Level II a daughter skep settles at the east end with more smoked hives, and a meadow opens under a
+  cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
+  undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
+  wall. Buildings already standing keep the drawing they were built from until you refresh them.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
@@ -53,6 +62,8 @@ asks for the steps, `latest.log` and any crash report).
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
 ### Fixed
+- A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
+  after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
 - **The Terrace in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of both
@@ -62,6 +73,11 @@ asks for the steps, `latest.log` and any crash report).
   keep the Crow-Step Row (49.10c).
 - **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
   looks count as one (49.10b).
+
+### Dev
+- The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
+  Palisade's mud and oak are in their chests (its first segment waited for them every night since 52.3), and a new
+  GameTest has the Steward's palisade go up whole and its gate shut at night (B1400).
 
 ## 0.157.0 — 2026-11-18
 

@@ -350,6 +350,84 @@ public class WallGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B1400: the Steward's palisade, with the drawings as they are now, goes up whole (towers, segments and the gate on
+	 * the road) from benches stocked with what those drawings are made of, and at night the guards shut its gate. The
+	 * walls scene stocked the old palisade's blocks after the 52.3 rebuild, so its first segment waited for ever.
+	 */
+	//$ gametest_ticks_batch AREA '12000' '"wallPalisadeBuilt"'
+	@GameTest(template = AREA, timeoutTicks = 12000, batch = "wallPalisadeBuilt")
+	public void theStewardsPalisadeGoesUpWholeAndItsGateShutsAtNight(GameTestHelper helper) {
+		helper.setDayTime(1000); // builders rest at night (B259)
+		ServerLevel level = helper.getLevel();
+		Village v = village(helper, new BlockPos(14, 2, 14));
+		// an open line 9 north of the hall, a road (not to be built) crossing it 4 west: tower, gate, two segments, tower
+		CityPlan.Road road = new CityPlan.Road(List.of(p(-4, -3), p(-4, -13)), CityPlan.Road.STREET, "", false);
+		v.entity().setPlan(CityPlan.EMPTY.addRoad(road)
+			.withWall(new CityPlan.Wall(List.of(p(-9, -9), p(9, -9)), false).approvedWith("palisade")));
+		boolean was = Walls.ENABLED;
+		Walls.ENABLED = true;
+		List<Walls.Piece> pieces = Walls.pieces(level, v.hall());
+		helper.assertTrue(pieces.stream().filter(p -> p.kind() == Walls.Kind.GATE).count() == 1
+			&& pieces.stream().anyMatch(p -> p.kind() == Walls.Kind.SEGMENT)
+			&& pieces.stream().anyMatch(p -> p.kind() == Walls.Kind.TOWER), "setup: the line's pieces are " + pieces.stream().map(p -> p.kind().name()).toList());
+		// every bench's chest holds what the line's drawings are made of (each chest the whole line's, a quarter over)
+		java.util.Map<net.minecraft.world.item.Item, Integer> need = new java.util.LinkedHashMap<>();
+		for (Walls.Piece piece : pieces) {
+			for (Blueprint.Entry e : BlueprintLibrary.get(level, piece.blueprint()).orElseThrow().blocks()) {
+				net.minecraft.world.item.Item item = e.state().getBlock().asItem();
+				if (!e.state().isAir() && item != Items.AIR) {
+					need.merge(item, 1, Integer::sum);
+				}
+			}
+		}
+		need.merge(Items.DIRT, 64, Integer::sum);
+		List<BlockPos> tables = List.of(new BlockPos(10, 2, 14), new BlockPos(10, 2, 20), new BlockPos(18, 2, 20));
+		for (int i = 0; i < tables.size(); i++) {
+			if (i > 0) {
+				helper.setBlock(tables.get(i), ModBlocks.BLUEPRINT_TABLE);
+				Villager b = helper.spawn(EntityType.VILLAGER, tables.get(i).east());
+				Builders.employ(level, b, helper.absolutePos(tables.get(i)));
+			}
+			helper.setBlock(tables.get(i).west(), Blocks.CHEST);
+			Container chest = helper.getBlockEntity(tables.get(i).west());
+			chest.clearContent();
+			int slot = 0;
+			for (var n : need.entrySet()) {
+				for (int left = n.getValue() * 5 / 4 + 1; left > 0 && slot < chest.getContainerSize(); left -= 64) {
+					chest.setItem(slot++, new ItemStack(n.getKey(), Math.min(64, left)));
+				}
+			}
+			helper.assertTrue(slot < chest.getContainerSize(), "setup: the line's materials fill more than a chest");
+		}
+		Walls.Piece gate = pieces.stream().filter(p -> p.kind() == Walls.Kind.GATE).findFirst().orElseThrow();
+		helper.onEachTick(() -> {
+			if (helper.getTick() % 200 == 0 && level.getDayTime() % 24000 > 11000) {
+				level.setDayTime(1000); // keep it day while they build: the night comes at the end
+			}
+		});
+		helper.succeedWhen(() -> {
+			List<Walls.Piece> now = Walls.pieces(level, v.hall());
+			long standing = now.stream().filter(p -> Walls.stands(level, p)).count();
+			helper.assertTrue(standing == now.size(), standing + " of " + now.size() + " palisade pieces stand; open: "
+				+ Walls.openSites(level, v.hall()).stream().map(s -> s.structure().getPath() + " missing " + s.missing()).toList());
+			level.setDayTime(18000); // midnight: the guards shut the gate
+			io.github.jcondedata.aliveworkplace.guard.Gates.round(level, v.hall(), 1);
+			int gates = 0;
+			for (BlockPos at : BlockPos.betweenClosed(gate.box().minX(), gate.box().minY(), gate.box().minZ(),
+				gate.box().maxX(), gate.box().maxY(), gate.box().maxZ())) {
+				var state = level.getBlockState(at);
+				if (state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock) {
+					gates++;
+					helper.assertTrue(!state.getValue(net.minecraft.world.level.block.FenceGateBlock.OPEN), "the palisade's gate at "
+						+ at.toShortString() + " stands open at midnight");
+				}
+			}
+			helper.assertTrue(gates > 0, "the Palisade Gate has no gate in it");
+			Walls.ENABLED = was;
+		});
+	}
+
 	/** A builder really builds the new Palisade Tower, from his chest, and it stands where the wall wants it. */
 	//$ gametest_ticks_batch AREA '4000' '"wallTowerBuilt"'
 	@GameTest(template = AREA, timeoutTicks = 4000, batch = "wallTowerBuilt")

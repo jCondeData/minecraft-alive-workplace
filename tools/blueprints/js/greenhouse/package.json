@@ -1,0 +1,10 @@
+{
+  "name": "greenhouse",
+  "private": true,
+  "type": "module",
+  "description": "The Greenhouse (the Leat House), drawn from scratch for ROADMAP 49/50.9 (tools/blueprints/briefs/greenhouse.md, REBUILD.md): a candidate for the critic. build.sh builds and saves it. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

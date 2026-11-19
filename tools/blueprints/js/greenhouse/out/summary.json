@@ -1,0 +1,19 @@
+{
+  "name": "greenhouse",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 9
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/greenhouse/out/greenhouse.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/greenhouse/out/summary.json",
+  "size": [
+    18,
+    13,
+    14
+  ],
+  "blockCount": 650,
+  "paletteCount": 60,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/greenhouse/recipe.mjs"
+}

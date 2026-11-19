@@ -1,0 +1,19 @@
+{
+  "name": "sifting-shed-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 29
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sifting_shed/out/sifting-shed-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sifting_shed/out/summary.json",
+  "size": [
+    10,
+    15,
+    14
+  ],
+  "blockCount": 571,
+  "paletteCount": 47,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sifting_shed/recipe.mjs"
+}

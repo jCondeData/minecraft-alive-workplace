@@ -1,0 +1,10 @@
+{
+  "name": "quarry",
+  "private": true,
+  "type": "module",
+  "description": "The Quarry (49, rebuilt from scratch): a headframe over the pit and a hoist-and-smelt house. MC_BUILDER = the minecraft-builder skill's folder. Until the critic passes it, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py quarry quarry --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

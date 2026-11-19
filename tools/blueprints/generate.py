@@ -166,7 +166,17 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "supply_shop", "supply_shop_2", "supply_shop_3", "supply_shop_4",
            # 50.11, the Market Stall (I-III, "the shop board"): js/market_stall (MC_BUILDER=..., sh build.sh writes the
            # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py market_stall market_stall_2 market_stall_3)
-           "market_stall", "market_stall_2", "market_stall_3"}
+           "market_stall", "market_stall_2", "market_stall_3",
+           # 50.9, the Compost Yard (I-II, "the Bin Barn"): js/compost_yard (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py compost_yard compost_yard_2)
+           "compost_yard", "compost_yard_2",
+           # 50.10, the Quarry ("the Headframe", no basement) and the Sifting Shed (I-II, "the Tipple"): js/quarry and
+           # js/sifting_shed (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then
+           # modded_library.py quarry sifting_shed sifting_shed_2)
+           "quarry", "sifting_shed", "sifting_shed_2",
+           # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
+           # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
+           "crushing_mill", "windmill"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -353,7 +363,8 @@ if __name__ == "__main__":
                        ("jewellers_workshop_2", jewellers_workshop_2)):
         if name not in REBUILT:  # ROADMAP 50.6 and 50.7: the Print Shop and the Jeweler's Workshop come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 34.14
-    quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
+    if "quarry" not in REBUILT:  # ROADMAP 50.10: the Quarry comes from the rebuild kit; quarry.quarry is the old drawing
+        quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     # ROADMAP 37.14 crafters_workshop and 46.6 glassblowers_workshop come from the rebuild kit since 50.7 (REBUILT);
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
@@ -370,10 +381,15 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 52.4: nether_gate and nether_gate_2 come from the rebuild kit (js/nether_gate)
     # ROADMAP 51.6: the Chapel comes from the rebuild kit (REBUILT); chapel() is the old drawing, kept in blueprint_history/
-    compost_yard().save(MAIN_STRUCTURES, "compost_yard")
-    compost_yard_2().save(MAIN_STRUCTURES, "compost_yard_2")
-    sifting_shed().save(MAIN_STRUCTURES, "sifting_shed")
-    sifting_shed_2().save(MAIN_STRUCTURES, "sifting_shed_2")
+    # ROADMAP 50.9: the Compost Yard comes from the rebuild kit (REBUILT); yards.compost_yard* are the old drawings,
+    # kept in blueprint_history/
+    for name, draw in (("compost_yard", compost_yard), ("compost_yard_2", compost_yard_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
+    # ROADMAP 50.10: the Sifting Shed comes from the rebuild kit (REBUILT); sifting_shed* here are the old drawings
+    for name, draw in (("sifting_shed", sifting_shed), ("sifting_shed_2", sifting_shed_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     pokemon_center().save(MAIN_STRUCTURES, "pokemon_center")
     pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
     for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks

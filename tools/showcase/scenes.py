@@ -1946,6 +1946,42 @@ SCENES = [
            ("03_outside_west", "From the west: the leat in its stone trough and the undershot wheel under its little hood"),
            ("02_outside_back", "From the back: the brick boiler and its tall stack"),
            ("10_room_1", "Inside at eye level: the beds either side of the walk, the belt along the west wall under the harvester and the plough")], furniture=True, create=True),
+    # ROADMAP 50.9: the Compost Yard rebuilt from scratch (REBUILD.md), "the Bin Barn" (Level I filmed)
+    S("rebuild_compost_yard", "Build families", "The Compost Yard, rebuilt: from four sides",
+      "the Compost Yard's blueprint stands on a cleared lawn; it has no furniture spots and no rooms (the barn is three open bins and a turning aisle), so it is filmed from four sides",
+      40, [("01_outside_front", "The Compost Yard from the front: the straw-thatched barn's three bins, green to black, under the jettied hoist gable, the composter and the scrap chest in the dry beneath it"),
+           ("02_outside_back", "From the back: the turning aisle's lower roof under the barn's steep thatch, slatted vents in its wall"),
+           ("03_outside_west", "From the west: the aisle door with its lamp post, the hoist gable's ridge running back into the main ridge"),
+           ("04_outside_east", "From the east: the barn's gable end over its rubble plinth, the scrap heap of pumpkins, hay and melons in the yard")], furniture=True),
+    # ROADMAP 50.10: the Quarry rebuilt from scratch (REBUILD.md), "the Headframe" (one level, no basement)
+    S("rebuild_quarry", "Build families", "The Quarry, rebuilt: from four sides and at eye level inside",
+      "the Quarry's blueprint stands on a cleared lawn (its pit is the ground under it); every furniture spot holds its piece and the hoist house gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Quarry from the front: the tall dark oak headframe over the pit with its spoked sheave, the hoist house beside it with the brick stack through its ridge"),
+           ("02_outside_back", "From the back: the spoil heap behind the pit, ore showing in the rubble"),
+           ("03_outside_west", "From the west: the headframe's legs stepping in halfway up, the skip and a lantern hanging on chains over the pit"),
+           ("04_outside_east", "From the east: the hoist house's boarded gable and deepslate roof, the stack rising from the blast furnace"),
+           ("10_room_1", "Inside at eye level: the blast furnace under the stack, the drop-off chest by it, the lamps and the winch drum")], furniture=True),
+    # ROADMAP 50.10: the Sifting Shed rebuilt from scratch (REBUILD.md), "the Tipple" (Level I filmed)
+    S("rebuild_sifting_shed", "Build families", "The Sifting Shed, rebuilt: from four sides",
+      "the Sifting Shed's blueprint stands on a cleared lawn; it has no furniture spots (the cauldron and the chest are the job's own blocks), so it is filmed from four sides",
+      40, [("01_outside_front", "The Sifting Shed from the front: the timber loft on its legs under the steep slate gable, the hoist beam's lantern under the ridge, the door under its hood"),
+           ("02_outside_back", "From the back: the loft's frame proud of its pale boards over the stone-walled screen room"),
+           ("03_outside_west", "From the west: the sieves hung drying on their rail under the loft's shuttered windows"),
+           ("04_outside_east", "From the east: the gravel and sand heaps in their board bays under the lean-to")], furniture=True),
+    # ROADMAP 50.10: the Crushing Mill rebuilt from scratch (REBUILD.md), "the Fall House" (Create only)
+    S("rebuild_crushing_mill", "Build families", "The Crushing Mill, rebuilt: from four sides and at eye level inside",
+      "the Crushing Mill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and the hall gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Crushing Mill from the front: the stone hall's gable to the street, the timber-framed glazed bay showing the two crushing wheels"),
+           ("03_outside_west", "From the west: the long stone wall framed in dark oak posts, the tower's glass slot showing the falling water"),
+           ("04_outside_east", "From the east: the brick stack over the blast furnace rising past the hall's roof"),
+           ("10_room_1", "Inside at eye level: the crushing wheels over the drain, the belt feeding them, the blast furnace and its chest by the hearth")], furniture=True, create=True),
+    # ROADMAP 50.10: the Windmill rebuilt from scratch (REBUILD.md), "the Stage Mill" (Create only)
+    S("rebuild_windmill", "Build families", "The Windmill, rebuilt: from four sides and at eye level inside",
+      "the Windmill's blueprint stands on a cleared lawn with Create; every furniture spot holds its piece and each floor gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Windmill from the front: four long white sails on the bearing in the cap's nose, the tarred smock over the brick drum"),
+           ("02_outside_back", "From the back: the tail pole raking down from the cap to the reefing stage"),
+           ("03_outside_west", "From the west: the stage on its brackets round the drum's top, the smock stepping in twice"),
+           ("10_room_1", "The meal floor at eye level: the millstone, the Farmer's composter and his store chest, sacks of grain")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

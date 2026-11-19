@@ -51,6 +51,29 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Compost Yard is rebuilt from scratch** (50.9) as "the Bin Barn": a steep straw-thatched barn on a rubble plinth
+  whose front opens on the yard as three bins, the heaps graded from fresh green through turning brown to ripe black, under
+  a jettied hoist gable with its loft door and lantern arm; the composter and the scrap chest stand in the dry under that
+  gable, and a turning aisle behind the bins holds the straw and a bone-meal chest. **Compost Yard II** leans a riddling
+  shed on the barn's east side: two more chests, a pile of fine compost, a potting bench of potted saplings and a bed of
+  ferns and lilies grown in the finished compost. Yards already standing keep their old drawing until refreshed.
+- **The Quarry is rebuilt from scratch** (50.10) as "the Headframe": a tall dark oak headframe over the pit, its legs
+  stepping in halfway up to a spoked sheave wheel, a skip and a lantern hanging on chains over the hole, the rail open
+  between its legs where the Miner steps down; beside it a stone hoist house under a deepslate roof, the brick stack
+  rising through its ridge from the blast furnace, with two double chests, lamps and the winch inside, and a spoil heap
+  behind the pit. It no longer has a basement (19 by 14, 17 tall); the pit and the furnace are where they always were.
+- **The Sifting Shed is rebuilt from scratch** (50.10) as "the Tipple": a timber hopper loft on dark oak legs over a
+  stone screen room, under a steep slate gable with a hoist beam, the gravel tipped through a chute into the cauldron
+  below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
+  climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
+  in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
+  House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
+  tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack
+  over the blast furnace and its chest (14 by 12, 18 tall). The Windmill is "the Stage Mill": a dark timber tower out of
+  a round brick base, a walkway stage round it on brackets, four long sails on a slate cap with a tail pole, and the
+  millstone, composter and chest on the round ground floor (15 by 14, 18 tall). Buildings already standing keep their
+  old drawing until refreshed.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range

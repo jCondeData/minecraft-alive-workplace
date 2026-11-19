@@ -144,6 +144,31 @@ public class QuarryBuildGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
+	/**
+	 * 50.10: the rebuilt Quarry has no basement, but the old drawing kept for Refresh (blueprint_history, 17 x 9 x 12 with
+	 * 5 under the ground) still comes out with that basement under the ground, its blast furnace on the cell the code
+	 * reads; today's drawing isn't moved.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void theOldQuarryDrawingKeepsItsBasementUnderTheGround(GameTestHelper helper) throws java.io.IOException {
+		helper.assertTrue(StarterBlueprints.QUARRY.basement() == 0 && !StarterBlueprints.WITH_BASEMENTS.contains(StarterBlueprints.QUARRY),
+			"the rebuilt Quarry is listed with a basement");
+		net.minecraft.resources.ResourceLocation file = io.github.jcondedata.aliveworkplace.AliveWorkplace.id("blueprint_history/quarry/v0.146.0.nbt");
+		CompoundTag tag;
+		try (java.io.InputStream in = helper.getLevel().getServer().getResourceManager().getResource(file).orElseThrow().open()) {
+			tag = net.minecraft.nbt.NbtIo.readCompressed(in, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+		}
+		Blueprint old = StarterBlueprints.withBasement(Blueprint.fromStructureNbt(QuarryBuilds.BLUEPRINT, tag,
+			io.github.jcondedata.aliveworkplace.mc.Lookup.lookup(BuiltInRegistries.BLOCK)));
+		helper.assertTrue(old.basement() == 5 && old.size().getY() == 9, "the old Quarry comes out " + old.size() + ", " + old.basement() + " under the ground");
+		helper.assertTrue(old.blocks().stream().anyMatch(e -> e.pos().equals(QuarryBuilds.FURNACE) && e.state().is(Blocks.BLAST_FURNACE)),
+			"the old Quarry's blast furnace isn't at " + QuarryBuilds.FURNACE);
+		Blueprint now = BlueprintLibrary.get(helper.getLevel(), QuarryBuilds.BLUEPRINT).orElseThrow();
+		helper.assertTrue(now.basement() == 0 && now.size().equals(StarterBlueprints.QUARRY.size()), "today's Quarry comes out " + now.size() + ", " + now.basement() + " under");
+		helper.succeed();
+	}
+
 	/** The Miner whose job block is the Quarry's blast furnace takes its pit by themselves, and mines it; nothing outside is touched. */
 	//$ gametest_ticks_batch HUGE_AREA '1600' '"quarry_build_mines"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 1600, batch = "quarry_build_mines")

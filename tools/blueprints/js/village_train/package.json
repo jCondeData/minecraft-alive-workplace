@@ -1,0 +1,6 @@
+{
+  "name": "village-train",
+  "private": true,
+  "type": "module",
+  "description": "The Village Train (Create only, 49/50.13): the Steam Tram. MC_BUILDER = the minecraft-builder skill folder; ./build.sh writes a candidate."
+}

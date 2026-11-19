@@ -22,11 +22,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 
 /**
- * QA (2026-11-17), a failing test for ROADMAP 37.10 (not registered: it fails on today's code). A player breaks a cable
- * in the middle of a Tom's network: the Storehouse at once lists the unplugged chest as its own store (its own walk of
- * the cables), but still reads the connector's item storage, which Tom's connector only rescans 5 to 20 ticks later. For
- * that window the unplugged chest's items count twice (46 planks of 23), against "each item counted once". The connector
- * broken outright is fine at once ({@code QaTomsNetworks1108cCompatTests#theConnectorBrokenByAPlayerFreesItsChests}).
+ * QA (2026-11-17), the test for B1358 (ROADMAP 37.10), fixed 2026-11-19. A player breaks a cable in the middle of a
+ * Tom's network: the Storehouse at once lists the unplugged chest as its own store (its own walk of the cables), but
+ * still reads the connector's item storage, which Tom's connector only rescans 5 to 20 ticks later. For that window the
+ * unplugged chest's items counted twice (46 planks of 23), against "each item counted once"; the counts now read a slot
+ * once when two stores of the list show it ({@code FabricItemStores}). The connector broken outright is fine at once
+ * ({@code QaTomsNetworks1108cCompatTests#theConnectorBrokenByAPlayerFreesItsChests}).
  */
 public class QaTomsCables1117cBugCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;

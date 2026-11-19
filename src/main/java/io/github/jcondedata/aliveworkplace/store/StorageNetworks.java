@@ -280,7 +280,9 @@ public final class StorageNetworks {
 	/**
 	 * The inventories the network head at {@code head} stands for (empty when it isn't one): for a Tom's inventory
 	 * connector, the inventories it joins. Found again on every call (nothing saved), so a chest unplugged from the
-	 * network is its own store again at once.
+	 * network is its own store again at once. Tom's connector itself looks again only every 20 ticks and shows that
+	 * chest until then; the counts read each slot once across a store list ({@code ItemStores}, B1358), so it isn't
+	 * counted twice meanwhile.
 	 */
 	public static Set<BlockPos> members(ServerLevel level, BlockPos head) {
 		if (!isTomsConnector(level.getBlockState(head))) {

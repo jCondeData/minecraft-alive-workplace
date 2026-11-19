@@ -621,6 +621,63 @@ public class WonderDrawingsGameTests implements FabricGameTest {
 	private static final int OLD_GARDENS_COUNT = 16233, NEW_GARDENS_COUNT = 15594;
 
 	/**
+	 * 52.6 shipped the rebuilt Great Wall ("the Pass Gate"): one begun with the 35.15 drawing (the key its file named until
+	 * then) is still counted, repaired and continued by that drawing, read from the shipped history. Finished, it is counted
+	 * against the old drawing's blocks, not today's; half-built at stage 2, its next stage is the old stage 2 part (the old
+	 * west run) at its old offset, its blocks as the old part had them; a Wall recorded with today's key goes by today's.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"wonderDrawingsWall"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "wonderDrawingsWall")
+	public void aGreatWallOfThe3515DrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ResourceLocation wall = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_wall");
+		String old = "drawn_f59e145e6"; // the 35.15 drawing (with its later fixes), the one standing on servers before 52.6
+		Wonder today = Wonders.loaded().get(wall);
+		helper.assertTrue(today != null, "the Great Wall isn't loaded: " + Wonders.problems());
+		helper.assertTrue(!Wonders.drawing(wall).equals(old), "the Great Wall's file still names the 35.15 drawing");
+		helper.assertTrue(WonderDrawings.olderKeys(level.getServer(), wall).contains(old), "the 35.15 drawing isn't in the history: "
+			+ WonderDrawings.olderKeys(level.getServer(), wall));
+		List<Wonder.Stage> oldStages = WonderDrawings.stages(level.getServer(), wall, old).orElseThrow();
+		List<BlockPos> offsets = oldStages.stream().map(st -> st.parts().get(0).offset()).toList();
+		helper.assertTrue(oldStages.size() == 4 && offsets.equals(List.of(BlockPos.ZERO, BlockPos.ZERO, new BlockPos(57, 0, 0), new BlockPos(1, 9, 2))),
+			"the 35.15 drawing's stages: " + oldStages.size() + " at " + offsets);
+
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), helper.absolutePos(new BlockPos(1, 2, 1)), Rotation.NONE, Mirror.NONE);
+		WonderSite finishedOld = new WonderSite(UUID.randomUUID(), wall, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		WonderSite finishedNew = new WonderSite(UUID.randomUUID(), wall, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE,
+			Optional.of(Wonders.drawing(wall)));
+		helper.assertTrue(WonderDrawings.older(level, finishedOld) && !WonderDrawings.older(level, finishedNew), "which drawing each goes by");
+		int oldCount = WonderUpkeep.blocks(level, finishedOld).size();
+		int newCount = WonderUpkeep.blocks(level, finishedNew).size();
+		// the counts WonderUpkeep keeps (structure and decoration steps; a few of each drawing's blocks are the plan's
+		// foundation or landscape steps, which the count leaves out for every Wonder)
+		helper.assertTrue(oldCount == OLD_WALL_COUNT && newCount == NEW_WALL_COUNT, "an old Great Wall is counted against " + oldCount
+			+ " blocks (the 35.15 drawing: " + OLD_WALL_COUNT + "), today's against " + newCount + " (" + NEW_WALL_COUNT + ")");
+		for (WonderUpkeep.Part part : WonderUpkeep.parts(level, finishedOld)) {
+			Optional<WonderDrawings.Older> o = WonderDrawings.parse(BlueprintStyles.base(part.structure()));
+			helper.assertTrue(o.isPresent() && o.get().key().equals(old), "an old Wall's part (repaired by it) is today's: " + part.structure());
+		}
+
+		WonderSite halfOld = new WonderSite(UUID.randomUUID(), wall, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 2, 1L,
+			Optional.empty(), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, false, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		Wonder.Part next = WonderDrawings.of(level, halfOld).stages().get(1).parts().get(0);
+		ResourceLocation todaysPart = today.stages().get(1).parts().get(0).part();
+		helper.assertTrue(next.part().equals(WonderDrawings.olderId(todaysPart, old)) && next.offset().equals(BlockPos.ZERO),
+			"a half-built old Wall's stage 2 is " + next);
+		helper.assertTrue(!today.stages().get(1).parts().get(0).offset().equals(next.offset()), "today's stage 2 part stands where the old one did");
+		Optional<Blueprint> oldPart = BlueprintLibrary.get(level, next.part());
+		Optional<Blueprint> newPart = BlueprintLibrary.get(level, todaysPart);
+		helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty() && newPart.isPresent()
+			&& !new HashSet<>(oldPart.get().blocks()).equals(new HashSet<>(newPart.get().blocks())), "the old stage 2 part didn't load as the old one");
+		helper.succeed();
+	}
+
+	/** The block counts {@link #aGreatWallOfThe3515DrawingKeepsItsOldStages} pins (WonderUpkeep's, of the 35.15 and 52.6 drawings). */
+	private static final int OLD_WALL_COUNT = 12327, NEW_WALL_COUNT = 13285;
+
+	/**
 	 * The record is saved: a site and the whole manager written and read back keep it; a site saved before it reads with
 	 * none (and everything else as it was); a record naming a drawing that isn't shipped goes by today's; an older
 	 * drawing's part is read from the history under its own id, and today's parts as before.

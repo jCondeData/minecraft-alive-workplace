@@ -396,26 +396,29 @@ Its search and the chart itself are built (`wonder/SkyChart`): one region of one
 the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map button hands it over
 (35.18).
 
-**The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
-facing out: its stairs are on your side), about 12,300 blocks. A curtain 7 thick and 12 high on a battered plinth of
-deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
-five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbeled out over the
-field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
-9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters. Since 35.15a each tower is solid
-stone from the ground to the walk, on a solid base a block wider all round (deepslate bricks under a battered step, the
-plinth stepping out round it again), with buttresses up its corners, a ledge of upside-down stairs round it at the walk
-with lanterns on its corners, a banner over a blind slit to the field and a lit niche under a keystone and a banner to
-the village. You enter a tower from the walk: a room at the walk (doors onto the walk, a guard's grindstone, and on the
-side facing the gate an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top
-room with windows on three sides, a banner to the field and a watch lantern on the roof's peak. Along the runs a banner
-hangs in every bay on the field side under an arrow slit, taller chiseled merlons stand over the buttresses, vines grow
-on the low courses, lanterns stand on the parapet between the braziers and on corbels on the village side. At the center the Great Gate, a gatehouse 17 wide and as high
-as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
-portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
-own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
-the gateway and at its corners, the towers' ledge at the walk, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
-landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
-Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
+**The Great Wall** (35.15, rebuilt from scratch in 52.6: "the Pass Gate") is a defense 97 long, placed like the other
+walls (stand in the village and place it facing out: its stairs are on your side), 26 high to the Gate Pavilion's
+roof and 27 deep with the barbican, about 13,300 blocks. The curtain runs (x 11-19, 29-38, 58-67, 77-85) stand on a dark
+foot of deepslate bricks 11 thick, battered in to 9 and then 7 of stone bricks (mossy, cracked, a little andesite), with
+dark buttresses on the field face and pilasters on the village face, a drip course on both faces, spouts under the
+village edge and ivy here and there; the walk on top (y 9) runs between a plain inner parapet with lantern posts and a
+field parapet corbeled out, merlons on every other cell. The wall's two ends are broken off, stepped down and mossed over:
+it goes on into the hills. Four watchtowers 9 by 9 at x 2, 20, 68 and 86, solid stone to the walk on a stepped plinth,
+with deepslate quoins and a blue banner to the village; the walk runs through each tower's guard room (a spruce door
+each way, a grindstone, a barrel, a slab table with a candle and a chair under the barred loops, a glazed window to the
+village, a ladder up) to the Crown, a lookout on stone piers with propped spruce shutters round a signal fire, under a
+stone cornice and a spruce hip cap with a lightning rod. At the center the Great Gate: a gatehouse (x 39-57) solid to
+the walk but for its passage 5 wide, shut by spruce fence gates two high under an iron portcullis; behind it on the
+field side the Barbican, a walled court with its own outer gate of dark oak fence gates; on top the Gate Pavilion, a
+two-story timber hall under flared roofs of deepslate tiles (the lower hall with the captain's table, benches, a
+windlass, stores and an anvil, the walk passing through it; the lantern room over it with windows all round). Two broad
+Horse Stairs of ten steps climb the village face either side of the gate to landings on the walk. Its stages: I *The
+Great Gate* (the site cleared, the gatehouse, barbican and pavilion), II *The West Run*, III *The East Run* (each run's
+curtain and its two towers to their guard rooms), IV *The Walk and the Towers' Crowns* (the walk and battlements, the
+crowns, their signal fires and caps). Every stage stands on its own and only adds to the ones before. A Great Wall begun
+before 52.6 keeps the 35.15 drawing (a cobblestone-faced curtain, towers with top rooms and the sentries' alcoves, a
+gatehouse under a long hipped roof): it is counted, repaired and finished from that drawing (`WonderDrawings`,
+`blueprint_history/wonder/great_wall/`); its sentries take today's posts, which fall on that drawing's open walk too. Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
 Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Emerald Brooches
 (Jeweler); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
 Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III a Wither Skeleton Skull (the Founder,
@@ -434,8 +437,9 @@ and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are of
   as ever. A siege's ladders never go up against it, and its Great Gate is no siege's breach: the rams only go for the
   village's own gate builds.
 - **Sentries** (`sentries`, `count` 4, `range` 16, `posts`): four Wall Sentries, the Golem Smith's (twice a golem's
-  health, their blows throwing foes back), come with the finished Wall and stand in the towers' alcoves on the walk. A
-  sentry fights any foe within 16 blocks of the wall as a golem does, and once none is left goes back to its alcove;
+  health, their blows throwing foes back), come with the finished Wall and stand on the walk, one on each run between the towers (posts x 15, 34, 62
+  and 81, at z 7). A
+  sentry fights any foe within 16 blocks of the wall as a golem does, and once none is left goes back to its post;
   while foes are about further out (within 80 blocks), it steps out onto the walk and watches them. Pushed or knocked
   off the Wall it walks back up, and where there is no way up it climbs the wall's face. A sentry lost is replaced the
   next morning (the hall's round before 2000 ticks of the day) by the village's Golem Smith, or a Tinkerer standing in,

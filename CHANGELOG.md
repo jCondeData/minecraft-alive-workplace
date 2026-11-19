@@ -92,6 +92,13 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
+  buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
+  whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story
+  timber pavilion under dark tile roofs, a walled barbican with a second gate on the field side, and two broad stairs up
+  the village side. Its sentries now stand on the open walk, one on each stretch between the towers. Same stage names. A
+  Great Wall already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
 - **The Hanging Gardens are rebuilt from scratch** (52.6): "the Terraced Mount", four mud-brick terraces on vaulted
   halls, set back toward the rear so the gardens fall to the front in green tiers hung with leaves and vines while the
   back rises as a sheer brick cliff. A grand stair climbs from a forecourt between two reflecting pools, and a stair up

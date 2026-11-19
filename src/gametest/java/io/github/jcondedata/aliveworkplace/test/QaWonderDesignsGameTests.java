@@ -234,7 +234,8 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				near(wrong, "its height", h, 34, 1);
 			}
 			case "great_wall" -> {
-				// "97 long, 7 thick and 12 high ... five towers (9 x 9, 18 high, hipped roofs) ... a 17-wide gatehouse"
+				// 52.6, rebuilt (briefs/great_wall.md, js/great_wall/plan.mjs): "97 long; the runs 12 high and 7 thick at y 6; four
+				// watchtowers 9 x 9, 18 high in stone under spruce hip caps; the Great Gate's middle at x 48"
 				near(wrong, "its length", w, 97, 0);
 				for (int[] run : new int[][] {{31, 36}, {79, 84}}) {
 					int[] wall = box(all, p -> p.getX() >= run[0] && p.getX() <= run[1]);
@@ -417,15 +418,19 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				new Feature("polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
 				new Feature("dark oak floors", 200, "minecraft:dark_oak_planks"),
 				new Feature("a glass lantern", 1, "minecraft:glass_pane", "minecraft:glass"));
-			case "great_wall" -> List.of(new Feature("a portcullis of iron bars", 6, "minecraft:iron_bars"),
-				new Feature("a gateway of fence gates", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate", "minecraft:dark_oak_fence_gate"),
-				new Feature("braziers along the walk", 4, "minecraft:campfire"),
-				new Feature("a grindstone for each tower's guard", 4, "minecraft:grindstone"),
-				new Feature("banners on the towers", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
-				new Feature("a deepslate-brick plinth", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
-				new Feature("mossy and cracked stone low down", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
-				new Feature("spruce roofs", 100, "minecraft:spruce_stairs"),
-				new Feature("stairs inside the towers", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
+			case "great_wall" -> List.of( // 52.6: the rebuilt Great Wall's named parts (js/great_wall/plan.mjs, "the Pass Gate")
+				new Feature("the Great Gate's portcullis and the towers' barred loops", 6, "minecraft:iron_bars"),
+				new Feature("the Great Gate's inner leaves", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate"),
+				new Feature("the Barbican's outer gate", 2, "minecraft:dark_oak_fence_gate"),
+				new Feature("a signal fire on each tower's Crown", 4, "minecraft:campfire"),
+				new Feature("a grindstone in each tower's guard room", 4, "minecraft:grindstone"),
+				new Feature("banners on the towers and the gate", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
+				new Feature("the curtain's dark battered foot", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
+				new Feature("aged stone on the curtain and towers", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
+				new Feature("the towers' spruce hip caps", 100, "minecraft:spruce_stairs"),
+				new Feature("the Gate Pavilion's tile roofs", 100, "minecraft:deepslate_tile_stairs"),
+				new Feature("a ladder up each guard room to its Crown", 4, "minecraft:ladder"),
+				new Feature("the Horse Stairs up the village face", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
 			case "observatory" -> List.of( // 52.6: the rebuilt Observatory's named parts (js/observatory/plan.mjs)
 				new Feature("the dome's tinted shutter and lens", 20, "minecraft:tinted_glass"),
 				new Feature("a dome and telescope of cut copper", 300, "minecraft:cut_copper"),

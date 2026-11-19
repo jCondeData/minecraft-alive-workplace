@@ -3862,6 +3862,8 @@ def h_low_moss(b):
 
 
 def hanging_gardens():
+    """The 35.x Hanging Gardens, replaced by hanging_gardens_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (hanging_gardens_stage, hanging_gardens_running)."""
     b = StagedBuild(HW, HH, HD)
     b.begin(1)
     b.fill(H_OX, 0, H_OZ, H_OX + 38, 0, H_OZ + 38, "smooth_sandstone")
@@ -3889,6 +3891,17 @@ def hanging_gardens():
     h_falls(b)
     h_low_moss(b)
     return b
+
+
+def hanging_gardens_drawn():
+    """The new Hanging Gardens (ROADMAP 52.6, rebuilt from scratch): js/hanging_gardens/recipe.mjs, its four stage
+    snapshots joined by js/hanging_gardens/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "hanging_gardens", "stages.py")
+    spec = importlib.util.spec_from_file_location("hanging_gardens_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def hanging_gardens_stage(stage=None):
@@ -5164,7 +5177,7 @@ WONDERS = {
         ],
     },
     "hanging_gardens": {
-        "draw": hanging_gardens,
+        "draw": hanging_gardens_drawn,  # 52.6: rebuilt from scratch (js/hanging_gardens/)
         "icon": "minecraft:flowering_azalea",
         "crew": 12,
         "requirements": [

@@ -1,0 +1,242 @@
+{
+  "name": "wonder.aliveworkplace.hanging_gardens.name",
+  "description": "wonder.aliveworkplace.hanging_gardens.description",
+  "icon": "minecraft:flowering_azalea",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:grand_chef",
+      "stand_in": [
+        {
+          "type": "job_level",
+          "job": "aliveworkplace:chef",
+          "level": 5,
+          "count": 1
+        },
+        {
+          "type": "meal_kinds",
+          "count": 8
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:sniffer_egg",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:wild_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:berry_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_2_0",
+          "offset": [5, 7, 12]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:pitcher_pod",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:torchflower_seeds",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:old_sage"
+            }
+          }
+        },
+        {
+          "item": "minecraft:heart_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:sifter",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:vintage_wine",
+          "count": 2,
+          "job": "aliveworkplace:vintner"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_3_0",
+          "offset": [9, 13, 20]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "minecraft:heart_of_the_sea",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:sponge",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.hanging_gardens.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/hanging_gardens/stage_4_0",
+          "offset": [13, 19, 28]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "minecraft:conduit",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:founder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "harvest",
+      "scope": "realm",
+      "extra_every": 4
+    },
+    {
+      "type": "births",
+      "meals": 12,
+      "per_day": 2
+    }
+  ],
+  "drawing": "drawn_1c1b28a91"
+}

@@ -35,29 +35,48 @@ const SECTION = [
   [5, 4, 10, body], [6, 4, 10, body], [7, 4, 10, body], [8, 4, 10, body],
 ]
 const LANDINGS = new Set([34, 35, 36, 60, 61, 62]) // where the horse stairs come up through the inner parapet
+// buttresses on the runs, two to a run, mirrored about the gate (round 2: the runs as deep as the towers); the village
+// face gets them too, but for 35 and 61, where the horse stairs' landings stand
+const BUTTRESSES = [13, 17, 31, 35, 61, 65, 79, 83]
+const PILASTERS = BUTTRESSES.filter(x => !LANDINGS.has(x))
+const dark = (y) => (y % 2 ? P.quoin : 'deepslate_bricks')
+const WALK_LAMPS = [12, 18, 30, 38, 58, 66, 78, 84] // lantern posts on the inner parapet, 6 to 8 apart with the towers'
 
 function curtain(c, x0, x1) {
   for (let x = x0; x <= x1; x++) {
     const end = x <= 1 || x >= 95
     // the wall goes on: its ends are broken off, stepped down and mossed over
     const keep = y => !end || y <= (x === 0 || x === 96 ? 4 : 6)
-    wallSection(c, x, end ? SECTION.map(r => (r[0] >= 3 ? [r[0], r[1], r[2], ragged, r[4]] : r)) : SECTION, keep)
+    // (round 2: the broken end keeps no pale stair step of its own, only the dark foot's, so it reads as fallen courses)
+    wallSection(c, x, end ? SECTION.map(r => (r[0] >= 3 ? [r[0], r[1], r[2], ragged] : r)) : SECTION, keep)
     if (end) continue
     // spouts under the village edge, every sixth cell; ivy down the field face here and there
-    if (x % 6 === 3 && !LANDINGS.has(x)) stair(c, x, 8, 3, P.bodyStairs, 'south', 'top')
-    if (hash(x, 11) < 4) for (let y = 5; y <= 7 - (hash(x, 3) & 1); y++) c.set(x, y, 11, 'vine', { north: 'true', south: 'false', east: 'false', west: 'false', up: 'false' })
+    if (x % 6 === 3 && ![x - 1, x, x + 1].some(v => LANDINGS.has(v))) stair(c, x, 8, 3, P.bodyStairs, 'south', 'top')
+    // depth: dark buttresses on the field face and pilasters on the village face, from the batter to the walk, and a
+    // second ledge (a drip course at y 7) on both faces between them
+    if (BUTTRESSES.includes(x)) for (let y = 4; y <= 8; y++) c.set(x, y, 11, dark(y))
+    else stair(c, x, 7, 11, P.bodyStairs, 'north', 'top')
+    if (PILASTERS.includes(x)) for (let y = 4; y <= 8; y++) c.set(x, y, 3, dark(y))
+    // (not beside a tower, where it would sit under the cap's eave as a slot, nor into the landings and galleries)
+    else if (!LANDINGS.has(x) && !c.get(x, 7, 3) && !TOWERS.some(t => x === t - 1 || x === t + 9)) stair(c, x, 7, 3, P.bodyStairs, 'south', 'top')
+    if (!BUTTRESSES.includes(x) && hash(x, 11) < 4) for (let y = 5; y <= 6 - (hash(x, 3) & 1); y++) c.set(x, y, 11, 'vine', { north: 'true', south: 'false', east: 'false', west: 'false', up: 'false' })
   }
 }
 
-// the walk on top of a run (stage IV): paving, a plain inner parapet, the field parapet with a merlon every other cell
+// the walk on top of a run (stage IV): paving, a plain inner parapet with lantern posts, and the field parapet carried
+// out one block on a corbel course (on the buttresses' heads where they rise), a merlon every other cell
 function walkTop(c, x0, x1) {
+  const out = CURTAIN.outer + 1
   for (let x = Math.max(x0, 2); x <= Math.min(x1, 94); x++) {
     for (let z = CURTAIN.inner; z <= CURTAIN.outer; z++) c.set(x, CURTAIN.walkY, z, walk)
     if (!LANDINGS.has(x)) c.set(x, 10, CURTAIN.inner, body)
-    c.set(x, 10, CURTAIN.outer, body)
+    if (BUTTRESSES.includes(x)) c.set(x, CURTAIN.walkY, out, P.key)
+    else stair(c, x, CURTAIN.walkY, out, P.bodyStairs, 'north', 'top')
+    c.set(x, 10, out, body)
+    if (WALK_LAMPS.includes(x)) { fence(c, x, 11, CURTAIN.inner, P.rail, []); c.set(x, 12, CURTAIN.inner, 'lantern', { hanging: 'false', waterlogged: 'false' }) }
   }
   const cells = []
-  for (let x = Math.max(x0, 2); x <= Math.min(x1, 94); x++) cells.push([x, CURTAIN.outer])
+  for (let x = Math.max(x0, 2); x <= Math.min(x1, 94); x++) cells.push([x, out])
   crenels(c, cells, CURTAIN.merlonY, CURTAIN.merlonY, body, (i, x) => x % 2 === 0)
 }
 
@@ -78,9 +97,16 @@ function towerBase(c, t) {
     const shell = x === t || x === t + 8 || z === z0 || z === z1
     c.set(x, y, z, corner(x, z) && y >= 3 ? (y % 2 ? P.quoin : 'deepslate_bricks') : y <= 2 && shell ? foot : body)
   }
+  // where the curtain meets the tower, its batter's top step is a full block (a cheek against the tower's corner), so no
+  // slot opens between the step and the cap's eave twelve blocks over it (holes.py "meet"; kit.seal_slots would fill it)
+  for (const x of [t - 1, t + 9]) for (const z of [z0, z1]) if (c.get(x, 4, z)) c.set(x, 4, z, body)
   // the walk's floor through the tower, and a drip course on both faces at its level
   for (let x = t; x <= t + 8; x++) for (let z = z0; z <= z1; z++) c.set(x, TOWER.floorY, z, x === t || x === t + 8 || z === z0 || z === z1 ? body : walk)
   for (let x = t; x <= t + 8; x++) { stair(c, x, TOWER.floorY, 2, P.bodyStairs, 'south', 'top'); stair(c, x, TOWER.floorY, 12, P.bodyStairs, 'north', 'top') }
+  // round 2: on the two end towers the drip course is carried round the open outer side, so it reads as a band, not a
+  // stub stuck on the village and field faces
+  const side = t === TOWERS[0] ? t - 1 : t === TOWERS[3] ? t + 9 : null
+  if (side !== null) for (let z = 2; z <= 12; z++) stair(c, side, TOWER.floorY, z, P.bodyStairs, side < t ? 'east' : 'west', 'top')
   // guard room walls, the walk's arches through the inner sides (never out of the wall's two ends)
   for (let y = 10; y <= TOWER.roomTop; y++) for (const [x, z] of ring(t, z0, t + 8, z1)) c.set(x, y, z, corner(x, z) ? (y % 2 ? P.quoin : 'deepslate_bricks') : body)
   for (const x of [t, t + 8]) {
@@ -89,9 +115,16 @@ function towerBase(c, t) {
     doorIn(c, x, 10, 7, P.door, x === t ? 'west' : 'east')
     c.set(x, 12, 7, P.key)
   }
-  // windows: glazed to the village, barred loops to the field
-  for (const y of [11, 12]) c.set(t + 4, y, z0, P.glass)
-  for (const x of [t + 2, t + 4, t + 6]) c.set(x, 11, z1, P.bars, { east: 'true', west: 'true', north: 'false', south: 'false', waterlogged: 'false' })
+  // windows: a three-light glazed window to the village, three tall barred loops to the field, each on a stair sill
+  // (the crown's corbel course over them is their hood)
+  for (const x of [t + 3, t + 4, t + 5]) {
+    for (const y of [11, 12]) c.set(x, y, z0, P.glass, { east: 'true', west: 'true', north: 'false', south: 'false', waterlogged: 'false' })
+    stair(c, x, 10, z0 - 1, P.bodyStairs, 'south')
+  }
+  for (const x of [t + 2, t + 4, t + 6]) {
+    for (const y of [11, 12]) c.set(x, y, z1, P.bars, { east: 'false', west: 'false', north: 'false', south: 'false', waterlogged: 'false' })
+    stair(c, x, 10, z1 + 1, P.bodyStairs, 'north')
+  }
   // the tower's colours on its village face, and the guard room's grindstone
   banner(c, t + 4, 7, z0 - 1, P.towerBanner, 'north')
   c.set(t + 2, 10, z0 + 1, 'grindstone', { face: 'floor', facing: 'south' })
@@ -103,6 +136,12 @@ function towerCrown(c, t) {
   for (let x = t; x <= t + 8; x++) for (let z = z0; z <= z1; z++) c.set(x, TOWER.crownFloor, z, x === t || x === t + 8 || z === z0 || z === z1 ? 'deepslate_bricks' : walk)
   c.clear(t + 6, TOWER.crownFloor, z0 + 1) // the ladder's hatchway
   for (let y = 10; y <= TOWER.crownFloor; y++) c.set(t + 6, y, z0 + 1, 'ladder', { facing: 'south', waterlogged: 'false' })
+  // the guard room's corner under the field loops, furnished once it has its roof and the walk is manned (an unroofed
+  // room with seats and no way up is a CHECK): an empty barrel, a slab table with a candle on it and a chair at it
+  c.set(t + 1, 10, z1 - 1, 'barrel', { facing: 'up', open: 'false' })
+  slab(c, t + 6, 10, z1 - 1, P.roof.slab, 'top'); slab(c, t + 7, 10, z1 - 1, P.roof.slab, 'top')
+  c.set(t + 7, 11, z1 - 1, 'candle', { candles: '1', lit: 'true', waterlogged: 'false' })
+  stair(c, t + 6, 10, z1 - 2, P.roof.stairs, 'north')
   c.set(t + 4, TOWER.crownFloor, 7, 'hay_block', { axis: 'y' })
   c.set(t + 4, 14, 7, 'campfire', { facing: 'south', lit: 'true', signal_fire: 'true', waterlogged: 'false' })
   lantern(c, t + 4, 12, 9)
@@ -149,10 +188,14 @@ function gate(c) {
     portcullis(c, [46, 47, 48, 49, 50], 3, z, P.bars)
     portcullis(c, [47, 48, 49], 4, z, P.bars)
   }
-  lantern(c, 48, 4, 8); lantern(c, 48, 4, 10)
+  for (const z of [6, 8, 10, 12, 23]) lantern(c, 48, 4, z) // the passage, lit end to end
   // --- the horse stairs up the village face, either side of the gate ---
   for (const side of [STAIRS.west, STAIRS.east])
     horseStair(c, { x0: side.x0, z0: STAIRS.z0, width: STAIRS.width, steps: STAIRS.steps, rise: side.rise, landing: 2, zTo: 3 }, P.bodyStairs, body, walk)
+  // lantern posts up both flights (on the outer edge, two steps up and six up) and on each landing
+  for (const [x, y] of [[43, 3], [39, 7], [53, 3], [57, 7], [34, 10], [62, 10]]) { fence(c, x, y, STAIRS.z0, P.rail, []); c.set(x, y + 1, STAIRS.z0, 'lantern', { hanging: 'false', waterlogged: 'false' }) }
+  // the barbican yard: a lantern post in each corner of the court
+  for (const [x, z] of [[42, 15], [54, 15], [42, 22], [54, 22]]) { fence(c, x, 1, z, P.rail, []); c.set(x, 2, z, 'lantern', { hanging: 'false', waterlogged: 'false' }) }
   // from each landing a gallery back along the wall's foot to the gatehouse top, so the gate stands climbable alone
   for (const x of [36, 37, 38, 58, 59, 60]) { for (let y = 0; y < G.top; y++) c.set(x, y, 3, y <= 1 ? foot : body); c.set(x, G.top, 3, walk) }
   // --- the gatehouse top: parapets round its rim (open where the walk comes in), merlons to the field ---
@@ -189,7 +232,7 @@ function gate(c) {
   for (const x of [L.x0, L.x1]) { c.clear(x, L.y0, 7); doorIn(c, x, L.y0, 7, P.door, x === L.x0 ? 'west' : 'east') } // the walk's doors
   // the floor between the storeys (and the pentice's bed), the pentice with its corners lifted
   for (let x = L.x0; x <= L.x1; x++) for (let z = L.z0; z <= L.z1; z++) c.set(x, 15, z, P.boards)
-  pavilionSkirt(c, L.x0 - 1, L.z0 - 1, L.x1 + 1, L.z1 + 1, 15, 2, P.roof, { flare: true })
+  pavilionSkirt(c, L.x0 - 1, L.z0 - 1, L.x1 + 1, L.z1 + 1, 15, 2, P.tile, { flare: true })
   // --- upper room ---
   const U = PAVILION.upper
   for (const [x, z] of ring(U.x0, U.z0, U.x1, U.z1)) {
@@ -201,14 +244,29 @@ function gate(c) {
     }
     log(c, x, U.y1, z, P.beam, z === U.z0 || z === U.z1 ? 'x' : 'z')
   }
-  ridgedHip(c, L.x0, L.z0, L.x1, L.z1, PAVILION.hipY, P.roof, { flare: true })
-  stair(c, 45, 25, 8, P.roof.stairs, 'east'); stair(c, 51, 25, 8, P.roof.stairs, 'west') // the ridge's horns
+  // the bracket course: the upper wall plate carried out one block on every side under the hip's eave, so the eave rests on
+  // timber over the pentice instead of leaving a slot between the two roofs (holes.py "meet")
+  for (const [x, z] of ring(L.x0, L.z0, L.x1, L.z1)) log(c, x, U.y1, z, P.beam, z === L.z0 || z === L.z1 ? 'x' : 'z')
+  const ridge = ridgedHip(c, L.x0, L.z0, L.x1, L.z1, PAVILION.hipY, P.tile, { flare: true })
+  // the ridge: a full course (a slab ridge left the horns standing on half a block, floating), its horns on the ends
+  for (let x = 45; x <= 51; x++) c.set(x, ridge, 8, P.tile.full)
+  stair(c, 45, ridge + 1, 8, P.tile.stairs, 'east'); stair(c, 51, ridge + 1, 8, P.tile.stairs, 'west')
   banner(c, 45, 18, U.z0 - 1, P.pavilionBanner, 'north'); banner(c, 51, 18, U.z0 - 1, P.pavilionBanner, 'north')
-  // --- interior: the captain's table and benches, the ladder up, lanterns ---
+  // --- interior: the gate-keeper's hall: the captain's table with benches and chairs and a lantern on it, the portcullis
+  // windlass by the village wall over the passage, stores in the corners, an anvil, the ladder up, lanterns ---
   for (let x = 46; x <= 50; x++) {
     slab(c, x, 10, 10, P.roof.slab, 'top')
     stair(c, x, 10, 11, P.roof.stairs, 'south')
   }
+  for (const x of [46, 48, 50]) stair(c, x, 10, 9, P.roof.stairs, 'north')
+  c.set(48, 11, 10, 'lantern', { hanging: 'false', waterlogged: 'false' })
+  c.set(46, 11, 10, 'candle', { candles: '3', lit: 'true', waterlogged: 'false' })
+  fence(c, 46, 10, 5, P.rail, []); fence(c, 50, 10, 5, P.rail, [])
+  for (let x = 47; x <= 49; x++) log(c, x, 10, 5, P.beam, 'x')
+  for (const [x, z] of [[42, 5], [42, 11], [54, 11]]) c.set(x, 10, z, 'barrel', { facing: 'up', open: 'false' })
+  c.set(42, 11, 5, 'barrel', { facing: 'up', open: 'false' })
+  c.set(54, 10, 5, 'anvil', { facing: 'east' })
+  lantern(c, 48, 14, 6); lantern(c, 48, 14, 10)
   for (let y = 10; y <= 14; y++) log(c, 43, y, 11, P.frame)
   for (let y = 10; y <= 15; y++) c.set(43, y, 10, 'ladder', { facing: 'north', waterlogged: 'false' })
   lantern(c, 45, 14, 8); lantern(c, 51, 14, 8)
@@ -308,7 +366,7 @@ export function verify() {
     const z6 = cells.filter(([[xx, y]]) => xx === x && y === 6).map(([[, , z]]) => z)
     spans.push(Math.max(...z6) - Math.min(...z6) + 1)
   }
-  if (Math.min(...spans) !== 7) fail(`run spans ${spans}`)
+  if (Math.min(...spans) !== 7 || Math.min(...spans.slice(0, 6)) !== 7 || Math.min(...spans.slice(6)) !== 7 || spans.some(v => v < 7)) fail(`run spans ${spans}`)
   // the sentry posts: level, on one line, west to east; each post and its walk spot holds a golem on solid floor
   const mid = POSTS.reduce((a, [x]) => a + x, 0) / 4
   for (const [x, y, z] of POSTS) {

@@ -1168,10 +1168,10 @@ SCENES = [
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # The Hanging Gardens (ROADMAP 35.20): its time-lapse, ending the next morning with the falls running and farmers on the terraces
     S("wonder_hanging_gardens", "Wonders", "The Hanging Gardens: its time-lapse, and farmers on its terraces",
-      "a crew of ten raised the Hanging Gardens terrace by terrace on a sped-up server, each stage's goods handed in at the stone; once finished its powers came on (a quarter more harvest across the realm, babies on 12 meals and two a day), and after the festival's fireworks, the next morning the falls ran from the crown's cistern into the pool and a farmer at each of the four farm corners took on that terrace's fields by themselves", 860,
-      [("11_wonder_hanging_gardens_stage_1", "Stage I, the First Terrace and the Cistern Vaults, up"), ("frame_*@middle", "The crew at work, the camera going round"),
-       ("14_wonder_hanging_gardens_stage_4", "The Crown Garden and the Falls: the Gardens finished"),
-       ("20_wonder_hanging_gardens_terraces", "The next morning: the falls running, farmers on the terraces")]),
+      "a crew of ten raised the Hanging Gardens terrace by terrace on a sped-up server, each stage's goods handed in at the stone: the Vaults and the Lower Terrace, the Gallery and the Middle Terrace, the Upper Terrace and its hall, and last the Crown Garden with the Water Pavilion over its cistern; once finished its powers came on (a quarter more harvest across the realm, babies on 12 meals and two a day), and after the festival's fireworks, the next morning its water stood in the shaft, the cistern, the fields' channels and the pools, and a farmer at each of the four farm corners took on that terrace's fields by themselves", 860,
+      [("11_wonder_hanging_gardens_stage_1", "Stage I, the Vaults and the Lower Terrace, up"), ("frame_*@middle", "The crew at work, the camera going round"),
+       ("14_wonder_hanging_gardens_stage_4", "The Crown Garden and the Water Pavilion: the Gardens finished"),
+       ("20_wonder_hanging_gardens_terraces", "The next morning: the terraces from the front, farmers at their farms")]),
     # The Great Library (ROADMAP 35.14): its time-lapse, ending in the rotunda on the scholar's screen with the second tier
     S("wonder_great_library", "Wonders", "The Great Library: its time-lapse, and the second research tier",
       "a crew of ten raised the Great Library stage by stage on a sped-up server, each stage's goods handed in at the stone; once finished its power came on and, after the festival's fireworks, inside the rotunda by the enchanting table a scholar's research screen showed the Great Library's row open: Swift Hands IV-V, Scholarship, Engineering, Cartography, Trade Law and Pharmacy", 840,
@@ -1998,6 +1998,14 @@ SCENES = [
            ("02_outside_back", "From the sea: the round bastion and its rip-rap, the tower climbing from its mossy foot to the pale shaft"),
            ("03_outside_west", "From the west: the fish stage and its drying rack off the mole, the gallery on its corbels"),
            ("04_outside_east", "From the east: the ferry landing and the jetty with the Travel Post at its end, the hood's ring of lamps")], furniture=True),
+    # ROADMAP 52.6: the Hanging Gardens rebuilt from scratch (REBUILD.md), "the Terraced Mount", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_hanging_gardens", "Build families", "The Hanging Gardens, rebuilt: from four sides",
+      "the Hanging Gardens' whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Hanging Gardens from the front: the Processional Stair between the Reflecting Pools, the terraces stepping back in green tiers to the Water Pavilion"),
+           ("02_outside_back", "From the back: the terraces' backs rising nearly sheer, a cliff of mud brick"),
+           ("03_outside_west", "From the west: the terraces stepping up toward the back, their arcades glazed under the blue frieze, leaves and vines spilling over every edge"),
+           ("04_outside_east", "From the east: the stairs climbing each terrace's face, the palms of the Palm Basin and the crown, the Cypress Walk")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

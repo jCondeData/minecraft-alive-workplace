@@ -68,10 +68,11 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
   shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
   ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
-  (blast furnace); the **Greenhouse**, a glass house on a brick knee wall with a stepped glass roof on spruce
-  rafters, farmland beds watered by two channels, and a belt from the wheel down the aisle to a depot, a little cart
-  of andesite casing on it carrying a mechanical harvester and a mechanical plough (ready to be fixed to a
-  contraption: Create's harvester and plough only work moving) (composter); the **Clock Tower** (rebuilt in 51.6, "the Water
+  (blast furnace); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
+  glasshouse of three glass gables with a raised nave, a brick boiler and stack behind; the leat in an open stone trough
+  on its west side turns an undershot wheel whose shaft drives a belt along the inside of the west wall to a depot in a
+  front-wall hatch, a mechanical harvester and a mechanical plough standing over the belt (Create's harvester and plough
+  only work moving), farmland beds either side of the walk (composter); the **Clock Tower** (rebuilt in 51.6, "the Water
   Clock", 15 x 26 x 15), a slender stone shaft under a jettied timber clock chamber with a cuckoo clock on every face and
   a bell-cast copper spire: water poured into a spout pier's cup falls down the tower's front corner past the wheel by
   the door, whose drive runs in through the wall, up a corner shaft (seen through a slit) and out through the chamber's

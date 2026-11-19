@@ -1,0 +1,6 @@
+{"spots": [
+  {"kind":"counter","pos":[13,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"birch","colour":null},
+  {"kind":"counter","pos":[14,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"birch","colour":null},
+  {"kind":"counter","pos":[15,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"birch","colour":null},
+  {"kind":"counter","pos":[16,1,10],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"birch","colour":null}
+]}

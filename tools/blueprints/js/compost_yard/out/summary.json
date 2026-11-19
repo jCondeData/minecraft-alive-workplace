@@ -1,0 +1,19 @@
+{
+  "name": "compost-yard-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 11
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/compost_yard/out/compost-yard-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/compost_yard/out/summary.json",
+  "size": [
+    15,
+    12,
+    13
+  ],
+  "blockCount": 704,
+  "paletteCount": 58,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/compost_yard/recipe.mjs"
+}

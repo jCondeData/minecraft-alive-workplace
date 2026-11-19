@@ -2,16 +2,26 @@
 
 ```infobox
 type: Build
-Size: 11 by 11, 8 high (II: 17 by 11)
-Tiers: I, II (four more hives)
+Size: 13 by 13, 9 high (II: 17 by 13)
+Tiers: I, II (a daughter skep and four more hives)
 Houses: a Beekeeper at the hives
 Where to get it: Blueprint Table
-Main materials: oak fences and planks, spruce stairs, grass, flowers, beehives
+Main materials: hay bales, stone bricks and stairs, polished andesite, grass, flowers, beehives, campfires
 categories: Builds
 related: jobs-land.md, flower-shop-build.md, healing-center-build.md
 ```
 
-Five **beehives** on posts in a flowery meadow, with a campfire and a little honey shed with a chest.
+The Skep Wall: **beehives** set in the niches of an old stone garden wall, each over a smoking campfire, round a giant
+straw skep that holds the Beekeeper's honey.
+
+## What it looks like
+
+Across the back of the plot runs a thick stone wall pierced by **bee boles** (rebuilt from scratch; an Apiary Garden
+already standing keeps its old look until refreshed): four niches, each with a beehive facing the garden over a
+campfire glowing in its foot, so the bees stay calm when the honey is taken. At the wall's heart rises a coiled straw
+**skep** as tall as a house, a hay dome you can walk into: the honey store, a double chest and stacked comb under a
+hanging lantern. In front lies a bee garden of cornflowers, alliums and daisies round a stone bee font with a lily pad,
+a low flowering hedge round the front and lantern piers either side of the gate.
 
 ## Getting the blueprint
 
@@ -25,7 +35,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Apiary Garden, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Apiary Garden II** runs the meadow on with four more hives (nine in all) and a second campfire.
+- **Apiary Garden II**: the colony swarms. A smaller daughter skep settles at the wall's east end with a smoked hive either side of its door, the mother skep takes a smoked hive either side of its own door (eight hives in all), and the garden opens east onto a bee meadow under a blossoming cherry.
 
 ## What it does for the village
 

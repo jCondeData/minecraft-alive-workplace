@@ -141,7 +141,11 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.8, the Physician's House ("the still room and ward round a physic garden") and the Healing Center (I-IV,
            # "the Spring Infirmary", IV with its Cistern cellar): js/physicians_house and js/healing_center (MC_BUILDER=...,
            # sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
-           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4"}
+           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4",
+           # 50.9, the Berry Farm (I-II, "the berry pergola"), the Apiary Garden (I-II, "the Skep Wall") and the Greenhouse
+           # (Create only, "the Leat House"): js/berry_farm, js/apiary_garden and js/greenhouse (MC_BUILDER=..., sh build.sh
+           # writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py for the berry farm and apiary)
+           "berry_farm", "berry_farm_2", "apiary_garden", "apiary_garden_2", "greenhouse"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -220,8 +224,11 @@ if __name__ == "__main__":
     storehouse().save(MAIN_STRUCTURES, "storehouse")
     storehouse_2().save(MAIN_STRUCTURES, "storehouse_2")
     storehouse_3().save(MAIN_STRUCTURES, "storehouse_3")
-    berry_farm().save(MAIN_STRUCTURES, "berry_farm")
-    berry_farm_2().save(MAIN_STRUCTURES, "berry_farm_2")
+    # ROADMAP 50.9: the Berry Farm and the Apiary Garden come from the rebuild kit (REBUILT); starter.berry_farm* and
+    # starter.apiary_garden* are the old drawings, kept in blueprint_history/
+    for name, draw in (("berry_farm", berry_farm), ("berry_farm_2", berry_farm_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     research_lab().save(MAIN_STRUCTURES, "research_lab")
     research_lab_2().save(MAIN_STRUCTURES, "research_lab_2")
     # ROADMAP 49.6: the Terrace (I-II) comes from the rebuild kit (tools/blueprints/js/terrace/build.sh, then
@@ -233,8 +240,9 @@ if __name__ == "__main__":
     for name, draw in (("ranch", ranch), ("ranch_2", ranch_2)):
         if name not in REBUILT:  # 49.9: the Ranch comes from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
-    apiary_garden().save(MAIN_STRUCTURES, "apiary_garden")
-    apiary_garden_2().save(MAIN_STRUCTURES, "apiary_garden_2")
+    for name, draw in (("apiary_garden", apiary_garden), ("apiary_garden_2", apiary_garden_2)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     flower_shop_building().save(MAIN_STRUCTURES, "flower_shop")
     flower_shop_building_2().save(MAIN_STRUCTURES, "flower_shop_2")
     for name, draw in (("graveyard", graveyard), ("graveyard_2", graveyard_2)):

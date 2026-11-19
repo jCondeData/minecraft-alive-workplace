@@ -113,6 +113,9 @@ asks for the steps, `latest.log` and any crash report).
   Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
   block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
   drops a plain one (B1070).
+- With Tom's Simple Storage, a chest cut off from the Storehouse's Inventory Connector by breaking a cable no longer
+  counts twice for the second it takes the connector to notice: the Village Hall, the Storehouse and a builder's
+  shortage check count each item once at every moment (B1358).
 - With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
   instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even

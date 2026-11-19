@@ -113,7 +113,11 @@ export function draw() {
   // --- Pass 6: ground: cacti in a sand strip behind the kitchen, water jars by the door ----------------------------------------
   for (const [x, z, plant] of OUTSIDE.garden) { // a strip of sand behind the kitchen: cacti and a dead bush
     c.set(x, 0, z, 'sand')
-    if (plant === 'cactus') { c.set(x, 1, z, 'cactus', { age: '0' }); c.set(x, 2, z, 'cactus', { age: '0' }) } else c.set(x, 1, z, plant)
+    if (plant === 'cactus') {
+      // 49.10d: a cactus breaks beside a solid block, so it grows a second block only where its sides are clear
+      c.set(x, 1, z, 'cactus', { age: '0' })
+      if ([[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dz]) => c.name(x + dx, 2, z + dz) === 'minecraft:air')) c.set(x, 2, z, 'cactus', { age: '0' })
+    } else c.set(x, 1, z, plant)
   }
   for (const [x, y, z] of OUTSIDE.jars) c.set(x, y, z, 'decorated_pot', { facing: 'north', cracked: 'false', waterlogged: 'false' })
   return c

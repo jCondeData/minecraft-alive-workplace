@@ -109,6 +109,23 @@ ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide,
 # shed's west wall and the headframe's back legs, under the eave and the frame's beams, is a covered landing, not a room
 ALLOW.update({(n, (9, 1, 6)): "the Quarry's open Gap to the pit under the headframe and the hoist house's eave, not a room"
               for n in ("quarry", "modded/quarry")})
+# The Trainer's House (49 rebuild, "the Battle Court") has a covered bench stand along the court's west side on purpose:
+# seats under a lean-to between posts on the curb, open to the field so neighbours watch the battles; not a room
+ALLOW.update({(n, (2, 2, 7)): "the Trainer's House's open bench stand facing the court, not a walled room"
+              for n in ("trainers_house", "modded/trainers_house")})
+# The Arena (49 rebuild, "the Market Stadium") is open on purpose: II's front stand is a colonnade, arcaded on both faces,
+# whose covered walk is the Festival Cup's fair lane (traders stand there), with the judges' loggia open over the gate;
+# III's grandstand is open to the pitch so its rows see the bouts. Walks and stands, not rooms
+ALLOW.update({(n, p): "the Arena's open colonnade over the fair lane, its loggia over the gate" for n in ("arena_2", "arena_3")
+              for p in ((4, 3, 2), (8, 3, 2), (16, 3, 2), (10, 7, 3))})
+ALLOW.update({("arena_3", (5, 3, 18)): "the Arena's grandstand, open to the pitch, not a walled room"})
+# The Habitat Garden (49 rebuild, "the Stone Ring") is open air: the keeper's bower is an open-fronted lean-to with the
+# pasture at its eave, the honey tree's crown shades the ground round its trunk, and (Level II) the hide stands on stilts
+# with open ground under its floor where its ladder rises: none of them is a walled room
+ALLOW.update({(n, p): why for n in ("habitat_garden", "habitat_garden_2", "modded/habitat_garden", "modded/habitat_garden_2")
+              for p, why in (((15, 1, 6), "the Habitat Garden's open-fronted bower, not a walled room"),
+                             ((12, 1, 13), "the shade under the Habitat Garden's honey tree, not a room"),
+                             ((2, 1, 18), "the open ground under the Habitat Garden's hide on its stilts, not a room"))})
 
 
 def load(path, props=False):

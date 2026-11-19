@@ -2,6 +2,8 @@ package io.github.jcondedata.aliveworkplace.build;
 
 import io.github.jcondedata.aliveworkplace.mc.Nbt;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import java.util.List;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
@@ -25,11 +27,29 @@ import org.jetbrains.annotations.Nullable;
  * ({@link BlockText}). Works for blocks from any mod, not just vanilla.
  */
 public final class BlockEntityData {
-	/** Keys that hold items, loot, mobs or ownership in vanilla and common mods. */
+	/**
+	 * Keys that hold items, loot, mobs or ownership in vanilla and common mods. B1070: also "components", the item
+	 * components every block entity keeps from the item it was placed with (enchantments, attribute modifiers, anything a
+	 * file writes there) and gives back on the item it drops, as Create's Clipboard does; B1069: "Components", the same
+	 * kept by a mod under its own key (Create's Backtank gives the whole item back on a right-click). What a block shows
+	 * (a banner's patterns, a head's skin, a name) is saved under keys of its own, so a built block loses no looks.
+	 */
 	private static final String[] STRIP_KEYS = {
 		"Items", "LootTable", "LootTableSeed", "RecordItem", "Book", "item", "Bees", "bees", "SpawnData", "SpawnPotentials",
-		"Owner", "OwnerName", "owner", "Password", "password", "Lock", "lock"
+		"Owner", "OwnerName", "owner", "Password", "password", "Lock", "lock", "components", "Components"
 	};
+
+	/**
+	 * What another mod's block holds in its data as plain numbers, by block id and key (no class of theirs), never copied:
+	 * the block is built as a freshly placed one, as a furnace is built without its fuel (B429). B1067: Create's Blaze
+	 * Burner keeps its fuel (which kind, how long it burns, and whether it is a creative burner that heats forever); its
+	 * goggles and train hat are looks and stay. B1069: a Backtank set down keeps its air and its Capacity enchantment's
+	 * level beside the item's components.
+	 */
+	private static final Map<String, List<String>> HELD_KEYS = Map.of(
+		"create:blaze_burner", List.of("fuelLevel", "burnTimeRemaining", "isCreative"),
+		"create:copper_backtank", List.of("Air", "CapacityEnchantment"),
+		"create:netherite_backtank", List.of("Air", "CapacityEnchantment"));
 
 	/**
 	 * The data to load into a freshly placed block entity, or null to load nothing. {@code blockEntity}
@@ -59,6 +79,9 @@ public final class BlockEntityData {
 		}
 		CompoundTag tag = nbt.copy();
 		for (String key : STRIP_KEYS) {
+			tag.remove(key);
+		}
+		for (String key : HELD_KEYS.getOrDefault(BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString(), List.of())) {
 			tag.remove(key);
 		}
 		if (stripStacksAndEntities(tag)) {

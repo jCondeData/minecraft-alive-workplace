@@ -48,7 +48,11 @@ public final class CupBout {
 	public record Action(int side, Move move, boolean hit, int damage, double effectiveness, boolean fainted) {
 	}
 
-	/** The move every Pokémon has when it has no attack of its own. */
+	/**
+	 * The move every Pokémon has when it has no attack of its own. As in the games it has no type in the sums (it hits a
+	 * Ghost and gets no same-type bonus; B1403: a moveless Wobbuffet or Ditto stalled on a Ghost and lost on time); "normal"
+	 * is only its look.
+	 */
 	public static final Move STRUGGLE = new Move("struggle", "normal", 50, 0, true);
 
 	public final UUID[] trainers = new UUID[2];
@@ -161,7 +165,7 @@ public final class CupBout {
 		Fighter target = f[other];
 		Move move = choose(attacker, target, random);
 		boolean hit = move.accuracy() <= 0 || random.nextInt(100) < move.accuracy();
-		double effectiveness = TypeChart.multiplier(move.type(), target.types());
+		double effectiveness = move == STRUGGLE ? 1 : TypeChart.multiplier(move.type(), target.types());
 		int damage = hit ? damage(attacker, target, move, effectiveness, random) : 0;
 		health[other][out[other]] = Math.max(0, health[other][out[other]] - damage);
 		boolean fainted = health[other][out[other]] == 0;
@@ -213,7 +217,7 @@ public final class CupBout {
 		double attack = move.physical() ? attacker.attack() : attacker.spAttack();
 		double defence = Math.max(1, move.physical() ? target.defence() : target.spDefence());
 		double base = Math.floor(Math.floor(2.0 * attacker.level() / 5 + 2) * move.power() * attack / defence / 50) + 2;
-		double stab = attacker.types().contains(move.type()) ? 1.5 : 1;
+		double stab = move != STRUGGLE && attacker.types().contains(move.type()) ? 1.5 : 1;
 		double roll = (85 + random.nextInt(16)) / 100.0;
 		return Math.max(1, (int) Math.floor(base * stab * effectiveness * roll));
 	}

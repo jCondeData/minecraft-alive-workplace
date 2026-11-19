@@ -1,0 +1,19 @@
+{
+  "name": "arena-3",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 68
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/arena/out/arena-3.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/arena/out/summary.json",
+  "size": [
+    25,
+    14,
+    23
+  ],
+  "blockCount": 2018,
+  "paletteCount": 63,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/arena/recipe.mjs"
+}

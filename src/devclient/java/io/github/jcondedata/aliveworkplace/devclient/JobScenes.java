@@ -6016,6 +6016,10 @@ final class JobScenes {
 					level.setBlock(e.getKey(), e.getValue(), 2 | 16);
 				}
 				BuildSiteManager.get(level).recordFinished(house, placement, player.getUUID());
+				// B1401: since 49.4 rebuilt the Stone House, the refresh from this drawing is a near-whole rebuild (about 950
+				// clears and placements): at the default 8 ticks a block that is some 8,500 ticks, past the scene's wait.
+				// One tick a block leaves about 950 ticks of block work plus the walks to the chests.
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());
 				BlockPos bench = new BlockPos(4, -60, -3);
 				place(level, bench, ModBlocks.BUILDERS_BENCH);
 				Villager builder = EntityType.VILLAGER.create(level);
@@ -6067,7 +6071,7 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, player);
 					}
 					player.closeContainer();
-				}, 3600)),
+				}, 6000)), // B1401: about 2,000-3,000 ticks of work at one tick a block, with a margin
 			(level, player) -> BuildSiteManager.get(level).finishedIn(level).stream()
 				.filter(f -> f.structure().equals(StarterBlueprints.STONE_HOUSE.id()) && f.placement().origin().equals(STATION.offset(-5, 0, -15)))
 				.findFirst().map(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.siteOf(level, f.placement()) == null

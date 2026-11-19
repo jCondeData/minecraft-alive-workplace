@@ -149,6 +149,51 @@ public class BuiltEmptyGameTests implements net.fabricmc.fabric.api.gametest.v1.
 	}
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
+	public void itemComponentsInBlockDataAreNotCopied(GameTestHelper helper) {
+		// B1070, B1069 (without Create): the item components a block entity keeps from the item it was placed with
+		// ("components", or a mod's own "Components") go, whatever a file writes there; the banner's looks stay, and the
+		// banner loaded with what is left gives back a plain banner
+		BlockPos pos = new BlockPos(0, 1, 0);
+		helper.setBlock(pos, Blocks.RED_BANNER);
+		CompoundTag components = new CompoundTag();
+		CompoundTag levels = new CompoundTag();
+		levels.putInt("minecraft:sharpness", 255);
+		CompoundTag enchantments = new CompoundTag();
+		enchantments.put("levels", levels);
+		components.put("minecraft:enchantments", enchantments);
+		components.putBoolean("minecraft:enchantment_glint_override", true);
+		CompoundTag nbt = new CompoundTag();
+		nbt.put("components", components.copy());
+		nbt.put("Components", components.copy());
+		ListTag patterns = new ListTag();
+		CompoundTag layer = new CompoundTag();
+		layer.putString("pattern", "minecraft:stripe_top");
+		layer.putString("color", "white");
+		patterns.add(layer);
+		nbt.put("patterns", patterns);
+		var registries = helper.getLevel().registryAccess();
+		net.minecraft.world.level.block.entity.BlockEntity banner = helper.getBlockEntity(pos);
+		// control: loaded as the file has it, the banner's item carries the file's components
+		banner.loadWithComponents(nbt.copy(), registries);
+		net.minecraft.world.item.ItemStack control = new net.minecraft.world.item.ItemStack(Items.RED_BANNER);
+		control.applyComponents(banner.collectComponents());
+		helper.assertTrue(control.getEnchantments().size() == 1, "(setup) a banner loaded with the file's data doesn't carry its"
+			+ " components, so the test can't tell: " + control.getComponentsPatch());
+		CompoundTag out = BlockEntityData.sanitize(helper.getLevel(), helper.absolutePos(pos), helper.getBlockState(pos), banner, nbt);
+		helper.assertTrue(out != null, "the banner's data was dropped whole");
+		helper.assertTrue(!out.contains("components") && !out.contains("Components"), "item components are copied: " + out);
+		helper.assertTrue(out.getList("patterns", 10).size() == 1, "the banner's pattern was lost: " + out);
+		banner.loadWithComponents(out, registries);
+		net.minecraft.world.item.ItemStack built = new net.minecraft.world.item.ItemStack(Items.RED_BANNER);
+		built.applyComponents(banner.collectComponents());
+		helper.assertTrue(built.getEnchantments().isEmpty() && !built.hasFoil(), "the built banner's item is no plain one: " + built.getComponentsPatch());
+		helper.assertTrue(built.getOrDefault(net.minecraft.core.component.DataComponents.BANNER_PATTERNS,
+			net.minecraft.world.level.block.entity.BannerPatternLayers.EMPTY).layers().size() == 1, "the built banner lost its pattern: " + built.getComponentsPatch());
+		helper.succeed();
+	}
+
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
 	public void aFluidHeldInBlockDataIsNotCopied(GameTestHelper helper) {
 		// B486: Create's tank as it saves 1000 mB of lava ({TankContent: {Fluid: {id, amount}}}), a Forge-style and a
 		// Fabric-style tank, and a list of tanks (Create's spout and basin): every fluid goes, the tank's own setup stays

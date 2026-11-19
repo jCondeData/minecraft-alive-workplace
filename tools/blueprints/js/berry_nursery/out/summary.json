@@ -1,0 +1,19 @@
+{
+  "name": "berry-nursery-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 4
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_nursery/out/berry-nursery-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_nursery/out/summary.json",
+  "size": [
+    13,
+    14,
+    23
+  ],
+  "blockCount": 1038,
+  "paletteCount": 76,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_nursery/recipe.mjs"
+}

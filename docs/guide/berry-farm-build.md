@@ -2,16 +2,24 @@
 
 ```infobox
 type: Build
-Size: 11 wide, 9 deep, 5 high (II: 15 deep, 6 high)
-Tiers: I, II (a pergola of glow berries)
+Size: 13 wide, 13 deep, 12 high (II: 17 deep)
+Tiers: I, II (a lattice of glow berries over the garden)
 Houses: an Orchard Keeper at the composter
 Where to get it: Blueprint Table; an Expert orchard keeper sells it for 10 emeralds
-Main materials: grass blocks, spruce fences, sweet berry bushes, cobblestone, gravel paths
+Main materials: spruce logs, mangrove planks and stairs, birch planks, azalea hedge, sweet berry bushes, podzol, dirt paths
 categories: Builds
 related: jobs-land.md, flower-shop-build.md, compost-yard-build.md
 ```
 
-A fenced garden of sweet berry bushes with rose bushes along the edges, gravel paths, lanterns, a composter and a chest: a small farm that keeps the village in fruit.
+A walled-in berry garden, the Lantern Arbor: a keeper's garden that keeps the village in fruit.
+
+## What it looks like
+
+A clipped azalea hedge with a gateway of spruce posts, and from it a walk of beaten earth straight up the middle under an
+open timber arbor (rebuilt from scratch; a Berry Farm already standing keeps its old look until refreshed). Either side,
+sweet berry bushes grow in beds raised in log curbs. At the end of the walk stands the keeper's picking lodge, a narrow
+store of pale birch boards in a spruce frame under a steep roof of red mangrove shingles, and under its pent-roofed
+porch the composter and the harvest chest wait at the end of the walk.
 
 ## Getting the blueprint
 
@@ -25,7 +33,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Berry Farm, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Berry Farm II** adds a pergola behind, with glow berries hanging from its roof.
+- **Berry Farm II** spreads the arbor into a rafter lattice over the whole garden, glow berries hanging from every second rafter, and opens the lodge's back door onto a second cloister of berry beds behind it: at night the garden is lit by what grows in it.
 
 ## What it does for the village
 

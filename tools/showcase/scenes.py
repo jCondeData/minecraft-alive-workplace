@@ -1911,6 +1911,27 @@ SCENES = [
            ("03_outside_west", "From the west: the little gabled wall dormer breaking the eave, herb pots on the ledges"),
            ("04_outside_east", "From the east: the second dormer gable, a framed window lit in it"),
            ("10_room_1", "Inside at eye level: the waiting benches facing each other, or the counter with the brewing stand and its chest behind it")], furniture=True),
+    # ROADMAP 50.9: the Berry Farm rebuilt from scratch (REBUILD.md), "the Lantern Arbor" (Level I filmed)
+    S("rebuild_berry_farm", "Build families", "The Berry Farm, rebuilt: from four sides",
+      "the Berry Farm's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none for a berry garden; the lodge is a store) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Berry Farm from the front: the gateway in the clipped hedge, the arbor walk between the berry beds to the picking lodge's steep red gable"),
+           ("02_outside_back", "From the back: the lodge's gable end and the hedge round the garden"),
+           ("03_outside_west", "From the west: the hedge, the arbor over the walk, the lodge's steep roof"),
+           ("04_outside_east", "From the east: the berry beds in their log curbs, the lodge behind them")], furniture=True),
+    # ROADMAP 50.9: the Apiary Garden rebuilt from scratch (REBUILD.md), "the Skep Wall" (Level I filmed)
+    S("rebuild_apiary_garden", "Build families", "The Apiary Garden, rebuilt: from four sides",
+      "the Apiary Garden's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: the skep is a store) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Apiary Garden from the front: the great straw skep in the stone wall, hives in the bee boles either side over their smoking campfires, the bee font in the flower garden"),
+           ("02_outside_back", "From the back: the wall's buttresses and the skep's round crown"),
+           ("03_outside_west", "From the west: the low hedge round the garden, the skep rising over the wall"),
+           ("04_outside_east", "From the east: the wall's end pier and its lantern, the bee garden in front")], furniture=True),
+    # ROADMAP 50.9: the Greenhouse rebuilt from scratch (REBUILD.md), "the Leat House" (Create only)
+    S("rebuild_greenhouse", "Build families", "The Greenhouse, rebuilt: from four sides and at eye level inside",
+      "the Greenhouse's blueprint stands on a cleared lawn with Create; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Greenhouse from the front: three glass gables, the tall nave in the middle, the depot hatch at the belt's end"),
+           ("03_outside_west", "From the west: the leat in its stone trough and the undershot wheel under its little hood"),
+           ("02_outside_back", "From the back: the brick boiler and its tall stack"),
+           ("10_room_1", "Inside at eye level: the beds either side of the walk, the belt along the west wall under the harvester and the plough")], furniture=True, create=True),
     # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
     # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
     S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",

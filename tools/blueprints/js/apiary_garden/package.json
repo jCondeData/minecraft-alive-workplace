@@ -1,0 +1,10 @@
+{
+  "name": "apiary-garden",
+  "private": true,
+  "type": "module",
+  "description": "The Apiary Garden (the Skep Wall), drawn from scratch for ROADMAP 49 (tools/blueprints/briefs/apiary_garden.md, REBUILD.md): a candidate for the critic. LEVEL=1..2 picks the level; build.sh builds and saves both. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

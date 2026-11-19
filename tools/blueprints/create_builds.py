@@ -393,7 +393,7 @@ GLASS_FRAME = "stripped_spruce_log"
 
 
 def greenhouse():
-    """15 x 11 x 13 (ROADMAP 39.8): the Greenhouse. An eleven-square glass house on a stone-brick knee wall, framed in
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/greenhouse; this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 11 x 13 (ROADMAP 39.8): the Greenhouse. An eleven-square glass house on a stone-brick knee wall, framed in
     stripped spruce, under a stepped glass roof on spruce rafters (one glass type: glass blocks); the water wheel on its
     west wall (header tank and mill race as the Watermill's). Inside, beds of farmland watered by two channels, and down
     the aisle between them a belt from the wheel's shaft, running to a depot by the front: the harvest line, with a

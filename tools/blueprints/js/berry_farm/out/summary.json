@@ -1,0 +1,19 @@
+{
+  "name": "berry-farm-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 19
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_farm/out/berry-farm-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_farm/out/summary.json",
+  "size": [
+    13,
+    12,
+    17
+  ],
+  "blockCount": 878,
+  "paletteCount": 46,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/berry_farm/recipe.mjs"
+}

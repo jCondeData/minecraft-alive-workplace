@@ -1,0 +1,19 @@
+{
+  "name": "village-train",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 3
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/village_train/out/village-train.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/village_train/out/summary.json",
+  "size": [
+    4,
+    4,
+    1
+  ],
+  "blockCount": 15,
+  "paletteCount": 10,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/village_train/recipe.mjs"
+}

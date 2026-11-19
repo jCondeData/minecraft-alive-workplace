@@ -176,7 +176,16 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            "quarry", "sifting_shed", "sifting_shed_2",
            # 50.10, the Crushing Mill ("the Fall House") and the Windmill ("the Stage Mill"), Create only: js/crushing_mill
            # and js/windmill (MC_BUILDER=..., sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones)
-           "crushing_mill", "windmill"}
+           "crushing_mill", "windmill",
+           # 50.13, the Train Station ("the Trainshed"), Create only: js/train_station (MC_BUILDER=..., sh build.sh writes
+           # the candidate; LIVE=1 sh build.sh the live one)
+           "train_station",
+           # 50.13, the Pump House ("the Tanner's Water Tower"), Create only: js/pump_house (MC_BUILDER=..., sh build.sh
+           # writes the candidate; LIVE=1 sh build.sh the live one)
+           "pump_house",
+           # 50.13, the Terminal Nook ("the Staddle Granary"), both drawings: js/terminal_nook (MC_BUILDER=..., sh build.sh
+           # writes the candidates, the vanilla build and its Tom's copy in modded/; LIVE=1 sh build.sh the live ones)
+           "terminal_nook"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -302,10 +311,11 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     for name, draw in CREATE_BUILDS + MORE_CREATE_BUILDS:  # ROADMAP 39.4 and 39.8: listed only with Create
         if name in REBUILT:
-            continue  # ROADMAP 50.2, 50.3, 50.5 and 50.7: drawn by the rebuild kit
+            continue  # ROADMAP 50.2, 50.3, 50.5, 50.7 and 50.13: drawn by the rebuild kit
         draw().save(MAIN_STRUCTURES, name)
     for name, draw in TRAIN_STATION:  # ROADMAP 39.7: listed only with Create and villageTrains
-        draw().save(MAIN_STRUCTURES, name)
+        if name not in REBUILT:  # ROADMAP 50.13: drawn by the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
     village_train().save(os.path.join(MAIN_STRUCTURES, "train"), "village_train")  # ROADMAP 39.7c: the village's Create train
     # ROADMAP 38.7 mega_shrine and 41.1 waystone_plaza (all five looks) come from the rebuild kit since 52.4
     # ROADMAP 49.4: the Stone House (I-IV) comes from the rebuild kit (tools/blueprints/js/stone_house/build.sh, then
@@ -367,7 +377,8 @@ if __name__ == "__main__":
         quarry().save(MAIN_STRUCTURES, "quarry")  # ROADMAP 36.12: the Miner's pit that grows back
     # ROADMAP 37.14 crafters_workshop and 46.6 glassblowers_workshop come from the rebuild kit since 50.7 (REBUILT);
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
-    save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
+    # ROADMAP 37.17: with their Tom's copies (50.13: the Terminal Nook's two come from the rebuild kit)
+    save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"), skip=REBUILT)
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
         if name not in REBUILT:  # ROADMAP 51.8 / 50.8: the Fire Station and the Physician's House come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19

@@ -58,9 +58,9 @@ public class QaStorageHallGameTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_test:huge_area";
 	private static final ResourceLocation TEST_HUT = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_hut");
 	/** Where each build's Storehouse block stands in its template (StorageHallGameTests). */
-	private static final BlockPos NOOK_STOREHOUSE = new BlockPos(2, 1, 4);
+	private static final BlockPos NOOK_STOREHOUSE = new BlockPos(2, 3, 4); // 50.13: the rebuilt Nook's room is one level up
 	private static final BlockPos HALL_STOREHOUSE = new BlockPos(6, 1, 5);
-	private static final int NOOK_STORES = 8;
+	private static final int NOOK_STORES = 11; // 50.13: 9 single chests and 2 barrels
 	private static final int HALL_STORES = 31;
 	/** Each material of the test hut is put in the hall's chests this many over what the hut takes. */
 	private static final int EXTRA = 3;
@@ -131,8 +131,8 @@ public class QaStorageHallGameTests implements FabricGameTest {
 	// ------------------------------------------------------------------------------------------- the board, once
 
 	/**
-	 * The finished Nook (its blocks set as the build sets them) with a different item in each of its 8 chests, a
-	 * different number of each: the board's stock line says 8 chests and the true total, and taking all of an item
+	 * The finished Nook (its blocks set as the build sets them) with a different item in each of its 11 chests and barrels, a
+	 * different number of each: the board's stock line says 11 chests and the true total, and taking all of an item
 	 * through the store gives exactly what was put in (a chest read through both halves of a double chest would give it
 	 * twice).
 	 */
@@ -146,7 +146,8 @@ public class QaStorageHallGameTests implements FabricGameTest {
 		BlockPos board = placement.origin().offset(NOOK_STOREHOUSE);
 		List<BlockPos> store = storeIn(level, board, box(placement, entry));
 		helper.assertTrue(store.size() == NOOK_STORES, "the Nook's store has " + store.size() + " blocks, wanted " + NOOK_STORES);
-		Item[] items = {Items.COBBLESTONE, Items.OAK_LOG, Items.IRON_INGOT, Items.WHEAT, Items.PAPER, Items.COAL, Items.BREAD, Items.STRING};
+		Item[] items = {Items.COBBLESTONE, Items.OAK_LOG, Items.IRON_INGOT, Items.WHEAT, Items.PAPER, Items.COAL, Items.BREAD, Items.STRING,
+			Items.FLINT, Items.LEATHER, Items.CLAY_BALL};
 		int total = 0;
 		for (int i = 0; i < store.size(); i++) {
 			((Container) level.getBlockEntity(store.get(i))).setItem(0, new ItemStack(items[i], i + 2));
@@ -236,7 +237,7 @@ public class QaStorageHallGameTests implements FabricGameTest {
 
 	/**
 	 * The Nook's build saved and loaded mid-structure (every site and the builder, as a server restart reads them): it
-	 * still finishes with every block right and nothing skipped, it is a Storehouse with its 8 stores, and the barrels
+	 * still finishes with every block right and nothing skipped, it is a Storehouse with its 11 stores, and the barrels
 	 * that held exactly its materials are empty, with nothing in the builder's bag (nothing was carried twice).
 	 */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"qaNookReload"'

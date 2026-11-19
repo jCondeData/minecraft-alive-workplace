@@ -1162,9 +1162,9 @@ SCENES = [
        ("22_wonder_stadium_battle", "The player's battle against a visiting trainer")], cobblemon=True),
     # The Lighthouse (ROADMAP 35.12): its time-lapse beside a sea the harness digs, ending at night with the lamps lit
     S("wonder_lighthouse", "Wonders", "The Lighthouse: its time-lapse by the sea, lit at night",
-      "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled, the jetty running out over the water; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the lantern's redstone lamps shone over the sea", 780,
-      [("11_wonder_lighthouse_stage_1", "Stage I, the Mole and the Quay, by the sea"),
-       ("14_wonder_lighthouse_stage_4", "The Lantern and the Keeper's House: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
+      "a crew of ten raised the Lighthouse stage by stage beside a sea the harness dug and filled: the quay, the mole and the bastion first, then the keeper's cottage with the ferry landing and its jetty out over the water, the shaft and the gallery, and last the lantern under its hood of lamps; once finished its powers came on (caravans twice as far in half the time, ferry fares halved, a day's warning of pirates) and the jetty's Travel Post joined the network under the village's name; after the festival's fireworks, at midnight the hood's ring of redstone lamps shone over the sea", 780,
+      [("11_wonder_lighthouse_stage_1", "Stage I, the Quay, the Mole and the Bastion, by the sea"),
+       ("14_wonder_lighthouse_stage_4", "The Lantern and the Hood: finished"), ("19_wonder_lighthouse_fireworks", "The festival's fireworks over the tower"),
        ("20_wonder_lighthouse_night", "Midnight: the lamps lit over the sea")]),
     # The Hanging Gardens (ROADMAP 35.20): its time-lapse, ending the next morning with the falls running and farmers on the terraces
     S("wonder_hanging_gardens", "Wonders", "The Hanging Gardens: its time-lapse, and farmers on its terraces",
@@ -1195,9 +1195,9 @@ SCENES = [
        ("14_wonder_great_wall_stage_4", "The Walk and the Towers' Crowns: the Wall finished"), ("20_wonder_great_wall_night", "Midnight: the raid gathers on the open side, the sentries on the walk")]),
     # The Observatory (ROADMAP 35.18): its time-lapse, then the Sky Chart in hand and the Coming days page
     S("wonder_observatory", "Wonders", "The Observatory: its time-lapse, the Sky Chart and the Coming days",
-      "a crew of twelve raised the Observatory stage by stage on a sped-up server, the terrace and courtyard first, then the tower, the copper dome and the great telescope with the orrery; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
-      [("11_wonder_observatory_stage_1", "Stage I, the Terrace and the Courtyard, up"),
-       ("14_wonder_observatory_stage_4", "The Great Telescope and the Orrery: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
+      "a crew of twelve raised the Observatory stage by stage on a sped-up server, the Star Terrace and the Chart Hall first, then the great gnomon with its quadrants, the drum and the copper dome with the great telescope; once finished its powers came on and, after the festival's fireworks, the hall's search charted the land round the village: the Sky Chart in hand shows about 6,144 blocks with a marker on every structure found, each named in its tooltip; then the hall's calendar page showed the Coming days, a festival in three days, a wedding tomorrow, a caravan on the road, the market day, the full moon and the night's raid risk", 840,
+      [("11_wonder_observatory_stage_1", "Stage I, the Star Terrace and the Chart Hall, up"),
+       ("14_wonder_observatory_stage_4", "The Copper Dome and the Great Telescope: the Observatory finished"), ("20_wonder_observatory_sky_chart", "The Sky Chart in hand"),
        ("21_wonder_observatory_coming_days", "The hall's calendar with the Coming days")]),
     # Switching classes on (ROADMAP 34.22): a village from before 1.8 finds its places; the hall's pages before and after
     S("class_switch_on", "Village Hall", "Switching classes on: a village finds its places",
@@ -1747,6 +1747,44 @@ SCENES = [
            ("03_outside_west", "From the west: the striped stall with produce on its counter, the open undercroft behind"),
            ("04_outside_east", "From the east: the outside stair up to the Market Court's door, a lamp post at its foot"),
            ("10_room_1", "The Market Court at eye level: the reeve's tables either side of the aisle to the balcony door, the cupboards of standard weights, two lamps hung from the tie beams")], furniture=True),
+    # ROADMAP 51.8: the defences rebuilt from scratch (the Gate Ward, the Gate Watch, the Hose Tower, the Gatehouse, the Hoarded Watchtower)
+    S("rebuild_barracks", "Build families", "The Barracks, rebuilt: from four sides and at eye level inside",
+      "the Barracks's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Barracks from the front: the square gate tower with its vaulted passage and glazed watch lantern beside the barrack range's slate gable"),
+           ("02_outside_back", "From the back: the walled training court behind the tower, lanterns on its merlons"),
+           ("04_outside_east", "From the east: the gate tower's slate cap over the court wall"),
+           ("10_room_1", "Inside the barrack range at eye level: the two guards' grindstones by the door, bunks at the back, the hearth")], furniture=True),
+    S("rebuild_guard_house", "Build families", "The Guard House, rebuilt: from four sides and at eye level inside",
+      "the Guard House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Guard House from the front: two stone piers and the road arch, the timber barrack room jettied over both under one slate roof with the watch gable over the gate"),
+           ("02_outside_back", "From the back: the road arch's iron grille and wicket under the jettied room"),
+           ("04_outside_east", "From the east: the lock-up pier and the straw practice butts under the rake"),
+           ("10_room_1", "The barrack room at eye level: bunks, the mess table and the watch desk at the window over the gate")], furniture=True),
+    S("rebuild_fire_station", "Build families", "The Fire Station, rebuilt: from four sides and at eye level inside",
+      "the Fire Station's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Fire Station from the front: the engine house's gable to the street, the timber watch loft jettied over the engine doors, the hose tower at the corner"),
+           ("02_outside_back", "From the back: the long red tile roof, the hose tower's lookout rising over the ridge"),
+           ("04_outside_east", "From the east: the hose tower's shaft up to its corbelled gallery and hipped cap"),
+           ("10_room_1", "The engine bay at eye level: the Firewarden's grindstone by the trough, buckets on the racks")], furniture=True),
+    S("rebuild_gatehouse", "Build families", "The Gatehouse, rebuilt: from four sides and at eye level inside",
+      "the Gatehouse's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Gatehouse from the village side: two stone towers clasping the road, the fighting loggia over the gate between them"),
+           ("02_outside_back", "From the field: the portcullis drawn up behind the shut fence gates, the towers' cut-back shoulders"),
+           ("04_outside_east", "From the east: the tower's crenellated fighting top over the wall line"),
+           ("10_room_1", "A tower's guardroom at eye level: a seat by the ladder up to the loggia")], furniture=True),
+    S("rebuild_lookout_tower", "Build families", "The Lookout Tower, rebuilt: from four sides and at eye level inside",
+      "the Lookout Tower's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Lookout Tower from the front: the rubble shaft on its battered foot, the timber watch gallery jettied out on corbels under the slate hat"),
+           ("02_outside_back", "From the back: arrow loops up the shaft under the open gallery"),
+           ("04_outside_east", "From the east: the gallery's knee braces and the copper lightning rod on the hat")], furniture=True),
+    # ROADMAP 51.9: the Royal Hall rebuilt from scratch ("the Brick Palace"; realm/royal_hall, REBUILD_BLUEPRINT: its id
+    # has a folder)
+    S("rebuild_royal_hall", "Build families", "The Royal Hall, rebuilt: from four sides and at eye level inside",
+      "the Royal Hall's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Brick Palace from the front: two brick gate towers under green copper caps, the proclamation balcony over the entrance arcade, the realm's banner on the stepped gable"),
+           ("02_outside_back", "From the back: the throne bay pushed out of the hall under its own hipped roof, the louver on the ridge"),
+           ("03_outside_west", "From the west: the battlemented vault with its barred slits"),
+           ("04_outside_east", "From the east: the steward's room, its twin")], env={"REBUILD_BLUEPRINT": "realm/royal_hall"}, furniture=True),
     # ROADMAP 51.6: the Chapel rebuilt from scratch ("the Blossom Court")
     S("rebuild_chapel", "Build families", "The Chapel, rebuilt: from four sides and at eye level inside",
       "the Chapel's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -1887,6 +1925,22 @@ SCENES = [
            ("03_outside_west", "From the west: the leat in its stone trough and the undershot wheel under its little hood"),
            ("02_outside_back", "From the back: the brick boiler and its tall stack"),
            ("10_room_1", "Inside at eye level: the beds either side of the walk, the belt along the west wall under the harvester and the plough")], furniture=True, create=True),
+    # ROADMAP 52.6: the Observatory rebuilt from scratch (REBUILD.md), "the Observatory of the Great Gnomon", filmed whole
+    # (its four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_observatory", "Build families", "The Observatory, rebuilt: from four sides",
+      "the Observatory's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Observatory from the front: the stair up the great gnomon's sloping edge to the drum, the Chart Hall's doors either side of its foot"),
+           ("02_outside_back", "From the back: the stepped terraces under the drum"),
+           ("03_outside_west", "From the west: the quadrant scale against the gnomon, the copper dome over the drum"),
+           ("04_outside_east", "From the east: the great telescope reaching out through the dome's glazed shutter")], furniture=True),
+    # ROADMAP 52.6: the Lighthouse rebuilt from scratch (REBUILD.md), "the Mole Light", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_lighthouse", "Build families", "The Lighthouse, rebuilt: from four sides",
+      "the Lighthouse's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Lighthouse from the quay: the keeper's cottage, the steps up onto the mole and the tower's door straight ahead"),
+           ("02_outside_back", "From the sea: the round bastion and its rip-rap, the tower climbing from its mossy foot to the pale shaft"),
+           ("03_outside_west", "From the west: the fish stage and its drying rack off the mole, the gallery on its corbels"),
+           ("04_outside_east", "From the east: the ferry landing and the jetty with the Travel Post at its end, the hood's ring of lamps")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",
@@ -1955,8 +2009,8 @@ SCENES = [
     S("realm_builds", "Realm builds", "The Colony Camp, the Royal Hall and the Royal Hall II, and all three in the five styles",
       "the Colony Camp, the Royal Hall and the Royal Hall II stand as drawn and in the five styles, the camp with its table and chest, each hall with its vault and on the map as a hall",
       200, [("10_colony_camp", "The Colony Camp: two wagons, the Village Hall under a striped awning, the campfire and the Travel Post"),
-           ("12_royal_hall", "The Royal Hall: a stone great hall with a gabled porch and a rose window"),
-           ("15_royal_hall_2_back", "Royal Hall II from behind: the keep tower, the treasury wing and the vault")]),
+           ("12_royal_hall", "The Royal Hall: a brick palace hall between two gate towers with green copper caps, the balcony over its arcade"),
+           ("15_royal_hall_2_back", "Royal Hall II from behind: the throne bay, the east range and its belfry")]),
     # Wonders (M35): every Wonder's design placed whole (ROADMAP 35.9; each design adds its stills)
     S("wonder_gallery", "Wonders", "The Wonders, each placed whole", "every Wonder stands whole, every part of every stage placed", 90,
       # each Wonder from the front (even) and from behind (odd): 10 the Great Cathedral, 12 the Lighthouse, 14 the Great

@@ -7,6 +7,9 @@ build/rebuild/observatory/ (never src/main/resources): wonder/observatory/stage_
 observatory_stage<n>.nbt (the whole Wonder after stage n, for renders and holes.py).
 
     MC_BUILDER=<minecraft-builder skill> python3 tools/blueprints/js/observatory/stages.py
+
+Shipped (52.6): wonders.WONDERS["observatory"]["draw"] is staged() below, so the mod's parts and data file are saved with
+    MC_BUILDER=<minecraft-builder skill> python3 -c "import sys; sys.path.insert(0, 'tools/blueprints'); import wonders; wonders.save_wonder('observatory')"
 """
 import os
 import subprocess
@@ -32,7 +35,9 @@ def run_recipe(n):
     return os.path.join(HERE, "out", "observatory.nbt" if n == STAGES else f"observatory-stage{n}.nbt")  # the runner writes the name with a hyphen
 
 
-def main():
+def staged():
+    """The Observatory as a kit StagedBuild, one stage per recipe snapshot: wonders.WONDERS["observatory"]["draw"]
+    (52.6, shipped with wonders.save_wonder; needs node and MC_BUILDER)."""
     snapshots = [holes.load(run_recipe(n), props=True) for n in range(1, STAGES + 1)]
     (w, h, d), _, _ = snapshots[-1]
     b = StagedBuild(w, h, d)
@@ -42,7 +47,11 @@ def main():
             if name is None or name == "minecraft:air" or pos in b.blocks:
                 continue
             b.set(*pos, name, **states[pos])
-    stages = b.stage_builds()
+    return b
+
+
+def main():
+    stages = staged().stage_builds()
     problems = 0
     before = set()
     for n, s in enumerate(stages, 1):

@@ -26,6 +26,24 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
+  green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
+  vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
+  with the treasury (eight chests, its own east door), a council chamber upstairs and a belfry with a bell. Halls already
+  standing keep their old drawing until refreshed.
+- **The Observatory is rebuilt from scratch** (52.6): a stepped monument of dark stone, "the Observatory of the Great
+  Gnomon". The Star Terrace with the Chart Hall inside it (a cartography table, lecterns and an amethyst star in the
+  floor) goes up first; then a giant sundial's blade with a stair up its sloping edge and a smooth stone quadrant scale
+  on each side; then the drum and its Observing Room; and last the copper dome with the great telescope reaching out
+  through its glazed shutter. New stage names to match. An Observatory already begun or finished keeps the old drawing:
+  it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Lighthouse is rebuilt from scratch** (52.6): "the Mole Light", a stone arm running out to sea from the quay to a
+  round bastion, the tower at its end climbing from a mossy foot to a pale shaft, a gallery on corbels and a glazed
+  lantern under a hood of 28 lamps that light by themselves at night. The keeper's cottage and a net shed stand on the
+  quay; a ferry landing with a jetty out to the Travel Post (now at the sea-side edge) and a fish stage with a drying
+  rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
+  stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
+  is repaired and finished as it was first drawn.
 ### Fixed
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
@@ -225,6 +243,26 @@ asks for the steps, `latest.log` and any crash report).
   the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
   market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
   already standing keep their look until you refresh them.
+- **The defenses are rebuilt from scratch** (51.8). Buildings already standing keep their look until you refresh them.
+  - **Barracks** ("the Gate Ward", 13 x 13, 13 high): a square stone gate tower with a vaulted passage and a glazed
+    watch lantern under a slate cap, a barrack range beside it with the two guards' grindstones, two bunks and a
+    hearth, and a walled training court behind with the Training Dummy, an archery butt and a spear rack. Barracks II
+    (21 wide) adds the range's mirror image on the tower's other side, with two more grindstones and two more bunks;
+    Barracks III digs an armory and lock-up under the west range.
+  - **Guard House** ("the Gate Watch", 15 x 11, 15 high): two stone piers with a road arch between them, a guardroom
+    with the grindstone in one and an armory and barred lock-up in the other, and the guard's timber barrack room
+    bridging both on a jetty under one steep slate roof, with a watch desk at the window over the gate. Guard houses
+    that grow in villages keep their own look.
+  - **Fire Station** ("the Hose Tower", 15 x 16, 18 high): a stone engine house with a timber watch loft jettied over
+    its doors under a red tile roof, and a tall hose tower at the front corner rising past the ridge to a lookout
+    gallery. The Firewarden's grindstone stands by the water trough, buckets on racks beside it.
+  - **Gatehouse** (11 x 5, now 16 high): two stout towers clasp the road under crenellated fighting tops, with a
+    gabled fighting loggia for the archers over the portcullis between them. Gatehouse II throws a walled barbican
+    forward with its own gate, portcullis, murder holes and archers' deck. The gates and portcullis work as before.
+  - **Lookout Tower** ("the Hoarded Watchtower", 9 x 9, 16 high): a slim rubble tower on a battered foot carries a
+    timber watch gallery, open on every side, under a steep slate hat. II leans a gear shed with a guard's grindstone
+    and the alarm bell against it, III adds a crenellated guardhouse with a second grindstone, two bunks and a lower
+    fighting roof, and IV digs an armory under the guardhouse.
 - **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
   of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
   canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying

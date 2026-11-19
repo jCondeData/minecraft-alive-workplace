@@ -109,7 +109,7 @@ function court(c, level) {
   }
   // the job piece and its dressing
   c.set(...COURT.dummy, 'aliveworkplace:training_dummy', { facing: 'north' })
-  c.set(...COURT.butt.hay, 'hay_bale', { axis: 'y' })
+  c.set(...COURT.butt.hay, 'hay_block', { axis: 'y' })
   c.set(...COURT.butt.target, 'target', { power: '0' })
   weaponRack(c, COURT.rack, `${P.wood}_fence`, 'lightning_rod')
   if (level >= 2) weaponRack(mirrorX(c, MIRROR), COURT.rack, `${P.wood}_fence`, 'lightning_rod')
@@ -174,7 +174,7 @@ function cellarLevel(c) {
   leverDoor(c, [4, -3, 7], { wall: 'x', jambSide: 1, out: 'north' }, { door: 'iron_door', jamb: P.beam })
   c.set(4, -1, 7, wall)
   for (const x of [2, 3, 6]) for (let y = -3; y <= -1; y++) c.set(x, y, 7, 'iron_bars')
-  for (const [x, z] of [[2, 10], [3, 10], [2, 9]]) c.set(x, -3, z, 'hay_bale', { axis: 'x' })
+  for (const [x, z] of [[2, 10], [3, 10], [2, 9]]) c.set(x, -3, z, 'hay_block', { axis: 'x' })
   for (let y = -2; y <= -1; y++) c.set(6, y, 10, 'chain', { axis: 'y', waterlogged: 'false' })
   return inside
 }

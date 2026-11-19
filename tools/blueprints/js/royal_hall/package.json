@@ -1,0 +1,7 @@
+{
+  "name": "royal-hall",
+  "private": true,
+  "type": "module",
+  "description": "The Royal Hall (realm/royal_hall, realm/royal_hall_2), rebuilt from scratch for ROADMAP 51.9 (tools/blueprints/briefs/royal_hall.md, REBUILD.md): the Brick Palace. MC_BUILDER = the minecraft-builder skill's folder. LEVEL=1|2 picks the level; build.sh builds and saves both as candidates (LIVE=1: the live structures).",
+  "scripts": { "build": "sh build.sh" }
+}

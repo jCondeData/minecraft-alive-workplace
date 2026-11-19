@@ -258,6 +258,25 @@ public final class StarterBlueprints {
 	public static final Entry TERRACE = new Entry(AliveWorkplace.id("terrace"), new Vec3i(13, 16, 10));
 	/** A third house on the east end, the same again: six beds. */
 	public static final Entry TERRACE_2 = new Entry(AliveWorkplace.id("terrace_2"), new Vec3i(18, 16, 10));
+	/**
+	 * The Terrace's biome looks (ROADMAP 49.10c, {@code tools/blueprints/js/terrace_<culture>}; see {@link BlueprintLooks}):
+	 * both levels drawn again in a village culture's climate, with the same homes, beds, doors, ladders, furniture spots
+	 * and size as the level drawn. A desert, savanna or taiga village builds its own look; plains and snowy (whose look
+	 * the critic sent back) the Terrace as drawn. Each list holds a culture's two levels, Level I first.
+	 */
+	public static final List<Entry> TERRACE_DESERT = terraceLook("desert");
+	public static final List<Entry> TERRACE_SAVANNA = terraceLook("savanna");
+	public static final List<Entry> TERRACE_TAIGA = terraceLook("taiga");
+	/** Every look of the Terrace, both levels. */
+	public static final List<Entry> TERRACE_LOOKS = java.util.stream.Stream.of(TERRACE_DESERT, TERRACE_SAVANNA, TERRACE_TAIGA)
+		.flatMap(List::stream).toList();
+
+	/** A culture's look of the Terrace's two levels, each the size of the level drawn (ids spelt out, as {@code stoneHouseLook}'s). */
+	private static List<Entry> terraceLook(String culture) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(TERRACE, TERRACE_2)
+			.map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 	/** A tavern below, three guest rooms with six beds above. */
 	public static final Entry INN = new Entry(AliveWorkplace.id("inn"), new Vec3i(13, 16, 13));
 	/** A stable on the side with a Feed Trough: a rancher moves in. */

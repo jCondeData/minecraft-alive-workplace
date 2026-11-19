@@ -32,6 +32,13 @@ Roadmap items: 49.6, B281, B304, B640, B641, B925
   (36.21). The chests, barrels and stoves of the old drawing stand in the same cells in the new one, so a refresh never
   has to move one.
 
+- **In its village's culture** (49.10c): a desert village builds both levels as the Windcatcher Row (sandstone below
+  mud brick, a dark oak lattice over each door, flat roofs behind a parapet, one slotted windcatcher per home); a
+  savanna village as the Veranda Row (one long golden thatch hip, red granite below packed mud, a veranda on acacia
+  posts, each home's window trim painted); a taiga village as the Logging Row (dark spruce logs on a mossy cobble
+  footing under one slate roof, a veranda on log posts, a stack on every party wall). The homes, beds, doors, ladders
+  and furniture are the same. Plains and snowy villages build the Crow-Step Row. The Blueprint Table lists the looks.
+
 ## 2. How it works
 
 - Drawn in JavaScript with the rebuild kit: `tools/blueprints/js/terrace/` (`plan.mjs`: three concepts, story, palette,
@@ -49,6 +56,13 @@ Roadmap items: 49.6, B281, B304, B640, B641, B925
 - `StarterBlueprints.TERRACE` and `TERRACE_2` keep their sizes. Modded copies: `modded_library.py terrace terrace_2`.
   Village looks: the styles (`BlueprintStyles`) are applied at play time, as before; the campfires sit on stone-brick
   caps that stay solid in every style.
+
+- The culture looks (49.10c) are drawn in `tools/blueprints/js/terrace_<culture>/` from the brief and the shipped
+  plan (they import its homes, furniture, doors and ladders; `look_spots.py` says SAME BUILDING); `SHIP=1 build.sh`
+  saves them as `structure/looks/<culture>/terrace[_2]`. The critic passed desert, savanna and taiga in round 1
+  (`tools/blueprints/briefs/terrace_looks_critic.md`); snowy went back (its gables ended in a blunt dark square) and is
+  redrawn, not yet shipped. `BlueprintLooks` lists the three looks; `StarterBlueprints.TERRACE_DESERT`, `_SAVANNA` and
+  `_TAIGA` list each look's levels. Scene: `rebuild_terrace_looks`.
 
 ## 3. Switches
 
@@ -89,6 +103,8 @@ their drawing until a refresh.
 - A refresh keeps slept-in beds, and the old drawings' beds stood in what is now the bedroom's open floor (z 3-4); a
   refreshed Terrace whose old beds were slept in keeps them there until they are broken.
 
+- No snowy look yet (critic round 1 BACK; round 2 drawn, not yet judged).
+
 ## 8. Proof
 
 `TerraceSleepGameTests`, `QaHallBeds1103cGameTests` (turned a quarter; save and reload), `QaBedsHauler1105cGameTests`,
@@ -98,4 +114,5 @@ their drawing until a refresh.
 alike), `B640GameTests` (the front panes, `FRONT`), `B648GameTests`, `BuilderGameTests.buildsTerrace` and
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `B280LandscapeGradeGameTests`, `QaReleaseRefresh1028GameTests`
 and `RefreshMatchesFreshBuildGameTests`, `QaRefreshHistory1028GameTests`, `StyleGameTests.chimneysStayWholeInEveryStyle`.
-Scenes `rebuild_terrace`, `terrace_sleep`, `furnished_home`.
+Scenes `rebuild_terrace`, `terrace_sleep`, `furnished_home`. `TerraceLooksGameTests` (culture pick, fallbacks, base/upgrade/lock per look, sizes, beds and job blocks, Level I of
+each look built to DONE, a desert site saved mid-build reloads as desert). Scene `rebuild_terrace_looks`.

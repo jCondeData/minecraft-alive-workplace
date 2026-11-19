@@ -121,3 +121,67 @@ Optional polish: L1/L2 left, the flue above the weathering is one block wide for
 dark box with a step (taiga_1_back): show the log ends or split it in two short stacks; L2 right, the hesje's dark posts
 with cloth between read as a wall of pillars (taiga_2_right): thinner posts (fences) under the rail; L1/L2 right, the log
 gable steps under the rake in an orange spruce sawtooth (taiga_1_right), as OLD's gables do, so not worse.
+
+## Round 2 (date 2026-11-19, a fresh critic)
+
+Renders `build/rebuild/r2_1910d/renders/` (`old_wc_<L>_*` the drawn levels, `wc_<culture>_<L>_*` the candidates, the
+`weavers-cottage-<culture>-<L>-cut3/cut7_*` cutaways); blocks read from `build/rebuild/r2_1910d/in/*.nbt`. Sheets:
+`weavers_cottage_looks/<culture>_<L>_r2_vs_old.png` (OLD left, NEW right: front, back, left, right, top, low). Same
+standard as round 1: each score at least OLD's (4/4/4/4), it reads as its culture, nothing in the brief missed. Interior
+is unchanged from round 1 (the cutaways show the same workroom and loft; the designers report look_spots SAME BUILDING).
+
+| Look | Silhouette | Depth | Interior | Detail | Reads as its culture | Verdict |
+|---|---|---|---|---|---|---|
+| OLD (as drawn) | 4 | 4 | 4 | 4 | - | - |
+| Desert | 4 | 4 | 4 | 4 | yes (unchanged) | SHIP |
+| Snowy | 4 | 4 | 4 | 3 | yes, clearly not taiga (unchanged) | BACK (narrow) |
+
+### Desert (SHIP)
+Round-1 notes checked:
+1. Oriel: answered. It now hangs a block out (z 0) on a row of sandstone corbels at y 4, fence corner posts, lattice on
+   the front and both sides, a dark-oak slab cornice a block out at y 8; it throws a shadow and reads as a bay, not a
+   door (wc_desert_1_low, wc_desert_2_front). Depth gained.
+2. Racks: half answered. Each rail now stops on a fence post, but the rail is `spruce_log` axis x, so its end grain at
+   (4, 12, 3) / (6, 12, 3) and (4, 12, 6) / (5, 12, 6) still shows behind the slim posts from the sides
+   (wc_desert_1_left). It reads now as a post with a board behind it, much smaller than round 1's crates.
+3. Palm: answered well enough. A 6-high bare jungle trunk with drooping fronds reads as a palm from the right
+   (wc_desert_2_right); from the back and top the diagonal leaves at top and top-1 still fill it into a broad umbrella
+   (wc_desert_2_back, wc_desert_2_top).
+Detail 4: the oriel was the fault that held it at 3, and it is now the front's best piece; what is left is small.
+
+Optional polish (no new critic needed): the rack rails as `stripped_spruce_log` or a fence rail so no ring shows from
+the sides; drop the four diagonal leaves at (palm ± 1, top - 1, ± 1) to thin the crown from the back; the y 4 course's
+stair ends at x 0 / x 12 (round 1's polish) are still there.
+
+### Snowy (BACK, narrow)
+Round-1 notes checked:
+1. Storm porch: answered. Rake stairs at (8, 4, 0..1) and (10, 4, 0..1), a deepslate-tile ridge at (9, 5, 0..1) with
+   snow, calcite only at (9, 4, 0), the lantern under the ridge at (9, 4, 1): it reads as a small pointed gable now
+   (wc_snowy_1_low).
+2. Woodpile: answered. One wood (spruce), logs along z at x 0, z 5..7, y 0..1, snow on top; from the left it reads as
+   a dark stack, not crates (wc_snowy_1_left).
+3. Ground snow: half answered. The cells by the step and at x 11..15 are bare, but two loose layers remain at
+   (16, 0, 1) and (17, 0, 1), in front of the fold's kerb and joined to nothing: the white slab is still on the grass in
+   both front views (wc_snowy_1_front, wc_snowy_2_front, bottom left).
+4. Drying wall: half answered. Slits at x 2, 5..6 and 9, y 1..2 open the wall, but they are bare 2-high holes with no
+   head or sill in the calcite panels, and through them the back road sees gravel, not the cloth: the banners hang at
+   (1..10, 3, 14), above the slits' sight line (wc_snowy_2_back). The wall is still four high and hides the ground
+   storey.
+New: the dormer's apex has a notch. The verge stairs at (3, 8, 1) and (5, 8, 1) leave (4, 8, 1) empty, so the birch
+plank behind it at (4, 8, 2) shows as a thin yellow stick standing up out of the slate (wc_snowy_1_front,
+wc_snowy_1_low).
+Detail 3: snow placed with discipline and the porch and woodpile fixed, but the front still carries the loose slab and
+the stick, and the back wall's slits read as holes. Still below OLD's 4.
+
+Notes (all small, all named cells):
+1. wc_snowy_1_front, wc_snowy_2_front: remove the snow layers at (16, 0, 1) and (17, 0, 1) (or join them to a drift along
+   the fold's whole kerb, x 11..17, z 1). No loose white cell left on the grass.
+2. wc_snowy_1_front, wc_snowy_1_low: fill the dormer's apex at (4, 8, 1) with `deepslate_tiles` (or an upside-down
+   deepslate-tile stair) so the verge closes and no birch shows above the face.
+3. wc_snowy_2_back: make the drying wall read from the back road. Either drop its top to y 3 between the piers
+   (x 1..3, 5..6, 8..10, keeping the hood at y 4 on the piers), or frame each slit (a stone-brick head at y 3 and a
+   slab sill at y 0) and hang the cloth low enough to fill them (banners at y 2 on the rail's posts, or wool at y 1..2,
+   z 15, behind the slits), so colour, not gravel, shows through.
+
+Under REBUILD.md's "twice at most" this is the snowy look's second BACK: if the lane answers these three, the look goes
+to the owner as it stands after round 3 (or to a third critic, as the lane decides).

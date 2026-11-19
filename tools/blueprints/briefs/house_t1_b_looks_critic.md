@@ -110,3 +110,49 @@ Notes:
 Verdict: desert and taiga SHIP (4/4/4/3 against OLD's 4/4/4/3, each with optional polish); savanna and snowy go BACK on
 Detail (2 against 3), each with notes 1-3 to answer. Under REBUILD.md's literal rule none beats OLD on three scores;
 they are judged, as the Terrace and Manor looks were, by the looks standard (at least OLD's on every score).
+
+## Round 2 (date 2026-11-19, a fresh critic)
+
+Renders `build/rebuild/r2_1910d/renders/` (`old_daub_1_*` the drawn house, `daub_<culture>_1_*` the candidates, the
+`house-t1-b-<culture>-1-cut3/cut7_*` cutaways); blocks read from `build/rebuild/r2_1910d/in/*.nbt`. Sheets:
+`house_t1_b_looks/<culture>_1_r2_vs_old.png` (OLD left, NEW right: front, back, left, right, top, low). Standard: each
+score at least OLD's (4/4/4/3), it reads as its culture, nothing in the function brief missed. The cutaways show the
+same kitchen, hall and loft as round 1 (four beds, the stove and pantry, the loft railing).
+
+| Look | Silhouette | Depth | Interior | Detail | Reads as its culture | Verdict |
+|---|---|---|---|---|---|---|
+| OLD (as drawn) | 4 | 4 | 4 | 3 | - | - |
+| Savanna | 4 | 4 | 4 | 3 | yes (unchanged) | SHIP |
+| Snowy | 4 | 4 | 4 | 3 | yes, clearly not taiga (unchanged) | SHIP |
+
+### Savanna (SHIP)
+Round-1 notes checked:
+1. Window dressing: answered. The side and back windows have open acacia trapdoor shutters and no stair under them; the
+   upper west window no longer sits on the lower one's head (daub_savanna_1_left). The two hall front windows keep
+   only a sill, under the veranda (daub_savanna_1_front).
+2. Veranda pent: answered. It runs x 0..8 at (x, 4, 0) and stops on the corner posts (0, 2..3, 0) and (8, 2..3, 0),
+   with no return round the corner (daub_savanna_1_left).
+3. Paint band: answered as offered: off the side walls, kept across the front at y 3, z 2 (orange at x 1, 3, 5, 7,
+   white at x 4) under the veranda.
+4. (optional) thatch colour: not done; kept as the village's thatch, as the Terrace looks were allowed.
+Detail 3: equal to OLD. The crates are gone; what is left is small orange spots on the side walls.
+
+Optional polish: daub_savanna_1_left, daub_savanna_1_right: the beam ring's corner logs (1, 4, 1), (1, 4, 11) and their
+twins at x 7 are axis x, so their orange end grain shows as squares on the side walls; turn those corners' logs to
+axis z (bark out on the sides). The band's west end (1, 3, 2) shows from the side as one lone orange square: make it
+white or plain packed mud.
+
+### Snowy (SHIP)
+Round-1 notes checked:
+1. East rake: answered. The x 8 cells over the wing's roof are deepslate tiles, so the rake is one dark band from the
+   front and right (daub_snowy_1_front, daub_snowy_1_right); no pale teeth.
+2. Dormer verge: answered. Deepslate-tile stairs and a tile ridge with snow; birch only in the face.
+3. Firewood: answered. Spruce alone, logs along x at (8..9, 0..1, 2) and (8..9, 0..1, 10), below the sill
+   (daub_snowy_1_front).
+4. (optional) back wall: not done; the back is still a plain wall either side of the stack (daub_snowy_1_back).
+New: the dormer's apex has a notch. The verge stairs at (3, 8, 0) and (5, 8, 0) leave (4, 8, 0) empty, so the birch
+plank behind at (4, 8, 1) shows as a thin yellow stick above the dormer (daub_snowy_1_front, daub_snowy_1_low).
+Detail 3: equal to OLD (OLD carries crates and a ragged fringe; this carries one notch).
+
+Polish before it ships (one block, no new critic needed): fill (4, 8, 0) with `deepslate_tiles`. Optional: one
+shuttered loft window either side of the stack on the back (round 1's note 4).

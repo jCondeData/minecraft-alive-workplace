@@ -1840,6 +1840,13 @@ SCENES = [
            ("02_outside_back", "From the back: the solid brick gable and the boiler's chimney up it"),
            ("04_outside_east", "From the east: the parlour's copper roof and the fenced cutting yard with its pond"),
            ("10_room_1", "Inside at eye level: the aisle between the raised beds of tall flowers, hanging pots, the composter at the end")], furniture=True),
+    # ROADMAP 50.11: the Supply Shop rebuilt from scratch ("the hoist house")
+    S("rebuild_supply_shop", "Build families", "The Supply Shop, rebuilt: from four sides and at eye level inside",
+      "the Supply Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Supply Shop from the front: the tall street gable jettied over two glass shop bays, the copper sign band, the hoist and its lantern at the apex"),
+           ("02_outside_back", "From the back: the loading door high in the back gable with its hoist beam"),
+           ("04_outside_east", "From the east: the timber frame standing proud of the pale walls, a dormer in the long roof"),
+           ("10_room_1", "Inside at eye level: the Shop Counter across the room between two counters, the stock wall of chests and barrels behind")], furniture=True),
     S("rebuild_tailors_shop", "Build families", "The Tailor's Shop, rebuilt: from four sides and at eye level inside",
       "the Tailor's Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
       40, [("01_outside_front", "The Tailor's Shop from the front: the jettied gable over the glazed shopfront, bolts of cloth on show"),
@@ -1967,7 +1974,7 @@ SCENES = [
     # pack's furniture mods builds them
     S("furnished_workplaces", "Build families", "Furnished workplaces: shop counters, Library desks, school benches (Handcrafted, Beautify, CobbleFurnies)",
       "every furniture spot of the four workplaces holds the piece this server chose, pieces of at least two mods, and each keeps only its own chests and barrels as storage",
-      80, [("01_shop_counter", "Inside the shop: Handcrafted counters either side of the Shop Counter, a shelf of cups, a picture, hanging pots"),
+      80, [("01_shop_counter", "Inside the rebuilt shop: Handcrafted counters either side of the Shop Counter, the stock wall of chests and barrels behind, a hanging lamp"),
            ("02_library_desks", "The Library's reading desks and chairs under hanging pots, the scholar's lectern beyond"),
            ("03_schoolroom", "The schoolroom's benches facing the blackboard and the teacher's Poké Ball desk"),
            ("04_clinic_benches", "The Healing Center's waiting benches, pictures and the nurse's Poké Ball desk")], cobblemon=True, furniture=True),

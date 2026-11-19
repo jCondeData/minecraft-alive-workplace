@@ -94,13 +94,15 @@ public final class StarterBlueprints {
 	public static final Entry HEALING_CENTER_3 = new Entry(AliveWorkplace.id("healing_center_3"), new Vec3i(21, 16, 26)); // ROADMAP 50.8: rebuilt
 	/** Level IV adds the Cistern under the Spring Hall: the spring's source pool and the still room's chests (26.15). */
 	public static final Entry HEALING_CENTER_4 = new Entry(AliveWorkplace.id("healing_center_4"), new Vec3i(21, 16, 26), 4); // ROADMAP 50.8: rebuilt
-	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 10));
-	/** A storeroom and the shopkeeper's bedroom upstairs. */
+	/** The Hoist House: a tall street gable jettied over two glass shop bays, a copper sign band and a hoist at the apex;
+	 *  the Shop Counter across the shop room, the stock wall behind (rebuilt 50.11). */
+	public static final Entry SUPPLY_SHOP = new Entry(AliveWorkplace.id("supply_shop"), new Vec3i(11, 11, 11));
+	/** A lower house range behind: the shopkeeper's back room with his bed, desk and chest. */
 	public static final Entry SUPPLY_SHOP_2 = new Entry(AliveWorkplace.id("supply_shop_2"), new Vec3i(11, 11, 16));
 
-	/** A post office annex with a Postal Desk. */
+	/** A seed and hardware wing beside the shop under its own little street gable. */
 	public static final Entry SUPPLY_SHOP_3 = new Entry(AliveWorkplace.id("supply_shop_3"), new Vec3i(17, 11, 16));
-	/** Supply Shop III with a stockroom under the shop, down a ladder behind the counter (26.15). */
+	/** Supply Shop III with a cool cellar of chests and casks under the wing, down a ladder (26.15). */
 	public static final Entry SUPPLY_SHOP_4 = new Entry(AliveWorkplace.id("supply_shop_4"), new Vec3i(17, 11, 16), 4);
 
 	/** A granary (stone below, a loft with a hoist above) with a Storehouse and eight chests: a porter moves in. */

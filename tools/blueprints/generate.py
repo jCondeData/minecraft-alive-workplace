@@ -160,7 +160,10 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.11, the Flower Shop ("the glasshouse florist"; the buildables only: the five village flower shops keep
            # their own looks, village.py and village_looks.py): js/flower_shop (MC_BUILDER=..., sh build.sh writes the
            # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py flower_shop flower_shop_2)
-           "flower_shop", "flower_shop_2"}
+           "flower_shop", "flower_shop_2",
+           # 50.11, the Supply Shop (I-IV, "the hoist house"; IV with its cellar): js/supply_shop (MC_BUILDER=..., sh
+           # build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
+           "supply_shop", "supply_shop_2", "supply_shop_3", "supply_shop_4"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -233,9 +236,11 @@ if __name__ == "__main__":
                        ("healing_center_3", healing_center_3)):
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
-    supply_shop().save(MAIN_STRUCTURES, "supply_shop")
-    supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
-    supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
+    # ROADMAP 50.11: the Supply Shop (I-IV) comes from the rebuild kit (REBUILT); starter.supply_shop* and
+    # basements.supply_shop_4 are the old drawings, kept in blueprint_history/
+    for name, draw in (("supply_shop", supply_shop), ("supply_shop_2", supply_shop_2), ("supply_shop_3", supply_shop_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     storehouse().save(MAIN_STRUCTURES, "storehouse")
     storehouse_2().save(MAIN_STRUCTURES, "storehouse_2")
     storehouse_3().save(MAIN_STRUCTURES, "storehouse_3")

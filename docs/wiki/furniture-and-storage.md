@@ -66,8 +66,8 @@ checks every shipped one. The Stone House was redone for it: the table by the we
 lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each.
 
 The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
-Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display
-windows and a trellis either side of the door (open trapdoors flat on the wall); the Library's reading tables are
+Counter are counters (rebuilt in 50.11: cloth-covered display tables by the door, shelves of cups by the front bays, a
+picture, pots hanging in the bays and a trellis on the side wall); the Library's reading tables are
 desks with their chairs, pictures by the door and hanging pots over the desks; the Schoolhouse's rows and the Village
 Hall's are benches, the Healing Center has waiting benches and a nurse's desk, the Schoolhouse a teacher's desk by the
 lectern, the Print Shop a printer's desk by the press and its buyers' counter, Village Hall II a council table with

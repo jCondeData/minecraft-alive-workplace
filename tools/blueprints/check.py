@@ -785,13 +785,19 @@ def load_blueprint(path, name):
     for p, block in cells.items():
         if block is not None:
             b.blocks[p] = (block, tuple(sorted(states[p].items())))
+    # A modded copy (modded/<name>, 37.12) has its plain drawing's spots: modded_library.py dresses it by them (a
+    # crockery set on a table by a counter spot), so the owner's rules read them too (50.11: the Supply Shop's)
+    base = name[len("modded/"):] if name.startswith("modded/") else name
     spots = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
-                         "src/main/resources/data/aliveworkplace/blueprint_furniture", name + ".json")
+                         "src/main/resources/data/aliveworkplace/blueprint_furniture", base + ".json")
     b.spots = []
+    from modded_library import basement
+    depth = basement(os.path.basename(base))
     if os.path.exists(spots):
         with open(spots) as f:
             for s in json.load(f)["spots"]:
                 px, py, pz = s["pos"]
+                py += depth  # a spots file has the game's positions (a basement below y = 0); the file's cells start at 0
                 b.spots.append({"kind": s["kind"], "cells": [(px + a[0], py + a[1], pz + a[2]) for a in
                                                              (blk["at"] for blk in s.get("blocks", []))]})
     return b

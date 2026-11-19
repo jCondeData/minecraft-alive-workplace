@@ -54,7 +54,7 @@ final class RebuildScene {
 		"bandit_fort", "caravan_wreck", "chapel", "market_cross", "market_corner", "market_square", "leaders_hall", "trade_hall",
 		"starter_cottage_looks", "clinic", "physicians_house", "healing_center", "barracks", "guard_house", "fire_station",
 		"gatehouse", "lookout_tower", "royal_hall", "observatory", "lighthouse", "berry_farm",
-		"apiary_garden", "greenhouse", "flower_shop");
+		"apiary_garden", "greenhouse", "flower_shop", "supply_shop");
 	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
 	static final Set<String> WONDERS = Set.of("observatory", "lighthouse");
 	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */

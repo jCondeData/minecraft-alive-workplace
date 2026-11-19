@@ -5,9 +5,9 @@ type: Build
 image: https://jcondedata.github.io/minecraft-alive-workplace/quarry_build/anim.gif
 caption: The Miner digs the Quarry's pit, and the rock grows back
 Kind: workshops
-Size: 17 wide, 9 tall, 12 deep, and a flight of steps 5 down
+Size: 19 wide, 17 tall, 14 deep (the pit goes down into the ground under it)
 Job block: a blast furnace, for the Miner
-Inside: a pit 8 by 9 and 10 deep, a hoist, the Miner's shed with a double chest and a crafting table
+Inside: a pit 8 by 9 and 10 deep under a headframe, the hoist house with the blast furnace, two double chests and the winch
 Upgrade: none
 Where: the Blueprint Table
 categories: Builds, Jobs
@@ -19,17 +19,22 @@ grows back, so the village has stone and ore for good.
 
 ## What it looks like
 
-A curb of cobblestone and stone brick with a spruce fence round the pit, open at the front under a spruce hoist with a
-lantern on a chain, and a gate on the east side. Inside the gate a flight of stone steps runs down the side of the pit
-to a lantern-lit landing four blocks down. East of the pit stands the Miner's shed: spruce walls between log posts on a
-cobblestone footing, a dark oak roof, and inside the blast furnace, a double chest and a crafting table. The pit itself
-is the ground you build it on.
+Rebuilt from scratch as "the Headframe". A stone curb with a spruce rail round the pit, lanterns on its four
+corner posts, and over the pit a tall dark oak headframe: four legs that step in halfway up, braced at each ring, with a
+big spoked sheave wheel on top and a skip and a lantern hanging on chains over the hole. The rail is open on the east
+side, between the headframe's legs, where the Miner steps down into the pit. East of it stands the hoist house: stone
+walls under a steep deepslate tile roof with boarded gables, and a red brick stack rising through the ridge straight
+from the blast furnace inside. Inside are the furnace, a drop-off double chest by it, a stores chest against the pit
+wall, an assay bench by the door, lamps, and the winch drum with its crank in the back corner. Behind the pit lies the
+spoil heap of rubble and gravel with an ore or two showing. The pit itself is the ground you build it on.
+
+Quarries already standing keep their old drawing until you refresh them.
 
 ## Building it
 
 Take the Quarry from the [Blueprint Table](blueprint-table.md) (its Jobs line says it brings a Miner), place it and
 stock the chests by the builder's table with what its tooltip lists. See [The Builder and blueprints](builder.md). The
-builder digs the steps out and leaves the pit's ground as it is.
+builder leaves the pit's ground as it is.
 
 ## Putting it to work
 

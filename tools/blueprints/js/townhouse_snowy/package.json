@@ -1,0 +1,10 @@
+{
+  "name": "townhouse-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Burgher's Townhouse, the snowy look (ROADMAP 49.10b): the shipped house as a snowbound merchant's house, a sheer white stone gable under a steep bell-cast slate roof carrying snow, deep windows, a storm porch with an oriel, a spired tower. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

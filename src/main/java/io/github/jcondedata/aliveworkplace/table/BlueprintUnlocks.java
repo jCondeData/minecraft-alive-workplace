@@ -307,12 +307,17 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		}
 	}
 
-	/** What a builder's next level-up unlocks: the locked builds the Table lists, lowest tier first, then by name. */
+	/**
+	 * What a builder's next level-up unlocks: the locked builds the Table lists, lowest tier first, then by name, each
+	 * counted once as its base build (a biome look or style unlocks with its base, so a look and its base are one pick,
+	 * not two: 49.10b).
+	 */
 	public static List<ResourceLocation> nextForLevelUp(ServerLevel level, @Nullable BlockPos hall) {
 		List<ResourceLocation> locked = new ArrayList<>();
 		for (ResourceLocation id : BlueprintLibrary.list(level.getServer(), false)) {
-			if (state(level, hall, id) == State.LOCKED) {
-				locked.add(id);
+			ResourceLocation base = family(id);
+			if (!locked.contains(base) && state(level, hall, base) == State.LOCKED) {
+				locked.add(base);
 			}
 		}
 		locked.sort(Comparator.comparingInt(BlueprintUpgrades::tier).thenComparing(ResourceLocation::toString));

@@ -1,0 +1,10 @@
+{
+  "name": "townhouse-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Burgher's Townhouse, the taiga look (ROADMAP 49.10b): the shipped house as a log merchant's lodge, mossy fieldstone below and notched spruce logs above under broad slate gables, a pent porch on posts, fieldstone stacks, firewood, a log lookout tower. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

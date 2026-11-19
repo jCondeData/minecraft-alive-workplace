@@ -1,0 +1,10 @@
+{
+  "name": "flower-shop",
+  "private": true,
+  "type": "module",
+  "description": "The Flower Shop (ROADMAP 49): the glasshouse florist, a glazed gable on a brick dwarf wall with copper glazing bars and a brick parlour; II adds a glass range across the yard and a ridge lantern. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

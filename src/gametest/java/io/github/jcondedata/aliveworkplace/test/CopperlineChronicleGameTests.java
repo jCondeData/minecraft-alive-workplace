@@ -242,6 +242,58 @@ public class CopperlineChronicleGameTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B1394: an open entry taller than the list folds on a click on any of its rows still in view, after its top row is
+	 * scrolled away; a closed entry still takes clicks only when wholly in view; no entry takes a click outside the list.
+	 */
+	//$ gametest EMPTY_STRUCTURE
+	@GameTest(template = EMPTY_STRUCTURE)
+	public void anOpenEntryScrolledPastItsTopStillFolds(GameTestHelper helper) {
+		List<String> problems = new ArrayList<>();
+		int[] list = {50, 40, 200, 120};
+		int bottom = list[1] + list[3];
+		// a day header, a closed entry, a 64-line open entry, a closed entry
+		boolean[] header = {true, false, false, false};
+		int tall = ChronicleLayout.entryHeight(64, true);
+		int[] heights = {0, ChronicleLayout.ENTRY_H, tall, ChronicleLayout.ENTRY_H};
+		int content = ChronicleLayout.rows(list, header, heights, 0)[header.length];
+		int max = ChronicleLayout.maxScroll(list, content);
+		for (int scroll = 0; scroll <= max; scroll++) {
+			int[] tops = ChronicleLayout.rows(list, header, heights, scroll);
+			int y = tops[2];
+			int[] part = ChronicleLayout.clickable(list, y, tall, true);
+			boolean inView = y < bottom && y + tall > list[1];
+			if (inView != (part != null)) {
+				problems.add("scroll " + scroll + ": open entry at " + y + " takes clicks " + (part != null) + ", in view " + inView);
+				continue;
+			}
+			if (part == null) {
+				continue;
+			}
+			if (part[0] < list[1] || part[0] + part[1] > bottom || part[0] < y || part[0] + part[1] > y + tall) {
+				problems.add("scroll " + scroll + ": clickable part " + part[0] + "+" + part[1] + " leaves the list or the entry");
+			}
+			// the row at the list's foot, the one the player sees when the entry is wheeled to its end
+			int lowRow = Math.min(y + tall, bottom) - 3;
+			if (lowRow >= Math.max(y, list[1]) && (lowRow < part[0] || lowRow >= part[0] + part[1])) {
+				problems.add("scroll " + scroll + ": a click on the lower row at " + lowRow + " misses the open entry");
+			}
+		}
+		// wheeled to the end, the entry's top is out of view and it still takes the click
+		int[] end = ChronicleLayout.rows(list, header, heights, max);
+		if (max == 0 || end[2] >= list[1] || ChronicleLayout.clickable(list, end[2], tall, true) == null) {
+			problems.add("at the list's end (scroll " + max + ") the open entry, top " + end[2] + ", can't be folded");
+		}
+		// closed entries: wholly in view or nothing, as before
+		if (ChronicleLayout.clickable(list, list[1] - 1, ChronicleLayout.ENTRY_H, false) != null
+			|| ChronicleLayout.clickable(list, bottom - ChronicleLayout.ENTRY_H + 1, ChronicleLayout.ENTRY_H, false) != null
+			|| ChronicleLayout.clickable(list, list[1], ChronicleLayout.ENTRY_H, false) == null) {
+			problems.add("a closed entry half out of view takes clicks, or one wholly in view doesn't");
+		}
+		helper.assertTrue(problems.isEmpty(), String.join("; ", problems.subList(0, Math.min(8, problems.size()))));
+		helper.succeed();
+	}
+
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
 	public void listMenusAndTheTraderSitInTheShell(GameTestHelper helper) {

@@ -1,0 +1,19 @@
+{
+  "name": "gem-grotto-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 30
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/gem_grotto/out/gem-grotto-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/gem_grotto/out/summary.json",
+  "size": [
+    15,
+    13,
+    20
+  ],
+  "blockCount": 1112,
+  "paletteCount": 35,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/gem_grotto/recipe.mjs"
+}

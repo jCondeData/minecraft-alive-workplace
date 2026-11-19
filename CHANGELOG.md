@@ -16,7 +16,32 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
+  every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
+  one great pyramid of golden thatch, a forester's lodge of mossy fieldstone and spruce logs gable-on to the road), with
+  the same rooms and furniture. Plains and snowy villages keep the rubble house; the Blueprint Table lists every look
+  (49.10b).
+- **The Townhouse in its village's culture**: desert and savanna villages now build their own look of it at every
+  level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
+  under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
+  and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
 ### Changed
+- **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
+  tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
+  at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
+  II** adds the shopkeeper's back room in a lower range behind, **III** a seed and hardware wing under its own little
+  street gable (it no longer has a Mailbox: the Post Office has one), and **IV** a cool cellar under the wing. The Market
+  Stall is now "the shop board": a steep timber booth with its gable to the street, whose front boards fold down into a
+  counter laid with cloth and prop up into a canopy under a red-and-white valance. The **Market Stall II** builds a
+  lock-up shop beside it with the Shop Counter in the booth's counter, and **III** runs the lock-up back into a
+  storeroom with a back door. Builds already standing keep their old drawing until refreshed.
+- **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
+  wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
+  to her composter, shelves and hanging pots of flowers, a brick parlor with the counter, a chimney from the stove that
+  warms the glass, and a fenced cutting yard with a pond. The **Flower Shop II** adds a second glass range across the
+  yard and a glazed lantern on the ridge. Shops already standing keep their old drawing until refreshed; village flower
+  shops keep their look.
 - **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
   Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
   the composter and the harvest chest under its porch; Level II roofs the whole garden in a lattice hung with glow
@@ -26,6 +51,29 @@ asks for the steps, `latest.log` and any crash report).
   cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
   undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
   wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Compost Yard is rebuilt from scratch** (50.9) as "the Bin Barn": a steep straw-thatched barn on a rubble plinth
+  whose front opens on the yard as three bins, the heaps graded from fresh green through turning brown to ripe black, under
+  a jettied hoist gable with its loft door and lantern arm; the composter and the scrap chest stand in the dry under that
+  gable, and a turning aisle behind the bins holds the straw and a bone-meal chest. **Compost Yard II** leans a riddling
+  shed on the barn's east side: two more chests, a pile of fine compost, a potting bench of potted saplings and a bed of
+  ferns and lilies grown in the finished compost. Yards already standing keep their old drawing until refreshed.
+- **The Quarry is rebuilt from scratch** (50.10) as "the Headframe": a tall dark oak headframe over the pit, its legs
+  stepping in halfway up to a spoked sheave wheel, a skip and a lantern hanging on chains over the hole, the rail open
+  between its legs where the Miner steps down; beside it a stone hoist house under a deepslate roof, the brick stack
+  rising through its ridge from the blast furnace, with two double chests, lamps and the winch inside, and a spoil heap
+  behind the pit. It no longer has a basement (19 by 14, 17 tall); the pit and the furnace are where they always were.
+- **The Sifting Shed is rebuilt from scratch** (50.10) as "the Tipple": a timber hopper loft on dark oak legs over a
+  stone screen room, under a steep slate gable with a hoist beam, the gravel tipped through a chute into the cauldron
+  below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
+  climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
+  in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
+  House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
+  tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack
+  over the blast furnace and its chest (14 by 12, 18 tall). The Windmill is "the Stage Mill": a dark timber tower out of
+  a round brick base, a walkway stage round it on brackets, four long sails on a slate cap with a tail pole, and the
+  millstone, composter and chest on the round ground floor (15 by 14, 18 tall). Buildings already standing keep their
+  old drawing until refreshed.
 - **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
   green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
   vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
@@ -53,8 +101,22 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
+  after it is scrolled past its first line, as the hint says (B1394).
 - A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
   village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
+- **The Terrace in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of both
+  levels (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
+  granite and mud with a veranda; pale calcite gables under steep deepslate roofs, snow on the eaves; a long range of
+  spruce logs under a slate roof with a porch on log posts), with the same homes, beds and furniture. Plains villages
+  keep the Crow-Step Row (49.10c).
+- **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
+  looks count as one (49.10b).
+
+### Dev
+- The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
+  Palisade's mud and oak are in their chests (its first segment waited for them every night since 52.3), and a new
+  GameTest has the Steward's palisade go up whole and its gate shut at night (B1400).
 
 ## 0.157.0 — 2026-11-18
 
@@ -2371,7 +2433,7 @@ asks for the steps, `latest.log` and any crash report).
   blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
   rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
   the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
-  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  of its lintel, since the grand stair starts right inside; the parlor rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
@@ -3103,7 +3165,7 @@ asks for the steps, `latest.log` and any crash report).
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
 - **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
-  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlor, two
   bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
   walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
   where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward

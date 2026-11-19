@@ -1764,15 +1764,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take 21 of
-				// the logs, which the Carpenter never touches, so 20 left him none to saw (until 46.1 he made the carpets from
-				// the spare wool, which is the Shepherd's work now, and the scene passed on those): a stack, and the rest of
-				// the stall's list as it is today.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.STRIPPED_SPRUCE_LOG, 3},
-					{net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
-					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 16}, {net.minecraft.world.item.Items.WHITE_WOOL, 9},
-					{net.minecraft.world.item.Items.RED_CARPET, 8}, {net.minecraft.world.item.Items.WHITE_CARPET, 6}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
-					{net.minecraft.world.item.Items.DANDELION, 1}, {net.minecraft.world.item.Items.RED_TULIP, 1}};
+				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take some of
+				// the logs (32 since the 50.11 rebuild), which the Carpenter never touches, so a short stock left him none to saw
+				// (until 46.1 he made the carpets from the spare wool, which is the Shepherd's work now, and the scene passed on
+				// those): a stack, and the rest of the stall's list as it is today (50.11's Shop Board).
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.DARK_OAK_STAIRS, 36},
+					{net.minecraft.world.item.Items.DARK_OAK_PLANKS, 6}, {net.minecraft.world.item.Items.WHITE_TERRACOTTA, 15}, {net.minecraft.world.item.Items.GLASS_PANE, 2},
+					{net.minecraft.world.item.Items.SPRUCE_FENCE_GATE, 1}, {net.minecraft.world.item.Items.CAKE, 1}, {net.minecraft.world.item.Items.RED_BANNER, 2},
+					{net.minecraft.world.item.Items.MELON, 2}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
+					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 4}, {net.minecraft.world.item.Items.WHITE_WOOL, 3},
+					{net.minecraft.world.item.Items.RED_CARPET, 2}, {net.minecraft.world.item.Items.WHITE_CARPET, 2}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
+					{net.minecraft.world.item.Items.CORNFLOWER, 1}, {net.minecraft.world.item.Items.POPPY, 1}};
 				for (int i = 0; i < stock.length; i++) {
 					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
 				}
@@ -1835,9 +1837,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall in its rawest form: the jobs make the rest.
-				// B1151: a stack of logs (the stall's own posts take 21, which the Carpenter leaves alone)
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+				// Everything for a Market Stall in its rawest form: the jobs make the rest (50.11's Shop Board: what no job here
+				// makes, the dark oak roof, the limewash, the glass, the gate and the cake, comes as it is).
+				// B1151: a stack of logs (the stall's own posts take 32, which the Carpenter leaves alone)
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 2}, {net.minecraft.world.item.Items.PUMPKIN, 2},
+					{net.minecraft.world.item.Items.DARK_OAK_STAIRS, 36}, {net.minecraft.world.item.Items.DARK_OAK_PLANKS, 6}, {net.minecraft.world.item.Items.WHITE_TERRACOTTA, 15},
+					{net.minecraft.world.item.Items.GLASS_PANE, 2}, {net.minecraft.world.item.Items.SPRUCE_FENCE_GATE, 1}, {net.minecraft.world.item.Items.CAKE, 1},
 					{net.minecraft.world.item.Items.RAW_IRON, 1}, {net.minecraft.world.item.Items.COAL, 1}, {net.minecraft.world.item.Items.TORCH, 1},
 					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.WHITE_WOOL, 35}, {net.minecraft.world.item.Items.POPPY, 20}};
 				for (int i = 0; i < stock.length; i++) {

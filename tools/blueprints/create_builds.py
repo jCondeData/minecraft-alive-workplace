@@ -104,7 +104,7 @@ def _sails(b, cx, cy, z):
 
 
 def windmill():
-    """9 x 17 x 9: the Windmill. A seven-square stone tower with a spruce frame under a spruce hip roof; on its
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/windmill; this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 17 x 9: the Windmill. A seven-square stone tower with a spruce frame under a spruce hip roof; on its
     front, a windmill bearing carries 24 sails in a pinwheel. The bearing's shaft runs back to a gearbox and straight
     down the middle of the tower to a pair of gearboxes on the floor, with the millstone (the farmer's machine, 39.3)
     on the second. The builder starts the bearing when the build is done (or leaves a sign saying how)."""
@@ -328,7 +328,7 @@ CRUSH_STONE = Mix((5, "cobblestone"), (3, "andesite"), (2, "stone"), seed=399)
 
 
 def crushing_mill():
-    """14 x 12 x 11 (ROADMAP 39.8): the Crushing Mill. A nine-by-nine andesite-and-cobble mill house framed in spruce
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/crushing_mill; this one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 12 x 11 (ROADMAP 39.8): the Crushing Mill. A nine-by-nine andesite-and-cobble mill house framed in spruce
     under a spruce gable; the water wheel on its west wall (header tank and mill race as the Watermill's). Inside, a
     pair of crushing wheels (their axles along z, a block apart: Create puts its crusher in the gap) turned the opposite
     ways through a train of gearboxes, a short belt over them dropping into the gap, and under the gap a pit where the

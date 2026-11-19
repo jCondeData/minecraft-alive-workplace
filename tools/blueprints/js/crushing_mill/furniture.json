@@ -1,0 +1,6 @@
+{"spots": [
+  {"kind":"lamp","pos":[4,4,6],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[8,4,6],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[3,4,3],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":null},
+  {"kind":"lamp","pos":[8,4,3],"facing":"north","cells":[[0,0,0]],"wood":"dark_oak","colour":null}
+]}

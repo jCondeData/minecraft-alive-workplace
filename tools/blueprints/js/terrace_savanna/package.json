@@ -1,0 +1,10 @@
+{
+  "name": "terrace-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Terrace, the savanna look (ROADMAP 49.10c): the shipped Terrace drawn again as a veranda row: one long golden thatch hip with eaves on every side, red granite and packed mud walls on grey acacia posts, a thatch veranda over every door, each household its own painted front and stack. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

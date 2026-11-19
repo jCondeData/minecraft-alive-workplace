@@ -1,0 +1,10 @@
+{
+  "name": "townhouse-desert",
+  "private": true,
+  "type": "module",
+  "description": "Burgher's Townhouse, the desert look (ROADMAP 49.10b): the shipped Townhouse drawn again as a caravan merchant's house: a street arcade, a lattice rawshan, a qa'a lantern on a flat roof, a loggia and terrace, a windcatcher tower and a walled court. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

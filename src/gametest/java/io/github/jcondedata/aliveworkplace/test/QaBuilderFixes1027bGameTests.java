@@ -312,13 +312,14 @@ public class QaBuilderFixes1027bGameTests implements FabricGameTest {
 	// ---------------------------------------------------------------- B487
 
 	/**
-	 * Healing Center IV (no walk covered it): from its back garden in by the garden door (5,1,14 above ground; the
-	 * template's y + 4 for its 4-deep herb store, so the origin sits 4 below the floor), turned a quarter round.
+	 * Healing Center IV (no walk covered it): from its back garden in by the garden door (6,1,19 above ground since the
+	 * 50.8 rebuild, was 5,1,14; the template's y + 4 for its 4-deep Cistern, so the origin sits 4 below the floor), turned
+	 * a quarter round.
 	 */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487Healing4Turned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487Healing4Turned")
 	public void aVillagerWalksInByTheTurnedHealingCenterIVsGardenDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_4", Rotation.CLOCKWISE_90, new BlockPos(25, -2, 4), new int[] {5, 5, 18}, new int[] {5, 5, 12}, new int[] {5, 5, 14});
+		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_4", Rotation.CLOCKWISE_90, new BlockPos(25, -2, 4), new int[] {6, 4, 23}, new int[] {6, 5, 15}, new int[] {6, 5, 19});
 	}
 
 	/** The Pokemon Center lodge look II, turned counterclockwise: from inside (6,1,8) out by the front door (6,1,10) to the path (6,1,13). */

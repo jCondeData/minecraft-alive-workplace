@@ -51,7 +51,7 @@ TENT = "inside a tent: a low space by the bed or the hay"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
-    ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT,
+    ("camp/colony_camp", (2, 2, 5)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",
 }
@@ -93,6 +93,11 @@ ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's
 # a rebuild candidate is named, "legend/prisoner_cage" the shipped one)
 ALLOW.update({(n, (2, 1, 2)): "the open underside of the cage wagon's bed between its wheels, not a room"
               for n in ("prisoner_cage", "legend/prisoner_cage")})
+
+# The Clinic (49 rebuild) has a sun veranda on purpose: the ward's west slope runs on as a catslide over an open deck on
+# posts, where the mending sit out in the sun on seats under the windows; the air under it is a porch, not a room
+ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide, not a walled room"
+              for n in ("clinic", "modded/clinic")})
 
 
 def load(path, props=False):

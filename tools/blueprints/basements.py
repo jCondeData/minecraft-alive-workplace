@@ -298,7 +298,7 @@ def library_4():
 
 
 def healing_center_4():
-    """Upgrade of the Healing Center III: a cool store of herbs and remedies under the front (walls x 1-9, z 2-8), down a
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Healing Center III: a cool store of herbs and remedies under the front (walls x 1-9, z 2-8), down a
     ladder in the back room. 11 x 10 x 22, 4 below."""
     from starter import healing_center_3
     b = healing_center_3().grow(11, 10, 22, basement=BASEMENT)

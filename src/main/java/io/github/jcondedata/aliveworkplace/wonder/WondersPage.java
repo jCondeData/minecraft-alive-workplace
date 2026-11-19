@@ -120,7 +120,8 @@ public final class WondersPage {
 		lore.add(VillageHallScreen.line(wonder.descriptionText(), ChatFormatting.AQUA));
 		if (card.site().isPresent()) {
 			WonderSite site = card.site().get();
-			int stages = Math.max(1, wonder.stages().size());
+			Wonder drawn = java.util.Objects.requireNonNullElse(WonderDrawings.recorded(level.getServer(), site), wonder); // 52.6: its own drawing's stages
+			int stages = Math.max(1, drawn.stages().size());
 			if (site.done()) {
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.finished", site.finished().get()), ChatFormatting.GREEN));
 				// 35.8: how much of it stands, and its powers: on, or stopped while it's damaged
@@ -132,7 +133,7 @@ public final class WondersPage {
 			} else {
 				int stage = Math.max(1, Math.min(site.stage(), stages));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.going_up", stage, stages,
-					wonder.stages().get(stage - 1).nameText(), (stage - 1) * 100 / stages), ChatFormatting.YELLOW));
+					drawn.stages().get(stage - 1).nameText(), (stage - 1) * 100 / stages), ChatFormatting.YELLOW));
 				lore.add(VillageHallScreen.line(Component.translatable("screen.aliveworkplace.wonders.crew", WonderCrews.leadName(level, site),
 					WonderCrews.crew(level, site).size(), WonderCrews.limit(level, site)), ChatFormatting.AQUA));
 			}

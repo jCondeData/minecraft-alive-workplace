@@ -19,11 +19,21 @@ import net.minecraft.resources.ResourceLocation;
  * whether every builder of the village was called to its crew ({@code called}). 35.7 adds whether the current stage's
  * goods were dedicated ({@code dedicated}) and the goods players handed in at the stone for it ({@code delivered}; the
  * goods in the stockpile's chests are counted where they lie). 35.8 adds how a finished one is kept up ({@link Kept}).
+ * 52.6 adds the drawing it was begun with ({@code drawing}, the key {@link Wonders#drawing} gave then; none in a save from
+ * before, {@link WonderDrawings} matches those by best fit and records it).
  * Every field but the first three has a default.
  */
 public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Optional<UUID> owner, String ownerName, int stage,
 						 long begun, Optional<Long> finished, Optional<BlueprintData.Placement> placement, Optional<BlockPos> stone,
-						 List<UUID> parts, Optional<UUID> builder, boolean called, boolean dedicated, List<Handed> delivered, Kept kept) {
+						 List<UUID> parts, Optional<UUID> builder, boolean called, boolean dedicated, List<Handed> delivered, Kept kept,
+						 Optional<String> drawing) {
+	/** A site as 35.8 recorded it: no record of the drawing it was begun with (52.6: matched by best fit, {@link WonderDrawings}). */
+	public WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Optional<UUID> owner, String ownerName, int stage, long begun,
+					  Optional<Long> finished, Optional<BlueprintData.Placement> placement, Optional<BlockPos> stone, List<UUID> parts,
+					  Optional<UUID> builder, boolean called, boolean dedicated, List<Handed> delivered, Kept kept) {
+		this(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, kept, Optional.empty());
+	}
+
 	/** A site as 35.2 recorded it: no placement, no stone, no parts, no builder. */
 	public WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Optional<UUID> owner, String ownerName, int stage, long begun,
 					  Optional<Long> finished) {
@@ -96,8 +106,21 @@ public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Option
 		Codec.BOOL.optionalFieldOf("called", false).forGetter(WonderSite::called),
 		Codec.BOOL.optionalFieldOf("dedicated", false).forGetter(WonderSite::dedicated),
 		Handed.CODEC.listOf().optionalFieldOf("delivered", List.of()).forGetter(WonderSite::delivered),
-		Kept.MAP_CODEC.forGetter(WonderSite::kept)
-	).apply(i, WonderSite::new));
+		Tail.MAP_CODEC.forGetter(s -> new Tail(s.kept(), s.drawing()))
+	).apply(i, (id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, tail) ->
+		new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered,
+			tail.kept(), tail.drawing())));
+
+	/**
+	 * The fields after {@code delivered}, saved flat with the others (a codec takes at most sixteen): how it's kept up, and
+	 * (52.6) the drawing it was begun with.
+	 */
+	private record Tail(Kept kept, Optional<String> drawing) {
+		static final com.mojang.serialization.MapCodec<Tail> MAP_CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+			Kept.MAP_CODEC.forGetter(Tail::kept),
+			Codec.STRING.optionalFieldOf("drawing").forGetter(Tail::drawing)
+		).apply(i, Tail::new));
+	}
 
 	/** Whether it's finished and its powers are on: not damaged (35.8). */
 	public boolean empowered() {
@@ -115,42 +138,46 @@ public record WonderSite(UUID id, ResourceLocation wonder, BlockPos hall, Option
 	}
 
 	WonderSite atStage(int next) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, next, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, next, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite finishedOn(long day) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, Optional.of(day), placement, stone, parts, builder, called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, Optional.of(day), placement, stone, parts, builder, called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite placedAt(BlueprintData.Placement where, BlockPos stonePos) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.of(where), Optional.of(stonePos.immutable()), parts, builder, called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, Optional.of(where), Optional.of(stonePos.immutable()), parts, builder, called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite withBuilder(UUID who) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.of(who), called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.of(who), called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite withoutBuilder() {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.empty(), called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, Optional.empty(), called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite withCalled(boolean call) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, call, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, call, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite withParts(List<UUID> sites) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, List.copyOf(sites), builder, called, dedicated, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, List.copyOf(sites), builder, called, dedicated, delivered, kept, drawing);
 	}
 
 	WonderSite withDedicated(boolean done) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, done, delivered, kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, done, delivered, kept, drawing);
 	}
 
 	WonderSite withKept(Kept now) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, now);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, now, drawing);
+	}
+
+	WonderSite withDrawing(Optional<String> key) {
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, delivered, kept, key);
 	}
 
 	WonderSite withDelivered(List<Handed> goods) {
-		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, List.copyOf(goods), kept);
+		return new WonderSite(id, wonder, hall, owner, ownerName, stage, begun, finished, placement, stone, parts, builder, called, dedicated, List.copyOf(goods), kept, drawing);
 	}
 }

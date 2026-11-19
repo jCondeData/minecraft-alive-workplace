@@ -176,7 +176,7 @@ PLASTER = Mix((9, "white_concrete"), (1, "polished_diorite"), seed=19)
 
 
 def physicians_house():
-    """13 x 11 x 13: a white plastered ward (x 1-11, z 3-11) in a spruce frame under a dark oak roof. Inside, the
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/physicians_house; this one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 13: a white plastered ward (x 1-11, z 3-11) in a spruce frame under a dark oak roof. Inside, the
     quarantine ward: four beds, two down each side, each between white wool screens; the Physician's brewing stand at
     the back on a counter of herbs. Out front a herb garden either side of the path, lamp posts at the gate."""
     b = Build(13, 12, 13)

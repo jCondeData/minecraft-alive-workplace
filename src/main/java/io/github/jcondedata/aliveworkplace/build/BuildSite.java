@@ -422,7 +422,9 @@ public final class BuildSite {
 			plan = null;
 		}
 		if (plan == null) {
-			Optional<Blueprint> blueprint = BlueprintLibrary.get(level.getServer(), structure);
+			// 52.6: a Wonder's part is built from the drawing its Wonder was begun with (a part site made before a redraw too)
+			Optional<Blueprint> blueprint = BlueprintLibrary.get(level.getServer(), wonder == null ? structure
+				: io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.partFor(level, wonder, structure));
 			if (blueprint.isEmpty()) {
 				status = Status.BLUEPRINT_MISSING;
 				return null;

@@ -77,6 +77,8 @@ public final class Wonders implements ResourceManagerReloadListener {
 	private static volatile Map<ResourceLocation, Wonder> wonders = Map.of();
 	/** The files the last load skipped, and why. */
 	private static volatile Map<ResourceLocation, String> problems = Map.of();
+	/** 52.6: each Wonder's drawing as its file names it ({@code "drawing"}; none for a file without one), by Wonder id. */
+	private static volatile Map<ResourceLocation, String> drawings = Map.of();
 
 	public static void init() {
 		Platform.get().onDataReload(AliveWorkplace.id("wonders"), new Wonders());
@@ -103,6 +105,15 @@ public final class Wonders implements ResourceManagerReloadListener {
 	/** The files the last load skipped, with the reason each was logged with. */
 	public static Map<ResourceLocation, String> problems() {
 		return problems;
+	}
+
+	/**
+	 * 52.6: the key of the Wonder {@code id}'s drawing today, as its file names it ({@code "drawing"}, written by
+	 * {@code tools/blueprints/wonder_history.py}); empty for a file that names none (a datapack's own Wonder). A Wonder is
+	 * begun with it ({@link WonderSite#drawing}); a later drawing of it ships this one in {@code blueprint_history}.
+	 */
+	public static String drawing(ResourceLocation id) {
+		return drawings.getOrDefault(id, "");
 	}
 
 	@Override
@@ -134,6 +145,8 @@ public final class Wonders implements ResourceManagerReloadListener {
 			problems = java.util.Collections.unmodifiableMap(all);
 		}
 		wonders = out;
+		drawings = drawingsOf(files);
+		WonderDrawings.forget(); // 52.6: older drawings put together again for the new files
 		forgetPowers(); // 35.8: the powers as the new files give them
 		WonderBlueprints.forget(); // the whole blueprints are merged again from the new files (35.3)
 		ColossusPlaque.forget(); // its plaque's signs found in the drawing again (35.22)
@@ -177,7 +190,29 @@ public final class Wonders implements ResourceManagerReloadListener {
 	/** Puts loaded Wonders in place (tests). */
 	public static void setForTest(Map<ResourceLocation, Wonder> map) {
 		wonders = java.util.Collections.unmodifiableMap(new LinkedHashMap<>(map));
+		WonderDrawings.forget();
 		forgetPowers();
+	}
+
+	/** 52.6: the {@code "drawing"} each Wonder file names, by Wonder id (files that don't parse, or name none, left out). */
+	private static Map<ResourceLocation, String> drawingsOf(Map<ResourceLocation, String> files) {
+		Map<ResourceLocation, String> out = new LinkedHashMap<>();
+		for (Map.Entry<ResourceLocation, String> e : files.entrySet()) {
+			String path = e.getKey().getPath();
+			if (!path.startsWith(FOLDER + "/") || !path.endsWith(".json")) {
+				continue;
+			}
+			try {
+				JsonElement tree = JsonParser.parseString(e.getValue());
+				if (tree.isJsonObject() && tree.getAsJsonObject().has("drawing") && tree.getAsJsonObject().get("drawing").isJsonPrimitive()) {
+					out.put(ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), path.substring(FOLDER.length() + 1, path.length() - ".json".length())),
+						tree.getAsJsonObject().get("drawing").getAsString());
+				}
+			} catch (RuntimeException ignored) {
+				// (a file that doesn't parse was logged and skipped by load)
+			}
+		}
+		return java.util.Collections.unmodifiableMap(out);
 	}
 
 	/**
@@ -205,6 +240,25 @@ public final class Wonders implements ResourceManagerReloadListener {
 		}
 		List<Condition> requirements = new ArrayList<>(Conditions.parseAll(json.has("requirements") ? array(json, "requirements") : new JsonArray()));
 		requirements.add(masterArchitect());
+		List<Wonder.Stage> stages = stages(json);
+		List<Wonder.Power> powers = new ArrayList<>();
+		for (JsonElement p : json.has("powers") ? array(json, "powers") : new JsonArray()) {
+			JsonObject power = p.getAsJsonObject();
+			// 35.8: each type is read by the code registered for it (wonder/powers/); an unknown type fails the file
+			io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower read = io.github.jcondedata.aliveworkplace.wonder.powers.WonderPowers.parse(power);
+			JsonObject numbers = power.deepCopy();
+			numbers.remove("type");
+			powers.add(new Wonder.Power(read.type(), numbers, read));
+		}
+		boolean colours = json.has("village_colours") && json.get("village_colours").getAsBoolean();
+		return new Wonder(id, name, description, icon, true, crew, List.copyOf(requirements), List.copyOf(stages), List.copyOf(powers), colours);
+	}
+
+	/**
+	 * The stages of a Wonder file (or, 52.6, of an older drawing's file in {@code blueprint_history}): its parts with their
+	 * offsets and each stage's goods. Throws {@link IllegalArgumentException} naming what's wrong.
+	 */
+	static List<Wonder.Stage> stages(JsonObject json) {
 		JsonArray stageArray = array(json, "stages");
 		if (stageArray.isEmpty()) {
 			throw new IllegalArgumentException("no stages");
@@ -219,17 +273,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 				throw new IllegalArgumentException("stage " + n + ": " + ex.getMessage(), ex);
 			}
 		}
-		List<Wonder.Power> powers = new ArrayList<>();
-		for (JsonElement p : json.has("powers") ? array(json, "powers") : new JsonArray()) {
-			JsonObject power = p.getAsJsonObject();
-			// 35.8: each type is read by the code registered for it (wonder/powers/); an unknown type fails the file
-			io.github.jcondedata.aliveworkplace.wonder.powers.WonderPower read = io.github.jcondedata.aliveworkplace.wonder.powers.WonderPowers.parse(power);
-			JsonObject numbers = power.deepCopy();
-			numbers.remove("type");
-			powers.add(new Wonder.Power(read.type(), numbers, read));
-		}
-		boolean colours = json.has("village_colours") && json.get("village_colours").getAsBoolean();
-		return new Wonder(id, name, description, icon, true, crew, List.copyOf(requirements), List.copyOf(stages), List.copyOf(powers), colours);
+		return stages;
 	}
 
 	/** The line every Wonder has: the Master Architect settled in the village, or else a Master builder. */
@@ -559,7 +603,7 @@ public final class Wonders implements ResourceManagerReloadListener {
 			WonderSite site = l.site();
 			Component village = VillageHalls.name(l.level(), site.hall());
 			Component owner = site.ownerName().isEmpty() ? Component.translatable("command.aliveworkplace.wonders.no_owner") : Component.literal(site.ownerName());
-			Wonder wonder = wonders.get(site.wonder());
+			Wonder wonder = WonderDrawings.recorded(l.level().getServer(), site); // 52.6: its own drawing's stages
 			Component stage;
 			if (site.done()) {
 				stage = site.kept().damaged() // 35.8: under wonderStanding, its powers off

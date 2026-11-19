@@ -1,0 +1,11 @@
+{
+  "name": "caravan-wreck",
+  "private": true,
+  "type": "module",
+  "description": "The Caravan Wreck (story/caravan_wreck), Rolled and Robbed, rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/caravan_wreck.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Output goes to build/rebuild/caravan_wreck/out; 'build' writes the candidate (build/rebuild/caravan_wreck/story), 'live' the live structure/story/caravan_wreck.nbt (shipped 52.5, critic SHIP).",
+  "scripts": {
+    "build": "mkdir -p ../../../../build/rebuild/caravan_wreck/story && node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/caravan_wreck/out --data-version 3955 && python3 ../../rebuild.py caravan_wreck story/caravan_wreck --candidate --nbt ../../../../build/rebuild/caravan_wreck/out/caravan-wreck.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/caravan_wreck/out --data-version 3955",
+    "live": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/caravan_wreck/out --data-version 3955 && python3 ../../rebuild.py caravan_wreck story/caravan_wreck --nbt ../../../../build/rebuild/caravan_wreck/out/caravan-wreck.nbt"
+  }
+}

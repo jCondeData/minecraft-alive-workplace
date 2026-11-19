@@ -117,12 +117,31 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # the candidates; LIVE=1 sh build.sh the live ones, the jeweler's III with its Deep Vault)
            "glassblowers_workshop", "jewellers_workshop", "jewellers_workshop_2", "jewellers_workshop_3",
            "crafters_workshop", "workshop",
+           # 52.5, the trail marks ("the Carter's Rags"): js/trail (MC_BUILDER=...; npm run build writes candidates, npm
+           # run live the five live story/trail_N); their old drawings in caravan.py are no longer saved
+           "trail_1", "trail_2", "trail_3", "trail_4", "trail_5",
+           # 52.5, the Raiders' Stockade, the Bandit Fort (I-III) and the Caravan Wreck: js/{raiders_stockade,bandit_fort,
+           # caravan_wreck} (MC_BUILDER=...; npm run build writes candidates, npm run live the live drawings, the
+           # stockade's loot table included); their old drawings in caravan.py and bandit_fort.py are no longer saved
+           "raiders_stockade", "bandit_fort", "bandit_fort_2", "bandit_fort_3", "caravan_wreck",
+           # 52.5, the Bandit Camp (the Lookout Camp): js/bandit_camp (MC_BUILDER=...; npm run build writes the candidate,
+           # npm run live the live camp/bandit_camp through its ship.py: the loot chest's table, the undrawn ground left
+           # out); its old drawing in bandits.py is no longer saved
+           "bandit_camp",
            # 51.5, the Leader's Hall (round 1, "the Challenge Hall") and the Trade Hall (round 3, "the Ball Tower"):
            # tools/blueprints/js/{leaders_hall,trade_hall}/ (MC_BUILDER=<minecraft-builder skill>; node
            # "$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955), then python3
            # tools/blueprints/rebuild.py <family> <family>; their village pieces keep their own looks (village.py's
            # staffed house)
-           "leaders_hall", "trade_hall"}
+           "leaders_hall", "trade_hall",
+           # 50.8, the Clinic ("the pavilion ward"; the buildable only: the village clinics stay village.py's staffed
+           # house): js/clinic (MC_BUILDER=..., sh build.sh writes the candidate; LIVE=1 sh build.sh the live one; then
+           # modded_library.py clinic)
+           "clinic",
+           # 50.8, the Physician's House ("the still room and ward round a physic garden") and the Healing Center (I-IV,
+           # "the Spring Infirmary", IV with its Cistern cellar): js/physicians_house and js/healing_center (MC_BUILDER=...,
+           # sh build.sh writes the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py <ids>)
+           "physicians_house", "healing_center", "healing_center_2", "healing_center_3", "healing_center_4"}
 
 
 # --- Gametest fixtures ------------------------------------------------------------------
@@ -189,9 +208,12 @@ if __name__ == "__main__":
     lookout_tower().save(MAIN_STRUCTURES, "lookout_tower")
     lookout_tower_2().save(MAIN_STRUCTURES, "lookout_tower_2")
     lookout_tower_3().save(MAIN_STRUCTURES, "lookout_tower_3")
-    healing_center().save(MAIN_STRUCTURES, "healing_center")
-    healing_center_2().save(MAIN_STRUCTURES, "healing_center_2")
-    healing_center_3().save(MAIN_STRUCTURES, "healing_center_3")
+    # ROADMAP 50.8: the Healing Center (I-IV) comes from the rebuild kit (REBUILT); starter.healing_center* and
+    # basements.healing_center_4 are the old drawings, kept in blueprint_history/
+    for name, draw in (("healing_center", healing_center), ("healing_center_2", healing_center_2),
+                       ("healing_center_3", healing_center_3)):
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     supply_shop().save(MAIN_STRUCTURES, "supply_shop")
     supply_shop_2().save(MAIN_STRUCTURES, "supply_shop_2")
     supply_shop_3().save(MAIN_STRUCTURES, "supply_shop_3")
@@ -249,15 +271,19 @@ if __name__ == "__main__":
     # ROADMAP 49.8: the Artisan's House (I-III) comes from the rebuild kit too (tools/blueprints/js/artisans_house/build.sh,
     # LIVE=1 to save the live drawings); its old Python drawing in houses.py and cellars.py is no longer saved
     settlers_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "settlers_camp")
-    bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
+    if "bandit_camp" not in REBUILT:  # 52.5: the Bandit Camp comes from the rebuild kit
+        bandit_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "bandit_camp")
     for name, draw in (("bandit_fort", bandit_fort), ("bandit_fort_2", bandit_fort_2), ("bandit_fort_3", bandit_fort_3)):
-        draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
+        if name not in REBUILT:  # 52.5: the Bandit Fort comes from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)  # ROADMAP 31.15: the Bandit King's fort
     if "shift_bell" not in REBUILT:  # 52.5: the Shift Bell comes from the rebuild kit
         shift_bell().save(os.path.join(MAIN_STRUCTURES, "story"), "shift_bell")  # ROADMAP 31.22: The Shift Bell's ending
-    caravan_wreck().save(os.path.join(MAIN_STRUCTURES, "story"), "caravan_wreck")  # ROADMAP 31.19: the Lost Caravan's trail
-    raiders_stockade().save(os.path.join(MAIN_STRUCTURES, "story"), "raiders_stockade")
+    for name, draw in (("caravan_wreck", caravan_wreck), ("raiders_stockade", raiders_stockade)):  # ROADMAP 31.19
+        if name not in REBUILT:  # 52.5: the wreck and the stockade come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), name)
     for i, draw in enumerate(TRAIL, 1):
-        draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
+        if f"trail_{i}" not in REBUILT:  # 52.5: the trail marks come from the rebuild kit
+            draw().save(os.path.join(MAIN_STRUCTURES, "story"), f"trail_{i}")
     war_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "war_camp")
     pirate_ship().save(os.path.join(MAIN_STRUCTURES, "camp"), "pirate_ship")  # ROADMAP 32.8
     tomb_camp().save(os.path.join(MAIN_STRUCTURES, "camp"), "tomb_camp")  # ROADMAP 32.9
@@ -295,9 +321,10 @@ if __name__ == "__main__":
     # workshops.crafters_workshop and glassblowers_workshop are the old drawings, kept in blueprint_history/
     save_storage_halls(MAIN_STRUCTURES, os.path.join(MAIN_STRUCTURES, "modded"))  # ROADMAP 37.17: with their Tom's copies
     for name, draw in (("fire_station", fire_station), ("physicians_house", physicians_house)):  # the well house: 52.1
-        draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
+        if name not in REBUILT:  # ROADMAP 50.8: the Physician's House comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)  # ROADMAP 32.19
     for name, draw in LEVEL_4:  # ROADMAP 26.15: the Level 4s, each with a basement
-        if name not in REBUILT:  # ROADMAP 51.4: library_4 comes from the rebuild kit
+        if name not in REBUILT:  # ROADMAP 51.4 and 50.8: library_4 and healing_center_4 come from the rebuild kit
             draw().save(MAIN_STRUCTURES, name)
     # ROADMAP 50.4: the Butcher's Shop (with its freezer) comes from the rebuild kit (REBUILT); basements.butchers_shop
     # is the old drawing, kept in blueprint_history/
@@ -331,7 +358,7 @@ if __name__ == "__main__":
         daub_house_village(style).save(VILLAGE_STRUCTURES, f"{style}_{DAUB_HOUSE}")
     for name in WORKPLACES + COBBLEMON_WORKPLACES:
         if name in REBUILT:
-            continue  # ROADMAP 50.2 and 50.5: drawn by the rebuild kit (below)
+            continue  # ROADMAP 50.2, 50.5 and 50.8: drawn by the rebuild kit (below)
         workplace(name).save(MAIN_STRUCTURES, name)
     for wonder_id in WONDERS:  # ROADMAP 35.9 on: the Wonders' stage parts and data files
         save_wonder(wonder_id)

@@ -672,7 +672,7 @@ answered, its repeat at once ignored and answered after 100 ticks), `TablePrevie
 3D preview data; 36.1: Starter Cottage IV's preview has cells below the ground and its fitted height counts them, and
 at scale 2 no cellar block shares a cell with a ground-floor block; B798: a banner, wall banner, decorated pot, sign and
 head alone in a blueprint each get a preview cell, a barrier none, and a scanned lone banner has its cell on the Table), `DoorwayHeadroomGameTests` (7, B173: a villager
-walks in by the Healing Center's front door onto its carpet, and by the Manor's front door onto the stair right inside:
+walks in by the Healing Center's front door onto its rug (50.8: door at template 6,1,2), and by the Manor's front door onto the stair right inside:
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheHealingCentersFrontDoor`,
 `DoorwayHeadroomGameTests.aVillagerWalksInByTheManorsFrontDoorOntoItsStair`; B178: three villagers walk from the War
 Camp's yard up to the beds of two canvas tents and into the Warlord's tent up to its barrel,

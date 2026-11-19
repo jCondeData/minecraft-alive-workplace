@@ -1,0 +1,11 @@
+{
+  "name": "physicians-house",
+  "private": true,
+  "type": "module",
+  "description": "The Physician's House (49): a stone still-room tower and a screened ward round a physic garden (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder; 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py physicians_house physicians_house --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/physicians-house.nbt"
+  }
+}

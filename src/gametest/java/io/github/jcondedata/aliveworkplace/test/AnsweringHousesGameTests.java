@@ -78,7 +78,7 @@ public class AnsweringHousesGameTests implements net.fabricmc.fabric.api.gametes
 		return List.of(
 			new House(StarterBlueprints.FIRE_STATION, ModVillagers.FIREWARDEN, Blocks.GRINDSTONE, new ItemStack(Items.WATER_BUCKET), new BlockPos(5, 1, 6)),
 			new House(StarterBlueprints.WELL_HOUSE, ModVillagers.WELL_KEEPER, Blocks.CAULDRON, new ItemStack(Items.IRON_SHOVEL), new BlockPos(8, 3, 5)),
-			new House(StarterBlueprints.PHYSICIANS_HOUSE, ModVillagers.PHYSICIAN, Blocks.BREWING_STAND, new ItemStack(Items.GLISTERING_MELON_SLICE), new BlockPos(6, 1, 8)));
+			new House(StarterBlueprints.PHYSICIANS_HOUSE, ModVillagers.PHYSICIAN, Blocks.BREWING_STAND, new ItemStack(Items.GLISTERING_MELON_SLICE), new BlockPos(12, 1, 3))); // 50.8: the still room by the stand (12, 1, 4)
 	}
 
 	/** The three are in the Blueprint Table and the creative tab's one-tier list, named, and on the Village Map. */

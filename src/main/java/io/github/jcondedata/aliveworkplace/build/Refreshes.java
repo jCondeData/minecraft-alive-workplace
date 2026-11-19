@@ -104,6 +104,11 @@ public final class Refreshes {
 		return history(server, structure).stream().filter(o -> o.key().equals(key)).findFirst().map(Old::drawing);
 	}
 
+	/** The keys of every older drawing of {@code structure}, as shipped (or added), in key order. */
+	public static List<String> olderKeys(MinecraftServer server, ResourceLocation structure) {
+		return history(server, structure).stream().map(Old::key).toList();
+	}
+
 	private static Map<ResourceLocation, List<Old>> load(ResourceManager resources) {
 		Map<ResourceLocation, List<Old>> out = new HashMap<>();
 		for (Map.Entry<ResourceLocation, Resource> e : resources.listResources(DIR, id -> id.getPath().endsWith(".nbt")).entrySet()) {

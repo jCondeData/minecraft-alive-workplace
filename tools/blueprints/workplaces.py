@@ -503,7 +503,8 @@ def cross_window(b, x, y, z, axis, mullion=CL_MULLION):
 
 
 def clinic_build():
-    """13 x 11 x 12: the clinic's pavilion and ward."""
+    """The OLD drawing (ROADMAP 50.8: the live clinic.nbt now comes from the rebuild kit, tools/blueprints/js/clinic; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 12: the clinic's pavilion and ward."""
     b = Build(13, 11, 12)
     plinth(b, 1, 6, 11, 10, CL_PLINTH, floor="birch_planks")
     walls(b, 1, 6, 11, 10, 1, 5, CL_PLASTER)

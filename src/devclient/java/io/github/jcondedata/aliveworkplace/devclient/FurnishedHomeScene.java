@@ -30,8 +30,9 @@ import net.minecraft.world.phys.Vec3;
  * two furniture mods stand in it. Then (B260) the owner's Stone House, furnished the same way: the way in from its door,
  * clear to the ladder, and its attic bedroom (the bed's head to the gable, a nightstand, a chest at its foot, a lamp
  * hung from the ridge); checks nothing stands in the door's way and every piece has what it stands on. And (B639) the
- * Clinic: its ward of four white beds, heads to the back wall, and its ceiling closed where the roof's stairs meet at the
- * ridge; checks the beds are whole and nothing is open under either ridge.
+ * Clinic: its ward of white beds, heads to the long walls, and its ceiling closed where the roof's stairs meet at the
+ * ridge; checks the beds are whole and nothing is open under either ridge (the ward's, and since the rebuild of ROADMAP
+ * 50.8 the east dormer's).
  */
 final class FurnishedHomeScene {
 	private static final ResourceLocation COTTAGE = StarterBlueprints.STARTER_COTTAGE_2.id();
@@ -59,8 +60,9 @@ final class FurnishedHomeScene {
 		new View("08_stone_attic", new Vec3(7.5, 7.7, 4.5), new Vec3(2.5, 6.4, 4.5), STONE),
 		new View("09_terrace_west", new Vec3(2.6, 3.2, 2.3), new Vec3(3.5, 1.4, 4.5), TERRACE_AT),
 		new View("10_terrace_east", new Vec3(10.4, 3.2, 2.3), new Vec3(8.5, 1.4, 4.5), TERRACE_AT),
-		new View("11_clinic_ward", new Vec3(6.5, 3.6, 3.2), new Vec3(6.5, 1.0, 9.0), CLINIC_AT),
-		new View("12_clinic_ceiling", new Vec3(2.5, 2.2, 7.5), new Vec3(10.5, 8.0, 8.5), CLINIC_AT));
+		// ROADMAP 50.8: re-aimed at the rebuilt Clinic (the ward x 5-11, z 3-9 under one ridge along z at x 8)
+		new View("11_clinic_ward", new Vec3(7.5, 3.6, 3.5), new Vec3(8.5, 1.0, 9.5), CLINIC_AT),
+		new View("12_clinic_ceiling", new Vec3(6.5, 2.2, 6.5), new Vec3(9.5, 8.5, 7.5), CLINIC_AT));
 	private static final int FIRST = 80;
 	private static final int EACH = 50;
 
@@ -156,7 +158,8 @@ final class FurnishedHomeScene {
 
 	/**
 	 * The Clinic as a builder here would build it (B639): its ward's beds are whole beds (not cots of slab and carpet), and
-	 * no cell under its two roofs' ridges is open.
+	 * no cell under its two ridges is open (ROADMAP 50.8: the rebuilt Clinic's are the ward's, at x 8 along z 1-11, and
+	 * the east dormer's little one, at z 6 over x 11-12).
 	 */
 	private void placeClinic(ServerLevel level) {
 		Blueprint base = BlueprintLibrary.get(level, CLINIC).orElse(null);
@@ -172,14 +175,14 @@ final class FurnishedHomeScene {
 		if (beds < 4) {
 			wrong.add("the Clinic's ward has " + beds + " beds");
 		}
-		for (int x = 1; x <= 11; x++) {
-			if (level.getBlockState(CLINIC_AT.offset(x, 8, 8)).isAir()) {
-				wrong.add("the Clinic's ward ceiling is open under the ridge at " + x + ",8,8");
+		for (int z = 1; z <= 11; z++) {
+			if (level.getBlockState(CLINIC_AT.offset(8, 9, z)).isAir()) {
+				wrong.add("the Clinic's ward ceiling is open under the ridge at 8,9," + z);
 			}
 		}
-		for (int z = 2; z <= 6; z++) {
-			if (level.getBlockState(CLINIC_AT.offset(6, 9, z)).isAir()) {
-				wrong.add("the Clinic's front ceiling is open under the ridge at 6,9," + z);
+		for (int x = 11; x <= 12; x++) {
+			if (level.getBlockState(CLINIC_AT.offset(x, 7, 6)).isAir()) {
+				wrong.add("the Clinic's dormer ceiling is open under its ridge at " + x + ",7,6");
 			}
 		}
 	}
@@ -225,7 +228,7 @@ final class FurnishedHomeScene {
 		}
 		summary = modsHere ? "Starter Cottage II furnished room by room: " + pieces + " pieces of " + String.join(", ", mods)
 			+ " in its dining corner, bedrooms and sitting corner, every one where its spot is; the Stone House's way in clear and its attic a bedroom; the Clinic's ward has "
-				+ "4 white beds and a closed ceiling"
+				+ "whole white beds and a closed ceiling"
 			: "no furniture mods loaded: the cottage is the vanilla build (run with -Pfurniture=true)";
 	}
 }

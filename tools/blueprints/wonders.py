@@ -5085,6 +5085,8 @@ def stage_s4(b):
 
 
 def stadium():
+    """The 35.x Stadium, replaced by stadium_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (stadium_stage, stadium_interiors)."""
     b = StagedBuild(SW, SH, SD)
     b.begin(1)
     stage_s1(b)
@@ -5095,6 +5097,17 @@ def stadium():
     b.begin(4)
     stage_s4(b)
     return b
+
+
+def stadium_drawn():
+    """The new Stadium (ROADMAP 52.6, rebuilt from scratch, "the Stadium Bowl"): js/stadium/recipe.mjs, its four stage
+    snapshots joined by js/stadium/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "stadium", "stages.py")
+    spec = importlib.util.spec_from_file_location("stadium_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def stadium_stage(stage=None):
@@ -5236,7 +5249,7 @@ WONDERS = {
         ],
     },
     "stadium": {
-        "draw": stadium,
+        "draw": stadium_drawn,  # 52.6: rebuilt from scratch (js/stadium/)
         # only with Cobblemon: without it the file isn't loaded, so the Stadium isn't on the Wonders page
         "load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["cobblemon"]}],
         "icon": "cobblemon:poke_ball",

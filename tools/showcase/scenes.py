@@ -2064,6 +2064,15 @@ SCENES = [
            ("02_outside_back", "From the back: the back wing's gable between two corner gardens, the drum rising behind it with its ring of windows under the cornice"),
            ("03_outside_west", "From the west: the cross of four copper-roofed wings round the drum, the spiral of glass winding up its open quarters toward the ribbed dome and its glass lantern"),
            ("04_outside_east", "From the east: the east wing's pilastered face and tall windows, the portico's columns at the front, a tree in each corner garden")], furniture=True),
+    # ROADMAP 52.6: the Stadium rebuilt from scratch (REBUILD.md), "the Stadium Bowl", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS; furniture=True films with Cobblemon, so its Healing Machine stands); a Wonder has no
+    # furniture spots, so the four outside views
+    S("rebuild_stadium", "Build families", "The Stadium, rebuilt: from four sides",
+      "the Stadium's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Stadium from the road: the Gate's stepped arch between its two banner pylons, STADIUM lettered on the attic, the nurse's booth with its red cross and the refreshment room at the front corners"),
+           ("02_outside_back", "From the back: the brick wall's quartz pilasters and cornice, the green copper roof of the Covered Stand rising behind it, the two changing rooms at the corners"),
+           ("03_outside_west", "From the west: the round end of the bowl, its windows set back on quartz sills, two floodlight masts on the corner pavilions"),
+           ("04_outside_east", "From the east: the scoreboard over the east end reading 2 - 1 to the road, the floodlight masts at either side")], furniture=True),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

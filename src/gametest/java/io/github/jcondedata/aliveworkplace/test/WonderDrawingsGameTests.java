@@ -736,6 +736,62 @@ public class WonderDrawingsGameTests implements FabricGameTest {
 	private static final int OLD_LIBRARY_COUNT = 14571, NEW_LIBRARY_COUNT = 14853;
 
 	/**
+	 * 52.6 shipped the rebuilt Stadium ("the Stadium Bowl"). Its file loads only with Cobblemon (and so do its older
+	 * drawings: the history's files carry the same load conditions), so here, without it, the history is read as shipped:
+	 * the 35.23 drawing (the key its file named until then, with 35.23a's interiors) is kept with its four stages and its
+	 * parts at their old offsets, each old part loads from the history under its own id with its own blocks (the old stage
+	 * 2 is not today's), and today's drawing is in the history with today's parts. Counting, repairing and continuing an
+	 * old Stadium by it is the same code the other Wonders' tests above run (WonderDrawings.of); the compat suite runs it
+	 * on the Stadium itself (StadiumCompatTests.aStadiumOfThe3523DrawingKeepsItsOldStages).
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"wonderDrawingsStadium"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "wonderDrawingsStadium")
+	public void aStadiumOfThe3523DrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		String old = "drawn_24f7878f0"; // the 35.23 drawing (bigger since 35.23a), the one standing on servers before 52.6
+		com.google.gson.JsonObject file = json(helper, ResourceLocation.fromNamespaceAndPath("aliveworkplace", "wonders/stadium.json"));
+		String now = file.get("drawing").getAsString();
+		helper.assertTrue(!now.equals(old), "the Stadium's file still names the 35.23 drawing");
+		com.google.gson.JsonObject kept = json(helper, ResourceLocation.fromNamespaceAndPath("aliveworkplace", "blueprint_history/wonder/stadium/" + old + ".json"));
+		com.google.gson.JsonObject todays = json(helper, ResourceLocation.fromNamespaceAndPath("aliveworkplace", "blueprint_history/wonder/stadium/" + now + ".json"));
+		helper.assertTrue(todays.get("stages").equals(file.get("stages")), "today's drawing " + now + " isn't in the history with today's stages");
+		List<List<BlockPos>> offsets = new ArrayList<>();
+		List<ResourceLocation> oldParts = new ArrayList<>();
+		for (com.google.gson.JsonElement stage : kept.getAsJsonArray("stages")) {
+			List<BlockPos> at = new ArrayList<>();
+			for (com.google.gson.JsonElement part : stage.getAsJsonObject().getAsJsonArray("parts")) {
+				com.google.gson.JsonArray o = part.getAsJsonObject().getAsJsonArray("offset");
+				at.add(new BlockPos(o.get(0).getAsInt(), o.get(1).getAsInt(), o.get(2).getAsInt()));
+				oldParts.add(ResourceLocation.parse(part.getAsJsonObject().get("part").getAsString()));
+			}
+			offsets.add(at);
+		}
+		helper.assertTrue(offsets.equals(List.of(List.of(BlockPos.ZERO, new BlockPos(48, 0, 0)), List.of(new BlockPos(5, 1, 5)),
+			List.of(new BlockPos(2, 0, 0), new BlockPos(48, 0, 8)), List.of(BlockPos.ZERO, new BlockPos(48, 0, 0)))),
+			"the 35.23 drawing's stages: " + offsets);
+		for (ResourceLocation part : oldParts) {
+			Optional<Blueprint> oldPart = BlueprintLibrary.get(level, WonderDrawings.olderId(part, old));
+			helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty(), "the 35.23 part " + part + " isn't in the history");
+		}
+		ResourceLocation stage2 = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "wonder/stadium/stage_2_0");
+		Optional<Blueprint> oldStage2 = BlueprintLibrary.get(level, WonderDrawings.olderId(stage2, old));
+		Optional<Blueprint> newStage2 = BlueprintLibrary.get(level, stage2);
+		helper.assertTrue(oldStage2.isPresent() && newStage2.isPresent()
+			&& !new HashSet<>(oldStage2.get().blocks()).equals(new HashSet<>(newStage2.get().blocks())), "the old stage 2 part didn't load as the old one");
+		helper.succeed();
+	}
+
+	private static com.google.gson.JsonObject json(GameTestHelper helper, ResourceLocation path) {
+		var resource = helper.getLevel().getServer().getResourceManager().getResource(path)
+			.orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException("no file " + path));
+		try (java.io.Reader reader = resource.openAsReader()) {
+			return com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+		} catch (Exception e) {
+			throw new net.minecraft.gametest.framework.GameTestAssertException(path + " doesn't read: " + e.getMessage());
+		}
+	}
+
+	/**
 	 * The record is saved: a site and the whole manager written and read back keep it; a site saved before it reads with
 	 * none (and everything else as it was); a record naming a drawing that isn't shipped goes by today's; an older
 	 * drawing's part is read from the history under its own id, and today's parts as before.

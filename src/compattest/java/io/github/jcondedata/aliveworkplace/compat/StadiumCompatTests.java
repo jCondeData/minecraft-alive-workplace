@@ -57,7 +57,7 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class StadiumCompatTests implements FabricGameTest {
 	private static final ResourceLocation STADIUM = AliveWorkplace.id("stadium");
-	/** The roadmap's figure (35.23: about 18,000 before it was drawn, 7,300 as first drawn; 12,100 since 35.23a made it bigger, with its interiors; ROADMAP Notes). */
+	/** The roadmap's figure (35.23: about 18,000 before it was drawn, 7,300 as first drawn; 12,100 since 35.23a made it bigger, with its interiors; ROADMAP Notes; the 52.6 rebuild kept it: 12,095). */
 	private static final int BLOCKS = 12_100;
 	private static final int PART_LIMIT = 48;
 	private static final Set<Block> UNOBTAINABLE = Set.of(Blocks.BEDROCK, Blocks.BARRIER, Blocks.COMMAND_BLOCK, Blocks.STRUCTURE_BLOCK,
@@ -295,6 +295,65 @@ public class StadiumCompatTests implements FabricGameTest {
 			entity.setColours(null);
 			level.removeBlock(hall, false);
 		}
+		helper.succeed();
+	}
+
+	/**
+	 * 52.6 shipped the rebuilt Stadium ("the Stadium Bowl"): one begun with the 35.23 drawing (the key its file named until
+	 * then, with 35.23a's interiors) is still counted, repaired and continued by that drawing, read from the shipped
+	 * history (the main suite's WonderDrawingsGameTests.aStadiumOfThe3523DrawingKeepsItsOldStages reads the history without
+	 * Cobblemon; this is the Stadium itself, loaded). Finished, it is counted against the old drawing's blocks, not
+	 * today's; half-built at stage 2, its next stage is the old stage 2 part (the old lower stands) at its old offset, its
+	 * blocks as the old part had them; a Stadium recorded with today's key goes by today's.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"stadiumDrawings"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "stadiumDrawings")
+	public void aStadiumOfThe3523DrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		String old = "drawn_24f7878f0"; // the 35.23 drawing, the one standing on servers before 52.6
+		Wonder today = Wonders.loaded().get(STADIUM);
+		helper.assertTrue(today != null, "the Stadium isn't loaded: " + Wonders.problems());
+		helper.assertTrue(!Wonders.drawing(STADIUM).equals(old), "the Stadium's file still names the 35.23 drawing");
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.olderKeys(level.getServer(), STADIUM).contains(old),
+			"the 35.23 drawing isn't in the history: " + io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.olderKeys(level.getServer(), STADIUM));
+		List<Wonder.Stage> oldStages = io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.stages(level.getServer(), STADIUM, old).orElseThrow();
+		List<BlockPos> offsets = oldStages.stream().map(st -> st.parts().get(0).offset()).toList();
+		helper.assertTrue(oldStages.size() == 4 && offsets.equals(List.of(BlockPos.ZERO, new BlockPos(5, 1, 5), new BlockPos(2, 0, 0), BlockPos.ZERO)),
+			"the 35.23 drawing's stages: " + oldStages.size() + " at " + offsets);
+
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), helper.absolutePos(new BlockPos(1, 2, 1)), Rotation.NONE, Mirror.NONE);
+		WonderSite finishedOld = new WonderSite(UUID.randomUUID(), STADIUM, helper.absolutePos(BlockPos.ZERO), java.util.Optional.empty(), "Owner", 4, 1L,
+			java.util.Optional.of(2L), java.util.Optional.of(at), java.util.Optional.empty(), List.of(), java.util.Optional.empty(), false, true, List.of(),
+			WonderSite.Kept.WHOLE, java.util.Optional.of(old));
+		WonderSite finishedNew = new WonderSite(UUID.randomUUID(), STADIUM, helper.absolutePos(BlockPos.ZERO), java.util.Optional.empty(), "Owner", 4, 1L,
+			java.util.Optional.of(2L), java.util.Optional.of(at), java.util.Optional.empty(), List.of(), java.util.Optional.empty(), false, true, List.of(),
+			WonderSite.Kept.WHOLE, java.util.Optional.of(Wonders.drawing(STADIUM)));
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.older(level, finishedOld)
+			&& !io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.older(level, finishedNew), "which drawing each goes by");
+		int oldCount = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.blocks(level, finishedOld).size();
+		int newCount = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.blocks(level, finishedNew).size();
+		// each within 10% of its drawing's solid blocks (11,758 drawn in 35.23a, 12,095 in 52.6; the count leaves out the
+		// plan's foundation and landscape steps, as for every Wonder), and not the same count
+		helper.assertTrue(Math.abs(oldCount - 11_758) <= 1_176 && Math.abs(newCount - 12_095) <= 1_210 && oldCount != newCount,
+			"an old Stadium is counted against " + oldCount + " blocks (the 35.23 drawing has 11,758), today's against " + newCount + " (12,095)");
+		for (io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.Part part : io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.parts(level, finishedOld)) {
+			java.util.Optional<io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.Older> o = io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.parse(
+				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(part.structure()));
+			helper.assertTrue(o.isPresent() && o.get().key().equals(old), "an old Stadium's part (repaired by it) is today's: " + part.structure());
+		}
+
+		WonderSite halfOld = new WonderSite(UUID.randomUUID(), STADIUM, helper.absolutePos(BlockPos.ZERO), java.util.Optional.empty(), "Owner", 2, 1L,
+			java.util.Optional.empty(), java.util.Optional.of(at), java.util.Optional.empty(), List.of(), java.util.Optional.empty(), false, false, List.of(),
+			WonderSite.Kept.WHOLE, java.util.Optional.of(old));
+		Wonder.Part next = io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.of(level, halfOld).stages().get(1).parts().get(0);
+		ResourceLocation todaysPart = today.stages().get(1).parts().get(0).part();
+		helper.assertTrue(next.part().equals(io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.olderId(todaysPart, old))
+			&& next.offset().equals(new BlockPos(5, 1, 5)), "a half-built old Stadium's stage 2 is " + next);
+		helper.assertTrue(!today.stages().get(1).parts().get(0).offset().equals(next.offset()), "today's stage 2 part stands where the old one did");
+		java.util.Optional<Blueprint> oldPart = BlueprintLibrary.get(level, next.part());
+		java.util.Optional<Blueprint> newPart = BlueprintLibrary.get(level, todaysPart);
+		helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty() && newPart.isPresent()
+			&& !new java.util.HashSet<>(oldPart.get().blocks()).equals(new java.util.HashSet<>(newPart.get().blocks())), "the old stage 2 part didn't load as the old one");
 		helper.succeed();
 	}
 }

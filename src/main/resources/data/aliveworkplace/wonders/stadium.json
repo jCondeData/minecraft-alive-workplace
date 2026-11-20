@@ -41,6 +41,14 @@
         {
           "part": "aliveworkplace:wonder/stadium/stage_1_1",
           "offset": [48, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_2",
+          "offset": [0, 0, 48]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_3",
+          "offset": [48, 0, 48]
         }
       ],
       "goods": [
@@ -80,7 +88,11 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/stadium/stage_2_0",
-          "offset": [5, 1, 5]
+          "offset": [7, 1, 6]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_2_1",
+          "offset": [48, 1, 13]
         }
       ],
       "goods": [
@@ -136,11 +148,15 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/stadium/stage_3_0",
-          "offset": [2, 0, 0]
+          "offset": [1, 1, 1]
         },
         {
           "part": "aliveworkplace:wonder/stadium/stage_3_1",
-          "offset": [48, 0, 8]
+          "offset": [48, 1, 2]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_2",
+          "offset": [19, 1, 48]
         }
       ],
       "goods": [
@@ -192,11 +208,11 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/stadium/stage_4_0",
-          "offset": [0, 0, 0]
+          "offset": [1, 1, 0]
         },
         {
           "part": "aliveworkplace:wonder/stadium/stage_4_1",
-          "offset": [48, 0, 0]
+          "offset": [55, 6, 1]
         }
       ],
       "goods": [
@@ -255,5 +271,5 @@
       "type": "tournament_host"
     }
   ],
-  "drawing": "drawn_24f7878f0"
+  "drawing": "drawn_1beba7449"
 }

@@ -571,28 +571,30 @@ Founder (or City rank while Legends are off).
   has forgotten it reads "long ago". A sign broken and put back is written again on the next round (every 5 seconds),
   with the names as they are then.
 
-**The Stadium** (35.23, only with Cobblemon; made bigger, with more dressing and walk-through interiors, by 35.23a) is
-drawn: an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners, about 12,100 blocks), round a grass battle
-field 31 by 21 ruled in white (its edge, the
-half-way line, a center circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
-time, seven tiers along the long sides and five at the ends, climbed by zig-zag aisles of stone brick stairs, with red and white carpet seats in wedges round the bowl;
-in a village with a Village Banner the red and the white are built in its banner's two colors instead (the base and
-the first other color of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
-stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
-middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
-spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
-a red header, showing 2 - 1 on both faces, to the stands and to the road outside. Outside, the back wall has pilasters (buttresses on the straight sides) and bays that take
-turns as open, lit entrances (a banner over each) and barred windows with flower beds at their foot, two bands of red
-and white terracotta and a parapet with lanterns and banners. Inside it, under the stands, everything is walkable and
-lit, three high: a concourse two wide right round; eight vomitories climbing as stairs from it into the front rows; on
-the north the first-aid room by the nurse's booth (cots, a red-cross banner), two food kiosks serving onto the concourse
-through a hatch, and a trophy room; on the south the players' tunnel from the concourse to the pitch under the
-professor's box, with the home and away dressing rooms off it (lockers, a bench, their banner), the referees' room and
-the groundsman's store; doors from the trainer boxes onto the concourse; two covered dugouts on the apron. The gateway on the north side is a
-tunnel through the stand under two piers and a lintel banded red and white, with standing banners on the piers and
-banners hung over the stand. Four floodlight towers stand at the corners, each an iron head with eight redstone lamps
-wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
-stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
+**The Stadium** (35.23, only with Cobblemon; rebuilt from scratch in 52.6: "the Stadium Bowl") is one continuous
+bowl drawn on the stadium shape (a rounded rectangle: straight sides, round ends), 59 by 49 and 26 high to the gate's
+banners, about 12,100 blocks (12,095). At its heart is a grass battle field 31 by 23 inside a white touchline, its chalk
+marking a center line, a center circle and a box round each end's Training Post (the trainer boxes), inside a
+pitch wall of polished blackstone. Round it the Lower Stands rise in three rows of red and white carpet seats on stone
+brick risers and smooth stone treads, then a walk, then the Upper Stands' three rows; 676 seats in all, climbed by
+aisles of stone brick stairs. In a village with a Village Banner the red and the white are built in its banner's two
+colors instead (the base and the first other color of its pattern; the field's chalk stays white). Along the back the
+Covered Stand shelters the upper rows under a green copper lean-to with lanterns hung under it; on the east end stands
+the scoreboard, two blocks thick, with "2 - 1" in white on black on each face under the two teams' colors, so it reads
+the right way round from the stands and from the road. The outer wall is red brick to a quartz cornice and coping, its
+order a block proud of the brick: a stone brick plinth, quartz pilasters every five blocks, a string course, and windows
+set back on quartz sills. Under the Upper Stands runs the Concourse, a hall three high right round the bowl, lit by
+hanging lanterns, with benches along its inner wall, doors out at both ends and into the gate's cut. Off it, in the
+four corners the round ends leave free, stand the corner pavilions, brick with quartz corners under copper roofs: at
+the front right the Nurse's Booth (the Healing Machine, a brewing stand and a counter, a red cross on a white panel
+over its door and another on its roof), at the front left the Refreshment Room (a counter with cakes, a table for two,
+a striped awning outside), and at the back the home and away changing rooms (benches under lockers, each in its team's
+colors). The Gate is a frontispiece across the front: two banner pylons, a stepped arch with a quartz lintel and
+keystone, a Poké Ball crest in a niche and STADIUM lettered on a quartz attic, read from the road; the way in runs
+through the cut in the bowl straight onto the field. Four floodlight masts of iron stand on the pavilions' outer
+corners, each with eight redstone lamps wired round a daylight detector that lights them at night. A Stadium already
+begun or finished keeps the old drawing (the 35.23 oval arena): it still counts as standing, and is repaired and
+finished as it was first drawn. Its stages: I
 *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
 Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls

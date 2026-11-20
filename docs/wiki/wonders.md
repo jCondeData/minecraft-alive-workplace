@@ -322,7 +322,7 @@ Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four 
 **The Great Library** (35.13, rebuilt from scratch in 52.6: "the Scroll Rotunda") is a round drum of books at the
 center of a cross of four short gabled wings, 41 by 41 and 34 high, about 15,000 blocks (14,967). It stands on a podium of
 stone bricks (y 0-2) behind a polished diorite balustrade, with two steps round its foot, the front steps across the
-portico's width, lamp posts at the steps and corners and a raised garden bed in each corner court (a smooth-stone kerb,
+portico's width, lamp posts at the steps and corners and a raised garden bed in each corner court (a smooth-stone curb,
 flowers and a small oak). The four wings (the Stacks; front and back 13 by 7, west and east 9 by 13) have pale walls of
 polished diorite and smooth stone, a ground floor (y 3-8) with tall windows between proud smooth-stone pilasters, each
 under a sill and a hood, a trim band at the upper-floor line, and a gallery floor (y 11-12) under an open copper roof

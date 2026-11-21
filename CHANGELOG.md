@@ -16,6 +16,17 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
+  look it was begun with after you update, instead of the new design going up over the half-built old one. Use
+  "Refresh to the latest look" once it's finished to bring it up to date (B1407).
+- The War Camp's ominous banner and the Blackstone Outpost's piglin banner now face the camp's gate and front,
+  toward players walking up, instead of turning their backs to them (B1175).
+- With Tom's Simple Storage, a chest that touches the Storehouse's inventory connector and is also faced by a cable
+  connector on the same cables is counted once: the Storehouse (and Tom's own terminal) showed its items and its free
+  room twice, so builders and the board thought the village had double (B1025).
+
 ## 0.158.0 — 2026-11-20
 
 ### Added
@@ -28,6 +39,13 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Weaver's Cottage and the Daub House in their village's culture**: desert, savanna, snowy and taiga villages now
+  build their own look of both. The Weaver's Cottage, at both levels: a flat-roofed sandstone and mud-brick dyer's house
+  with an arcade over the weaver's window and cloth drying on the roof; a golden thatch house with a veranda and a kraal
+  for the flock; a white calcite loomhouse under a steep snowy slate roof; and a deep-eaved spruce log lodge with a
+  veranda along its front. The Daub House: a little mud kasbah with a tower at each corner; a mud house under one great
+  golden thatch with a veranda; a calcite house under a long snowy slate roof; and a spruce log lodge with its gable to
+  the road. The same rooms, loom, beds and furniture; plains villages keep both as drawn (49.10d).
 - **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
   it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
   porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden

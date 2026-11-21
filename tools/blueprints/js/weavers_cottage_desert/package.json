@@ -1,0 +1,10 @@
+{
+  "name": "weavers-cottage-desert",
+  "private": true,
+  "type": "module",
+  "description": "Weaver's Cottage, the desert look (ROADMAP 49.10d): the shipped Weaver's Cottage drawn again as a dyer-weaver's house: sandstone and mud brick under a flat roof with a windcatcher, an arcade before the weaver's window, a lattice oriel over the door, dyed cloth drying on the roof, a fold under a palm-rib shade and (II) an irrigated dye garden. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

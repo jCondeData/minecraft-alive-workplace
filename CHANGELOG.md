@@ -44,6 +44,9 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- A husk piling a sand ramp no longer counts as already over the wall, and gives up its ramp one block high, when it
+  stands outside the village beside your own wall (a garden wall) that lines up with the village wall: only the
+  village wall the ramp leans on counts now, so it piles the ramp to the top and climbs in (B1419).
 - A builder's poured water runs again when a dry stair, slab or Create fluid pipe stands two blocks away: a
   player's own water wheel or fountain built from a blueprint flows and turns as it did in the original (B1410).
 - Opening the Village Hall first after a restart (or a `/reload`) no longer freezes the server for seconds: the

@@ -429,7 +429,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   ground, onto ground one block higher inside, with and without a bale) and over a Palisade comes down off the inner
   stairs onto the ground and shoots his target, never standing up on the wall for 5 seconds; a husk walking round the
   corner to a side-wall ramp is never let go while outside, piles the ramp to the top and gets in, and so does one
-  whose waiting spot is fenced off (it waits beside the ramp).
+  whose waiting spot is fenced off (it waits beside the ramp). B1419: a husk starting beside a player's garden wall
+  that stands on the ramp wall's line outside the yard, past a gap, is not counted over there (only the village wall
+  the ramp leans on counts, unbroken from the ramp to beside the raider); it piles the ramp to the top and gets in.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

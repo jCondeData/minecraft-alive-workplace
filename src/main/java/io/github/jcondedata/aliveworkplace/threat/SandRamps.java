@@ -619,16 +619,31 @@ public final class SandRamps {
 		return (mob.getX() - (site.foot.getX() + 0.5)) * site.into.getStepX() + (mob.getZ() - (site.foot.getZ() + 0.5)) * site.into.getStepZ();
 	}
 
+	/** How far along its wall's line, from the ramp, {@link #behindTheWall} follows the wall at most. */
+	private static final int WALL_SPAN = 32;
+
 	/**
-	 * Whether the wall {@code site}'s ramp leans on runs as far along as where {@code mob} is: something stands on the
-	 * wall's line beside the mob, at the foot's height or one above. A raider in from the foot with the wall there is
-	 * behind it; one farther along than the wall goes is outside, past its end or round a corner of the walls (B726).
+	 * Whether the wall {@code site}'s ramp leans on runs as far along as where {@code mob} is: the wall stands unbroken on
+	 * its line from the block the ramp leans on to the one beside the mob, at the foot's height or one above. A raider in
+	 * from the foot with the wall there is behind it; one farther along than the wall goes is outside, past its end or round
+	 * a corner of the walls (B726). Only this one wall counts: a player's own wall farther along the same line, past a gap
+	 * (a garden wall outside the village), is a different wall, and a raider beside it is still outside (B1419).
 	 */
 	private static boolean behindTheWall(ServerLevel level, Mob mob, Site site) {
 		BlockPos wall = site.foot.relative(site.into);
-		BlockPos beside = site.into.getAxis() == Direction.Axis.Z ? new BlockPos(mob.getBlockX(), wall.getY(), wall.getZ())
-			: new BlockPos(wall.getX(), wall.getY(), mob.getBlockZ());
-		return blocked(level, beside) || blocked(level, beside.above());
+		boolean alongX = site.into.getAxis() == Direction.Axis.Z;
+		int along = alongX ? mob.getBlockX() - wall.getX() : mob.getBlockZ() - wall.getZ();
+		if (Math.abs(along) > WALL_SPAN) {
+			return false;
+		}
+		Direction step = alongX ? (along >= 0 ? Direction.EAST : Direction.WEST) : (along >= 0 ? Direction.SOUTH : Direction.NORTH);
+		for (int k = 0; k <= Math.abs(along); k++) {
+			BlockPos piece = wall.relative(step, k);
+			if (!blocked(level, piece) && !blocked(level, piece.above())) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/** Whether {@code mob} is on top of the ramp by the wall, or past it over the wall. */

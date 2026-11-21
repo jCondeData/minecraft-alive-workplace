@@ -7057,14 +7057,14 @@ Same method (Milestone 49). Lane C builds it once Milestone 47 is done.
 - [ ] **51.2** (blocked: waits for the owner's pick of A or B, review package 2026-11-18) **Inn** (3 levels; flagship: A and B).
 - [ ] **51.3** (blocked: waits for the owner's pick of A or B, review package 2026-11-18) **Storehouse** (3 levels; flagship: A and B), **Storage
   Hall** and **Warehouse**.
-- [x] **51.4** (approved 2026-11-19) **Library** (4 levels), **School** and **Schoolhouse**.
-- [x] **51.5** (review: pending 2026-11-18) **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
+- [x] **51.4** (approved 2026-11-19) (verified 2026-11-21: lane-c-1121-0953: QaRebuiltCivic1121cGameTests [16: Library lecterns 1/2/3/3 walked to, III-IV enchant at full power, upgrades keep job blocks and chests, School post and bed, Schoolhouse lectern, live: two jobless villagers take Library II's lecterns], QaRebuiltMarkets1121cGameTests [8: Trade Hall's one Shop Counter and bed, Leader's Hall post, walked to like a villager, live paths], QaRebuiltDefense1121cGameTests [Royal Hall vault grows, every chest walked to, Level II east door]; wiki blueprint-library.md and realms.md read and extended. Mutation/repeats: nightly.) **Library** (4 levels), **School** and **Schoolhouse**.
+- [x] **51.5** (review: pending 2026-11-18) (verified 2026-11-21: lane-c-1121-0953: QaRebuiltCivic1121cGameTests [16: Library lecterns 1/2/3/3 walked to, III-IV enchant at full power, upgrades keep job blocks and chests, School post and bed, Schoolhouse lectern, live: two jobless villagers take Library II's lecterns], QaRebuiltMarkets1121cGameTests [8: Trade Hall's one Shop Counter and bed, Leader's Hall post, walked to like a villager, live paths], QaRebuiltDefense1121cGameTests [Royal Hall vault grows, every chest walked to, Level II east door]; wiki blueprint-library.md and realms.md read and extended. Mutation/repeats: nightly.) **Guildhall** (3 levels), **Trade Hall**, **Leader's Hall**
   and **Map Room**.
 - [x] **51.6** (review: pending 2026-11-18) **Chapel**, **Graveyard**, **Clock Tower** and **Post Office**.
 - [x] **51.7** (review: pending 2026-11-18) **Market Square**, **Market Cross** and **Market Corner**.
 - [x] **51.8** (review: pending 2026-11-19) **Barracks** (3 levels), **Guard House**, **Fire Station**,
   **Gatehouse** and **Lookout Tower** (4 levels).
-- [x] **51.9** (review: pending 2026-11-19) **The Royal Hall** (`realm/`, 2 levels).
+- [x] **51.9** (review: pending 2026-11-19) (verified 2026-11-21: lane-c-1121-0953: QaRebuiltCivic1121cGameTests [16: Library lecterns 1/2/3/3 walked to, III-IV enchant at full power, upgrades keep job blocks and chests, School post and bed, Schoolhouse lectern, live: two jobless villagers take Library II's lecterns], QaRebuiltMarkets1121cGameTests [8: Trade Hall's one Shop Counter and bed, Leader's Hall post, walked to like a villager, live paths], QaRebuiltDefense1121cGameTests [Royal Hall vault grows, every chest walked to, Level II east door]; wiki blueprint-library.md and realms.md read and extended. Mutation/repeats: nightly.) **The Royal Hall** (`realm/`, 2 levels).
 
 ## Milestone 52: Rebuild from scratch: small pieces, walls, stories, wonders
 

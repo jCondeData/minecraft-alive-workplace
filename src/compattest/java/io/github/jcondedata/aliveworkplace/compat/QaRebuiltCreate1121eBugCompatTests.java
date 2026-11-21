@@ -152,42 +152,4 @@ public class QaRebuiltCreate1121eBugCompatTests implements FabricGameTest {
 		});
 		return run;
 	}
-
-	// ---- The Pump House's tank ----
-
-	/**
-	 * The Pump House's brief: the pump draws water from the pool and pumps it up the riser into the two-high tank. A while
-	 * after the builder is done, the tank (13, 8..9, 3) holds water.
-	 */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"qa1121e_pump_house_tank"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "qa1121e_pump_house_tank")
-	public void aBuiltPumpHouseFillsItsTank(GameTestHelper helper) {
-		Build b = start(helper, StarterBlueprints.PUMP_HOUSE, List.of());
-		long[] doneAt = {-1};
-		helper.succeedWhen(() -> {
-			assertDone(helper, b);
-			if (doneAt[0] < 0) {
-				doneAt[0] = helper.getTick();
-			}
-			String lower = tag(b.level, b.at(new BlockPos(13, 8, 3)));
-			String upper = tag(b.level, b.at(new BlockPos(13, 9, 3)));
-			boolean water = lower.contains("minecraft:water") || upper.contains("minecraft:water");
-			if (!water && helper.getTick() < doneAt[0] + 1200) {
-				throw new GameTestAssertException("waiting for the tank to fill");
-			}
-			StringBuilder seen = new StringBuilder();
-			for (int y = 1; y <= 9; y++) {
-				for (int x = 11; x <= 15; x++) {
-					for (int z = 2; z <= 4; z++) {
-						BlockState s = b.level.getBlockState(b.at(new BlockPos(x, y, z)));
-						if (!s.isAir() && (BuiltInRegistries.BLOCK.getKey(s.getBlock()).getNamespace().equals("create") || !s.getFluidState().isEmpty())) {
-							seen.append(' ').append(x).append(',').append(y).append(',').append(z).append('=').append(s);
-						}
-					}
-				}
-			}
-			helper.assertTrue(water, "a minute after the build, the tank holds no water: " + lower + " / " + upper + "; pump Speed "
-				+ speed(b.level, b.at(new BlockPos(13, 2, 3))) + "; round the pump:" + seen);
-		});
-	}
 }

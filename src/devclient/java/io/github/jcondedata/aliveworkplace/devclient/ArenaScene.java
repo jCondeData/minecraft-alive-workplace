@@ -24,9 +24,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 import net.minecraft.world.phys.Vec3;
 
 /**
- * SCENE=arena (ROADMAP 28.16, with Cobblemon): the Arena's three tiers side by side, each from the front (the way in,
- * north) and from above: the ring with its lines and centre circle, the trainer's boxes, the benches; Arena II's stands,
- * gate arch and fair lane; Arena III's covered grandstand, trainers' rooms and champion's pole. Two Trainer Leaders face
+ * SCENE=arena (ROADMAP 28.16, with Cobblemon; rebuilt 50.12, "the Market Stadium"): the Arena's three tiers side by side,
+ * each from the front (the way in, north) and from above: the chalk-marked pitch, the red and the blue box, the back row
+ * of seats; Arena II's colonnade over the fair lane and the judges' loggia; Arena III's grandstand, trainers' towers and
+ * champion's mast. Two Trainer Leaders face
  * each other from Arena III's boxes. Checks: every tier's spots (Arenas.at) hold what they should, and Arena III's
  * rooms have their Healing Machines.
  */
@@ -104,13 +105,14 @@ final class ArenaScene {
 		for (int i = 0; i < 3; i++) {
 			Arenas.Arena a = arena(level, i);
 			String name = StarterBlueprints.ARENAS.get(i).id().getPath();
-			Showcase.check(level.getBlockState(a.ring().below()).is(Blocks.WHITE_GLAZED_TERRACOTTA), name + ": the ring's centre spot is where Arenas says");
-			Showcase.check(a.boxes().stream().allMatch(b -> level.getBlockState(b.below()).is(Blocks.POLISHED_ANDESITE)), name + ": both trainer's boxes are on their daises");
+			Showcase.check(level.getBlockState(a.ring().below()).is(Blocks.CHISELED_STONE_BRICKS), name + ": the ring's centre spot is where Arenas says");
+			Showcase.check(level.getBlockState(a.boxes().get(0).below()).is(Blocks.RED_TERRACOTTA) && level.getBlockState(a.boxes().get(1).below()).is(Blocks.BLUE_TERRACOTTA),
+				name + ": both trainer's boxes are on their daises");
 			long seats = a.seats().stream().filter(s -> level.getBlockState(s).getBlock() instanceof StairBlock).count();
-			Showcase.check(seats == a.seats().size() && seats == new int[]{12, 30, 52}[i], name + ": " + seats + " seats");
+			Showcase.check(seats == a.seats().size() && seats == new int[]{12, 30, 54}[i], name + ": " + seats + " seats");
 		}
 		BlockPos o = ORIGINS.get(2);
-		long machines = List.of(o.offset(3, 1, 19), o.offset(21, 1, 19)).stream()
+		long machines = List.of(o.offset(2, 1, 21), o.offset(22, 1, 21)).stream()
 			.filter(p -> BuiltInRegistries.BLOCK.getKey(level.getBlockState(p).getBlock()).equals(ModVillagers.HEALING_MACHINE_BLOCK)).count();
 		Showcase.check(machines == 2, "Arena III: a Healing Machine in each trainers' room (" + machines + ")");
 	}

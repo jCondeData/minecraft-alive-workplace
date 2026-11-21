@@ -1,0 +1,19 @@
+{
+  "name": "colossus-a-s4-cut24",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 0
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/colossus_a/out/colossus-a-s4-cut24.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/colossus_a/out/summary.json",
+  "size": [
+    29,
+    47,
+    29
+  ],
+  "blockCount": 7734,
+  "paletteCount": 29,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/colossus_a/recipe.mjs"
+}

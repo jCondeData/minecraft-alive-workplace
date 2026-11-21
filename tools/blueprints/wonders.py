@@ -4227,6 +4227,8 @@ def co_head(b):
 
 
 def colossus():
+    """The 35.x Colossus, replaced by colossus_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays as the record of what older sites were built from."""
     b = StagedBuild(COW, COH, COD)
     b.begin(1)
     co_plinth(b)
@@ -4243,6 +4245,17 @@ def colossus_stage(stage=None):
     """For the renders only: the Colossus as it stands after a stage (whole by default)."""
     stages = colossus().stage_builds()
     return stages[(stage or len(stages)) - 1]
+
+
+def colossus_drawn():
+    """The new Colossus (ROADMAP 52.6, rebuilt from scratch, design A "Astride the Road"): js/colossus_a/recipe.mjs, its
+    four stage snapshots joined by js/colossus_a/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "colossus_a", "stages.py")
+    spec = importlib.util.spec_from_file_location("colossus_a_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 # --- the Stadium (with Cobblemon) ---------------------------------------------------------------------------------------
@@ -5247,7 +5260,7 @@ WONDERS = {
         ],
     },
     "colossus": {
-        "draw": colossus,
+        "draw": colossus_drawn,  # 52.6: rebuilt from scratch (js/colossus_a/)
         "icon": "minecraft:lantern",
         "crew": 12,
         "requirements": [

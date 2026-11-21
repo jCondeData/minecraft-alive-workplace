@@ -423,8 +423,9 @@ SCENES = [
       cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
-      [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
-       ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
+      [("01_arena_front", "Arena: the chalk-marked pitch, the red and the blue box, the back row of seats"),
+       ("03_arena_2_front", "Arena II: the colonnade's stand over the fair lane, the judges' loggia over the gate"),
+       ("05_arena_3_front", "Arena III: the brick-roofed grandstand between the trainers' towers"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
     # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
     # circuit, the player signed up, the seeds and the roll of champions
     S("cup_page", "Trainer Leader", "The Festival Cup's page",
@@ -1953,6 +1954,34 @@ SCENES = [
            ("02_outside_back", "From the back: the lodge's gable end and the hedge round the garden"),
            ("03_outside_west", "From the west: the hedge, the arbor over the walk, the lodge's steep roof"),
            ("04_outside_east", "From the east: the berry beds in their log curbs, the lodge behind them")], furniture=True),
+    # ROADMAP 50.12: the Habitat Garden rebuilt from scratch (REBUILD.md), "the Stone Ring" (Level I filmed)
+    S("rebuild_habitat_garden", "Build families", "The Habitat Garden, rebuilt: from four sides",
+      "the Habitat Garden's blueprint stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every room (none: an open-air garden, the bower is open-fronted) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Habitat Garden from the front: the gate in the low hedge, the ring of standing stones round the mossy center stone, the trilithon at its back"),
+           ("02_outside_back", "From the back: the trilithon, the honey tree's crown and the bower's tall roof behind the hedge"),
+           ("03_outside_west", "From the west: the reed-edged pond with its standing stone, the ring beyond"),
+           ("04_outside_east", "From the east: the keeper's bower with the Pasture Block under its eave, the Saccharine honey tree behind")], furniture=True),
+    # ROADMAP 50.12: the Arena rebuilt from scratch ("the Market Stadium"; Level I filmed, II and III in the arena scene)
+    S("rebuild_arena", "Build families", "The Arena, rebuilt: from four sides",
+      "the Arena's blueprint stands on a cleared lawn; every room (none: Level I is an open pitch, the trainers' towers come with Arena III) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Arena from the front: the low coped wall, the notice board on the gate pier, the pitch beyond"),
+           ("02_outside_back", "From the back: the back row of seats against its coped wall, the podium in the middle"),
+           ("03_outside_west", "From the west: the red box under its canopy and the red flag behind it, the chalk-marked pitch"),
+           ("04_outside_east", "From the east: the blue box under its canopy and the blue flag behind it")], furniture=True),
+    # ROADMAP 50.12: the Pokémon Center rebuilt from scratch ("the Red Dome"; Level I filmed, II in the pokemon_center scene)
+    S("rebuild_pokemon_center", "Build families", "The Pokémon Center, rebuilt: from four sides",
+      "the Pokémon Center's blueprint stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every furniture spot holds its piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Pokémon Center from the front: the white octagonal drum under the stepped red dome and its glazed eye, the glass shop-front and canopy over the door"),
+           ("02_outside_back", "From the back: stone pilasters at the drum's corners, windows set back over sills"),
+           ("03_outside_west", "From the west: the dome and its lantern in outline over the drum"),
+           ("04_outside_east", "From the east: the same round outline, nothing else in a village shaped like it")], furniture=True),
+    # ROADMAP 50.12: the Pokémon Center's looks side by side (the Mountain Lodge rebuilt; the Sunny Plaza still the old drawing)
+    S("rebuild_pokemon_center_looks", "Build families", "The Pokémon Center's three looks: the Red Dome, the Mountain Lodge and the Sunny Plaza",
+      "the Pokémon Center as drawn and its two looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("01_row_front", "The three looks from the front"),
+           ("10_plains", "The Red Dome, as drawn"),
+           ("11_lodge", "The Mountain Lodge: a steep red front gable over a porch deck, a jettied cross gable, a stone chimney and dormer"),
+           ("12_plaza", "The Sunny Plaza")], furniture=True),
     # ROADMAP 50.9: the Apiary Garden rebuilt from scratch (REBUILD.md), "the Skep Wall" (Level I filmed)
     S("rebuild_apiary_garden", "Build families", "The Apiary Garden, rebuilt: from four sides",
       "the Apiary Garden's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: the skep is a store) gets an eye-level shot from a free floor cell with a clear view",
@@ -2081,6 +2110,14 @@ SCENES = [
            ("02_outside_back", "From the east: the apse's half octagon with its tall windows, the choir aisles' chapels at its sides, the crossing's lead fleche behind"),
            ("03_outside_west", "From the north: the nave's long roof over its aisles' lean-tos, the clerestory windows, the transept's gable and its chapel on the east wall"),
            ("04_outside_east", "From the south: the mirror of the north side, the towers' spires rising over the west end and the fleche over the crossing")]),
+    # ROADMAP 52.6: the Colossus rebuilt from scratch (REBUILD.md), design A "Astride the Road", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_colossus", "Build families", "The Colossus, rebuilt: from four sides",
+      "the Colossus's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Colossus from the road: the Founder's feet planted either side of the arch in the dark gate, the plaque's seven signs over it, the lantern raised high on the right"),
+           ("02_outside_back", "From the back: the copper cloak falling from the shoulders and pooling on the deck, the gate's pilasters and copper frieze under it"),
+           ("03_outside_west", "From the west: the stride from the side, the left hand holding the rolled plan at the hip, the stairs up the gate's flank"),
+           ("04_outside_east", "From the east: the right arm thrown up with the glowstone lantern in its yellow cage, the braziers on the deck's corners")]),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

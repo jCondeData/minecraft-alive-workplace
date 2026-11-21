@@ -40,8 +40,8 @@ import net.minecraft.world.level.block.Rotation;
 public class ArenaCompatTests implements FabricGameTest {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
-	/** The Healing Machines of Arena III (template spots, one in each trainers' room; tools/blueprints/arena.py). */
-	private static final List<BlockPos> MACHINES = List.of(new BlockPos(3, 1, 19), new BlockPos(21, 1, 19));
+	/** The Healing Machines of Arena III (template spots, one in each trainers' tower; tools/blueprints/js/arena/plan.mjs, 50.12). */
+	private static final List<BlockPos> MACHINES = List.of(new BlockPos(2, 1, 21), new BlockPos(22, 1, 21));
 
 	/** An Expert Trainer Leader sells the Arena's blueprint; nothing a Leader sells below Expert is one. */
 	//$ gametest AREA

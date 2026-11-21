@@ -56,10 +56,11 @@ final class RebuildScene {
 		"gatehouse", "lookout_tower", "royal_hall", "observatory", "lighthouse", "berry_farm",
 		"apiary_garden", "greenhouse", "flower_shop", "trainers_house", "supply_shop", "market_stall", "compost_yard", "quarry",
 		"sifting_shed", "crushing_mill", "windmill", "hanging_gardens", "great_wall", "train_station", "pump_house", "terminal_nook",
-		"ball_workshop", "research_lab", "great_library", "stadium", "great_cathedral");
+		"habitat_garden", "ball_workshop", "arena", "research_lab", "great_library", "stadium", "great_cathedral",
+		"colossus", "pokemon_center", "pokemon_center_looks");
 	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
 	static final Set<String> WONDERS = Set.of("observatory", "lighthouse", "hanging_gardens", "great_wall", "great_library", "stadium",
-		"great_cathedral");
+		"great_cathedral", "colossus");
 	/** SCENE=rebuild_&lt;family&gt;_looks films the family's biome looks side by side ({@link #placeLooks}). */
 	static final String LOOKS_SUFFIX = "_looks";
 	private static final BlockPos AT = new BlockPos(0, -60, 0);

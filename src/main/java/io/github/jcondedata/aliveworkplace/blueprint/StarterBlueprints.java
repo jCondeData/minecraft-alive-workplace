@@ -130,19 +130,21 @@ public final class StarterBlueprints {
 	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(23, 13, 15), 4);
 
 	/**
-	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
-	 * roof, Cobblemon's Healing Machine on the counter (the nurse's place), a PC beside it, potions and benches.
+	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): the Red Dome (rebuilt 50.12), a white octagonal
+	 * drum under a stepped red dome with a glazed eye, Cobblemon's Healing Machine in the desk under the eye (the
+	 * Nurse's place), a PC beside it, waiting benches either side of a red aisle.
 	 */
-	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 10, 12));
-	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
-	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
+	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 16, 13));
+	/** A gabled Trade Hall on the east (the Shop Counter) and a planted garden behind with a domed pavilion and the Pasture Block. */
+	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(20, 16, 26));
 	/**
-	 * The Pokémon Center's other looks (ROADMAP 28.7a; tools/blueprints/pokemon_looks.py, see {@link BlueprintLooks}): a
-	 * timber Mountain Lodge under a steep red gable with a porch, and its upgrade with a two-storey wing on the east and
-	 * a pen behind.
+	 * The Pokémon Center's other looks (ROADMAP 28.7a, see {@link BlueprintLooks}): the Mountain Lodge (rebuilt 50.12,
+	 * tools/blueprints/js/pokemon_center_lodge), a log lodge under a steep red gable with a porch deck, a jettied cross
+	 * gable and a stone chimney, and its upgrade carrying the cross gable east into the Trader's wing, with a paddock
+	 * and field shelter behind.
 	 */
-	public static final Entry POKEMON_CENTER_LODGE = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center"), new Vec3i(13, 12, 12));
-	public static final Entry POKEMON_CENTER_LODGE_2 = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center_2"), new Vec3i(21, 14, 18));
+	public static final Entry POKEMON_CENTER_LODGE = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center"), new Vec3i(13, 15, 13));
+	public static final Entry POKEMON_CENTER_LODGE_2 = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center_2"), new Vec3i(21, 15, 26));
 	/** A flat-roofed sandstone Sunny Plaza with a striped awning and a red-capped drum; its upgrade adds a wing and a courtyard. */
 	public static final Entry POKEMON_CENTER_PLAZA = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center"), new Vec3i(13, 11, 12));
 	public static final Entry POKEMON_CENTER_PLAZA_2 = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center_2"), new Vec3i(13, 12, 25));
@@ -152,15 +154,17 @@ public final class StarterBlueprints {
 	public static final List<Entry> POKEMON_CENTER_2_LOOKS = List.of(POKEMON_CENTER_2, POKEMON_CENTER_LODGE_2, POKEMON_CENTER_PLAZA_2);
 
 	/**
-	 * With Cobblemon only (ROADMAP 28.16; tools/blueprints/arena.py): a 15 x 9 battle ring (packed mud, white lines, a
-	 * centre circle), a trainer's box on a dais at each end, benches for 12, banner poles and a notice board. The spots
-	 * the mod uses (the ring centre, the boxes, the seats...) are {@code hall.Arenas}'.
+	 * With Cobblemon only (ROADMAP 28.16; rebuilt 50.12, "the Market Stadium", tools/blueprints/js/arena): a chalk-marked
+	 * 15 x 9 pitch (coarse earth, a halfway line and centre circle, a chalk boundary round it), a red box and a blue box on
+	 * daises under little canopies at its ends, a flag behind each, 12 seats along the back wall and a low front wall whose
+	 * gate pier carries the notice board. The spots the mod uses (the ring centre, the boxes, the seats...) are
+	 * {@code hall.Arenas}'.
 	 */
-	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 8, 19));
-	/** Stands on both long sides (30 seats), a gate arch, lanterns round the ring and a fair lane with two striped kiosks. */
-	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 9, 29));
-	/** A covered grandstand on stone terraces, a trainers' room with a Healing Machine at each end, the champion's pole. */
-	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 12, 29));
+	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 9, 19));
+	/** A colonnaded stand along the front (30 seats in all) over the Cup's fair lane, with the judges' loggia over the gate. */
+	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 13, 19));
+	/** A brick-roofed grandstand along the back (54 seats), a trainers' tower with a Healing Machine at each end, the champion's mast. */
+	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 14, 23));
 	/** The Arena's three tiers. */
 	public static final List<Entry> ARENAS = List.of(ARENA, ARENA_2, ARENA_3);
 
@@ -183,17 +187,24 @@ public final class StarterBlueprints {
 	public static final Entry DAYCARE_2 = new Entry(AliveWorkplace.id("daycare_2"), new Vec3i(19, 11, 27));
 
 	/**
-	 * A wild garden in a hedge round a mossy centre stone ({@link #HABITAT_GARDEN_CENTRE}), a pond, a Saccharine tree and
-	 * the Habitat Keeper's Pasture Block in the hedge.
+	 * The Stone Ring: a hedged clearing round an old ring of standing stones with the mossy centre stone at its heart
+	 * ({@link #HABITAT_GARDEN_CENTRE}), a reed-edged pond, the keeper's bower with her chest and the Pasture Block under
+	 * its eave, and the old Saccharine honey tree (rebuilt 50.12).
 	 */
-	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(15, 8, 15));
-	/** The garden runs on behind to a second pond and a keeper's hide on stilts. */
-	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(15, 11, 25));
+	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(19, 13, 17));
+	/** The walk runs on through the trilithon to a second pond and the keeper's hide on stilts beside it. */
+	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(19, 13, 25));
 	/**
 	 * The Habitat Garden's mossy centre stone, a template spot of both tiers (ROADMAP 28.14 puts the village's habitat
-	 * under it; HABITAT_CENTRE in pokemon_jobs.py).
+	 * under it; the Centre in js/habitat_garden/plan.mjs; (7, 0, 7) before the 50.12 rebuild).
 	 */
-	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
+	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(9, 0, 8);
+	/**
+	 * The centre stone of the old drawing (before the 50.12 rebuild; HABITAT_CENTRE in pokemon_jobs.py,
+	 * blueprint_history/habitat_garden*&#47;v0.145.0.nbt): a garden built from it and not refreshed still has its stone
+	 * here, and {@code VillageHabitats.centre(level, placement)} finds it. Never change it.
+	 */
+	public static final BlockPos V0145_HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
 	/**
 	 * A stone shed over a lava pool behind glass, ledges round it for tumblestones, the Gem Grower's stonecutter and an
 	 * amethyst niche. All vanilla, like her job: in the table without Cobblemon too.

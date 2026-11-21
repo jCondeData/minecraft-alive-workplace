@@ -63,10 +63,21 @@ public class QaDoorwayBugGameTests implements FabricGameTest {
 		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.NONE, new BlockPos(5, 2, 2), new int[] {2, 2, 16}, new int[] {6, 2, 17}, new int[] {3, 2, 17});
 	}
 
-	/** The Pokemon Center lodge look II: from the path in by the front door (6,1,10) to (6,1,8). */
+	/**
+	 * The Pokemon Center lodge look II: from the path in by the door to (6,1,8). 50.12 rebuilt the lodge (26 deep now, so
+	 * it stands at (4,2,2)): the door this walk was about moved from (6,1,10) to the Nurse's back door (6,1,11), a spruce
+	 * stair step behind it at (6,1,12), and (6,1,10) is open floor inside; the path cell (6,1,13) and the goal stay.
+	 */
 	//$ gametest_ticks_batch AREA '500' '"qaB173LodgeFront"'
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaB173LodgeFront")
 	public void aVillagerWalksInByThePokemonLodgesFrontDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.NONE, new BlockPos(4, 2, 4), new int[] {6, 1, 13}, new int[] {6, 1, 8}, new int[] {6, 1, 10});
+		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.NONE, new BlockPos(4, 2, 2), new int[] {6, 1, 13}, new int[] {6, 1, 8}, new int[] {6, 1, 11});
+	}
+
+	/** 50.12: the rebuilt lodge II's real front door (6,1,2), off its porch deck: from the street in to (6,1,8), every other door walled up. */
+	//$ gametest_ticks_batch AREA '500' '"qaLodgeStreetDoor"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qaLodgeStreetDoor")
+	public void aVillagerWalksInByThePokemonLodgesStreetDoor(GameTestHelper helper) {
+		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.NONE, new BlockPos(4, 2, 2), new int[] {6, 0, -1}, new int[] {6, 1, 8}, new int[] {6, 1, 2});
 	}
 }

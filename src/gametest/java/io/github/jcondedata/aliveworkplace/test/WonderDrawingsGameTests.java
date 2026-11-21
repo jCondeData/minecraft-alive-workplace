@@ -16,6 +16,7 @@ import io.github.jcondedata.aliveworkplace.mc.Ids;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModComponents;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
+import io.github.jcondedata.aliveworkplace.wonder.ColossusPlaque;
 import io.github.jcondedata.aliveworkplace.wonder.Wonder;
 import io.github.jcondedata.aliveworkplace.wonder.WonderDrawings;
 import io.github.jcondedata.aliveworkplace.wonder.WonderManager;
@@ -792,6 +793,77 @@ public class WonderDrawingsGameTests implements FabricGameTest {
 
 	/** The block counts {@link #aGreatCathedralOfThe359DrawingKeepsItsOldStages} pins (WonderUpkeep's, of the 35.9 and 52.6 drawings). */
 	private static final int OLD_CATHEDRAL_COUNT = 14245, NEW_CATHEDRAL_COUNT = 14221;
+
+	/**
+	 * 52.6 shipped the rebuilt Colossus (design A, "Astride the Road"): one begun with the 35.21 drawing (the key its file
+	 * named until then, with its later fixes) is still counted, repaired and continued by that drawing, read from the
+	 * shipped history. Finished, it is counted against the old drawing's blocks, not today's, and its plaque (written when
+	 * it finishes, ColossusPlaque) still finds the old drawing's seven signs where they stand; half-built at stage 2, its
+	 * next stage is the old stage 2 part (the old robe) at its old offset, its blocks as the old part had them; a Colossus
+	 * recorded with today's key goes by today's.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"wonderDrawingsColossus"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "wonderDrawingsColossus")
+	public void aColossusOfThe35xDrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ResourceLocation colossus = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "colossus");
+		String old = "drawn_ec2ed8477"; // the 35.21 drawing (with its later fixes), the one standing on servers before 52.6
+		Wonder today = Wonders.loaded().get(colossus);
+		helper.assertTrue(today != null, "the Colossus isn't loaded: " + Wonders.problems());
+		helper.assertTrue(!Wonders.drawing(colossus).equals(old), "the Colossus's file still names the 35.21 drawing");
+		helper.assertTrue(WonderDrawings.olderKeys(level.getServer(), colossus).contains(old), "the 35.21 drawing isn't in the history: "
+			+ WonderDrawings.olderKeys(level.getServer(), colossus));
+		List<Wonder.Stage> oldStages = WonderDrawings.stages(level.getServer(), colossus, old).orElseThrow();
+		List<BlockPos> offsets = oldStages.stream().map(st -> st.parts().get(0).offset()).toList();
+		helper.assertTrue(oldStages.size() == 4 && offsets.equals(List.of(BlockPos.ZERO, new BlockPos(9, 13, 9), new BlockPos(9, 13, 8), new BlockPos(10, 34, 8))),
+			"the 35.21 drawing's stages: " + oldStages.size() + " at " + offsets);
+
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), helper.absolutePos(new BlockPos(1, 2, 1)), Rotation.NONE, Mirror.NONE);
+		WonderSite finishedOld = new WonderSite(UUID.randomUUID(), colossus, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		WonderSite finishedNew = new WonderSite(UUID.randomUUID(), colossus, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE,
+			Optional.of(Wonders.drawing(colossus)));
+		helper.assertTrue(WonderDrawings.older(level, finishedOld) && !WonderDrawings.older(level, finishedNew), "which drawing each goes by");
+		int oldCount = WonderUpkeep.blocks(level, finishedOld).size();
+		int newCount = WonderUpkeep.blocks(level, finishedNew).size();
+		// the counts WonderUpkeep keeps (structure and decoration steps; a few of each drawing's blocks are the plan's
+		// foundation or landscape steps, which the count leaves out for every Wonder)
+		helper.assertTrue(oldCount == OLD_COLOSSUS_COUNT && newCount == NEW_COLOSSUS_COUNT, "an old Colossus is counted against " + oldCount
+			+ " blocks (the 35.21 drawing: " + OLD_COLOSSUS_COUNT + "), today's against " + newCount + " (" + NEW_COLOSSUS_COUNT + ")");
+		for (WonderUpkeep.Part part : WonderUpkeep.parts(level, finishedOld)) {
+			Optional<WonderDrawings.Older> o = WonderDrawings.parse(BlueprintStyles.base(part.structure()));
+			helper.assertTrue(o.isPresent() && o.get().key().equals(old), "an old Colossus's part (repaired by it) is today's: " + part.structure());
+		}
+		// the plaque: an old Colossus's seven signs are the old drawing's (where they stand on it), today's are today's
+		List<BlockPos> oldSigns = ColossusPlaque.signs(level, finishedOld);
+		List<BlockPos> newSigns = ColossusPlaque.signs(level, finishedNew);
+		Set<BlockPos> oldDrawn = new HashSet<>();
+		for (WonderUpkeep.Block b : WonderUpkeep.blocks(level, finishedOld)) {
+			if (b.state().getBlock() instanceof net.minecraft.world.level.block.WallSignBlock) {
+				oldDrawn.add(b.pos());
+			}
+		}
+		helper.assertTrue(oldSigns.size() == 7 && oldDrawn.containsAll(oldSigns), "an old Colossus's plaque signs: " + oldSigns + " (its drawing's: " + oldDrawn + ")");
+		helper.assertTrue(newSigns.size() == 7 && !new HashSet<>(newSigns).equals(new HashSet<>(oldSigns)),
+			"today's plaque signs " + newSigns + " are the old drawing's " + oldSigns);
+
+		WonderSite halfOld = new WonderSite(UUID.randomUUID(), colossus, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 2, 1L,
+			Optional.empty(), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, false, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		Wonder.Part next = WonderDrawings.of(level, halfOld).stages().get(1).parts().get(0);
+		ResourceLocation todaysPart = today.stages().get(1).parts().get(0).part();
+		helper.assertTrue(next.part().equals(WonderDrawings.olderId(todaysPart, old)) && next.offset().equals(new BlockPos(9, 13, 9)),
+			"a half-built old Colossus's stage 2 is " + next);
+		helper.assertTrue(!today.stages().get(1).parts().get(0).offset().equals(next.offset()), "today's stage 2 part stands where the old one did");
+		Optional<Blueprint> oldPart = BlueprintLibrary.get(level, next.part());
+		Optional<Blueprint> newPart = BlueprintLibrary.get(level, todaysPart);
+		helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty() && newPart.isPresent()
+			&& !new HashSet<>(oldPart.get().blocks()).equals(new HashSet<>(newPart.get().blocks())), "the old stage 2 part didn't load as the old one");
+		helper.succeed();
+	}
+
+	/** The block counts {@link #aColossusOfThe35xDrawingKeepsItsOldStages} pins (WonderUpkeep's, of the 35.21 and 52.6 drawings). */
+	private static final int OLD_COLOSSUS_COUNT = 8963, NEW_COLOSSUS_COUNT = 8786;
 
 	/**
 	 * 52.6 shipped the rebuilt Stadium ("the Stadium Bowl"). Its file loads only with Cobblemon (and so do its older

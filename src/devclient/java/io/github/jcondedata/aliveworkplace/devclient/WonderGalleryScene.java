@@ -42,7 +42,7 @@ final class WonderGalleryScene {
 		new Wonder("observatory", new Vec3i(31, 43, 31), -1), // 35.17; rebuilt in 52.6 at the same size
 		new Wonder("great_wall", new Vec3i(97, 26, 27), -1), // 35.15: front (z = 0) is the village side; rebuilt in 52.6, 27 deep with its barbican
 		new Wonder("hanging_gardens", new Vec3i(47, 33, 44), -1), // 35.19; rebuilt in 52.6 at the same size
-		new Wonder("colossus", new Vec3i(29, 47, 29), -1), // 35.21: the road runs front to back through its arch
+		new Wonder("colossus", new Vec3i(29, 47, 29), -1), // 35.21; rebuilt in 52.6 at the same size: the road runs front to back through its arch, between the statue's feet
 		new Wonder("stadium", new Vec3i(59, 26, 49), -1)); // 35.23 (bigger since 35.23a, rebuilt 52.6): its file and its Healing Machine need Cobblemon, so the scene is filmed with it
 	/** How far the sea reaches past a coastal Wonder's sides and back. */
 	private static final int SEA_MARGIN = 10;

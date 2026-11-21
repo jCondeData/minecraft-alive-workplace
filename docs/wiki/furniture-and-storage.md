@@ -100,7 +100,8 @@ coming in by the other home's door climbed the wrong ladder and gave his bed up.
 the bed counts only if a villager can get through it, as vanilla's walking sees doors: a wooden one (he opens it) or
 any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876). A villager
 without a bed who is already up in the wrong bedroom at bedtime (both its beds someone else's) takes a free bed next
-door too: he goes down his own ladder, along to the other home's door and up its ladder (B925).
+door too: he goes down his own ladder, along to the other home's door and up its ladder (B925). So does one standing
+out behind the house at bedtime, the long way round from its door (B735).
 
 Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
 file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
@@ -177,8 +178,7 @@ vanilla chests and barrels underneath).
 
 **Two build libraries** (37.12). Every blueprint as it ships is the **vanilla library**, never changed. The **modded
 library** is a copy of every home and workshop (130 builds: every tier of the homes, workshops, job builds and the
-Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none, and the open-air Habitat Garden
-has nothing to dress) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
+Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
 building mods: the plaster and the birch infill of the timber frames are Supplementaries daub, with a brace in a
 panel's bottom corner beside a post; covered wooden floors are Chipped herringbone boards of the same wood; polished
 andesite is Rechiseled andesite tiles and covered cobblestone floors Rechiseled cobblestone brick paving; chests,
@@ -359,6 +359,10 @@ for one with a ladder within 8 blocks whose top comes up in the bed's room (a wa
 top to the bed: nothing taller than a step underfoot, nothing at head height, doors open) and whose foot the villager
 can walk to; that bed is claimed as vanilla claims any. At bedtime `BedLadders` takes the villager to the foot of a
 ladder that comes up in his bed's room, before any nearer one that doesn't (when none does, the nearest, as before).
+The walk to a ladder's foot is looked for up to 96 blocks long (`BedLadders.walkTo`; a villager's everyday path search
+stops at 48, roughly counted): from a few blocks behind the Terrace, 30 blocks' walk from a ladder round by the front
+door, the 48-block search found no way, and a villager without a bed, outdoors at night, walks nowhere by himself, so
+he stood there until morning (B735). The longer search visits no more nodes than any other.
 Nothing is saved.
 
 ## 3. Switches

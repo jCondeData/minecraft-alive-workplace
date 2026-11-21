@@ -190,6 +190,20 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.13, the Terminal Nook ("the Staddle Granary"), both drawings: js/terminal_nook (MC_BUILDER=..., sh build.sh
            # writes the candidates, the vanilla build and its Tom's copy in modded/; LIVE=1 sh build.sh the live ones)
            "terminal_nook",
+           # 50.12, the Habitat Garden (I-II, "the Stone Ring"): js/habitat_garden (MC_BUILDER=..., sh build.sh writes
+           # the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py habitat_garden habitat_garden_2);
+           # pokemon_jobs.habitat_garden* are the old drawings, kept in blueprint_history/
+           "habitat_garden", "habitat_garden_2",
+           # 50.12, the Arena (I-III, "the Market Stadium"): js/arena (MC_BUILDER=..., sh build.sh writes the candidates;
+           # LIVE=1 sh build.sh the live ones; no modded copies); arena.py's ARENAS are the old drawings, kept in
+           # blueprint_history/
+           "arena", "arena_2", "arena_3",
+           # 50.12, the Pokémon Center (I-II, "the Red Dome"): js/pokemon_center (MC_BUILDER=..., sh build.sh writes the
+           # candidates; LIVE=1 sh build.sh the live ones; then modded_library.py pokemon_center pokemon_center_2); its
+           # Mountain Lodge look: js/pokemon_center_lodge (SHIP=1 sh build.sh saves looks/lodge/pokemon_center(_2); no
+           # modded copies). pokemon.py's pokemon_center* and pokemon_looks.py's lodge are the old drawings, kept in
+           # blueprint_history/. The Plaza look is still pokemon_looks.py's
+           "pokemon_center", "pokemon_center_2", "looks/lodge/pokemon_center", "looks/lodge/pokemon_center_2",
            # 50.12, the Ball Workshop ("the Drying Loft"; the buildable only: the five village ball workshops keep their
            # own looks, village.py and village_looks.py): js/ball_workshop (MC_BUILDER=..., sh build.sh writes the
            # candidate; LIVE=1 sh build.sh the live one; then modded_library.py ball_workshop); workplaces.py's
@@ -417,18 +431,21 @@ if __name__ == "__main__":
     for name, draw in (("sifting_shed", sifting_shed), ("sifting_shed_2", sifting_shed_2)):
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
-    pokemon_center().save(MAIN_STRUCTURES, "pokemon_center")
-    pokemon_center_2().save(MAIN_STRUCTURES, "pokemon_center_2")
-    for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks
-        tier1().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center")
-        tier2().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), "pokemon_center_2")
+    for name, draw in (("pokemon_center", pokemon_center), ("pokemon_center_2", pokemon_center_2)):
+        if name not in REBUILT:  # ROADMAP 50.12: the Pokémon Center comes from the rebuild kit
+            draw().save(MAIN_STRUCTURES, name)
+    for look, tier1, tier2 in POKEMON_CENTER_LOOKS:  # ROADMAP 28.7a: the Center's other looks (50.12: lodge rebuilt)
+        for name, draw in (("pokemon_center", tier1), ("pokemon_center_2", tier2)):
+            if f"{LOOK_FOLDER}/{look}/{name}" not in REBUILT:
+                draw().save(os.path.join(MAIN_STRUCTURES, LOOK_FOLDER, look), name)
     for name, draw in JOB_BUILDS:  # ROADMAP 28.13: the Pokémon jobs' builds (52.2: the camp kitchen is rebuilt)
         if name not in REBUILT:
             draw().save(MAIN_STRUCTURES, name)
     guildhall().save(MAIN_STRUCTURES, "guildhall")
     guildhall_2().save(MAIN_STRUCTURES, "guildhall_2")
-    for name, draw in ARENAS:  # ROADMAP 28.16: the Arena's three tiers
-        draw().save(MAIN_STRUCTURES, name)
+    for name, draw in ARENAS:  # ROADMAP 28.16: the Arena's three tiers (50.12: rebuilt, REBUILT; arena.py is the old drawing)
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

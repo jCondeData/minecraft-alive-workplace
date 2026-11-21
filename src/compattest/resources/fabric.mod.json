@@ -293,6 +293,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonJobSitesVerify1031",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ArenaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.OldArenaWatchCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.OldPokemonCenterDrawingCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BerryBreederCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFarSiteBerryCompatTests",
@@ -479,7 +481,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaMixedTagPack1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116cCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116bCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116bCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eCompatTests"
 		]
 	},
 	"depends": {

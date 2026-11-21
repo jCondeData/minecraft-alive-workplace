@@ -53,7 +53,7 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 		new Design("observatory", 9_000), // 35.17
 		new Design("great_wall", 12_300), // 35.15, with 35.15a's solid tower bases (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
 		new Design("hanging_gardens", 15_000), // 35.19; rebuilt in 52.6 (15,623)
-		new Design("colossus", 9_000)); // 35.21
+		new Design("colossus", 9_000)); // 35.21; rebuilt in 52.6 (8,786)
 	// The Stadium (35.23) needs Cobblemon for its file and its Healing Machine: the same checks are compat StadiumCompatTests.
 
 	/** The largest a part may be on any side (a structure file a Structure Block could load). */

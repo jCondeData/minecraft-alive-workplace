@@ -496,7 +496,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPumpHouseTank1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eBugCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eCompatTests",
+      "io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eBugCompatTests"
 		]
 	},
 	"depends": {

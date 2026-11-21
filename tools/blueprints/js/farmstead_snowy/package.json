@@ -1,0 +1,9 @@
+{
+  "name": "farmstead-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Farmstead, the snowy look (ROADMAP 49.10e): the shipped Farmstead drawn again for a farm in deep snow: a calcite farmhouse showing the road its long side under a steep slate roof with a birch gablet over the door, a broad stone stack, a deep gable porch over the Farmer's composter on the field side, and (II) a tall white barn crossing behind under its own steep roof with a louvre, hay hood and wagon doors. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh"
+  }
+}

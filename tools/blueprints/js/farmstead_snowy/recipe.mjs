@@ -8,10 +8,10 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   SIZE, BASEMENT, IDS, PALETTE, HOUSE, GABLET, NICHE, STACK, WOODPILE, PORCH, BARN, FIELD, FIELD2, KERB, FIELD_LAMPS,
-  CELLAR, CELLAR_STORE, OPENINGS, FURNITURE, CROPS,
+  CELLAR, CELLAR_STORE, OPENINGS, FURNITURE, CROPS, WEST_GABLE,
 } from './plan.mjs'
 import {
-  LiftedCanvas, mix, stair, slab, trapdoor, floor, window, door, quoins, gableRoof, evenGableRoof, frontDormer,
+  LiftedCanvas, mix, stair, slab, trapdoor, floor, window, door, quoins, gableRoof, frontDormer,
   snowLoad, rakeVerge, furnitureParts, cellar, hatchLadder, louvre, railingRun, fieldPlot, kerbFence,
   scarecrow, composter,
 } from '../parts/index.mjs'
@@ -91,14 +91,10 @@ export function draw(level) {
   // The hall's steep roof, ridge along x (the long side to the road), run on two blocks past the east gable as the
   // gable porch; the stack takes its cells at x 0, z 4..5
   const stackCell = (x, y, z) => x === STACK.x && STACK.zs.includes(z) && y >= STACK.weathering
-  evenGableRoof(c, H.roof, P.roof, (x, y, z) => z <= 9 && !stackCell(x, y, z))
-  // the gablet over the door: birch posts and boards round a tall light, its own steep slate gable with snow
-  frontDormer(c, GABLET, P.roof, { cheek: P.post, infill: P.face, glass: P.glass, verge: P.roof.stairs, vergeTop: P.roof.full, snow: P.snow })
-  // round 2 (note 3): the gablet's snow lies on its ridge itself, packed snow in the ridge's cells, not a layer a course over it
-  for (let z = 0; z <= GABLET.face + 1; z++) {
-    const ry = GABLET.y0 + 4
-    if (c.name(GABLET.cx, ry, z) === `minecraft:${P.roof.full}`) { c.set(GABLET.cx, ry, z, 'snow_block'); if (c.name(GABLET.cx, ry + 1, z) === 'minecraft:snow') c.clear(GABLET.cx, ry + 1, z) }
-  }
+  hallRoof(c, H.roof, P.roof, (x, y, z) => !stackCell(x, y, z))
+  // the gablet over the door: birch posts and boards round a tall light, its own steep slate gable; round 3 (note 3):
+  // no snow on it at all, its little ridge stays slate (snowLoad skips it), so no white piece floats mid-slope
+  frontDormer(c, GABLET, P.roof, { cheek: P.post, infill: P.face, glass: P.glass, verge: P.roof.stairs, vergeTop: P.roof.full })
   // and the verge's apex notch under it closed in slate, so the snow cap sits on a whole little roof, not over a gap
   if (!c.get(GABLET.cx, GABLET.y0 + 3, GABLET.face - 1)) c.set(GABLET.cx, GABLET.y0 + 3, GABLET.face - 1, P.roof.full)
   // The barn (II): its steep roof, ridge along z, the front rake flush on its gable, the back rake one out
@@ -138,6 +134,14 @@ export function draw(level) {
   for (const z of S.zs) for (let y = S.breast.top + 1; y <= S.top; y++) c.set(S.x, y, z, P.stack)
   // round 2 (note 2): the breast steps in once, a weathering at y 5 on either side of the stack
   stair(c, S.x, S.weathering, S.breast.z0, P.step, 'south'); stair(c, S.x, S.weathering, S.breast.z1, P.step, 'north')
+  // round 3 (note 2): the west gable closed in the rake's plane, calcite up to the slate on both sides of the stack over
+  // the andesite course (carried on round from the walls) on the breast and two stone corbels, so the slate ends on a
+  // whole wall and the grey stack stands against it
+  const WG = WEST_GABLE
+  for (const z of WG.beamZ) c.set(WG.x, WG.beamY, z, P.course)
+  for (const z of WG.corbels) stair(c, WG.x, WG.beamY - 1, z, P.step, 'east', 'top')
+  // the slate's own blocks in that plane under each rake stair are calcite too, so only the stairs' edge shows: a thin verge
+  for (const z of WG.boards) for (let y = WG.beamY + 1; c.name(WG.x, y, z) !== `minecraft:${P.roof.stairs}`; y++) c.set(WG.x, y, z, P.wall)
   c.set(...S.fire, 'campfire', { facing: 'north', lit: 'true', signal_fire: 'false', waterlogged: 'false' })
   slab(c, ...S.slab, P.capSlab)
   // the woodpile under the west rake, split logs laid along the wall
@@ -211,7 +215,7 @@ export function draw(level) {
   // --- Pass 8: snow ---------------------------------------------------------------------------------------------------
   // on the ridges (the hall's two back-to-back stairs set full), the eave lips, never on a rake, the gablet's verge,
   // a hood or the louvre
-  const rake = (x, z) => z <= 9 && H.rakes.includes(x)
+  const rake = (x, z) => z >= 1 && z <= 8 && H.rakes.includes(x) // round 3: the eave lips run on over the corners, edge to edge
   const gablet = (x, y, z) => x >= GABLET.cx - 2 && x <= GABLET.cx + 2 && z <= GABLET.face + 1 && y >= GABLET.y0 + 2
   const lv = B.louvre
   const louvreCell = (x, y, z) => two && Math.abs(x - lv.x) <= 1 && Math.abs(z - lv.z) <= 1 && y >= lv.y
@@ -225,12 +229,6 @@ export function draw(level) {
   })
   // the rakes: one clean steep verge each (the hall's at x 0 and x 9, the barn's back one at z 21)
   rakeVerge(c, P.roof, 'x', 9, [0, 9])
-  // round 2 (note 2): the west rake gets a closed barge: two courses of dark boards under each step of the rake, so it runs
-  // as one band from the stack down to the eave lip on both sides, the stack standing against the gable inside it
-  for (let z = 1; z <= 8; z++) for (const dy of [1, 2]) {
-    const y = H.under[z] - dy
-    if (!c.get(0, y, z)) c.set(0, y, z, P.barge)
-  }
   if (two) rakeVerge(c, P.roof, 'z', B.roof.along[1], [0, 8])
   // snow on the sills, the niche's tops, the woodpile, the scarecrow's head
   const dust = (x, y, z, n) => { if (c.name(x, y, z) === 'minecraft:air') c.set(x, y, z, P.snow, { layers: String(n) }) }
@@ -247,24 +245,39 @@ export function draw(level) {
   return { c, dug }
 }
 
-// round 2 (note 4): the drift, varied: the free ground cells along every wall and kerb (as snowSkirt finds them),
-// piled three deep in the corners against the walls, two against a wall, one or two along the kerbs with gaps here and
-// there, kept off the steps and doorsteps.
+// round 3 (note 1): the hall's roof, blocks and stairs alternating up each slope (H.roof.steps: each column's stair y,
+// full blocks under it down to the column before's stair, so every stair sits on slate), the two ridge stairs back to
+// back; a 3:2 pitch that keeps the snowy village's steep look with the ridge two courses lower than 2:1
+function hallRoof(c, { across: [a0, a1], along: [l0, l1], steps }, roof, keep) {
+  const n = (a1 - a0 + 1) / 2
+  for (let x = l0; x <= l1; x++) for (const [z0, dir, rise] of [[a0, 1, 'south'], [a1, -1, 'north']]) for (let i = 0; i < n; i++) {
+    const z = z0 + dir * i, from = i === 0 ? steps[0] : i === 1 ? steps[0] + 1 : steps[i - 1]
+    for (let y = from; y < steps[i]; y++) if (keep(x, y, z)) c.set(x, y, z, roof.full)
+    if (keep(x, steps[i], z)) stair(c, x, steps[i], z, roof.stairs, rise)
+  }
+}
+
+// the drift (round 2, note 4; round 3, note 4): the free ground cells banked against a wall (the house's, the barn's,
+// the breast, the woodpile), four deep where two walls meet, two or three along one; none on open grass, along the
+// kerbs or by the flags, kept off the steps and doorsteps.
 function drift(c, snow, two) {
   const [w, , d] = c.size
   const solid = (x, z) => x >= 0 && x < w && z >= 0 && z < d && (c.name(x, 0, z) !== 'minecraft:air' || c.name(x, 1, z) !== 'minecraft:air')
+  // round 3: something standing a block up to lean on (a wall, the kerb's fence, a step's riser), not flags or a deck
+  const upright = (x, z) => x >= 0 && x < w && z >= 0 && z < d && !/air|snow|wheat|carrots|potatoes|beetroots|lantern|torch/.test(c.name(x, 1, z))
   const wall = (x, z) => x >= 0 && x < w && z >= 0 && z < d && /calcite|stone_bricks|polished_andesite|_log|cobblestone|stone$|andesite/.test(c.name(x, 1, z)) && !/stairs|slab/.test(c.name(x, 1, z))
   const bare = new Set(['7,0', '9,0', '0,8', '0,10', '4,21', '7,21', '3,1', '5,1'].filter(k => two || !['0,8', '0,10', '4,21', '7,21'].includes(k)))
   const hash = (x, z) => { let h = (x * 73856093) ^ (z * 19349663) ^ 0x5bd1e995; h = Math.abs((h ^ (h >>> 13)) * 1274126177); return h % 100 }
   const add = []
   for (let x = 0; x < w; x++) for (let z = 0; z < d; z++) {
     if (solid(x, z) || bare.has(`${x},${z}`)) continue
-    let near = false
-    for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) if ((dx || dz) && solid(x + dx, z + dz)) near = true
-    if (!near) continue
-    const walls = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dz]) => wall(x + dx, z + dz)).length
+    // round 3 (note 4): only where it is banked against a wall (the house's, the barn's, the breast, the woodpile), never
+    // loose on the grass or along the kerbs, deeper where two walls meet
+    const sides = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+    if (!sides.some(([dx, dz]) => upright(x + dx, z + dz))) continue
+    const walls = sides.filter(([dx, dz]) => wall(x + dx, z + dz)).length
     const h = hash(x, z)
-    let n = walls >= 2 ? 3 : walls === 1 ? (h < 60 ? 2 : 1) : h < 18 ? 0 : h < 55 ? 1 : 2
+    let n = walls >= 2 ? 4 : walls === 1 ? (h < 55 ? 3 : 2) : 0
     if (n) add.push([x, z, n])
   }
   for (const [x, z, n] of add) c.set(x, 0, z, snow, { layers: String(n) })

@@ -184,3 +184,24 @@ Notes:
    white piece on the front slope that does not run to an edge.
 4. L1 front and top, the loose drift tiles (snowy_1_front, snowy_1_top): the single layers alone on the grass away from
    any wall read as paving slabs. Keep drift only where it leans on a wall, kerb or step.
+
+### Round 3 designer notes: snowy
+
+Candidates rebuilt (`build/rebuild/farmstead_snowy/farmstead[_2|_3].nbt`, not shipped), sizes 15 x 15 x 12 (was
+15 x 17 x 12), 15 x 18 x 22 and 15 x 18 x 22 + the 4-deep cellar; renders and cutaways overwritten in
+`build/rebuild/farmstead_snowy/renders/` (same names). Rerun after the changes: `look_spots.py farmstead_snowy
+farmstead` SAME BUILDING (11 / 17 / 19 spots, 0 missing, nothing moved; furniture.json unchanged); `holes.py` 0 at all
+three levels (roof, meet, stray, peek, open); no CHECK line; II keeps 98.7 % of I; III = II above the ground but the
+hatch.
+1. The hall's proportion (snowy_1_front): the hall's roof now rises 2, 1, 2, 1 up each slope (blocks and stairs
+   alternating, still steep, about 3:2) instead of 2:1, so the ridge is at y 11 (was 13) over the same walls; the stack
+   tops at y 13 (was 15). The house now reads wider than it stands from the road, and at II the barn's ridge (14) and
+   louvre stand three courses over the hall.
+2. The west end (snowy_1_left): the gable is closed in the rake's own plane, calcite up to the slate on both sides of
+   the stack over the andesite course (carried round from the walls) on two stone corbels and the breast's weathering;
+   the slate's blocks in that plane are calcite too, so the slate ends on a thin stepped verge. The spruce barge boards
+   (the orange sawtooth) are gone; the grey stack stands against a white wall.
+3. The gablet's snow (snowy_1_front): none. The gablet's ridge stays slate; the only white on the front slope is the
+   eave lip, which now runs over both corners edge to edge, and the main ridge.
+4. The loose drift (snowy_1_front, snowy_1_top): drift only where it is banked against a wall (house, barn, breast,
+   woodpile), 2-3 layers along one wall, 4 in an inside corner; none on open grass, along the kerbs or by the flags.

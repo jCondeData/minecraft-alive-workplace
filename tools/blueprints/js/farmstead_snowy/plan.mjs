@@ -40,14 +40,18 @@
 //   Hall        walls x 1..7, z 1..8 (the shipped cells): calcite y 1..3 on a stone-brick plinth, quoins at the four
 //               corners, a polished-andesite course at y 4 all round (the windows' heads), the gables x 1 and x 7 up to the roof; tie beams y 5 at
 //               z 4 and z 7 carry the shipped hanging lamps (chain 0, as shipped).
-//   Roof        steep (2:1), ridge along x over z 4..5 (y 12, two stairs set full with snow on them), eaves at z 0 and
-//               z 9 (y 4, snow-laden lips), one snow line across the back slope (y 8), rakes at x 0 (west) and x 9: it runs two blocks past the east gable.
+//   Roof        steep (3:2 since round 3: blocks and stairs alternating, 2, 1, 2, 1 up each slope), ridge along x over
+//               z 4..5 (y 11, two stairs set full with snow on them), eaves at z 0 and z 9 (y 5, snow-laden lips edge to
+//               edge), one snow line across the back slope (y 8), rakes at x 0 (west, on the closed calcite gable) and
+//               x 9: it runs two blocks past the east gable.
 //   Gablet      over the front door: a three-wide steep gable rising out of the slope (x 3..5, face z 1, y 5..8), white
 //               birch posts and boards, a tall light over the door, its own slate verge and ridge (y 9) with snow;
 //               lanterns hang from its eaves.
 //   Storm niche stone-brick cheeks x 3 and x 5 on z 0 (y 1..3) under the eave, an andesite lintel, the step.
-//   Stack       on the west gable: a breast of gathered stone x 0, z 3..6 up to y 8, a two-wide stone-brick stack
-//               (z 4..5) through the ridge to y 14, a slab cap and its smoke; the hearth inside the wall at (1, 1, 5).
+//   Stack       on the west gable: a breast of gathered stone x 0, z 3..6 up to y 4, weathered in at y 5, a
+//               two-wide stone-brick stack (z 4..5) through the ridge to y 13, a slab cap and its smoke at y 14, against
+//               the closed west gable (calcite in the rake's plane x 0 over the andesite course and two corbels); the
+//               hearth inside the wall at (1, 1, 5).
 //   Gable porch x 8..9 under the roof's east run-on: the gallery deck x 8 (z 1..9; z 1..20 in II) with its step at
 //               (8, 0, 0); its gable closed at x 9 in birch boards with two dark spruce studs over a spruce beam at y 5,
 //               a boarded ceiling over the deck at y 5; lanterns hung at (8, 4, 1) and (8, 4, 8); the hall's three east windows look onto it.
@@ -116,11 +120,32 @@
 //    Checked after round 2: look_spots SAME BUILDING (11/17/19, 0 missing, none moved); holes.py 0 at all three levels;
 //    no CHECK line; composters 1/2, beds 1/2, field I 36 farmland 5 x 9 on y 0 with 8 water, II 74; II keeps 98 % of I;
 //    III = II above the ground but the hatch; about 49 / 73 / 76 stacks. Renders overwritten in renders/ (same names).
+//  Round 3 (2026-11-21, the scorecard's Round 2 notes, Snowy BACK on Silhouette 3 and Detail 3):
+//    1 the hall's proportion: the roof is no longer 2:1 all the way; it rises 2, 1, 2, 1 up each slope (blocks and
+//      stairs alternating, HOUSE.roof.steps, hallRoof() in recipe.mjs), so the ridge is at y 11, not 13, the walls
+//      unchanged (calcite y 1..4, the course at y 5); the stack tops at y 13 (smoke 14), two over the ridge's snow, not a
+//      tower four over it; I is 15 x 15 x 12. II's barn (eave 7, ridge 14, the louvre) now stands three courses over
+//      the hall, so the T reads stronger. The gablet keeps its size (face y 6..9, ridge y 10, under the main ridge).
+//    2 the west end: the gable is closed in the rake's own plane (x 0, WEST_GABLE): calcite up to the slate's stairs
+//      on both sides of the stack, the slate's own blocks in that plane taken as calcite so only the stairs' edge shows
+//      as a thin stepped verge, over the andesite course (y 5) carried on round from the walls, on the breast's
+//      weathering and two stone-brick corbels at the corners; the round-2 spruce barge boards are gone. The grey stack
+//      now stands against a white wall.
+//    3 the gablet carries no snow at all (its little ridge is slate; frontDormer gets no snow, snowLoad skips it), so
+//      nothing white floats mid-slope; the front's white pieces are the eave lip (now run on over both corners, x 0..9,
+//      edge to edge) and the main ridge.
+//    4 the drift lies only banked against a wall (the house's, the barn's, the breast, the woodpile): 2 or 3 layers
+//      along a wall, 4 where two walls meet; none loose on the grass, along the kerbs, beside the flags or the steps.
+//    Checked after round 3: look_spots SAME BUILDING (11/17/19, 0 missing, none moved); holes.py 0 at all three levels
+//    (roof, meet, stray, peek, open); no CHECK line; furniture.json unchanged; II keeps 98.7 % of I; III = II above the
+//    ground but the hatch; my stack count (every kind rounded up, snow by layers) 42 / 62 / 65 against round 2's
+//    43 / 62 / 65 by the same count. Renders overwritten in renders/ (same names, cutaways cut3 and cut7 for I and II,
+//    cut-1 for III).
 //  For the ship step: the snow layers need the builder to carry snow; the sizes above differ from the shipped
 //    Farmstead's declared ones; III's cellar box is 2,2,6,7 (out/cellar.txt).
 import { FURNITURE as F, CROPS as C } from '../farmstead/plan.mjs'
 
-export const SIZE = { 1: [15, 17, 12], 2: [15, 18, 22], 3: [15, 18, 22] } // w, h, d (plot: 18 x 28 x 21 for I, 26 deep for II)
+export const SIZE = { 1: [15, 15, 12], 2: [15, 18, 22], 3: [15, 18, 22] } // w, h, d (plot: 18 x 28 x 21 for I, 26 deep for II)
 export const BASEMENT = { 3: 4 }
 export const IDS = { 1: 'farmstead', 2: 'farmstead_2', 3: 'farmstead_3' }
 
@@ -141,15 +166,20 @@ export const PALETTE = {
 
 export const HOUSE = {
   x0: 1, x1: 7, z0: 1, z1: 8, room: { x0: 2, x1: 6, z0: 2, z1: 7 }, wallTop: 4, band: 5, // round 2: a course higher
-  roof: { axis: 'x', across: [0, 9], along: [0, 9], eaveY: 5 }, // ridge y 13 over z 4..5
-  under: [5, 6, 8, 10, 12, 12, 10, 8, 6, 5], // the roof's lowest cell over each z (0..9)
-  ridgeY: 13, ridgeZ: [4, 5], rakes: [0, 9], snowLine: { y: 9, zs: [7] }, // one snow line across the back slope, rake to rake (the gablet breaks the front's)
+  // round 3 (note 1): the roof rises 2, 1, 2, 1 (blocks and stairs alternating, a 3:2 pitch) instead of 2:1 all the way,
+  // so the ridge is at y 11, not 13: steps[i] is the stair's y over the column i in from each eave
+  roof: { axis: 'x', across: [0, 9], along: [0, 9], eaveY: 5, steps: [5, 7, 8, 10, 11] }, // ridge y 11 over z 4..5
+  under: [5, 6, 7, 8, 10, 10, 8, 7, 6, 5], // the roof's lowest cell over each z (0..9)
+  ridgeY: 11, ridgeZ: [4, 5], rakes: [0, 9], snowLine: { y: 8, zs: [7] }, // one snow line across the back slope, rake to rake (the gablet breaks the front's)
   backWood: [[1, 1, 9], [2, 1, 9], [1, 2, 9], [6, 1, 9], [7, 1, 9], [7, 2, 9]], // I only: firewood on the back porch (the passage takes it in II)
   tieBeams: [4, 7], beamY: 5,
 }
 export const GABLET = { cx: 4, face: 1, y0: 6 } // frontDormer: face y 6..9, ridge y 10 over z 0..2 (round 2: the ridge is snow)
 export const NICHE = { cheeks: [3, 5], z: 0, top: 4, lintel: [4, 4, 0], lamp: [4, 3, 0], lamps: [[2, 7, 0], [6, 7, 0]] } // under the eave (y 5)
-export const STACK = { x: 0, breast: { z0: 3, z1: 6, top: 4 }, weathering: 5, zs: [4, 5], top: 15, fire: [0, 16, 4], slab: [0, 16, 5] } // round 2: the breast steps in at y 5
+export const STACK = { x: 0, breast: { z0: 3, z1: 6, top: 4 }, weathering: 5, zs: [4, 5], top: 13, fire: [0, 14, 4], slab: [0, 14, 5] } // round 2: the breast steps in at y 5; round 3: two over the ridge's snow, not four
+// round 3 (note 2): the west gable closed in the rake's own plane (x 0): calcite over the andesite course at y 5,
+// corbelled a block out over the hall's west wall on stone brackets at the corners, either side of the breast and stack
+export const WEST_GABLE = { x: 0, beamY: 5, beamZ: [1, 2, 7, 8], corbels: [1, 8], boards: [1, 2, 3, 6, 7, 8] }
 export const WOODPILE = { x: 0, z0: 7, z1: 8, top: 2 }
 export const PORCH = { // the gable porch over the gallery
   deckX: 8, z0: 1, z1: { 1: 9, 2: 20 }, step: [8, 0, 0],

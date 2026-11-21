@@ -205,3 +205,45 @@ hatch.
    eave lip, which now runs over both corners edge to edge, and the main ridge.
 4. The loose drift (snowy_1_front, snowy_1_top): drift only where it is banked against a wall (house, barn, breast,
    woodpile), 2-3 layers along one wall, 4 in an inside corner; none on open grass, along the kerbs or by the flags.
+
+## Round 3 (2026-11-21, a fresh critic): snowy
+
+Sheets `farmstead_looks/snowy_<1|2|3>_r3_vs_old.png` (OLD as drawn left, NEW right: front, back, left, right, top).
+Both sides rendered here from the .nbt files (the candidates' .nbt postdate the designer's renders by a minute):
+the live `structure/farmstead[_2|_3].nbt` copied as `old_<L>.nbt` and the candidates as `new_<L>.nbt`, then
+`node tools/blueprints/render/shoot.mjs <out> <nbts> --views front,back,left,right,top,low` under
+`flock /tmp/render.lock`, then `sheet.py --renders <out> --old-name old_<L> --new-name new_<L> --views
+front,back,left,right,top`. (The render folder had no `node_modules`: `npm ci` there; the npm Playwright wants
+headless shell 1194 and the container has 1243, so `PLAYWRIGHT_BROWSERS_PATH` pointed at a scratch folder linking
+`chromium_headless_shell-1194/chrome-linux/headless_shell` to the 1243 binary.) Rerun here: `look_spots.py
+farmstead_snowy farmstead` SAME BUILDING (11 / 17 / 19 spots, 0 missing, nothing moved); `holes.py` on the three
+candidates TOTAL 0 (also 0 with `--all`). Counted here from the .nbt files: composters 1 / 2 / 2, bed heads 1 / 2 / 2,
+chests 2 / 4 / 7, no barrel, one carved pumpkin, farmland 36 / 74 / 74, carrots 9 and wheat 18 in I; sizes 15 x 15 x 12,
+15 x 18 x 22, 15 x 22 x 22 (III = II plus the 4-deep cellar). Interiors unchanged (snowy_1_cut3_top).
+
+| Look | Silhouette | Depth | Interior | Detail | Reads as its culture | Brief misses | Verdict |
+|---|---|---|---|---|---|---|---|
+| OLD (as drawn) | 4 | 4 | 4 | 4 | - | - | - |
+| Snowy r3 | 4 (was 3) | 4 | 4 | 4 (was 3) | yes: calcite on stone brick, half-hipped dark slate with snow lips and ridges, a stone stack against a white gable; clearly not taiga | none | SHIP |
+
+- Silhouette 4 (OLD 4): with the ridge down to y 11 the hall now reads as a roof over a house, not a dark wedge: from
+  the road a half-hipped end with its lit gablet over a snow-lipped eave and the stone storey (snowy_1_r3 front); the
+  west end is a white gable with the stack standing against it (left), no longer a tower; II's T with the barn's
+  ridge and louvre three courses over the hall reads from every side (snowy_2_r3 left, right, back). Level I is still
+  about as tall as it is wide from the road and the slate is a little over half the front, but it now has a clear
+  roof shape (half-hip, gablet, eave), which is what the score was missing.
+- Depth 4 (OLD 4): the eave lip over both corners, the niche and porch, quoins, the andesite course carried round the
+  west gable on its corbels, the gablet, the breast's weathering (snowy_1_r3 front, left).
+- Interior 4 (OLD 4): unchanged, equal by construction (snowy_1_cut3_top, snowy_2_cut7_top, snowy_3_cut-1_top).
+- Detail 4 (OLD 4): every white line on a slope now runs edge to edge (front: eave lip and ridge only; back: two snow
+  lines rake to rake), no floating bar, the orange barge sawtooth is gone, drift only against walls (every snow layer
+  at y 0 touches the house wall, checked in the .nbt), the barn's back gable with hoods, hoist and lantern kept.
+- Round-2 notes: 1 answered (ridge y 11, roof a little over half the front, reads wider than before; not quite
+  "wider than it stands" from the road, accepted); 2 answered (closed calcite gable, stack against it, snowy_1_r3
+  left); 3 answered (gablet ridge in slate, no stray white, snowy_1_r3 front); 4 answered (no drift on open grass).
+
+Optional polish (not blocking): the long back slope with its two snow lines and the eave lip reads as three stacked
+bands from the back (snowy_1_r3 back); the calcite filling under each slate step on the west gable gives a thin white
+stepped verge rather than a straight barge line (snowy_1_r3 left); the 2-layer drift pieces in front of the back
+benches still read as flat white tiles from above (snowy_1_r3 back, top), though in a snowy village the ground round
+them is snow anyway.

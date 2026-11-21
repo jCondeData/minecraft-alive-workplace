@@ -535,7 +535,10 @@ public final class StewardDesk {
 			.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX(), hall.getY(), hall.getZ()))).toList();
 	}
 
-	/** Which builder would build {@code proposal}: the nearest idle one whose bench reaches it, else the one with the shortest queue. */
+	/**
+	 * Which builder would build {@code proposal}: the nearest idle one whose bench reaches it (one lending a hand on
+	 * another's build counts as idle), else the one with the shortest queue.
+	 */
 	public static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal) {
 		return builderFor(level, hall, proposal, false);
 	}
@@ -563,7 +566,8 @@ public final class StewardDesk {
 			if (inReach && !io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
 				continue;
 			}
-			BuildSite active = Builders.activeSite(level, v);
+			// (B789: a helper on another builder's build is free for one of his own, and leaves the crew for it)
+			BuildSite active = Builders.hasOwnBuild(level, v) ? Builders.activeSite(level, v) : null;
 			int queue = active == null ? 0 : 1 + Builders.queue(level, v).size();
 			if (queue <= Builders.MAX_QUEUE && queue < bestQueue) {
 				List<BuildSite> waiting = Builders.queue(level, v);
@@ -636,7 +640,7 @@ public final class StewardDesk {
 		Villager villager = builder.get().villager();
 		UUID owner = entity.owner() != null ? entity.owner() : player != null ? player.getUUID() : villager.getUUID();
 		String ownerName = entity.owner() != null ? entity.ownerName() : player != null ? player.getGameProfile().getName() : "";
-		boolean busy = Builders.activeSite(level, villager) != null;
+		boolean busy = Builders.hasOwnBuild(level, villager); // (B789: a helper on another's build starts it at once)
 		BuildSite site = busy
 			? Builders.enqueue(level, villager, owner, ownerName, proposal.blueprint(), proposal.placement())
 			: Builders.start(level, villager, owner, ownerName, proposal.blueprint(), proposal.placement());

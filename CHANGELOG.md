@@ -27,6 +27,11 @@ asks for the steps, `latest.log` and any crash report).
   finished as it was first drawn.
 ### Fixed
 
+- A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a
+  build of his own (a house, an upgrade or an old house to take down), and the Steward counts him as free when
+  choosing a builder. His own build used to wait for as long as the build he was helping stayed open, which was for
+  good when its lead stood waiting for materials: an old house's take-down never started. Worlds saved with a build
+  waiting like that pick it up by themselves (B789).
 - A Hauler or Farmhand Golem whose foe vanishes mid-fight (despawned or unloaded) goes straight back to work; in rare
   cases it used to stand about for 20 to 39 seconds first (B769).
 - A villager without a bed who is standing out behind a house at bedtime now takes a free bed up a ladder inside

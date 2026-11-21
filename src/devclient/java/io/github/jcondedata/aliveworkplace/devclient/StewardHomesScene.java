@@ -116,7 +116,7 @@ final class StewardHomesScene {
 		if (!started) {
 			StewardWishes.rankIfDue(level, HALL);
 			for (StewardWishes.Wish wish : StewardWishes.of(level, HALL).wishes()) {
-				StewardWishes.plotFor(wish).ifPresent(request -> Plots.request(level, HALL, request));
+				StewardWishes.plotFor(level, HALL, wish).ifPresent(request -> Plots.request(level, HALL, request));
 			}
 			StewardDesk.plan(level, steward, HALL);
 			started = !StewardDesk.openSites(level, HALL).isEmpty();

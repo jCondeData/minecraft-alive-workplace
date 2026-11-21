@@ -44,6 +44,8 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- Opening the Village Hall first after a restart (or a `/reload`) no longer freezes the server for seconds: the
+  older drawings of the builds are now read only for the buildings asked about, not all thousand at once (B1418).
 - A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a
   build of his own (a house, an upgrade or an old house to take down), and the Steward counts him as free when
   choosing a builder. His own build used to wait for as long as the build he was helping stayed open, which was for

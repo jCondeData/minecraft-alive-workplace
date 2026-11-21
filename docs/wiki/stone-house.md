@@ -3,7 +3,7 @@
 Milestone 49, item 49.4: the village's second kind of home, rebuilt from scratch with the rebuild kit
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/stone_house.md`), a blind design, and a critic
 who scored old and new side by side and said SHIP in round 2 (`tools/blueprints/briefs/stone_house_critic.md`).
-Roadmap items: 26.15, 49.4, 49.10b
+Roadmap items: 26.15, 49.4, 49.10b, B1431
 
 ## 1. What a player sees
 

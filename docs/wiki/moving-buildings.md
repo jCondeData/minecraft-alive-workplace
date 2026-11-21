@@ -632,10 +632,6 @@ one item; a sculk vein on 3 faces is 3 sculk veins.
 
 - The pick (spot and turn) is not saved: closing the hall's screen forgets it. Only a confirmed move is.
 
-- A glow lichen on several faces that lands on a Mover's Crate comes back as one glow lichen: its loot is shears-only
-  and counts no faces otherwise, so the others are lost (QA, 2026-11-15; a sculk vein, whose Silk Touch loot counts
-  its faces, is right).
-
 - A resident is noted by name only if loaded within 128 blocks as the move starts; one far away (or not loaded) still
   gets the moved bed or workstation (B1154): every occupied bed and workstation in the box is saved as a claim on the
   site and held where it goes up, and a remembered old spot is forwarded to the moved block when they come back.

@@ -35,6 +35,11 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- A Hauler or Farmhand Golem whose foe vanishes mid-fight (despawned or unloaded) goes straight back to work; in rare
+  cases it used to stand about for 20 to 39 seconds first (B769).
+- A villager without a bed who is standing out behind a house at bedtime now takes a free bed up a ladder inside
+  (the Terrace's bedrooms) and walks round to the door to sleep in it, instead of standing behind the house all
+  night (B735).
 - A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
   look it was begun with after you update, instead of the new design going up over the half-built old one. Use
   "Refresh to the latest look" once it's finished to bring it up to date (B1407).

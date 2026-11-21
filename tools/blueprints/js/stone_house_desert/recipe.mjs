@@ -143,6 +143,13 @@ function levelTwo(c) {
   for (let z = 0; z <= 1; z++) c.clear(10, 0, z) // Level I's corner pot, where the loggia's floor goes
   for (let y = 0; y <= MASSES.house.upperY; y++) { c.clear(10, y, 1); c.clear(10, y, 9) } // Level I's east pilasters: in the loggia, behind the parlour
   for (let z = W.z0 - 1; z <= W.z1; z++) c.clear(10, MASSES.house.upperY, z) // the moulding, where the parlour stands
+  // Level I's hall east window becomes the doorway into the parlour (its glass kept as a light over it, as the savanna
+  // look's): its sill and brow, a block out, now stand inside the parlour, the sill an upside-down stair across the
+  // doorway's threshold that shut the parlour off (B1431). Take them down.
+  for (const w of OPENINGS.windows.filter(w => w.until === 1)) {
+    const [ox, oz] = DIRS[w.out]
+    for (const [x, y, z] of w.cells) for (const dy of [-1, 1]) c.clear(x + ox, y + dy, z + oz)
+  }
   // Pass 1: plinth and floor, mud-brick walls against the house's east wall, the deck and its coping
   plinth(c, W.x0 + 1, W.z0, W.x1, W.z1, P.plinth)
   floor(c, W.x0 + 1, W.z0 + 1, W.x1 - 1, W.z1 - 1, 0, P.floor)

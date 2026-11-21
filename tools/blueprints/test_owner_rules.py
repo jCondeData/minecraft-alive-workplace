@@ -235,5 +235,36 @@ class AdversarialOwnerRules(unittest.TestCase):
         b.set(4, 1, 4, "somemod:copper_pressure_plate")
         self.assertEqual([], [p for p in owner(b) if "crockery" in p])
 
+
+class QaCornerRule1121c(unittest.TestCase):
+    """QA (lane-b-1121-2138): corners the owner would see that the first tests don't draw."""
+
+    def corner(self, a, b_block):
+        b = room()
+        for x in range(1, 5):
+            b.set(x, 1, 1, a)
+        for z in range(2, 6):
+            b.set(5, 1, z, b_block)
+        return [p for p in owner(b) if "runs @" in p]
+
+    def test_two_woods_meeting_still_need_a_post(self):
+        problems = self.corner("oak_fence", "spruce_fence")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("no post @5,1,1", problems[0])
+
+    def test_iron_bars_corner_needs_a_post(self):
+        problems = self.corner("iron_bars", "iron_bars")
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("no post @5,1,1", problems[0])
+
+    def test_one_block_gap_short_of_the_corner_is_not_a_corner(self):
+        b = room()
+        for x in range(1, 4):
+            b.set(x, 1, 1, "oak_fence")  # stops at x = 3, a gap at 4, so the runs never meet
+        for z in range(2, 6):
+            b.set(5, 1, z, "oak_fence")
+        self.assertEqual([], [p for p in owner(b) if "runs @" in p])
+
+
 if __name__ == "__main__":
     unittest.main()

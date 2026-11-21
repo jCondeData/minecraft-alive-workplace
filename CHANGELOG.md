@@ -18,6 +18,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ### Fixed
 
+- A Hauler or Farmhand Golem whose foe vanishes mid-fight (despawned or unloaded) goes straight back to work; in rare
+  cases it used to stand about for 20 to 39 seconds first (B769).
 - A villager without a bed who is standing out behind a house at bedtime now takes a free bed up a ladder inside
   (the Terrace's bedrooms) and walks round to the door to sleep in it, instead of standing behind the house all
   night (B735).

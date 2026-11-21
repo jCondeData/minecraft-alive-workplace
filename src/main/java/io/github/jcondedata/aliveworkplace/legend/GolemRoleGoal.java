@@ -12,6 +12,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.animal.IronGolem;
 import net.minecraft.world.level.pathfinder.Path;
@@ -25,8 +26,9 @@ import org.jetbrains.annotations.Nullable;
  * The work of a Golem Smith's golem (29.15), as one of the iron golem's own goals (added to every iron golem by
  * {@code IronGolemRolesMixin}; it does nothing for a plain golem). It holds the golem's legs while a Hauler carries
  * goods or a Farmhand tends the fields, so the golem's wandering doesn't pull it off the job; a fight comes first (the
- * golem's attack goal ranks above this one and takes over whenever it has a target). The Wall Sentry's post is held by
- * {@link WallSentries.HoldGoal}, which ranks above the attack.
+ * golem's attack goal ranks above this one and takes over whenever it has a target; a target that is gone, vanished or
+ * dead, is dropped at once, B769). The Wall Sentry's post is held by {@link WallSentries.HoldGoal}, which ranks above
+ * the attack.
  *
  * <p>While at work the golem swims, the way most mobs do (B722): a plain iron golem sinks and walks the bottom, so in
  * water two deep with steep banks (a moat round a Storehouse) it could never climb out and stood there with its load
@@ -96,11 +98,22 @@ public class GolemRoleGoal extends Goal {
 
 	@Override
 	public boolean canUse() {
-		if (!(golem.level() instanceof ServerLevel) || golem.getTarget() != null || golem.isPassenger()) {
+		if (!(golem.level() instanceof ServerLevel) || golem.isPassenger()) {
 			return false;
 		}
 		GolemSmith.Role role = GolemSmith.role(golem);
-		return role == GolemSmith.Role.HAULER || role == GolemSmith.Role.FARMHAND;
+		if (role != GolemSmith.Role.HAULER && role != GolemSmith.Role.FARMHAND) {
+			return false;
+		}
+		LivingEntity foe = golem.getTarget();
+		if (foe != null && !foe.isAlive()) {
+			// A foe that is gone (despawned, unloaded, dead) is no fight (B769). Vanilla drops it only through the target
+			// goal that picked it; one set any other way stayed until the golem's anger ran out, 20 to 39 seconds, and
+			// the golem stood about with its work undone.
+			golem.setTarget(null);
+			foe = null;
+		}
+		return foe == null;
 	}
 
 	@Override

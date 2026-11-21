@@ -1954,6 +1954,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltHomes1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltShopsWater1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests"
 		]
 	},

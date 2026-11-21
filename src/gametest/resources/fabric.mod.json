@@ -1950,6 +1950,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarkets1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltHomes1121bGameTests",

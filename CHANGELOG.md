@@ -48,6 +48,10 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- A full Graveyard no longer walls in its own graves: once all 32 were taken, the headstones boxed in 18 of them, so
+  mourners couldn't gather there and the Undertaker had to be teleported in. New graves go in rows with grass walks
+  between them, so every grave can be walked up to. Graves already laid stay where they are and
+  are still revived from the Graveyard (B1423).
 - An archer on the Palisade's walk hits raiders again: his arrows stuck in the stake tops in front of him, because he
   aimed at a raider's knees, which the stakes hid even when he could see the raider. From a battle station he now aims
   as high up the raider as his arrow needs to clear the wall (B1439).

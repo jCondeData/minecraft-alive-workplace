@@ -259,3 +259,21 @@ Renders and cutaways overwritten in `build/rebuild/ranch_taiga/renders/` (`taiga
    taiga_1_right); from the road a narrow head end-on.
 Checked: `look_spots.py ranch_taiga ranch` SAME BUILDING (8/8 and 13/13, 0 moved); `holes.py` 0 at both levels (open
 included); no CHECK line; 829 and 1296 blocks; 13 x 16 x 13 and 21 x 16 x 21. Not shipped.
+
+### Round 3 designer notes: savanna
+
+Plan: `js/ranch_savanna/plan.mjs`, "Round 3". Renders and cutaways overwritten in `build/rebuild/ranch_savanna/renders/`
+(same names). Rerun: `look_spots.py ranch_savanna ranch` SAME BUILDING (8/8 and 13/13 shipped spots, 0 beds,
+containers, job blocks or doors moved); `holes.py` 0 (incl. `open`) at both levels; no CHECK line; 13 x 14 x 13 and
+21 x 14 x 21 as before. Not rerun: stacks and the share of I that II keeps (the skirt's cells are the same cells).
+1. The skirt (I left, back and right): it falls again from the loft to the eave over its four rings, a thatch stair at
+   the eave (y 4), a bottom slab over the stalls' band (y 5), a stair rising off it (y 5), a stair against the loft
+   (y 6; the stalls' lamps hang from its bottom face as shipped): y 7 at the loft to y 4 at the eave, three blocks of
+   drop, the hip lines stair corners. Why round 2 read as a ledge: a top slab sat beside a bottom slab at the same
+   level, so from the side one looked in under it at the stalls' lamps, a sunken tray with a lip. Every piece now
+   closes the cell under it. Tried first: stair, slab, top slab, stair (slabs between, as the note says): the same open
+   tray from the side, so the third ring is a stair.
+2. The band at the hoist (I front): the hoist beam ran through the loft's band at y 8 (its log end was the red block
+   with a spiral, its bark the mossy block). It now comes out of the beam ring at y 9, over the band and the hay hood, two
+   blocks out through the crown's eave, with two links of chain to the lantern; the red-and-white course runs unbroken
+   over the hay door.

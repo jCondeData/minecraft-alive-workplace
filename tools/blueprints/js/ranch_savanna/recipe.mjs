@@ -26,13 +26,21 @@ const pieces = {
   },
 }
 
-// round 2, note 3: the 45-degree skirt read as a ziggurat of stair courses with jagged hips. It is now a low hip of
-// slabs (half a block a ring from the half-block level half0), which has no stair corners on its hips.
-function lowSkirt(c, { x0, z0, x1, z1, half0 }, roof, skip) {
+// round 3, note 1: the round-2 skirt (half a block a ring, all slabs) read as a ledge with a lip: its top slabs sat
+// beside bottom slabs, and from the side the eye (and the renderer) looked in under them at the stalls' lamps. It now
+// FALLS from the loft wall to the eave over its four rings, every piece closed underneath: a thatch stair at the eave
+// (y 4), a slab (y 5 bottom), a stair rising off it (y 5) and a stair against the loft (y 6, where the stalls' lamps
+// hang from its full bottom face): from y 7 at the loft to y 4 at the eave, three blocks of drop. The hips are the
+// rings' meeting lines, stairs shaped into corners by the build, so no stepped block corners.
+const SKIRT_PROFILE = [[0, 'stair'], [1, 'bottom'], [1, 'stair'], [2, 'stair']] // [y above the eave, piece] per ring
+function fallingSkirt(c, { x0, z0, x1, z1, eaveY }, roof, skip) {
   for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
     if (skip(x, z)) continue
-    const h = half0 + Math.min(x - x0, x1 - x, z - z0, z1 - z)
-    slab(c, x, Math.floor(h / 2), z, roof.slab, h % 2 ? 'top' : 'bottom')
+    const d = Math.min(x - x0, x1 - x, z - z0, z1 - z, SKIRT_PROFILE.length - 1)
+    const [dy, piece] = SKIRT_PROFILE[d], y = eaveY + dy
+    if (piece !== 'stair') { slab(c, x, y, z, roof.slab, piece); continue }
+    const face = d === x - x0 ? 'east' : d === x1 - x ? 'west' : d === z - z0 ? 'south' : 'north'
+    stair(c, x, y, z, roof.stairs, face)
   }
 }
 
@@ -79,7 +87,7 @@ export function draw(level = 1) {
     band(c, a, b, S.paintY, P, (x, z) => inLoft(x, z))
 
   // --- Pass 2: the roofs: the skirt (a hip round the loft), the crown (a hip over it), a clay pot on the ridge ----------
-  lowSkirt(c, SKIRT, P.roof, inLoft)
+  fallingSkirt(c, SKIRT, P.roof, inLoft)
   hipRoof(c, CROWN, P.roof)
   c.set(...CROWN.finial, P.finial, POT)
 
@@ -110,7 +118,8 @@ export function draw(level = 1) {
   for (const [x, y, z] of HOOD.stairs) stair(c, x, y, z, P.roof.stairs, 'south')
   const hb = HOOD.beam
   for (let z = hb.z0; z <= hb.z1; z++) c.set(hb.x, hb.y, z, P.frame, { axis: 'z' })
-  c.set(...HOOD.chain, 'chain', { axis: 'y', waterlogged: 'false' })
+  // round 3, note 2: the beam runs out of the ring beam at y 9, over the band, so the band at y 8 runs through unbroken
+  for (const ch of HOOD.chain) c.set(...ch, 'chain', { axis: 'y', waterlogged: 'false' })
   c.set(...HOOD.lamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
   // the smoker's stack up the back through both eaves
   chimney(c, STACK.x, STACK.z, 0, STACK.top, P.stack)

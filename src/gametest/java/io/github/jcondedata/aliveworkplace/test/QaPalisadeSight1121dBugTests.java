@@ -10,7 +10,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
  * cases (a raider 2 to 5 out of sight of every walk station, the stakes' foot) wait for the owner's call on the
  * Palisade's look: they are on the branch tests/wall-sight-1121d (ROADMAP Notes, B1439). */
 public class QaPalisadeSight1121dBugTests implements FabricGameTest {
-	//$ gametest_ticks_batch "aliveworkplace_test:huge_area" '1000' '"qaPalisadeSight1121dShoot"'
+	//$ gametest_ticks_batch '"aliveworkplace_test:huge_area"' '1000' '"qaPalisadeSight1121dShoot"'
 	@GameTest(template = "aliveworkplace_test:huge_area", timeoutTicks = 1000, batch = "qaPalisadeSight1121dShoot")
 	public void qaAnArcherOnThePalisadesWalkHitsRaidersEightAndFifteenOut(GameTestHelper helper) {
 		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE);

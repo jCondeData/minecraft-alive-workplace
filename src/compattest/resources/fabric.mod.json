@@ -47,6 +47,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneMoved1116dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystones1117dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneLeftover1118aCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneChunkMove1121dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneQaBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneTwoHallsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStadiumVisitorsCompatTests",

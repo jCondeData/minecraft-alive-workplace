@@ -289,6 +289,11 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   village has two stones once its own plaza stands; the waystone tests now clear such a plaza along with the hall
   (`RaidHelperCompatTests.clearAround`), and then the village has one stone, its own. B1375's "village listed twice" was
   this: the plaza of the test standing just west, not a dead entry left by the Mover or the builder.
+- `QaWaystoneChunkMove1121dCompatTests` (compat suite, 8, B1310 and B1375): a plaza whose stone stands at a chunk's
+  edge (local x 0 or 15, z 0 or 15, and a corner) moved by a Mover across one border, two at once, and across and back:
+  the same waystone, one entry in the Waystones list at the new spot with the village's name, discovered for the player
+  who had found it and not for one who hadn't, the same after a save and reload; broken at its new spot and put back by
+  the builder's upkeep, still listed once.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

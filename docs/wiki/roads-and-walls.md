@@ -72,7 +72,9 @@ with a lantern on every side (5 x 12 x 5). The **Palisade Gate** is a small timb
 a pale lintel over three spruce gates (the way through 2 high), a steep gable roof with lanterns under it (7 x 9 x 2).
 The **Palisade** is an earthwork: a cobble toe and mud-brick steps up the village side of a rammed-earth bank to a
 stripped-oak walk of 7 battle stations, behind a row of bark-on spruce stakes with an oak rail through them, waist-high above the walk so the archers on it
-can see and shoot out (B1382: the old pointed heads hid everything outside) (7 x 4 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
+can see out (B1382: the old pointed heads hid everything outside; from the walk a raider 8 to 15 blocks out is in sight,
+one 2 to 4 out, at the stakes' foot, is not. Found 2026-11-21, not fixed: on the Palisade, unlike Palisade II, most of
+an archer's arrows stick in the stake tops in front of him) (7 x 4 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
 three wide (19 stations, the steps kept as its stair) and plants seven dripstone stakes in a ditch of turned earth
 outside (7 x 4 x 5). Pieces already standing keep their old look until refreshed.
 

@@ -29,7 +29,7 @@ Rebuilt from scratch in 50.12 as "the Market Stadium" (an Arena already standing
 refreshed, and the Cup reads it by the old drawing's spots: its benches, boxes, pole and notice board):
 
 - **Arena** (25 × 19): a 15 × 9 pitch of coarse earth marked in chalk (a halfway line, a center circle and a line all
-  round); a red box and a blue box on daises under little canopies at its ends, each with a lantern and a flag; 12
+  round); a red box and a blue box on raised platforms under little canopies at its ends, each with a lantern and a flag; 12
   seats along the back wall; a low front wall with the notice board on the gate's west pier.
 - **Arena II** (25 × 19): a colonnaded stand along the front (30 seats in all) over the fair lane, a covered walk where
   the Cup's traders stand, and a judges' loggia over the gate.

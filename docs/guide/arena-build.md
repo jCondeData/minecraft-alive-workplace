@@ -17,7 +17,7 @@ related: festival-cup.md, trainer-leader.md, cup-day.md, cup-champions.md
 
 The village's Cup ground, like a little town stadium: where the [Festival Cup](festival-cup.md) is fought. A 15 by 9
 pitch of coarse earth marked in chalk (a halfway line, a center circle and a line all round), a red box and a blue box
-on daises under little brick canopies at its two ends, each with a lantern over the trainer and a flag in its color
+on raised platforms under little brick canopies at its two ends, each with a lantern over the trainer and a flag in its color
 behind it, a row of 12 seats along the back wall, and a low front wall with the gate in the middle and the notice board
 on the gate's west pier.
 

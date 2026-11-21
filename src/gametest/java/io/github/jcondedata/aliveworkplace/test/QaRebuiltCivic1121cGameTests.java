@@ -705,6 +705,9 @@ public class QaRebuiltCivic1121cGameTests implements FabricGameTest {
 	private void yardFills(GameTestHelper helper, StarterBlueprints.Entry entry) {
 		Leftovers.clear(helper);
 		Leftovers.graves(helper);
+		// a hall or finished Graveyard an earlier batch left in reach would take the graves (seen in the full suite)
+		Leftovers.halls(helper);
+		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
 		BlockPos origin = place(helper, entry, YARD);
 		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin, Rotation.NONE, Mirror.NONE);

@@ -210,5 +210,30 @@ class AdversarialOwnerRules(unittest.TestCase):
         self.assertEqual([], [p for p in owner(b) if "crockery" in p])
 
 
+    def test_plates_two_floors_above_the_kitchen_are_refused(self):
+        b = Build(9, 9, 9)
+        b.fill(0, 0, 0, 8, 0, 8, "stone")
+        b.fill(0, 4, 0, 8, 4, 8, "oak_planks")
+        b.set(4, 1, 4, "smoker", facing="south")
+        b.set(4, 5, 4, "oak_fence")
+        b.set(4, 6, 4, "white_carpet")
+        b.set(4, 7, 4, "flower_pot")
+        b.furniture("crockery", 4, 7, 4, "north", wood="oak", colour="white")
+        self.assertTrue(any("flower_pot@4,7,4 is crockery outside" in p for p in owner(b)))
+
+    def test_an_upside_down_stair_by_the_table_is_not_a_chair(self):
+        b = room()
+        b.set(4, 1, 4, "oak_fence")
+        b.set(4, 2, 4, "white_carpet")
+        b.set(3, 1, 4, "oak_stairs", facing="west", half="top")
+        b.set(4, 3, 4, "flower_pot")
+        b.furniture("crockery", 4, 3, 4, "north", wood="oak", colour="white")
+        self.assertTrue(any("flower_pot@4,3,4 is crockery outside" in p for p in owner(b)))
+
+    def test_a_modded_pressure_plate_is_not_crockery(self):
+        b = room()
+        b.set(4, 1, 4, "somemod:copper_pressure_plate")
+        self.assertEqual([], [p for p in owner(b) if "crockery" in p])
+
 if __name__ == "__main__":
     unittest.main()

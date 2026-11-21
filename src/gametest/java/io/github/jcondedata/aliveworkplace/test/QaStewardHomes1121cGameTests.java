@@ -79,6 +79,11 @@ public class QaStewardHomes1121cGameTests implements net.fabricmc.fabric.api.gam
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(TABLE, ModBlocks.BLUEPRINT_TABLE);
 		BlockPos hall = helper.absolutePos(HALL);
+		// B1429: the village reaches 64 blocks round the hall, far past this area, and beds an earlier batch left there
+		// (in the full suite) were counted as this village's: nobody was homeless, no home was wished for. No beds here.
+		for (BlockPos bed : io.github.jcondedata.aliveworkplace.hall.VillageHalls.beds(level, hall).toList()) {
+			level.setBlock(bed, Blocks.AIR.defaultBlockState(), 3);
+		}
 		Leftovers.after(helper, () -> {
 			for (BuildSite site : new ArrayList<>(manager.all())) {
 				if (near.isInside(site.placement().origin())) {

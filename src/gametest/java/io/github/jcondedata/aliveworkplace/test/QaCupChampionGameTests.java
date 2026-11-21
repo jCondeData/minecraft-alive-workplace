@@ -44,7 +44,7 @@ public class QaCupChampionGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	private static final BlockPos HALL = new BlockPos(15, 2, 15);
 	private static final BlockPos ASHFORD = new BlockPos(3, 2, 27);
-	private static final BlockPos POLE = new BlockPos(15, 7, 1);
+	private static final BlockPos POLE = new BlockPos(15, 13, 1); // Arenas.CHAMPION_POLE (12, 12, 0) of the Arena III at (3, 1, 1)
 	private static final ResourceLocation THEME = AliveWorkplace.id("test_qa_cup_champions");
 	private static final String PRIDE = "our village holds the Cup";
 
@@ -75,8 +75,8 @@ public class QaCupChampionGameTests implements FabricGameTest {
 		s.ash.setCustomName(Component.literal("Ashford"));
 		BlueprintData.Placement arena = new BlueprintData.Placement(level.dimension().location(), s.host.offset(-12, -1, -14), Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.ARENAS.get(2).id(), arena, UUID.randomUUID());
-		helper.setBlock(POLE, Blocks.STRIPPED_SPRUCE_LOG);
-		helper.setBlock(POLE.above(), Blocks.GOLD_BLOCK);
+		helper.setBlock(POLE, Blocks.SPRUCE_LOG);
+		helper.setBlock(POLE.above(), Blocks.LANTERN);
 		Map<ResourceLocation, CupThemes.Theme> themes = new LinkedHashMap<>(CupThemes.loaded());
 		CupThemes.setForTest(Map.of(THEME, theme()));
 		Cups.COBBLEMON = true;

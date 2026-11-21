@@ -19,8 +19,10 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * QA for the Arena (ROADMAP 28.16), from the spec's words about the build: the Arena is at most 25 x 19; every tier
- * keeps a 15 x 9 battle ring of packed mud inside a white line round the ring centre (one block outside it isn't
- * ring); the first tier has two banner poles and a lamp post by each trainer's box.
+ * keeps a 15 x 9 battle ring round the ring centre, of one floor block inside a contrasting edge line (one block outside
+ * it isn't ring); the first tier has two banner poles and a lamp post by each trainer's box. 50.12 rebuilt the Arena:
+ * the floor is coarse earth marked in chalk (polished diorite: a halfway line and a centre circle, the centre spot a
+ * chiseled stone brick), and the chalk edge line runs just outside the 15 x 9 (its corners may be the towers' masonry).
  */
 public class QaArenaGameTests implements FabricGameTest {
 	/** The ring's half sizes: 15 x 9 is 7 either side of the centre along x, 4 along z. */
@@ -36,33 +38,34 @@ public class QaArenaGameTests implements FabricGameTest {
 		BlockPos centre = Arenas.RING_CENTRE.below();
 		for (StarterBlueprints.Entry entry : StarterBlueprints.ARENAS) {
 			Map<BlockPos, BlockState> at = states(blueprint(helper, entry));
-			int mud = 0;
+			int floor = 0;
 			for (int dx = -HALF_X; dx <= HALF_X; dx++) {
 				for (int dz = -HALF_Z; dz <= HALF_Z; dz++) {
 					BlockPos p = centre.offset(dx, 0, dz);
 					BlockState s = at.getOrDefault(p, Blocks.AIR.defaultBlockState());
-					boolean edge = Math.abs(dx) == HALF_X || Math.abs(dz) == HALF_Z;
-					boolean white = s.is(Blocks.WHITE_CONCRETE) || s.is(Blocks.WHITE_GLAZED_TERRACOTTA) || s.is(Blocks.WHITE_WOOL)
-						|| s.is(Blocks.WHITE_TERRACOTTA) || s.is(Blocks.WHITE_CONCRETE_POWDER) || s.is(Blocks.QUARTZ_BLOCK) || s.is(Blocks.CALCITE);
-					helper.assertTrue(edge ? white : white || s.is(Blocks.PACKED_MUD), entry.id() + ": the ring at " + p.toShortString() + " is " + s);
+					boolean marking = s.is(Blocks.POLISHED_DIORITE) || dx == 0 && dz == 0 && s.is(Blocks.CHISELED_STONE_BRICKS);
+					helper.assertTrue(marking || s.is(Blocks.COARSE_DIRT), entry.id() + ": the ring at " + p.toShortString() + " is " + s);
 					helper.assertTrue(at.getOrDefault(p.above(), Blocks.AIR.defaultBlockState()).isAir(), entry.id() + ": something stands in the ring at "
 						+ p.above().toShortString());
-					mud += s.is(Blocks.PACKED_MUD) ? 1 : 0;
+					floor += s.is(Blocks.COARSE_DIRT) ? 1 : 0;
 				}
 			}
-			helper.assertTrue(mud >= 15 * 9 / 2, entry.id() + ": a ring of " + mud + " packed mud");
+			helper.assertTrue(floor >= 15 * 9 / 2, entry.id() + ": a ring of " + floor + " coarse dirt");
+			// the edge line, one block outside the 15 x 9 all round: chalk (its four corners may be anything but floor)
 			for (int dx = -HALF_X - 1; dx <= HALF_X + 1; dx++) {
 				for (int dz : new int[]{-HALF_Z - 1, HALF_Z + 1}) {
 					BlockPos p = centre.offset(dx, 0, dz);
-					helper.assertFalse(at.getOrDefault(p, Blocks.AIR.defaultBlockState()).is(Blocks.PACKED_MUD), entry.id() + ": the ring is wider than 9 at "
-						+ p.toShortString());
+					BlockState s = at.getOrDefault(p, Blocks.AIR.defaultBlockState());
+					helper.assertFalse(s.is(Blocks.COARSE_DIRT), entry.id() + ": the ring is wider than 9 at " + p.toShortString());
+					helper.assertTrue(Math.abs(dx) > HALF_X || s.is(Blocks.POLISHED_DIORITE), entry.id() + ": no edge line at " + p.toShortString() + ": " + s);
 				}
 			}
 			for (int dz = -HALF_Z; dz <= HALF_Z; dz++) {
 				for (int dx : new int[]{-HALF_X - 1, HALF_X + 1}) {
 					BlockPos p = centre.offset(dx, 0, dz);
-					helper.assertFalse(at.getOrDefault(p, Blocks.AIR.defaultBlockState()).is(Blocks.PACKED_MUD), entry.id() + ": the ring is longer than 15 at "
-						+ p.toShortString());
+					BlockState s = at.getOrDefault(p, Blocks.AIR.defaultBlockState());
+					helper.assertFalse(s.is(Blocks.COARSE_DIRT), entry.id() + ": the ring is longer than 15 at " + p.toShortString());
+					helper.assertTrue(s.is(Blocks.POLISHED_DIORITE), entry.id() + ": no edge line at " + p.toShortString() + ": " + s);
 				}
 			}
 		}

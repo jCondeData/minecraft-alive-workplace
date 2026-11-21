@@ -36,11 +36,23 @@ asks for the steps, `latest.log` and any crash report).
   mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
   furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Habitat Garden, rebuilt from scratch** as "the Stone Ring" (with Cobblemon): a hedged clearing around an old ring
+  of standing stones, the mossy center stone at its heart on the walk from the gate through a trilithon, a reed-edged
+  pond, the keeper's open bower with her chest and the Pasture Block under its eave, and the old Saccharine honey tree.
+  The **Habitat Garden II** walks on to a second pond and the keeper's hide on stilts with a balcony over the water.
+  Gardens already standing keep their old drawing until refreshed, and their keeper still founds the village's habitat
+  under their old center stone.
 - **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
   cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
   gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
   glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
   skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Arena, rebuilt from scratch** as "the Market Stadium": a chalk-marked pitch with a red box and a blue box under
+  little canopies at its ends, a flag behind each, 12 seats along the back wall and the notice board on the gate's pier.
+  **Arena II** raises a colonnaded stand along the front over the Cup's fair lane, with a judges' loggia over the gate;
+  **Arena III** roofs the back with a brick grandstand (54 seats), a trainers' tower with a Healing Machine at each end
+  and the champion's pole before the gate. Arenas already standing keep their old look until refreshed, and the Cup
+  still seats its crowd on their benches, calls the trainers to their boxes and offers [Watch] at their notice board.
 - **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
   loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
   Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on

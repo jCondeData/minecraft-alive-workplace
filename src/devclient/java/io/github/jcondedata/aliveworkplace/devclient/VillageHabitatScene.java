@@ -30,7 +30,7 @@ import net.minecraft.world.phys.Vec3;
 final class VillageHabitatScene {
 	private static final BlockPos ORIGIN = new BlockPos(0, -60, 0);
 	/** The garden's Pasture Block (template spot), where the keeper works. */
-	private static final BlockPos PASTURE = new BlockPos(14, 1, 7);
+	private static final BlockPos PASTURE = new BlockPos(14, 1, 6);
 	private static final int GIVE_UP = 1200;
 
 	private int tick;
@@ -56,7 +56,7 @@ final class VillageHabitatScene {
 					.placeInWorld(level, ORIGIN, ORIGIN, new StructurePlaceSettings(), level.getRandom(), 2);
 				BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), ORIGIN, Rotation.NONE, Mirror.NONE);
 				BuildSiteManager.get(level).recordFinished(StarterBlueprints.HABITAT_GARDEN.id(), placement, UUID.randomUUID());
-				level.setBlockAndUpdate(ORIGIN.offset(-4, 0, 7), ModBlocks.VILLAGE_HALL.defaultBlockState());
+				level.setBlockAndUpdate(ORIGIN.offset(-4, 0, StarterBlueprints.HABITAT_GARDEN_CENTRE.getZ()), ModBlocks.VILLAGE_HALL.defaultBlockState());
 			});
 			look(server, false);
 		}

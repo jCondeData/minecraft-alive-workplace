@@ -423,8 +423,9 @@ SCENES = [
       cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
-      [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
-       ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
+      [("01_arena_front", "Arena: the chalk-marked pitch, the red and the blue box, the back row of seats"),
+       ("03_arena_2_front", "Arena II: the colonnade's stand over the fair lane, the judges' loggia over the gate"),
+       ("05_arena_3_front", "Arena III: the brick-roofed grandstand between the trainers' towers"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
     # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
     # circuit, the player signed up, the seeds and the roll of champions
     S("cup_page", "Trainer Leader", "The Festival Cup's page",
@@ -1953,6 +1954,20 @@ SCENES = [
            ("02_outside_back", "From the back: the lodge's gable end and the hedge round the garden"),
            ("03_outside_west", "From the west: the hedge, the arbor over the walk, the lodge's steep roof"),
            ("04_outside_east", "From the east: the berry beds in their log curbs, the lodge behind them")], furniture=True),
+    # ROADMAP 50.12: the Habitat Garden rebuilt from scratch (REBUILD.md), "the Stone Ring" (Level I filmed)
+    S("rebuild_habitat_garden", "Build families", "The Habitat Garden, rebuilt: from four sides",
+      "the Habitat Garden's blueprint stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every room (none: an open-air garden, the bower is open-fronted) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Habitat Garden from the front: the gate in the low hedge, the ring of standing stones round the mossy center stone, the trilithon at its back"),
+           ("02_outside_back", "From the back: the trilithon, the honey tree's crown and the bower's tall roof behind the hedge"),
+           ("03_outside_west", "From the west: the reed-edged pond with its standing stone, the ring beyond"),
+           ("04_outside_east", "From the east: the keeper's bower with the Pasture Block under its eave, the Saccharine honey tree behind")], furniture=True),
+    # ROADMAP 50.12: the Arena rebuilt from scratch ("the Market Stadium"; Level I filmed, II and III in the arena scene)
+    S("rebuild_arena", "Build families", "The Arena, rebuilt: from four sides",
+      "the Arena's blueprint stands on a cleared lawn; every room (none: Level I is an open pitch, the trainers' towers come with Arena III) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Arena from the front: the low coped wall, the notice board on the gate pier, the pitch beyond"),
+           ("02_outside_back", "From the back: the back row of seats against its coped wall, the podium in the middle"),
+           ("03_outside_west", "From the west: the red box under its canopy and the red flag behind it, the chalk-marked pitch"),
+           ("04_outside_east", "From the east: the blue box under its canopy and the blue flag behind it")], furniture=True),
     # ROADMAP 50.9: the Apiary Garden rebuilt from scratch (REBUILD.md), "the Skep Wall" (Level I filmed)
     S("rebuild_apiary_garden", "Build families", "The Apiary Garden, rebuilt: from four sides",
       "the Apiary Garden's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: the skep is a store) gets an eye-level shot from a free floor cell with a clear view",

@@ -1,0 +1,10 @@
+{
+  "name": "great_cathedral_a",
+  "private": true,
+  "type": "module",
+  "description": "The Great Cathedral Wonder, version A (52.6 rebuild): STAGE=<n> builds the Wonder as it stands after stage n; stages.py saves the four stage candidates.",
+  "scripts": {
+    "build": "python3 stages.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

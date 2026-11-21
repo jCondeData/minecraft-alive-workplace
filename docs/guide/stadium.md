@@ -4,21 +4,22 @@
 type: Wonder
 expansion: M35
 Needs: Cobblemon, a Town, the Pokémon Professor (or 25 pastured Pokémon of 10 types), the Master Architect
-Size: 53 by 43, its stands 18 high
+Size: 59 by 49, 26 high to the gate's banners
 Stages: The Field; The Lower Stands; The Upper Stands and the Covered Stand; The Gate and the Floodlights
 While it stands: Stadium Days every second afternoon, 2 to 4 visiting trainers; the Festival Cup is held here
 categories: Wonders, Pokémon
 related: wonders.md, pokemon.md, festivals-and-markets.md
 ```
 
-An oval arena of stone round a grass battle field ruled in white, with stands of red and white seats, a trainer's box
-at each end and a professor's box, a covered stand, a gateway arch, a scoreboard and four floodlight towers that light
-up at night. Outside are a nurse's booth with a Healing Machine and pitches for market stalls.
+A brick bowl of red and white seats round a chalked grass field, with a trainer's box at each end of the field, a
+covered stand under a green copper roof along the back, a scoreboard on the east end that reads "2 - 1" from the stands
+and from the road, and a gate with STADIUM lettered over its arch. Four floodlight masts on the corner pavilions light
+up at night.
 
-Under the stands you can walk right round: a lit concourse behind the arched entrances, stairs up from it into the
-front rows, two food kiosks, a first-aid room, a trophy room, and on the south side the players' tunnel out to the pitch
-with the home and away dressing rooms off it. In a village with its
-own colors, the seats are built in them.
+Under the upper stands you can walk right round the bowl: a lit concourse with benches, doors out at both ends and
+into the gate, and four corner pavilions off it: the nurse's booth with a Healing Machine, the refreshment room, and
+the home and away changing rooms. In a village with its own colors, the seats are built in them. A Stadium you began
+before it was redrawn is finished and repaired as it was first drawn.
 
 ## What it needs
 

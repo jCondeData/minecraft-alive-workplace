@@ -325,8 +325,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 
 	/**
 	 * 35.23a "give it interiors to walk through like a real football stadium": from outside, a player walks in through
-	 * the gate onto the field, up the stands, to both trainer boxes' Training Posts, the professor's lectern, the nurse's
-	 * brewing stand, and along a covered concourse under the stands.
+	 * the gate onto the field, up the stands, to both trainer boxes' Training Posts, the nurse's brewing stand, and along a
+	 * covered concourse under the stands. Since the 52.6 rebuild ("the Stadium Bowl") the rooms off the concourse are the
+	 * Nurse's Booth, the Refreshment Room (its cakes) and the two changing rooms (their lockers); the 35.23 drawing's
+	 * professor's lectern is gone (the brief names no job block: a lectern is a job site the village would claim).
 	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
@@ -346,7 +348,7 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 				wrong.add("the Training Post at " + post.toShortString());
 			}
 		}
-		for (String block : List.of("minecraft:lectern", "minecraft:brewing_stand")) {
+		for (String block : List.of("minecraft:brewing_stand", "minecraft:cake", "minecraft:spruce_trapdoor")) {
 			List<BlockPos> at = where(all, block);
 			if (at.isEmpty() || at.stream().noneMatch(p -> reaches(walked, p))) {
 				wrong.add("a " + block);
@@ -400,7 +402,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The wiki: "an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners)"; four towers of eight lamps round a detector. */
+	/**
+	 * The wiki: "a brick bowl 59 by 49, 26 high to the gate's banners" (52.6, rebuilt; the 35.23 oval was 53 by 43 and 24
+	 * high); four floodlight masts of eight lamps round a detector.
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaStadiumSizeAndFloodlightsAsTheWikiSays(GameTestHelper helper) {
@@ -409,11 +414,11 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		int w = Math.max(b[3] - b[0], b[5] - b[2]) + 1;
 		int l = Math.min(b[3] - b[0], b[5] - b[2]) + 1;
 		int h = b[4] + 1;
-		helper.assertTrue(Math.abs(w - 53) <= 1 && Math.abs(l - 43) <= 1 && Math.abs(h - 24) <= 1,
-			"the Stadium is " + w + " x " + l + " and " + h + " high, the wiki says 53 x 43 and 24 to the banners");
+		helper.assertTrue(Math.abs(w - 59) <= 1 && Math.abs(l - 49) <= 1 && Math.abs(h - 26) <= 1,
+			"the Stadium is " + w + " x " + l + " and " + h + " high, the wiki says 59 x 49 and 26 to the banners");
 		int lamps = count(all, is("minecraft:redstone_lamp"));
 		int detectors = count(all, is("minecraft:daylight_detector"));
-		helper.assertTrue(lamps == 32 && detectors == 4, lamps + " redstone lamps and " + detectors + " daylight detectors, not 4 towers of 8 round one");
+		helper.assertTrue(lamps == 32 && detectors == 4, lamps + " redstone lamps and " + detectors + " daylight detectors, not 4 masts of 8 round one");
 		for (BlockPos d : where(all, "minecraft:daylight_detector")) {
 			long near = where(all, "minecraft:redstone_lamp").stream().filter(p -> p.distManhattan(d) <= 4).count();
 			helper.assertTrue(near >= 8, "the detector at " + d.toShortString() + " has " + near + " lamps round it");

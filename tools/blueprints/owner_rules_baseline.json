@@ -36,8 +36,7 @@
   "village/snowy_ranch_house": 1,
   "village/taiga_ball_workshop": 2,
   "village/taiga_ferry_house": 1,
-  "village/taiga_ranch_house": 1,
-  "wonder/stadium/stage_3_0": 6
+  "village/taiga_ranch_house": 1
  },
  "why": "Blueprints drawn before the owner's three rules (ROADMAP 49.1). Their owner-rule problems are reported as one line until their rebuild (Milestones 49-52), which removes them from this list. Never add a new blueprint here."
 }

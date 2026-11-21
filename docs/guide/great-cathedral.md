@@ -4,16 +4,23 @@
 type: Wonder
 expansion: M35
 Needs: a Town, the Seer (or a Master Cleric), 3 finished Chapels, the Master Architect
-Size: 39 blocks across the transepts, 55 long, its spires 52 high
+Size: 39 blocks across the transepts, 56 long, its spires 52 high
 Stages: The Foundations and the West Front; The Nave; The Transepts and the Choir; The Towers and the Rose Window
 While it stands: undertakers need nothing and bring the village's dead back by morning; weddings at its altar are blessed; its bells ring; 8 beauty
 categories: Wonders
 related: wonders.md, jobs-services.md, village-life.md
 ```
 
-A Gothic cathedral on a cross plan: two west towers under stone spires, a rose window of white, light blue, yellow and
-red glass over a deep west door, flying buttresses along the nave. Inside, pews either side of a red runner, an altar
-of gold and candles, three side chapels and open belfries with three bells.
+A Gothic cathedral on a cross plan: a tall nave over lower aisles, held up by flying buttresses that leap the aisle
+roofs, under a steep slate-dark roof. Two west towers rise to louvered belfries and stone spires, a rose window of
+white, light blue, yellow and red glass stands over the triple portal between them, a slim lead spire tops the
+crossing, and the east end steps down to a rounded apse round the altar.
+
+Inside, pews either side of a red runner face a raised choir with its stalls and an altar of gold and candles before a
+carved stone screen. Four chapels open off the east end: the sacristy with its brewing stand, the Lady chapel and the
+two aisle chapels, three of them with a lectern. A ladder climbs each tower through three floors to the belfry, where
+two bells hang on a beam. A Great Cathedral you began before it was redrawn is finished and repaired as it was first
+drawn.
 
 ## What it needs
 

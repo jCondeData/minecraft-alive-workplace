@@ -103,29 +103,30 @@ public class StadiumGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The scoreboard over the east wall reads "2 - 1" from both sides (B141: it was one face thick, so from outside the
-	 * bowl it read mirrored, "1 - S"). Its part of stage III (offset 48, 0, 8 in the Stadium) has a face at x 49 read
-	 * from the stands, looking east (north on the left), and one at x 50 read from the road, looking west (south on the
-	 * left); the score's white cells on each, read left to right, top to bottom, are the same digits.
+	 * The scoreboard on the east end reads "2 - 1" from both sides (B141: the 35.23 one was one face thick, so from
+	 * outside the bowl it read mirrored, "1 - S"). The rebuilt Stadium's (52.6, "the Stadium Bowl") is two blocks thick
+	 * and in its part of stage IV (offset 55, 6, 1 in the Stadium): a face at x 56 read from the stands, looking east
+	 * (north on the left), and one at x 57 read from the road, looking west (south on the left); the score's white
+	 * concrete cells on each, read left to right, top to bottom, are the same digits.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void theScoreboardReadsFromBothSides(GameTestHelper helper) {
-		ResourceLocation id = AliveWorkplace.id("wonder/stadium/stage_3_1");
+		ResourceLocation id = AliveWorkplace.id("wonder/stadium/stage_4_1");
 		StructureTemplate part = helper.getLevel().getStructureManager().get(id)
 			.orElseThrow(() -> new GameTestAssertException("no structure " + id));
 		Set<BlockPos> white = new HashSet<>();
-		for (StructureTemplate.StructureBlockInfo info : part.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.WHITE_TERRACOTTA)) {
-			white.add(info.pos().offset(48, 0, 8));
+		for (StructureTemplate.StructureBlockInfo info : part.filterBlocks(BlockPos.ZERO, new StructurePlaceSettings(), Blocks.WHITE_CONCRETE)) {
+			white.add(info.pos().offset(55, 6, 1));
 		}
-		String[] score = {"WWW....W.", "..W...WW.", "WWW.W..W.", "W......W.", "WWW...WWW"}; // "2 - 1", rows y 17 down to 13
+		String[] score = {"WWW......W.", "..W.....WW.", "WWW.WWW..W.", "W........W.", "WWW.....WWW"}; // "2 - 1", rows y 19 down to 15
 		StringBuilder field = new StringBuilder();
 		StringBuilder road = new StringBuilder();
 		for (int row = 0; row < score.length; row++) {
-			int y = 17 - row;
-			for (int i = 0; i < 9; i++) {
-				field.append(white.contains(new BlockPos(49, y, 17 + i)) ? 'W' : '.');
-				road.append(white.contains(new BlockPos(50, y, 25 - i)) ? 'W' : '.');
+			int y = 19 - row;
+			for (int i = 0; i < 11; i++) {
+				field.append(white.contains(new BlockPos(56, y, 19 + i)) ? 'W' : '.');
+				road.append(white.contains(new BlockPos(57, y, 29 - i)) ? 'W' : '.');
 			}
 			field.append('/');
 			road.append('/');

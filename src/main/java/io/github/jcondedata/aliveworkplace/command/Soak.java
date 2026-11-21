@@ -57,9 +57,18 @@ public final class Soak {
 	/** One in-game day; the soak runs 2 by default ({@code /workplace soak <days>} for more). */
 	public static final long DAY = 24000;
 	public static final int DAYS = 2;
-	/** Each builder has a row: a chest pad and bench at its west end, then its builds 18 blocks apart. */
+	/**
+	 * Each builder has a row: a chest pad and bench at its west end, then its builds side by side, {@link #BUILD_GAP}
+	 * blocks of ground between them. Rows are at least {@link #ROW} apart and columns at least {@link #COLUMN}, more when
+	 * the widest row or the deepest build needs it, so no two plots ever overlap (B690: a fixed 18-block step let the
+	 * 19-wide guildhall and manor run into their neighbours).
+	 */
 	static final int ROW = 26;
-	static final int BUILD_STEP = 18;
+	static final int BUILD_GAP = 4;
+	/** Where a row's first build starts, east of the row's bench. */
+	static final int FIRST_BUILD = 5;
+	/** Where a row's bench stands, east of its column's west edge. */
+	static final int BENCH_EAST = 8;
 	static final int COLUMNS = 2;
 	static final int COLUMN = 70;
 	/** In split mode the columns stand further apart, room for column 1's storehouses west of its benches. */
@@ -209,13 +218,13 @@ public final class Soak {
 
 	/** Lays out the ground, the builders, their chests and builds; public for the soak GameTest and scene. */
 	static Run start(ServerLevel level, BlockPos origin, RandomSource random, long limit) {
-		List<StarterBlueprints.Entry> builds = StarterBlueprints.ALL.stream()
-			.filter(e -> BlueprintUpgrades.baseOf(e.id()).isEmpty()).toList();
+		List<StarterBlueprints.Entry> builds = starterSet();
 		int rows = (BUILDERS + COLUMNS - 1) / COLUMNS;
 		int perBuilder = (builds.size() + BUILDERS - 1) / BUILDERS;
-		int column = split ? SPLIT_COLUMN : COLUMN;
+		int column = columnWidth(builds, perBuilder, split);
+		int row = rowDepth(builds);
 		int west = split ? SPLIT_WEST : 0;
-		terrain(level, origin, west, COLUMNS * column, rows * ROW, random);
+		terrain(level, origin, west, COLUMNS * column, rows * row, random);
 		List<Planned> planned = new ArrayList<>();
 		List<BlockPos> chests = new ArrayList<>();
 		List<Villager> builders = new ArrayList<>();
@@ -226,8 +235,8 @@ public final class Soak {
 			stores.add(new ArrayList<>());
 		}
 		for (int b = 0; b < BUILDERS; b++) {
-			int x = origin.getX() + (b % COLUMNS) * column + 8;
-			int z = origin.getZ() + (b / COLUMNS) * ROW;
+			int x = origin.getX() + (b % COLUMNS) * column + BENCH_EAST;
+			int z = origin.getZ() + (b / COLUMNS) * row;
 			BlockPos bench = pad(level, x, z + 6);
 			level.setBlockAndUpdate(bench, ModBlocks.BUILDERS_BENCH.defaultBlockState());
 			Villager builder = EntityType.VILLAGER.spawn(level, bench.south(), MobSpawnType.COMMAND);
@@ -238,12 +247,14 @@ public final class Soak {
 			Builders.employ(level, builder, bench);
 			builders.add(builder);
 			Map<Item, Integer> mine = new TreeMap<>(Soak::byId);
+			int east = FIRST_BUILD;
 			for (int k = 0; k < perBuilder; k++) {
 				int index = b + k * BUILDERS;
 				if (index >= builds.size()) {
 					break;
 				}
-				BlockPos at = top(level, x + 5 + k * BUILD_STEP, z);
+				BlockPos at = top(level, x + east, z);
+				east += builds.get(index).size().getX() + BUILD_GAP;
 				BlueprintData.Placement placement = new BlueprintData.Placement(Ids.of(level.dimension()), at, Rotation.NONE, Mirror.NONE);
 				BuildSite site = k == 0
 					? Builders.start(level, builder, null, builds.get(index).id(), placement)
@@ -269,16 +280,73 @@ public final class Soak {
 			// West of each column's benches, level with rows 1 and 3: every bench is within the village's 48 blocks of
 			// its storehouse (about 29 at most) and more than 48 from the other column's.
 			for (int c = 0; c < COLUMNS; c++) {
-				int x = origin.getX() + c * column + 8 - STOREHOUSE_WEST;
-				chests.addAll(storehouse(level, x, origin.getZ() + ROW + 6, stores.get(2 * c)));
-				chests.addAll(storehouse(level, x, origin.getZ() + 3 * ROW + 6, stores.get(2 * c + 1)));
+				int x = origin.getX() + c * column + BENCH_EAST - STOREHOUSE_WEST;
+				chests.addAll(storehouse(level, x, origin.getZ() + row + 6, stores.get(2 * c)));
+				chests.addAll(storehouse(level, x, origin.getZ() + 3 * row + 6, stores.get(2 * c + 1)));
 			}
 		}
 		// Count from here: everything builders gain, build in or drop is in the ledger.
 		MaterialLedger.start();
 		BlockPos from = origin.offset(-4 - west, -8, -4);
-		BlockPos to = origin.offset(COLUMNS * column + 4, 40, rows * ROW + 4);
+		BlockPos to = origin.offset(COLUMNS * column + 4, 40, rows * row + 4);
 		return new Run(level, level.getGameTime(), limit, from, to, planned, chests, builders, stocked, StallWatch.stalls());
+	}
+
+	/**
+	 * Every build's plot as the soak lays it out, flat (y 0), relative to the soak's origin, in the order the builds are
+	 * handed out; the same arithmetic as {@link #start}. Public for the layout GameTest (B690).
+	 */
+	public static List<net.minecraft.world.level.levelgen.structure.BoundingBox> footprints(boolean split) {
+		List<StarterBlueprints.Entry> builds = starterSet();
+		int perBuilder = (builds.size() + BUILDERS - 1) / BUILDERS;
+		int column = columnWidth(builds, perBuilder, split);
+		int row = rowDepth(builds);
+		List<net.minecraft.world.level.levelgen.structure.BoundingBox> boxes = new ArrayList<>();
+		for (int b = 0; b < BUILDERS; b++) {
+			int x = (b % COLUMNS) * column + BENCH_EAST;
+			int z = (b / COLUMNS) * row;
+			int east = FIRST_BUILD;
+			for (int k = 0; k < perBuilder && b + k * BUILDERS < builds.size(); k++) {
+				net.minecraft.core.Vec3i size = builds.get(b + k * BUILDERS).size();
+				boxes.add(new net.minecraft.world.level.levelgen.structure.BoundingBox(x + east, 0, z,
+					x + east + size.getX() - 1, 0, z + size.getZ() - 1));
+				east += size.getX() + BUILD_GAP;
+			}
+		}
+		return boxes;
+	}
+
+	/** The builds the soak puts up: every starter build that isn't an upgrade of another. */
+	public static List<StarterBlueprints.Entry> starterSet() {
+		return StarterBlueprints.ALL.stream().filter(e -> BlueprintUpgrades.baseOf(e.id()).isEmpty()).toList();
+	}
+
+	/** How far apart the columns stand: at least {@link #COLUMN} (or {@link #SPLIT_COLUMN}), and room for the longest row plus a gap. */
+	static int columnWidth(List<StarterBlueprints.Entry> builds, int perBuilder, boolean split) {
+		int longest = 0;
+		for (int b = 0; b < BUILDERS; b++) {
+			longest = Math.max(longest, rowLength(builds, perBuilder, b));
+		}
+		int needed = BENCH_EAST + longest + BUILD_GAP;
+		return split ? Math.max(SPLIT_COLUMN, needed + SPLIT_COLUMN - COLUMN) : Math.max(COLUMN, needed);
+	}
+
+	/** How far east of its bench builder {@code b}'s last build ends. */
+	static int rowLength(List<StarterBlueprints.Entry> builds, int perBuilder, int b) {
+		int east = FIRST_BUILD;
+		for (int k = 0; k < perBuilder && b + k * BUILDERS < builds.size(); k++) {
+			east += builds.get(b + k * BUILDERS).size().getX() + BUILD_GAP;
+		}
+		return east - BUILD_GAP;
+	}
+
+	/** How far apart the rows stand: at least {@link #ROW}, and the deepest build plus a gap. */
+	static int rowDepth(List<StarterBlueprints.Entry> builds) {
+		int deepest = 0;
+		for (StarterBlueprints.Entry e : builds) {
+			deepest = Math.max(deepest, e.size().getZ());
+		}
+		return Math.max(ROW, deepest + BUILD_GAP);
 	}
 
 	/** Rolling hills of grass over dirt and stone, with oak and birch woods on them. */

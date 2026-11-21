@@ -1183,6 +1183,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaScaffoldsUnloaded1116bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1322GameTests",
 			"io.github.jcondedata.aliveworkplace.test.SeasonSoakGameTests",
+			"io.github.jcondedata.aliveworkplace.test.SoakLayoutB690GameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardHomesRulesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StewardCivicRulesGameTests",

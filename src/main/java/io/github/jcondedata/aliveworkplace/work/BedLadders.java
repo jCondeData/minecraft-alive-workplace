@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.work;
 
 import com.mojang.datafixers.util.Pair;
+import io.github.jcondedata.aliveworkplace.mixin.PathNavigationAccessor;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -52,6 +53,8 @@ public final class BedLadders {
 	private static final double STEP_UP = 0.6;
 	/** How many paths to a ladder's foot one bed claim may work out ({@link #pathUpALadder}). */
 	private static final int PATHS = 2;
+	/** How long a walk to a ladder's foot the bed claim looks for, in blocks: twice a villager's everyday 48 ({@link #walkTo}). */
+	private static final float LADDER_RANGE = 96;
 	/** The ladder found for each villager's bed: [bed, top, bottom]. */
 	private static final Map<Villager, BlockPos[]> LADDERS = new WeakHashMap<>();
 	/** The ladder down from the floor a villager is on, for a bed on that floor it can't walk to: [bed, top, bottom] (B925). */
@@ -410,13 +413,27 @@ public final class BedLadders {
 			bottoms.sort(Comparator.comparingDouble(b -> b.distSqr(feet)));
 			for (BlockPos bottom : bottoms.subList(0, Math.min(walks, bottoms.size()))) {
 				walks--;
-				Path walk = villager.getNavigation().createPath(bottom, 1);
+				Path walk = walkTo(villager, bottom);
 				if (walk != null && walk.canReach()) {
 					return new Path(List.of(new Node(bed.getX(), bed.getY(), bed.getZ())), bed.immutable(), true);
 				}
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * The villager's walk to the foot of a ladder, or null, looked for {@link #LADDER_RANGE} blocks of walking away, not
+	 * the 48 of a villager's everyday paths. The way to a ladder is often the long way round: in at the front door from
+	 * behind a house with no back door. Vanilla's search stops at paths as long as its range, and it counts that length
+	 * roughly (well over the real one once it has looked along a wall), so from the open ground a few blocks behind the
+	 * Terrace, 30 blocks' walk from a ladder, it found no way. A villager without a bed, outdoors at night, walks nowhere
+	 * by himself, so nothing took him to where the search would have worked: he stood there all night with free beds
+	 * indoors (B735). The search visits no more nodes than any other of his.
+	 */
+	@Nullable
+	private static Path walkTo(Villager villager, BlockPos bottom) {
+		return ((PathNavigationAccessor) villager.getNavigation()).aliveworkplace$createPath(Set.of(bottom), 8, false, 1, LADDER_RANGE);
 	}
 
 	private BedLadders() {

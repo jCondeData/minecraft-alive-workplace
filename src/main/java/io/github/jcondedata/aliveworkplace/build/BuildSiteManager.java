@@ -301,12 +301,17 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
-	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
+	/**
+	 * The finished building of {@code structure} whose outline contains {@code pos}, if any. A building standing as an older
+	 * drawing of its id is measured by that drawing's box as well as today's (B1433: an upgrade clicked onto its back wall,
+	 * outside today's smaller box, still lines up with it).
+	 */
 	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
 		for (Finished f : finished) {
 			if (f.structure().equals(structure) && f.placement().dimension().equals(Ids.of(level.dimension()))) {
 				boolean inside = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure)
-					.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()).isInside(pos))
+					.map(b -> Refreshes.standingBox(level, f,
+						io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()), false).isInside(pos))
 					.orElse(false);
 				if (inside) {
 					return java.util.Optional.of(f);

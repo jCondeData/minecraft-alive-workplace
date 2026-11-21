@@ -48,6 +48,10 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- Taking down a house whose old look the mod no longer knows now leaves it in the Village Hall: the Builder says he
+  took nothing down instead of reporting it gone, and the house can still be moved, repaired or refreshed (B1432).
+- The next level's blueprint now lines up with a house still standing as an older, bigger look wherever on the house
+  it is clicked, its back wall included, instead of being placed as a new build on top (B1433).
 - A house still standing as an older, deeper drawing of its blueprint is now kept whole by its neighbors: a new build
   beside it no longer digs or fills under its back rows, the Steward keeps his 2 free blocks behind its real back wall,
   and a villager sleeping in its back rows has that house as their home again (B1435, B1436).

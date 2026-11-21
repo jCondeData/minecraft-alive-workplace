@@ -585,6 +585,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSites1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dBugGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaMoverMultiface1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaChronicleLate1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStatusCardRows1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoveHallBed1111cBugTests",

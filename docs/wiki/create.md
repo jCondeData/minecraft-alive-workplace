@@ -86,7 +86,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House** (18 x 17 x 13; rebuilt
   from scratch in 50.13 as "the Tanner's Water Tower"), a stone water tower under a steep green copper cap: water poured
   into a stone cup on its flank falls past the wheel into a trough, the wheel's cogwheel turns a mechanical pump over a
-  four-source cistern at the tower's foot (it refills; seen through the front windows), and a riser climbs the tower to
+  cistern two sources deep at the tower's foot (it refills; seen through the front windows; the pump draws through a
+  pipe standing straight down in it, as Create keeps a pipe only bent between two pipes, pumps or tanks), and a riser climbs the tower to
   a two-high fluid tank in a glazed belvedere, a door out onto the gallery round it; the Leatherworker's tannery leans
   on the tower under a deepslate gable (his cauldron between two chests, a cutting table, a stitching desk, hides;
   standing pump houses keep their old drawing until refreshed). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's

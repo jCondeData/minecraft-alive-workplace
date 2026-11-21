@@ -27,6 +27,9 @@ asks for the steps, `latest.log` and any crash report).
   finished as it was first drawn.
 ### Fixed
 
+- The Pump House's tank fills with water now. Its intake pipe dipped into the cistern as a bend, which Create
+  straightened out toward an empty window, so the pump turned but drew nothing. The cistern is now two deep, and the
+  intake runs straight down through it to draw from the bottom (B1411).
 - A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
   look it was begun with after you update, instead of the new design going up over the half-built old one. Use
   "Refresh to the latest look" once it's finished to bring it up to date (B1407).

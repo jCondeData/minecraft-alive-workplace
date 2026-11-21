@@ -2193,6 +2193,15 @@ SCENES = [
            ("12_savanna", "Savanna: a tiered golden roof, a wide low thatch skirt round a tall packed-mud clerestory, a pot on top"),
            ("13_snowy", "Snowy: one great snow-capped A with a deep dark porch mouth, dormers and barred stall lights in its slate sides"),
            ("14_taiga", "Taiga: three stepped log gables, a gallery for pitching hay and a carved horse's head on the ridge")], furniture=True),
+    # ROADMAP 49.10g: the Artisan's House in each village culture's climate (desert, savanna, snowy, taiga; plains as
+    # drawn), Level I of each side by side
+    S("rebuild_artisans_house_looks", "Build families", "The Artisan's House in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Artisan's House as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: a plaster floor jettied over a stone workroom under a steep dark gable, the brick bottle kiln beside it"),
+           ("11_desert", "Desert: a flat coped block of mud brick over coursed sandstone, a deep iwan under a red arch, a lattice bay, a windcatcher and a domed kiln"),
+           ("12_savanna", "Savanna: one great golden thatch hip on gray acacia posts over red granite and packed mud, a painted band, a red termite-mound kiln"),
+           ("13_snowy", "Snowy: a tall white calcite gable under steep dark slate and snow, a closed storm porch, a brick kiln with a stone stack"),
+           ("14_taiga", "Taiga: twin slate gables, a jettied dark log house on mossy fieldstone beside an open timber kiln barn, a carved horse's head on the ridge")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

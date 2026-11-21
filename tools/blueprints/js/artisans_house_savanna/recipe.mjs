@@ -141,7 +141,10 @@ function levelTwo(c) {
     if (!dx && !dz) { c.set(cx, 0, cz, 'coarse_dirt'); c.set(cx, 1, cz, 'campfire', { facing: 'north', lit: 'false', signal_fire: 'false', waterlogged: 'false' }); continue }
     slab(c, cx + dx, 1, cz + dz, 'mud_brick_slab', 'bottom')
   }
-  pot(c, [cx - 2, 1, cz + 1]); pot(c, [cx, 1, cz + 2])
+  for (const [x, z] of [[cx - 2, cz + 1], [cx, cz + 2]]) { // each jar stands on the yard's ground (not on the plot's edge air)
+    if (!c.get(x, 0, z)) c.set(x, 0, z, 'coarse_dirt')
+    pot(c, [x, 1, z])
+  }
 }
 
 // --- Level III: the clay cellar ---------------------------------------------------------------------------------------

@@ -479,6 +479,8 @@ def main(argv):
         if name.startswith(".."):  # a rebuild candidate (build/rebuild/<family>/<id>.nbt): known by its id
             name = os.path.basename(path)[:-4]
         deep = under.get(name, under.get(name[len("modded/"):], 0) if name.startswith("modded/") else 0)
+        if name.startswith("looks/"):  # a biome look (49.10) keeps its level's basement (StarterBlueprints.cultureLook)
+            deep = under.get(os.path.basename(name), 0)
         if deep:
             size = (size[0], size[1] - deep, size[2])
             cells = {(x, y - deep, z): c for (x, y, z), c in cells.items() if y >= deep}

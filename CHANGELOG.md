@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.158.0 — 2026-11-20
+
 ### Added
 - **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
   every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under

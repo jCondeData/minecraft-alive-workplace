@@ -200,3 +200,34 @@ out on the grass. Also: the porch gable's beam drops to y 5 under the whole east
 studs fills the rake. Sizes: I 15 x 14 x 12 (was 17 tall), II 15 x 18 x 22, III 15 x 18 x 22 + 4 below. Rerun:
 look_spots SAME BUILDING (11 / 17 / 19 spots, 0 missing, nothing moved); holes.py 0 at all three levels (roof, meet,
 stray, peek, open); no CHECK line. Interiors unchanged.
+
+## Round 3 (fresh critic, 2026-11-21)
+
+The last round. Sheets `farmstead_looks/snowy_<1|2|3>_r3_vs_old.png` (OLD as drawn left, NEW round 3 right, five
+views) and the renders in `build/rebuild/farmstead_snowy/renders/` (`snowy_1_front/left/back/right/top.png` looked at
+full size). Rerun here: `look_spots.py farmstead_snowy farmstead` says SAME BUILDING (11 / 17 / 19 shipped spots, 0
+missing, 0 beds, containers, job blocks or doors moved); `holes.py` on the three candidate `.nbt`s: TOTAL 0 (0 roof,
+0 meet, 0 stray, 0 peek, 0 open). Checked in the `.nbt`s: every snow layer on the ground (6 at I, 14 at II) touches a
+block beside it; none stands alone on the grass. Interior unchanged (the shipped furniture cell for cell), so it stays 4.
+
+| Look | Level | Silhouette | Depth | Interior | Detail | Reads as its culture | Brief misses | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| OLD (as drawn) | I / II / III | 4 | 4 | 4 | 4 | - | - | - |
+| Snowy r3 | I / II / III | 4 / 4 / 4 (I was 3) | 4 / 4 / 4 | 4 / 4 / 4 | 4 / 4 / 4 (was 3) | yes: pale calcite on stone, dark slate with snow on ridges and lips, a stone stack; clearly not taiga (no logs, no moss) | none | **SHIP** |
+
+### Snowy (SHIP)
+- Silhouette 4 (round 2: 3): the kicked roof brings the ridge down to y 10; from the road the slate is about half the
+  front over the calcite storey and the gablet, and the hall now sits as a cottage, not a dark wedge (snowy_1_front);
+  the east gable with its birch boards and dark beam is a clear end (snowy_1_right). II and III keep the T with the
+  barn's tall gable and louvre (snowy_2_back, snowy_2_right, snowy_3_left).
+- Depth 4: the kicked eave throws a shadow line on every side, the storm niche, quoins, andesite course, the stack's
+  breast proud of a closed gable with its weathering (snowy_1_left), the barn's hoods and hoist (snowy_2_back).
+- Interior 4: unchanged (round-1 cutaways; look_spots SAME BUILDING).
+- Detail 4 (round 2: 3): no white piece floats mid-slope at the front any more; the snow runs as the eave lips and the
+  ridge, rake to rake (snowy_1_front, snowy_1_back); the west barge sawtooth is gone, the slate ends on the calcite
+  gable (snowy_1_left); drift only at the foot of walls.
+- Round-2 notes: 1 answered (snowy_1_front), 2 answered (snowy_1_left; the stack still rises tall, but against a wall
+  now), 3 answered (snowy_1_front), 4 answered (snowy_1_front, snowy_1_top; .nbt check above).
+- Open, not blocking: the drift along the barn's west wall at II and III is a long run of single layers that still
+  reads a little like a paved edge (snowy_2_back, snowy_3_back); the two snow layers before the back door's step read
+  as tiles (snowy_1_back); the flat snow ridge reads as a white plank from above (snowy_1_top).

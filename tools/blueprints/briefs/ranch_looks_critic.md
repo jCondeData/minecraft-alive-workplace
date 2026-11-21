@@ -290,3 +290,52 @@ course at y 8 runs unbroken across the front over the hay door. Nothing else cha
 yard, II's bunk house and kraal). Sizes: I 13 x 14 x 13 (737 blocks), II 21 x 14 x 21 (1181 blocks); II keeps 99 % of I
 (728 of 737). `look_spots.py ranch_savanna ranch`: SAME BUILDING (8/8 and 13/13 shipped spots, 0 missing, 0 beds,
 containers, job blocks or doors moved). `holes.py`: 0 at both levels (`open` included). The build printed no CHECK line.
+
+## Round 3 (fresh critic, 2026-11-21)
+
+The last round. Sheets `ranch_looks/<culture>_<1|2>_r3_vs_old.png` (OLD as drawn left, NEW round 3 right, five views;
+savanna's OLD cells cut unchanged from the r2 sheets) and the renders in `build/rebuild/ranch_<culture>/renders/`
+(several looked at full size, named below). Rerun here: `look_spots.py ranch_<culture> ranch` says SAME BUILDING for
+all three (8/8 and 13/13 shipped spots, 0 missing, 0 beds, containers, job blocks or doors moved; snowy's lamps on other
+chains, allowed); `holes.py` on the six candidate `.nbt`s: TOTAL 0 (0 roof, 0 meet, 0 stray, 0 peek, 0 open).
+Interior unchanged (the shipped furniture cell for cell; no eye-level shots filmed), so it stays 4.
+
+| Look | Level | Silhouette | Depth | Interior | Detail | Reads as its culture | Brief misses | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| OLD (as drawn) | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 3 / 4 | - | - | - |
+| Savanna r3 | I / II | 4 / 4 (I was 3) | 4 / 4 | 4 / 4 | 4 / 4 | yes: two tiers of golden hip thatch, acacia, granite and packed mud, red-and-white band, pots on the points, a kraal | none | **SHIP** |
+| Snowy r3 | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 4 / 4 (was 3 / 3) | yes: one steep slate A under snow, pale calcite, a storm forebay; clearly not taiga | none | **SHIP** |
+| Taiga r3 | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 4 / 4 (was 3 / 3) | yes: dark spruce logs notched at the corners, mossy fieldstone, stepped gables, svalgang, konek; clearly not snowy | none | **SHIP** |
+
+### Savanna (SHIP)
+- Silhouette 4 / 4 (round 2: 3 / 4): the lower skirt falls from the loft wall to a stair eave, so from the back and
+  sides it reads as a second hip of thatch under the crown again, not a tray (savanna_1_back, savanna_1_left,
+  savanna_1_right); II's two pyramid huts beside it (savanna_2_back).
+- Depth 4 / 4: two eaves of shadow on every face, acacia posts, the band under each eave (savanna_1_back).
+- Detail 4 / 4: the red-and-white course now runs unbroken across the loft's front over the hay door (savanna_1_front);
+  kerb gone, fence gate, dull plinth held from round 2 (savanna_2_back).
+- Round-2 notes: 1 answered (savanna_1_back), 2 answered (savanna_1_front).
+- Open, not blocking: the hoist's terracotta pieces beside the hay door read as two loose red cubes from the road, and
+  a small stepped hump of thatch sits where the skirt meets the loft at its west corner (savanna_1_front,
+  savanna_1_back); the bamboo-mosaic thatch is very saturated.
+
+### Snowy (SHIP)
+- Silhouette 4 / 4, Depth 4 / 4: unchanged from round 2 (snowy_1_left, snowy_1_right, snowy_2_front).
+- Detail 4 / 4 (round 2: 3 / 3): each dormer is a closed little slate gable with birch cheeks and its snow lying on its
+  ridge, not a slab above a notch (render snowy_1_right.png, snowy_1_left.png); the drift lies in runs of three and four
+  along the walls, broken at doors (snowy_1_left, snowy_1_right); II's run-in shelter is open on its back and ends,
+  rails and hay showing, under its own snowed gable (render snowy_2_back.png).
+- Round-2 notes: 1 answered, 2 answered, 3 answered.
+- Open, not blocking: one single snow layer stands alone at II (cell 20, 0, 4, the paddock side); the dormer snow and the
+  shelter's ridge snow read as thick white caps.
+
+### Taiga (SHIP)
+- Silhouette 4 / 4, Depth 4 / 4: unchanged from round 2 (taiga_1_front, taiga_2_front, taiga_2_left).
+- Detail 4 / 4 (round 2: 3 / 3): the hay barn's gable face is plain dark logs round the window and hoist lamp, and the
+  rakes are dark oak stairs with no pale tooth (render taiga_1_front.png, taiga_2_front.png); the pale squares left are
+  the pens' and bunkhouse's notched corners; the konek reads from the left as a neck and a head looking out (render
+  taiga_1_left.png, taiga_2_left).
+- Round-2 notes: 1 answered, 2 answered from the sides; from the front the konek is still more a dark stepped bracket
+  than a head (taiga_1_front).
+- Open, not blocking: the stall ranges' sides carry many proud log-end blocks that read as boxes stuck on the wall
+  (render taiga_1_left.png); the yard's crates and logs crowd the front (taiga_2_front).

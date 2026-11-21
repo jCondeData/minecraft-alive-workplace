@@ -588,6 +588,9 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   `aBuilderBuildsThePumpHouseAndItTurns` (the pump; pipes and both tank blocks in place): each built from exact
   materials, nothing skipped, the job block a job site, the machine's `Speed` read by name. Scene `create_builds_more`:
   the six set down in two rows, every machine turning. Renders: `tools/blueprints/render/preview.sh greenhouse ...`.
+- `QaPumpHouseTank1121eCompatTests` (B1411, lane E's QA): the Pump House turned a quarter, and flipped and turned
+  round, each has water in its tank within a minute of the build's end; as drawn, the tank ends up holding two buckets
+  more than every water source standing in the build when it finished (the cistern refills; the full tank is 16 buckets).
 - `QaCreateBuildsTurnedCompatTests` (39.4, 39.5, 39.8, with Create; lane E's QA): the Workshop flipped and turned round,
   the Watermill, the Sawmill and the Crushing Mill flipped, the Brass Foundry and the Pump House turned a quarter
   (either way): each built from exact materials, nothing skipped, the job block a job site, its machines turning, and

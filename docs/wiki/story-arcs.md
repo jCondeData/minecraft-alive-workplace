@@ -87,9 +87,7 @@ Roadmap items: 31.4, B724
 
 ## Known limits
 
-- When the same arc runs in two villages, killing one village's spawned `role:` foe also counts for the other
-  village's `kill` step while that village's own foe hasn't spawned yet (B724, found by QA on 2026-10-31; its failing
-  test waits on the branch tests/village-verify-1031 for the fix).
+- None known.
 
 ## Proof
 
@@ -101,7 +99,10 @@ far build never over paving and once across a reload, who hears an announcement,
 `QaDisabledArcsGameTests`, `QaThreatArcsPeace1031GameTests`, `QaStoryArcsPeace1031GameTests`,
 `QaRefusedArcMobs1031GameTests`, `QaHallStoryGameTests`, `QaStoryArcEngineBug1031Tests`, `StoryArcCastGameTests`
 (a `talk` or `role:` kill counts only the one this arc cast in this village, across a reload) and
-`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in) and `QaStoryVerify1103cGameTests`
+`QaVillage1031VerifyGameTests` (a villager tagged by hand as the part is no stand-in), `QaVillage1031VerifyBugTests` and
+`QaArcFoes1121dGameTests` (B724: the same arc in two villages, each with its own foe; a player's kill of the other
+village's foe never ends this village's hunt, before its own foe comes or after, and killing its own does, also across
+a save and reload between each foe's coming and its kill) and `QaStoryVerify1103cGameTests`
 (a `threat` arc waiting while At peace, at level 0 and on Peaceful and starting once threatened, a removed file's one log
 line after a save and reload, the real `/reload` reading the arc files again, the commands refused to non-operators,
 every story sentence in American English). Showcase scene `story_arc`.

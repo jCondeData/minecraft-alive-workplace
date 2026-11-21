@@ -106,6 +106,9 @@ Roadmap items: 32.9, B382, B437, B828
 - A husk killed within three seconds of a restart doesn't rise.
 - Sand a player knocks loose from a ramp (by digging under it) falls as sand does, and the block it lands as is
   not taken away after the siege.
+- A climber that reaches the wall's foot at the spot nearest its target before it has begun a ramp (a husk starting
+  three blocks behind the back wall, its villager inside a little to one side) stands there and never begins one
+  (B1445, found by QA on 2026-11-21; its failing test waits on the branch tests/ramp-foot-1121d for the fix).
 
 ## Proof
 
@@ -125,6 +128,10 @@ Roadmap items: 32.9, B382, B437, B828
 - `QaSandRampHeight1103dGameTests` (3, QA lane D): against walls exactly 8 high a husk climber begins a ramp; against
   walls 9 high, and against walls 4 high with a ledge all round two above their top, no ramp is begun and no sand is
   piled in 500 ticks of siege.
+- `QaSandRampCorners1121dGameTests` (3, QA lane D, B726): a ramp against the back wall, raiders standing still: one
+  inside two past the landing is let go, while ones outside the west and east walls as deep in from the ramp's foot,
+  and one outside behind the ramp, never are; a husk from outside the east wall's front corner, and one from behind
+  the back wall at the test area's edge (its waiting spot off the land), piles its ramp to the wall's top.
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
 - `QaRisings1102dBugTests` (B828): a husk that fell just before the raid was called off, before the raiders left at

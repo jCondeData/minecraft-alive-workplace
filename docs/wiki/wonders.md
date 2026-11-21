@@ -582,11 +582,12 @@ Founder (or City rank while Legends are off).
 
 **The Stadium** (35.23, only with Cobblemon; rebuilt from scratch in 52.6: "the Stadium Bowl") is one continuous
 bowl drawn on the stadium shape (a rounded rectangle: straight sides, round ends), 59 by 49 and 26 high to the gate's
-banners, about 12,100 blocks (12,095). At its heart is a grass battle field 31 by 23 inside a white touchline, its chalk
+banners, about 12,100 blocks (12,094). At its heart is a grass battle field 31 by 23 inside a white touchline, its chalk
 marking a center line, a center circle and a box round each end's Training Post (the trainer boxes), inside a
 pitch wall of polished blackstone. Round it the Lower Stands rise in three rows of red and white carpet seats on stone
 brick risers and smooth stone treads, then a walk, then the Upper Stands' three rows; 676 seats in all, climbed by
-aisles of stone brick stairs. In a village with a Village Banner the red and the white are built in its banner's two
+aisles of stone brick stairs. The back aisle climbs one step past the top row to a standing alcove in the outer wall,
+under the Covered Stand, the highest place a spectator can stand. In a village with a Village Banner the red and the white are built in its banner's two
 colors instead (the base and the first other color of its pattern; the field's chalk stays white). Along the back the
 Covered Stand shelters the upper rows under a green copper lean-to with lanterns hung under it; on the east end stands
 the scoreboard, two blocks thick, with "2 - 1" in white on black on each face under the two teams' colors, so it reads

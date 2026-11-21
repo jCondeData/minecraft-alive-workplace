@@ -215,13 +215,19 @@ export function draw() {
   for (let r = RINGS.upper[0]; r <= RINGS.upper[1]; r++) {
     const k = r - RINGS.upper[0], top = lastRow + 2 + k
     rakedRow(c, cellsOfRing(r), { top, hollowBelow: HALL_TOP }, { fill: riser, tread: P.tread, seat: (x, z) => aisleSeat(seatColour(k, x), x, z) })
-    if (r < RINGS.upper[1]) for (const [x, z] of cellsOfRing(r)) if (isAisle(x, z)) stair(c, x, top + 1, z, P.aisle, stepFacing(x, z))
+    // the back aisle climbs one more step at the top row, to the standing alcove in the wall behind it (below)
+    const steps = r < RINGS.upper[1] ? isAisle : (x, z) => x === BOWL.cx && z > BOWL.cz && isAisle(x, z)
+    for (const [x, z] of cellsOfRing(r)) if (steps(x, z)) stair(c, x, top + 1, z, P.aisle, stepFacing(x, z))
   }
   for (let x = 0; x < W; x++) for (let z = 0; z < BOWL.cz; z++) if (isEndWall(x, z)) for (let y = 1; y <= HALL_TOP; y++) c.set(x, y, z, P.plinth)
   for (const x of [GAP.x0 - 1, GAP.x1 + 1]) doorAt(c, x, 1, 3, x < BOWL.cx ? 'east' : 'west')
   // the outer wall: brick to 12 with the coping at 13; doors at both ends, windows in the bays (hall and upper level)
+  const ALCOVE = lastRow + 2 + (RINGS.upper[1] - RINGS.upper[0]) + 3 // over the top step's tread (10)
   for (const [x, z] of cellsOfRing(RINGS.wall)) {
-    for (let y = 1; y <= WALL_TOP; y++) c.set(x, y, z, P.brick)
+    // the standing alcove at the head of the back aisle: two cells left open in the wall over its top step, the
+    // pilaster behind closing it (the top of the stands, under the Covered Stand, where a player stands to see it all)
+    const alcove = x === BOWL.cx && z > BOWL.cz
+    for (let y = 1; y <= WALL_TOP; y++) if (!(alcove && (y === ALCOVE || y === ALCOVE + 1))) c.set(x, y, z, P.brick)
     slab(c, x, WALL_TOP + 1, z, P.coping)
     if (L.windows.has(faceKey(x, z))) for (const y of [2, 3, 9, 10]) pane(c, x, y, z)
   }

@@ -332,10 +332,10 @@ public class StadiumCompatTests implements FabricGameTest {
 			&& !io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.older(level, finishedNew), "which drawing each goes by");
 		int oldCount = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.blocks(level, finishedOld).size();
 		int newCount = io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.blocks(level, finishedNew).size();
-		// each within 10% of its drawing's solid blocks (11,758 drawn in 35.23a, 12,095 in 52.6; the count leaves out the
+		// each within 10% of its drawing's solid blocks (11,758 drawn in 35.23a, 12,094 in 52.6; the count leaves out the
 		// plan's foundation and landscape steps, as for every Wonder), and not the same count
-		helper.assertTrue(Math.abs(oldCount - 11_758) <= 1_176 && Math.abs(newCount - 12_095) <= 1_210 && oldCount != newCount,
-			"an old Stadium is counted against " + oldCount + " blocks (the 35.23 drawing has 11,758), today's against " + newCount + " (12,095)");
+		helper.assertTrue(Math.abs(oldCount - 11_758) <= 1_176 && Math.abs(newCount - 12_094) <= 1_210 && oldCount != newCount,
+			"an old Stadium is counted against " + oldCount + " blocks (the 35.23 drawing has 11,758), today's against " + newCount + " (12,094)");
 		for (io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.Part part : io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.parts(level, finishedOld)) {
 			java.util.Optional<io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.Older> o = io.github.jcondedata.aliveworkplace.wonder.WonderDrawings.parse(
 				io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles.base(part.structure()));

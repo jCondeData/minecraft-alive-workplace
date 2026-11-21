@@ -140,7 +140,8 @@ asks for the steps, `latest.log` and any crash report).
   Cathedral already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
   as it was first drawn.
 - **The Stadium is rebuilt from scratch** (52.6, with Cobblemon): "the Stadium Bowl", one brick bowl of red and white
-  seats round a chalked grass field, a trainer's box at each end. A green copper covered stand shelters the back, a
+  seats round a chalked grass field, a trainer's box at each end, its back aisle climbing past the top row to a
+  standing alcove in the outer wall. A green copper covered stand shelters the back, a
   scoreboard on the east end reads "2 - 1" from both the stands and the road, and the gate is a stepped arch between
   two banner pylons with STADIUM lettered over it. Under the upper stands a lit concourse runs right round to four
   corner pavilions: the nurse's booth with the Healing Machine, the refreshment room and the home and away changing

@@ -168,7 +168,9 @@ keeps the wall finished and counted once, stands on its own with its neighbors g
 finished and the piece is back on the list; upgraded stone towers and gates, a styled `palisade_2`; ordinary buildings
 still count and another mod's `palisade_2` is not a wall piece). `QaWallGap1121dBugTests` (2, B1425: a finished wall with one segment
 taken down isn't finished; a segment with only its two neighbors built is still to build and isn't held back as a
-replacement).
+replacement). `QaWallGapEnds1121cGameTests` (6, B1425: the first or the last segment taken down, a Town's stone wall, a gap
+between upgraded segments, a gap across a restart closed by building it again, and a tower taken down; each time only
+the missing piece is to build).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

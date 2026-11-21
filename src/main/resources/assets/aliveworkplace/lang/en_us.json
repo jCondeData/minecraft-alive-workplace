@@ -8950,7 +8950,7 @@
   "screen.aliveworkplace.trade.common_board": "Common Market: the realm's average price",
   "screen.aliveworkplace.realm.treasury.levy_edict": "The Common Market adds %s points: members pay %s%%",
   "wonder.aliveworkplace.great_wall.name": "Great Wall",
-  "wonder.aliveworkplace.great_wall.description": "A long gray wall 97 long on a dark, battered foot, with a crenellated walk, four watchtowers with signal fires under spruce roofs, and at its center the Great Gate: a timber gate pavilion over the gatehouse, a walled barbican behind it, and two broad stairs up the village side. No raid gathers behind it, and iron golem sentries keep its walk.",
+  "wonder.aliveworkplace.great_wall.description": "A gray wall 97 blocks long on a dark, battered foot, with a crenellated walk, four watchtowers with signal fires under spruce roofs, and at its center the Great Gate: a timber gate pavilion over the gatehouse, a walled barbican behind it, and two broad stairs up the village side. No raid gathers behind it, and iron golem sentries keep its walk.",
   "wonder.aliveworkplace.great_wall.stage.1": "The Great Gate",
   "wonder.aliveworkplace.great_wall.stage.2": "The West Run",
   "wonder.aliveworkplace.great_wall.stage.3": "The East Run",

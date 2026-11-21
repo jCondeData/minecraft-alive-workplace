@@ -1937,7 +1937,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarkets1121cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cBugTests"
 		]
 	},
 	"depends": {

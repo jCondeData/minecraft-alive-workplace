@@ -156,7 +156,10 @@ Well, a finished Wonder or one waiting for its goods, each opening the next piec
 B753: a Well sharing one corner column holds a piece and one column clear doesn't; six held pieces in a row skipped to
 the first free one; held pieces still skipped after a restart; a piece opens once its Well is gone and its Wonder
 canceled; a street between two Wells goes round a waiting Wonder, a turned finished Wonder, and a waiting Wonder read
-back from its save).
+back from its save). `QaWallUpgradeCounts1121dGameTests` (5, B1380: one upgraded palisade or stone segment
+keeps the wall finished and counted once, stands on its own with its neighbors gone, and once removed the wall isn't
+finished and the piece is back on the list; upgraded stone towers and gates, a styled `palisade_2`; ordinary buildings
+still count and another mod's `palisade_2` is not a wall piece).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

@@ -48,6 +48,9 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- An archer on the Palisade's walk hits raiders again: his arrows stuck in the stake tops in front of him, because he
+  aimed at a raider's knees, which the stakes hid even when he could see the raider. From a battle station he now aims
+  as high up the raider as his arrow needs to clear the wall (B1439).
 - The desert Stone House II, III and IV: the parlor's bed can be reached again. The old hall window's sill, a stone
   stair, blocked the doorway into the parlor, so nobody got to that bed; the doorway now opens straight in (B1431).
 - Taking down a house whose old look the mod no longer knows now leaves it in the Village Hall: the Builder says he

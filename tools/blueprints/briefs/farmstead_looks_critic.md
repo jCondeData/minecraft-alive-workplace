@@ -184,3 +184,19 @@ Notes:
    white piece on the front slope that does not run to an edge.
 4. L1 front and top, the loose drift tiles (snowy_1_front, snowy_1_top): the single layers alone on the grass away from
    any wall read as paving slabs. Keep drift only where it leans on a wall, kerb or step.
+
+### Round 3 designer notes: Snowy (2026-11-21)
+Sheets `farmstead_looks/snowy_<1|2|3>_r3_vs_old.png`; renders and cutaways in `build/rebuild/farmstead_snowy/renders/`.
+1 (proportion): the hall's roof is now kicked, 45 degrees off both eaves with one steep course at the ridge. The ridge
+drops from y 13 to y 10 and the walls are unchanged (calcite y 1..4, andesite course y 5), so the slate is about half
+the front. The barn's ridge (14) and louvre still stand over the hall at II. 2 (west end): the west rake now sits on
+the gable wall x 1, which is solid calcite up to the slate. The stack and its stone breast stand one block proud of it
+at x 0, with the weathering at y 5. The stepped barge boards are gone, and the stack tops at y 12. 3 (gablet snow): the
+gablet (face y 5..8) breaks the eave down to the wall head and its ridge stays slate. The only snow on the front slope
+is the eave lip on each side of the gablet, running from rake to gablet, and the ridge from rake to rake. The back's
+mid-slope snow line went with the steep courses. 4 (drift): snow only on cells against a wall (a full block at y 1
+beside it): two or three layers, three where two walls meet, a few gaps. There is none beside kerbs or steps and none
+out on the grass. Also: the porch gable's beam drops to y 5 under the whole east rake, so the birch gable with its two
+studs fills the rake. Sizes: I 15 x 14 x 12 (was 17 tall), II 15 x 18 x 22, III 15 x 18 x 22 + 4 below. Rerun:
+look_spots SAME BUILDING (11 / 17 / 19 spots, 0 missing, nothing moved); holes.py 0 at all three levels (roof, meet,
+stray, peek, open); no CHECK line. Interiors unchanged.

@@ -90,17 +90,16 @@ export function draw(level) {
   // --- Pass 2: the roofs --------------------------------------------------------------------------------------------
   // The hall's steep roof, ridge along x (the long side to the road), run on two blocks past the east gable as the
   // gable porch; the stack takes its cells at x 0, z 4..5
-  const stackCell = (x, y, z) => x === STACK.x && STACK.zs.includes(z) && y >= STACK.weathering
-  evenGableRoof(c, H.roof, P.roof, (x, y, z) => z <= 9 && !stackCell(x, y, z))
-  // the gablet over the door: birch posts and boards round a tall light, its own steep slate gable with snow
-  frontDormer(c, GABLET, P.roof, { cheek: P.post, infill: P.face, glass: P.glass, verge: P.roof.stairs, vergeTop: P.roof.full, snow: P.snow })
-  // round 2 (note 3): the gablet's snow lies on its ridge itself, packed snow in the ridge's cells, not a layer a course over it
-  for (let z = 0; z <= GABLET.face + 1; z++) {
-    const ry = GABLET.y0 + 4
-    if (c.name(GABLET.cx, ry, z) === `minecraft:${P.roof.full}`) { c.set(GABLET.cx, ry, z, 'snow_block'); if (c.name(GABLET.cx, ry + 1, z) === 'minecraft:snow') c.clear(GABLET.cx, ry + 1, z) }
-  }
-  // and the verge's apex notch under it closed in slate, so the snow cap sits on a whole little roof, not over a gap
+  // round 3 (note 1): a kicked roof, 45 degrees off the eaves and one steep course to the ridge at y 10 (was 13), so the
+  // slate is about half the front; its rakes on the gable wall x 1 (note 2) and over the porch screen x 9
+  hallRoof(c, H, P.roof)
+  // the gablet over the door: birch posts and boards round a tall light, its own slate gable (round 3: no snow on its
+  // ridge, which runs back into the main slope under the ridge)
+  frontDormer(c, GABLET, P.roof, { cheek: P.post, infill: P.face, glass: P.glass, verge: P.roof.stairs, vergeTop: P.roof.full })
+  // the verge's apex notch closed in slate
   if (!c.get(GABLET.cx, GABLET.y0 + 3, GABLET.face - 1)) c.set(GABLET.cx, GABLET.y0 + 3, GABLET.face - 1, P.roof.full)
+  // round 3 (note 3): the gablet breaks the eave, its face down to the wall head, so no lip runs in front of its light
+  for (let x = GABLET.cx - 1; x <= GABLET.cx + 1; x++) c.clear(x, H.roof.tops[0], 0)
   // The barn (II): its steep roof, ridge along z, the front rake flush on its gable, the back rake one out
   if (two) {
     gableRoof(c, B.roof, P.roof)
@@ -115,7 +114,7 @@ export function draw(level) {
   door(c, bd.at, bd.facing, bd.out, { wood: P.wood })
   if (two) {
     for (const o of [...OPENINGS.passageDoors, OPENINGS.barnDoor, OPENINGS.barnSideDoor, OPENINGS.hayDoor]) door(c, o.at, o.facing, o.out, { wood: P.wood })
-    for (const o of OPENINGS.passageDoors) for (let y = 3; y < H.roof.eaveY; y++) c.set(o.at[0], y, o.at[2], y === 3 ? P.lintel : P.wall) // the passage's ends closed over its doors, under the back eave
+    for (const o of OPENINGS.passageDoors) for (let y = 3; y < H.roof.tops[9]; y++) c.set(o.at[0], y, o.at[2], y === 3 ? P.lintel : P.wall) // the passage's ends closed over its doors, under the back eave
     const wd = OPENINGS.wagonDoors
     wd.at.forEach((at, i) => door(c, at, wd.facing, wd.out, { wood: P.wood, hinge: i ? 'right' : 'left' }))
     for (let x = wd.lintel.x0; x <= wd.lintel.x1; x++) c.set(x, wd.lintel.y, B.z1, ...log(P.beam, 'x'))
@@ -211,26 +210,18 @@ export function draw(level) {
   // --- Pass 8: snow ---------------------------------------------------------------------------------------------------
   // on the ridges (the hall's two back-to-back stairs set full), the eave lips, never on a rake, the gablet's verge,
   // a hood or the louvre
-  const rake = (x, z) => z <= 9 && H.rakes.includes(x)
-  const gablet = (x, y, z) => x >= GABLET.cx - 2 && x <= GABLET.cx + 2 && z <= GABLET.face + 1 && y >= GABLET.y0 + 2
+  const gablet = (x, y, z) => x >= GABLET.cx - 2 && x <= GABLET.cx + 2 && z < H.ridgeZ[0] && y >= GABLET.y0 + 2
   const lv = B.louvre
   const louvreCell = (x, y, z) => two && Math.abs(x - lv.x) <= 1 && Math.abs(z - lv.z) <= 1 && y >= lv.y
   snowLoad(c, P.roof, P.snow, {
     eaves: true, ridge: '2',
     tread: (x, y, z) => (y === H.ridgeY && H.ridgeZ.includes(z) && x <= 9)
-      || (y === H.snowLine.y && H.snowLine.zs.includes(z) && x <= 9) // the hall's snow line, rake to rake (round 2)
       || (two && y === B.snowLine.y && B.snowLine.xs.includes(x) && z >= B.z0 && z <= B.z1), // the barn's, off its back verge
     skip: (x, y, z) => louvreCell(x, y, z) || gablet(x, y, z),
-    eaveSkip: (x, y, z) => rake(x, z) || gablet(x, y, z) || louvreCell(x, y, z) || (two && z === B.z1 + 1 && (y === B.wagonHood.y || y === B.hayHood.y)),
+    // the hall's 45-degree courses have no roof under them: only its two eave rows (z 0 and 9) carry a lip
+    eaveSkip: (x, y, z) => (z <= 9 && z !== 0 && z !== 9) || gablet(x, y, z) || louvreCell(x, y, z) || (two && z === B.z1 + 1 && (y === B.wagonHood.y || y === B.hayHood.y)),
   })
-  // the rakes: one clean steep verge each (the hall's at x 0 and x 9, the barn's back one at z 21)
-  rakeVerge(c, P.roof, 'x', 9, [0, 9])
-  // round 2 (note 2): the west rake gets a closed barge: two courses of dark boards under each step of the rake, so it runs
-  // as one band from the stack down to the eave lip on both sides, the stack standing against the gable inside it
-  for (let z = 1; z <= 8; z++) for (const dy of [1, 2]) {
-    const y = H.under[z] - dy
-    if (!c.get(0, y, z)) c.set(0, y, z, P.barge)
-  }
+  // the barn's back rake (z 21): one clean steep verge
   if (two) rakeVerge(c, P.roof, 'z', B.roof.along[1], [0, 8])
   // snow on the sills, the niche's tops, the woodpile, the scarecrow's head
   const dust = (x, y, z, n) => { if (c.name(x, y, z) === 'minecraft:air') c.set(x, y, z, P.snow, { layers: String(n) }) }
@@ -247,24 +238,33 @@ export function draw(level) {
   return { c, dug }
 }
 
-// round 2 (note 4): the drift, varied: the free ground cells along every wall and kerb (as snowSkirt finds them),
-// piled three deep in the corners against the walls, two against a wall, one or two along the kerbs with gaps here and
-// there, kept off the steps and doorsteps.
+// round 3: the hall's roof, along x over H.roof.along, each z column's top stair at H.roof.tops[z] rising to the ridge,
+// full blocks under it down to the course below where the pitch steepens (the ridge course); the two ridge stairs back
+// to back over z 4..5 (snowLoad sets them full under the ridge's snow).
+function hallRoof(c, H, roof) {
+  const t = H.roof.tops, mid = (t.length - 1) / 2
+  for (let x = H.roof.along[0]; x <= H.roof.along[1]; x++) for (let z = 0; z < t.length; z++) {
+    for (let y = H.under[z]; y < t[z]; y++) c.set(x, y, z, roof.full)
+    stair(c, x, t[z], z, roof.stairs, z < mid ? 'south' : 'north')
+  }
+}
+
+// round 3 (note 4): the drift only where it leans on something: the free ground cells against a wall (a full block at
+// y 1 beside them, not a fence, step or kerb), two or three layers, three where two walls meet, with a few gaps; none
+// out on the open grass, none by the steps and doorsteps.
 function drift(c, snow, two) {
   const [w, , d] = c.size
   const solid = (x, z) => x >= 0 && x < w && z >= 0 && z < d && (c.name(x, 0, z) !== 'minecraft:air' || c.name(x, 1, z) !== 'minecraft:air')
-  const wall = (x, z) => x >= 0 && x < w && z >= 0 && z < d && /calcite|stone_bricks|polished_andesite|_log|cobblestone|stone$|andesite/.test(c.name(x, 1, z)) && !/stairs|slab/.test(c.name(x, 1, z))
+  const wall = (x, z) => x >= 0 && x < w && z >= 0 && z < d && /calcite|stone_bricks|polished_andesite|_log|cobblestone|stone$|andesite/.test(c.name(x, 1, z)) && !/stairs|slab|wall$/.test(c.name(x, 1, z))
   const bare = new Set(['7,0', '9,0', '0,8', '0,10', '4,21', '7,21', '3,1', '5,1'].filter(k => two || !['0,8', '0,10', '4,21', '7,21'].includes(k)))
   const hash = (x, z) => { let h = (x * 73856093) ^ (z * 19349663) ^ 0x5bd1e995; h = Math.abs((h ^ (h >>> 13)) * 1274126177); return h % 100 }
   const add = []
   for (let x = 0; x < w; x++) for (let z = 0; z < d; z++) {
     if (solid(x, z) || bare.has(`${x},${z}`)) continue
-    let near = false
-    for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) if ((dx || dz) && solid(x + dx, z + dz)) near = true
-    if (!near) continue
     const walls = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dz]) => wall(x + dx, z + dz)).length
+    if (!walls) continue
     const h = hash(x, z)
-    let n = walls >= 2 ? 3 : walls === 1 ? (h < 60 ? 2 : 1) : h < 18 ? 0 : h < 55 ? 1 : 2
+    const n = walls >= 2 ? 3 : h < 15 ? 0 : h < 65 ? 2 : 1
     if (n) add.push([x, z, n])
   }
   for (const [x, z, n] of add) c.set(x, 0, z, snow, { layers: String(n) })

@@ -116,11 +116,19 @@
 //    Checked after round 2: look_spots SAME BUILDING (11/17/19, 0 missing, none moved); holes.py 0 at all three levels;
 //    no CHECK line; composters 1/2, beds 1/2, field I 36 farmland 5 x 9 on y 0 with 8 water, II 74; II keeps 98 % of I;
 //    III = II above the ground but the hatch; about 49 / 73 / 76 stacks. Renders overwritten in renders/ (same names).
+//  Round 3 (2026-11-21, round-2 notes): 1 the hall's roof is kicked: 45 degrees off both eaves and one steep course to
+//      the ridge, now y 10 (was 13), the slate about half the front; the stack tops at y 12; I is 15 x 14 x 12. 2 the
+//      west rake sits on the gable wall x 1, closed in calcite up to the slate; the stack and its breast stand proud of
+//      it at x 0 (the stepped boards are gone). 3 the gablet (face y 5..8) breaks the eave and its ridge stays slate;
+//      the front's only snow is the eave lip each side of it and the ridge, rake to rake; the back's snow line went
+//      with the steep courses. 4 drift only against a wall (two or three layers, three in corners, a few gaps); none
+//      beside kerbs, steps or out on the grass. Also: the porch gable's beam drops to y 5 under the whole east rake.
+//    Checked: look_spots SAME BUILDING, holes.py 0 at all three levels, no CHECK line.
 //  For the ship step: the snow layers need the builder to carry snow; the sizes above differ from the shipped
 //    Farmstead's declared ones; III's cellar box is 2,2,6,7 (out/cellar.txt).
 import { FURNITURE as F, CROPS as C } from '../farmstead/plan.mjs'
 
-export const SIZE = { 1: [15, 17, 12], 2: [15, 18, 22], 3: [15, 18, 22] } // w, h, d (plot: 18 x 28 x 21 for I, 26 deep for II)
+export const SIZE = { 1: [15, 14, 12], 2: [15, 18, 22], 3: [15, 18, 22] } // w, h, d (plot: 18 x 28 x 21 for I, 26 deep for II)
 export const BASEMENT = { 3: 4 }
 export const IDS = { 1: 'farmstead', 2: 'farmstead_2', 3: 'farmstead_3' }
 
@@ -141,19 +149,21 @@ export const PALETTE = {
 
 export const HOUSE = {
   x0: 1, x1: 7, z0: 1, z1: 8, room: { x0: 2, x1: 6, z0: 2, z1: 7 }, wallTop: 4, band: 5, // round 2: a course higher
-  roof: { axis: 'x', across: [0, 9], along: [0, 9], eaveY: 5 }, // ridge y 13 over z 4..5
-  under: [5, 6, 8, 10, 12, 12, 10, 8, 6, 5], // the roof's lowest cell over each z (0..9)
-  ridgeY: 13, ridgeZ: [4, 5], rakes: [0, 9], snowLine: { y: 9, zs: [7] }, // one snow line across the back slope, rake to rake (the gablet breaks the front's)
+  // round 3: a kicked roof, 45 degrees from the eave and one steep course at the ridge (ridge y 10), its west rake on
+  // the gable wall x 1 (the stack stands proud of the gable at x 0), the east one over the porch's screen at x 9
+  roof: { axis: 'x', along: [1, 9], tops: [5, 6, 7, 8, 10, 10, 8, 7, 6, 5] }, // each z's top stair (0..9)
+  under: [5, 6, 7, 8, 9, 9, 8, 7, 6, 5], // the roof's lowest cell over each z (0..9)
+  ridgeY: 10, ridgeZ: [4, 5], rakes: [1, 9],
   backWood: [[1, 1, 9], [2, 1, 9], [1, 2, 9], [6, 1, 9], [7, 1, 9], [7, 2, 9]], // I only: firewood on the back porch (the passage takes it in II)
   tieBeams: [4, 7], beamY: 5,
 }
-export const GABLET = { cx: 4, face: 1, y0: 6 } // frontDormer: face y 6..9, ridge y 10 over z 0..2 (round 2: the ridge is snow)
-export const NICHE = { cheeks: [3, 5], z: 0, top: 4, lintel: [4, 4, 0], lamp: [4, 3, 0], lamps: [[2, 7, 0], [6, 7, 0]] } // under the eave (y 5)
-export const STACK = { x: 0, breast: { z0: 3, z1: 6, top: 4 }, weathering: 5, zs: [4, 5], top: 15, fire: [0, 16, 4], slab: [0, 16, 5] } // round 2: the breast steps in at y 5
+export const GABLET = { cx: 4, face: 1, y0: 5 } // frontDormer: face y 5..8, ridge y 9 over z 0..3 into the main slope (round 3: its ridge stays slate)
+export const NICHE = { cheeks: [3, 5], z: 0, top: 4, lintel: [4, 4, 0], lamp: [4, 3, 0], lamps: [[1, 4, 0], [7, 4, 0]] } // hung under the eave lip at the front corners
+export const STACK = { x: 0, breast: { z0: 3, z1: 6, top: 4 }, weathering: 5, zs: [4, 5], top: 12, fire: [0, 13, 4], slab: [0, 13, 5] } // round 2: the breast steps in at y 5
 export const WOODPILE = { x: 0, z0: 7, z1: 8, top: 2 }
 export const PORCH = { // the gable porch over the gallery
   deckX: 8, z0: 1, z1: { 1: 9, 2: 20 }, step: [8, 0, 0],
-  screenX: 9, beamY: 6, screen: { z0: 2, z1: 7 }, studs: [3, 6], soffitY: 6, // a boarded ceiling over the gallery (x 8) closes the porch's gable space
+  screenX: 9, beamY: 5, screen: { z0: 1, z1: 8 }, studs: [3, 6], soffitY: 6, // round 3: the beam under the whole rake // a boarded ceiling over the gallery (x 8) closes the porch's gable space
   lamps: [[8, 5, 1], [8, 5, 8]],
 }
 export const BARN = {

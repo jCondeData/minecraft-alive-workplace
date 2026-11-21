@@ -242,3 +242,51 @@ Notes:
 2. I front and left, the konek (taiga_1_front, taiga_1_left): a flat board on a post reads as a sign. Make the head
    read as a head in outline: two stairs facing each other (crossed heads) at the apex, or a stair head turned along
    the ridge with a trapdoor or button ear, dark spruce, one block wide.
+
+### Round 3 designer notes: Snowy (2026-11-21)
+Sheets `ranch_looks/snowy_1_r3_vs_old.png`, `snowy_2_r3_vs_old.png` (OLD left, NEW round 3 right, five views); renders
+in `build/rebuild/ranch_snowy/renders/`. Note 1 (dormers): each is now a closed little gable flush with the side wall,
+birch cheeks either side of the panes, slate stairs from the eaves (z +- 2) to stairs at z +- 1 meeting a full ridge
+block over the panes, flush with their tops, two rows deep into the slope; the snow lies on that ridge as two layers
+(no slab a block above, no open overhang row), and the stray snow tile on the eave between the dormers is gone. Note 2
+(drift): regrouped into runs along the walls, each line cut into pieces of four and three with one bare block between,
+two layers in the middle and one at the ends, corners joined to the longer run, broken at the doors and walks, never a
+single tile; none inside the paddock. Note 3 (II's run-in shelter): open on its back and both ends (a fieldstone kerb
+and two spruce rails between the stone-brick piers and the posts) under a real little slate gable whose point faces the
+back like the barn's (ridge along z with snow), its back gable boarded; the hay shows through the rails. Nothing else
+changed (silhouette, depth, interior as round 2). Sizes 13 x 16 x 13 and 21 x 16 x 21 (873 and 1423 blocks). Rerun:
+`look_spots.py ranch_snowy ranch` SAME BUILDING (8/8 and 13/13 spots, 0 beds, containers, job blocks or doors moved;
+only the allowed lamp chains differ); `holes.py` 0 at both levels (open included); no CHECK line.
+
+### Round 3 designer notes: Taiga (2026-11-21)
+
+Sheets `ranch_looks/taiga_<1|2>_r3_vs_old.png` (OLD as drawn left, NEW round 3 right, five views); renders and cutaways
+`build/rebuild/ranch_taiga/renders/taiga_<1|2>_<view>.png`, `taiga_<1|2>_cut<3|7>_<top|front>.png`. Note 1 (gable and
+rakes): the hay barn's corners above the loft band are now upright logs on both gables, so its gable face is plain dark
+logs round the window and the hoist lamp with no log end in it; the barge under every rake (barn, pens, bunkhouse) is
+dark oak stairs instead of spruce, so the rakes no longer show a pale tooth at each course. The only pale squares left
+on the front are the pens' and bunkhouse's notched corners (every other course), the wicket door's stripped frame and
+the yard's rails. Note 2 (konek): the fence post is gone; it is now dark oak and one block wide, turned along the ridge:
+a stair rising toward the road on the ridge's front end is the neck, and an upside-down stair out over the road is the
+head (the notch under it is the jaw), with a trapdoor laid on top for the forelock. From the left and the front it reads
+as a curved neck and a head looking out. Nothing else changed (silhouette, depth, interior, the yard, II's bunkhouse and
+paddock). Sizes: I 13 x 16 x 13 (828 blocks), II 21 x 16 x 21 (1299 blocks). `look_spots.py ranch_taiga ranch`: SAME
+BUILDING (8/8 and 13/13 shipped spots, 0 beds, containers, job blocks or doors moved). `holes.py`: 0 at both levels
+(`open` included). The build printed no CHECK line.
+
+### Round 3 designer notes: Savanna (2026-11-21)
+
+Sheets `ranch_looks/savanna_<1|2>_r3_vs_old.png` (OLD as drawn left, the same OLD cells as the r2 sheets; NEW round 3
+right, five views); renders `build/rebuild/ranch_savanna/renders/savanna_<1|2>_<view>.png`. Note 1 (the skirt): it is
+a real thatch slope again, half a block a ring and 2.5 blocks of fall from the loft wall to the eave: stairs at the eave
+(y 4, hip corners shaped by finish()), a bottom slab and then a full thatch block at y 5, stairs against the loft at y 6
+(the stalls' lamps still hang from them). No top slabs: the ring of top slabs in round 2 rendered level with the slabs
+beside it, which is what read as a flat tray with a lip, and it let the kit's seal_slots carry the loft wall out under
+the crown's eave as a ledge. From the sides and back the lower tier now reads as a second hip of thatch under the crown,
+its hips clean diagonals with no stepped corner. The stable's band moved down a course to y 3 (granite y 1..2), right
+under the new eave stairs, so it still shows all round. Note 2 (the band at the hoist): the hoist beam now comes out
+through the hay hood at y 7 (between its two stairs, the chain and lantern a block lower), so the loft's red-and-white
+course at y 8 runs unbroken across the front over the hay door. Nothing else changed (the crown, the kraal gate and
+yard, II's bunk house and kraal). Sizes: I 13 x 14 x 13 (737 blocks), II 21 x 14 x 21 (1181 blocks); II keeps 99 % of I
+(728 of 737). `look_spots.py ranch_savanna ranch`: SAME BUILDING (8/8 and 13/13 shipped spots, 0 missing, 0 beds,
+containers, job blocks or doors moved). `holes.py`: 0 at both levels (`open` included). The build printed no CHECK line.

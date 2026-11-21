@@ -49,8 +49,11 @@ export function draw(level = 1) {
   // the front and back log walls, the whole width: the pens' gables and the hay barn's wall, corners notched
   for (const z of [PENS.z0, PENS.z1]) for (let x = PENS.west.outer; x <= PENS.east.outer; x++)
     for (let y = 1; y <= wallTop(x); y++) {
-      const corner = x === PENS.west.outer || x === PENS.east.outer || ((x === W.x0 || x === W.x1) && y > BARN.band)
-      log(x, y, z, corner ? (y % 2 ? 'x' : 'z') : 'x')
+      // the pens' outer corners notched (their ends alternate); the hay barn's corners over the band are upright posts,
+      // so no log end shows on its gable face (round 3, note 1: the only pale squares on the front are the notches)
+      const corner = x === PENS.west.outer || x === PENS.east.outer
+      const post = (x === W.x0 || x === W.x1) && y > BARN.band
+      log(x, y, z, post ? 'y' : corner ? (y % 2 ? 'x' : 'z') : 'x')
     }
   // the pens' outer walls
   for (const x of [PENS.west.outer, PENS.east.outer]) for (let z = PENS.z0 + 1; z < PENS.z1; z++)
@@ -112,8 +115,13 @@ export function draw(level = 1) {
   c.set(...HOIST.lamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
   // the konek: a thin neck (a fence post) on the ridge's front end and the horse's head on it, a stair turned side-on so
   // its outline (muzzle out to the side, the neck under the back of the head) reads from the road (round 2, note 2)
-  c.set(KONEK.x, KONEK.y + 1, KONEK.z, `${P.wood}_fence`)
-  stair(c, KONEK.x, KONEK.y + 2, KONEK.z, P.bracket, 'east', 'top')
+  // (round 3, note 2: no post, so no sign: the head is turned along the ridge, in dark wood: on the ridge's end a
+  // stair rising to the road is the neck; past the rake, over the road, an upside-down stair is the head, the notch
+  // under its muzzle the jaw, a trapdoor laid on it the forelock and ears, so from the sides its outline is a horse's
+  // head looking out)
+  stair(c, KONEK.x, KONEK.y + 1, KONEK.z, P.konek, 'north')
+  stair(c, KONEK.x, KONEK.y + 1, KONEK.z - 1, P.konek, 'south', 'top')
+  c.set(KONEK.x, KONEK.y + 2, KONEK.z - 1, P.konekEar, { facing: 'south', half: 'bottom', open: 'false', powered: 'false', waterlogged: 'false' })
   // the smoker's stack up the back gable: a broad breast weathered in, the flue through the rake, smoke on top
   const S = STACK
   for (let x = S.breast[0]; x <= S.breast[1]; x++) for (let y = 0; y <= S.breastTop; y++) c.set(x, y, S.z, stack)

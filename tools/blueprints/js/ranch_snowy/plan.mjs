@@ -98,8 +98,20 @@
 //    on the ground storey (the gable above already birch boards with spruce studs and two lights). Rechecked: no CHECK
 //    line, look_spots SAME BUILDING (8/8, 13/13, 0 moved), holes.py 0 (open included), ~37 / 51 stacks, II keeps 92 %
 //    of I; 926 / 1427 blocks. Renders overwritten in build/rebuild/ranch_snowy/renders/ (same names).
-//  Open for the critic: the shelter's back face is low fieldstone under its coping; the forebay's sides are open under the eaves
-//    above the firewood and the hay (on purpose: a porch).
+//  Round 3 (2026-11-21, round-2 notes): 1 each dormer is now a closed little gable flush with the side wall
+//    (../parts/ranch_snowy_dormer.mjs): birch cheeks either side of the panes, slate stairs from eaves at z +- 2 to
+//    stairs at z +- 1 meeting a full ridge block over the panes, flush with their tops, two rows deep into the slope;
+//    the snow on its ridge two layers lying on it (no slab a block above, no open overhang row); the single snow tile
+//    left on the barn's eave between the dormers is gone; 2 the drift is regrouped into runs along the walls (each
+//    line cut into pieces of 4 and 3 with one bare block between, two layers in the middle and one at the ends, the
+//    corners joined to the longer run, broken at the doors and walks; never a single tile), II's walk and shelter
+//    bare cells only at II; 3 the run-in shelter is open on its back and ends (a fieldstone kerb and two spruce rails
+//    between the stone-brick piers and the posts) under a real little slate gable whose point faces the back (ridge
+//    along z, two full blocks with snow), its back gable boarded. Rechecked: no CHECK line, look_spots SAME BUILDING,
+//    holes.py 0 (open included); 873 / 1423 blocks. Renders: build/rebuild/ranch_snowy/renders/; sheets
+//    briefs/ranch_looks/snowy_<1|2>_r3_vs_old.png.
+//  Open for the critic: the forebay's sides are open under the eaves above the firewood and the hay (on purpose: a
+//    porch).
 import { FURNITURE as AS_DRAWN } from '../ranch/plan.mjs'
 
 export const IDS = { 1: 'ranch', 2: 'ranch_2' }

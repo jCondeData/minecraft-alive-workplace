@@ -48,8 +48,9 @@
 //   Gallery     the svalgang: a spruce deck at y 4 (z 1..2, x 4..8) on a log beam and two log posts at z 1 with
 //               brackets, a spruce rail round it, lanterns under it either side of the wicket door; the hay door opens on
 //               to it. The wicket door sits in a stripped-log frame.
-//   Konek       on the ridge's front end: a fence-post neck (6, 13, 1) and the carved head, an upside-down spruce stair
-//               turned side-on (round 2; a log pole and a log neck read as a chimney stub).
+//   Konek       turned along the ridge in dark oak: the neck a stair rising to the road on the ridge's front end
+//               (6, 13, 1), the head an upside-down stair over the road (6, 13, 0) with a trapdoor forelock on it (round 3;
+//               a log stub read as a chimney, a stair on a fence post as a sign).
 //   Hoist lamp  a chain from the front rake's apex (6, 11, 1) and a lantern over the gallery (a hoist beam there was
 //               tried: from the road it stacked with the konek into one column of log ends).
 //   Stack       the smoker's flue: a mossy fieldstone breast three wide (x 5..7, z 12) to y 4, weathered in, the flue
@@ -99,6 +100,12 @@
 //      door, the svalgang's language; the firewood in the slot now stacks right up under the barn's eave (z 5..11, y 0..4).
 //    Checked after round 2: look_spots SAME BUILDING (8/8, 13/13, nothing moved); holes.py 0 at both levels (open
 //    included); rebuild.py no CHECK line; 827 / 1298 blocks. Renders overwritten in build/rebuild/ranch_taiga/renders/.
+//  Round 3 (2026-11-21, the round-2 notes): 1 the hay barn's corners over the band are upright logs, so no log end
+//    shows on its gable faces (front and back); the barge under every rake is dark oak stairs (spruce stairs drew a pale
+//    tooth at every course); the only pale squares left on the front are the pens' and the bunkhouse's notches, the
+//    door's stripped frame and the yard's rails. 2 the konek: no post; a neck stair and a head stair turned along the
+//    ridge with a trapdoor forelock, the head out over the road. Checked: look_spots SAME BUILDING (8/8, 13/13, nothing
+//    moved), holes.py 0 (open included) at both, no CHECK line; 828 / 1299 blocks.
 //  Open for the critic: the renderer draws spruce bark warm orange, so the logs read lighter than in game; the stall
 //    pens' gables are small (three wide) beside the hay barn's; the konek is a two-block sign, clearest from the sides.
 
@@ -115,7 +122,7 @@ export const PALETTE = {
   stack: [['cobblestone', 3], ['mossy_cobblestone', 2], ['stone', 1]], weather: 'cobblestone_stairs',
   log: 'spruce_log', band: 'stripped_spruce_log', frame: 'stripped_spruce_log', post: 'spruce_log', bracket: 'spruce_stairs',
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
-  barge: 'spruce_stairs', floor: 'spruce_planks', deck: 'spruce_planks', wood: 'spruce', door: 'dark_oak', glass: 'glass_pane',
+  barge: 'dark_oak_stairs', konek: 'dark_oak_stairs', konekEar: 'dark_oak_trapdoor', floor: 'spruce_planks', deck: 'spruce_planks', wood: 'spruce', door: 'dark_oak', glass: 'glass_pane',
   bars: 'iron_bars', bedding: 'coarse_dirt', hay: 'hay_block', firewood: 'spruce_log', rim: 'stripped_spruce_log',
   moss: 'moss_carpet', pot: 'potted_fern', path: 'dirt_path',
 }

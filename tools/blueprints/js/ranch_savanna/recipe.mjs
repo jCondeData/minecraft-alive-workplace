@@ -26,13 +26,19 @@ const pieces = {
   },
 }
 
-// round 2, note 3: the 45-degree skirt read as a ziggurat of stair courses with jagged hips. It is now a low hip of
-// slabs (half a block a ring from the half-block level half0), which has no stair corners on its hips.
-function lowSkirt(c, { x0, z0, x1, z1, half0 }, roof, skip) {
+// round 3, note 1: the skirt falls from the loft wall to the eave like a roof, half a block a ring (2.5 blocks over its
+// four rings): a stair at the eave (y 4, facing in; rebuild.py's finish() turns the corners into hip corners), a bottom
+// slab and then a full block at y 5, and a stair against the loft at y 6 (the stalls' lamps hang from it). Its hips run
+// diagonally through the slab and block rings, with no stepped corner.
+function skirt(c, { x0, z0, x1, z1, eaveY }, roof, skip) {
   for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) {
     if (skip(x, z)) continue
-    const h = half0 + Math.min(x - x0, x1 - x, z - z0, z1 - z)
-    slab(c, x, Math.floor(h / 2), z, roof.slab, h % 2 ? 'top' : 'bottom')
+    const d = Math.min(x - x0, x1 - x, z - z0, z1 - z)
+    const face = d === x - x0 ? 'east' : d === x1 - x ? 'west' : d === z - z0 ? 'south' : 'north'
+    if (d === 0) stair(c, x, eaveY, z, roof.stairs, face)
+    else if (d === 1) slab(c, x, eaveY + 1, z, roof.slab, 'bottom')
+    else if (d === 2) c.set(x, eaveY + 1, z, roof.full) // a full block, not a top slab (the same height, and it reads in every render)
+    else stair(c, x, eaveY + 2, z, roof.stairs, face)
   }
 }
 
@@ -57,7 +63,7 @@ export function draw(level = 1) {
   // the stable's granite walls (y 1..3): the stalls' outer walls and the front and back walls right across
   for (const x of [S.x0, S.x1]) wallPanel(c, [x, S.z0], [x, S.z1], 1, S.wallTop, granite)
   for (const z of [S.z0, S.z1]) wallPanel(c, [S.x0, z], [S.x1, z], 1, S.wallTop, granite)
-  for (const x of [S.x0, S.x1]) for (const z of S.posts) post(c, x, z, 1, S.wallTop, P.frame)
+  for (const x of [S.x0, S.x1]) for (const z of S.posts) post(c, x, z, 1, S.postTop, P.frame)
   // the loft rising out of it: posts the full height, the beam at the loft floor, packed mud above, the beam ring
   for (const x of [L.x0, L.x1]) for (const z of L.posts) post(c, x, z, 1, L.paintY - 1, P.frame)
   for (const x of [L.x0, L.x1]) for (let z = L.z0 + 1; z < L.z1; z++) if (!L.posts.includes(z)) c.set(x, L.beamY, z, P.frame, { axis: 'z' })
@@ -79,7 +85,7 @@ export function draw(level = 1) {
     band(c, a, b, S.paintY, P, (x, z) => inLoft(x, z))
 
   // --- Pass 2: the roofs: the skirt (a hip round the loft), the crown (a hip over it), a clay pot on the ridge ----------
-  lowSkirt(c, SKIRT, P.roof, inLoft)
+  skirt(c, SKIRT, P.roof, inLoft)
   hipRoof(c, CROWN, P.roof)
   c.set(...CROWN.finial, P.finial, POT)
 
@@ -108,7 +114,7 @@ export function draw(level = 1) {
   // --- Pass 4: depth and detail --------------------------------------------------------------------------------------
   // the hay hood (a thatch hood over the hay door) and the hoist beam out over it, its chain and lantern
   for (const [x, y, z] of HOOD.stairs) stair(c, x, y, z, P.roof.stairs, 'south')
-  const hb = HOOD.beam
+  const hb = HOOD.beam // round 3, note 2: through the hood, under the band, which runs on unbroken
   for (let z = hb.z0; z <= hb.z1; z++) c.set(hb.x, hb.y, z, P.frame, { axis: 'z' })
   c.set(...HOOD.chain, 'chain', { axis: 'y', waterlogged: 'false' })
   c.set(...HOOD.lamp, 'lantern', { hanging: 'true', waterlogged: 'false' })

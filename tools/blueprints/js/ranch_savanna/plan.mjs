@@ -69,6 +69,11 @@
 //    Also: the two lanterns under the front pent are gone (a top-slab eave holds no lantern); the hoist lantern lights
 //    the wicket door. Rechecked: look_spots SAME BUILDING (8/8, 13/13, 0 moved), holes.py 0, no CHECK line, II keeps
 //    99 % of I, about 35 and 49 stacks. Renders overwritten in build/rebuild/ranch_savanna/renders/ (same names).
+//  Round 3 (2026-11-21, BACK on I's Silhouette 3): 1 the skirt falls 2.5 blocks again (eave stairs y 4, a bottom slab
+//    and a full block at y 5, stairs against the loft at y 6; no top slabs, which rendered flat and let seal_slots carry
+//    the loft wall out as a ledge), the stable's band down to y 3 under the eave stairs; 2 the hoist beam comes out
+//    through the hay hood at y 7, so the loft's band at y 8 runs unbroken. Rechecked: look_spots SAME BUILDING, holes.py
+//    0, no CHECK line, 737 and 1181 blocks, II keeps 99 % of I.
 //  Left: the critic's pass (REBUILD.md) against the as-drawn Ranch; the Java side (the ship step).
 //
 // Coordinates as the shipped Ranch: x across the front (west 0 -> east), y up (0 = the layer on the clicked block: the
@@ -80,7 +85,7 @@
 //   Stable      the ground storey: the stalls' outer walls x 1 and 11, the front and back walls z 3 and 11 (x 1..11), red
 //               granite y 1..3 on a terracotta plinth, grey acacia posts at z 3, 7, 11; barred stall windows; the
 //               painted band (red and white terracotta) at y 3 across the stalls' front.
-//   Skirt       the lower thatch: one low hip of slabs x 0..12, z 2..12 from its eave (a top slab at y 4), cut where the
+//   Skirt       the lower thatch: one low hip x 0..12, z 2..12 from its eave (stairs at y 4, up to stairs at y 6), cut where the
 //               loft rises out of it (x 4..8, z 3..11): the stalls' lean-tos (y 6 against the loft), and a pent over the
 //               front and the back of the loft's walls; the wicket door under the front pent.
 //   Loft        the clerestory: walls x 4 and 8, z 3 and 11; the stall fronts at y 1..2 (acacia boards, gates and rails),
@@ -128,16 +133,18 @@ export const PALETTE = {
   tree: { soil: 'grass_block', log: 'acacia_log', leaves: 'acacia_leaves' },
 }
 
-export const STABLE = { x0: 1, x1: 11, z0: 3, z1: 11, wallTop: 3, posts: [3, 7, 11], paintY: 4 } // granite y 1..3, the band y 4
-// round 2: the skirt is a LOW hip of slabs, half a block a ring: the eave a top slab at y 4, then y 5 bottom, y 5 top,
-// and y 6 bottom against the loft (where the stalls' lamps hang from it as shipped)
-export const SKIRT = { x0: 0, z0: 2, x1: 12, z1: 12, eaveY: 4, half0: 9 }
+// round 3: granite y 1..2 and the band y 3 right under the skirt's eave stairs (y 4, which hide the course behind them)
+export const STABLE = { x0: 1, x1: 11, z0: 3, z1: 11, wallTop: 4, postTop: 2, posts: [3, 7, 11], paintY: 3 }
+// round 3: the skirt is a real thatch slope again, falling 2.5 blocks from the loft wall to the eave: eave stairs at
+// y 4, a bottom slab at y 5, a full block at y 5, stairs at y 6 against the loft (where the stalls' lamps hang as shipped)
+export const SKIRT = { x0: 0, z0: 2, x1: 12, z1: 12, eaveY: 4 }
 export const LOFT = {
   x0: 4, x1: 8, z0: 3, z1: 11, aisle: { x0: 5, x1: 7, z0: 4, z1: 10 }, posts: [3, 7, 11],
   beamY: 4, mudY: [5, 8], paintY: 8, ringY: 9, floorY: 4,
 }
 export const CROWN = { x0: 3, z0: 2, x1: 9, z1: 12, eaveY: 9, finial: [6, 13, 7] }
-export const HOOD = { stairs: [[5, 7, 2], [6, 7, 2], [7, 7, 2]], beam: { x: 6, y: 8, z0: 1, z1: 3 }, chain: [6, 7, 1], lamp: [6, 6, 1] }
+// round 3: the hoist beam comes out through the hood at y 7 (between its two stairs), so the band at y 8 runs unbroken
+export const HOOD = { stairs: [[5, 7, 2], [7, 7, 2]], beam: { x: 6, y: 7, z0: 1, z1: 3 }, chain: [6, 6, 1], lamp: [6, 5, 1] }
 export const STACK = { x: 6, z: 12, top: 11 }
 export const STALLS = { list: [{ z0: 4, z1: 6, gate: 5 }, { z0: 8, z1: 10, gate: 9 }], partition: 7, west: [2, 3], east: [9, 10] }
 export const GATE = { poles: [4, 8], z: 0, top: 3, beamY: 4, beam: [3, 9], lamps: [[5, 3, 0], [7, 3, 0]], finial: [6, 6, 0] }

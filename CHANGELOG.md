@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.158.0 — 2026-11-20
+
 ### Added
 - **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
   every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
@@ -41,6 +43,21 @@ asks for the steps, `latest.log` and any crash report).
   mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
   furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
+  cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
+  gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
+  glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
+  skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
+  loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
+  Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on
+  trays behind the loft's louvers beside his bed and order desk, and a store lean-to behind holds the chests. Workshops
+  already standing keep their old drawing until refreshed; village ball workshops keep their look.
+- **The Trainer's House, rebuilt from scratch** as "the Battle Court" (with Cobblemon, 50.12): a gateway of two banner-hung
+  stone piers onto a marked turf court with the Training Post at its head, a covered bench stand where neighbors watch
+  the battles, a sparring yard with dummies, and a spruce-framed clubhouse with the Trainer's den and his bedroom in a
+  loft that looks down the court. Houses already standing keep their old drawing until refreshed; village trainer's
+  houses keep their look.
 - **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
   tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
   at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
@@ -124,6 +141,28 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Cathedral is rebuilt from scratch** (52.6): "the Ship of Stone", a Gothic basilica whose tall nave is
+  held up by flying buttresses leaping the aisle roofs. Two west towers climb by ladder through three floors to louvered
+  belfries with two bells each and slim stone spires; a rose window of four colors stands over the triple portal, a
+  lead spire tops the crossing and the east end steps down to a rounded apse round the gold altar. Inside, a raised
+  choir with its stalls and four chapels, among them the sacristy with its brewing stand. Same stage names. A Great
+  Cathedral already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
+- **The Stadium is rebuilt from scratch** (52.6, with Cobblemon): "the Stadium Bowl", one brick bowl of red and white
+  seats round a chalked grass field, a trainer's box at each end, its back aisle climbing past the top row to a
+  standing alcove in the outer wall. A green copper covered stand shelters the back, a
+  scoreboard on the east end reads "2 - 1" from both the stands and the road, and the gate is a stepped arch between
+  two banner pylons with STADIUM lettered over it. Under the upper stands a lit concourse runs right round to four
+  corner pavilions: the nurse's booth with the Healing Machine, the refreshment room and the home and away changing
+  rooms. Floodlight masts on the pavilions light up at night. Same stage names. A Stadium already begun or finished
+  keeps the old drawing: it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Great Library is rebuilt from scratch** (52.6): "the Scroll Rotunda", a round drum of books at the center of
+  four copper-roofed wings on a stone podium, with a garden in each corner, a ribbed copper dome with a glass lantern
+  over the drum and a portico of six quartz columns at the front. Inside, a walkway climbs twice round a wall of
+  bookshelves with a band of windows riding just above it, so from outside a spiral of glass winds up the drum; the
+  enchanting table stands at its heart, the map room is in the front wing, and each wing has an upper gallery of books
+  and reading tables. Same stage names. A Great Library already begun or finished keeps the old drawing: it still counts
+  as standing, and is repaired and finished as it was first drawn.
 - **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
   buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
   whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story
@@ -140,11 +179,21 @@ asks for the steps, `latest.log` and any crash report).
   Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
   finished as they were first drawn.
 ### Fixed
+- Villagers can walk through the Pump House's upper door again: the railing in front of it, out on the gallery, is now
+  a flat panel against the edge instead of a fence post, so a villager steps out onto the gallery standing up (B1405,
+  B1406).
+- A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
+  carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
+  he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the
+  edicts' checks every villager makes every tick (work stopped by a raid, Curfew's bedtime) are quicker too (B455).
 - With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
   placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
   Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
   block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
   drops a plain one (B1070).
+- With Tom's Simple Storage, a chest cut off from the Storehouse's Inventory Connector by breaking a cable no longer
+  counts twice for the second it takes the connector to notice: the Village Hall, the Storehouse and a builder's
+  shortage check count each item once at every moment (B1358).
 - With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
   instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
 - A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even

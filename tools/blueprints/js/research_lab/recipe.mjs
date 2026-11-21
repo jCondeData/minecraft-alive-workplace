@@ -17,6 +17,9 @@ import {
 const here = path.dirname(fileURLToPath(import.meta.url))
 const bands = list => strataBands(list.map(([y, b], i) => [y, Array.isArray(b) ? mix(b, 11 + i) : b]))
 const strata = bands(P.strata)
+const gableStrata = bands(P.gableStrata)
+// a window's sill: the plinth's stone where it sits on the plinth (panes from y 2), the pale sandstone higher up
+const sillFor = w => (Math.min(...w.cells.map(p => p[1])) === 2 ? P.plinthSill : P.sill)
 const ring = (c, { x0, x1, z0, z1 }, y0, y1, id) => {
   wallPanel(c, [x0, z0], [x1, z0], y0, y1, id); wallPanel(c, [x0, z1], [x1, z1], y0, y1, id)
   wallPanel(c, [x0, z0], [x0, z1], y0, y1, id); wallPanel(c, [x1, z0], [x1, z1], y0, y1, id)
@@ -58,9 +61,9 @@ function levelOne(c) {
   // little gable where the Prep Room's roof meets the Lab's
   const cope = id => (id.endsWith('_stairs') ? P.coping.stairs : P.coping.full)
   copedGable(c, 'z', L.walls.z0, L.roof.along[0], L.roof.across, main.under, L.wallTop + 1, strata, cope)
-  copedGable(c, 'z', L.walls.z1, L.roof.along[1], L.roof.across, main.under, L.wallTop + 1, strata, cope)
+  copedGable(c, 'z', L.walls.z1, L.roof.along[1], L.roof.across, main.under, L.wallTop + 1, gableStrata, cope)
   for (const z of [L.walls.z0, L.walls.z1]) c.set(4, main.ridgeY, z, P.coping.apex)
-  copedGable(c, 'x', kw.x1, K.roof.along[1], K.roof.across, wing.under, K.wallTop + 1, strata, cope)
+  copedGable(c, 'x', kw.x1, K.roof.along[1], K.roof.across, wing.under, K.wallTop + 1, gableStrata, cope)
   gableWall(c, 'x', kw.x0, [kw.z0, kw.z1], K.wallTop + 1, wing.under, (z, y) => (c.get(kw.x0, y, z) ? null : P.roof.full)) // the valley's backing, in tile
   // tie beams across the Lab at the wall top, their ends showing through the walls
   bayTies(c, L.ties.zs, L.walls.x0, L.walls.x1, L.ties.y, `${P.wood}_log`)
@@ -71,7 +74,7 @@ function levelOne(c) {
   const gw = OPENINGS.greatWindow
   pointedLight(c, gw.axis, gw.line, gw.cu, gw.y0, gw.y1, P.glass, P.sill, P.key, P.vaultGlass)
   for (let y = 1; y <= 2; y++) c.clear(...[OPENINGS.prepDoorway.at[0], y, OPENINGS.prepDoorway.at[2]])
-  for (const w of OPENINGS.windows.filter(w => w.level === 1)) window(c, w.cells, w.out, w.sill ? 'sill' : null, { glass: P.glass, wood: P.wood, sill: P.sill })
+  for (const w of OPENINGS.windows.filter(w => w.level === 1)) window(c, w.cells, w.out, w.sill ? 'sill' : null, { glass: P.glass, wood: P.wood, sill: sillFor(w) })
 
   // Pass 3: depth and detail. The door's hood with a lantern either side, the barge boards, the rods on the ridge.
   const h = OPENINGS.labHood
@@ -135,7 +138,7 @@ function levelTwo(c) {
   c.set(gd.at[0], gd.at[1] + 3, gd.at[2], P.key) // the carved panel over the door
   const dw = OPENINGS.galleryDoorway.at
   for (let y = 1; y <= 2; y++) c.clear(dw[0], y, dw[2])
-  for (const w of OPENINGS.windows.filter(w => w.level === 2)) window(c, w.cells, w.out, w.sill ? 'sill' : null, { glass: P.glass, wood: P.wood, sill: P.sill })
+  for (const w of OPENINGS.windows.filter(w => w.level === 2)) window(c, w.cells, w.out, w.sill ? 'sill' : null, { glass: P.glass, wood: P.wood, sill: sillFor(w) })
   const r = OPENINGS.rose
   crossWindow(c, r.axis, r.line, r.cu, r.cy, P.glass)
 

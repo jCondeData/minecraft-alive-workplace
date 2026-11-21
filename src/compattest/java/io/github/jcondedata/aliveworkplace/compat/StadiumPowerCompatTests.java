@@ -341,9 +341,11 @@ public class StadiumPowerCompatTests {
 			WonderSite placed = manager.site(site.id()).orElseThrow();
 			StadiumDays.Spots spots = StadiumDays.spots(level, placed).orElseThrow(() -> new net.minecraft.gametest.framework.GameTestAssertException(
 				"no spots in the drawing"));
-			helper.assertTrue(spots.posts().equals(List.of(far.offset(8, 1, 21), far.offset(44, 1, 21))), "the posts: " + spots.posts());
-			helper.assertTrue(spots.ring().equals(far.offset(26, 1, 21)), "the field's centre: " + spots.ring());
-			helper.assertTrue(spots.boxes().equals(List.of(far.offset(9, 1, 21), far.offset(43, 1, 21), far.offset(9, 1, 22), far.offset(43, 1, 20))),
+			// 52.6, the rebuilt Stadium ("the Stadium Bowl", js/stadium/plan.mjs POSTS, RING, BOX_SPOTS); the 35.23 drawing's
+			// were posts (8, 1, 21) and (44, 1, 21), ring (26, 1, 21)
+			helper.assertTrue(spots.posts().equals(List.of(far.offset(17, 1, 24), far.offset(41, 1, 24))), "the posts: " + spots.posts());
+			helper.assertTrue(spots.ring().equals(far.offset(29, 1, 24)), "the field's centre: " + spots.ring());
+			helper.assertTrue(spots.boxes().equals(List.of(far.offset(18, 1, 24), far.offset(40, 1, 24), far.offset(18, 1, 25), far.offset(40, 1, 23))),
 				"the box spots: " + spots.boxes());
 			java.util.Set<BlockPos> solid = new java.util.HashSet<>();
 			for (io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.Block b : io.github.jcondedata.aliveworkplace.wonder.WonderUpkeep.blocks(level, placed)) {

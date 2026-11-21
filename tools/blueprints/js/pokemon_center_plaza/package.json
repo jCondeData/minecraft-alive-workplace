@@ -1,0 +1,10 @@
+{
+  "name": "pokemon-center-plaza",
+  "private": true,
+  "type": "module",
+  "description": "The Pokémon Center (ROADMAP 49): the Sunny Plaza look: the arcaded hall (I), its court and market arcade (II). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

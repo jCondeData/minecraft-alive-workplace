@@ -28,7 +28,7 @@ import net.minecraft.world.phys.Vec3;
  * done, Scholarship II, Engineering I and Trade Law I researched, Cartography being researched, the cursor on Scholarship.
  */
 final class WonderLibraryScene {
-	/** The rotunda's centre in the template (tools/blueprints/wonders.py, GC), and its floor's top. */
+	/** The rotunda's centre in the template (js/great_library/plan.mjs, ROTUNDA, since the 52.6 rebuild), and its floor's top. */
 	private static final int CX = 20;
 	private static final int CZ = 22;
 	private static final int FLOOR = 3;
@@ -53,7 +53,8 @@ final class WonderLibraryScene {
 		@Override
 		public void ready(ServerLevel level, ServerPlayer player, BlueprintData.Placement placement, BlockPos hall) {
 			this.hall = hall;
-			// the player and a scholar between the door and the enchanting table, in the gap its ring of shelves leaves
+			// the player and a scholar between the door and the enchanting table, in the gap its ring of shelves leaves (52.6: the
+			// recipe's verify() keeps (20-21, 3-4, 18) clear on a floor, with a clear line to the table)
 			BlockPos stand = at(placement, CX, FLOOR, CZ - 4);
 			Villager v = EntityType.VILLAGER.create(level);
 			v.moveTo(stand.getX() + 1.5, stand.getY(), stand.getZ() + 0.5, 0, 0);

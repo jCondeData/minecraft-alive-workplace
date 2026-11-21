@@ -1,0 +1,10 @@
+{
+  "name": "pokemon-center",
+  "private": true,
+  "type": "module",
+  "description": "The Pokémon Center (ROADMAP 49): the Red Dome (I) and its Trade Hall and garden (II). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

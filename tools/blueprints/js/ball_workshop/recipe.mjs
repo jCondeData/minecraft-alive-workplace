@@ -92,7 +92,8 @@ export function draw() {
     window(c, w.cells, w.out, w.pot ? 'sill' : null, { glass: P.glass, wood: P.trim, pots: w.pot ? [w.pot] : [] })
   for (const v of OPENINGS.louvres) {
     const cells = []
-    for (let u = v.from; u <= v.to; u++) for (let y = L.wallY[0]; y <= L.wallY[1]; y++)
+    const rows = v.rows ?? Array.from({ length: L.wallY[1] - L.wallY[0] + 1 }, (_, i) => L.wallY[0] + i)
+    for (let u = v.from; u <= v.to; u++) for (const y of rows)
       cells.push(v.cells === 'x' ? [u, y, v.line] : [v.line, y, u])
     louvres(c, cells, P.louvre, v.out)
   }

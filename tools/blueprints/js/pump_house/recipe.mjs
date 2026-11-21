@@ -115,6 +115,8 @@ export function draw() {
   hatchLadder(c, L.x, L.z, L.y0, L.top, L.facing, P.wood)
   // and the belvedere's door out onto the gallery, in place of the front's middle panes
   door(c, T.galleryDoor, 'south', 'north', { wood: P.wood })
+  // the landing in front of it: the railing's panel there an open trapdoor on the deck's outer edge (B1405), walkable
+  c.set(...T.galleryLanding, `${P.wood}_trapdoor`, { facing: 'south', half: 'bottom', open: 'true', powered: 'false', waterlogged: 'false' })
 
   // --- Pass 6: interior -------------------------------------------------------------------------------------------------
   for (const f of FURNITURE) {

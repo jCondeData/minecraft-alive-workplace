@@ -131,6 +131,7 @@
 			"io.github.jcondedata.aliveworkplace.test.BlueprintUnlocksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintListCacheGameTests",
 			"io.github.jcondedata.aliveworkplace.test.StoreScanCacheGameTests",
+			"io.github.jcondedata.aliveworkplace.test.TickShareB455GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoreScanCache1111bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ShapeGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageGameTests",
@@ -1922,7 +1923,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaLevelUpVillage1116bBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperTrades1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests"
 		]
 	},
 	"depends": {

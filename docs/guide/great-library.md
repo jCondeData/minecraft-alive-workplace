@@ -11,9 +11,11 @@ categories: Wonders
 related: wonders.md, jobs-services.md, builder.md, research.md
 ```
 
-A domed library on a cross plan: a rotunda of bookshelf galleries under a copper dome that weathers green, four wings
-of reading halls, gardens in the corners of its terrace, and a portico of six quartz columns. At its heart an
-enchanting table ringed with bookshelves.
+"The Scroll Rotunda": a round drum of books at the center of a cross of four copper-roofed wings, on a stone podium
+with a garden in each corner, under a ribbed copper dome with a glass lantern, and a portico of six quartz columns at
+the front. Inside the drum a walkway climbs twice round a wall of bookshelves, and a spiral of windows climbs with it,
+so from outside the glass winds up the drum like a scroll being unrolled. At its heart an enchanting table ringed with
+bookshelves. A Great Library begun before the rebuild keeps the look it was begun with.
 
 ## What it needs
 
@@ -24,10 +26,10 @@ Scholar stands in) and the Master Architect. See [Wonders](wonders.md) for drawi
 
 | Stage | Found by exploring (and the rare worker who finds it) | From a workshop |
 |---|---|---|
-| The Stacks | A Heart Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days) | An Illuminated Book (Printer) |
-| The Galleries | An Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Noble Robes (Tailor) |
-| The Rotunda | An Echo Shard (the Seer, 18 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Illuminated Books (Printer) |
-| The Dome and the Portico | An Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweler) |
+| The Stacks (the podium and the four wings' ground floors round an open court) | A Heart Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days) | An Illuminated Book (Printer) |
+| The Galleries (each wing's upper floor under its copper roof) | An Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days), a Wild Armor Trim Template (the Pathfinder, 11 days) | 2 Noble Robes (Tailor) |
+| The Rotunda (the drum, its wall of books, the climbing walkway and the enchanting table) | An Echo Shard (the Seer, 18 days), an Enchanted Golden Apple (the Grand Chef, 22 days), a Vex Armor Trim Template (the Merchant Prince, 22 days) | 2 Illuminated Books (Printer) |
+| The Dome and the Portico (the ribbed dome and its lantern, the columned front) | An Ominous Trial Key (the Pathfinder, 14 days), a Nether Star (the Golem Smith, 36 days), the music disc otherside (the Bard Laureate, 18 days) | 2 Gold Circlets (Jeweler) |
 
 ## While it stands
 

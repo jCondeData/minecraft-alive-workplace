@@ -47,9 +47,9 @@ public class WonderBlueprintGameTests implements FabricGameTest {
 	}
 
 	static final List<Design> WONDERS = List.of(
-		new Design("great_cathedral", 14_000), // 35.9
+		new Design("great_cathedral", 14_000), // 35.9; rebuilt in 52.6 (14,225)
 		new Design("lighthouse", 5_000), // 35.11 (the roadmap's 7,500 doesn't fit its 25 x 33 x 46: ROADMAP Notes)
-		new Design("great_library", 16_000), // 35.13
+		new Design("great_library", 16_000), // 35.13; rebuilt in 52.6 (14,967)
 		new Design("observatory", 9_000), // 35.17
 		new Design("great_wall", 12_300), // 35.15, with 35.15a's solid tower bases (the roadmap's 18,000 needs solid towers: ROADMAP Notes)
 		new Design("hanging_gardens", 15_000), // 35.19; rebuilt in 52.6 (15,623)

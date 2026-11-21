@@ -4,7 +4,7 @@ The twelve workplaces the Steward asks a builder for each have their own buildin
 from the street, and so does every job's house that villages grow by themselves, the Weaver's Cottage and the Inn.
 Before, all of them were the same timber house with a different room inside (the owner's playtest, 2026-10-16).
 
-Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8, 50.11
+Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8, 50.11, 50.12
 
 ## 1. What a player sees
 
@@ -51,13 +51,20 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8, 50.
   with a lookout cupola carrying the ferry light; a boarded landing the whole width of the front under a canopy with a
   teal valance, the Travel Post by the landing steps and benches against the wall. 15 x 17 x 11; standing Ferry Houses
   keep their old drawing until refreshed.
-- **Trainer's House** (Cobblemon): a long low dojo with a deep veranda, before it a fenced sand sparring ring with
-  targets.
+- **Trainer's House** (Cobblemon; rebuilt from scratch in 50.12, "the Battle Court"): a gateway of two stone piers
+  with a red and a blue banner opens onto a marked turf court, the Training Post at its head in the red home box; a
+  covered bench stand runs along the west side and a sparring yard with two dummies lies on the east. At the head of
+  the court a clubhouse of birch boards in a spruce frame under a slate roof holds the den (hearth, armchair, table,
+  chest) and, in the loft jettied over the porch, the Trainer's bed. 17 x 15 x 19; standing Trainer's Houses keep
+  their old drawing until refreshed.
 - **Leader's Hall** (Cobblemon): a stone hall with a portico of four columns under a pediment, steps the whole width,
   a red carpet inside up to the Training Post (it starts a step in from the door: a carpet right under the door's low
   lintel stopped villagers, who are taller than players, in the doorway).
-- **Ball Workshop** (Cobblemon): a round tower with an open drying loft of slatted fences (apricorns, as colored carpets,
-  laid out to dry) under a copper cone that greens with the years, and a low workshop beside it.
+- **Ball Workshop** (Cobblemon, rebuilt from scratch in 50.12 as "the Drying Loft"): a white plaster workshop with the
+  smithing table and the forge under a red loft jettied out over the front, its louvers open where the apricorns (as
+  colored carpets) dry on trays and the Ball Smith sleeps; a black beam band with a white boss over the door between the
+  two, so the front reads as a Poké Ball; a brick forge stack up the east side and a store lean-to of chests behind.
+  15 x 18 x 17; standing Ball Workshops keep their old drawing until refreshed, village ones keep their look.
 - **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper story on stone arches over an open trading
   floor, an open cupola on the ridge.
 - **School** (Cobblemon): a brick U round a little courtyard with the tutor's Training Post in it.

@@ -241,13 +241,22 @@ on."
 
 Every Wonder also needs the Master Architect (stand-in: a Master builder).
 
-**The Great Cathedral** (35.9) is drawn: a Gothic cathedral on a cross plan, 39 blocks across the transepts, 55 long,
-its two west towers 44 high under stone spires reaching 52; about 14,250 blocks. A deep west door under three stepped
-pointed arches, a rose window of white, light blue, yellow and red glass over it; a nave of five bays with flying
-buttresses over the aisles and tall lancet windows; transepts with gable windows over their doors; a choir ending in a
-rounded apse; open belfries with three bells. Inside: pews either side of a red runner, banners and lanterns on the
-polished andesite piers, an altar of gold and candles, three side chapels with lecterns, and a sacristy with a brewing
-stand. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
+**The Great Cathedral** (35.9; rebuilt from scratch in 52.6: "the Ship of Stone") is a Gothic basilica on a cross
+plan, 39 blocks across the transepts and 56 long, its two west towers' spires reaching 52; about 14,200 blocks
+(14,225). The west front is a gabled triple portal (two doors round a stone trumeau) under the stone ring of a rose
+window of white, light blue, yellow and red glass, its gable stepping up to a pinnacle; the towers either side rise
+with clasping buttresses through three floors joined by a ladder, each with its own side portal, to louvered belfries
+with two bells each on a beam (four in all, at y 31), a corbelled cornice, a parapet with corner pinnacles and a slim
+octagonal deepslate spire. The nave stands over lower aisles: clerestory walls to y 20 on a pointed arcade, lancets
+over the aisle roofs, a stone vault with polished ribs, a steep roof (ridge at y 35) and four flying buttresses a side
+leaping the aisles' lean-to roofs. The transepts carry coped gables with a tall twin lancet and a pointed oculus, and
+their roofs meet the main roof in valleys; a lead fleche stands on the crossing. The choir is raised a step, with its
+stalls, and ends in a half-octagon apse with tall windows round the altar (gold and candles before a carved reredos).
+The aisles end in two chapels, and each transept has a chapel on its east wall: the sacristy (a brewing stand) and the
+Lady chapel; three chapels have a lectern and a candle altar. Inside the nave, dark oak pews either side of a red
+runner, banners in the sanctuary and the transepts, and chain lanterns. The floor is a checker of polished andesite and
+deepslate tiles inside the walls. A Great Cathedral already begun or finished keeps the old drawing (the 35.9 one): it
+still counts as standing, and is repaired and finished as it was first drawn. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
 III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its goods (found, with the rare worker who
 finds each and in how many days; then what a workshop makes): I a Prize Pottery Sherd (a Master Sifter, 9 days), a
 Ghast Tear (a Master Netherworker, 7 days); made: 2 Fine Clothes (Tailor); II the music disc otherside (the Bard
@@ -319,19 +328,31 @@ Wine (Vintner).
 
 Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,600 blocks, on
-a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
-diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
-the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
-reading halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow
-copper dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on
-top. Each wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the
-walls under a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under
-the windows, reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The
-rotunda has three rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by
-fifteen bookshelves, open towards the door, with the librarian's lectern before it and four reading desks round it. A
-lectern for a scholar stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round
-a cartography table. Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*.
+**The Great Library** (35.13, rebuilt from scratch in 52.6: "the Scroll Rotunda") is a round drum of books at the
+center of a cross of four short gabled wings, 41 by 41 and 34 high, about 15,000 blocks (14,967). It stands on a podium of
+stone bricks (y 0-2) behind a polished diorite balustrade, with two steps round its foot, the front steps across the
+portico's width, lamp posts at the steps and corners and a raised garden bed in each corner court (a smooth-stone curb,
+flowers and a small oak). The four wings (the Stacks; front and back 13 by 7, west and east 9 by 13) have pale walls of
+polished diorite and smooth stone, a ground floor (y 3-8) with tall windows between proud smooth-stone pilasters, each
+under a sill and a hood, a trim band at the upper-floor line, and a gallery floor (y 11-12) under an open copper roof
+from the eave at y 13 to the ridge at y 20. Inside, books line every wall between the windows; the front wing is the Map
+Room (the cartography table and a lectern), the west and east wings have three desks with chairs under their windows
+and a lectern, the back wing a desk and a lectern, and in each a dark oak flight climbs to the gallery through a hatch
+folded back against the wall; the galleries hold shelf rows, desks and reading tables. The drum (center (20, 22), 23
+across, three thick) rises from the court between the wings to a cornice at y 23: a wall of bookshelves two deep lines
+it all the way up, and a walkway of dark oak slabs climbs two full turns up the books from the back door to y 19, lit by
+lanterns at every quarter turn, with a band of windows riding just above it, so outside the drum's four open quarters
+carry a spiral of glass winding up toward the dome, and a ring of clerestory windows runs round it above the wing
+ridges. Its inner ceiling is coffered round a glass oculus, hung with four chandeliers. At the center the Enchanting
+Table (20, 3, 22) in a ring of bookshelves open toward the front door (26 shelves count for it), the center lectern
+behind it. Over the drum a ribbed copper dome with twelve ribs and a glass lantern on top (it weathers green), and at
+the front a portico of six quartz columns with bases and capitals under an entablature, a coffered soffit and a copper
+gable with a quartz pediment. Its stages: I *The Stacks* (the podium, the four wings' ground floors round an open court,
+the gardens), II *The Galleries* (each wing's upper floor and copper roof), III *The Rotunda* (the drum, its wall of
+books, the helix walk and its spiral of windows, the table), IV *The Dome and the Portico*. Every stage stands on its
+own and only adds to the ones before. A Great Library begun before 52.6 keeps the 35.13 drawing (a rotunda of three
+rings of bookshelves with two galleries under a shallow dome, wings under deepslate-tile roofs, a terrace of smooth
+stone): it is counted, repaired and finished from that drawing (`WonderDrawings`, `blueprint_history/wonder/great_library/`).
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Heart
 Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days); made: an Illuminated
 Book (Printer); II an Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days),
@@ -559,28 +580,31 @@ Founder (or City rank while Legends are off).
   has forgotten it reads "long ago". A sign broken and put back is written again on the next round (every 5 seconds),
   with the names as they are then.
 
-**The Stadium** (35.23, only with Cobblemon; made bigger, with more dressing and walk-through interiors, by 35.23a) is
-drawn: an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners, about 12,100 blocks), round a grass battle
-field 31 by 21 ruled in white (its edge, the
-half-way line, a center circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
-time, seven tiers along the long sides and five at the ends, climbed by zig-zag aisles of stone brick stairs, with red and white carpet seats in wedges round the bowl;
-in a village with a Village Banner the red and the white are built in its banner's two colors instead (the base and
-the first other color of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
-stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
-middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
-spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
-a red header, showing 2 - 1 on both faces, to the stands and to the road outside. Outside, the back wall has pilasters (buttresses on the straight sides) and bays that take
-turns as open, lit entrances (a banner over each) and barred windows with flower beds at their foot, two bands of red
-and white terracotta and a parapet with lanterns and banners. Inside it, under the stands, everything is walkable and
-lit, three high: a concourse two wide right round; eight vomitories climbing as stairs from it into the front rows; on
-the north the first-aid room by the nurse's booth (cots, a red-cross banner), two food kiosks serving onto the concourse
-through a hatch, and a trophy room; on the south the players' tunnel from the concourse to the pitch under the
-professor's box, with the home and away dressing rooms off it (lockers, a bench, their banner), the referees' room and
-the groundsman's store; doors from the trainer boxes onto the concourse; two covered dugouts on the apron. The gateway on the north side is a
-tunnel through the stand under two piers and a lintel banded red and white, with standing banners on the piers and
-banners hung over the stand. Four floodlight towers stand at the corners, each an iron head with eight redstone lamps
-wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
-stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
+**The Stadium** (35.23, only with Cobblemon; rebuilt from scratch in 52.6: "the Stadium Bowl") is one continuous
+bowl drawn on the stadium shape (a rounded rectangle: straight sides, round ends), 59 by 49 and 26 high to the gate's
+banners, about 12,100 blocks (12,094). At its heart is a grass battle field 31 by 23 inside a white touchline, its chalk
+marking a center line, a center circle and a box round each end's Training Post (the trainer boxes), inside a
+pitch wall of polished blackstone. Round it the Lower Stands rise in three rows of red and white carpet seats on stone
+brick risers and smooth stone treads, then a walk, then the Upper Stands' three rows; 676 seats in all, climbed by
+aisles of stone brick stairs. The back aisle climbs one step past the top row to a standing alcove in the outer wall,
+under the Covered Stand, the highest place a spectator can stand. In a village with a Village Banner the red and the white are built in its banner's two
+colors instead (the base and the first other color of its pattern; the field's chalk stays white). Along the back the
+Covered Stand shelters the upper rows under a green copper lean-to with lanterns hung under it; on the east end stands
+the scoreboard, two blocks thick, with "2 - 1" in white on black on each face under the two teams' colors, so it reads
+the right way round from the stands and from the road. The outer wall is red brick to a quartz cornice and coping, its
+order a block proud of the brick: a stone brick plinth, quartz pilasters every five blocks, a string course, and windows
+set back on quartz sills. Under the Upper Stands runs the Concourse, a hall three high right round the bowl, lit by
+hanging lanterns, with benches along its inner wall, doors out at both ends and into the gate's cut. Off it, in the
+four corners the round ends leave free, stand the corner pavilions, brick with quartz corners under copper roofs: at
+the front right the Nurse's Booth (the Healing Machine, a brewing stand and a counter, a red cross on a white panel
+over its door and another on its roof), at the front left the Refreshment Room (a counter with cakes, a table for two,
+a striped awning outside), and at the back the home and away changing rooms (benches under lockers, each in its team's
+colors). The Gate is a frontispiece across the front: two banner pylons, a stepped arch with a quartz lintel and
+keystone, a Poké Ball crest in a niche and STADIUM lettered on a quartz attic, read from the road; the way in runs
+through the cut in the bowl straight onto the field. Four floodlight masts of iron stand on the pavilions' outer
+corners, each with eight redstone lamps wired round a daylight detector that lights them at night. A Stadium already
+begun or finished keeps the old drawing (the 35.23 oval arena): it still counts as standing, and is repaired and
+finished as it was first drawn. Its stages: I
 *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
 Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls
@@ -835,11 +859,12 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
   item, so canceling never hands back something nobody found.
 - The goods lists live in `tools/blueprints/wonder_goods.py` with their hour estimates and the pacing reckoning;
   `wonders.py` takes them from there, so drawing the Wonders again writes the same lines.
-- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9): nine parts, two of stage I only
-  clearing the air up to the spires' tips (y 48 to 52), and the spires' last few blocks a small part of stage IV.
-- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): the rose's ring is built
-  with the nave (II) and its glass with the towers (IV), as the roadmap splits them; nothing hangs in the air between
-  stages.
+- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9; the 52.6 drawing has ten parts):
+  two of stage I only clearing the air up to the spires' tips (y 48 to 52), the fleche's tip a small part of stage III
+  and the spires' last few blocks a small part of stage IV.
+- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): in the 52.6 drawing the
+  rose's stone ring is built with the west front (I) and its glass with the towers (IV), as the roadmap splits them;
+  nothing hangs in the air between stages.
 - The Lighthouse is about 5,200 blocks, not the 7,500 first planned (35.11; 5,175 since its 52.6 rebuild): a tower 13
   to 9 across with the cottage, the landings and the mole fills 25 by 33 by 46 that way, and only solid masonry would
   reach 7,500.
@@ -849,10 +874,9 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
 - The Lighthouse's lamps are redstone lamps, each with an inverted daylight detector on top of it open to the sky (52.6:
   the hood's eave of 28), so each lights at night and is dark by day with no clock and no other power. The lamps' lit
   state is not checked as damage.
-- The Great Library's walls are two leaves (35.13), diorite outside and smooth stone inside, with deep windows, and it
-  stands on a solid terrace three high.
-- The Great Library's sixteenth bookshelf place round the Enchanting Table is left open towards the door (35.13), so the
-  librarian can walk in; fifteen shelves still give the table its full power.
+- The Great Library stands on a solid podium three high (35.13, kept by the 52.6 rebuild), its drum's wall three thick.
+- The Great Library's ring of bookshelves round the Enchanting Table is left open toward the door (35.13, kept by the
+  52.6 rebuild), so the scholar can walk in and stand facing the table; the shelves still give the table its full power.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
@@ -1113,7 +1137,7 @@ whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWon
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
-leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,175 and Observatory 8,504 since their 52.6 rebuilds, Library 14,574, Wall 12,338)
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,175 and Observatory 8,504 since their 52.6 rebuilds, Library 14,967 since its 52.6 rebuild, Wall 12,338)
 and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
 refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
 hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the

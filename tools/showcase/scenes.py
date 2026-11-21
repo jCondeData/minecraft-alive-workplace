@@ -1840,6 +1840,27 @@ SCENES = [
            ("02_outside_back", "From the back: the solid brick gable and the boiler's chimney up it"),
            ("04_outside_east", "From the east: the parlour's copper roof and the fenced cutting yard with its pond"),
            ("10_room_1", "Inside at eye level: the aisle between the raised beds of tall flowers, hanging pots, the composter at the end")], furniture=True),
+    # ROADMAP 50.12: the Trainer's House rebuilt from scratch ("the Battle Court")
+    S("rebuild_trainers_house", "Build families", "The Trainer's House, rebuilt: from four sides and at eye level inside",
+      "the Trainer's House's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Trainer's House from the front: the gate between two stone piers, the marked turf court with the Training Post at its head, the clubhouse gable behind"),
+           ("03_outside_west", "From the west: the covered bench stand along the court and the stone chimney up the clubhouse eave"),
+           ("04_outside_east", "From the east: the sparring yard with its two dummies, the lamp posts and the dormer on the slate roof"),
+           ("10_room_1", "Inside at eye level: the den, its hearth in the west wall with the armchair and rug, the table for two")], furniture=True),
+    # ROADMAP 50.12: the Ball Workshop rebuilt from scratch ("the Drying Loft")
+    S("rebuild_ball_workshop", "Build families", "The Ball Workshop, rebuilt: from four sides and at eye level inside",
+      "the Ball Workshop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Ball Workshop from the front: red loft over a black band over white plaster, like a Poké Ball, the white boss and button over the door"),
+           ("04_outside_east", "From the east: the brick forge stack climbing past the ridge, the band of louvers in the loft"),
+           ("02_outside_back", "From the back: the store lean-to with the chests under its single pitch"),
+           ("10_room_1", "Inside at eye level: the smithing table in the middle of the workshop, the anvil and the forge's mouth")], furniture=True),
+    # ROADMAP 50.12: the Research Lab rebuilt from scratch ("the Strata Lab"; Level I filmed, the Gallery and the Dig come with II and III)
+    S("rebuild_research_lab", "Build families", "The Research Lab, rebuilt: from four sides and at eye level inside",
+      "the Research Lab's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Research Lab from the front: the tall coped gable in bands of stone like a cliff face, the pointed Great Window over the door's hood, lightning rods on the gables"),
+           ("02_outside_back", "From the back: the plain banded back gable with its lancet, buttresses on the deepslate plinth"),
+           ("03_outside_west", "From the west: the steep tile roof with the skylight stepping up its slope"),
+           ("10_room_1", "Inside at eye level: the tall lab open to the roof under its tie beams, the scientist's desk and cupboards, the Fossil Analyzer on the back wall (with Cobblemon)")], furniture=True),
     # ROADMAP 50.11: the Supply Shop rebuilt from scratch ("the hoist house")
     S("rebuild_supply_shop", "Build families", "The Supply Shop, rebuilt: from four sides and at eye level inside",
       "the Supply Shop's blueprint stands on a cleared lawn; every one of its furniture spots holds the furniture mods' piece and each room gets an eye-level shot from a free floor cell with a clear view",
@@ -2035,6 +2056,31 @@ SCENES = [
            ("02_outside_back", "From the field: the battlements on their corbels, the buttresses, and the Barbican pushed out behind the gate with its outer gate"),
            ("03_outside_west", "From the west: the broken, mossy end where the wall goes on, the end tower's signal-fire lookout under its spruce cap"),
            ("04_outside_east", "From the east: the walk running through the towers to the Gate Pavilion's two dark-tiled roofs")], furniture=True),
+    # ROADMAP 52.6: the Great Library rebuilt from scratch (REBUILD.md), "the Scroll Rotunda", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_library", "Build families", "The Great Library, rebuilt: from four sides",
+      "the Great Library's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Library from the front: the steps up the stone podium to the quartz portico and its pediment, the front wing behind it and the copper dome over the drum"),
+           ("02_outside_back", "From the back: the back wing's gable between two corner gardens, the drum rising behind it with its ring of windows under the cornice"),
+           ("03_outside_west", "From the west: the cross of four copper-roofed wings round the drum, the spiral of glass winding up its open quarters toward the ribbed dome and its glass lantern"),
+           ("04_outside_east", "From the east: the east wing's pilastered face and tall windows, the portico's columns at the front, a tree in each corner garden")], furniture=True),
+    # ROADMAP 52.6: the Stadium rebuilt from scratch (REBUILD.md), "the Stadium Bowl", filmed whole (its four stages
+    # standing, RebuildScene.WONDERS; furniture=True films with Cobblemon, so its Healing Machine stands); a Wonder has no
+    # furniture spots, so the four outside views
+    S("rebuild_stadium", "Build families", "The Stadium, rebuilt: from four sides",
+      "the Stadium's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Stadium from the road: the Gate's stepped arch between its two banner pylons, STADIUM lettered on the attic, the nurse's booth with its red cross and the refreshment room at the front corners"),
+           ("02_outside_back", "From the back: the brick wall's quartz pilasters and cornice, the green copper roof of the Covered Stand rising behind it, the two changing rooms at the corners"),
+           ("03_outside_west", "From the west: the round end of the bowl, its windows set back on quartz sills, two floodlight masts on the corner pavilions"),
+           ("04_outside_east", "From the east: the scoreboard over the east end reading 2 - 1 to the road, the floodlight masts at either side")], furniture=True),
+    # ROADMAP 52.6: the Great Cathedral rebuilt from scratch (REBUILD.md), design A "the Ship of Stone", filmed whole (its
+    # four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_cathedral", "Build families", "The Great Cathedral, rebuilt: from four sides",
+      "the Great Cathedral's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Cathedral from the west: the two towers' louvred belfries under stone spires, the rose window over the deep portal between them, the steps up to its doors"),
+           ("02_outside_back", "From the east: the apse's half octagon with its tall windows, the choir aisles' chapels at its sides, the crossing's lead fleche behind"),
+           ("03_outside_west", "From the north: the nave's long roof over its aisles' lean-tos, the clerestory windows, the transept's gable and its chapel on the east wall"),
+           ("04_outside_east", "From the south: the mirror of the north side, the towers' spires rising over the west end and the fleche over the crossing")]),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

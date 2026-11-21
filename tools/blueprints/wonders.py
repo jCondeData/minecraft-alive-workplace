@@ -759,6 +759,8 @@ def stage_4(b):
 
 
 def great_cathedral():
+    """The 35.x Great Cathedral, replaced by great_cathedral_drawn (52.6); its parts are kept in blueprint_history, and
+    this drawing stays as the record of what older sites were built from."""
     b = StagedBuild(CW_, CH_, CD_)
     roof = roof_layer()
     b.begin(1)
@@ -770,6 +772,18 @@ def great_cathedral():
     b.begin(4)
     stage_4(b)
     return b
+
+
+def great_cathedral_drawn():
+    """The new Great Cathedral (ROADMAP 52.6, rebuilt from scratch, design A "the Ship of Stone"):
+    js/great_cathedral_a/recipe.mjs, its four stage snapshots joined by js/great_cathedral_a/stages.py. Needs node and
+    MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_cathedral_a", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_cathedral_a_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 # --- the Lighthouse ------------------------------------------------------------------------------------------------------
@@ -1986,6 +2000,8 @@ def stage_g4(b):
 
 
 def great_library():
+    """The 35.x Great Library, replaced by great_library_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (great_library_stage, great_library_section)."""
     b = StagedBuild(GW, GH, GD)
     b.begin(1)
     stage_g1(b)
@@ -1996,6 +2012,17 @@ def great_library():
     b.begin(4)
     stage_g4(b)
     return b
+
+
+def great_library_drawn():
+    """The new Great Library (ROADMAP 52.6, rebuilt from scratch, "the Scroll Rotunda"): js/great_library/recipe.mjs, its
+    four stage snapshots joined by js/great_library/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_library", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_library_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def great_library_stage(stage=None):
@@ -5072,6 +5099,8 @@ def stage_s4(b):
 
 
 def stadium():
+    """The 35.x Stadium, replaced by stadium_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (stadium_stage, stadium_interiors)."""
     b = StagedBuild(SW, SH, SD)
     b.begin(1)
     stage_s1(b)
@@ -5082,6 +5111,17 @@ def stadium():
     b.begin(4)
     stage_s4(b)
     return b
+
+
+def stadium_drawn():
+    """The new Stadium (ROADMAP 52.6, rebuilt from scratch, "the Stadium Bowl"): js/stadium/recipe.mjs, its four stage
+    snapshots joined by js/stadium/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "stadium", "stages.py")
+    spec = importlib.util.spec_from_file_location("stadium_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def stadium_stage(stage=None):
@@ -5105,7 +5145,7 @@ from wonder_goods import GOODS  # each stage's goods and their pacing (35.7a, 35
 
 WONDERS = {
     "great_cathedral": {
-        "draw": great_cathedral,
+        "draw": great_cathedral_drawn,  # 52.6: rebuilt from scratch (js/great_cathedral_a/)
         "icon": "minecraft:bell",
         "crew": 12,
         "requirements": [
@@ -5141,7 +5181,7 @@ WONDERS = {
         ],
     },
     "great_library": {
-        "draw": great_library,
+        "draw": great_library_drawn,  # 52.6: rebuilt from scratch (js/great_library/)
         "icon": "minecraft:enchanting_table",
         "crew": 12,
         "requirements": [
@@ -5223,7 +5263,7 @@ WONDERS = {
         ],
     },
     "stadium": {
-        "draw": stadium,
+        "draw": stadium_drawn,  # 52.6: rebuilt from scratch (js/stadium/)
         # only with Cobblemon: without it the file isn't loaded, so the Stadium isn't on the Wonders page
         "load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["cobblemon"]}],
         "icon": "cobblemon:poke_ball",

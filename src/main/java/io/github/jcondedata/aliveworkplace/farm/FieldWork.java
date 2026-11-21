@@ -112,6 +112,17 @@ public class FieldWork extends Behavior<Villager> {
 	public static final int COMPOST_LOOK_TICKS = 20;
 	/** How often {@link #compost} counted the chests' contents (for tests). */
 	public static long compostLooks;
+	/** How often a farmer emptied the bag at the chests, and took seeds or a hoe from them (for tests, B455). */
+	public static long deposits;
+	public static long fetches;
+	/**
+	 * How long a farmer who found nothing to do waits before looking again (B455). Until then nothing he goes by can
+	 * have changed but his bag or his hoe: the field is looked over every {@link #SCAN_EVERY} ticks, which ends the wait.
+	 */
+	public static final int IDLE_LOOK_TICKS = 10;
+	/** How often a farmer went through the field's tasks and found nothing to do (for tests). */
+	public static long idleLooks;
+	private long idleUntil;
 	private long noSurplusAt = Long.MIN_VALUE / 2;
 	private BlockPos noSurplusStation = BlockPos.ZERO;
 	private int compostTimer;
@@ -150,6 +161,7 @@ public class FieldWork extends Behavior<Villager> {
 		walker.reset();
 		current = null;
 		scanTimer = 0;
+		idleUntil = 0;
 		villager.setDropChance(EquipmentSlot.MAINHAND, 0f);
 	}
 
@@ -188,6 +200,7 @@ public class FieldWork extends Behavior<Villager> {
 		// 2. Look over the field now and then.
 		if (--scanTimer <= 0) {
 			scanTimer = SCAN_EVERY;
+			idleUntil = 0;
 			tasks = scan(level, field);
 			skipped.clear();
 			fetchedOtherSeeds = false;
@@ -200,6 +213,12 @@ public class FieldWork extends Behavior<Villager> {
 			chestsHaveBoneMeal = SupplyContainers.firstMatching(level, supplies, s -> s.is(Items.BONE_MEAL)) != null;
 		}
 
+		// B455: with nothing to do he went through every task (each growing crop is one, waiting for bone meal) and his
+		// bag, the chests' spare seeds and his status line again every tick; now half a second later. He stays at rest.
+		if (current == null && gameTime < idleUntil && idleUntil - gameTime <= IDLE_LOOK_TICKS) {
+			return;
+		}
+
 		// 3. Pick the nearest job that can be done with what we carry (or can fetch).
 		boolean hasSeeds = hasSeeds(bag, seed);
 		boolean hasHoe = isHoe(io.github.jcondedata.aliveworkplace.work.TradeDisplay.workHand(villager)); // a shown ware is the display's (B776)
@@ -208,6 +227,7 @@ public class FieldWork extends Behavior<Villager> {
 			current = null;
 			progress = 0;
 			boolean wantsSeeds = false;
+			boolean shortOfSeeds = false;
 			boolean wantsHoe = false;
 			boolean wantsBoneMeal = false;
 			Task best = null;
@@ -225,7 +245,14 @@ public class FieldWork extends Behavior<Villager> {
 						case FERTILIZE -> hasBoneMeal;
 					};
 					if (!doable) {
-						wantsSeeds |= (t.kind() == Kind.PLANT || t.kind() == Kind.TILL) && !hasSeeds;
+						// Seeds are fetched only where they get something done: ground to till also takes a hoe (in the hand
+						// or in the chests), unless it is trampled farmland. B455: a carrot or potato farmer with dirt to
+						// till and no hoe anywhere took the carrots out (the ground wants seeds), carried them straight
+						// back (they are harvest, and nothing can be sown) and took them out again, a trip every tick.
+						boolean seedsHelp = t.kind() == Kind.PLANT
+							|| t.kind() == Kind.TILL && (hasHoe || chestsHaveHoe || isTrampled(level, t.pos()));
+						wantsSeeds |= seedsHelp && !hasSeeds;
+						shortOfSeeds |= (t.kind() == Kind.PLANT || t.kind() == Kind.TILL) && !hasSeeds;
 						wantsHoe |= t.kind() == Kind.TILL && !hasHoe && !isTrampled(level, t.pos());
 						wantsBoneMeal |= t.kind() == Kind.FERTILIZE;
 						continue;
@@ -279,8 +306,10 @@ public class FieldWork extends Behavior<Villager> {
 					status(villager, field, Phase.COMPOSTING);
 					return;
 				}
+				idleLooks++;
+				idleUntil = gameTime + IDLE_LOOK_TICKS;
 				rest(villager, true);
-				status(villager, field, wantsSeeds ? Phase.NEEDS_SEEDS : Phase.RESTING);
+				status(villager, field, shortOfSeeds && !chestsHaveSeeds ? Phase.NEEDS_SEEDS : Phase.RESTING);
 				return;
 			}
 			tasks.remove(best);
@@ -729,22 +758,12 @@ public class FieldWork extends Behavior<Villager> {
 	}
 
 	private static boolean hasSeeds(BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
-		for (ItemStack stack : bag.stacks()) {
-			if (sows.test(stack)) {
-				return true;
-			}
-		}
-		return false;
+		return bag.any(sows);
 	}
 
 	/** Anything in the bag worth carrying to the chests (not just the seeds we keep). */
 	private static boolean hasHarvest(BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
-		for (ItemStack stack : bag.stacks()) {
-			if (!stack.isEmpty() && !stack.is(Items.BONE_MEAL) && (!sows.test(stack) || isCropToo(stack) || bag.count(stack.getItem()) > KEEP_SEEDS)) {
-				return true;
-			}
-		}
-		return false;
+		return bag.any(stack -> !stack.is(Items.BONE_MEAL) && (!sows.test(stack) || isCropToo(stack) || bag.count(stack.getItem()) > KEEP_SEEDS));
 	}
 
 	/**
@@ -876,6 +895,7 @@ public class FieldWork extends Behavior<Villager> {
 		if (got.isEmpty()) {
 			return true;
 		}
+		fetches++;
 		if (seeds) {
 			int more = reserve == io.github.jcondedata.aliveworkplace.build.BuildReserve.NONE
 				? SupplyContainers.extract(level, supplies, got.getItem(), keepOf(got) - 1)
@@ -906,6 +926,7 @@ public class FieldWork extends Behavior<Villager> {
 
 	private static void deposit(ServerLevel level, BlockPos station, BuilderBag bag, java.util.function.Predicate<ItemStack> sows) {
 		List<BlockPos> supplies = SupplyContainers.find(level, station, null);
+		deposits++;
 		List<ItemStack> all = new ArrayList<>(bag.takeAll());
 		all.sort(Comparator.comparingInt(s -> -s.getCount())); // keep the fullest seed stacks
 		for (ItemStack stack : all) {

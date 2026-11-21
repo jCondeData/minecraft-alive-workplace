@@ -1,0 +1,236 @@
+{
+  "name": "wonder.aliveworkplace.great_library.name",
+  "description": "wonder.aliveworkplace.great_library.description",
+  "icon": "minecraft:enchanting_table",
+  "enabled": true,
+  "crew": 12,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:old_sage",
+      "stand_in": [
+        {
+          "type": "job_level",
+          "job": "aliveworkplace:scholar",
+          "level": 5,
+          "count": 1
+        }
+      ]
+    },
+    {
+      "type": "research_levels",
+      "count": 20
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.great_library.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_library/stage_1_0",
+          "offset": [0, 0, 0]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:heart_pottery_sherd",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:sifter",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "minecraft:dune_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 9,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:illuminated_book",
+          "count": 1,
+          "job": "aliveworkplace:printer"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_library.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_library/stage_2_0",
+          "offset": [1, 10, 5]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:eye_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "minecraft:music_disc_relic",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 16,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
+        },
+        {
+          "item": "minecraft:wild_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 11,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_library.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_library/stage_3_0",
+          "offset": [8, 3, 10]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:echo_shard",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:seer"
+            }
+          }
+        },
+        {
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
+        },
+        {
+          "item": "minecraft:vex_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:illuminated_book",
+          "count": 2,
+          "job": "aliveworkplace:printer"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.great_library.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/great_library/stage_4_0",
+          "offset": [8, 3, 3]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:ominous_trial_key",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "minecraft:music_disc_otherside",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "research_tier",
+      "tier": 2
+    }
+  ],
+  "drawing": "drawn_4c2cc22f3"
+}

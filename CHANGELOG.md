@@ -44,6 +44,8 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- A builder's poured water runs again when a dry stair, slab or Create fluid pipe stands two blocks away: a
+  player's own water wheel or fountain built from a blueprint flows and turns as it did in the original (B1410).
 - Opening the Village Hall first after a restart (or a `/reload`) no longer freezes the server for seconds: the
   older drawings of the builds are now read only for the buildings asked about, not all thousand at once (B1418).
 - A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a

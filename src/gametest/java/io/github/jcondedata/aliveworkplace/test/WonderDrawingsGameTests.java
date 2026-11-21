@@ -736,6 +736,64 @@ public class WonderDrawingsGameTests implements FabricGameTest {
 	private static final int OLD_LIBRARY_COUNT = 14571, NEW_LIBRARY_COUNT = 14853;
 
 	/**
+	 * 52.6 shipped the rebuilt Great Cathedral (design A, "the Ship of Stone"): one begun with the 35.9 drawing (the key
+	 * its file named until then, with its later fixes) is still counted, repaired and continued by that drawing, read from
+	 * the shipped history. Finished, it is counted against the old drawing's blocks, not today's; half-built at stage 2, its
+	 * next stage is the old stage 2 part (the old nave) at its old offset, its blocks as the old part had them; a Cathedral
+	 * recorded with today's key goes by today's.
+	 */
+	//$ gametest_batch 'FabricGameTest.EMPTY_STRUCTURE' '"wonderDrawingsCathedral"'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, batch = "wonderDrawingsCathedral")
+	public void aGreatCathedralOfThe359DrawingKeepsItsOldStages(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		ResourceLocation cathedral = ResourceLocation.fromNamespaceAndPath("aliveworkplace", "great_cathedral");
+		String old = "drawn_73d5c7990"; // the 35.9 drawing (with its later fixes), the one standing on servers before 52.6
+		Wonder today = Wonders.loaded().get(cathedral);
+		helper.assertTrue(today != null, "the Great Cathedral isn't loaded: " + Wonders.problems());
+		helper.assertTrue(!Wonders.drawing(cathedral).equals(old), "the Great Cathedral's file still names the 35.9 drawing");
+		helper.assertTrue(WonderDrawings.olderKeys(level.getServer(), cathedral).contains(old), "the 35.9 drawing isn't in the history: "
+			+ WonderDrawings.olderKeys(level.getServer(), cathedral));
+		List<Wonder.Stage> oldStages = WonderDrawings.stages(level.getServer(), cathedral, old).orElseThrow();
+		List<BlockPos> offsets = oldStages.stream().map(st -> st.parts().get(0).offset()).toList();
+		helper.assertTrue(oldStages.size() == 4 && offsets.equals(List.of(BlockPos.ZERO, new BlockPos(6, 1, 0), new BlockPos(0, 1, 38), new BlockPos(5, 14, 0))),
+			"the 35.9 drawing's stages: " + oldStages.size() + " at " + offsets);
+
+		BlueprintData.Placement at = new BlueprintData.Placement(Ids.of(level.dimension()), helper.absolutePos(new BlockPos(1, 2, 1)), Rotation.NONE, Mirror.NONE);
+		WonderSite finishedOld = new WonderSite(UUID.randomUUID(), cathedral, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		WonderSite finishedNew = new WonderSite(UUID.randomUUID(), cathedral, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 4, 1L,
+			Optional.of(2L), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, true, List.of(), WonderSite.Kept.WHOLE,
+			Optional.of(Wonders.drawing(cathedral)));
+		helper.assertTrue(WonderDrawings.older(level, finishedOld) && !WonderDrawings.older(level, finishedNew), "which drawing each goes by");
+		int oldCount = WonderUpkeep.blocks(level, finishedOld).size();
+		int newCount = WonderUpkeep.blocks(level, finishedNew).size();
+		// the counts WonderUpkeep keeps (structure and decoration steps; a few of each drawing's blocks are the plan's
+		// foundation or landscape steps, which the count leaves out for every Wonder)
+		helper.assertTrue(oldCount == OLD_CATHEDRAL_COUNT && newCount == NEW_CATHEDRAL_COUNT, "an old Great Cathedral is counted against " + oldCount
+			+ " blocks (the 35.9 drawing: " + OLD_CATHEDRAL_COUNT + "), today's against " + newCount + " (" + NEW_CATHEDRAL_COUNT + ")");
+		for (WonderUpkeep.Part part : WonderUpkeep.parts(level, finishedOld)) {
+			Optional<WonderDrawings.Older> o = WonderDrawings.parse(BlueprintStyles.base(part.structure()));
+			helper.assertTrue(o.isPresent() && o.get().key().equals(old), "an old Cathedral's part (repaired by it) is today's: " + part.structure());
+		}
+
+		WonderSite halfOld = new WonderSite(UUID.randomUUID(), cathedral, helper.absolutePos(BlockPos.ZERO), Optional.empty(), "Owner", 2, 1L,
+			Optional.empty(), Optional.of(at), Optional.empty(), List.of(), Optional.empty(), false, false, List.of(), WonderSite.Kept.WHOLE, Optional.of(old));
+		Wonder.Part next = WonderDrawings.of(level, halfOld).stages().get(1).parts().get(0);
+		ResourceLocation todaysPart = today.stages().get(1).parts().get(0).part();
+		helper.assertTrue(next.part().equals(WonderDrawings.olderId(todaysPart, old)) && next.offset().equals(new BlockPos(6, 1, 0)),
+			"a half-built old Cathedral's stage 2 is " + next);
+		helper.assertTrue(!today.stages().get(1).parts().get(0).offset().equals(next.offset()), "today's stage 2 part stands where the old one did");
+		Optional<Blueprint> oldPart = BlueprintLibrary.get(level, next.part());
+		Optional<Blueprint> newPart = BlueprintLibrary.get(level, todaysPart);
+		helper.assertTrue(oldPart.isPresent() && !oldPart.get().blocks().isEmpty() && newPart.isPresent()
+			&& !new HashSet<>(oldPart.get().blocks()).equals(new HashSet<>(newPart.get().blocks())), "the old stage 2 part didn't load as the old one");
+		helper.succeed();
+	}
+
+	/** The block counts {@link #aGreatCathedralOfThe359DrawingKeepsItsOldStages} pins (WonderUpkeep's, of the 35.9 and 52.6 drawings). */
+	private static final int OLD_CATHEDRAL_COUNT = 14245, NEW_CATHEDRAL_COUNT = 14221;
+
+	/**
 	 * 52.6 shipped the rebuilt Stadium ("the Stadium Bowl"). Its file loads only with Cobblemon (and so do its older
 	 * drawings: the history's files carry the same load conditions), so here, without it, the history is read as shipped:
 	 * the 35.23 drawing (the key its file named until then, with 35.23a's interiors) is kept with its four stages and its

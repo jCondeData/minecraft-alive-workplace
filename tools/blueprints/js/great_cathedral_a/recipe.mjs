@@ -94,7 +94,10 @@ function drawWith(paved) {
   const footprint = (x, z) =>
     (z <= 1 && x >= 13 && x <= 25) || (z >= 1 && z <= 11 && x >= 3 && x <= 35) || (z >= 11 && z <= 30 && x >= 5 && x <= 33) ||
     (z >= 30 && z <= 39) || (z >= 40 && z <= 45 && (x <= 7 || x >= 31)) || (z >= 40 && z <= 53 && x >= 7 && x <= 31) || (z >= 48 && apseM(x, z) <= 7)
-  const inside = (x, z) => (x >= 8 && x <= 30 && z >= 3 && z <= 53) || (z >= 32 && z <= 38 && x >= 1 && x <= 37) || (z >= 40 && z <= 43 && (x <= 6 || x >= 32))
+  // (the chequer stops at the walls' inside faces: the chapels' outer walls (x 0, 38) and the choir aisles' east walls
+  // (z 52) stand on the plain paving, so no striped plinth shows outside)
+  const inside = (x, z) => (x >= 8 && x <= 30 && z >= 3 && z <= 51) || inApse(x, z) || (z >= 32 && z <= 38 && x >= 1 && x <= 37) ||
+    (z >= 40 && z <= 43 && ((x >= 1 && x <= 6) || (x >= 32 && x <= 37)))
   for (let x = 0; x < SIZE[0]; x++) for (let z = 0; z < SIZE[2]; z++) {
     if (!footprint(x, z) || !(paved(x, z) || inside(x, z))) continue
     c.set(x, 0, z, inside(x, z) ? ((x + z) % 2 ? P.floorA : P.floorB) : L(x, 0, z))

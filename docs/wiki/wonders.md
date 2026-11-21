@@ -241,13 +241,22 @@ on."
 
 Every Wonder also needs the Master Architect (stand-in: a Master builder).
 
-**The Great Cathedral** (35.9) is drawn: a Gothic cathedral on a cross plan, 39 blocks across the transepts, 55 long,
-its two west towers 44 high under stone spires reaching 52; about 14,250 blocks. A deep west door under three stepped
-pointed arches, a rose window of white, light blue, yellow and red glass over it; a nave of five bays with flying
-buttresses over the aisles and tall lancet windows; transepts with gable windows over their doors; a choir ending in a
-rounded apse; open belfries with three bells. Inside: pews either side of a red runner, banners and lanterns on the
-polished andesite piers, an altar of gold and candles, three side chapels with lecterns, and a sacristy with a brewing
-stand. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
+**The Great Cathedral** (35.9; rebuilt from scratch in 52.6: "the Ship of Stone") is a Gothic basilica on a cross
+plan, 39 blocks across the transepts and 56 long, its two west towers' spires reaching 52; about 14,200 blocks
+(14,225). The west front is a gabled triple portal (two doors round a stone trumeau) under the stone ring of a rose
+window of white, light blue, yellow and red glass, its gable stepping up to a pinnacle; the towers either side rise
+with clasping buttresses through three floors joined by a ladder, each with its own side portal, to louvered belfries
+with two bells each on a beam (four in all, at y 31), a corbelled cornice, a parapet with corner pinnacles and a slim
+octagonal deepslate spire. The nave stands over lower aisles: clerestory walls to y 20 on a pointed arcade, lancets
+over the aisle roofs, a stone vault with polished ribs, a steep roof (ridge at y 35) and four flying buttresses a side
+leaping the aisles' lean-to roofs. The transepts carry coped gables with a tall twin lancet and a pointed oculus, and
+their roofs meet the main roof in valleys; a lead fleche stands on the crossing. The choir is raised a step, with its
+stalls, and ends in a half-octagon apse with tall windows round the altar (gold and candles before a carved reredos).
+The aisles end in two chapels, and each transept has a chapel on its east wall: the sacristy (a brewing stand) and the
+Lady chapel; three chapels have a lectern and a candle altar. Inside the nave, dark oak pews either side of a red
+runner, banners in the sanctuary and the transepts, and chain lanterns. The floor is a checker of polished andesite and
+deepslate tiles inside the walls. A Great Cathedral already begun or finished keeps the old drawing (the 35.9 one): it
+still counts as standing, and is repaired and finished as it was first drawn. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
 III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its goods (found, with the rare worker who
 finds each and in how many days; then what a workshop makes): I a Prize Pottery Sherd (a Master Sifter, 9 days), a
 Ghast Tear (a Master Netherworker, 7 days); made: 2 Fine Clothes (Tailor); II the music disc otherside (the Bard
@@ -849,11 +858,12 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
   item, so canceling never hands back something nobody found.
 - The goods lists live in `tools/blueprints/wonder_goods.py` with their hour estimates and the pacing reckoning;
   `wonders.py` takes them from there, so drawing the Wonders again writes the same lines.
-- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9): nine parts, two of stage I only
-  clearing the air up to the spires' tips (y 48 to 52), and the spires' last few blocks a small part of stage IV.
-- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): the rose's ring is built
-  with the nave (II) and its glass with the towers (IV), as the roadmap splits them; nothing hangs in the air between
-  stages.
+- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9; the 52.6 drawing has ten parts):
+  two of stage I only clearing the air up to the spires' tips (y 48 to 52), the fleche's tip a small part of stage III
+  and the spires' last few blocks a small part of stage IV.
+- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): in the 52.6 drawing the
+  rose's stone ring is built with the west front (I) and its glass with the towers (IV), as the roadmap splits them;
+  nothing hangs in the air between stages.
 - The Lighthouse is about 5,200 blocks, not the 7,500 first planned (35.11; 5,175 since its 52.6 rebuild): a tower 13
   to 9 across with the cottage, the landings and the mole fills 25 by 33 by 46 that way, and only solid masonry would
   reach 7,500.

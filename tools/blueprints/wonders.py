@@ -759,6 +759,8 @@ def stage_4(b):
 
 
 def great_cathedral():
+    """The 35.x Great Cathedral, replaced by great_cathedral_drawn (52.6); its parts are kept in blueprint_history, and
+    this drawing stays as the record of what older sites were built from."""
     b = StagedBuild(CW_, CH_, CD_)
     roof = roof_layer()
     b.begin(1)
@@ -770,6 +772,18 @@ def great_cathedral():
     b.begin(4)
     stage_4(b)
     return b
+
+
+def great_cathedral_drawn():
+    """The new Great Cathedral (ROADMAP 52.6, rebuilt from scratch, design A "the Ship of Stone"):
+    js/great_cathedral_a/recipe.mjs, its four stage snapshots joined by js/great_cathedral_a/stages.py. Needs node and
+    MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_cathedral_a", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_cathedral_a_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 # --- the Lighthouse ------------------------------------------------------------------------------------------------------
@@ -5131,7 +5145,7 @@ from wonder_goods import GOODS  # each stage's goods and their pacing (35.7a, 35
 
 WONDERS = {
     "great_cathedral": {
-        "draw": great_cathedral,
+        "draw": great_cathedral_drawn,  # 52.6: rebuilt from scratch (js/great_cathedral_a/)
         "icon": "minecraft:bell",
         "crew": 12,
         "requirements": [

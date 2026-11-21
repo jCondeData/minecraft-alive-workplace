@@ -177,15 +177,17 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 		helper.assertTrue(b[1] == 0, id + " starts at y " + b[1] + ", not on the clicked block");
 		switch (id) {
 			case "great_cathedral" -> {
-				// "about 27 wide (39 across the transepts) and 55 long, its two west towers 44 high under stone spires reaching 52"
+				// 52.6, rebuilt (briefs/great_cathedral.md, js/great_cathedral_a/plan.mjs, "the Ship of Stone"): 39 across the
+				// transepts and 56 long with its apse, the two west towers' spires reaching 52 (the brief's 51-53), the nave and
+				// aisles 25 wide at z 25. The same kinds of check as the 35.9 pins (which read 55 long and 27 wide at z 25).
 				near(wrong, "its width across the transepts", w, 39, 2);
-				near(wrong, "its length", l, 55, 2);
+				near(wrong, "its length", l, 56, 2);
 				near(wrong, "its spires' tops", b[4], 52, 1);
 				int mid = (b[0] + b[3]) / 2;
 				near(wrong, "the north-west tower's spire top", box(all, p -> p.getZ() <= 12 && p.getX() < mid)[4], 52, 1);
 				near(wrong, "the south-west tower's spire top", box(all, p -> p.getZ() <= 12 && p.getX() > mid)[4], 52, 1);
 				int nave = box(all, p -> p.getZ() == 25 && p.getY() == 2)[3] - box(all, p -> p.getZ() == 25 && p.getY() == 2)[0] + 1;
-				near(wrong, "the nave and aisles' width (z 25)", nave, 27, 2);
+				near(wrong, "the nave and aisles' width (z 25)", nave, 25, 2);
 			}
 			case "lighthouse" -> {
 				// 52.6, rebuilt (briefs/lighthouse.md, js/lighthouse/plan.mjs): "25 x 33 and 46 high: a round tower that
@@ -379,19 +381,20 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 
 	static List<Feature> features(String id) {
 		return switch (id) {
-			case "great_cathedral" -> List.of(new Feature("three bells", 3, "minecraft:bell"),
+			// 52.6: the rebuilt Cathedral's named parts (js/great_cathedral_a/plan.mjs), the minimums raised to the new design
+			case "great_cathedral" -> List.of(new Feature("four bells, two in each belfry", 4, "minecraft:bell"),
 				new Feature("a rose window's white glass", 1, "minecraft:white_stained_glass_pane", "minecraft:white_stained_glass"),
 				new Feature("a rose window's light blue glass", 1, "minecraft:light_blue_stained_glass_pane", "minecraft:light_blue_stained_glass"),
 				new Feature("a rose window's yellow glass", 1, "minecraft:yellow_stained_glass_pane", "minecraft:yellow_stained_glass"),
 				new Feature("a rose window's red glass", 1, "minecraft:red_stained_glass_pane", "minecraft:red_stained_glass"),
-				new Feature("pews (dark oak stairs)", 10, "minecraft:dark_oak_stairs"),
-				new Feature("an altar of gold", 1, "minecraft:gold_block"), new Feature("candles", 1, "minecraft:white_candle", "minecraft:candle"),
-				new Feature("banners on the piers", 2, "minecraft:red_wall_banner", "minecraft:white_wall_banner", "minecraft:blue_wall_banner"),
-				new Feature("lecterns in three side chapels", 3, "minecraft:lectern"),
+				new Feature("pews and choir stalls (dark oak stairs)", 80, "minecraft:dark_oak_stairs"),
+				new Feature("an altar of gold", 1, "minecraft:gold_block"), new Feature("candles on the altar and the chapel altars", 6, "minecraft:white_candle", "minecraft:candle"),
+				new Feature("banners in the sanctuary and the transepts", 4, "minecraft:red_wall_banner", "minecraft:white_wall_banner", "minecraft:blue_wall_banner"),
+				new Feature("lecterns in three chapels", 3, "minecraft:lectern"),
 				new Feature("a sacristy's brewing stand", 1, "minecraft:brewing_stand"),
-				new Feature("polished andesite piers", 50, "minecraft:polished_andesite"),
-				new Feature("a deepslate-tile roof", 200, "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tiles"),
-				new Feature("cracked and mossy stone bricks", 50, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
+				new Feature("polished andesite piers and floor", 1500, "minecraft:polished_andesite"),
+				new Feature("a deepslate-tile roof and floor", 3500, "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tiles"),
+				new Feature("cracked and mossy stone bricks", 600, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
 			case "lighthouse" -> List.of( // 52.6: the rebuilt Lighthouse's named parts (js/lighthouse/plan.mjs)
 				new Feature("the Lantern's sea lantern on its pedestal", 1, "minecraft:sea_lantern"),
 				new Feature("the Hood's eave of night lamps", 24, "minecraft:redstone_lamp"),

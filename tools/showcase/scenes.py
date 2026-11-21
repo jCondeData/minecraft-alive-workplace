@@ -2073,6 +2073,14 @@ SCENES = [
            ("02_outside_back", "From the back: the brick wall's quartz pilasters and cornice, the green copper roof of the Covered Stand rising behind it, the two changing rooms at the corners"),
            ("03_outside_west", "From the west: the round end of the bowl, its windows set back on quartz sills, two floodlight masts on the corner pavilions"),
            ("04_outside_east", "From the east: the scoreboard over the east end reading 2 - 1 to the road, the floodlight masts at either side")], furniture=True),
+    # ROADMAP 52.6: the Great Cathedral rebuilt from scratch (REBUILD.md), design A "the Ship of Stone", filmed whole (its
+    # four stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_great_cathedral", "Build families", "The Great Cathedral, rebuilt: from four sides",
+      "the Great Cathedral's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Great Cathedral from the west: the two towers' louvred belfries under stone spires, the rose window over the deep portal between them, the steps up to its doors"),
+           ("02_outside_back", "From the east: the apse's half octagon with its tall windows, the choir aisles' chapels at its sides, the crossing's lead fleche behind"),
+           ("03_outside_west", "From the north: the nave's long roof over its aisles' lean-tos, the clerestory windows, the transept's gable and its chapel on the east wall"),
+           ("04_outside_east", "From the south: the mirror of the north side, the towers' spires rising over the west end and the fleche over the crossing")]),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

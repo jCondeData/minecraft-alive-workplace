@@ -132,6 +132,13 @@ asks for the steps, `latest.log` and any crash report).
   rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
   stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
   is repaired and finished as it was first drawn.
+- **The Great Cathedral is rebuilt from scratch** (52.6): "the Ship of Stone", a Gothic basilica whose tall nave is
+  held up by flying buttresses leaping the aisle roofs. Two west towers climb by ladder through three floors to louvered
+  belfries with two bells each and slim stone spires; a rose window of four colors stands over the triple portal, a
+  lead spire tops the crossing and the east end steps down to a rounded apse round the gold altar. Inside, a raised
+  choir with its stalls and four chapels, among them the sacristy with its brewing stand. Same stage names. A Great
+  Cathedral already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
 - **The Stadium is rebuilt from scratch** (52.6, with Cobblemon): "the Stadium Bowl", one brick bowl of red and white
   seats round a chalked grass field, a trainer's box at each end. A green copper covered stand shelters the back, a
   scoreboard on the east end reads "2 - 1" from both the stands and the road, and the gate is a stepped arch between

@@ -267,6 +267,10 @@ capital moved to another village, changes the cap at once. `realm/` blueprints a
 - The Colony Camp's flag is a plain white banner: the realm's arms can't go on a placed template's banner without new
   code in the arrival, left for the arms work.
 
+QA (lane-c-1121-0953, `QaRebuiltDefense1121cGameTests.qaTheRoyalHallsVaultGrowsAndEveryChestIsWalkedTo`): no job
+block (the belfry's bell allowed), at least 4 chests and more in Level II, Level I's chests in the same cells in Level
+II, every chest walked to from the front, and Level II has its way in from the east.
+
 ## Shared research (33.15)
 
 **What a player sees.** In a realm, a member's research screen (sneak-right-click a Scholar) shows each topic of the

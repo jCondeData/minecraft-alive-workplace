@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Added
+- **The Artisan's House in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it, at every level: a flat-roofed mud and sandstone house with a deep arched doorway, a lattice bay, a windcatcher and
+  a domed kiln; a great golden thatch on acacia posts beside a red termite-mound kiln; a tall white gable under steep
+  snowy slate with a closed storm porch; and a jettied dark log house with a timber kiln barn and a horse's head on the
+  ridge. The same rooms, beds, job blocks, furniture and Level III clay cellar; plains villages keep it as drawn (49.10g).
 - **The Farmstead and the Ranch in their village's culture**: desert, savanna, snowy and taiga villages now build their
   own look of both, at every level. The Farmstead: an oasis farm of mud and sandstone with a dovecote tower and a
   palm-rib shade along the field; a painted mud house under a squat golden thatch pyramid; a pale stone house under a
@@ -44,6 +49,17 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer
+  stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block
+  sends its signal right away instead of staying dark until a block next to it changes. Redstone inside any moved
+  building now looks at its surroundings once the whole building stands (B1160, B1216).
+- A husk piling a sand ramp no longer counts as already over the wall, and gives up its ramp one block high, when it
+  stands outside the village beside your own wall (a garden wall) that lines up with the village wall: only the
+  village wall the ramp leans on counts now, so it piles the ramp to the top and climbs in (B1419).
+- A builder's poured water runs again when a dry stair, slab or Create fluid pipe stands two blocks away: a
+  player's own water wheel or fountain built from a blueprint flows and turns as it did in the original (B1410).
+- Opening the Village Hall first after a restart (or a `/reload`) no longer freezes the server for seconds: the
+  older drawings of the builds are now read only for the buildings asked about, not all thousand at once (B1418).
 - A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a
   build of his own (a house, an upgrade or an old house to take down), and the Steward counts him as free when
   choosing a builder. His own build used to wait for as long as the build he was helping stayed open, which was for

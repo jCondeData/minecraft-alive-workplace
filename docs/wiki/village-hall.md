@@ -424,6 +424,14 @@ bar says whose they are and that they can add the player with `/workplace friend
   only while the Map section is open, so the other sections send nothing more; `HallMap.layout` places the map, the
   legend and Draw a map. `CopperLayout.body` is the box a screen draws its own body in.
 
+**The first open after a restart doesn't stall (B1418).** The advice's cellar tip asks, for each finished building,
+which drawing it was built from (`Cellars.toDig` -> `Refreshes.builtFrom`), and that looks at the blueprint's shipped
+older drawings (`data/aliveworkplace/blueprint_history/`, over a thousand files). They used to be read all at once on the
+first question after a start or `/reload`, freezing the server for 3 to 4 seconds on the first hall open. Now a reload
+only lists the files by blueprint, and a blueprint's own drawings are read the first time it is asked about, then kept
+until the next reload; a blueprint with no older drawing reads nothing. The answers are the same as reading them all
+(same keys, same order, same drawings), proven by `B1418GameTests`.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -592,6 +600,10 @@ point of interest, saved by Minecraft).
   whole). Long and non-Latin names come back exactly (`CaravanSavedNameB1233GameTests`, `QaCaravanNames1114c3GameTests`).
 
 ## Proof
+
+`B1418GameTests` (B1418: the cellar question about a Stone House after a reload reads only the Stone House's older
+drawings, once, and a blueprint with none reads nothing; read one blueprint at a time, the history matches reading it
+all at once).
 
 `HallBoardGameTests` (47.2: the Overview's cards and "Needs you" read from a hall opened by hand, each going where it
 says; an empty village; the Map section's village map only while it is open, with Draw a map still working; a map click

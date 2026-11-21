@@ -457,6 +457,22 @@ public final class StarterBlueprints {
 	/** The clay cellar dug under the house (36.7). */
 	public static final Entry ARTISANS_HOUSE_3 = new Entry(AliveWorkplace.id("artisans_house_3"), new Vec3i(16, 17, 19), 4);
 	/**
+	 * The cultures the Artisan's House has a biome look for (ROADMAP 49.10g, {@code tools/blueprints/js/artisans_house_<culture>};
+	 * see {@link BlueprintLooks}): every level drawn again in a village culture's climate, with the same workroom, kiln,
+	 * hall, beds, job blocks, chests, doors, furniture spots and footprint as the level drawn, and Level III's clay cellar
+	 * under the house. A village of one of these cultures builds its own look; plains (and any culture left out here) the
+	 * Artisan's House as drawn. To hold a look back, take its culture out of this list (BlueprintLooks reads it) and out of
+	 * {@code ArtisansHouseLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> ARTISANS_HOUSE_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Artisan's House, every level, in the order of {@link #ARTISANS_HOUSE_CULTURES}. */
+	public static final List<Entry> ARTISANS_HOUSE_LOOKS = ARTISANS_HOUSE_CULTURES.stream().flatMap(c -> artisansHouseLook(c).stream()).toList();
+
+	/** A culture's look of the Artisan's House's three levels, Level I first, each the size (and Level III the cellar) of the level drawn. */
+	public static List<Entry> artisansHouseLook(String culture) {
+		return cultureLook(culture, ARTISANS_HOUSE, ARTISANS_HOUSE_2, ARTISANS_HOUSE_3);
+	}
+	/**
 	 * The Burgher's Townhouse (34.15, a grade II home: {@code homes/townhouse.json}; rebuilt from scratch, ROADMAP 49.5,
 	 * {@code tools/blueprints/js/townhouse}): a tall merchant's house gable-end to the street, a stone shop and kitchen
 	 * below a jettied timber floor and a steep attic, three beds.
@@ -1060,8 +1076,8 @@ public final class StarterBlueprints {
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
-		// 49.10a/b/e/f: the biome looks of a Level IV (and of Farmstead III), each with its level's basement
-		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS, FARMSTEAD_LOOKS).flatMap(List::stream)
+		// 49.10a/b/e/f/g: the biome looks of a Level IV (and of Farmstead III and Artisan's House III), each with its level's basement
+		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS, FARMSTEAD_LOOKS, ARTISANS_HOUSE_LOOKS).flatMap(List::stream)
 			.filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,

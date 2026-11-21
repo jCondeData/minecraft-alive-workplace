@@ -2824,16 +2824,7 @@ public class BuilderWork extends Behavior<Villager> {
 			return false;
 		}
 		if (water) {
-			// two steps round, as the water beside this spot, told of it, would tick and run into its own neighbours
-			for (int dx = -2; dx <= 2; dx++) {
-				for (int dz = -2; dz <= 2; dz++) {
-					int far = Math.abs(dx) + Math.abs(dz);
-					if (far >= 1 && far <= 2 && drawnDry(plan.targets().get(pos.offset(dx, 0, dz)))) {
-						return true;
-					}
-				}
-			}
-			return false;
+			return couldFloodDrawnDry(level, plan, pos);
 		}
 		for (Direction d : Direction.Plane.HORIZONTAL) {
 			net.minecraft.world.level.material.FluidState there = level.getFluidState(pos.relative(d));
@@ -2842,6 +2833,69 @@ public class BuilderWork extends Behavior<Villager> {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * B1410: whether water poured at {@code pos} could, by vanilla's two-source rule, waterlog a block the drawing has
+	 * dry on its level. Running water never waterlogs anything; only a new source does, and a spot becomes one with two
+	 * sources beside it and a floor (a solid block or a source) under it. So, taking every water source the drawing or
+	 * the world has round here as poured, the open spots that would turn to sources are added until none more do, and
+	 * the pour is risky only if some dry waterloggable spot ends up with two sources beside it over a floor. A lone tank
+	 * source with a stair or pipe two cells off (B1377 stopped such water from ever running) is placed as usual.
+	 */
+	private static boolean couldFloodDrawnDry(ServerLevel level, BuildPlan plan, BlockPos pos) {
+		final int r = 3;
+		int side = 2 * r + 1;
+		boolean[] source = new boolean[side * side];
+		boolean[] open = new boolean[side * side];
+		boolean[] dry = new boolean[side * side];
+		boolean[] floor = new boolean[side * side];
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dz = -r; dz <= r; dz++) {
+				int i = (dx + r) * side + dz + r;
+				BlockPos at = pos.offset(dx, 0, dz);
+				BlockState state = drawnOrStanding(level, plan, at);
+				net.minecraft.world.level.material.FluidState fluid = state.getFluidState();
+				source[i] = dx == 0 && dz == 0 || fluid.is(net.minecraft.tags.FluidTags.WATER) && fluid.isSource()
+					|| level.getFluidState(at).is(net.minecraft.tags.FluidTags.WATER) && level.getFluidState(at).isSource();
+				dry[i] = !source[i] && drawnDry(state);
+				open[i] = !source[i] && !dry[i] && (state.isAir() || state.getBlock() instanceof LiquidBlock || state.canBeReplaced());
+				BlockState under = drawnOrStanding(level, plan, at.below());
+				floor[i] = under.isSolid() || under.getFluidState().is(net.minecraft.tags.FluidTags.WATER) && under.getFluidState().isSource();
+			}
+		}
+		boolean grew = true;
+		while (grew) {
+			grew = false;
+			for (int x = 0; x < side; x++) {
+				for (int z = 0; z < side; z++) {
+					int i = x * side + z;
+					if (source[i] || !floor[i] || !open[i] && !dry[i]) {
+						continue;
+					}
+					int beside = (x > 0 && source[i - side] ? 1 : 0) + (x < side - 1 && source[i + side] ? 1 : 0)
+						+ (z > 0 && source[i - 1] ? 1 : 0) + (z < side - 1 && source[i + 1] ? 1 : 0);
+					if (beside < 2) {
+						continue;
+					}
+					if (dry[i]) {
+						return true;
+					}
+					source[i] = true;
+					grew = true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** B1410: the block the drawing has at {@code at} (air where it clears a room), or what stands there outside it. */
+	private static BlockState drawnOrStanding(ServerLevel level, BuildPlan plan, BlockPos at) {
+		BlockState drawn = plan.targets().get(at);
+		if (drawn != null) {
+			return drawn;
+		}
+		return plan.drawnAirAt(at) ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : level.getBlockState(at);
 	}
 
 	/** B1377: a waterloggable block drawn without water. */

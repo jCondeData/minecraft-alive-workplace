@@ -21,6 +21,20 @@ from holes import load  # noqa: E402
 
 DATA = os.path.join(ROOT, "src/main/resources/data/aliveworkplace")
 KEEP = ("bed", "chest", "barrel", "furnace", "crafting_table", "smoker", "door", "ladder")
+# Blocks whose POI counts as a job block in the looks' GameTests (every POI but a bed's), by type and count (49.10g;
+# the Manor's snowy lightning rod failed its test in 49.10f because nothing checked this before the ship step).
+POI = ("barrel", "blast_furnace", "brewing_stand", "cartography_table", "cauldron", "water_cauldron", "lava_cauldron",
+       "powder_snow_cauldron", "composter", "fletching_table", "grindstone", "lectern", "loom", "smithing_table",
+       "smoker", "stonecutter", "lightning_rod", "bell", "beehive", "bee_nest", "lodestone")
+
+
+def jobs(cells):
+    out = {}
+    for n in cells.values():
+        if n and n.split(":")[-1] in POI:
+            k = n.split(":")[-1].replace("water_", "").replace("lava_", "").replace("powder_snow_", "")
+            out[k] = out.get(k, 0) + 1
+    return out
 
 
 def main(argv):
@@ -43,6 +57,10 @@ def main(argv):
                  if n and any(k in n for k in KEEP) and "trapdoor" not in n and b.get(p) != n]
         print(f"{id_}: {len(shipped)} shipped spots, {len(missing)} missing{' ' + str(missing) if missing else ''}; "
               f"{len(moved)} beds/containers/job blocks/doors moved{' ' + str(moved[:8]) if moved else ''}")
+        ja, jb = jobs(a), jobs(b)
+        if ja != jb:
+            print(f"  job blocks differ: shipped {ja}, look {jb}")
+            ok = False
         if chain:
             print(f"  lamps on another chain length (allowed): {chain}")
         ok = ok and not missing and not moved

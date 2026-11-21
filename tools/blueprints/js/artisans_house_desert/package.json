@@ -1,0 +1,10 @@
+{
+  "name": "artisans-house-desert",
+  "private": true,
+  "type": "module",
+  "description": "Artisan's House, the desert look (ROADMAP 49.10g): the shipped Kiln House drawn again for a hot dry village, a flat-roofed sandstone and mud-brick house with an iwan porch, a domed terracotta updraft kiln smoking beside it and the roof a shaded drying floor for greenware. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

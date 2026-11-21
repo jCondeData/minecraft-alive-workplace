@@ -48,7 +48,10 @@ public final class BlueprintLooks {
 		// 49.10e: the Farmstead (every level, Level III's cellar too) and the Ranch (both levels) likewise
 		// (tools/blueprints/js/farmstead_<culture>, ranch_<culture>), all four of each (the last four passed their critic in round 3)
 		Map.entry(StarterBlueprints.FARMSTEAD.id(), StarterBlueprints.FARMSTEAD_CULTURES),
-		Map.entry(StarterBlueprints.RANCH.id(), StarterBlueprints.RANCH_CULTURES));
+		Map.entry(StarterBlueprints.RANCH.id(), StarterBlueprints.RANCH_CULTURES),
+		// 49.10g: the Artisan's House likewise (tools/blueprints/js/artisans_house_<culture>), every level, Level III's
+		// clay cellar too, all four (passed their critic in round 2)
+		Map.entry(StarterBlueprints.ARTISANS_HOUSE.id(), StarterBlueprints.ARTISANS_HOUSE_CULTURES));
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

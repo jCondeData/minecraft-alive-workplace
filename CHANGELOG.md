@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Farmstead and the Ranch in their village's culture**: desert, savanna, snowy and taiga villages now build their
+  own look of both, at every level. The Farmstead: an oasis farm of mud and sandstone with a dovecote tower and a
+  palm-rib shade along the field; a painted mud house under a squat golden thatch pyramid; a pale stone house under a
+  big white-ridged slate roof with a deep porch gable; and a dark log lodge with a stone byre. The Ranch: mud stall
+  ranges round a crenellated hay tower with a windcatcher; a tiered golden thatch over a mud clerestory; one great
+  snow-capped A with a deep porch mouth; and three stepped log gables with a hay gallery and a horse's head on the
+  ridge. The same rooms, field, job blocks, beds, furniture and Farmstead III root cellar; plains villages keep both as
+  drawn (49.10e).
 ### Changed
 - **The Colossus is rebuilt from scratch** (52.6): "Astride the Road", the Founder striding over the main road, his
   feet planted either side of it so the road and its caravans pass through an arch between them. The base is a dark

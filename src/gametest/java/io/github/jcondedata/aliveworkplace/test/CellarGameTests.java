@@ -152,10 +152,18 @@ public class CellarGameTests implements FabricGameTest {
 	 * builder digs the cellar out of the earth and fits it out, and leaves the Level II as it stood (its chests too).
 	 */
 	private static void levelThreeOverLevelTwo(GameTestHelper helper, StarterBlueprints.Entry two, StarterBlueprints.Entry three) {
+		levelThreeOverLevelTwo(helper, two, three, 6, 9);
+	}
+
+	/**
+	 * {@code two} stands finished on real ground (6 deep) with its corner at {@code x}, {@code z}; a builder given
+	 * {@code three} digs its cellar and keeps the Level II (the workers' chests where they were, under 60% of it placed again).
+	 */
+	static void levelThreeOverLevelTwo(GameTestHelper helper, StarterBlueprints.Entry two, StarterBlueprints.Entry three, int x, int z) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		ground(helper, 30);
-		BlockPos origin = new BlockPos(6, GROUND + 1, 9);
+		BlockPos origin = new BlockPos(x, GROUND + 1, z);
 		BlueprintData.Placement placement = placement(helper, origin);
 		level.getStructureManager().get(two.id()).orElseThrow()
 			.placeInWorld(level, helper.absolutePos(origin), helper.absolutePos(origin), new StructurePlaceSettings(), RandomSource.create(1L), 2);

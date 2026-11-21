@@ -194,6 +194,7 @@ export const CROPS = {
 }
 export const OUTSIDE = {
   fieldLamps: { 1: [[14, 1], [14, 11]], 2: [[14, 21], [9, 21]] },
-  woodpile: { 1: [[0, 1, 7], [0, 1, 8], [0, 2, 7]] },
-  jars: { 1: [[0, 1, 9]], 2: [] },
+  // on the yard's ground (y 0, as the field and the stack's foot), not a block up in the air
+  woodpile: { 1: [[0, 0, 7], [0, 0, 8], [0, 1, 7]] },
+  jars: { 1: [[0, 0, 9]], 2: [] },
 }

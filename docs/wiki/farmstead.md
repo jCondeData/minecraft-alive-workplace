@@ -4,7 +4,7 @@ Milestone 49, item 49.9: the Farmer's workplace (27.14) and its cellared Level I
 rebuild kit (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/farmstead.md`), a blind design, and
 a critic who scored old and new side by side (silhouette, depth, interior and detail 4/4/4/4 against 3/3/2/3) and,
 after one slip in the code was fixed, said SHIP (`tools/blueprints/briefs/farmstead_critic.md`).
-Roadmap items: 27.14, 36.7, 49.9
+Roadmap items: 27.14, 36.7, 49.9, 49.10e
 
 ## 1. What a player sees
 
@@ -34,6 +34,16 @@ Roadmap items: 27.14, 36.7, 49.9
 - A Farmstead standing in the older drawing keeps it until its owner presses **Refresh** on the hall's Repairs page
   (36.21). The composters, the chests and the bed stand in the same cells in the old and new drawings, so a refreshed
   Farmstead keeps exactly one composter (two in II).
+- **In its village's culture** (49.10e): a desert village builds every level as an oasis farm (mud and sandstone under
+  flat roofs, a palm-rib shade on palm-trunk posts along the field where the composters and harvest chests stand, a
+  dovecote tower over the house and a well sweep at the field; Level II's passage and granary step up behind); a
+  savanna village as the Painted Homestead (a painted mud house under one squat golden thatch pyramid with a tall stack,
+  a veranda along the field, and at II a taller thatch over the barn behind it); a snowy village under a big
+  white-ridged slate roof on a pale stone foot, with a fat stack, a pointed gablet and a deep porch gable on the field
+  side (the steeper roof stands a block taller at I and three at II and III); a taiga village as a dark log lodge, a
+  small gable to the road crossing a broad slate ridge, with a stone byre and the gallery carried on along the barn. The
+  hall, the field, the composters, the chests, the bed, the doors, every furniture spot and Level III's root cellar are
+  the same. Plains villages build the Farmstead as drawn. The Blueprint Table lists the looks.
 
 ## 2. How it works
 
@@ -53,6 +63,14 @@ Roadmap items: 27.14, 36.7, 49.9
   Steward's renewal of an old Farmer's house (`steward_renewal/farmer.json`) work as before; Level I is one block
   shallower than the old drawing, so it fits every old plot the old one did.
 - Level III is Level II with the cellar: the only change above ground is the hatch over the ladder.
+- The culture looks (49.10e) are drawn in `tools/blueprints/js/farmstead_<culture>/` from the brief and the shipped
+  plan (`look_spots.py` says SAME BUILDING: every furniture spot, the composters, the chests and the doors in the same
+  cells at every level; the critic's scorecards are `tools/blueprints/briefs/farmstead_looks_critic.md`); `SHIP=1
+  build.sh` saves them as `structure/looks/<culture>/farmstead[_n]` with their furniture spots (III with `--basement 4
+  --cellar`, the same cellar as the drawing's). `StarterBlueprints.FARMSTEAD_CULTURES` lists the cultures that have a
+  look (`BlueprintLooks` reads it; take a culture out to hold its look back), `farmsteadLook(culture)` each look's three
+  levels (the snowy look 14, 18 and 18 high) and `FARMSTEAD_LOOKS` all of them; the Level IIIs are among the basement
+  builds. Scene: `rebuild_farmstead_looks`.
 
 ## 3. Switches
 
@@ -88,4 +106,7 @@ sites mid-build keep their drawing until a refresh.
 built from its supply report, the Farmers walk in and take their composters, and I's Farmer takes on the field,
 harvests and stores), `QaNewWorkplacesGameTests.qaFarmsteadHoldsItsFieldAndBed`, `CellarGameTests`,
 `BasementGameTests`, `QaBasementGameTests`, the build reserve tests, `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`,
-`ModdedLibraryGameTests`, `QaFurnishedRooms1031GameTests`, `QaRefreshHistory1028GameTests`. Scene `rebuild_farmstead`.
+`ModdedLibraryGameTests`, `QaFurnishedRooms1031GameTests`, `QaRefreshHistory1028GameTests`. Scene `rebuild_farmstead`. `FarmsteadLooksGameTests` (culture pick, fallbacks, base/upgrade/lock, cellar and map kind
+per look, footprints, beds, composters and furniture spots per level, every field watered and sown, each look's III its
+II over the cellar, Level I of each look built to DONE, the snowy III's cellar dug under a finished snowy II, a desert
+site saved mid-build reloads as desert). Scene `rebuild_farmstead_looks`.

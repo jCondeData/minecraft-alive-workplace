@@ -1,0 +1,10 @@
+{
+  "name": "ranch-desert",
+  "private": true,
+  "type": "module",
+  "description": "Ranch, the desert look (ROADMAP 49.10e): the shipped Ranch drawn again as a caravan town's horse and camel stable: a mud-brick hay tower crowned with merlons and a windcatcher over two flat-roofed stall ranges of coursed sandstone, an arched gateway with the ranch's banner over a walled yard and its stone trough, and (II) a bunk house behind an arcaded loggia and an adobe-pier corral with date palms. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

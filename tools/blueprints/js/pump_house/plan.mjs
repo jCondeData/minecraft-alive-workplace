@@ -86,7 +86,11 @@ export const MASSES = {
 export const MACHINE = {
   pool: [[12, 1, 3], [13, 1, 3], [12, 1, 4], [13, 1, 4]], // four poured sources, a 2 x 2 that refills itself
   curb: [[12, 1, 2], [13, 1, 2], [14, 1, 3], [14, 1, 4]], // (14, 1, 2) is left as floor: the walked spot by the pool
-  intake: [[12, 2, 3]], // open end down into the pool, east into the pump
+  // B1411: the cistern is two deep. A Create pipe shapes itself from its neighbours (a pipe, pump or tank, never
+  // water), so a lone corner over the pool went straight east-west and drew from nothing: the intake is now a corner
+  // into the pump and a straight pipe standing in the pool, its open end down on the sump's sources under it
+  sump: [[12, 0, 3], [13, 0, 3], [12, 0, 4], [13, 0, 4]], // the pool's lower course, on the ground under the build
+  intake: [[12, 2, 3], [12, 1, 3]], // east into the pump, down through the pool, open on the sump below
   pump: { at: [13, 2, 3], facing: 'east' }, // pushes east, its axle along x
   // up the shaft, into the tank's foot. It steps west at y 4 (50.13 ship): a dry waterloggable block (a pipe) two cells
   // beside the cup's source at its own height makes the builder pour that source quietly (BuilderWork.keepsDrawnDry,

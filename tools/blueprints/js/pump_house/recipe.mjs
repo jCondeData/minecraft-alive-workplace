@@ -56,8 +56,12 @@ export function draw() {
   // the cistern: a curb round four poured sources at the tower's foot (it refills itself as the pump draws)
   for (const [x, y, z] of M.curb) c.set(x, y, z, wet)
   pool(c, M.pool.map(([x, , z]) => [x, z]), 1)
+  // the sump under it (B1411), resting on the ground as a well's water does, shut in by the plinth on four sides
+  for (const [x, y, z] of M.sump) c.set(x, y, z, 'water', { level: '0' })
   // the pump over the cistern, its cog meshing beside it, the drive through the east wall to the wheel
-  pipeRun(c, M.intake, { before: 'down', after: 'east' })
+  pipeRun(c, M.intake, { before: 'east', after: 'down' })
+  const [ix, iy, iz] = M.intake[M.intake.length - 1]
+  c.set(ix, iy, iz, 'create:fluid_pipe', { ...c.get(ix, iy, iz).props, waterlogged: 'true' }) // it stands in the pool
   c.set(...M.pump.at, 'create:mechanical_pump', { facing: M.pump.facing })
   cog(c, M.cog.at, M.cog.axis)
   shaftRun(c, M.shafts, 'x')

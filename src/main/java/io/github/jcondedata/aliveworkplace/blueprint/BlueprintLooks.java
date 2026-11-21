@@ -25,26 +25,30 @@ public final class BlueprintLooks {
 	public static final List<String> CULTURES = List.of("desert", "savanna", "snowy", "taiga");
 
 	/** The looks drawn for each first-tier blueprint, besides the one as drawn (tools/blueprints/pokemon_looks.py). */
-	private static final Map<ResourceLocation, List<String>> LOOKS = Map.of(StarterBlueprints.POKEMON_CENTER.id(), List.of("lodge", "plaza"),
+	private static final Map<ResourceLocation, List<String>> LOOKS = Map.ofEntries(Map.entry(StarterBlueprints.POKEMON_CENTER.id(), List.of("lodge", "plaza")),
 		// 41.1: the Waystone Plaza in each village culture's style, plains as drawn (tools/blueprints/waystones.py)
-		io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.LOOKS,
+		Map.entry(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.PLAZA, io.github.jcondedata.aliveworkplace.hall.VillageWaystones.LOOKS),
 		// 49.10a: the Starter Cottage in each village culture's climate, every level (tools/blueprints/js/starter_cottage_<culture>)
-		StarterBlueprints.STARTER_COTTAGE.id(), CULTURES,
+		Map.entry(StarterBlueprints.STARTER_COTTAGE.id(), CULTURES),
 		// 49.10b: the Stone House likewise (tools/blueprints/js/stone_house_<culture>); its snowy look went back to the
 		// critic three times and waits for the owner, so a snowy village builds it as drawn
-		StarterBlueprints.STONE_HOUSE.id(), List.of("desert", "savanna", "taiga"),
+		Map.entry(StarterBlueprints.STONE_HOUSE.id(), List.of("desert", "savanna", "taiga")),
 		// 49.10b: the Townhouse likewise (tools/blueprints/js/townhouse_<culture>); its snowy and taiga looks went back to
 		// the critic three times and wait for the owner, so those villages build it as drawn
-		StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna"),
+		Map.entry(StarterBlueprints.TOWNHOUSE.id(), List.of("desert", "savanna")),
 		// 49.10c: the Terrace likewise (tools/blueprints/js/terrace_<culture>), all four (snowy passed its critic in round 3)
-		StarterBlueprints.TERRACE.id(), CULTURES,
+		Map.entry(StarterBlueprints.TERRACE.id(), CULTURES),
 		// 49.10f: the Manor likewise (tools/blueprints/js/manor_<culture>), every level, all four (snowy passed its critic in
 		// round 3, taiga in round 2); the ballroom stays in the same cells, so the Noble's Ball finds it in any look
-		StarterBlueprints.MANOR.id(), CULTURES,
+		Map.entry(StarterBlueprints.MANOR.id(), CULTURES),
 		// 49.10d: the Weaver's Cottage (both levels) and the Daub House likewise (tools/blueprints/js/weavers_cottage_<culture>,
 		// house_t1_b_<culture>); the cultures each has a look for are listed beside its entry in StarterBlueprints
-		StarterBlueprints.WEAVERS_COTTAGE.id(), StarterBlueprints.WEAVERS_COTTAGE_CULTURES,
-		StarterBlueprints.DAUB_HOUSE.id(), StarterBlueprints.DAUB_HOUSE_CULTURES);
+		Map.entry(StarterBlueprints.WEAVERS_COTTAGE.id(), StarterBlueprints.WEAVERS_COTTAGE_CULTURES),
+		Map.entry(StarterBlueprints.DAUB_HOUSE.id(), StarterBlueprints.DAUB_HOUSE_CULTURES),
+		// 49.10e: the Farmstead (every level, Level III's cellar too) and the Ranch (both levels) likewise
+		// (tools/blueprints/js/farmstead_<culture>, ranch_<culture>), all four of each (the last four passed their critic in round 3)
+		Map.entry(StarterBlueprints.FARMSTEAD.id(), StarterBlueprints.FARMSTEAD_CULTURES),
+		Map.entry(StarterBlueprints.RANCH.id(), StarterBlueprints.RANCH_CULTURES));
 
 	/** The blueprint {@code id} is a look of ({@code looks/lodge/pokemon_center_2} is {@code pokemon_center_2}); {@code id} itself if none. */
 	public static ResourceLocation base(ResourceLocation id) {

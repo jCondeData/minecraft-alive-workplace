@@ -1,0 +1,10 @@
+{
+  "name": "farmstead-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Farmstead, the savanna look (ROADMAP 49.10e): the shipped Farmstead drawn again as a savanna homestead: a painted mud house under one golden thatch hip with the field veranda under its east eave, (II) a tall mud grain barn under a higher hip behind it, the veranda running on along it, (III) a granite root cellar. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

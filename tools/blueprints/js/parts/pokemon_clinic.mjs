@@ -38,12 +38,17 @@ export function deskRun(c, cells, facing, { base, top, wood }) {
  *  runs down to just above the ring outside it (no see-through step). Rings over the room (k <= `lined`) get a second,
  *  inner course of `lining` behind the red one (from just above the ring two out, up to under its own red), so the vault
  *  reads pale from under it and red from outside. `keep(x, y, z)` false leaves a cell (an eye, a cupola). Returns the
- *  cells of each ring (rings[k]: [x, z]). */
-export function ringDome(c, { cx, cz, H, lined = -1 }, roof, lining = null, keep = () => true) {
+ *  cells of each ring (rings[k]: [x, z]). `rings` (optional, [k] -> [x, z] cells) gives the rings instead, e.g. the
+ *  last two as a drum's wall ring and the ring one out from it, so the eave overhangs the wall by one all round.
+ *  `coffered` (optional): rings over the room (k <= `lined`) get neither lining nor the block behind the outer ring's
+ *  stair, so the vault seen from under it is the dome's own stepped courses, each step a coffer shut by the tall half
+ *  of the stair outside it; a coffer stays filled where a stair beside it shows it a side, not its tall back. */
+export function ringDome(c, { cx, cz, H, lined = -1, rings: given = null, coffered = false }, roof, lining = null, keep = () => true) {
   const R = H.length - 1
   const rings = []
   const seen = new Set()
-  for (let k = 0; k <= R; k++) {
+  if (given) for (let k = 0; k <= R; k++) rings[k] = given[k].map(([x, z]) => [x, z])
+  else for (let k = 0; k <= R; k++) {
     rings[k] = []
     for (let dx = -k; dx <= k; dx++) for (let dz = -k; dz <= k; dz++) {
       if (dx * dx + dz * dz > k * k + k || seen.has(`${dx},${dz}`)) continue
@@ -61,10 +66,29 @@ export function ringDome(c, { cx, cz, H, lined = -1 }, roof, lining = null, keep
         if (y === H[k] && inner > H[k] && roof.stairs) put(x, y, z, roof.stairs, { facing: FACE_IN(dx, dz), half: 'bottom', shape: 'straight', waterlogged: 'false' })
         else put(x, y, z, roof.full)
       }
+      if (coffered && k <= lined) continue
       if (k < R && (k > lined || !lining)) put(x, outH, z, roof.full) // behind the outer ring's stair: closes the step
       if (k > lined || !lining) continue
       const from = k + 2 <= R ? H[k + 2] + 1 : redFrom - 1
       for (let y = Math.min(from, redFrom - 1); y < redFrom; y++) put(x, y, z, lining)
+    }
+  }
+  if (coffered) {
+    const D = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] }
+    const st0 = roof.stairs && (roof.stairs.includes(':') ? roof.stairs : `minecraft:${roof.stairs}`)
+    for (let k = 0; k < R && k <= lined; k++) {
+      const y = H[k + 1]
+      for (const [x, z] of rings[k]) {
+        if (c.get(x, y, z) || !keep(x, y, z)) continue
+        const shut = [[1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dz]) => {
+          const nx = x + dx, nz = z + dz, b = c.get(nx, y, nz)
+          if (!b) return !!c.get(nx, y + 1, nz) // another coffer (or the hall) beside: shut if roofed
+          if (b.id !== st0) return true
+          const [fx, fz] = D[b.props.facing]
+          return nx + fx === x && nz + fz === z // its tall back toward the coffer
+        })
+        if (!shut) put(x, y, z, roof.full)
+      }
     }
   }
   // a lining cell the sky can see sideways (beside air, or beside a stair the game may turn into an outer corner, which

@@ -4,7 +4,7 @@ Milestone 49, item 49.9: the Rancher's workplace, rebuilt from scratch with the 
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/ranch.md`), a blind design, and a critic who
 scored old and new side by side (silhouette, depth, interior and detail 4/4/4/3 against 3/2/2/3 for Level I, 4/4/4/4
 against 3/2/2/3 for Level II) and said SHIP (`tools/blueprints/briefs/ranch_critic.md`).
-Roadmap items: 49.9
+Roadmap items: 49.9, 49.10e
 
 ## 1. What a player sees
 
@@ -37,6 +37,15 @@ Roadmap items: 49.9
 - A Ranch standing in the older drawing keeps it until its owner presses **Refresh** on the hall's Repairs page
   (36.21). The smoker and the first chest stand in the same cells in the old and new drawings, and the cells of the
   old drawing's water cauldrons are left open, so a refreshed Ranch keeps its blocks where they were.
+- **In its village's culture** (49.10e): a desert village builds both levels in mud and stone (low stall ranges either
+  side of a crenellated hay tower with a windcatcher, a gateway into the yard, a palm-rib ramada; at II a lower block
+  and a walled corral); a savanna village under a tiered golden roof (a wide low thatch skirt round a tall packed-mud
+  clerestory with a pot on top, and at II a smaller roof of the same kind beside it and a kraal behind; two blocks lower
+  than the drawing); a snowy village as one great snow-capped A with a deep dark porch mouth, dormers and barred stall
+  lights in its slate sides, and at II a lesser A beside it; a taiga village as three stepped log gables with a gallery
+  for pitching hay, a hitching rail and a carved horse's head on the ridge. The aisle, the stalls, the hay loft, the
+  smoker, the chests, the bunk, the yard, the paddock and every furniture spot are the same. Plains villages build the
+  Ranch as drawn. The Blueprint Table lists the looks.
 
 ## 2. How it works
 
@@ -54,6 +63,12 @@ Roadmap items: 49.9
 - The Rancher's chests are within 8 blocks of his smoker (`SupplyContainers.find`), so he finds his saddles and feed.
 - Level II is Level I with the wing and the paddock added: 822 of Level I's 824 blocks stay as they are, so the upgrade
   builds only what is new.
+- The culture looks (49.10e) are drawn in `tools/blueprints/js/ranch_<culture>/` from the brief and the shipped plan
+  (`look_spots.py` says SAME BUILDING; the critic's scorecards are `tools/blueprints/briefs/ranch_looks_critic.md`);
+  `SHIP=1 build.sh` saves them as `structure/looks/<culture>/ranch[_2]` with their furniture spots.
+  `StarterBlueprints.RANCH_CULTURES` lists the cultures that have a look (`BlueprintLooks` reads it; take a culture out
+  to hold its look back), `ranchLook(culture)` each look's two levels (the savanna look 14 high) and `RANCH_LOOKS` all of
+  them. Scene: `rebuild_ranch_looks`.
 
 ## 3. Switches
 
@@ -91,4 +106,6 @@ drawing until a refresh.
 `BuilderGameTests.buildsRanch` (Level I built whole from its plan's materials), `starterUpgradesKeepMostOfTheirBase`
 and `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, the `workplace_ranch` case of `WorkplacesGameTests`,
 `ModdedLibraryGameTests`, `QaBuildReachGameTests`, `QaFurnishedRooms1031GameTests`, `FurnitureSpotGameTests`,
-`QaRefreshHistory1028GameTests`. Scene `rebuild_ranch`.
+`QaRefreshHistory1028GameTests`. Scene `rebuild_ranch`. `RanchLooksGameTests` (culture pick, fallbacks, base/upgrade/lock and map kind per look,
+footprints, beds, job blocks and furniture spots per level, Level I of each look built to DONE, a desert site saved
+mid-build reloads as desert). Scene `rebuild_ranch_looks`.

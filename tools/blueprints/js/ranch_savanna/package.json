@@ -1,0 +1,10 @@
+{
+  "name": "ranch-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Ranch, the savanna look (ROADMAP 49.10e): the shipped Ranch drawn again as a herder's stable: a red granite stable range under a skirt of golden thatch hipped on all four sides, the hay loft rising out of it as a mud clerestory under a second, higher thatch hip with a clay pot on its ridge, a thatched kraal gate before an acacia-railed yard, and (II) a mud bunk house under a thatch pyramid and a kraal behind with an acacia shade tree and a thatched shelter. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

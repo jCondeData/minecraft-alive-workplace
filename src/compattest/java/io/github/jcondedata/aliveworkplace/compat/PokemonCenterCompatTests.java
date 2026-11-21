@@ -177,19 +177,19 @@ public class PokemonCenterCompatTests implements FabricGameTest {
 		build(helper, StarterBlueprints.POKEMON_CENTER, List.of(new BlockPos(6, 1, 7), new BlockPos(10, 1, 7)));
 	}
 
-	/** And Pokémon Center II: the lodge, its Shop Counter and beds, and the Pasture Block in the garden. */
+	/** And Pokémon Center II (50.12, the Red Dome): the Trade Hall's Shop Counter and the Pasture Block in the garden. */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"pokemon_center_2_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "pokemon_center_2_build")
 	public void aBuilderBuildsPokemonCenterII(GameTestHelper helper) {
-		build(helper, StarterBlueprints.POKEMON_CENTER_2, List.of(new BlockPos(6, 1, 22), new BlockPos(6, 1, 14)));
+		build(helper, StarterBlueprints.POKEMON_CENTER_2, List.of(new BlockPos(9, 1, 19), new BlockPos(15, 1, 7)));
 	}
 
 	/** ROADMAP 28.7a: a builder builds the Mountain Lodge II with Cobblemon: its Healing Machine, Pasture Block and Shop Counter in place. */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"pokemon_center_lodge_2_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "pokemon_center_lodge_2_build")
 	public void aBuilderBuildsTheLodgePokemonCenterII(GameTestHelper helper) {
-		// 21 wide: at (8, 2, 3) it and its landscaping margin (a block round it) stay inside the 30-wide area
-		build(helper, StarterBlueprints.POKEMON_CENTER_LODGE_2, List.of(new BlockPos(6, 1, 7), new BlockPos(6, 1, 15), new BlockPos(16, 1, 6)),
+		// 21 wide and 26 deep: at (8, 2, 3) it and its landscaping margin (a block round it) stay inside the 30-wide area
+		build(helper, StarterBlueprints.POKEMON_CENTER_LODGE_2, List.of(new BlockPos(6, 1, 7), new BlockPos(10, 1, 19), new BlockPos(15, 1, 7)),
 			new BlockPos(8, 2, 3));
 	}
 

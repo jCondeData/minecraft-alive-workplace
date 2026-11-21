@@ -1,0 +1,10 @@
+{
+  "name": "farmstead-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Farmstead, the taiga look (ROADMAP 49.10e): the shipped Farmstead drawn again as a forest croft: a log house gable-on to the road on a mossy fieldstone footing under a broad slate gable, a svalgang along the field under one low eave, and (II) a tall cross barn of logs on a fieldstone byre with a hoist gablet; (III) a root cellar. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

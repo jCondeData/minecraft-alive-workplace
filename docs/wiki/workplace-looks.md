@@ -65,6 +65,16 @@ Roadmap items: 26.11, 36.8, B170, 36.21, B639, 50.1, 50.2, 50.3, 50.5, 50.8, 50.
   colored carpets) dry on trays and the Ball Smith sleeps; a black beam band with a white boss over the door between the
   two, so the front reads as a Poké Ball; a brick forge stack up the east side and a store lean-to of chests behind.
   15 x 18 x 17; standing Ball Workshops keep their old drawing until refreshed, village ones keep their look.
+- **Pokémon Center** (Cobblemon; rebuilt from scratch in 50.12, "the Red Dome"): a white eight-sided hall under a
+  stepped red dome with a glazed eye, stone pilasters at its corners and windows set back over sills. Inside, benches line
+  a red aisle to the desk, the Healing Machine right under the eye, the PC beside it and a stocked corner of barrels,
+  chests and shelves behind. 13 x 16 x 13. Pokémon Center II adds a gabled Trade Hall with the Shop Counter on the east
+  and a planted garden behind, with paths to a domed pavilion and the Pasture Block (20 x 16 x 26). Its **Mountain
+  Lodge** look was rebuilt too: a log lodge on a stone plinth under a steep red front gable with a porch deck, a jettied
+  cross gable on the east, a stone chimney and dormer on the west and a back porch (13 x 15 x 13); its II carries the
+  cross gable east into the Trader's wing, with a paddock, a field shelter and stepping-stone paths behind (21 x 15 x 26).
+  The Sunny Plaza look is unchanged. Standing Pokémon Centers keep their old drawing until refreshed, and their Shop
+  Counter and Pasture Block keep working where they stand.
 - **Trade Hall** (Cobblemon): a market hall, its brick-and-timber upper story on stone arches over an open trading
   floor, an open cupola on the ridge.
 - **School** (Cobblemon): a brick U round a little courtyard with the tutor's Training Post in it.
@@ -162,9 +172,13 @@ taken by its worker), `BuilderGameTests.starterBlueprintsMatchTheirDeclaredSizes
 `VillageGameTests.noVillageHouseHasATrapdoorInItsFrontWalkRow`, `VillageGameTests.everyVillageTypeCanGrowTheOtherHouses`,
 `VillageGameTests.everyVillageTemplatePlacedLikeAVillageKeepsTheGroundInFrontOfItsDoor`, `CountryWorkplacesGameTests`,
 `BuildersWorkshopGameTests` (50.1: the rebuilt workshop's one table, bed, chests and crane; walked in to by the
-front door and up the ladder; built to DONE within 12,000 ticks; its village pieces' fixed cells in all five styles).
+front door and up the ladder; built to DONE within 12,000 ticks; its village pieces' fixed cells in all five styles),
+`PokemonCenterCompatTests` and `BuilderGameTests.buildsPokemonCenter*` (50.12: the rebuilt Pokémon Center and Lodge, both
+levels, built from exactly their materials), `QaDoorwayBugGameTests` and `QaBuilderFixes1027bGameTests` (walks in by the
+lodge's street and back doors, and out turned), `OldPokemonCenterDrawingCompatTests` (an old-drawing II's Shop Counter and
+Pasture Block still taken where they stand).
 
-Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21).
+Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21), `rebuild_pokemon_center` and `rebuild_pokemon_center_looks` (50.12).
 
 Measurement (not part of `build`): `tools/modtest/village_density.sh` runs `VillageDensityMeasure` alone, 50 village
 starts per type at fixed seeds, and prints houses per village (mean, lowest, vanilla, ours) and footprint per type; the

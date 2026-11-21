@@ -1,0 +1,10 @@
+{
+  "name": "ranch-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Ranch, the taiga look (ROADMAP 49.10e): the shipped Ranch drawn again as a northern horse barn: three log gables to the road (a tall hay barn between two stall pens), a gallery on log posts across the tall gable with the hay door on it, a carved horse's head (konek) on the ridge, a fieldstone stack up the back; (II) a log bunkhouse with a gabled porch and a split-rail paddock with a run-in shed and a hesje. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

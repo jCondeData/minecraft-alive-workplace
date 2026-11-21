@@ -425,6 +425,11 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   begun there, and once let out it goes back, finishes the first (5 rungs) and gets over.
 - `LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt`: a player's hay bale where the ladder would go is
   never replaced; the ladder goes up in air beside it and the climber is still over the wall within 600 ticks.
+- `QaSiegeClimbs1121dGameTests` (QA, B1389 and B726): a climber over the rebuilt Stone Wall (from a bale, from flat
+  ground, onto ground one block higher inside, with and without a bale) and over a Palisade comes down off the inner
+  stairs onto the ground and shoots his target, never standing up on the wall for 5 seconds; a husk walking round the
+  corner to a side-wall ramp is never let go while outside, piles the ramp to the top and gets in, and so does one
+  whose waiting spot is fenced off (it waits beside the ramp).
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

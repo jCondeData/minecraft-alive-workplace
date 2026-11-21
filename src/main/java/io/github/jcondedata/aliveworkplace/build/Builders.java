@@ -141,9 +141,12 @@ public final class Builders {
 		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
 		if (job != null) {
 			BuildSite site = BuildSiteManager.get(level).get(job.siteId());
-			if (site != null && !site.isQueued() && !(job.helper() && site.isDone())) {
+			if (site != null && !site.isQueued() && !(job.helper() && site.isDone()) && !(lendsAHand(job, site) && hasQueue(level, villager))) {
 				return site;
 			}
+			// (B789: a helper with a build of his own waiting leaves the crew for it, as when a player hands him a blueprint.
+			// A site queued for him while he helped, by the Steward or the hall, waited for as long as the build he helped
+			// stayed open: for good when its lead stood waiting for materials. Worlds saved so pick it up here too.)
 			if (job.helper()) {
 				stopHelping(level, villager);
 			} else {
@@ -157,6 +160,30 @@ public final class Builders {
 			return crew;
 		}
 		return startNext(level, villager);
+	}
+
+	/** True for a helper on another builder's build; a Wonder's crew is not lending a hand, it is called (35.5). */
+	private static boolean lendsAHand(BuilderJob job, BuildSite site) {
+		return job.helper() && site.wonder() == null;
+	}
+
+	private static boolean hasQueue(ServerLevel level, Villager villager) {
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (site.isQueued() && villager.getUUID().equals(site.builder())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * True while {@code villager} has a build of their own under way. Lending a hand on another builder's build is not
+	 * one (B789): a build given to a helper starts at once, and he leaves the crew for it ({@link #start}).
+	 */
+	public static boolean hasOwnBuild(ServerLevel level, Villager villager) {
+		BuildSite site = activeSite(level, villager);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
+		return site != null && !(job != null && job.siteId().equals(site.id()) && lendsAHand(job, site));
 	}
 
 	/** The site to work on this shift: their own (or next queued) build, else one nearby to help with. */

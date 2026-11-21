@@ -82,7 +82,15 @@ Skipping heart event mypack:
 # WonderDataGameTests and QaWonderRulesGameTests feed the Wonder loader broken files (owner_pack, qa_pack) to prove each is skipped with its path and reason (35.2).
 Skipping Wonder (qa_pack|owner_pack):wonders/
 
+# QaEveryBlockSaveGameTests (and the other QaEvery*Save/Codec tests) put a value of every other kind (-7, Long.MIN_VALUE, "x", [],
+# ["x"], [I;1,2,3]) under each key a block reads, items among them, to prove the block still loads; vanilla logs each item it drops
+# (lane-e-1121-0713; the bare 'Not a string' stays visible, too plain to tell from a real save's).
+Tried to load invalid item: 'Not a map: (\[I;1,2,3\]|-9223372036854775808L|\["x"\]|\[\]|-7); Not a string'
+
 # --- other mods in the compat test server (dev environment, not our code) ---
+# Tom's Storage queues each block entity's onLoad for the next tick; QaModdedRefresh1115cCompatTests (Others) places a modded Storage
+# Hall and Warehouse and clears them in the same tick, so the queued onLoad finds air (lane-e-1121-0713; a builder never does).
+as it does not exist in Block\{minecraft:air\}(?:\n[^\n]*){1,2}com\.tom\.storagemod\.block\.entity\.\w+\.onLoad
 # Modded entities have no DataFixerUpper schema; every mod's entity logs this once.
 No data fixer registered for
 # Carved Wood ships pale oak (1.21.4) recipes and advancements that 1.21.1 can't parse.

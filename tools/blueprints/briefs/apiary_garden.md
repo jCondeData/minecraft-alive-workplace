@@ -97,7 +97,7 @@ library-wide. How many hives each level has is the designer's, with at least one
   the four stocked barrels (1/3/4/5, 2, 4) and the builder (3, 2, 3) stand north-west of it. (`huge_area`, 30 x 20 x 30,
   is not used for this family.)
 - **Plot (II): no test builds it**; keep it within 18 wide x 16 tall x 18 deep so it stays a garden-zone plot (the
-  builder soak spaces builds 18 apart, `Soak.BUILD_STEP`, B690).
+  builder soak now spaces plots by each build's own width, B690, but a small plot keeps the soak compact).
 - **Smaller is better for renewals:** a Beekeeper's old house is replaced by Level I only if I fits that house's
   footprint plus 3 blocks round it, its front on the old front's line centred on the old door (`Renewals.fit`,
   `MARGIN` 3).

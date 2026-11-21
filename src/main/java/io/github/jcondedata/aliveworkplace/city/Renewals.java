@@ -425,7 +425,7 @@ public final class Renewals {
 		Villager villager = builder.get().villager();
 		UUID owner = entity.owner() != null ? entity.owner() : player != null ? player.getUUID() : villager.getUUID();
 		String ownerName = entity.owner() != null ? entity.ownerName() : player != null ? player.getGameProfile().getName() : "";
-		boolean busy = Builders.activeSite(level, villager) != null;
+		boolean busy = Builders.hasOwnBuild(level, villager); // (B789: a helper on another's build starts it at once)
 		BlueprintData.Placement old = new BlueprintData.Placement(Ids.of(level.dimension()),
 			new BlockPos(oldBox.get().minX(), oldBox.get().minY(), oldBox.get().minZ()), Rotation.NONE, Mirror.NONE);
 		BuildSite site = busy ? Builders.enqueue(level, villager, owner, ownerName, scan, old) : Builders.start(level, villager, owner, ownerName, scan, old);

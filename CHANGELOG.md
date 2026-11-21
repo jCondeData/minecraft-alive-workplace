@@ -44,6 +44,11 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a
+  build of his own (a house, an upgrade or an old house to take down), and the Steward counts him as free when
+  choosing a builder. His own build used to wait for as long as the build he was helping stayed open, which was for
+  good when its lead stood waiting for materials: an old house's take-down never started. Worlds saved with a build
+  waiting like that pick it up by themselves (B789).
 - The Pump House's tank fills with water now. Its intake pipe dipped into the cistern as a bend, which Create
   straightened out toward an empty window, so the pump turned but drew nothing. The cistern is now two deep, and the
   intake runs straight down through it to draw from the bottom (B1411).

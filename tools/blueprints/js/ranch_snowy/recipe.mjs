@@ -5,10 +5,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, IDS, PALETTE, BARN, FOREBAY, STACK, DORMERS, EAVE_POSTS, WING, PADDOCK, OPENINGS, FURNITURE } from './plan.mjs'
+import { SIZE, IDS, PALETTE, BARN, FOREBAY, STACK, DORMERS, EAVE_POSTS, WING, PADDOCK, OPENINGS, FURNITURE, DRIFT } from './plan.mjs'
 import {
-  Canvas, mix, stair, slab, post, floor, wallPanel, window, door, quoins, gableRoof, flaredGableRoof, gableWall,
-  railingRun, furnitureParts, doubleChest, stallFront, horseTrough, paddockFence, lampPost, snowLoad, snowSkirt,
+  Canvas, stair, post, floor, wallPanel, window, door, quoins, gableRoof, flaredGableRoof, gableWall,
+  railingRun, furnitureParts, doubleChest, stallFront, horseTrough, paddockFence, lampPost, snowLoad,
   rakeVerge,
 } from '../parts/index.mjs'
 import { steepWallDormer } from '../parts/ranch_snowy_dormer.mjs'
@@ -30,7 +30,6 @@ export function draw(level = 1) {
   const c = new Canvas(SIZE[level])
   const P = PALETTE
   const B = BARN, W = B.walls, A = B.aisle
-  const field = mix(P.field, 7)
 
   // --- Pass 1: block-out and structure -------------------------------------------------------------------------
   // the plinth under every wall line and the stall fronts; the aisle's setts, the stalls' hay bedding
@@ -70,9 +69,10 @@ export function draw(level = 1) {
   for (const x of sl.xs) for (const z of sl.zs) c.set(x, sl.y, z, P.bars)
   for (const w of OPENINGS.backWindows) window(c, w.cells, w.out, w.dress, { glass: P.glass, wood: P.wood })
   // the pitching dormers, one on each slope over the stall partition
+  const dormerRidges = []
   for (const d of DORMERS) {
     if (d.levels && !d.levels.includes(level)) continue // II's wing takes the east slope's foot: no dormer in its valley
-    steepWallDormer(c, d, P.roof, { infill: P.gable, glass: P.glass })
+    dormerRidges.push(...steepWallDormer(c, d, P.roof, { infill: P.gable, glass: P.glass }))
   }
   // the partition's pilaster up each side wall to the eave, and the posts proud under the kicked eave
   for (const x of [W.x0, W.x1]) for (let y = 1; y <= B.wallTop; y++) c.set(x, y, B.partition, P.frame, log('y'))
@@ -131,7 +131,9 @@ export function draw(level = 1) {
   for (const [x, y, z] of F.hay) c.set(x, y, z, P.hay, log('y'))
   horseTrough(c, F.trough.water, F.trough.y, P.rim)
 
-  if (level >= 2) drawLevel2(c, P, field)
+  if (level >= 2) drawLevel2(c, P)
+  const shelterRidge = level >= 2 ? Array.from({ length: PADDOCK.shelter.x1 - PADDOCK.shelter.x0 + 1 },
+    (_, i) => [PADDOCK.shelter.x0 + i, PADDOCK.shelter.roofY + 1, PADDOCK.shelter.z0 + 1]) : []
 
   // --- Pass 7: snow -----------------------------------------------------------------------------------------------
   // ridges (capped three wide), the kicked eave lips (y 3; and the wing's free eave at x 20), never under the forebay's
@@ -146,26 +148,24 @@ export function draw(level = 1) {
   }
   lie(1, 4, BARN.partition); lie(11, 4, BARN.partition) // between the dormers (at the forebay's corners it read as a board)
   if (level >= 2) for (let z = WING.roof.along[0]; z <= WING.roof.along[1]; z++) lie(19, 6, z)
-  const bare = []
-  for (let x = 0; x <= 12; x++) for (let z = 0; z <= 2; z++) bare.push([x, z]) // the forebay stays dry
-  for (let x = 12; x <= 18; x++) for (let z = 0; z <= 4; z++) bare.push([x, z]) // the walk to the wing's porch
-  for (let x = 1; x <= 6; x++) for (let z = 17; z <= 19; z++) bare.push([x, z]) // under the run-in shelter
-  bare.push([1, 16], [19, 16], [19, 17], [13, 12], [12, 12])
-  snowSkirt(c, P.snow, bare)
-  // round 2 (note 2): the drift uneven (one and two layers, broken here and there and at the corners), and none inside
-  // the paddock's fence
-  const corners = new Set(['0,12', '12,12', '0,13', '20,12', '20,4', '12,4'])
-  for (let x = 0; x < c.size[0]; x++) for (let z = 0; z < c.size[2]; z++) {
-    if (c.name(x, 0, z) !== `minecraft:${P.snow}`) continue
-    const h = (x * 5 + z * 3 + ((x * z) % 7)) % 6
-    if (z >= 13 || corners.has(`${x},${z}`) || h === 0) c.clear(x, 0, z)
-    else c.set(x, 0, z, P.snow, { layers: h <= 2 ? '1' : '2' })
+  // round 3 (note 1): the dormers' ridges and the shelter's carry a thin even course (two layers), lying on the ridge
+  for (const [x, y, z, n] of [...dormerRidges, ...shelterRidge]) c.set(x, y, z, P.snow, { layers: n ?? '2' })
+  // round 3 (note 2): the drift in runs against the walls and into the corners (plan.mjs DRIFT), none at the doors,
+  // under the forebay or inside the paddock
+  for (const r of DRIFT) {
+    if (!r.levels.includes(level)) continue
+    const n = Math.max(Math.abs(r.x1 - r.x0), Math.abs(r.z1 - r.z0))
+    for (let i = 0; i <= n; i++) {
+      const x = r.x0 + Math.sign(r.x1 - r.x0) * i, z = r.z0 + Math.sign(r.z1 - r.z0) * i
+      if (c.get(x, 0, z) || c.get(x, 1, z)) throw new Error(`drift (${x}, ${z}) is not free ground`)
+      c.set(x, 0, z, P.snow, { layers: String(r.layers[i]) })
+    }
   }
   return c
 }
 
 // Level II: the feed and bunk wing east of the barn and the paddock behind; nothing of Level I is moved.
-function drawLevel2(c, P, field) {
+function drawLevel2(c, P) {
   const W = WING.walls, R = WING.room
   for (let x = W.x0; x <= W.x1; x++) for (let z = W.z0; z <= W.z1; z++) {
     const edge = x === W.x0 || x === W.x1 || z === W.z0 || z === W.z1
@@ -209,15 +209,17 @@ function drawLevel2(c, P, field) {
   const D = PADDOCK
   paddockFence(c, { ring: D.ring, manGap: D.manGap, gates: D.gates, gateFacing: 'east', lampPosts: D.lampPosts },
     { fence: `${P.wood}_fence`, gate: `${P.wood}_fence_gate` })
-  // the run-in shelter, open to the paddock: dressed piers at its back corners, spruce posts in front, a low fieldstone
-  // back and sides under a stone-brick coping, a little slate gable over it
+  // the run-in shelter, open to the paddock: dressed piers at its back corners, spruce posts in front, a board wall
+  // and a rail round its back and sides, a little slate gable over it
   const S = D.shelter
   for (const x of [S.x0, S.x1]) for (let y = 0; y <= S.postTop; y++) {
     c.set(x, y, S.z1, P.plinth)
     c.set(x, y, S.z0, P.frame, log('y'))
   }
-  for (let x = S.x0 + 1; x < S.x1; x++) { c.set(x, 0, S.z1, field); slab(c, x, 1, S.z1, `${P.plinth.replace('bricks', 'brick')}_slab`) }
-  for (const x of [S.x0, S.x1]) for (let z = S.z0 + 1; z < S.z1; z++) { c.set(x, 0, z, field); slab(c, x, 1, z, `${P.plinth.replace('bricks', 'brick')}_slab`) }
+  // round 3 (note 3): its back and sides a half-height spruce board wall with a rail over it, open above to the eave,
+  // so from behind it reads as a shelter (the hay and the posts show through), not a stone box
+  for (let x = S.x0 + 1; x < S.x1; x++) { c.set(x, 0, S.z1, P.boards); c.set(x, 1, S.z1, `${P.wood}_fence`) }
+  for (const x of [S.x0, S.x1]) for (let z = S.z0 + 1; z < S.z1; z++) { c.set(x, 0, z, P.boards); c.set(x, 1, z, `${P.wood}_fence`) }
   for (let x = S.x0; x <= S.x1; x++) {
     stair(c, x, S.roofY, S.z0, P.roof.stairs, 'south')
     c.set(x, S.roofY, S.z0 + 1, P.roof.full)

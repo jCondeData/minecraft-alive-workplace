@@ -51,17 +51,18 @@
 //               open to the slope above, their lamps on a chain from it; barred lights in the side walls.
 //   Hay loft    over the aisle (x 5..7, y 4), on spruce beams at x 4 and 8 carried on posts at z 7, railed along both
 //               edges, hay stacked down its sides, the ladder's hatch at (7, 4, 4); its lamp hangs from the ridge.
-//   Dormers     a steep pitching dormer on each slope at z 7 (faces x 1 and 11, panes y 4..5), birch faces, slate cheeks
-//               of their own roof, snow on their ridges.
+//   Dormers     pitching dormers over the stalls at z 4 and 10 (faces x 1 and 11, panes y 4..5; II the west pair), birch
+//               faces under a hooded 45-degree slate stair gable whose ridge runs back into the slope, snow on the ridge.
 //   Wing (II)   walls x 13..19, z 5..11, calcite y 1..4 with quoins, a spruce beam (y 5) and birch gables; its own steep
 //               gable (ridge along z at x 16, y 11, eaves x 12 and 20 at y 4), the gable to the road; a boarded ceiling at
 //               y 6 over the bunk room; a closed stone storm porch on the door (16, 1, 5) with its own pointed little
 //               gable; the valley at x 11..12 against the barn's east slope, the slot under it stacked with firewood.
 //   Paddock(II) x 0..20, z 13..20: a spruce fence with corner lamp posts, the man-gap (0, 0, 16) a villager walks
-//               through and a horse can't, the double gate on the east; along the back a fieldstone lee wall (x 1..6)
-//               under a slate run-in roof over the hay; the trough and a snubbing post.
+//               through and a horse can't, the double gate on the east; along the back an open run-in shelter (x 1..6,
+//               board and rail back and sides, stone-brick piers, spruce posts) under a slate gable over the hay; the
+//               trough and a snubbing post.
 //  Snow    on every ridge (the barn's capped three wide, the dormers', the wing's, the porch's), on the kicked eave lips,
-//          on the lee wall's top, as a drift round the walls; never under the forebay, on a step or a walk.
+//          on the shelter's ridge, as drifts in runs against the walls (DRIFT); never under the forebay, on a step or a walk.
 //  Inside  the as-drawn furniture cell for cell (../ranch/plan.mjs FURNITURE); only the lamps' chains change: the
 //          stalls' four hang one link from the slope, the loft's one link from the ridge, the bunk room's straight from
 //          its ceiling.
@@ -98,8 +99,24 @@
 //    on the ground storey (the gable above already birch boards with spruce studs and two lights). Rechecked: no CHECK
 //    line, look_spots SAME BUILDING (8/8, 13/13, 0 moved), holes.py 0 (open included), ~37 / 51 stacks, II keeps 92 %
 //    of I; 926 / 1427 blocks. Renders overwritten in build/rebuild/ranch_snowy/renders/ (same names).
-//  Open for the critic: the shelter's back face is low fieldstone under its coping; the forebay's sides are open under the eaves
-//    above the firewood and the hay (on purpose: a porch).
+//  Round 3 (2026-11-21, the round-2 critic's notes, Snowy): 1 the dormers (../parts/ranch_snowy_dormer.mjs): each is
+//    now a closed 45-degree gable of slate stairs (eaves at z +- 2 on y 5, a course at z +- 1 on y 6) meeting at one
+//    full ridge block (y 7) that runs from a one-block hood over the face straight back into the slope where the slope
+//    reaches it (x 0..2, or 10..12); the cheeks are the main slope's own full blocks, flush; the old steep stepped roof
+//    of full blocks and top stairs and the 3-layer cap standing a block over its stairs are gone, and the snow lies on
+//    the ridge itself, two layers along its three blocks (tried in renders and dropped: a flush face with no hood read
+//    as a birch hatch under a chimney, snow on every course read as steps); 2 the drift: no more scattered tiles; plan
+//    DRIFT lays it in runs two to four long (west side between the eave posts, into both back corners, against the
+//    flue's breast, the wing's front corner turning down its side, under its window, into its back corner), two layers
+//    where it piles against a foot or a corner and one where it tails off, gaps at the posts, none at the doors, under
+//    the forebay or in the paddock; 3 the run-in shelter's back and sides are now a half-height spruce board wall with
+//    a spruce rail over it between the stone-brick piers, open above to the eave, so from the back the hay, the posts
+//    and the open front show through (the shelter's ridge snow also two layers, not three). Rechecked: no CHECK line,
+//    look_spots SAME BUILDING (8/8, 13/13, 0 moved; only the lamps' chains as before), holes.py 0 (open included),
+//    ~35 / 49 stacks, II keeps 94 % of I; 899 / 1416 blocks, 13 x 16 x 13 and 21 x 16 x 21. Renders overwritten in
+//    build/rebuild/ranch_snowy/renders/ (same names).
+//  Open for the critic: the forebay's sides are open under the eaves above the firewood and the hay (on purpose: a
+//    porch); the dormer hood's stairs show their stepped profile end-on, as any stair gable does.
 import { FURNITURE as AS_DRAWN } from '../ranch/plan.mjs'
 
 export const IDS = { 1: 'ranch', 2: 'ranch_2' }
@@ -114,7 +131,7 @@ export const PALETTE = {
   snow: 'snow',
   gable: 'birch_planks', frame: 'spruce_log', wood: 'spruce', boards: 'spruce_planks', glass: 'glass_pane',
   bars: 'iron_bars', bedding: 'hay_block', hay: 'hay_block', loft: 'spruce_planks', firewood: 'spruce_log',
-  rim: 'stripped_spruce_log', field: [['stone', 3], ['andesite', 2], ['cobblestone', 2]],
+  rim: 'stripped_spruce_log',
 }
 
 export const BARN = {
@@ -161,12 +178,28 @@ export const PADDOCK = {
   ring: [[0, 0, 13], [20, 0, 13], [20, 0, 20], [0, 0, 20], [0, 0, 13]],
   manGap: [0, 0, 16], gates: [[20, 0, 16], [20, 0, 17]],
   lampPosts: [[0, 13], [20, 13], [20, 20], [0, 20]],
-  // round 2 (note 3): an open three-sided run-in shelter instead of the tall lee wall: a low fieldstone back and sides
-  // with a stone-brick coping between dressed piers, spruce posts in front, a little slate gable (ridge along x, y 3)
+  // round 2 (note 3): an open three-sided run-in shelter instead of the tall lee wall, between dressed piers at its back
+  // corners and spruce posts in front, a little slate gable (ridge along x, y 3); round 3 (note 3): its back and sides a
+  // half-height spruce board wall with a rail over it, open above to the eave (was low fieldstone under a coping)
   shelter: { x0: 1, x1: 6, z0: 18, z1: 20, postTop: 2, roofY: 3 },
   shelterHay: [[2, 0, 19], [3, 0, 19], [4, 0, 19], [5, 0, 19], [3, 1, 19], [4, 1, 19]],
   trough: { water: [[9, 19], [10, 19]], y: 0 }, snubbingPost: [10, 16],
 }
+
+// round 3 (note 2): the drift laid in runs two to four long against the walls and into the corners, deeper (two layers)
+// where it piles against a wall's foot, a corner or the stack's breast, thinner (one) where it tails off, with gaps
+// between runs at the eave posts and at the doors (the forebay and the walk to the wing's porch stay bare). Each run:
+// [x0, z0, x1, z1, layers along it]; `levels` the levels that lay it (II's wing fills the barn's east side).
+const run = (x0, z0, x1, z1, layers, levels = [1, 2]) => ({ x0, z0, x1, z1, layers, levels })
+export const DRIFT = [
+  run(0, 4, 0, 6, [1, 2, 2]), run(0, 8, 0, 9, [2, 1]), // the west side, between the eave posts
+  run(0, 12, 1, 12, [2, 1]), run(3, 12, 4, 12, [1, 2]), // the back, west: a corner drift, then against the breast
+  run(8, 12, 11, 12, [2, 2, 1, 1]), // the back, east of the breast
+  run(12, 5, 12, 6, [1, 2], [1]), run(12, 8, 12, 10, [2, 2, 1], [1]), // the east side (I only)
+  run(19, 4, 20, 4, [1, 2], [2]), run(20, 5, 20, 6, [2, 1], [2]), // the wing's front corner, turning down its side
+  run(20, 8, 20, 10, [1, 2, 2], [2]), // the wing's east side under its window
+  run(18, 12, 20, 12, [1, 2, 2], [2]), run(14, 12, 16, 12, [1, 2, 1], [2]), // the wing's back, into its corner
+]
 
 export const OPENINGS = {
   barnDoor: { at: [6, 1, 3], facing: 'south', out: 'north', leaves: [5, 7] },

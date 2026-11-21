@@ -277,3 +277,26 @@ containers, job blocks or doors moved); `holes.py` 0 (incl. `open`) at both leve
    with a spiral, its bark the mossy block). It now comes out of the beam ring at y 9, over the band and the hay hood, two
    blocks out through the crown's eave, with two links of chain to the lantern; the red-and-white course runs unbroken
    over the hay door.
+
+### Round 3 designer notes: snowy
+
+Rechecked here: no CHECK line at either level; `look_spots.py ranch_snowy ranch` SAME BUILDING (8/8 and 13/13 shipped
+spots, 0 beds, containers, job blocks or doors moved; only the lamps' chains, as before); `holes.py` 0 at both levels
+(open included); 899 and 1416 blocks, 13 x 16 x 13 and 21 x 16 x 21; about 35 and 49 stacks; II keeps 94 % of I.
+Renders and cutaways overwritten in `build/rebuild/ranch_snowy/renders/` (same names: `snowy_<1|2>_<front|back|left|
+right|top>`, `snowy_<L>_cut3_*`, `snowy_<L>_cut7_*`).
+1. The dormers (`js/parts/ranch_snowy_dormer.mjs`): each is now a closed 45-degree gable of slate stairs, eave stairs
+   at z +- 2 and a course at z +- 1, meeting at one full ridge block that runs from a one-block hood over the birch face
+   straight back into the slope where the slope reaches its height; the cheeks are the main slope's own full blocks,
+   flush. The old steep roof of full blocks and top stairs (the stepped cheeks) and the 3-layer cap a block over its
+   stairs are gone: the snow lies on the ridge itself, two layers along its three blocks (snowy_1_left, snowy_1_right,
+   snowy_2_left). Tried and dropped in renders: a flush face with no hood (a birch hatch under a chimney) and snow on
+   every course (steps).
+2. The drift: no more scattered tiles. `plan.mjs` DRIFT lays it in runs two to four long: the west side between the
+   eave posts, into both back corners, against the flue's breast, the east side (I), the wing's front corner turning
+   down its side, under its window and into its back corner; two layers where it piles against a foot or a corner, one
+   where it tails off; gaps at the posts; none at the doors, under the forebay or in the paddock (snowy_1_back,
+   snowy_1_left, snowy_2_right).
+3. II's run-in shelter: its back and sides are now a half-height spruce board wall with a spruce rail over it between
+   the stone-brick piers, open above to the eave, so from the back the hay, the posts and the open front show through;
+   its ridge snow is two layers, not three (snowy_2_back).

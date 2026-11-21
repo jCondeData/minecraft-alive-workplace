@@ -85,7 +85,7 @@ chests at (2, 1, 9) and (10, 1, 10), a barrel at (2, 1, 10) (round 3); front doo
 loggia (z 1 since round 3), up the steps at z 0. II: Shop Counter
 (16, 1, 18), Pasture Block (3, 1..2, 22) (moved from round 1's (4, 1, 21)), the back door (6, 1, 11); II keeps 99.6 %
 of I by block and state (only the back window's three cells become the door). Sizes: I 13 x 14 x 13, II 20 x 14 x 26 (round 3; 13 tall before).
-Stacks (upper bound): I 33, II 54. `rebuild.py --candidate`: no CHECK line; `holes.py`: 0.
+Stacks (upper bound): I 44, II 58 (round 3). `rebuild.py --candidate`: no CHECK line; `holes.py`: 0.
 
 Pins the ship step must move (on top of round 1's list): the declared sizes are now 13 x 13 x 13 and 20 x 13 x 26;
 the Plaza II Pasture Block is (3, 1, 22); the lone-pane arch check re-aims at the keystone (6, 4, 0).

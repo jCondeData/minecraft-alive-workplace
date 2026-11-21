@@ -214,3 +214,22 @@ Notes, Plaza (to its designer; II is accepted as it stands, keep it):
 3. I cutaway y <= 3 top: the hall is cut into small pockets. Open one clear waiting room from the door to the machine, with seats facing the desk and the storage corner behind it.
 4. I top and right views: the low stepped hip has almost no eave. Run one continuous overhang with a cornice under it all round.
 5. II right view: the market hall's long side is still a plain wall of openings. Open it as an arcade onto the court, or give it pilasters between the windows.
+
+## Pokémon Center, Sunny Plaza (I, II): round 3, BACK, to the owner as it stands
+Fresh critic (lane-c-1121-0653), sheets `pokemon_center_plaza{,_2}_r3_sheet.png` and `..._r3_cut_sheet.png` in this
+folder; eye level not filmed. Brief: no miss (machine, PC, chests, door, sizes, Pasture Block and Shop Counter, II
+keeps 99.2 % of I). Three rounds spent: the old Plaza drawing stays live; the round 3 candidate stays in
+`js/pokemon_center_plaza/` for the owner to judge.
+
+| Score | I | II |
+|---|---|---|
+| Silhouette | 3 -> 4 | 3 -> 4 |
+| Depth | 3 -> 3 | 3 -> 3 |
+| Interior | 3 -> 3 | 3 -> 3 |
+| Detail | 3 -> 4 | 3 -> 4 |
+
+Notes (if the owner wants another round): 1 left, right and back (both levels): flat sandstone with one red band; a
+plinth, proud corner piers and sills under the side and back windows; 2 I back: a worked feature (a bay, a porch or a
+chimney); 3 II y <= 3 top: the 4 x 11 shop wing is nearly empty, furnish both long walls and close the dead end past
+the counter; 4 film eye level before judging interior; 5 I y <= 7: the hall is one low room under a tall roof void,
+raise the ceiling or trim the roof (also keeps I lean, 785 blocks against the old 560).

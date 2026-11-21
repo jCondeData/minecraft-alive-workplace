@@ -181,6 +181,7 @@ public final class Walls {
 		int segW = segment.get().size().getX();
 		int gateW = gate.get().size().getX();
 		int towerW = tower.get().size().getX();
+		List<BoundingBox> built = wallBoxes(level);
 		List<Piece> out = new ArrayList<>();
 		for (int i = 0; i + 1 < points.size(); i++) {
 			BlockPos a = points.get(i);
@@ -189,20 +190,20 @@ public final class Walls {
 			Direction outward = outward(hall, a, b);
 			List<BlockPos> crossings = crossingsOn(level, hall, plan, a, b); // the roads crossing this run
 			// the corner's tower: behind the corner along this run, so it fills the corner outside both of its runs
-			add(out, level, hall, Kind.TOWER, kit.cornerTower(), tower.get().size(), a.relative(along.getOpposite(), towerW - 1), along, outward, towerW);
+			add(out, level, hall, built, Kind.TOWER, kit.cornerTower(), tower.get().size(), a.relative(along.getOpposite(), towerW - 1), along, outward, towerW);
 			int to = (int) Math.sqrt(a.distSqr(b)); // the run's length: a piece from s covers s .. s + width - 1
 			for (int[] piece : run(crossings, a, along, to, segW, towerW, gateW)) {
 				Kind kind = Kind.values()[piece[2]];
 				ResourceLocation blueprint = kind == Kind.GATE ? kit.gate() : kind == Kind.TOWER ? kit.cornerTower() : kit.segment();
 				Vec3i size = (kind == Kind.GATE ? gate : kind == Kind.TOWER ? tower : segment).get().size();
-				add(out, level, hall, kind, blueprint, size, a.relative(along, piece[0]), along, outward, piece[1]);
+				add(out, level, hall, built, kind, blueprint, size, a.relative(along, piece[0]), along, outward, piece[1]);
 			}
 		}
 		if (!closed(plan) && points.size() >= 2) {
 			BlockPos last = points.get(points.size() - 1);
 			BlockPos before = points.get(points.size() - 2);
 			Direction along = Direction.getNearest(last.getX() - before.getX(), 0, last.getZ() - before.getZ());
-			add(out, level, hall, Kind.TOWER, kit.cornerTower(), tower.get().size(), last, along, outward(hall, before, last), towerW);
+			add(out, level, hall, built, Kind.TOWER, kit.cornerTower(), tower.get().size(), last, along, outward(hall, before, last), towerW);
 		}
 		return List.copyOf(out);
 	}
@@ -272,9 +273,32 @@ public final class Walls {
 		return out;
 	}
 
-	/** Adds one piece: it starts at {@code at} along the run, its inside face on the line, at its own ground height. */
-	private static void add(List<Piece> out, ServerLevel level, BlockPos hall, Kind kind, ResourceLocation blueprint, Vec3i size,
-							BlockPos at, Direction along, Direction outward, int width) {
+	/**
+	 * B1457: the boxes of every wall piece, of any kit or tier, finished or with its site open, in {@code level}: where
+	 * the wall itself stands is no ground for laying it out ({@link #groundY}).
+	 */
+	static List<BoundingBox> wallBoxes(ServerLevel level) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		List<BoundingBox> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
+			if (isPiece(f.structure())) {
+				BlueprintLibrary.get(level, f.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(f.placement(), b.size())));
+			}
+		}
+		for (BuildSite site : manager.all()) {
+			if (isPiece(site.structure()) && site.placement().dimension().equals(Ids.of(level.dimension()))) {
+				BlueprintLibrary.get(level, site.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(site.placement(), b.size())));
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * Adds one piece: it starts at {@code at} along the run, its inside face on the line, at its own ground height (the
+	 * wall's own pieces, {@code built}, aren't its ground: {@link #groundY}).
+	 */
+	private static void add(List<Piece> out, ServerLevel level, BlockPos hall, List<BoundingBox> built, Kind kind, ResourceLocation blueprint,
+							Vec3i size, BlockPos at, Direction along, Direction outward, int width) {
 		Rotation rotation = rotationFor(outward);
 		// the footprint: `width` along the run from `at`, `depth` outward from the line
 		BlockPos far = at.relative(along, width - 1).relative(outward, size.getZ() - 1);
@@ -282,7 +306,7 @@ public final class Walls {
 		int minZ = Math.min(at.getZ(), far.getZ());
 		int maxX = Math.max(at.getX(), far.getX());
 		int maxZ = Math.max(at.getZ(), far.getZ());
-		int y = groundY(level, (minX + maxX) / 2, (minZ + maxZ) / 2, hall.getY());
+		int y = groundY(level, (minX + maxX) / 2, (minZ + maxZ) / 2, hall.getY(), built);
 		BlockPos corner = net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
 			new BlockPos(size.getX() - 1, 0, size.getZ() - 1), Mirror.NONE, rotation, BlockPos.ZERO);
 		BlockPos origin = new BlockPos(minX - Math.min(0, corner.getX()), y, minZ - Math.min(0, corner.getZ()));
@@ -308,11 +332,20 @@ public final class Walls {
 		return middle.relative(side, 4).distSqr(hall) > middle.relative(side.getOpposite(), 4).distSqr(hall) ? side : side.getOpposite();
 	}
 
-	/** The top of the ground at {@code x, z} near the hall's height: a piece's blocks start on the block above it. */
-	static int groundY(ServerLevel level, int x, int z, int nearY) {
+	/**
+	 * The top of the ground at {@code x, z} near the hall's height: a piece's blocks start on the block above it. Blocks
+	 * inside {@code built} (the boxes of wall pieces finished or going up, {@link #wallBoxes}) are no ground: B1457, segments
+	 * sit a block or two over one another ({@link #run}), so once one stood, the one beside it was laid out on top of it,
+	 * and each built in turn lifted the other onto itself, stacking the wall up till the builders' stone ran out. A piece
+	 * laid out again over itself sits where it was built (B94, B283).
+	 */
+	static int groundY(ServerLevel level, int x, int z, int nearY, List<BoundingBox> built) {
 		int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), nearY + GROUND_REACH);
 		for (int y = top; y >= nearY - GROUND_REACH; y--) {
 			BlockPos p = new BlockPos(x, y, z);
+			if (built.stream().anyMatch(b -> b.isInside(p))) {
+				continue;
+			}
 			BlockState state = level.getBlockState(p);
 			if (!state.isAir() && level.getFluidState(p).isEmpty() && !state.canBeReplaced()) {
 				return y + 1;

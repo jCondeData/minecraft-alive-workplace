@@ -1329,6 +1329,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShipsSinking1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallUpgradeCounts1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallGap1121dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWallStack1121aBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinsMutants1116d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovensMutants1116d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanupMutants1117dGameTests",

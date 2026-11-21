@@ -48,6 +48,9 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- A Steward's palisade no longer stacks up on itself: two wall segments that overlap a little were each laid out on
+  top of the other once one stood, so builders kept building them higher until they ran out of cobblestone and the
+  wall never finished. Wall pieces are now always set on the real ground.
 - A full Graveyard no longer walls in its own graves: once all 32 were taken, the headstones boxed in 18 of them, so
   mourners couldn't gather there and the Undertaker had to be teleported in. New graves go in rows with grass walks
   between them, so every grave can be walked up to. Graves already laid stay where they are and

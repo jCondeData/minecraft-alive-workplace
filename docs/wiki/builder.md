@@ -580,7 +580,10 @@ claims and trip counts.
   blueprints, among them the Library, Inn and Manor, were restarted on today's look, half old and half new). A build of an older drawing not shipped and an imported or uploaded build
   show no button. Until it is refreshed, a build of a shipped older drawing is repaired (asked about only for what is
   missing from its own drawing), taken down, upgraded from the Upgrades page and moved as the drawing it was built from,
-  across restarts too (B1369-B1374, `QaOldDrawings1121cGameTests`). Not yet: a take-down of a build of an older drawing
+  across restarts too (B1369-B1374, `QaOldDrawings1121cGameTests`). Its neighbors read it as it stands too: a site
+  beside it levels round its whole old box, the Steward keeps his 2 free blocks round that box, and a bed on its back
+  row is in that home (each also keeps today's drawing's box, so they never read less than before; B1435, B1436,
+  `QaOldHouseNeighbors1121cGameTests`). Not yet: a take-down of a build of an older drawing
   that isn't shipped takes nothing down and the hall forgets the build anyway, and an upgrade blueprint clicked onto a
   part of an older-drawing build that today's drawing doesn't cover doesn't line up with it. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's

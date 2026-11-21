@@ -345,7 +345,9 @@ public final class BuildSiteManager extends SavedData {
 				box(level, site.structure(), site.placement()).ifPresent(b -> out.add(new Footprint(site.placement(), b)));
 			}
 			for (Finished f : finishedIn(level)) {
-				box(level, f.structure(), f.placement()).ifPresent(b -> out.add(new Footprint(f.placement(), b)));
+				// B1435: a building standing as an older drawing of its id keeps the ground under that drawing's box too
+				box(level, f.structure(), f.placement()).map(b -> Refreshes.standingBox(level, f, b, true))
+					.ifPresent(b -> out.add(new Footprint(f.placement(), b)));
 			}
 			cache.list = out;
 			cache.changes = changes;

@@ -452,25 +452,28 @@ public final class Plots {
 		List<Build> out = new ArrayList<>();
 		for (BuildSite site : manager.all()) {
 			if (site.placement().dimension().equals(dim)) {
-				add(level, out, area, site.structure(), site.placement());
+				add(level, out, area, site.structure(), site.placement(), null);
 			}
 		}
 		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
-			add(level, out, area, f.structure(), f.placement());
+			add(level, out, area, f.structure(), f.placement(), f);
 		}
 		for (WonderSite wonder : WonderManager.get(level).sites()) {
 			if (wonder.placement().isPresent() && wonder.placement().get().dimension().equals(dim)) {
 				for (WonderUpkeep.Part part : WonderUpkeep.parts(level, wonder)) {
-					add(level, out, area, part.plain(), part.placement());
+					add(level, out, area, part.plain(), part.placement(), null);
 				}
 			}
 		}
 		return out;
 	}
 
-	private static void add(ServerLevel level, List<Build> out, BoundingBox area, ResourceLocation structure, BlueprintData.Placement placement) {
+	/** B1435: {@code finished}, when the build is a finished building, widens its box to the older drawing it stands as. */
+	private static void add(ServerLevel level, List<Build> out, BoundingBox area, ResourceLocation structure, BlueprintData.Placement placement,
+							@org.jetbrains.annotations.Nullable BuildSiteManager.Finished finished) {
 		BlueprintLibrary.get(level, structure).ifPresent(b -> {
-			BoundingBox box = BlueprintOutline.bounds(placement, b.size());
+			BoundingBox today = BlueprintOutline.bounds(placement, b.size());
+			BoundingBox box = finished == null ? today : io.github.jcondedata.aliveworkplace.build.Refreshes.standingBox(level, finished, today, false);
 			BoundingBox near = box.inflatedBy(CLEAR);
 			if (near.intersects(area)) {
 				out.add(new Build(near, BlueprintStyles.base(structure), placement.mirror(),

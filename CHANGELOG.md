@@ -48,6 +48,9 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- A house still standing as an older, deeper drawing of its blueprint is now kept whole by its neighbors: a new build
+  beside it no longer digs or fills under its back rows, the Steward keeps his 2 free blocks behind its real back wall,
+  and a villager sleeping in its back rows has that house as their home again (B1435, B1436).
 - The Great Wall's description in the Village Hall's Wonder list now reads "A gray wall 97 blocks long" instead of "A long gray wall 97 long" (B1438).
 
 - With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer

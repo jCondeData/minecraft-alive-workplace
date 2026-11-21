@@ -339,6 +339,21 @@ public final class StarterBlueprints {
 	/** A feed and bunk wing on the east, and a fenced paddock behind with a man-gap, a double gate and a run-in shelter. */
 	public static final Entry RANCH_2 = new Entry(AliveWorkplace.id("ranch_2"), new Vec3i(21, 16, 21));
 	/**
+	 * The cultures the Ranch has a biome look for (ROADMAP 49.10e, {@code tools/blueprints/js/ranch_<culture>}; see
+	 * {@link BlueprintLooks}): both levels drawn again in a village culture's climate, with the same stalls, smoker, chests,
+	 * doors, Level II's bunk wing and paddock, furniture spots and footprint as the level drawn. A village of one
+	 * of these cultures builds its own look; plains (and any culture left out here) the Ranch as drawn. To hold a look
+	 * back, take its culture out of this list (BlueprintLooks reads it) and out of {@code RanchLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> RANCH_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Ranch, both levels, in the order of {@link #RANCH_CULTURES}. */
+	public static final List<Entry> RANCH_LOOKS = RANCH_CULTURES.stream().flatMap(c -> ranchLook(c).stream()).toList();
+
+	/** A culture's look of the Ranch's two levels, Level I first: the savanna look's one thatch is lower (14), the others 16 as drawn. */
+	public static List<Entry> ranchLook(String culture) {
+		return "savanna".equals(culture) ? cultureLook(culture, new int[] {14, 14}, RANCH, RANCH_2) : cultureLook(culture, RANCH, RANCH_2);
+	}
+	/**
 	 * The Skep Wall (rebuilt from scratch in ROADMAP 50.9, tools/blueprints/js/apiary_garden): a stone wall of bee boles,
 	 * each a hive smoked by a campfire, round a great straw skep that holds the honey chests, and a bee garden round a font.
 	 */
@@ -418,6 +433,16 @@ public final class StarterBlueprints {
 	private static List<Entry> cultureLook(String culture, Entry... levels) {
 		String folder = BlueprintLooks.PREFIX + culture + "/";
 		return java.util.stream.Stream.of(levels).map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
+
+	/**
+	 * A culture's look of {@code levels} whose roof stands at another height: each level as wide and deep as drawn, with its
+	 * basement, {@code heights[i]} tall above the ground (49.10e: the snowy Farmstead's half-hip, the savanna Ranch's thatch).
+	 */
+	private static List<Entry> cultureLook(String culture, int[] heights, Entry... levels) {
+		List<Entry> drawn = cultureLook(culture, levels);
+		return java.util.stream.IntStream.range(0, drawn.size()).mapToObj(i -> new Entry(drawn.get(i).id(),
+			new Vec3i(drawn.get(i).size().getX(), heights[i], drawn.get(i).size().getZ()), drawn.get(i).basement())).toList();
 	}
 
 	/**
@@ -574,6 +599,26 @@ public final class StarterBlueprints {
 	public static final Entry FARMSTEAD_2 = new Entry(AliveWorkplace.id("farmstead_2"), new Vec3i(15, 15, 22));
 	/** A root cellar dug under the farmhouse (36.7), down a ladder under a hatch inside the door. */
 	public static final Entry FARMSTEAD_3 = new Entry(AliveWorkplace.id("farmstead_3"), new Vec3i(15, 15, 22), 4);
+	/**
+	 * The cultures the Farmstead has a biome look for (ROADMAP 49.10e, {@code tools/blueprints/js/farmstead_<culture>}; see
+	 * {@link BlueprintLooks}): every level drawn again in a village culture's climate, with the same rooms, beds, composters,
+	 * chests, doors, field of crops on watered farmland, Level II's barn, furniture spots and footprint as the level drawn;
+	 * Level III has the same 4-deep root cellar. A village of one of these cultures builds its own look; plains (and any
+	 * culture left out here) the Farmstead as drawn. To hold a look back, take its culture out of this list (BlueprintLooks
+	 * reads it) and out of {@code FarmsteadLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> FARMSTEAD_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Farmstead, every level, in the order of {@link #FARMSTEAD_CULTURES}. */
+	public static final List<Entry> FARMSTEAD_LOOKS = FARMSTEAD_CULTURES.stream().flatMap(c -> farmsteadLook(c).stream()).toList();
+
+	/**
+	 * A culture's look of the Farmstead's three levels, Level I first: the snowy look's half-hipped roof stands taller (15,
+	 * then 18 over the barn), the others the height drawn.
+	 */
+	public static List<Entry> farmsteadLook(String culture) {
+		return "snowy".equals(culture) ? cultureLook(culture, new int[] {15, 18, 18}, FARMSTEAD, FARMSTEAD_2, FARMSTEAD_3)
+			: cultureLook(culture, FARMSTEAD, FARMSTEAD_2, FARMSTEAD_3);
+	}
 	/**
 	 * A shore hut with a jetty 5 blocks into the water on log posts and a barrel (Fisherman). Its plot must be on a shore:
 	 * water within 4 blocks of its front, no more than 3 deep under the jetty (city/Plots).
@@ -1014,8 +1059,8 @@ public final class StarterBlueprints {
 		STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4, LIBRARY_4, HEALING_CENTER_4, LOOKOUT_TOWER_4, BUTCHERS_SHOP, SMITHY, SMITHY_2,
 		STOREHOUSE, STOREHOUSE_2, STOREHOUSE_3, KITCHEN, INN_3, WINERY_3, FARMSTEAD_3, GUILDHALL_3, BARRACKS_3, RESEARCH_LAB_3,
 		JEWELLERS_WORKSHOP_3, ARTISANS_HOUSE_3),
-		// 49.10a/b/f: the biome looks of a Level IV, each with its level's basement
-		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS).flatMap(List::stream)
+		// 49.10a/b/f: the biome looks of a Level IV, each with its level's basement; 49.10e: the Farmstead III looks' cellar
+		java.util.stream.Stream.of(STARTER_COTTAGE_LOOKS, STONE_HOUSE_LOOKS, TOWNHOUSE_LOOKS, MANOR_LOOKS, FARMSTEAD_LOOKS).flatMap(List::stream)
 			.filter(e -> e.basement() > 0)).toList();
 	/** The Level 4s (26.15): each its Level III with a basement under it. */
 	public static final List<Entry> LEVEL_4 = List.of(STARTER_COTTAGE_4, STONE_HOUSE_4, TOWNHOUSE_4, MANOR_4, SUPPLY_SHOP_4,

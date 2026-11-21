@@ -1,0 +1,11 @@
+{"spots": [
+  {"kind": "shelf", "pos": [7, 2, 10], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:spruce_slab[type=top,waterlogged=false]"}], "support": ["wall"]},
+  {"kind": "lamp", "pos": [6, 3, 6], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [6, 3, 9], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [3, 5, 5], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [9, 5, 5], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [3, 5, 9], "facing": "east", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [9, 5, 9], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [6, 11, 7], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "table", "pos": [6, 13, 1], "facing": "north", "wood": "dark_oak", "blocks": [{"at": [0, 0, 0], "state": "minecraft:dark_oak_fence[east=false,north=false,south=false,waterlogged=false,west=false]"}, {"at": [0, 1, 0], "state": "minecraft:dark_oak_stairs[facing=south,half=top,shape=straight,waterlogged=false]"}], "support": ["floor"]}
+]}

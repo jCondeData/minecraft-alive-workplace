@@ -2176,6 +2176,23 @@ SCENES = [
            ("12_savanna", "Savanna: a mud house in a gray acacia frame under one great golden thatch hip, a thatched veranda across the front"),
            ("13_snowy", "Snowy: pale calcite under a long slate roof sweeping down to the ground floor, a dormer, a storm porch, snow on the ridges"),
            ("14_taiga", "Taiga: a spruce log lodge, its slate gable to the road over a recessed porch, the kitchen a lower log cross-wing")], furniture=True),
+    # ROADMAP 49.10e: the Farmstead in each village culture's climate (desert, savanna, snowy, taiga; plains as drawn),
+    # Level I of each side by side
+    S("rebuild_farmstead_looks", "Build families", "The Farmstead in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Farmstead as drawn and its four culture looks stand side by side on a cleared lawn, each with its watered field of crops, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: a limewashed house under one catslide roof sweeping down over a gallery along the field, the composter and harvest chest under it"),
+           ("11_desert", "Desert: mud brick on a sandstone foot under flat coped roofs, a dovecote tower and domed grain bins, a palm-rib shade and a shaduf by the field"),
+           ("12_savanna", "Savanna: two golden thatch hips with no gable on acacia posts, limed walls with a red band on a terracotta plinth"),
+           ("13_snowy", "Snowy: calcite on stone brick under a half-hipped dark slate roof with snow on its lips and ridge, a stone stack against a white gable"),
+           ("14_taiga", "Taiga: spruce logs notched at the corners on mossy fieldstone, a slate gable to the road and a covered gallery down the field")], furniture=True),
+    # ROADMAP 49.10e: the Ranch in each village culture's climate (desert, savanna, snowy, taiga; plains as drawn)
+    S("rebuild_ranch_looks", "Build families", "The Ranch in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Ranch as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: a monitor horse barn, a tall center over the aisle between two lean-to stall sheds, behind a ranch gate and a fenced yard"),
+           ("11_desert", "Desert: coursed sandstone under mud brick, a crenellated hay tower and a windcatcher, an arched gateway and an adobe-pier corral"),
+           ("12_savanna", "Savanna: two tiers of golden thatch hips on acacia posts over granite and packed mud, pots on the peaks, a kraal for the yard"),
+           ("13_snowy", "Snowy: one steep dark slate roof with dormers and snow on its ridge, pale calcite walls and a closed storm porch"),
+           ("14_taiga", "Taiga: dark spruce logs notched at the corners on mossy fieldstone, three stepped gables, a covered gallery and a carved horse head on the ridge")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

@@ -5,7 +5,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, PALETTE as P, HALL, LOGGIA, ARCADES, COTE, FIXED, OPENINGS, FURNITURE, COURT } from './plan.mjs'
+import { SIZE, PALETTE as P, HALL, LOGGIA, ARCADES, COTE, APRON, FIXED, OPENINGS, FURNITURE, COURT } from './plan.mjs'
 import {
   Canvas, mix, stair, door, gableRoof, gableWall, archHead, furnitureParts, railingRun, roundCurb, pool, lampPost,
   plantFlower, healingMachine, pcTower, pastureBlock, shopCounter, deskRun, tileHip, tileArcade, DIRS, OPP,
@@ -28,6 +28,22 @@ function plazaWindow(c, x, z, out) {
   stair(c, x + ox, 1, z + oz, P.dressStairs, OPP[out], 'top')
 }
 
+/** bayWindow: the window in an arcade bay, so the bay reads as a window and not a hole. In the hall wall at (x, z): an
+ *  arched light set a block back (three panes at y 2, the middle one at y 3, under the bay's round head; a corner
+ *  stone in the run stays), a sandstone head over it; one out, in the arcade's plane: a cut-sandstone breast across
+ *  the bay at y 1 (the sill course, with the piers) and a pot of flowers on its middle. */
+function bayWindow(c, x, z, out, pot) {
+  const [ox, oz] = DIRS[out]
+  const [ax, az] = ox ? [0, 1] : [1, 0]
+  for (const d of [-1, 0, 1]) {
+    const wx = x + ax * d, wz = z + az * d
+    if (c.get(wx, 2, wz) !== P.dress) c.set(wx, 2, wz, P.glass)
+    c.set(wx + ox, 1, wz + oz, P.dress)
+  }
+  c.set(x, 3, z, P.glass); c.set(x, 4, z, P.dress)
+  if (pot) c.set(x + ox, 2, z + oz, pot)
+}
+
 const ARCADE = { plinth: P.socle, pier: P.dress, head: P.dress, stairs: P.dressStairs, key: P.key, frieze: P.band }
 
 // --- Level I: the Sunny Plaza's hall, its arcade and loggia -------------------------------------------------------------
@@ -35,11 +51,14 @@ function levelOne(c) {
   const floorMix = mix(P.floor, 32)
   const H = HALL, L = LOGGIA
   // Pass 1: block-out and structure. Floor; sandstone walls on a smooth socle course, up to y 5; no ceiling: the hall
-  // is open to the underside of its tile hip (its lamps hang on chains from it)
-  c.fill(H.x0, 0, L.z0, H.x1, 0, H.z1, floorMix)
+  // is open to the underside of its tile hip (its lamps hang on chains from it). The walls' own footing course (y 0)
+  // is left out where the arcade's plinth and the floor hide it on both sides (all but under the door): nobody sees it
+  c.fill(H.x0, 0, L.z0, H.x1, 0, H.z0 - 1, floorMix)
+  c.fill(H.x0 + 1, 0, H.z0 + 1, H.x1 - 1, 0, H.z1 - 1, floorMix)
+  c.set(OPENINGS.frontDoor[0], 0, H.z0, P.socle)
   for (let x = H.x0; x <= H.x1; x++) for (let z = H.z0; z <= H.z1; z++) {
     if (x !== H.x0 && x !== H.x1 && z !== H.z0 && z !== H.z1) continue
-    c.set(x, 0, z, P.socle); c.set(x, 1, z, P.socle)
+    c.set(x, 1, z, P.socle)
     // the top course only where it shows: on the front over the terrace (the sides and back have the arcade's frieze
     // standing against that course, so the hall shows its red back from inside, a band under the tiles)
     for (let y = 2; y <= H.top; y++) if (y < H.top || z === H.z0) c.set(x, y, z, P.wall)
@@ -48,28 +67,44 @@ function levelOne(c) {
   for (const [x, z] of [[H.x0, H.z0], [H.x1, H.z0], [H.x0, H.z1], [H.x1, H.z1]]) for (let y = 2; y <= H.top; y++) c.set(x, y, z, P.dress)
   // the arcade one block proud on the sides and back: piers, round heads over the window bays, the red frieze at y 5
   for (const [axis, at, a0, a1, piers] of ARCADES) tileArcade(c, { axis, at, a0, a1, piers, y0: 0, headY: 4 }, ARCADE)
-  // the roof: one low hip of tiles over the arcades' outer line, its eave a continuous slab course at y 6
-  const roofAt = tileHip(c, H.roof, P.roof)
+  // the cornice: a ring of upside-down sandstone stairs on the roof's outer line over the frieze, its undercut outward
+  const R = H.roof
+  for (let x = R.x0; x <= R.x1; x++) for (let z = R.z0; z <= R.z1; z++) {
+    if (x !== R.x0 && x !== R.x1 && z !== R.z0 && z !== R.z1) continue
+    const inward = x === R.x0 ? 'east' : x === R.x1 ? 'west' : z === R.z0 ? 'south' : 'north'
+    stair(c, x, H.cornice, z, P.dressStairs, inward, 'top')
+  }
+  // the roof: one low hip of tiles over the arcades' outer line, its eave a continuous slab course on the cornice
+  const roofAt = tileHip(c, R, P.roof)
 
-  // the loggia: piers on the front line, side walls, a ceiling at y 4 with the red frieze on its front, steps into each bay
+  // the loggia: piers on its front line, side walls, a ceiling at y 4 with the red frieze on its front
   const T = L.ceiling + 1 // the terrace's walking level
-  for (const x of L.piers) for (let y = 1; y < L.ceiling; y++) c.set(x, y, L.z0, P.dress)
+  for (const x of L.piers) { c.set(x, 0, L.z0, P.socle); for (let y = 1; y < L.ceiling; y++) c.set(x, y, L.z0, P.dress) }
   for (const x of [H.x0, H.x1]) for (let z = L.z0 + 1; z < H.z0; z++) { c.set(x, 1, z, P.socle); for (let y = 2; y < L.ceiling; y++) c.set(x, y, z, P.wall) }
   for (let x = H.x0; x <= H.x1; x++) {
     for (let z = L.z0; z < H.z0; z++) c.set(x, L.ceiling, z, P.ceiling)
     c.set(x, L.ceiling, L.z0, P.band)
   }
   for (const x of [H.x0, H.x1]) for (let z = L.z0 + 1; z < H.z0; z++) c.set(x, L.ceiling, z, P.band) // the frieze round the loggia's sides
-  for (const [a, b] of L.bays) {
-    for (let x = a; x <= b; x++) stair(c, x, 0, L.z0, P.dressStairs, 'south')
-    if (b - a === 2) archHead(c, a, b, L.z0, 3, P.dressStairs, P.key)
+  for (const [a, b] of L.bays) if (b - a === 2) archHead(c, a, b, L.z0, 3, P.dressStairs, P.key)
+  // the apron, the street edge in front: steps up to the middle arch; a planter in soil either side of them (azaleas at
+  // its ends, flowers between); a lamp on a post at each corner; a striped awning over each planter, sloping down
+  // from the frieze (quartz and tile stairs in turn), shading it
+  const A = APRON
+  for (let x = A.steps[0]; x <= A.steps[1]; x++) stair(c, x, 0, A.z, P.dressStairs, 'south')
+  for (const [a, b, plants] of A.planters) for (let x = a; x <= b; x++) {
+    c.set(x, 0, A.z, P.soil, { snowy: 'false' })
+    const plant = plants[x - a]
+    if (plant === 'flowering_azalea') c.set(x, 1, A.z, plant); else plantFlower(c, x, 1, A.z, plant)
   }
-  // the terrace over the loggia: a sandstone balustrade round its open edges, up to the roof's eave at the back
+  for (const x of A.lamps) lampPost(c, x, 0, A.z, `${P.wood}_fence`, 3)
+  for (const [a, b] of A.awnings) for (let x = a; x <= b; x++) stair(c, x, L.ceiling, A.z, (x - a) % 2 ? P.roof.stairs : 'quartz_stairs', 'south')
+  // the terrace over the loggia: a sandstone balustrade round its open edges, up to the cornice at the back
   railingRun(c, [[H.x0, T, H.z0 - 1], [H.x0, T, L.z0], [H.x1, T, L.z0], [H.x1, T, H.z0 - 1]], null, P.baluster)
-  // the bell-cote over the middle arch, two deep: piers, a tall opening with a lantern hung in it, the red frieze round
+  // the bell-cote over the middle arch, two deep: piers, a tall niche with a lantern hung in it, the red frieze round
   // its top, a cap, a tile gable
   for (let x = COTE.x0; x <= COTE.x1; x++) for (let z = COTE.z0; z <= COTE.z1; z++) {
-    const side = x === COTE.x0 || x === COTE.x1
+    const side = x === COTE.x0 || x === COTE.x1 || z === COTE.z1 // the back closed: the roof's slope is behind it
     for (let y = COTE.y0; y <= COTE.top; y++) if (side || y === COTE.y0 || y === COTE.top) c.set(x, y, z, y === COTE.top ? P.band : P.dress)
     else c.clear(x, y, z)
     c.set(x, COTE.top + 1, z, P.dress)
@@ -80,9 +115,11 @@ function levelOne(c) {
   c.set(6, COTE.top - 1, COTE.z0, 'lantern', { hanging: 'true', waterlogged: 'false' })
   c.set(6, COTE.top + 3, COTE.z0, 'lightning_rod', { facing: 'up', powered: 'false', waterlogged: 'false' })
 
-  // Pass 2: openings. The front door under the middle arch, the windows (each in an arcade bay), the loggia's sides
+  // Pass 2: openings. The front door under the middle arch, the windows (the front pair onto the loggia, an arched
+  // light in every arcade bay), the loggia's sides
   door(c, OPENINGS.frontDoor, 'south', 'north', { wood: P.wood })
-  for (const [x, z, out] of [...OPENINGS.windows, OPENINGS.backWindow]) plazaWindow(c, x, z, out)
+  for (const [x, z, out] of OPENINGS.windows) plazaWindow(c, x, z, out)
+  for (const [x, z, out, pot] of [...OPENINGS.bays, OPENINGS.backWindow]) bayWindow(c, x, z, out, pot)
   for (const [x, z] of OPENINGS.loggiaSides) { c.set(x, 2, z, P.glass); c.set(x, 3, z, P.glass) }
 
   // Pass 3: depth: lanterns hung under the loggia ceiling either side of the door; stone benches in the side bays
@@ -132,7 +169,7 @@ function levelTwo(c) {
   door(c, [A.x0, 1, 18], 'east', 'west', { wood: P.wood })
   // the back lane's arcade at x 19: bays in line with the back wall's windows
   tileArcade(c, { axis: 'z', at: A.x1 + 1, a0: A.z0, a1: A.z1, piers: [12, 16, 20, 24], y0: 0, headY: 4 }, ARCADE)
-  for (const z of [14, 18, 22]) plazaWindow(c, A.x1, z, 'east')
+  for (const [z, pot] of [[14, 'potted_red_tulip'], [18, 'potted_flowering_azalea_bush'], [22, 'potted_poppy']]) bayWindow(c, A.x1, z, 'east', pot)
   // a 45-degree gable of tiles over it all, ridge along z (y 9), eaves on the court front and on the lane arcade, the
   // gable ends in sandstone with a little window each
   const rf = gableRoof(c, { axis: 'z', across: [A.x0 - 1, A.x1 + 1], along: [A.z0 - 1, A.z1 + 1], eaveY: 6, steep: false }, P.roof)
@@ -142,7 +179,7 @@ function levelTwo(c) {
 
   // Pass 2: the back door from the hall into the court, through the middle bay of the hall's back arcade
   const [bx, bz] = OPENINGS.backWindow
-  c.clear(bx, 1, bz + 1)
+  c.clear(bx, 1, bz + 1); c.clear(bx, 2, bz + 1) // the breast's middle and its pot
   door(c, [bx, 1, bz], 'north', 'south', { wood: P.wood })
   c.set(bx, 3, bz, P.glass)
 

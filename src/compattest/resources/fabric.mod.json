@@ -11,6 +11,9 @@
 			"io.github.jcondedata.aliveworkplace.test.MockPlayerSweep"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.compat.QaMoneyWording1121dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaStadiumNames1121dCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneHallless1121dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaJobsShops1117cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuildHistorySweep1120eBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuildCreate1117e3CompatTests",
@@ -47,6 +50,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneMoved1116dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystones1117dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneLeftover1118aCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneChunkMove1121dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneQaBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneTwoHallsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaStadiumVisitorsCompatTests",

@@ -97,6 +97,9 @@ Roadmap items: 32.8, B823, B1317
 - `QaShipsMutants1116dBugTests.qaTheSunkenHoldIsStillSeaNotRunningWater` and
   `qaTheSunkenHoldIsStillSeaAfterAReloadMidSinking`: 100 ticks after the sinking, every spot of the ship below the
   waterline is still (source) water, with and without a save and load halfway through (B1317).
+- `QaShipsSinking1121dGameTests` (4, B1317): a ship lying bow east and one bow south, one aground on a shoal with its
+  stern over a sandbar, and one that sank while its ground was unloaded: 5 s after the sinking every spot below the
+  waterline is source water, nothing above it is water, and the seabed, sandbar and sea round the ship are untouched.
 - `PirateLandingGameTests.theClocksPirateRaidWadesAshoreAtTheBeachNearestTheShip`: the raid the clock set for tonight
   (as every real pirate raid comes) wades ashore within 5 blocks of the beach nearest the ship (B823).
 - `PirateLandingGameTests.withNoShipAToldPirateRaidKeepsToTheToldSide`: with no ship, a raid told for the east gathers

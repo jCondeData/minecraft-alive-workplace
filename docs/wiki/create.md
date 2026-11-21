@@ -641,6 +641,11 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   (B1015: saw, deployer and arm at the edge), with their open-village controls.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
+- Create taken out of the pack (lane E's QA, without Create): `QaCreateGoneGameTests` (a Watermill begun with Create
+  is finished without it; a farmer's trip to a millstone gives its wheat back) and `QaCreateGoneRebuilt1121eGameTests`
+  (2026-11-21: the same for every other Create build and the Train Station as rebuilt in Milestones 50 and 51, side by
+  side: no Create item asked for and each finished from the store; the Brass Foundry and Train Station take about
+  25,000 ticks with one builder).
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
   listed and built as drawn, not imported again), `aWrittenSchematicImportsItsFile` (the item used on the table; the
   line names the file, the uploader and the unknown block), `aMissingFileSaysSo` (and a blank Schematic; every line

@@ -584,6 +584,8 @@
 			"io.github.jcondedata.aliveworkplace.test.CopperlineChronicleGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSites1121dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltRaiderSites1121dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltStorySites1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverMultiface1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleLate1121cGameTests",
@@ -1057,6 +1059,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWallRamps1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPalisadeAim1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerRouteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerNoDropBoxGameTests",
@@ -1964,7 +1967,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltShopsWater1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bBugTests",
-			"io.github.jcondedata.aliveworkplace.test.BlueprintPiecesGameTests"
+			"io.github.jcondedata.aliveworkplace.test.BlueprintPiecesGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaStoneTownLooks1121cGameTests"
 		]
 	},
 	"depends": {

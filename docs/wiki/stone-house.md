@@ -108,5 +108,7 @@ keep their drawing until a refresh.
 `DoorJamGameTests` (door 5, 1, 1, doorstep 5, 0, 0), `FurnishedRoomsGameTests.theStoneHouseReadsAsAHome`,
 `BuilderGameTests.buildsStoneHouse`, `buildsStoneHouseIII`, `buildsAStyledStoneHouse`,
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `starterUpgradesKeepMostOfTheirBase`, the basement tests,
-`RefreshGameTests` and `RefreshMatchesFreshBuildGameTests`, `QaChairFacingGameTests`, `StoneHouseLooksGameTests` (49.10b).
+`RefreshGameTests` and `RefreshMatchesFreshBuildGameTests`, `QaChairFacingGameTests`, `StoneHouseLooksGameTests` (49.10b),
+`QaRebuiltLooks1121bBugTests` (B1431) and `QaStoneTownLooks1121cGameTests` (desert II built across a reload from exactly
+its materials and every bed reached, desert I->II keeps claimed beds and chests, one material short waits and resumes).
 Scenes `rebuild_stone_house` and `rebuild_stone_house_looks`.

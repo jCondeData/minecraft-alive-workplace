@@ -1,0 +1,19 @@
+{
+  "name": "great-cathedral-b-s4",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 449
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_cathedral_b/out/great-cathedral-b-s4.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_cathedral_b/out/summary.json",
+  "size": [
+    39,
+    54,
+    56
+  ],
+  "blockCount": 15152,
+  "paletteCount": 82,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/great_cathedral_b/recipe.mjs"
+}

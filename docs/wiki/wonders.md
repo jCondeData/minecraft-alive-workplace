@@ -89,7 +89,7 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   time): the crew lays a given-up block once nothing stands in it, and the wall goes on from there. If nobody can lay
   it and the crew has stood still for 10 seconds, the lead gives up the block over it too (every block waiting so at once, B270), so a
   part may end with a hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A
-  villager boxed in where a block goes, with nowhere in reach to step to (inside the Colossus's lantern, in the ring of panes
+  villager boxed in where a block goes, with nowhere in reach to step to (inside the Colossus's lantern, in the glass cage
   round its glowstone), is moved to the nearest free spot further off (up to 16 blocks), so the block isn't given up (B308). A block
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
@@ -538,18 +538,25 @@ Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off).
 - **Its terraces are four village farms**: a farmer whose composter is a farm corner's takes on that terrace's fields
   by themselves, as at any composter with a chest by it.
 
-**The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over
-the village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from
-far off: the tall head (9 across, 10 high), the long nose hanging past the chin, a dark unibrow over white eyes with
-emerald pupils, and a robe of polished diorite trimmed with smooth stone at the hem, the belt and down the front,
-flaring at the hem over two feet. Its left arm folds across the chest, the hand resting on it; its right arm rises
-clear of the head and holds up the lantern, a cage of glass panes round glowstone under a copper cap, lit day and
-night. A cloak of cut copper (about 370 blocks with the lantern's copper) hangs from the shoulders to the pedestal in
-three pleats, and weathers green over the weeks. The plinth is 13 high in three steps of stone bricks (mossy and
-cracked low down) on a skirt of deepslate brick: polished andesite pilasters and a cornice, a terrace with a
-balustrade and nine braziers round it, and a smooth stone pedestal. The road passes front to back through an arch 5
-wide and 6 high, with lantern niches down the passage and lamp posts at both mouths; over the front arch is the
-Founder's plaque, a row of seven dark oak signs on a dark oak panel (35.22 writes them). The arm and the head need
+**The Colossus** (35.21; rebuilt from scratch in 52.6: "Astride the Road") is the Founder's statue, 47 high on a 29 by
+29 site, about 8,800 blocks (8,786), standing over the village's main road. The Founder strides over the road: his
+feet are planted wide either side of it, the left forward and the right back, so the road runs through an arch between
+his own feet. The arch is 5 wide and 6 high at its crown, vaulted in deepslate tiles with shroomlights let into the
+crown, with voussoirs and a chiseled keystone at both mouths. The base is a dark gate: three stair-edged courses of
+stone bricks (cracked and mossy among them) all round, four corner piers with a brazier each, and a die of deepslate
+bricks between proud polished deepslate pilasters with recessed panels and hanging lanterns, a copper frieze, an
+overhanging cornice and a smooth stone deck (y 12) behind a low balustrade with a brazier at each corner and the
+eternal flame before the Founder's feet: nine braziers in all. Over the road arch is the Founder's plaque, seven dark
+oak signs (35.22 writes them). The figure is white: bare shins in sandals, a pleated knee-length tunic of smooth stone,
+a copper belt with a chiseled buckle, a sash across the chest and polished diorite skin. His left hand holds the
+rolled founding plan (bone) at his hip; his right arm is thrown up, and on the fist stands the lantern: three
+glowstone (y 43 to 45) caged in yellow glass on all four sides, a copper grate band and a copper cap with a chiseled
+crown at the top (y 46), lit day and night. The bearded head looks down the road from deep-set emerald eyes under a
+brow, the nose standing out past them, a copper laurel in the hair. A cloak of cut copper falls from the shoulders,
+spreading like a bell and gathering again, its train pooling on the deck; with the belt, frieze, laurel and lantern
+it is 398 copper blocks, none waxed, and it weathers green over the weeks. A Colossus already begun or finished keeps
+the old drawing (the 35.21 one, a robed villager on a stepped plinth): it still counts as standing, its plaque is
+still written on its own seven signs, and it is repaired and finished as it was first drawn. The arm and the head need
 scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV
 *The Head and the Lantern*. Its goods (found, with the rare worker who finds each and in how many days; then what a
 workshop makes): I a Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7

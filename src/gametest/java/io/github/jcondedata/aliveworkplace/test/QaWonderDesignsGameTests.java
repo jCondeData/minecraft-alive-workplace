@@ -310,7 +310,9 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				}
 			}
 			case "colossus" -> {
-				// "47 high ... on a 13-high stepped plinth with an arch through it (5 wide, 6 high) for the main road"
+				// "47 high ... on a 13-high stepped plinth with an arch through it (5 wide, 6 high) for the main road"; 52.6, rebuilt
+				// (briefs/colossus.md, js/colossus_a/plan.mjs, "Astride the Road"): the same 47 high, the arch x 12-16 crowned 6
+				// high, the last layer 13 or more across at y 13 (the deck's balustrade), the figure from y 14. Unchanged checks.
 				near(wrong, "its height", h, 47, 0);
 				int[] open = new int[b[3] + 1];
 				for (int x = b[0]; x <= b[3]; x++) {
@@ -477,12 +479,22 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				new Feature("a baked-brick plinth", 300, "minecraft:bricks", "minecraft:brick_stairs"),
 				new Feature("sandstone dressings, floors and parapets", 1000, "minecraft:smooth_sandstone", "minecraft:cut_sandstone", "minecraft:chiseled_sandstone"),
 				new Feature("the frieze of blue glazed tiles under every cornice", 200, "minecraft:blue_glazed_terracotta"));
-			case "colossus" -> List.of(new Feature("a lantern of glowstone", 1, "minecraft:glowstone"),
-				new Feature("the lantern's glass cage", 4, "minecraft:glass_pane", "minecraft:glass"),
-				new Feature("braziers round the plinth", 4, "minecraft:campfire"),
-				new Feature("the Founder's plaque, a row of signs", 3, "minecraft:dark_oak_wall_sign", "minecraft:oak_wall_sign", "minecraft:spruce_wall_sign"),
-				new Feature("a figure of polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
-				new Feature("a cloak of cut copper", 150, "minecraft:cut_copper", "minecraft:cut_copper_stairs", "minecraft:cut_copper_slab"));
+			// 52.6: the rebuilt Colossus's named parts (js/colossus_a/plan.mjs, "Astride the Road"), the minimums raised to the new design
+			case "colossus" -> List.of(new Feature("the Lantern's three glowstone", 3, "minecraft:glowstone"),
+				new Feature("the Lantern's yellow glass cage", 16, "minecraft:yellow_stained_glass", "minecraft:yellow_stained_glass_pane"),
+				new Feature("the Lantern's copper grate band", 4, "minecraft:copper_grate"),
+				new Feature("nine braziers: the corner piers, the deck's corners and the eternal flame", 9, "minecraft:campfire"),
+				new Feature("the Plaque, seven dark oak signs over the arch", 7, "minecraft:dark_oak_wall_sign"),
+				new Feature("the Head's emerald eyes", 2, "minecraft:emerald_block"),
+				new Feature("the Arms' rolled founding plan", 3, "minecraft:bone_block"),
+				new Feature("the vault's shroomlights", 5, "minecraft:shroomlight"),
+				new Feature("a figure and deck of polished diorite and smooth stone", 1500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
+				new Feature("the Cloak, belt, frieze and laurel of copper", 300, "minecraft:cut_copper", "minecraft:cut_copper_stairs", "minecraft:cut_copper_slab",
+					"minecraft:copper_block", "minecraft:chiseled_copper"),
+				new Feature("the Gate die's deepslate bricks", 3500, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks"),
+				new Feature("the polished deepslate pilasters and cornice", 500, "minecraft:polished_deepslate", "minecraft:polished_deepslate_stairs",
+					"minecraft:polished_deepslate_wall"),
+				new Feature("the Steps' cracked and mossy stone bricks", 500, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
 			case "stadium" -> List.of( // 52.6: the rebuilt Stadium's named parts (js/stadium/plan.mjs, "the Stadium Bowl")
 				new Feature("two Training Posts", 2, "aliveworkplace:training_post"),
 				new Feature("the Nurse's Booth's brewing stand", 1, "minecraft:brewing_stand"),

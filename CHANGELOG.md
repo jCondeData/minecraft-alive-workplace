@@ -16,6 +16,16 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Changed
+- **The Colossus is rebuilt from scratch** (52.6): "Astride the Road", the Founder striding over the main road, his
+  feet planted either side of it so the road and its caravans pass through an arch between them. The base is a dark
+  stone gate with stepped courses, corner piers, pilasters, a copper frieze and a deck ringed with nine braziers, the
+  seven-sign plaque over the arch. The white figure wears a belted tunic under a copper cloak that sweeps down to pool
+  on the deck and weathers green; his left hand holds the rolled founding plan, and his right arm is thrown up with a
+  glowstone lantern caged in yellow glass, lit day and night. Same stage names and size. A Colossus already begun or
+  finished keeps the old drawing: it still counts as standing, its plaque is still written, and it is repaired and
+  finished as it was first drawn.
+
 ## 0.158.0 — 2026-11-20
 
 ### Added

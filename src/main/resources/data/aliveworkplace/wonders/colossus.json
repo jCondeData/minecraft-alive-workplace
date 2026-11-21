@@ -66,7 +66,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/colossus/stage_2_0",
-          "offset": [9, 13, 9]
+          "offset": [9, 13, 8]
         }
       ],
       "goods": [
@@ -120,7 +120,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/colossus/stage_3_0",
-          "offset": [9, 13, 8]
+          "offset": [6, 13, 8]
         }
       ],
       "goods": [
@@ -174,7 +174,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/colossus/stage_4_0",
-          "offset": [10, 34, 8]
+          "offset": [11, 34, 7]
         }
       ],
       "goods": [
@@ -239,5 +239,5 @@
       "points": 8
     }
   ],
-  "drawing": "drawn_ec2ed8477"
+  "drawing": "drawn_92b83da4f"
 }

@@ -52,6 +52,9 @@ asks for the steps, `latest.log` and any crash report).
   can't hold one) was skipped by the builder. The workshop's hooks now hang on the post beside the window, and the
   Farmstead's tool wall keeps the two hooks over its bench. The Flower Shop's back room, with the Florist's second
   chest, is open again: a shelf of pots no longer blocks its doorway (B1451, B1452, B1454).
+- The village Ball Workshops' tower ladder reaches the drying loft again: two of its rungs hung on a glass pane, which
+  can't hold a ladder, so builders skipped them. The tower's east wall is now solid behind the ladder; its windows face
+  north and south (B1453).
 - A Steward's palisade no longer stacks up on itself: two wall segments that overlap a little were each laid out on
   top of the other once one stood, so builders kept building them higher until they ran out of cobblestone and the
   wall never finished. Wall pieces are now always set on the real ground.

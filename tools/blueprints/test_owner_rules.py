@@ -248,10 +248,6 @@ class WallHungPieces(unittest.TestCase):
     CANT_HOLD = ("pane", "iron_bars", "fence", "_wall", "chain", "carpet", "flower_pot", "potted_", "lantern",
                  "trapdoor", "_door", "minecraft:air")
 
-    # B1453 (village Ball Workshops' loft ladders on a pane): still open, its own bug; delete each line as it is fixed
-    OPEN_BUGS = tuple(f"village/{v}_ball_workshop: ladder@(11, {y}, 5) hangs on glass_pane@(12, {y}, 5)"
-                      for v in ("desert", "plains", "savanna", "snowy", "taiga") for y in (4, 7))
-
     def hung(self, piece, behind, **props):
         """check()'s lines for a {@code piece} at (4, 2, 4) hanging north (on the block south of it) on {@code behind}."""
         b = room()
@@ -296,9 +292,7 @@ class WallHungPieces(unittest.TestCase):
                 if held_by is None:
                     continue  # outside the drawing or a structure void: the ground or another stage holds it
                 if any(t in held_by for t in self.CANT_HOLD):
-                    line = f"{name}: {block[10:]}@{p} hangs on {held_by[10:]}@{behind}"
-                    if line not in self.OPEN_BUGS:
-                        wrong.append(line)
+                    wrong.append(f"{name}: {block[10:]}@{p} hangs on {held_by[10:]}@{behind}")
         self.assertEqual([], wrong, "\n" + "\n".join(wrong))
 
 

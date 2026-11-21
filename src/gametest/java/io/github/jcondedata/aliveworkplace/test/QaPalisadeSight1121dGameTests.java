@@ -160,15 +160,27 @@ public class QaPalisadeSight1121dGameTests implements FabricGameTest {
 	 * raiders, 8 and 15 blocks out from the stake line, without coming down.
 	 */
 	static void shootsFromTheWalk(GameTestHelper helper, StarterBlueprints.Entry build) {
+		shootsFromTheWalk(helper, build, Items.BOW, 1, NEAR, 5, FAR);
+	}
+
+	/**
+	 * The same siege with the archer holding {@code weapon} in his off hand, the raiders standing {@code nearOut} and
+	 * {@code farOut} blocks out from the stake line in the columns {@code nearX} and {@code farX} (helper x minus the
+	 * palisade's west end: 0 to 6 is in front of it, below 0 or above 6 off to the side, a slanting shot over the stakes).
+	 */
+	static void shootsFromTheWalk(GameTestHelper helper, StarterBlueprints.Entry build, net.minecraft.world.item.Item weapon, int nearX, int nearOut,
+		int farX, int farOut) {
 		Village village = village(helper);
 		ServerLevel level = village.level();
 		Blueprint blueprint = stand(helper, build, WALL, Rotation.NONE, true);
 		int face = WALL.getZ() + blueprint.size().getZ() - 1;
 		Villager archer = archer(helper, 4, 1);
-		Mob near = raider(helper, helper.absolutePos(new BlockPos(WALL.getX() + 1, 2, face + NEAR)));
-		Mob far = raider(helper, helper.absolutePos(new BlockPos(WALL.getX() + 5, 2, face + FAR)));
+		archer.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(weapon));
+		String shooter = build.id() + " (" + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(weapon).getPath() + ")";
+		Mob near = raider(helper, helper.absolutePos(new BlockPos(WALL.getX() + nearX, 2, face + nearOut)));
+		Mob far = raider(helper, helper.absolutePos(new BlockPos(WALL.getX() + farX, 2, face + farOut)));
 		List<BlockPos> walk = BattleStations.spots(blueprint).stream().filter(p -> p.getZ() == WALK_Z).map(p -> world(helper, WALL, Rotation.NONE, p).above()).toList();
-		helper.assertTrue(!walk.isEmpty(), build.id() + ": no stations on the walk: " + BattleStations.spots(blueprint));
+		helper.assertTrue(!walk.isEmpty(), shooter + ": no stations on the walk: " + BattleStations.spots(blueprint));
 		VillageRaids.track(level, village.hall(), village.culture(), List.of(near, far));
 		helper.assertTrue(Sieges.siege(level, village.hall()).isPresent(), "no siege on the village");
 		long[] on = {-1};
@@ -178,21 +190,21 @@ public class QaPalisadeSight1121dGameTests implements FabricGameTest {
 				if (BattleStations.onStation(archer)) {
 					on[0] = tick;
 					BlockPos post = BattleStations.post(archer).orElseThrow();
-					helper.assertTrue(walk.contains(post), build.id() + ": his station " + post.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + " isn't on the palisade's walk "
+					helper.assertTrue(walk.contains(post), shooter + ": his station " + post.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + " isn't on the palisade's walk "
 						+ walk.stream().map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).toList());
 				} else if (tick > 500) {
-					helper.fail(build.id() + ": the archer isn't on the palisade's walk within 500 ticks: at " + helper.relativeVec(archer.position()) + ", his place "
+					helper.fail(shooter + ": the archer isn't on the palisade's walk within 500 ticks: at " + helper.relativeVec(archer.position()) + ", his place "
 						+ BattleStations.post(archer).map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()));
 				}
 				return;
 			}
 			if (hit(near) && hit(far)) {
-				helper.assertTrue(BattleStations.onStation(archer), build.id() + ": he came down off the walk to hit them: at " + helper.relativeVec(archer.position()));
+				helper.assertTrue(BattleStations.onStation(archer), shooter + ": he came down off the walk to hit them: at " + helper.relativeVec(archer.position()));
 				helper.succeed();
 			} else if (tick > LIMIT) {
-				helper.fail(build.id() + ": from the walk station " + BattleStations.post(archer).map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()) + " the archer hit "
-					+ (hit(near) ? "the raider " + NEAR + " out" : "") + (hit(far) ? "the raider " + FAR + " out" : "") + (!hit(near) && !hit(far) ? "neither raider" : " only")
-					+ "; in sight: " + NEAR + " out " + archer.hasLineOfSight(near) + ", " + FAR + " out " + archer.hasLineOfSight(far) + "; arrows " + arrows(helper, archer) + " stuck at " + stuck(helper, archer)
+				helper.fail(shooter + ": from the walk station " + BattleStations.post(archer).map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()) + " the archer hit "
+					+ (hit(near) ? "the raider " + nearOut + " out" : "") + (hit(far) ? "the raider " + farOut + " out" : "") + (!hit(near) && !hit(far) ? "neither raider" : " only")
+					+ "; in sight: " + nearOut + " out " + archer.hasLineOfSight(near) + ", " + farOut + " out " + archer.hasLineOfSight(far) + "; arrows " + arrows(helper, archer) + " stuck at " + stuck(helper, archer)
 					+ "; he is at " + helper.relativeVec(archer.position()));
 			}
 		});

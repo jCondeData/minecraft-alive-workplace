@@ -1059,6 +1059,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWallRamps1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPalisadeAim1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerRouteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerNoDropBoxGameTests",

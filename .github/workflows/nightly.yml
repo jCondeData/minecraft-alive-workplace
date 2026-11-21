@@ -384,6 +384,11 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@v4
+      # B1056: the whole suite outgrew the job (2026-11-07: baseline 1514 s, a mutant 2113 s; 11-08: every shard cut off by
+      # --timeout 1800 on its baseline, "0 of 0 killed"). --covering runs each mutant against only the GameTest classes
+      # that name the mutated class (at most 40), and the baseline against those of the shard's 4 mutants together; a
+      # mutant no test class reaches is listed NO-TEST. --budget 6000: no run starts that would likely end after 100
+      # minutes, and one run is cut at 30 (--timeout), so the shard reports inside the job's 150 minutes with setup.
       - name: Mutants (shard ${{ matrix.shard }} of 5)
         env:
           SINCE: ${{ needs.mutation-plan.outputs.since }}
@@ -391,7 +396,8 @@ jobs:
           mkdir -p build/nightly
           python3 tools/modtest/mutate.py --since "$SINCE" --max 20 --seed "${{ needs.mutation-plan.outputs.seed }}" --shard "${{ matrix.shard }}/5" \
             --cmd "./gradlew :$NODE:runGameTest" --compat-cmd "./gradlew :$NODE:runCompatGameTest" --compat-max 4 \
-            --timeout 1800 > "build/nightly/mutants-${{ matrix.shard }}.md" 2>&1 || true
+            --covering --cover-max 40 --budget 6000 --timeout 1800 > "build/nightly/mutants-${{ matrix.shard }}.md" 2>&1 || true
+          git checkout -- src/gametest/resources/fabric.mod.json src/compattest/resources/fabric.mod.json
           cat "build/nightly/mutants-${{ matrix.shard }}.md"
       - uses: actions/upload-artifact@v4
         if: always()

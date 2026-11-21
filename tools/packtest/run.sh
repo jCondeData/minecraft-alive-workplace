@@ -321,18 +321,7 @@ if [ "${CITY:-false}" = "true" ]; then
   echo "--- city (full log: $SERVER/server.log)"
   grep -E "City:|City result:|Builder stalled|Sprint completed|Crash|Exception" server.log | grep -v "No data fixer" || true
   if [ "${PERF:-false}" = "true" ] && [ -f city.jfr ]; then python3 ../../../tools/packtest/perf.py city.jfr; fi
-  python3 - server.log <<'EOF'
-import re, sys
-line = next((l for l in open(sys.argv[1], errors="replace") if "City result:" in l), None)
-if line is None:
-    sys.exit("No City result line: the run didn't end.")
-m = re.search(r"City result: (\d+)/(\d+) builds", line)
-p95 = float(re.search(r"p95 ([\d.]+) ms", line).group(1))
-ok = (m and m.group(1) == m.group(2) and int(m.group(2)) > 0 and "Keep Clear: none;" in line
-      and re.search(r"; 0 stalls; items off: none;", line) and p95 < 0.5)
-print("City passed." if ok else "The city run did not pass.")
-sys.exit(0 if ok else 1)
-EOF
+  python3 ../../../tools/packtest/city.py server.log   # the verdict and the wall's count (B1363)
   exit $?
 fi
 

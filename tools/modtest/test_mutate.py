@@ -72,7 +72,73 @@ def unit_checks():
             got = mutate.reached_summary(Path(d), 0)
             print(("ok   " if got == want else f"FAIL (got {got!r}) ") + name)
             bad += got != want
+    return bad + covering_checks()
+
+
+def covering_checks():
+    """B1056: --covering picks the test classes that name the mutated class (or a class using it)."""
+    import mutate
+    bad = 0
+    tests = {"t.ATests": "A a = new A(); a.big(2); A.x();", "t.BTests": "B b;", "t.UsesTests": "Helper.go();",
+             "t.Other": "Abc d;"}
+    main_src = {"A": "class A {}", "Helper": "class Helper { A a; }", "Lonely": "class Lonely {}"}
+    cases = [
+        ("a test naming the class covers it (whole word: Abc isn't A)", mutate.covering("A", tests, main_src, 40), ["t.ATests"]),
+        ("none names it: the tests naming a class that uses it", mutate.covering("Zed", tests, {**main_src, "Helper": "Zed z;"}, 40),
+         ["t.UsesTests"]),
+        ("no test reaches it", mutate.covering("Lonely", tests, main_src, 40), []),
+        ("the cap keeps the classes naming it most",
+         mutate.covering("A", {**tests, "t.More": "A A A A"}, main_src, 1), ["t.More"]),
+    ]
+    for name, got, want in cases:
+        print(("ok   " if got == want else f"FAIL (got {got!r}) ") + name)
+        bad += got != want
     return bad
+
+
+MOD_JSON = '{\n\t"entrypoints": {\n\t\t"fabric-gametest": [\n\t\t\t"t.ATests",\n\t\t\t"t.OtherTests"\n\t\t]\n\t}\n}\n'
+GT = "src/gametest/resources/fabric.mod.json"
+
+
+def covering_runs(root):
+    """End to end on the throwaway mod: the run sees only the covering class, and the file is put back."""
+    os.makedirs(os.path.join(root, "src/gametest/resources"), exist_ok=True)
+    os.makedirs(os.path.join(root, "src/gametest/java/t"), exist_ok=True)
+    with open(os.path.join(root, GT), "w") as f:
+        f.write(MOD_JSON)
+    with open(os.path.join(root, "src/gametest/java/t/ATests.java"), "w") as f:
+        f.write("package t; class ATests { mod.A a; }\n")
+    with open(os.path.join(root, "src/gametest/java/t/OtherTests.java"), "w") as f:
+        f.write("package t; class OtherTests {}\n")
+    only_a = f"! grep -q OtherTests {GT} && grep -q ATests {GT}"
+    cases = [
+        ("--covering runs only the class naming A, and it kills the mutant",
+         ["--covering", "--cmd", f"{only_a} && {CATCHES}"], 0, "KILLED"),
+        ("without --covering the run sees every class", ["--cmd", f"grep -q OtherTests {GT}"], 1, "SURVIVED"),
+        ("a baseline cut off by --timeout says so (not 'Gradle')", ["--cmd", "sleep 5", "--timeout", "1"], 1,
+         "timed out after 1s"),
+        ("--budget: no mutant starts that would end past it", ["--cmd", "sleep 2", "--budget", "3"], 0, "Out of time: 1 mutant"),
+    ]
+    fails = 0
+    for name, args, want_code, want_text in cases:
+        code, out = mutate(root, *args)
+        with open(os.path.join(root, GT)) as f:
+            restored = f.read() == MOD_JSON
+        ok = code == want_code and want_text in out and restored
+        print(("ok   " if ok else "FAIL ") + name)
+        if not ok:
+            fails += 1
+            print(f"     exit {code} (want {want_code}), file restored: {restored}\n" + out[-1200:])
+    # A mutated class no test names is NO-TEST, not run and not a kill.
+    with open(os.path.join(root, "src/gametest/java/t/ATests.java"), "w") as f:
+        f.write("package t; class ATests {}\n")
+    code, out = mutate(root, "--covering", "--cmd", "exit 9")
+    ok = code == 0 and "NO-TEST" in out and "reached by no test class" in out
+    print(("ok   " if ok else "FAIL ") + "a class no test names is NO-TEST and nothing runs")
+    if not ok:
+        fails += 1
+        print(f"     exit {code}\n" + out[-1200:])
+    return fails
 
 
 def main():
@@ -104,6 +170,7 @@ def main():
             if not ok:
                 fails += 1
                 print(f"     exit {code} (want {want_code}), file restored: {restored}\n" + out[-1200:])
+        fails += covering_runs(root)
     print(f"\n{fails} failed" if fails else "\nall passed")
     sys.exit(1 if fails else 0)
 

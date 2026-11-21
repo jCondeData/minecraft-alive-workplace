@@ -48,6 +48,10 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- The Carpenter's Workshop and Farmstead II and III are built whole again: a tool hook drawn on a glass pane (which
+  can't hold one) was skipped by the builder. The workshop's hooks now hang on the post beside the window, and the
+  Farmstead's tool wall keeps the two hooks over its bench. The Flower Shop's back room, with the Florist's second
+  chest, is open again: a shelf of pots no longer blocks its doorway (B1451, B1452, B1454).
 - A Steward's palisade no longer stacks up on itself: two wall segments that overlap a little were each laid out on
   top of the other once one stood, so builders kept building them higher until they ran out of cobblestone and the
   wall never finished. Wall pieces are now always set on the real ground.

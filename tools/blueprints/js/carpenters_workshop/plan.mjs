@@ -155,7 +155,7 @@ export const OUTSIDE = {
   boards: { cells: [[8, 1, 1], [9, 1, 1], [8, 1, 2], [9, 1, 2], [9, 2, 2]], top: [[8, 2, 2], [9, 2, 1]] },
   shopLogs: { cells: [[8, 1, 5], [9, 1, 5], [8, 2, 5]] },
   shopBoards: { cells: [[4, 1, 8], [9, 1, 8]], top: [[4, 2, 8], [9, 2, 8]] },
-  toolRack: { cells: [[8, 3, 8], [9, 3, 8]], facing: 'north' }, // hooks on the back wall over the board stack
+  toolRack: { cells: [[9, 3, 8], [9, 4, 8]], facing: 'north' }, // hooks up the back wall's post over the board stack (B1451: not on the pane at x 8)
   rack: { cells: [[11, 1, 3], [11, 1, 4], [11, 1, 5], [11, 2, 3], [11, 2, 4], [11, 2, 5], [11, 3, 3], [11, 3, 4], [11, 3, 5],
     [12, 1, 4], [12, 1, 5], [11, 1, 8], [11, 2, 8]] },
   shedPile: { cells: [], top: [[12, 2, 5]] },

@@ -90,6 +90,22 @@ def bed_problem(blocks, p, props):
             f"{q[0]},{q[1]},{q[2]} ({_short(other)} there): a half bed no one can sleep in")
 
 
+# Wall-hung pieces (B1451, B1452): a wall torch, ladder, tripwire hook, wall button or lever needs a full face behind it.
+# A pane, bars, a fence or wall, a chain, a carpet, a lantern, a pot, a door or a trapdoor has none, so the builder
+# defers the piece and skips it, and one placed there by hand pops off. Stairs and slabs are left out: their shape decides.
+WALL_HUNG = ("wall_torch", "soul_wall_torch", "redstone_wall_torch", "tripwire_hook")
+CANT_HOLD = ("pane", "iron_bars", "fence", "_wall", "chain", "carpet", "flower_pot", "potted_", "lantern", "trapdoor",
+             "_door")
+
+
+def hung_on_problem(behind):
+    """Why a wall-hung piece can't hang on {@code behind} (a (name, props) pair, or None for air), or None if it can.
+    Air behind is left to the caller: a torch on the drawing's edge may hang on the ground or a later stage."""
+    if behind is None or not any(t in behind[0] for t in CANT_HOLD):
+        return None
+    return "hangs on " + _short(behind) + " (it can't hold one: the builder skips it)"
+
+
 def check(b, only=None, whole=None):
     """What's wrong with build {@code b}, as lines of text (empty if nothing). {@code only}: the positions to report on
     (a Wonder's stage, checked standing on the stages before it); None for all of them. {@code whole}: whether the
@@ -143,7 +159,11 @@ def check(b, only=None, whole=None):
             bad = "is under " + _short(above) + " (the game turns it to dirt: grass, dirt or coarse dirt there)"
         elif short == "ladder":
             dx, dy, dz = FACING[props["facing"]]
-            bad = (x - dx, y, z - dz) not in blocks and "has no wall behind it"
+            behind = blocks.get((x - dx, y, z - dz))
+            bad = (behind is None and "has no wall behind it") or hung_on_problem(behind)
+        elif short in WALL_HUNG or ((short.endswith("_button") or short == "lever") and props.get("face") == "wall"):
+            dx, dy, dz = FACING[props["facing"]]
+            bad = hung_on_problem(blocks.get((x - dx, y, z - dz)))
         elif short.endswith("_door"):
             other = (x, y + 1, z) if props.get("half") == "lower" else (x, y - 1, z)
             bad = (other not in blocks or blocks[other][0] != name) and "is missing a half"

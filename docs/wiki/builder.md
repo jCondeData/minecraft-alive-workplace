@@ -2,7 +2,7 @@
 
 The flagship job: a villager who builds blueprints, block by block, from the chests by their bench.
 
-Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280, B1294, B619, B1070
+Roadmap items: 23.1, 23.1a, 23.1b, 23.2, 23.3, 23.4, 23.8, 26.9, B120, 36.1, B173, B178, B185, B132, B197, B203, 36.15, B261, B279, B280, B290, B297, B298, B299, B340, B342, B379, B402, B403, B404, B393, B410, B394, B429, B434, B449, B486, B438, B515, B519, B487, B537, B538, B539, 36.20, 36.21, B642, B648, B636, B661, B662, B656, B792, B812, B822, B869, B880, B964, B965, B969, B973, B981, B1019, B1017, B1023, B1042, B1043, B1088, B1099, B1100, B1101, B1030, B1045, B1046, B874, B1105, B1113, B1119, B181, B872, B1117, B1187, B1243, B1272, B1280, B1294, B619, B1070, B1407
 
 ## 1. What a player sees
 
@@ -571,7 +571,10 @@ claims and trip counts.
   Clinic with slab-and-carpet cots was offered no refresh; `history.py --check` lists any release drawing missing). A
   build from the modded library (37.12) is matched against its modded copy's older drawings,
   `blueprint_history/modded/<blueprint>/`, written the same way (B680: the tool skipped them, so a modded Clinic of
-  0.151.0 got no refresh to its white beds). A build of an older drawing not shipped and an imported or uploaded build
+  0.151.0 got no refresh to its white beds). A modded build still going up when its blueprint is redrawn keeps the modded
+  copy it was begun from: its site saved the vanilla drawing of its day, and each modded folder's `aliases.json` (from
+  `history.py`, checked by `--check`) names the key that day's modded copy ships under (B1407: 39 modded sites of 23
+  blueprints, among them the Library, Inn and Manor, were restarted on today's look, half old and half new). A build of an older drawing not shipped and an imported or uploaded build
   show no button. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is

@@ -110,9 +110,35 @@ public final class VillageHabitats {
 		return structure.equals(StarterBlueprints.HABITAT_GARDEN.id()) || structure.equals(StarterBlueprints.HABITAT_GARDEN_2.id());
 	}
 
-	/** The world spot of a placed garden's centre stone. */
+	/** The world spot of a placed garden's centre stone, as today's drawing has it. */
 	public static BlockPos centre(BlueprintData.Placement placement) {
 		return placement.origin().offset(StructureTemplate.transform(StarterBlueprints.HABITAT_GARDEN_CENTRE, placement.mirror(), placement.rotation(), BlockPos.ZERO));
+	}
+
+	/**
+	 * The world spot of the centre stone of a garden standing as the old drawing (before the 50.12 rebuild,
+	 * {@link StarterBlueprints#V0145_HABITAT_GARDEN_CENTRE}).
+	 */
+	public static BlockPos v0145Centre(BlueprintData.Placement placement) {
+		return placement.origin().offset(StructureTemplate.transform(StarterBlueprints.V0145_HABITAT_GARDEN_CENTRE, placement.mirror(), placement.rotation(), BlockPos.ZERO));
+	}
+
+	/**
+	 * The world spot of the centre stone of the garden standing at {@code placement}: today's drawing's spot, unless the
+	 * stone (or the habitat founded in its place) isn't there but is at the old drawing's spot, as in a garden built before
+	 * 50.12 and not refreshed (a finished building records no drawing version, so its blocks tell).
+	 */
+	public static BlockPos centre(ServerLevel level, BlueprintData.Placement placement) {
+		BlockPos now = centre(placement);
+		if (level.isLoaded(now) && centreOrHabitat(level.getBlockState(now))) {
+			return now;
+		}
+		BlockPos old = v0145Centre(placement);
+		return level.isLoaded(old) && centreOrHabitat(level.getBlockState(old)) ? old : now;
+	}
+
+	private static boolean centreOrHabitat(BlockState state) {
+		return isCentreStone(state) || isHabitat(state);
 	}
 
 	// ---- Founding ----
@@ -134,7 +160,7 @@ public final class VillageHabitats {
 			if (!isGarden(f.structure()) || !f.placement().dimension().equals(level.dimension().location())) {
 				continue;
 			}
-			BlockPos centre = centre(f.placement());
+			BlockPos centre = centre(level, f.placement());
 			if (level.isLoaded(centre) && isCentreStone(level.getBlockState(centre))) {
 				return centre;
 			}
@@ -310,13 +336,13 @@ public final class VillageHabitats {
 		if (!isGarden(structure)) {
 			return;
 		}
-		BlockPos centre = centre(placement);
+		BlockPos centre = centre(level, placement);
 		if (level.isLoaded(centre) && isHabitat(level.getBlockState(centre))) {
 			level.removeBlockEntity(centre);
 			level.setBlock(centre, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
 		}
 		VillageHallBlockEntity hall = hall(level, centre);
-		if (hall != null && centre.equals(hall.habitat())) {
+		if (hall != null && (centre.equals(hall.habitat()) || v0145Centre(placement).equals(hall.habitat()) || centre(placement).equals(hall.habitat()))) {
 			hall.setHabitat(null);
 		}
 	}

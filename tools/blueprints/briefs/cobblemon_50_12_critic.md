@@ -94,3 +94,58 @@ course instead of hay bands on the back; 4 a path to egg II's east door, tidy lo
 ## Ship note
 Arena and Habitat Garden are held on `wip/lane-c-50.12`: both move spots the code reads at fixed positions, which would
 break standing old buildings on the live server (ROADMAP Notes, 2026-11-19 lane-c-1119-0653).
+
+## Pokémon Center (default, Lodge, Plaza; I, II): BACK, BACK, BACK (round 1)
+Sheets `pokemon_center{,_2,_lodge,_lodge_2,_plaza,_plaza_2}_sheet.png` (five views and cutaways at y <= 3 and y <= 7,
+candidates from each look's `build.sh`); eye level not filmed. Cobblemon's blocks (machine, PC, Pasture Block) render
+as air in these shots.
+
+| Score | default I | default II | Lodge I | Lodge II | Plaza I | Plaza II |
+|---|---|---|---|---|---|---|
+| Silhouette | 2 -> 4 | 2 -> 4 | 3 -> 3 | 3 -> 3 | 3 -> 3 | 2 -> 4 |
+| Depth | 2 -> 3 | 2 -> 3 | 3 -> 3 | 3 -> 3 | 3 -> 3 | 3 -> 3 |
+| Interior | 3 -> 3 | 3 -> 3 | 3 -> 3 | 3 -> 3 | 3 -> 3 | 2 -> 3 |
+| Detail | 3 -> 3 | 2 -> 3 | 3 -> 3 | 3 -> 3 | 3 -> 2 | 3 -> 3 |
+
+Evidence: default, the red dome and its eye are known in outline from every side where the old one is a hip-roofed box
+with a flat white cap (front, top); its drum walls are flat between the quoins (right, back); the I desk, carpet aisle and
+barrels match the old hall's furnishing, not beat it (cutaway y <= 3); II's trade hall, pavilion and garden beat the old
+jammed boxes and fenced lawn (left, back). Lodge, the new 45-degree gable and porch is a strong front, but the sides are
+a plain roof slope over a flat log wall (right), against an old cross-gabled, half-timbered lodge of the same strength
+(left); II's wing roof runs into the main slope as a lump (top) and the paddock is a bare fenced lawn (back). Plaza, I's
+arcade and bell tower front is good, but the roof reads ragged and patchy from above (top, cutaway y <= 7) and the back
+and sides are flat pale walls (back); II's L round a fountain court is a real shape and a used court (top, cutaway y <= 3).
+
+Brief: no hard miss in any look (checked on the `.nbt`s): one Healing Machine at (6, 1, 7), PC at (10, 1, 7)-(10, 2, 7),
+(6, 1, 8) open, 2-3 chests or barrels within reach, a ground-floor front door on the z = 0 side, I 649-782 blocks, II keeps
+98-100 % of its I by block, sizes within the plots. The Pasture Block and Shop Counter move (default II (9, 1, 19),
+(15, 1, 7); Lodge II (10, 1, 19), (15, 1, 6); Plaza II (4, 1, 21), (16, 1, 18)), which the brief allows the ship step,
+with the same live-server caveat as the Arena below. Risk: default and Lodge I are 762 and 782 blocks against the brief's
+"keep Level I lean (the old one is 560)" for the 12,000-tick build; confirm `buildsPokemonCenter(Lodge)` timings.
+
+Notes, default (II passes; I does not):
+1. I right and back views: the drum's walls are flat white between the quoins; set the windows a block back with sills
+   and stand a pilaster proud at each octagon vertex up to the eave.
+2. I left and right views: the lowest dome rings step unevenly at the eave; make the bottom two rings one even overhang.
+3. I cutaway y <= 3: the lining ring eats the edge cells; give the lobby a row of waiting seats and the room behind the
+   desk a lit, furnished Nurse's corner.
+4. II back view: the garden is mostly bare lawn round the pavilion; plant beds in soil and lead a path to the Pasture Block.
+5. I's 762 blocks: check the 12,000-tick build; trim lining the eye never sees before trimming detail.
+
+Notes, Lodge:
+1. I right view (and II left): the long sides are a flat log wall under an unbroken roof slope; add a dormer or a side
+   porch and stand the frame posts proud of the infill.
+2. II top and cutaway y <= 7: the wing's roof runs into the main slope as a lump; give the wing its own gable end and a
+   clean valley.
+3. II back and right views: the paddock is a fenced lawn with a trough and hay; add a lean-to shelter and a path from the
+   wing's door.
+4. I back view: the rear gable is blank below its window; a balcony, beam ends or a back porch.
+5. I front and right views: the same red shutter pair on every window; add sills or window boxes and vary them.
+
+Notes, Plaza (II passes on silhouette and interior only):
+1. I top and cutaway y <= 7: the terracotta roof reads ragged, with stepped patches and gaps; make one clean hip with a
+   continuous eave.
+2. I back, left and right views: flat pale walls with flush windows; carry the front's arcade or pilasters round the back.
+3. I and II left views: white walls beside sandstone break the palette; one wall material, sandstone with a single trim.
+4. II right view: the market hall's long side is a plain wall under its roof; open it as an arcade onto the court.
+5. II cutaway y <= 3: the fountain stands alone on sand; benches and planters in soil round it.

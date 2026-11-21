@@ -18,7 +18,7 @@
 		"client": ["io.github.jcondedata.aliveworkplace.client.AliveWorkplaceClient"],
 		"modmenu": ["io.github.jcondedata.aliveworkplace.client.compat.ModMenuEntry"]
 	},
-	"mixins": ["aliveworkplace.mixins.json", "aliveworkplace.create.mixins.json", {"config": "aliveworkplace.client.mixins.json", "environment": "client"}],
+	"mixins": ["aliveworkplace.mixins.json", "aliveworkplace.create.mixins.json", "aliveworkplace.toms.mixins.json", {"config": "aliveworkplace.client.mixins.json", "environment": "client"}],
 	"depends": {
 		"fabricloader": ">=0.16.0",
 		"minecraft": "${minecraft}",

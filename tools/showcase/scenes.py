@@ -423,8 +423,9 @@ SCENES = [
       cobblemon=True, mega=True),
     S("arena", "Trainer Leader", "The Arena, three tiers",
       "every tier's ring center, boxes and seats are where Arenas says, and Arena III has a Healing Machine in each trainers' room", 50,
-      [("01_arena_front", "Arena"), ("03_arena_2_front", "Arena II: stands, gate arch, fair lane"),
-       ("05_arena_3_front", "Arena III: the covered grandstand"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
+      [("01_arena_front", "Arena: the chalk-marked pitch, the red and the blue box, the back row of seats"),
+       ("03_arena_2_front", "Arena II: the colonnade's stand over the fair lane, the judges' loggia over the gate"),
+       ("05_arena_3_front", "Arena III: the brick-roofed grandstand between the trainers' towers"), ("06_arena_3_above", "Arena III from above")], cobblemon=True),
     # The Festival Cup (ROADMAP 28.17): the hall's Cup page for a Town host with an Arena, two trade partners on its
     # circuit, the player signed up, the seeds and the roll of champions
     S("cup_page", "Trainer Leader", "The Festival Cup's page",
@@ -1953,6 +1954,20 @@ SCENES = [
            ("02_outside_back", "From the back: the lodge's gable end and the hedge round the garden"),
            ("03_outside_west", "From the west: the hedge, the arbor over the walk, the lodge's steep roof"),
            ("04_outside_east", "From the east: the berry beds in their log curbs, the lodge behind them")], furniture=True),
+    # ROADMAP 50.12: the Habitat Garden rebuilt from scratch (REBUILD.md), "the Stone Ring" (Level I filmed)
+    S("rebuild_habitat_garden", "Build families", "The Habitat Garden, rebuilt: from four sides",
+      "the Habitat Garden's blueprint stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every room (none: an open-air garden, the bower is open-fronted) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Habitat Garden from the front: the gate in the low hedge, the ring of standing stones round the mossy center stone, the trilithon at its back"),
+           ("02_outside_back", "From the back: the trilithon, the honey tree's crown and the bower's tall roof behind the hedge"),
+           ("03_outside_west", "From the west: the reed-edged pond with its standing stone, the ring beyond"),
+           ("04_outside_east", "From the east: the keeper's bower with the Pasture Block under its eave, the Saccharine honey tree behind")], furniture=True),
+    # ROADMAP 50.12: the Arena rebuilt from scratch ("the Market Stadium"; Level I filmed, II and III in the arena scene)
+    S("rebuild_arena", "Build families", "The Arena, rebuilt: from four sides",
+      "the Arena's blueprint stands on a cleared lawn; every room (none: Level I is an open pitch, the trainers' towers come with Arena III) gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Arena from the front: the low coped wall, the notice board on the gate pier, the pitch beyond"),
+           ("02_outside_back", "From the back: the back row of seats against its coped wall, the podium in the middle"),
+           ("03_outside_west", "From the west: the red box under its canopy and the red flag behind it, the chalk-marked pitch"),
+           ("04_outside_east", "From the east: the blue box under its canopy and the blue flag behind it")], furniture=True),
     # ROADMAP 50.9: the Apiary Garden rebuilt from scratch (REBUILD.md), "the Skep Wall" (Level I filmed)
     S("rebuild_apiary_garden", "Build families", "The Apiary Garden, rebuilt: from four sides",
       "the Apiary Garden's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: the skep is a store) gets an eye-level shot from a free floor cell with a clear view",
@@ -2122,6 +2137,23 @@ SCENES = [
            ("12_savanna", "Savanna: the Great House under One Thatch, one broad golden hip over the whole house, a colonnade of acacia posts, the tower rising through it"),
            ("13_snowy", "Snowy: the White Hall, pale calcite walls under one steep slate roof, tall pointed gables, the tower under a slate pyramid with snow on its point"),
            ("14_taiga", "Taiga: the Boyar's Lodge, dark spruce logs on a mossy fieldstone footing under broad slate roofs, verandas on log posts, two fieldstone stacks")], furniture=True),
+    # ROADMAP 49.10d: the Weaver's Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
+    # drawn), Level I of each side by side
+    S("rebuild_weavers_cottage_looks", "Build families", "The Weaver's Cottage in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Weaver's Cottage as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: a two-story stone range with a long weaver's window, a wool loft under slate and a sheep fold on the east gable"),
+           ("11_desert", "Desert: the Dyer's Roof, sandstone below mud brick under a flat roof, an arcade shading the weaver's window, dyed cloth drying on the roof"),
+           ("12_savanna", "Savanna: one golden thatch hip over the house, a veranda on acacia posts along the street, the flock in a kraal with its own little thatched shelter"),
+           ("13_snowy", "Snowy: the Snowbound Loomhouse, white calcite under a steep snow-laden slate roof, a dormer over the loom and a stone storm porch"),
+           ("14_taiga", "Taiga: a deep-eaved log lodge on a mossy fieldstone course, a veranda the whole length of the front, a split-rail paddock for the sheep")], furniture=True),
+    # ROADMAP 49.10d: the Daub House in each village culture's climate (desert, savanna, snowy, taiga; plains as drawn)
+    S("rebuild_house_t1_b_looks", "Build families", "The Daub House in its village's culture: plains, desert, savanna, snowy and taiga",
+      "the Daub House as drawn and its four culture looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("10_plains", "Plains, as drawn: mud-brick daub in a dark oak frame under a steep brick roof, a low stone kitchen on the east side"),
+           ("11_desert", "Desert: a little kasbah of mud, a square tower at each corner over a coped parapet, the kitchen under a low mud vault"),
+           ("12_savanna", "Savanna: a mud house in a gray acacia frame under one great golden thatch hip, a thatched veranda across the front"),
+           ("13_snowy", "Snowy: pale calcite under a long slate roof sweeping down to the ground floor, a dormer, a storm porch, snow on the ridges"),
+           ("14_taiga", "Taiga: a spruce log lodge, its slate gable to the road over a recessed porch, the kitchen a lower log cross-wing")], furniture=True),
     # Any mod's spruce chair will do (ROADMAP 37.13): the Builder's chairs follow the chest, Handcrafted's or CobbleFurnies'
     S("furniture_any_mod", "Build families", "Any mod's spruce chair will do: the Builder uses the furniture in its chest",
       "two Starter Cottage IIs planned with Handcrafted's chairs: the one whose chest held only CobbleFurnies' chairs has CobbleFurnies' chairs in the same places and facing, every other piece as planned",

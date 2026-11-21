@@ -16,6 +16,17 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+
+- A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
+  look it was begun with after you update, instead of the new design going up over the half-built old one. Use
+  "Refresh to the latest look" once it's finished to bring it up to date (B1407).
+- The War Camp's ominous banner and the Blackstone Outpost's piglin banner now face the camp's gate and front,
+  toward players walking up, instead of turning their backs to them (B1175).
+- With Tom's Simple Storage, a chest that touches the Storehouse's inventory connector and is also faced by a cable
+  connector on the same cables is counted once: the Storehouse (and Tom's own terminal) showed its items and its free
+  room twice, so builders and the board thought the village had double (B1025).
+
 ## 0.158.0 — 2026-11-20
 
 ### Added
@@ -28,6 +39,13 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Weaver's Cottage and the Daub House in their village's culture**: desert, savanna, snowy and taiga villages now
+  build their own look of both. The Weaver's Cottage, at both levels: a flat-roofed sandstone and mud-brick dyer's house
+  with an arcade over the weaver's window and cloth drying on the roof; a golden thatch house with a veranda and a kraal
+  for the flock; a white calcite loomhouse under a steep snowy slate roof; and a deep-eaved spruce log lodge with a
+  veranda along its front. The Daub House: a little mud kasbah with a tower at each corner; a mud house under one great
+  golden thatch with a veranda; a calcite house under a long snowy slate roof; and a spruce log lodge with its gable to
+  the road. The same rooms, loom, beds and furniture; plains villages keep both as drawn (49.10d).
 - **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
   it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
   porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden
@@ -36,11 +54,23 @@ asks for the steps, `latest.log` and any crash report).
   mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
   furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
 ### Changed
+- **The Habitat Garden, rebuilt from scratch** as "the Stone Ring" (with Cobblemon): a hedged clearing around an old ring
+  of standing stones, the mossy center stone at its heart on the walk from the gate through a trilithon, a reed-edged
+  pond, the keeper's open bower with her chest and the Pasture Block under its eave, and the old Saccharine honey tree.
+  The **Habitat Garden II** walks on to a second pond and the keeper's hide on stilts with a balcony over the water.
+  Gardens already standing keep their old drawing until refreshed, and their keeper still founds the village's habitat
+  under their old center stone.
 - **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
   cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
   gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
   glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
   skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Arena, rebuilt from scratch** as "the Market Stadium": a chalk-marked pitch with a red box and a blue box under
+  little canopies at its ends, a flag behind each, 12 seats along the back wall and the notice board on the gate's pier.
+  **Arena II** raises a colonnaded stand along the front over the Cup's fair lane, with a judges' loggia over the gate;
+  **Arena III** roofs the back with a brick grandstand (54 seats), a trainers' tower with a Healing Machine at each end
+  and the champion's pole before the gate. Arenas already standing keep their old look until refreshed, and the Cup
+  still seats its crowd on their benches, calls the trainers to their boxes and offers [Watch] at their notice board.
 - **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
   loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
   Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on

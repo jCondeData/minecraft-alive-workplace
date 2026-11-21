@@ -5,7 +5,7 @@ ROADMAP 32.10. Part of Milestone 32 (1.6), switched on for players in 1.0 with e
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) has a lit Nether portal they
 come through, and who carry off the village's gold (see [Desert raiders](desert.md) for the culture before it).
 
-Roadmap items: 32.10, B829
+Roadmap items: 32.10, B829, B1175
 
 ## What a player sees
 
@@ -14,7 +14,7 @@ Roadmap items: 32.10, B829
 - **The Blackstone Outpost.** 56 to 80 blocks from the hall, on dry, fairly flat ground: a broken platform of
   blackstone and its bricks with netherrack worn through it; at the back, on a dais of polished blackstone bricks, a
   **lit portal** in an obsidian frame with crying obsidian at its corners and heaped beside it, flanked by two broken
-  bastion pillars; a **basalt pillar** flying the black piglin banner with the gold snout; a **hoglin pen** of crimson
+  bastion pillars; a **basalt pillar** flying the black piglin banner with the gold snout, facing the front; a **hoglin pen** of crimson
   fences on crimson nylium; the **hoard**, gold blocks heaped against a broken wall with the loot chest; a campfire in
   the middle. Chat says so ("A portal has been lit beyond Thornholm: Warlord Grukk the Gilded has raised a blackstone
   outpost 60 blocks west...").

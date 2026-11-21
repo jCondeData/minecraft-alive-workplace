@@ -235,5 +235,45 @@ class AdversarialOwnerRules(unittest.TestCase):
         b.set(4, 1, 4, "somemod:copper_pressure_plate")
         self.assertEqual([], [p for p in owner(b) if "crockery" in p])
 
+
+class WallHungPieces(unittest.TestCase):
+    """Every shipped drawing's wall-hung pieces (wall torches, ladders, tripwire hooks, wall buttons and levers) hang on
+    a block that can hold them: a pane, bars, a fence or wall, a chain, a carpet, a lantern, a door, a trapdoor, a pot or
+    drawn air can't, so the builder defers the piece and skips it, and the finished build is missing it (B1451, B1452,
+    B1453; lane-b-1121-1838). Stairs and slabs are left out: whether their side holds depends on their shape."""
+
+    FACING = {"north": (0, 0, -1), "south": (0, 0, 1), "east": (1, 0, 0), "west": (-1, 0, 0)}
+    HUNG = ("minecraft:wall_torch", "minecraft:soul_wall_torch", "minecraft:redstone_wall_torch", "minecraft:ladder",
+            "minecraft:tripwire_hook")
+    CANT_HOLD = ("pane", "iron_bars", "fence", "_wall", "chain", "carpet", "flower_pot", "potted_", "lantern",
+                 "trapdoor", "_door", "minecraft:air")
+
+    def test_every_wall_hung_piece_hangs_on_a_block_that_holds_it(self):
+        import glob
+        from holes import load
+        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                            "src/main/resources/data/aliveworkplace/structure")
+        wrong = []
+        for path in sorted(glob.glob(os.path.join(root, "**", "*.nbt"), recursive=True)):
+            name = os.path.relpath(path, root)[:-4]
+            (w, h, d), cells, states = load(path, props=True)
+            for p, block in cells.items():
+                props = states.get(p, {})
+                if block in self.HUNG:
+                    facing = props.get("facing")
+                elif block and (block.endswith("_button") or block == "minecraft:lever") and props.get("face") == "wall":
+                    facing = props.get("facing")
+                else:
+                    continue
+                dx, _, dz = self.FACING[facing]
+                behind = (p[0] - dx, p[1], p[2] - dz)
+                held_by = cells.get(behind)
+                if held_by is None:
+                    continue  # outside the drawing or a structure void: the ground or another stage holds it
+                if any(t in held_by for t in self.CANT_HOLD):
+                    wrong.append(f"{name}: {block[10:]}@{p} hangs on {held_by[10:]}@{behind}")
+        self.assertEqual([], wrong, "\n" + "\n".join(wrong))
+
+
 if __name__ == "__main__":
     unittest.main()

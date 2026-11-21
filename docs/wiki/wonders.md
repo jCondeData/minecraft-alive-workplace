@@ -630,7 +630,9 @@ one keeps the name Stadium.
   chronicle counts them), from noon (6000) until dusk (12000), two to four visiting trainers (the day's random, fixed by
   the site and the day) stand in the two trainer boxes, two to a box at most, facing the field. Each realm village
   (with realms off, each caravan partner, a route either way) sends the trainer it would send to a Cup
-  (`Cups.delegate`: its Leader, else its best Trainer), named "(name) of (village)"; the rest are traveling trainers
+  (`Cups.delegate`: its Leader, else its best Trainer), named "(name) of (village)", the village's name read without
+  loading a far village's chunk (B644): its hall's own where its chunk is loaded, else the realm's record of it, else
+  the caravans' list's, else its made-up name; the rest are traveling trainers
   of Journeyman to Master rank, "the Traveler". They are Trainers to a player: right-click to battle, a win pays the
   rank's prize (CobbleDollars, or emeralds), once a day each (`trainer/Trainers`). From 7000, one bout every 1,000
   ticks, the village's own trainers (the highest rank first, in turn) take the visitors on: the Cup's exhibition
@@ -1064,6 +1066,12 @@ visitors (every count seen, the file's every 2 days with 2 to 4); with no realm 
 afternoon and the odd day's afternoon has none; five fans by three seats seat three, only they "watched a Stadium Day"
 (+5); a village with no trainer of its own fights no bout, the visitors stay until dusk; a visitor's own trainer at home
 gains a battle and XP from the visitor's bout.
+
+QA compat GameTests in `QaStadiumNames1121dCompatTests` (B644): a caravan partner 1,200 blocks off, its hall, realm
+record and caravans' list each naming it differently: loaded (its Trainer by the hall), its visitor takes the hall's
+name; unloaded, the realm record's; with a blank realm record, the list's; with neither, the made-up name; in each
+unloaded case the far chunk is still unloaded after the visitors arrive, and the named visitor keeps its name and home
+through a save and reload.
 
 GameTests in `ColossusPowerGameTests` (35.22): a villager at home 12 happier with "proud of the Colossus", one in a
 village off its routes not at all, then with a caravan route 8 happier with "the realm's Colossus", its 8 beauty;

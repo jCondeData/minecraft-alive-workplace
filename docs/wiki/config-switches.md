@@ -310,6 +310,9 @@ expansions' builds wait the same way; the Table refuses a closed expansion's bui
 world and ticking, the riders stay mounted and a pup of two tame wolves keeps their owner; only what the world refuses
 is forced and logged; with the switch off a band's riders all come on foot and the log says so),
 QA's `QaBuilderSwitches1114bBugTests` (B1227: every game rule in the table above has its words on the Edit Game Rules
-screen).
+screen), `QaMoneyWording1121dCompatTests` (compat suite, B1379, `dollarsPerEmerald`: at rates 1, 21 and 100 every
+money line's sum (an emerald price of 0, 1, 2 and 3, the family tree's price, the cup purses) reads "1 CobbleDollar"
+for one and "CobbleDollars" otherwise, "0 CobbleDollars" too; the hall's treasury and quest reward lines read so on
+its own buttons; without CobbleDollars the sums read "1 emerald", "2 emeralds").
 
 Showcase scenes: `config` (the settings screen).

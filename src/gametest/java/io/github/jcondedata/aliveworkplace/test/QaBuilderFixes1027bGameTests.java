@@ -322,11 +322,14 @@ public class QaBuilderFixes1027bGameTests implements FabricGameTest {
 		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_4", Rotation.CLOCKWISE_90, new BlockPos(25, -2, 4), new int[] {6, 4, 23}, new int[] {6, 5, 15}, new int[] {6, 5, 19});
 	}
 
-	/** The Pokemon Center lodge look II, turned counterclockwise: from inside (6,1,8) out by the front door (6,1,10) to the path (6,1,13). */
+	/**
+	 * The Pokemon Center lodge look II, turned counterclockwise: from inside (6,1,8) out by the door to the path (6,1,13).
+	 * 50.12 rebuilt the lodge: that door moved from (6,1,10) to the Nurse's back door (6,1,11); (6,1,10) is open floor.
+	 */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487LodgeOutTurned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487LodgeOutTurned")
 	public void aVillagerWalksOutByTheTurnedLodgesFrontDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.COUNTERCLOCKWISE_90, new BlockPos(4, 2, 25), new int[] {6, 1, 8}, new int[] {6, 1, 13}, new int[] {6, 1, 10});
+		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.COUNTERCLOCKWISE_90, new BlockPos(4, 2, 25), new int[] {6, 1, 8}, new int[] {6, 1, 13}, new int[] {6, 1, 11});
 	}
 
 	/** Royal Hall II: from the treasury (23,1,15) out by the east door (25,1,14) to its step (26,1,14) (51.9's drawing). */

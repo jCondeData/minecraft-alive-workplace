@@ -149,3 +149,68 @@ Notes, Plaza (II passes on silhouette and interior only):
 3. I and II left views: white walls beside sandstone break the palette; one wall material, sandstone with a single trim.
 4. II right view: the market hall's long side is a plain wall under its roof; open it as an arcade onto the court.
 5. II cutaway y <= 3: the fountain stands alone on sand; benches and planters in soil round it.
+
+## Pokémon Center (default, Lodge, Plaza; I, II): round 2
+Verdict: **default SHIP, Lodge SHIP, Plaza BACK** (Plaza II passes; Plaza I does not, and a look ships only with both
+levels). Sheets `pokemon_center{,_2,_lodge,_lodge_2,_plaza,_plaza_2}_r2_sheet.png` (front, back, left, right, top) and
+`..._r2_cut_sheet.png` (y <= 3 and y <= 7, top and front; OLD cut from the shipped `.nbt`s the same way), all in this
+folder. Cobblemon's blocks render as air; eye level not filmed. Judged fresh, without round 1's numbers.
+
+| Score | default I | default II | Lodge I | Lodge II | Plaza I | Plaza II |
+|---|---|---|---|---|---|---|
+| Silhouette | 2 -> 4 | 2 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 4 | 2 -> 4 |
+| Depth | 2 -> 4 | 2 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 4 |
+| Interior | 3 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 3 | 2 -> 4 |
+| Detail | 3 -> 3 | 2 -> 4 | 3 -> 4 | 3 -> 4 | 3 -> 2 | 3 -> 3 |
+
+Evidence, default:
+- I silhouette: the dome and lantern read in outline from all four sides, where the old one is a hip-roofed box with a flat cream cap (top).
+- I depth: stone pilasters now stand proud at the corners, with windows set back over sills (back, right); the old walls are flat render (back).
+- I interior: waiting benches line both sides of the red aisle, with a stocked corner of barrels, chests and shelves behind the desk (cutaway y <= 3 top); the old hall is a desk and a carpet.
+- I detail: even. The new I lost the old flower boxes and lamp posts by the door (front), and the dome's lower rings still step a little unevenly (back).
+- II silhouette and depth: the dome, the gabled trade hall and the garden pavilion make one composition (front, left), where the old one is two boxes jammed together (left).
+- II interior: the trade hall and the hall are furnished, and the garden is laid out (cutaway y <= 3 top).
+- II detail: planted beds in soil, paths to the Pasture Block and a roofed pavilion (back), against a bare fenced lawn (old back).
+
+Evidence, Lodge:
+- I silhouette: steep front gable and porch deck, a cross gable on the right, a stone chimney and dormer on the left, and a balcony porch at the back. Every side is worked (front, right, left, back); the old one has a good front but a plain back slope (old back).
+- I depth: a stone plinth, beam ends under a jettied gable and window boxes (right); the old one has proud posts on the front only.
+- I interior: desk, red carpet, benches and a storage corner (cutaway y <= 3 top), against a sparser old hall.
+- I detail: window boxes with flowers, vines on the plinth and a lamp on the chimney (right); the red shutter pair still repeats (front).
+- II silhouette: the wing now meets the hall in a clean L valley (top); the old two-storey jettied front is strong, but its back is one long slope (old back).
+- II depth: the wing keeps the plinth and beam work (right).
+- II interior and detail: a roofed shelter in the paddock, a trough and a gravel path from the wing (back, top), where the old paddock is a bare fenced lawn with hay.
+
+Evidence, Plaza:
+- I silhouette and depth: the bell tower over an arcade front is recognisable. Deep arched window recesses now run round the back and sides under one hip roof (back, right). The old one is a crenellated block with a red cap.
+- I interior: rooms with seats and chests, but cut up and no clearer than the old desk-and-shelves hall (cutaway y <= 3 top).
+- I detail: it loses. The old one has planters, lamp posts and striped awnings at the door (old front); the new I stands on bare grass with one hanging lantern on the tower, and the arches read as raw holes (front, right).
+- II silhouette: the L round a fountain court with a gabled market hall reads clearly (top, back), where the old one is a stacked block.
+- II interior: the court has a fountain, planters and seats, and the rooms are furnished (cutaway y <= 3 top).
+- II detail: even. The court is good, but the outside is bare grass and the market hall's long side is a plain wall of window holes (right).
+
+Brief (checked on the `.nbt`s), no miss:
+- One Healing Machine at (6, 1, 7) with (6, 1, 8) and (6, 2, 8) open, and the PC at (10, 1, 7)-(10, 2, 7), in all six.
+- 2-3 chests or barrels within 8 across and 4 up or down of the machine.
+- A ground-floor front door facing the z = 0 side: default (6, 1, 1), Lodge (6, 1, 2), Plaza (6, 1, 3) behind its open arcade.
+- Only vanilla, ours and Cobblemon's blocks.
+- Sizes: I 13 x 16/15/13 x 13; II 20 x 16 x 26, 21 x 15 x 26 and 20 x 13 x 26, all within the plots.
+- II keeps its I: 99 %, 98 % and 100 % of I's blocks unchanged, and no block entity moves.
+- Pasture Block and Shop Counter, each moved from the pinned cell, which the brief lets the ship step re-aim:
+
+| Look | Pasture Block (pinned today) | Shop Counter (pinned today) |
+|---|---|---|
+| default II | (9, 1, 19) (was (6, 1, 22)) | (15, 1, 7) (was (6, 1, 14)) |
+| Lodge II | (10, 1, 19) (was (6, 1, 15)) | (15, 1, 7) (was (16, 1, 6)) |
+| Plaza II | (3, 1, 22) (was (6, 1, 21)) | (16, 1, 18) (was (6, 1, 14)) |
+
+Plaza's QaLonePanes arch check and the Lodge doorway walk tests also need re-aiming at the ship step.
+
+Level I block counts, against the brief's lean-Level-I wish (old 560): default 718 (wish 718), Lodge 762 (wish 762), Plaza 742 (wish 742). Each is exactly at the wish. Confirm the 12,000-tick `buildsPokemonCenter(Lodge|Plaza)` runs at the ship step.
+
+Notes, Plaza (to its designer; II is accepted as it stands, keep it):
+1. I front and right views: the outside is bare. Put the old one's kind of street life back at the door: planters in soil either side of the steps, lamps on posts, and an awning or shade over the arcade.
+2. I right and back views: the side arches read as raw holes. Give each a sill, a keystone or trim course and a filled lower part (a bench or panes), so they read as windows, not damage.
+3. I cutaway y <= 3 top: the hall is cut into small pockets. Open one clear waiting room from the door to the machine, with seats facing the desk and the storage corner behind it.
+4. I top and right views: the low stepped hip has almost no eave. Run one continuous overhang with a cornice under it all round.
+5. II right view: the market hall's long side is still a plain wall of openings. Open it as an arcade onto the court, or give it pilasters between the windows.

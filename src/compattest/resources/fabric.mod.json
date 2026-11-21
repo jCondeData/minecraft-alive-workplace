@@ -477,7 +477,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaMixedTagPack1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1115eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116cCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116bCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCarvedChest1116bCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eCompatTests"
 		]
 	},
 	"depends": {

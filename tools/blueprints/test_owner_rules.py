@@ -152,6 +152,24 @@ class AdversarialOwnerRules(unittest.TestCase):
         self.assertTrue(any("lantern@2,0,2 stands on the floor (the ground)" in p for p in owner_problems(
             {p: (n, dict(s)) for p, (n, s) in b.blocks.items()})))
 
+    def test_lantern_on_a_rug_is_still_on_the_floor(self):
+        b = room()
+        b.set(4, 1, 4, "red_carpet")
+        b.set(4, 2, 4, "lantern", hanging=False)
+        self.assertTrue(any("lantern@4,2,4 stands on the floor" in p for p in owner(b)))
+
+    def test_lantern_on_a_wide_rug_is_still_on_the_floor_and_on_a_table_cloth_passes(self):
+        # B1444: a rug wider than the lamp; a carpet on a fence post is a table and stays allowed
+        b = room()
+        b.fill(3, 1, 3, 5, 1, 5, "red_carpet")
+        b.set(4, 2, 4, "lantern", hanging=False)
+        b.set(1, 1, 1, "oak_fence")
+        b.set(1, 2, 1, "white_carpet")
+        b.set(1, 3, 1, "lantern", hanging=False)
+        problems = [p for p in owner(b) if "lantern" in p]
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("lantern@4,2,4 stands on the floor", problems[0])
+
     def test_lantern_on_a_barrel_or_bookshelf_passes(self):
         b = room()
         b.set(2, 1, 2, "barrel", facing="up")
@@ -234,6 +252,30 @@ class AdversarialOwnerRules(unittest.TestCase):
         b = room()
         b.set(4, 1, 4, "somemod:copper_pressure_plate")
         self.assertEqual([], [p for p in owner(b) if "crockery" in p])
+
+
+class ShippedModdedCrockery(unittest.TestCase):
+    """The owner's rule 3 on what modded_library.py ships: Handcrafted's crockery set goes on a table at a meal (a seat
+    beside it) or in a kitchen (a stove, furnace, smoker or sink in reach). A shop's sales counter is a `counter` spot
+    too, so check.py counts it as a kitchen; this reads the shipped files without that, so plates on a shop's display
+    table are caught (lane-b-1121-1838, B1450)."""
+
+    def test_modded_crockery_sits_at_a_meal_or_in_a_kitchen(self):
+        import glob
+        from check import baselined, crockery_problems, load_blueprint
+        known = baselined()  # drawn before the owner's rules and listed until their rebuild (Village Hall II)
+        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                            "src/main/resources/data/aliveworkplace/structure")
+        wrong = []
+        for path in sorted(glob.glob(os.path.join(root, "modded", "*.nbt"))):
+            name = "modded/" + os.path.basename(path)[:-4]
+            if name in known:
+                continue
+            b = load_blueprint(path, name)
+            blocks = {q: (v[0], dict(v[1])) for q, v in b.blocks.items()}
+            spots = [s for s in b.spots if s["kind"] != "counter"]
+            wrong += [name + ": " + line for line in crockery_problems(blocks, spots) if "crockery_combo@" in line]
+        self.assertEqual([], wrong)
 
 
 class WallHungPieces(unittest.TestCase):

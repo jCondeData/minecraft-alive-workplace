@@ -76,9 +76,10 @@ export const MASSES = {
   // top at y 13, a lantern hanging from the yard's west end, the torn sail under its east arm (x 2..4).
   mast: { at: [1, 1, 8], height: 12, yardY: 10, yardAxis: 'x', from: 0, to: 4 },
   // the torn sail: strips under the yard's east arm, their lower ends blown a block south (z 9), the last one dripping
-  // toward the cauldron
+  // toward the cauldron. Each tail starts beside its strip's lowest block, face to face with it (B1455: a block lower,
+  // they met the sail only at edges and hung in the air)
   sail: { axis: 'x', at: 8, a: 2, y: 10, drops: [4, 3, 2] },
-  sailBlown: [[2, 5, 9], [2, 4, 9], [3, 6, 9], [3, 5, 9], [4, 7, 9]],
+  sailBlown: [[2, 6, 9], [2, 5, 9], [3, 7, 9], [3, 6, 9], [4, 8, 9]],
   rainCatch: [3, 1, 8], // a cauldron full of rain water under the sail's torn corner: the castaway's only fresh water
   mastFoot: [[0, 1, 8, 'east'], [1, 1, 9, 'north'], [2, 1, 8, 'west']], // stones wedging the mast upright (stairs)
   // The fire: a campfire sunk in the ground layer at (2, 0, 3), a curb of beach stones round it, an empty spit over it.

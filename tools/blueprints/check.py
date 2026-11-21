@@ -713,7 +713,14 @@ def lamp_problems(blocks, only=None, spots=()):
         s, props = _short(block), block[1]
         if not s.endswith(LAMPS) or props.get("hanging") == "true" or (only is not None and (x, y, z) not in only):
             continue
+        lamp = (x, y, z)
         below = blocks.get((x, y - 1, z))
+        # a rug laid on the floor is part of the floor (B1444): judge the lamp from the rug's height. A carpet on a
+        # post is a table top, which is_table below lets through.
+        while (below is not None and _short(below).endswith("carpet") and not is_table(blocks, (x, y - 1, z))
+               and (x, y - 1, z) not in surfaces):
+            y -= 1
+            below = blocks.get((x, y - 1, z))
         if below is not None and (_short(below).endswith(LAMP_STANDS) or is_table(blocks, (x, y - 1, z))
                                   or any(t in _short(below) for t in FURNITURE_STANDS) or (x, y - 1, z) in surfaces):
             continue
@@ -725,6 +732,7 @@ def lamp_problems(blocks, only=None, spots=()):
             and not passable(blocks.get((x + dx, y - 1, z + dz)))
             for dx, dz in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y - 1, z + dz) in blocks)
         if floor:
+            x, y, z = lamp
             problems.append(f"{OWNER}{s}@{x},{y},{z} stands on the floor ({_short(below) if below else 'the ground'}): "
                             f"a short lamp goes on a table, side table or slab, or hangs")
     return problems

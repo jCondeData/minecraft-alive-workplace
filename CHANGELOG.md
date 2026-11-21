@@ -55,6 +55,12 @@ asks for the steps, `latest.log` and any crash report).
 - The village Ball Workshops' tower ladder reaches the drying loft again: two of its rungs hung on a glass pane, which
   can't hold a ladder, so builders skipped them. The tower's east wall is now solid behind the ladder; its windows face
   north and south (B1453).
+- With Handcrafted installed, the Supply Shop no longer sets plates and cups on its display tables: a hardware shop
+  with no stove and no chairs isn't a kitchen (B1450).
+- The Castaway Camp's torn sail hangs from the sail again: its five blown tail blocks were hanging in the air, joined
+  only at their corners (B1455).
+- The blueprint checker now refuses a lantern standing on a rug laid on the floor, like one on the bare floor (no
+  shipped build had one) (B1444).
 - A Steward's palisade no longer stacks up on itself: two wall segments that overlap a little were each laid out on
   top of the other once one stood, so builders kept building them higher until they ran out of cobblestone and the
   wall never finished. Wall pieces are now always set on the real ground.

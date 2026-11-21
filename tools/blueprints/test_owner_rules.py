@@ -138,5 +138,102 @@ class Baseline(unittest.TestCase):
         self.assertEqual(problems, report("a_new_rebuild_not_listed", problems))
 
 
+class AdversarialOwnerRules(unittest.TestCase):
+    """QA (lane-b-1121-1538), from 49.1's spec rather than the code: the rules' edges from both sides."""
+
+    def test_soul_lantern_on_the_floor_is_refused(self):
+        b = room()
+        b.set(4, 1, 4, "soul_lantern", hanging=False)
+        self.assertTrue(any("soul_lantern@4,1,4 stands on the floor" in p for p in owner(b)))
+
+    def test_lantern_on_the_bare_ground_is_refused(self):
+        b = Build(5, 3, 5)
+        b.set(2, 0, 2, "lantern", hanging=False)
+        self.assertTrue(any("lantern@2,0,2 stands on the floor (the ground)" in p for p in owner_problems(
+            {p: (n, dict(s)) for p, (n, s) in b.blocks.items()})))
+
+    def test_lantern_on_a_barrel_or_bookshelf_passes(self):
+        b = room()
+        b.set(2, 1, 2, "barrel", facing="up")
+        b.set(2, 2, 2, "lantern", hanging=False)
+        b.set(6, 1, 6, "bookshelf")
+        b.set(6, 2, 6, "lantern", hanging=False)
+        self.assertEqual([], [p for p in owner(b) if "lantern" in p])
+
+    def test_balcony_railing_corner_over_air_is_refused(self):
+        b = room()
+        b.fill(0, 1, 0, 6, 1, 6, "oak_planks")  # a raised deck, its railing one up
+        for x in range(1, 5):
+            b.set(x, 2, 1, "spruce_fence")
+        for z in range(2, 6):
+            b.set(5, 2, z, "spruce_fence")
+        problems = [p for p in owner_problems({p: (n, dict(s)) for p, (n, s) in b.blocks.items()}) if "runs @" in p]
+        self.assertEqual(1, len(problems), problems)
+        self.assertIn("no post @5,2,1", problems[0])
+
+    def test_straight_railing_and_a_t_join_are_not_corners(self):
+        b = room()
+        for x in range(1, 8):
+            b.set(x, 1, 1, "oak_fence")
+        for z in range(2, 6):
+            b.set(4, 1, z, "oak_fence")  # a T: the branch joins the run's middle
+        self.assertEqual([], [p for p in owner(b) if "runs @" in p])
+
+    def test_fence_meeting_a_wall_run_is_not_this_rule(self):
+        b = room()
+        for x in range(1, 5):
+            b.set(x, 1, 1, "oak_fence")
+        for z in range(2, 6):
+            b.set(5, 1, z, "cobblestone_wall")
+        self.assertEqual([], [p for p in owner(b) if "runs @" in p])
+
+    def test_plates_on_a_table_with_no_chair_and_no_kitchen_are_refused(self):
+        b = room()
+        b.set(4, 1, 4, "oak_fence")
+        b.set(4, 2, 4, "white_carpet")
+        b.set(4, 3, 4, "flower_pot")
+        b.furniture("crockery", 4, 3, 4, "north", wood="oak", colour="white")
+        self.assertTrue(any("flower_pot@4,3,4 is crockery outside" in p for p in owner(b)))
+
+    def test_plates_just_outside_the_kitchen_reach_are_refused_and_just_inside_pass(self):
+        for dx, refused in ((5, True), (4, False)):
+            b = room()
+            b.set(1, 1, 1, "smoker", facing="south")
+            b.set(1 + dx, 1, 1, "spruce_slab", type="top")
+            b.set(1 + dx, 2, 1, "flower_pot")
+            b.furniture("crockery", 1 + dx, 2, 1, "south", wood="spruce", colour="white")
+            self.assertEqual(refused, any("crockery outside" in p for p in owner(b)), dx)
+
+    def test_a_pressure_plate_is_not_crockery(self):
+        b = room()
+        b.set(4, 1, 4, "oak_pressure_plate")
+        self.assertEqual([], [p for p in owner(b) if "crockery" in p])
+
+
+    def test_plates_two_floors_above_the_kitchen_are_refused(self):
+        b = Build(9, 9, 9)
+        b.fill(0, 0, 0, 8, 0, 8, "stone")
+        b.fill(0, 4, 0, 8, 4, 8, "oak_planks")
+        b.set(4, 1, 4, "smoker", facing="south")
+        b.set(4, 5, 4, "oak_fence")
+        b.set(4, 6, 4, "white_carpet")
+        b.set(4, 7, 4, "flower_pot")
+        b.furniture("crockery", 4, 7, 4, "north", wood="oak", colour="white")
+        self.assertTrue(any("flower_pot@4,7,4 is crockery outside" in p for p in owner(b)))
+
+    def test_an_upside_down_stair_by_the_table_is_not_a_chair(self):
+        b = room()
+        b.set(4, 1, 4, "oak_fence")
+        b.set(4, 2, 4, "white_carpet")
+        b.set(3, 1, 4, "oak_stairs", facing="west", half="top")
+        b.set(4, 3, 4, "flower_pot")
+        b.furniture("crockery", 4, 3, 4, "north", wood="oak", colour="white")
+        self.assertTrue(any("flower_pot@4,3,4 is crockery outside" in p for p in owner(b)))
+
+    def test_a_modded_pressure_plate_is_not_crockery(self):
+        b = room()
+        b.set(4, 1, 4, "somemod:copper_pressure_plate")
+        self.assertEqual([], [p for p in owner(b) if "crockery" in p])
+
 if __name__ == "__main__":
     unittest.main()

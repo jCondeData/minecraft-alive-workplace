@@ -221,6 +221,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildMidBuild1117eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldDrawings1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldHouseNeighbors1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaOldHouseCorner1121cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefreshFurnishedGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefreshFurnishedShortGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RefreshMatchesFreshBuildGameTests",

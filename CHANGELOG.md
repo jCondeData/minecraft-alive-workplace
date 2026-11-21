@@ -16,6 +16,15 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Farmstead and the Ranch in their village's culture**: desert, savanna, snowy and taiga villages now build their
+  own look of both, at every level. The Farmstead: an oasis farm of mud and sandstone with a dovecote tower and a
+  palm-rib shade along the field; a painted mud house under a squat golden thatch pyramid; a pale stone house under a
+  big white-ridged slate roof with a deep porch gable; and a dark log lodge with a stone byre. The Ranch: mud stall
+  ranges round a crenellated hay tower with a windcatcher; a tiered golden thatch over a mud clerestory; one great
+  snow-capped A with a deep porch mouth; and three stepped log gables with a hay gallery and a horse's head on the
+  ridge. The same rooms, field, job blocks, beds, furniture and Farmstead III root cellar; plains villages keep both as
+  drawn (49.10e).
 ### Changed
 - **The Colossus is rebuilt from scratch** (52.6): "Astride the Road", the Founder striding over the main road, his
   feet planted either side of it so the road and its caravans pass through an arch between them. The base is a dark
@@ -25,11 +34,24 @@ asks for the steps, `latest.log` and any crash report).
   glowstone lantern caged in yellow glass, lit day and night. Same stage names and size. A Colossus already begun or
   finished keeps the old drawing: it still counts as standing, its plaque is still written, and it is repaired and
   finished as it was first drawn.
+- **The Pokémon Center and its Mountain Lodge look are rebuilt from scratch** (50.12, with Cobblemon). The Center is
+  now "the Red Dome": a white eight-sided hall under a stepped red dome with a glazed eye. Inside, benches line a red
+  aisle to the desk, with the Healing Machine right under the eye and a stocked corner of barrels and chests behind.
+  Pokémon Center II adds a gabled Trade Hall with the Shop Counter and a planted garden with a domed pavilion and the
+  Pasture Block. The Mountain Lodge is a log lodge under a steep red gable with a porch deck, a jettied cross gable, a
+  stone chimney and a back porch. Its II carries the cross gable into the Trader's wing and adds a paddock with a field
+  shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
+  keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
 - The Pump House's tank fills with water now. Its intake pipe dipped into the cistern as a bend, which Create
   straightened out toward an empty window, so the pump turned but drew nothing. The cistern is now two deep, and the
   intake runs straight down through it to draw from the bottom (B1411).
+- A Hauler or Farmhand Golem whose foe vanishes mid-fight (despawned or unloaded) goes straight back to work; in rare
+  cases it used to stand about for 20 to 39 seconds first (B769).
+- A villager without a bed who is standing out behind a house at bedtime now takes a free bed up a ladder inside
+  (the Terrace's bedrooms) and walks round to the door to sleep in it, instead of standing behind the house all
+  night (B735).
 - A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
   look it was begun with after you update, instead of the new design going up over the half-built old one. Use
   "Refresh to the latest look" once it's finished to bring it up to date (B1407).

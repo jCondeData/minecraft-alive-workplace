@@ -125,6 +125,30 @@ public class GolemHaulerFightGameTests implements net.fabricmc.fabric.api.gamete
 		hauledAfterTheFight(helper, zombie, box, 9, golem);
 	}
 
+	/**
+	 * B769: the foe vanishes before any of the golem's own target goals has taken it up (they start at random, so about
+	 * 1 fight in 100 of the test above went this way; a target another mod or a command gave it goes the same way).
+	 * Nothing of vanilla's then drops the vanished foe until the golem's anger runs out, 20 to 39 seconds later, and a
+	 * golem at work stood about that long. The hauler must drop it and be back at work within 10 ticks, then haul.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"haulerFightGoneAtOnce"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "haulerFightGoneAtOnce")
+	public void haulerDropsAFoeThatVanishedBeforeItsTargetGoalsTookItUp(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		Container box = round(helper, new BlockPos(6, 2, 6), 9);
+		IronGolem golem = hauler(helper, new BlockPos(14, 1, 14));
+		Zombie zombie = zombie(helper, new BlockPos(18, 2, 14), golem);
+		zombie.discard(); // gone before the golem's first tick: no target goal of its own ever holds this foe
+		helper.assertTrue(golem.getTarget() == zombie, "setup: the golem's foe is the vanished zombie");
+		helper.runAfterDelay(10, () -> {
+			helper.assertTrue(golem.getTarget() == null, "10 ticks after its foe vanished the golem still targets " + golem.getTarget()
+				+ ", running " + running(golem));
+			helper.assertTrue(running(golem).contains("GolemRoleGoal"), "10 ticks after its foe vanished the golem isn't back at work: running "
+				+ running(golem));
+		});
+		hauledAfterTheFight(helper, zombie, box, 9, golem);
+	}
+
 	/** Mid-carry, the hauler turns on a zombie, which dies of something else: it carries its load on and fetches the rest. */
 	//$ gametest_ticks_batch AREA '1200' '"haulerFightCarry"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "haulerFightCarry")

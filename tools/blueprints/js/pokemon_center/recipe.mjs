@@ -6,10 +6,10 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, PALETTE as P, DRUM, FIXED, OPENINGS, FURNITURE } from './plan.mjs'
+import { SIZE, PALETTE as P, DRUM, BAYS, FIXED, OPENINGS, FURNITURE, GARDEN } from './plan.mjs'
 import {
   Canvas, mix, stair, slab, roundCells, railCells, towardCentre, wallPanel, window, door, gableRoof, gableWall,
-  bargeTrim, glazedLantern, hood, furnitureParts, railingRun, roundDais, discCells, flowerBed, lampPost,
+  bargeTrim, glazedLantern, hood, furnitureParts, railingRun, roundDais, discCells, lampPost, raisedBed,
   healingMachine, pcTower, pastureBlock, shopCounter, deskRun, ringDome,
 } from '../parts/index.mjs'
 
@@ -49,10 +49,29 @@ function levelOne(c) {
   // the octagon's eight corners (where a flat face turns onto a diagonal) in white diorite: quoins that draw its facets
   for (const [x, z] of DRUM.vertices) for (let y = 1; y <= DRUM.wallTop; y++) c.set(x, y, z, P.trim)
 
-  // the dome: red outside, a white vault over the hall, the eye on top
+  // the bays (round 2): the three flat faces stand one proud on the skirt's ring, a pilaster at each vertex from the
+  // plinth to the cornice, the band carried round, the windows set back in the drum behind an open reveal
+  for (const b of BAYS) {
+    const pil = new Set(b.pilasters.map(p => key(...p))), open = new Set(b.open.map(p => key(...p)))
+    for (const [x, z] of b.cells) {
+      c.set(x, 0, z, stone)
+      if (!open.has(key(x, z))) for (let y = 1; y <= DRUM.wallTop; y++) c.set(x, y, z, pil.has(key(x, z)) ? P.trim : P.wall)
+      c.set(x, DRUM.bandY, z, pil.has(key(x, z)) ? P.trim : P.band)
+    }
+  }
+
+  // the dome: red outside, a white vault over the hall, the eye on top. Its rings: the hall's (round, from the centre),
+  // the drum's wall ring, then the skirt's ring, so the eave overhangs the wall by one block all round
   const roof = P.roof
   const eye = [cx, cz]
-  ringDome(c, { cx, cz, H: DRUM.dome, lined: r - 1 }, roof, P.lining)
+  const hall = area.filter(([x, z]) => inside(x, z))
+  const rings = [0, 1, 2, 3, 4].map(k => hall.filter(([x, z]) => {
+    const d = (x - cx) ** 2 + (z - cz) ** 2
+    return (k === 4 ? true : d <= k * k + k) && (k === 0 || d > (k - 1) * (k - 1) + (k - 1))
+  }))
+  rings.push(drum)
+  if (DRUM.dome.length > 6) rings.push(outerCells)
+  ringDome(c, { cx, cz, H: DRUM.dome, lined: r - 1, rings, coffered: !process.env.LINED }, roof, P.lining)
   const cap = glazedLantern(c, eye[0], eye[1], DRUM.eyeY, { post: P.trim, glass: P.glass, cap: roof, finial: 'lightning_rod' })
   c.clear(cx, DRUM.eyeY - 1, cz)
   for (let y = DRUM.eyeY - 1; y >= DRUM.domeY; y--) if (c.get(cx, y, cz)) c.clear(cx, y, cz) // the eye: open down into the hall
@@ -95,8 +114,12 @@ function levelTwo(c) {
     wallPanel(c, [W.x0, W.z0], [W.x1, W.z0], y, y, id); wallPanel(c, [W.x0, W.z1], [W.x1, W.z1], y, y, id)
     wallPanel(c, [W.x0, W.z0], [W.x0, W.z1], y, y, id); wallPanel(c, [W.x1, W.z0], [W.x1, W.z1], y, y, id)
   }
+  // the drum's east bay is the wing's west wall: its pilasters and band stay as Level I drew them (seen inside the wing)
+  const bay = []
+  for (let z = W.z0; z <= W.z1; z++) for (let y = 1; y <= 4; y++) if (c.get(W.x0, y, z)) bay.push([W.x0, y, z, c.get(W.x0, y, z)])
   for (let y = 1; y <= 3; y++) ring(y, P.wall)
   ring(4, P.band)
+  for (const [x, y, z, b] of bay) c.set(x, y, z, b.id, b.props)
   for (const [x, z] of [[W.x0, W.z0], [W.x1, W.z0], [W.x0, W.z1], [W.x1, W.z1]]) for (let y = 1; y <= 3; y++) c.set(x, y, z, P.trim)
   const roof = { axis: 'z', across: [W.x0 - 1, W.x1 + 1], along: [W.z0 - 1, W.z1 + 1], eaveY: 5, steep: false }
   const wr = gableRoof(c, roof, P.roof, empty)
@@ -114,7 +137,6 @@ function levelTwo(c) {
   for (const x of [13, 17]) window(c, [[x, 2, W.z1], [x, 3, W.z1]], 'south', 'sill', { glass: P.glass, sill: P.trimStairs })
   door(c, OPENINGS.wingBackDoor.at, 'north', 'south', { wood: P.wood, step: [15, 0, W.z1 + 1], stepStair: P.skirt })
   for (const [x, z] of OPENINGS.arch) { c.clear(x, 1, z); c.clear(x, 2, z); c.set(x, 3, z, P.trim) }
-  c.set(11, 0, 6, stone); c.set(12, 0, 6, stone)
   const bd = OPENINGS.backDoor.at
   c.clear(bd[0], 3, bd[2]) // the window's upper pane goes with its sill: a door and a pane over it
   c.clear(bd[0], 1, bd[2] + 1)
@@ -129,8 +151,10 @@ function levelTwo(c) {
   furnish(c, FURNITURE.filter(f => f.level === 2), P)
   shopCounter(c, FIXED.shopCounter, 'north')
 
-  // Pass 5: the garden. A paved path from each back door, a birch fence round it with posts at every corner, flower
-  // beds, the pavilion: a round stone dais under a little red dome on four white posts, the Pasture Block in it (a
+  // Pass 5: the garden (round 2: beds of soil, one walk that leads to the pavilion). A paved walk from each back door
+  // meets a cross walk, a spur off it between two lamp posts climbs the pavilion's steps to the Pasture Block, and a walk
+  // goes on out of its far side to the gate; a birch fence round it all; four stone-rimmed beds of soil in the corners,
+  // planted; the pavilion: a round stone dais under a little red dome on four white posts, the Pasture Block in it (a
   // canopy two out from the block at most: an open shrine, not a room the weather gets into)
   const [px, , pz] = FIXED.pasture
   const pave = mix(P.paving, 9)
@@ -141,17 +165,23 @@ function levelTwo(c) {
   pastureBlock(c, FIXED.pasture, 'north')
   const walk = (cells) => { for (const [x, z] of cells) if (empty(x, 0, z)) slab(c, x, 0, z, 'stone_brick_slab') }
   const line = (a, b) => { const out = []; for (let x = Math.min(a[0], b[0]); x <= Math.max(a[0], b[0]); x++) for (let z = Math.min(a[1], b[1]); z <= Math.max(a[1], b[1]); z++) out.push([x, z]); return out }
-  walk([...line([6, 13], [6, 16]), ...line([6, 16], [7, 16]), ...line([15, 12], [15, 16]), ...line([12, 16], [15, 16]), ...line([9, 22], [9, 24])])
+  const G = GARDEN
+  walk([...line([6, 13], [6, G.crossZ]), ...line([15, 12], [15, G.crossZ]), ...line([6, G.crossZ], [15, G.crossZ]), ...line([px, G.crossZ + 1], [px, pz - 3]), ...line([px, pz + 3], [px, 24])])
+  for (const x of [px - 2, px + 2]) lampPost(c, x, 0, G.crossZ + 1, P.fence, 2) // either side of the spur
   railingRun(c, [[0, 0, 12], [0, 0, 25], [19, 0, 25], [19, 0, 12]], null, P.fence)
   for (const x of [8, 9, 10]) c.clear(x, 0, 25) // the garden's gate to the fields
-  flowerBed(c, 1, 4, 24, ['poppy', 'oxeye_daisy', 'red_tulip', 'white_tulip'])
-  flowerBed(c, 14, 18, 24, ['white_tulip', 'poppy', 'azure_bluet', 'red_tulip'])
-  flowerBed(c, 1, 3, 14, ['allium', 'poppy'])
-  for (const [x, z] of [[1, 18], [18, 18]]) lampPost(c, x, 0, z, P.fence, 2)
-  // two benches facing the pavilion
+  for (const b of G.beds) {
+    const inside = raisedBed(c, b, { rim: P.bedRim, cap: P.bedCap, soil: P.soil, skipCap: () => true })
+    inside.forEach(([x, z], i) => {
+      const plant = b.plants[i % b.plants.length]
+      if (plant.tall) { c.set(x, 1, z, plant.id, { half: 'lower' }); c.set(x, 2, z, plant.id, { half: 'upper' }) }
+      else c.set(x, 1, z, plant)
+    })
+  }
+  // two benches facing the pavilion (not recorded as furniture spots: at y = 0 they stand on the plot's own ground,
+  // outside the template, which furniture.py's floor check reads as floating)
   for (const [x, z, facing] of [[4, 19, 'east'], [14, 19, 'west']]) for (const dz of [-1, 0, 1]) {
     stair(c, x, 0, z + dz, `${P.wood}_stairs`, facing === 'east' ? 'west' : 'east')
-    c.spot('bench', [x, 0, z + dz], facing, [[0, 0, 0]], P.wood)
   }
 }
 

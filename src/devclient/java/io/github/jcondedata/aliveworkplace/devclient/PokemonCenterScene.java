@@ -25,7 +25,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * SCENE=pokemon_center (ROADMAP 28.7, with Cobblemon): the Pokémon Center from the street, then Pokémon Center II over
- * it (the lodge and the garden behind), the other looks (28.7a: the Mountain Lodge and the Sunny Plaza, both tiers
+ * it (the Trade Hall and the garden behind), the other looks (28.7a: the Mountain Lodge and the Sunny Plaza, both tiers
  * each), then inside: the nurse at the counter puts the player's hurt team in her
  * Healing Machine, which runs, and everyone comes out full.
  */
@@ -82,7 +82,7 @@ final class PokemonCenterScene {
 			ScreenshotHarness.shot(mc, "02_pokemon_center_2");
 			server.execute(() -> {
 				Showcase.check(ScreenshotHarness.cobblemonBlock("pasture").getBlock()
-					== server.overworld().getBlockState(ORIGIN_2.offset(6, 1, 22)).getBlock(), "Pokémon Center II's garden has its Pasture Block");
+					== server.overworld().getBlockState(ORIGIN_2.offset(9, 1, 19)).getBlock(), "Pokémon Center II's garden has its Pasture Block");
 				ScreenshotHarness.hoverLookingAt(player(server), new Vec3(4, -50, 28), new Vec3(19, -57, 52));
 			});
 		}
@@ -90,7 +90,7 @@ final class PokemonCenterScene {
 			ScreenshotHarness.shot(mc, "05_lodge");
 			server.execute(() -> {
 				Showcase.check(server.overworld().getBlockEntity(LODGE.offset(6, 1, 7)) instanceof HealingMachineBlockEntity
-					&& ScreenshotHarness.cobblemonBlock("pasture").getBlock() == server.overworld().getBlockState(LODGE_2.offset(6, 1, 15)).getBlock(),
+					&& ScreenshotHarness.cobblemonBlock("pasture").getBlock() == server.overworld().getBlockState(LODGE_2.offset(10, 1, 19)).getBlock(),
 					"the Mountain Lodge has its Healing Machine and Lodge II its Pasture Block");
 				ScreenshotHarness.hoverLookingAt(player(server), new Vec3(52, -50, 28), new Vec3(66, -57, 54));
 			});

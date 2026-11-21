@@ -1,21 +1,23 @@
 // The Pokémon Center's Mountain Lodge look, the recipe: assembles plan.mjs from the shared parts library (../parts) in
 // passes (block-out and structure, openings, depth and detail, interior, ground). LEVEL=1|2 (default 1): II draws I
-// first and grows out of it (the Trader's wing, the paddock), keeping I's cells but for the few it opens (the arch, the
-// back door). Writes furniture.json (the level's spots). Build: sh build.sh; CUT=<y> builds a cutaway above y removed.
+// first and grows out of it (the Trader's wing carrying on I's cross gable, the paddock), keeping I's cells but for the
+// few it opens (the arch) or walls in (the shutters on the wing's side). Writes furniture.json (the level's spots).
+// Build: sh build.sh; CUT=<y> builds a cutaway above y removed.
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, PALETTE as P, HALL, WING, FIXED, OPENINGS, FURNITURE } from './plan.mjs'
+import { SIZE, PALETTE as P, HALL, CROSS, WING, DORMER, FIXED, OPENINGS, FURNITURE, mainEast, mainWest } from './plan.mjs'
 import {
-  Canvas, mix, stair, slab, trapdoor, wallPanel, window, door, gableRoof, gableWall, bargeTrim, chimney, hearthFire,
-  furnitureParts, railingRun, horseTrough, brackets, healingMachine, pcTower, pastureBlock, shopCounter, deskRun,
+  Canvas, mix, stair, slab, window, door, gableRoof, gableWall, bargeTrim, chimney, hearthFire, furnitureParts,
+  railingRun, horseTrough, brackets, healingMachine, pcTower, pastureBlock, shopCounter, deskRun, pitchDormer, woodpile,
 } from '../parts/index.mjs'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
+const ST = (facing, half = 'bottom') => ({ facing, half, shape: 'straight', waterlogged: 'false' })
 
 function furnish(c, list) {
   for (const f of list) {
-    if (f.part === 'desk') deskRun(c, f.cells, f.facing, { base: `${f.wood}_planks`, top: 'smooth_stone_slab', wood: f.wood })
+    if (f.part === 'desk' && f.cells) deskRun(c, f.cells, f.facing, { base: `${f.wood}_planks`, top: 'smooth_stone_slab', wood: f.wood })
     else furnitureParts[f.part](c, f)
   }
 }
@@ -33,8 +35,40 @@ function logWalls(c, { x0, x1, z0, z1 }, socle, top, plate, stone, skip = () => 
   }
 }
 
-/** a two-high window with open red shutters either side (the lodge's one window, on every face) */
-const shuttered = (c, [x, y0, z, out]) => window(c, [[x, y0, z], [x, y0 + 1, z]], out, 'shutters', { glass: P.glass, wood: P.shutter })
+/** the window kinds (note 5): red shutters, a window box (a sill with potted plants), or bare glass */
+const dressed = (c, [cells, out, dress, pots = []]) =>
+  window(c, cells, out, dress, dress === 'shutters' ? { glass: P.glass, wood: P.shutter } : { glass: P.glass, wood: P.wood, pots })
+
+/** the cross roof's height over row z (ridge along x at CROSS.cz) */
+const crossY = z => CROSS.eaveY + CROSS.half - Math.abs(z - CROSS.cz)
+
+/** the cross gable's roof over columns x0..x1: a stair (or the ridge's full block) on each cell where it stands above
+ *  the main slope, taking the main roof's cell under it away so the hall rises into it; where the two meet at one
+ *  height the main roof's stair stays and the valley runs down them */
+function crossRoof(c, x0, x1, main) {
+  for (let x = x0; x <= x1; x++) for (let z = CROSS.cz - CROSS.half; z <= CROSS.cz + CROSS.half; z++) {
+    const y = crossY(z), m = main(x)
+    if (m !== null && y <= m) continue
+    if (m !== null) c.clear(x, m, z)
+    if (z === CROSS.cz) c.set(x, y, z, P.roof.full)
+    else stair(c, x, y, z, P.roof.stairs, z < CROSS.cz ? 'south' : 'north')
+  }
+}
+
+/** a jettied, timbered gable face on line x (the cross gable's in I, the wing's end in II), standing one block out
+ *  from the wall below on a sill beam (y 5) and three brackets, flush under its roof like the front gable: white
+ *  infill, a two-high window at the ridge's row with a frame post either side of its foot, the ridge beam's end on top */
+function crossFace(c, x) {
+  const { cz, eaveY } = CROSS
+  for (let z = cz - CROSS.half + 1; z <= cz + CROSS.half - 1; z++) for (let y = eaveY; y < crossY(z); y++) {
+    if (y === eaveY) c.set(x, y, z, P.log, { axis: 'z' }) // the sill beam
+    else if (z === cz && y <= eaveY + 2) c.set(x, y, z, P.glass)
+    else if (z === cz) c.set(x, y, z, P.log, { axis: 'x' }) // the ridge beam's end
+    else if (Math.abs(z - cz) === 1 && y === eaveY + 1) c.set(x, y, z, P.frame, { axis: 'y' })
+    else c.set(x, y, z, P.infill)
+  }
+  brackets(c, [-3, 0, 3].map(d => [x, eaveY - 1, cz + d]), `${P.wood}_stairs`, 'west')
+}
 
 // --- Level I: the Mountain Lodge ------------------------------------------------------------------------------------
 function levelOne(c) {
@@ -45,11 +79,6 @@ function levelOne(c) {
   logWalls(c, H, 1, 4, H.plate, stone)
   for (const z of H.ties) for (let x = H.x0 + 1; x < H.x1; x++) c.set(x, H.plate, z, P.log, { axis: 'x' })
   const rf = gableRoof(c, H.roof, P.roof)
-  // the hall's ceiling: boards under the slope (the stair's lower block), so the hall reads warm under a red roof
-  for (let x = H.x0 + 1; x < H.x1; x++) for (let z = 0; z <= 12; z++) {
-    const y = rf.under[x] - 1
-    if (y > H.plate && !c.get(x, y, z)) c.set(x, y, z, P.lining)
-  }
   const gable = (line, window) => gableWall(c, 'z', line, [H.x0, H.x1], H.plate + 1, rf.under, (u, y) => {
     if (y === H.plate + 1) return [P.frame, { axis: 'x' }] // the collar
     if (window(u, y)) return P.glass
@@ -58,8 +87,24 @@ function levelOne(c) {
     return P.infill
   })
   gable(0, (u, y) => u >= 5 && u <= 7 && (y === 7 || y === 8))
-  gable(H.z1, (u, y) => u === 6 && (y === 7 || y === 8))
-  for (const line of [0, 12]) bargeTrim(c, 'z', line, H.roof.across, rf.under, 'spruce_stairs')
+  gable(H.z1, (u, y) => (u === 6 && (y === 7 || y === 8)) || ((u === 5 || u === 7) && y === 7))
+  // a ridge beam the length of the roof (the hall's ceiling is its timbers, no lining: Level I stays lean), and the
+  // purlins' ends through both gables (note 4's beam ends)
+  for (let z = 0; z <= 12; z++) c.set(6, rf.ridgeY - 1, z, P.log, { axis: 'z' })
+  for (const z of [0, H.z1, 12]) for (const x of H.purlins) c.set(x, rf.under[x] - 1, z, P.log, { axis: 'z' })
+  bargeTrim(c, 'z', 12, H.roof.across, rf.under, 'spruce_stairs')
+
+  // the cross gable (note 1): its roof from the eave line (x 12) back into the main slope, its face jettied out over
+  // the east wall on the eave line (the main eave and the slope's cells under the cross roof give way; the hall rises
+  // into it)
+  crossRoof(c, CROSS.from, CROSS.to, mainEast)
+  crossFace(c, CROSS.to)
+
+  // the dormer (note 1) on the west slope over the desk
+  pitchDormer(c, { face: DORMER.face, zc: DORMER.zc, dir: -1, main: mainWest }, { roof: P.roof, frame: P.frame, infill: P.infill, glass: P.glass })
+  // its little roof stops flush with its face: an overhang there leaves slots over the main slope that the kit seals
+  // with a block of frame either side, hiding the window
+  for (let dz = -2; dz <= 2; dz++) c.clear(DORMER.face - 1, mainWest(DORMER.face) + 3 - Math.abs(dz), DORMER.zc + dz)
 
   // the porch: steps at z 0, a deck at z 1, posts at the corners carrying a beam and a boarded ceiling at y 5,
   // brackets under the beam, a rail from each post to the wall
@@ -72,15 +117,26 @@ function levelOne(c) {
   railingRun(c, [[H.x1, 1, 1], [H.x1, 1, 1]], P.wood)
   for (const x of [4, 8]) c.set(x, 4, 1, 'lantern', { hanging: 'true', waterlogged: 'false' })
 
-  // Pass 2: openings. The front door off the porch deck, the shuttered windows
+  // Pass 2: openings. The front door off the porch deck, the Nurse's back door, the windows (three kinds)
   door(c, OPENINGS.frontDoor, 'south', 'north', { wood: P.wood })
-  for (const w of [...OPENINGS.windows, OPENINGS.eastWindowI, OPENINGS.backWindow]) shuttered(c, w)
+  const bd = OPENINGS.backDoor
+  door(c, bd.at, 'north', 'south', { wood: P.wood, step: bd.step, stepStair: `${P.wood}_stairs` })
+  for (const w of [...OPENINGS.windows, OPENINGS.eastWindowI]) dressed(c, w)
 
-  // Pass 3: depth. The hearth: a stone breast in the west wall round the fire, the stack outside at x 0 past the ridge
+  // Pass 3: depth. The hearth: a stone breast in the west wall round the fire, the stack outside at x 0 past the ridge,
+  // the winter's wood under the west eave
   const [hx, , hz] = OPENINGS.hearth
   for (let z = hz - 1; z <= hz + 1; z++) for (let y = 1; y <= 4; y++) c.set(hx, y, z, stone)
   hearthFire(c, OPENINGS.hearth, 'east')
   chimney(c, 0, hz, 0, rf.ridgeY + 1, stone, { breast: { axis: 'z', top: 3, stair: 'cobblestone_stairs' } })
+  woodpile(c, 0, 9, 11, P.log)
+  // the back porch (note 4): a pent over the back door on two log posts, brackets, a slab deck either side of the step
+  const bz = bd.at[2] + 1
+  for (const x of [4, 8]) for (let y = 0; y <= 3; y++) c.set(x, y, bz, P.log, { axis: 'y' })
+  for (let x = 3; x <= 9; x++) stair(c, x, 4, bz, P.roof.stairs, 'north')
+  brackets(c, [[5, 3, bz]], `${P.wood}_stairs`, 'west')
+  brackets(c, [[7, 3, bz]], `${P.wood}_stairs`, 'east')
+  slab(c, 5, 0, bz, `${P.wood}_slab`, 'bottom'); slab(c, 7, 0, bz, `${P.wood}_slab`, 'bottom')
 
   // Pass 4: interior. The plan's furniture (lamps after the beams they hang from), the machine and the PC
   furnish(c, FURNITURE.filter(f => f.level === 1))
@@ -93,54 +149,62 @@ function levelOne(c) {
 function levelTwo(c) {
   const stone = mix(P.stone, 22)
   const W = WING
-  const empty = (x, y, z) => !c.get(x, y, z)
-  // Pass 1: the wing's floor, socle, log walls (the hall's east wall is its west wall), a tie beam, its lower gable roof
-  c.fill(W.x0 + 1, 0, W.z0 + 1, W.x1 - 1, 0, W.z1 - 1, P.floor)
-  logWalls(c, W, 1, 3, W.plate, stone, (x) => x === W.x0)
-  for (let x = W.x0 + 1; x < W.x1; x++) c.set(x, W.plate, 5, P.log, { axis: 'x' })
-  const rf = gableRoof(c, W.roof, P.roof, empty)
-  for (let z = W.z0 + 1; z < W.z1; z++) for (let x = W.x0 + 1; x <= W.x1; x++) {
-    const y = rf.under[z] - 1
-    if (y > W.plate && empty(x, y, z)) c.set(x, y, z, P.lining)
-  }
-  // where the wing's roof runs into the hall's: its west end closed up to the roof (a hidden wall over the hall's eave)
-  for (let z = W.z0; z <= W.z1; z++) for (let y = W.plate + 1; y < rf.under[z]; y++) if (empty(W.x0 + 1, y, z)) c.set(W.x0 + 1, y, z, P.lining)
-  gableWall(c, 'x', W.x1, [W.z0, W.z1], W.plate + 1, rf.under, (u, y) => {
-    if (y === W.plate + 1) return [P.frame, { axis: 'z' }]
-    if (u === 6 && y === 7) return P.glass
-    if (u === 6) return [P.frame, { axis: 'y' }]
-    return P.infill
-  })
-  bargeTrim(c, 'x', W.roof.along[1], W.roof.across, rf.under, 'spruce_stairs')
+  // Pass 1: the wing's floor, socle, log walls (the hall's east wall is its west wall), a tie beam, and the cross
+  // gable's roof carried on east to the wing's own gable end at x 19 (note 2)
+  c.fill(W.x0, 0, W.z0 + 1, W.x1 - 1, 0, W.z1 - 1, P.floor)
+  logWalls(c, { x0: W.x0 - 1, x1: W.x1, z0: W.z0, z1: W.z1 }, 1, 4, W.plate, stone, (x) => x === W.x0 - 1)
+  for (const x of W.ties) for (let z = W.z0 + 1; z < W.z1; z++) c.set(x, W.plate, z, P.log, { axis: 'z' })
+  crossRoof(c, CROSS.to + 1, W.overhang, () => null)
+  crossFace(c, W.overhang) // jettied like I's: the same face, one block out over the wing's end wall
+  // I's cross-gable face stays, the window between the hall and the wing; the ridge beam carries on to the wing's end
+  for (let x = CROSS.to + 1; x < W.overhang; x++) c.set(x, crossY(CROSS.cz) - 1, CROSS.cz, P.log, { axis: 'x' })
 
-  // Pass 2: openings: the arch from the hall, the wing's door and windows, the hall's back door to the paddock
-  const [ax, az] = OPENINGS.arch
-  c.clear(ax, 1, az); c.clear(ax, 2, az); c.set(ax, 0, az, P.floor)
+  // Pass 2: openings: the arch from the hall, the wing's shop door and back door, its windows; I's east window by the
+  // arch loses its shutters (one is the wing's wall now)
+  const [ex, ez] = OPENINGS.arch
+  for (const dz of [-1, 1]) for (const y of [2, 3]) if (c.name(ex + 1, y, ez + dz).includes('trapdoor')) c.clear(ex + 1, y, ez + dz)
+  c.clear(ex, 1, ez); c.clear(ex, 2, ez); c.set(ex, 0, ez, P.floor)
   door(c, OPENINGS.wingDoor.at, 'south', 'north', { wood: P.wood, step: OPENINGS.wingDoor.step, stepStair: 'cobblestone_stairs' })
-  for (const w of OPENINGS.wingWindows) shuttered(c, w)
-  // the east window of I is now inside the wing: its shutters go, its panes stay (a window between the rooms)
-  const [ex, ey, ez] = OPENINGS.eastWindowI
-  for (const dz of [-1, 1]) for (const y of [ey, ey + 1]) if (c.name(ex + 1, y, ez + dz).includes('trapdoor')) c.clear(ex + 1, y, ez + dz)
-  const [bx, , bz] = OPENINGS.backWindow
-  for (const dx of [-1, 1]) for (const y of [2, 3]) c.clear(bx + dx, y, bz + 1)
-  door(c, [bx, 1, bz], 'north', 'south', { wood: P.wood, step: [bx, 0, bz + 1], stepStair: 'cobblestone_stairs' })
-  c.set(bx, 3, bz, P.glass)
+  door(c, OPENINGS.wingBackDoor.at, 'north', 'south', { wood: P.wood, step: OPENINGS.wingBackDoor.step, stepStair: 'cobblestone_stairs' })
+  for (const w of OPENINGS.wingWindows) dressed(c, w)
 
   // Pass 4: interior
   furnish(c, FURNITURE.filter(f => f.level === 2))
   shopCounter(c, FIXED.shopCounter, 'north')
 
-  // Pass 5: the paddock: a fence round it with a gap on the path from the back door, the Pasture Block on a stone pad,
-  // a log trough of water, a stack of hay, a lamp on a post at the gate
+  // Pass 5: the paddock (note 3): a fence round it with an open gap on each path, a lamp post by each gap, stepping
+  // stones from both back doors to the Pasture Block on its stone pad, a lean-to field shelter on the back fence with
+  // hay in it, a log trough
   const [px, , pz] = FIXED.pasture
-  railingRun(c, [[1, 0, 13], [1, 0, 24], [19, 0, 24], [19, 0, 13], [1, 0, 13]], P.wood)
-  c.clear(6, 0, 13); c.clear(7, 0, 13) // the way in: an open gap (villagers can't work a gate), the lamp post beside it
-  for (let z = 12; z <= 12; z++) slab(c, 6, 0, z, 'cobblestone_slab')
+  railingRun(c, [[1, 0, 13], [1, 0, 25], [19, 0, 25], [19, 0, 13], [1, 0, 13]], P.wood)
+  const gaps = [6, 15]
+  for (const gx of gaps) c.clear(gx, 0, 13)
+  for (const lx of [7, 16]) { c.set(lx, 1, 13, P.fence); c.set(lx, 2, 13, 'lantern', { hanging: 'false', waterlogged: 'false' }) }
+  const stones = []
+  for (let z = 12; z <= pz; z++) stones.push([6, z], [15, z]) // from both back steps (drawn already) through the gaps
+  for (let x = 7; x <= px - 2; x++) stones.push([x, pz])
+  for (let x = px + 2; x <= 14; x++) stones.push([x, pz])
+  stones.forEach(([x, z], i) => { if (!c.get(x, 0, z)) slab(c, x, 0, z, P.path[(x * 7 + z * 3) % 2], 'bottom') })
   for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) c.set(px + dx, 0, pz + dz, stone)
   pastureBlock(c, FIXED.pasture, 'north')
-  horseTrough(c, [[14, 21], [15, 21], [16, 21]], 0, P.log)
-  for (const [x, y, z] of [[3, 0, 22], [4, 0, 22], [3, 0, 21], [3, 1, 22]]) c.set(x, y, z, 'hay_block', { axis: 'y' })
-  c.set(5, 1, 13, P.fence); c.set(5, 2, 13, 'lantern', { hanging: 'false', waterlogged: 'false' })
+  // the field shelter: x 2..8, open to the north, its back wall on the fence line, a lean-to roof falling to the front
+  const S = { x0: 2, x1: 8, front: 23, back: 25 }
+  for (let x = S.x0; x <= S.x1; x++) for (let y = 0; y <= 3; y++) c.set(x, y, S.back, P.lining)
+  c.set(5, 0, S.back, P.log, { axis: 'y' }); c.set(5, 3, S.back, P.log, { axis: 'x' }) // a mid post, a rail over the hay window
+  c.set(5, 1, S.back, P.fence); c.set(5, 2, S.back, P.fence)
+  for (const x of [3, 4, 6, 7]) c.set(x, 3, S.back, P.log, { axis: 'x' })
+  for (const x of [S.x0, S.x1]) {
+    for (let y = 0; y <= 3; y++) c.set(x, y, S.back, P.log, { axis: 'y' })
+    for (let y = 0; y <= 2; y++) c.set(x, y, S.back - 1, P.lining)
+    for (let y = 0; y <= 1; y++) c.set(x, y, S.front, P.log, { axis: 'y' })
+  }
+  for (let x = S.x0 - 1; x <= S.x1 + 1; x++) {
+    stair(c, x, 4, S.back, P.roof.stairs, 'south')
+    stair(c, x, 3, S.back - 1, P.roof.stairs, 'south')
+    stair(c, x, 2, S.front, P.roof.stairs, 'south')
+  }
+  for (const [x, y, z] of [[3, 0, 24], [4, 0, 24], [3, 1, 24], [7, 0, 24], [6, 0, 24]]) c.set(x, y, z, 'hay_block', { axis: 'y' })
+  horseTrough(c, [[13, 22], [14, 22], [15, 22]], 0, P.log)
 }
 
 export function draw(level = 1) {

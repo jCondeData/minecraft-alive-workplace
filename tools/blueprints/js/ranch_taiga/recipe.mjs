@@ -49,8 +49,11 @@ export function draw(level = 1) {
   // the front and back log walls, the whole width: the pens' gables and the hay barn's wall, corners notched
   for (const z of [PENS.z0, PENS.z1]) for (let x = PENS.west.outer; x <= PENS.east.outer; x++)
     for (let y = 1; y <= wallTop(x); y++) {
-      const corner = x === PENS.west.outer || x === PENS.east.outer || ((x === W.x0 || x === W.x1) && y > BARN.band)
-      log(x, y, z, corner ? (y % 2 ? 'x' : 'z') : 'x')
+      // notched (alternating) only at the pens' outer corners; the hay barn's corners over the pens' roofs are upright
+      // corner posts, so its gable face shows no log ends at all (round 3, note 1)
+      const corner = x === PENS.west.outer || x === PENS.east.outer
+      const post = (x === W.x0 || x === W.x1) && y > BARN.band
+      log(x, y, z, post ? 'y' : corner ? (y % 2 ? 'x' : 'z') : 'x')
     }
   // the pens' outer walls
   for (const x of [PENS.west.outer, PENS.east.outer]) for (let z = PENS.z0 + 1; z < PENS.z1; z++)
@@ -112,8 +115,15 @@ export function draw(level = 1) {
   c.set(...HOIST.lamp, 'lantern', { hanging: 'true', waterlogged: 'false' })
   // the konek: a thin neck (a fence post) on the ridge's front end and the horse's head on it, a stair turned side-on so
   // its outline (muzzle out to the side, the neck under the back of the head) reads from the road (round 2, note 2)
-  c.set(KONEK.x, KONEK.y + 1, KONEK.z, `${P.wood}_fence`)
-  stair(c, KONEK.x, KONEK.y + 2, KONEK.z, P.bracket, 'east', 'top')
+  // Round 3, note 2: the head turned along the ridge, looking out over the road (north), dark wood, one block wide: a
+  // fence neck on the ridge's front end, the skull an upside-down stair whose cheek hangs at the back over the neck, the
+  // muzzle a top slab out over the rake, and a button for the ear on the crown. From the sides it is a horse's profile;
+  // from the road a narrow head end-on on a thin neck.
+  const K = KONEK
+  c.set(K.x, K.y + 1, K.z, `${K.wood}_fence`)
+  stair(c, K.x, K.y + 2, K.z, `${K.wood}_stairs`, 'south', 'top')
+  c.set(K.x, K.y + 2, K.z - 1, `${K.wood}_slab`, { type: 'top', waterlogged: 'false' })
+  c.set(K.x, K.y + 3, K.z, `${K.wood}_button`, { face: 'floor', facing: 'north', powered: 'false' })
   // the smoker's stack up the back gable: a broad breast weathered in, the flue through the rake, smoke on top
   const S = STACK
   for (let x = S.breast[0]; x <= S.breast[1]; x++) for (let y = 0; y <= S.breastTop; y++) c.set(x, y, S.z, stack)
@@ -166,8 +176,9 @@ function drawLevel2(c, P, footing, log) {
   const roof = gableRoof(c, B.roof, P.roof, x => x !== B.roof.across[0])
   for (const z of [W.z0, W.z1]) gableWall(c, 'z', z, [W.x0, W.x1], B.top + 1, roof.under, () => [P.log, { axis: 'x' }])
   for (const z of B.roof.along) bargeTrim(c, 'z', z, [W.x0, B.roof.across[1]], roof.under, P.barge)
-  // log ends at the outer corners, on footing stones
-  for (const [x, z, axis] of [[20, 5, 'x'], [19, 4, 'z'], [20, 11, 'x'], [19, 12, 'z'], [13, 4, 'z'], [13, 12, 'z']]) {
+  // log ends at the outer (east) corners only, on footing stones: the west corners stand in the slot by the barn, where
+  // their ends crowded the east pen's into one cluster of pale squares on the front (round 3, note 1)
+  for (const [x, z, axis] of [[20, 5, 'x'], [19, 4, 'z'], [20, 11, 'x'], [19, 12, 'z']]) {
     c.set(x, 0, z, footing); for (let y = axis === 'x' ? 1 : 2; y <= 3; y += 2) log(x, y, z, axis) // every other course
   }
   // the door under a little gabled porch on two log posts, a lantern under its ridge

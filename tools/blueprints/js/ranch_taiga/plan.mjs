@@ -101,6 +101,20 @@
 //    included); rebuild.py no CHECK line; 827 / 1298 blocks. Renders overwritten in build/rebuild/ranch_taiga/renders/.
 //  Open for the critic: the renderer draws spruce bark warm orange, so the logs read lighter than in game; the stall
 //    pens' gables are small (three wide) beside the hay barn's; the konek is a two-block sign, clearest from the sides.
+//  Round 3 (2026-11-21, the round-2 critic's notes, BACK on II's Detail 3):
+//    1 gable face and rakes: the hay barn's corners over the pens' roofs (x 4 and 8, y 5..9, front and back) were
+//      notched, so every other course showed a log end on the gable face beside the window and the hoist lamp; they
+//      are upright corner posts now (log on end, bark all round), so the gable face is plain dark bark with no ends in
+//      it. The barge under every rake (hay barn, both pens, the bunkhouse) is dark oak stairs, not pale spruce, set
+//      flush under the slate, one dark line. At II the bunkhouse's two west corner ends (by the east pen's) are gone:
+//      the two pens' ends crowded into one cluster of pale squares in the valley. The pale squares left on the front
+//      are the notched outer corners of the pens and the bunkhouse's east corners.
+//    2 konek: turned along the ridge, looking out over the road, all dark oak and one block wide: a fence neck on the
+//      ridge's front end (6, 13, 1), the skull an upside-down stair (6, 14, 1, facing south: its cheek hangs at the back
+//      over the neck), the muzzle a top slab out over the rake (6, 14, 0), a button ear on the crown (6, 15, 1). From the
+//      sides a hooked horse's head on its neck; from the road a narrow head end-on.
+//    Checked after round 3: look_spots SAME BUILDING (8/8, 13/13, nothing moved); holes.py 0 at both levels (open
+//    included); rebuild.py no CHECK line; 829 / 1296 blocks; sizes 13 x 16 x 13 and 21 x 16 x 21. Renders overwritten.
 
 import { FURNITURE as SHIPPED } from '../ranch/plan.mjs'
 
@@ -115,7 +129,7 @@ export const PALETTE = {
   stack: [['cobblestone', 3], ['mossy_cobblestone', 2], ['stone', 1]], weather: 'cobblestone_stairs',
   log: 'spruce_log', band: 'stripped_spruce_log', frame: 'stripped_spruce_log', post: 'spruce_log', bracket: 'spruce_stairs',
   roof: { full: 'deepslate_tiles', stairs: 'deepslate_tile_stairs', slab: 'deepslate_tile_slab' },
-  barge: 'spruce_stairs', floor: 'spruce_planks', deck: 'spruce_planks', wood: 'spruce', door: 'dark_oak', glass: 'glass_pane',
+  barge: 'dark_oak_stairs', floor: 'spruce_planks', deck: 'spruce_planks', wood: 'spruce', door: 'dark_oak', glass: 'glass_pane',
   bars: 'iron_bars', bedding: 'coarse_dirt', hay: 'hay_block', firewood: 'spruce_log', rim: 'stripped_spruce_log',
   moss: 'moss_carpet', pot: 'potted_fern', path: 'dirt_path',
 }
@@ -132,7 +146,7 @@ export const PENS = {
   stalls: { west: [{ z0: 4, z1: 6, gate: 5 }, { z0: 8, z1: 10, gate: 8 }], east: [{ z0: 4, z1: 6, gate: 5 }, { z0: 8, z1: 10, gate: 9 }] },
 }
 export const GALLERY = { x0: 4, x1: 8, z0: 1, z1: 2, y: 4, posts: [4, 8], lamps: [[5, 3, 2], [7, 3, 2]] }
-export const KONEK = { x: 6, y: 12, z: 1 } // on the ridge's front end (the rake at z 1)
+export const KONEK = { x: 6, y: 12, z: 1, wood: 'dark_oak' } // on the ridge's front end (the rake at z 1)
 export const HOIST = { x: 6, y: 11, z0: 1, z1: 3, lamp: [6, 8, 1] }
 export const STACK = { x: 6, z: 12, breast: [5, 7], breastTop: 4, top: 13 }
 

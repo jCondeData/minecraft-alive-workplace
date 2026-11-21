@@ -242,3 +242,20 @@ Notes:
 2. I front and left, the konek (taiga_1_front, taiga_1_left): a flat board on a post reads as a sign. Make the head
    read as a head in outline: two stairs facing each other (crossed heads) at the apex, or a stair head turned along
    the ridge with a trapdoor or button ear, dark spruce, one block wide.
+
+### Round 3 designer notes: taiga
+
+Renders and cutaways overwritten in `build/rebuild/ranch_taiga/renders/` (`taiga_<1|2>_<front|back|left|right|top>`,
+`taiga_<1|2>_cut3_*`, `taiga_<1|2>_cut7_*`); `js/ranch_taiga/plan.mjs` "Round 3".
+1. The hay barn's gable and rakes: the barn's corners over the pens' roofs (x 4 and 8, y 5..9, front and back) were
+   notched, which put a log end every other course on the gable face beside the window and the hoist lamp; they are
+   upright corner posts now, so the gable face is plain dark bark with no ends in it. The barge under every rake (hay
+   barn, both pens, bunkhouse) is dark oak stairs flush under the slate, one dark line instead of pale spruce teeth.
+   At II the bunkhouse's two west corner ends, which crowded the east pen's into one cluster in the valley, are gone.
+   The only pale squares left on the front are the notched outer corners (taiga_1_front, taiga_2_front).
+2. The konek: turned along the ridge, looking out over the road, dark oak, one block wide: a fence neck (6, 13, 1), the
+   skull an upside-down stair with its cheek hanging at the back over the neck, the muzzle a top slab out over the
+   rake (6, 14, 0) and a button ear on the crown. From the sides a hooked horse's head on its neck (taiga_1_left,
+   taiga_1_right); from the road a narrow head end-on.
+Checked: `look_spots.py ranch_taiga ranch` SAME BUILDING (8/8 and 13/13, 0 moved); `holes.py` 0 at both levels (open
+included); no CHECK line; 829 and 1296 blocks; 13 x 16 x 13 and 21 x 16 x 21. Not shipped.

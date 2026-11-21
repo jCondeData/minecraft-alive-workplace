@@ -300,3 +300,68 @@ right|top>`, `snowy_<L>_cut3_*`, `snowy_<L>_cut7_*`).
 3. II's run-in shelter: its back and sides are now a half-height spruce board wall with a spruce rail over it between
    the stone-brick piers, open above to the eave, so from the back the hay, the posts and the open front show through;
    its ridge snow is two layers, not three (snowy_2_back).
+
+## Round 3 (2026-11-21, a fresh critic)
+
+Sheets `ranch_looks/<culture>_<1|2>_r3_vs_old.png` (OLD as drawn left, NEW round 3 right, five views). Made here: the
+live `structure/ranch.nbt` and `ranch_2.nbt` and the six candidates in `build/rebuild/ranch_<culture>/` rendered again
+with `render/shoot.mjs --views front,back,left,right,top` (so the sheets show the `.nbt`s as they stand, not the
+designers' renders), then `sheet.py --renders <dir> --old-name old_<L> --new-name <culture>_<L>`. Close renders at
+2400 x 1600 for the snowy dormers and the taiga konek and front. Rerun here: `look_spots.py ranch_<culture> ranch` SAME
+BUILDING for all three (8/8 and 13/13 shipped spots, 0 beds, containers, job blocks or doors moved); `holes.py` on the
+six candidate files: TOTAL 0 (roof, meet, stray, peek and open); sizes and blocks read from the `.nbt`s: savanna
+13 x 14 x 13 (770) and 21 x 14 x 21 (1214), snowy 13 x 16 x 13 (899) and 21 x 16 x 21 (1416), taiga 13 x 16 x 13 (829)
+and 21 x 16 x 21 (1296). Not rerun (designers' claims): no CHECK line, stacks, the share of I kept. Interior stays 4
+(the shipped furniture cell for cell; no eye-level shots filmed). Same standard as rounds 1 and 2.
+
+| Look | Level | Silhouette | Depth | Interior | Detail | Reads as its culture | Brief misses | Verdict |
+|---|---|---|---|---|---|---|---|---|
+| OLD (as drawn) | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 3 / 4 | - | - | - |
+| Savanna | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 4 / 4 | yes | none | **SHIP** |
+| Snowy | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 4 / 4 | yes, clearly not taiga | none | **SHIP** |
+| Taiga | I / II | 4 / 4 | 4 / 4 | 4 / 4 | 4 / 4 | yes, clearly not snowy | none | **SHIP** |
+
+None of the three beats OLD by a point on three scores (REBUILD.md's family rule); like desert in round 2 they ship on
+this file's looks standard (each score at least the as-drawn level's, none worse, reads as its culture, no brief miss).
+
+### Savanna (SHIP)
+- Silhouette 4 / 4 (round 2: 3 / 4): the skirt falls again, stair at the loft, stair, slab, stair at the eave, three
+  blocks of drop; from the left, back and right it reads as a second golden thatch slope under the crown, the two-tier
+  hip of round 1 back without its ziggurat corners (savanna_1_left, savanna_1_back, savanna_1_right). II's two pyramid
+  huts unchanged (savanna_2_back).
+- Depth 4 / 4: two eaves of shadow on every face, posts proud of the mud, the hood over the hay door (savanna_1_front).
+- Interior 4 / 4: as drawn.
+- Detail 4 / 4: the red-and-white band now runs unbroken over the hay door; the hoist beam comes out of the beam ring
+  above it with its chain and lantern (savanna_1_front). Round-2 kraal, gate and plinth fixes kept (savanna_2_back).
+- Round-2 notes: 1 answered, 2 answered.
+- Brief: no miss. The ship step must declare 13 x 14 x 13 and 21 x 14 x 21.
+
+### Snowy (SHIP)
+- Silhouette 4 / 4: the steep A, two dormers a side, II's twin gables (snowy_1_front, snowy_1_left, snowy_2_back).
+- Depth 4 / 4: posts proud under the kicked eave, the dormers' hoods one block out, the back windows and shutters
+  (snowy_1_right, snowy_1_back).
+- Interior 4 / 4: as drawn.
+- Detail 4 / 4 (round 2: 3 / 3): each dormer is now a closed slate-stair gable on a full ridge block with two layers of
+  snow lying on the ridge itself, birch gable over the panes; no floating board (close render of snowy_1_left and
+  snowy_1_right, checked in the `.nbt`: snow at y 8 on the ridge at y 7). The drift lies in runs against the walls and
+  into the corners, gaps at the posts and doors, none in the paddock (snowy_1_right, snowy_2_right). II's shelter shows
+  a board wall and rail from the back with the hay above it, plainly a shelter (snowy_2_back).
+- Round-2 notes: 1 answered, 2 answered, 3 answered.
+- Brief: no miss. Clearly not taiga.
+- Left as it is (not a hole, not a reason to send it back): between each pair of dormers the eave cell (east side
+  x 11, y 4, z 7) is a full block with two snow layers on it, a small valley the two dormers' eave stairs drain into; up
+  close it reads as a white tile in a notch (snowy_1_right close). The stepped cheeks of the dormers' stairs are busy
+  at arm's length but read as little gables at 20 blocks.
+
+### Taiga (SHIP)
+- Silhouette 4 / 4: three stepped gables, the stack, the bunkhouse at II (taiga_1_front, taiga_2_front).
+- Depth 4 / 4: notched outer corners, the svalgang on posts with brackets, the rakes over the gallery (taiga_1_front).
+- Interior 4 / 4: as drawn.
+- Detail 4 / 4 (round 2: 3 / 3): the hay barn's gable face is plain dark bark round the window, the hoist lamp and the
+  door; the barge under every rake is one dark stair line under the slate; the only pale squares on the front are the
+  notched outer corners of the pens and the bunkhouse (close taiga_1_front, taiga_2_front). The front reads calm. The
+  konek from the sides is a hooked head on a thin neck, muzzle out over the rake (close taiga_1_left).
+- Round-2 notes: 1 answered, 2 answered from the sides; from the road (taiga_1_front) the head end-on is a flat cap on
+  a post and still reads as a sign. Not worth a round on its own: the konek is one block on a 16-tall barn and the
+  silhouette and detail hold without it.
+- Brief: no miss. Clearly not snowy.

@@ -108,22 +108,22 @@ public class PokemonBuildsCompatTests implements FabricGameTest {
 			at(14, 1, 5, "minecraft:hay_block")));
 	}
 
-	/** The Habitat Garden: the Pasture Block in the east hedge, the mossy centre stone, the Saccharine tree, the pond. */
+	/** The Habitat Garden: the Pasture Block under the bower's eave, the mossy centre stone, the Saccharine tree, the pond. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"habitat_garden_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "habitat_garden_build")
 	public void aBuilderBuildsTheHabitatGarden(GameTestHelper helper) {
-		build(helper, StarterBlueprints.HABITAT_GARDEN, List.of(at(14, 1, 7, "cobblemon:pasture"), centreStone(),
-			at(10, 1, 11, "cobblemon:saccharine_log"), at(3, 0, 9, "minecraft:water")));
+		build(helper, StarterBlueprints.HABITAT_GARDEN, List.of(at(14, 1, 6, "cobblemon:pasture"), centreStone(),
+			at(14, 1, 12, "cobblemon:saccharine_log"), at(3, 1, 4, "minecraft:water")));
 	}
 
 	/** Habitat Garden II: the keeper's hide on its stilts and the second pond, the centre stone where it was. */
 	//$ gametest_ticks_batch HUGE_AREA '60000' '"habitat_garden_2_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 60000, batch = "habitat_garden_2_build")
 	public void aBuilderBuildsHabitatGardenII(GameTestHelper helper) {
-		build(helper, StarterBlueprints.HABITAT_GARDEN_2, List.of(at(14, 1, 7, "cobblemon:pasture"), centreStone(),
-			at(3, 3, 17, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.moddedLibrary(StarterBlueprints.HABITAT_GARDEN_2.id())
+		build(helper, StarterBlueprints.HABITAT_GARDEN_2, List.of(at(14, 1, 6, "cobblemon:pasture"), centreStone(),
+			at(3, 5, 19, io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.moddedLibrary(StarterBlueprints.HABITAT_GARDEN_2.id())
 				? "chipped:herringbone_spruce_planks" : "minecraft:spruce_planks"), // the modded library's herringbone floor (37.12)
-			at(2, 5, 16, "minecraft:spruce_log"), at(10, 0, 19, "minecraft:water")));
+			at(1, 6, 17, "minecraft:spruce_log"), at(11, 1, 20, "minecraft:water")));
 	}
 
 	/** The centre stone, at the spot ROADMAP 28.14 puts the habitat under. */

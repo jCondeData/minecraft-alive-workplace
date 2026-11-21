@@ -152,15 +152,17 @@ public final class StarterBlueprints {
 	public static final List<Entry> POKEMON_CENTER_2_LOOKS = List.of(POKEMON_CENTER_2, POKEMON_CENTER_LODGE_2, POKEMON_CENTER_PLAZA_2);
 
 	/**
-	 * With Cobblemon only (ROADMAP 28.16; tools/blueprints/arena.py): a 15 x 9 battle ring (packed mud, white lines, a
-	 * centre circle), a trainer's box on a dais at each end, benches for 12, banner poles and a notice board. The spots
-	 * the mod uses (the ring centre, the boxes, the seats...) are {@code hall.Arenas}'.
+	 * With Cobblemon only (ROADMAP 28.16; rebuilt 50.12, "the Market Stadium", tools/blueprints/js/arena): a chalk-marked
+	 * 15 x 9 pitch (coarse earth, a halfway line and centre circle, a chalk boundary round it), a red box and a blue box on
+	 * daises under little canopies at its ends, a flag behind each, 12 seats along the back wall and a low front wall whose
+	 * gate pier carries the notice board. The spots the mod uses (the ring centre, the boxes, the seats...) are
+	 * {@code hall.Arenas}'.
 	 */
-	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 8, 19));
-	/** Stands on both long sides (30 seats), a gate arch, lanterns round the ring and a fair lane with two striped kiosks. */
-	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 9, 29));
-	/** A covered grandstand on stone terraces, a trainers' room with a Healing Machine at each end, the champion's pole. */
-	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 12, 29));
+	public static final Entry ARENA = new Entry(AliveWorkplace.id("arena"), new Vec3i(25, 9, 19));
+	/** A colonnaded stand along the front (30 seats in all) over the Cup's fair lane, with the judges' loggia over the gate. */
+	public static final Entry ARENA_2 = new Entry(AliveWorkplace.id("arena_2"), new Vec3i(25, 13, 19));
+	/** A brick-roofed grandstand along the back (54 seats), a trainers' tower with a Healing Machine at each end, the champion's mast. */
+	public static final Entry ARENA_3 = new Entry(AliveWorkplace.id("arena_3"), new Vec3i(25, 14, 23));
 	/** The Arena's three tiers. */
 	public static final List<Entry> ARENAS = List.of(ARENA, ARENA_2, ARENA_3);
 
@@ -183,17 +185,24 @@ public final class StarterBlueprints {
 	public static final Entry DAYCARE_2 = new Entry(AliveWorkplace.id("daycare_2"), new Vec3i(19, 11, 27));
 
 	/**
-	 * A wild garden in a hedge round a mossy centre stone ({@link #HABITAT_GARDEN_CENTRE}), a pond, a Saccharine tree and
-	 * the Habitat Keeper's Pasture Block in the hedge.
+	 * The Stone Ring: a hedged clearing round an old ring of standing stones with the mossy centre stone at its heart
+	 * ({@link #HABITAT_GARDEN_CENTRE}), a reed-edged pond, the keeper's bower with her chest and the Pasture Block under
+	 * its eave, and the old Saccharine honey tree (rebuilt 50.12).
 	 */
-	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(15, 8, 15));
-	/** The garden runs on behind to a second pond and a keeper's hide on stilts. */
-	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(15, 11, 25));
+	public static final Entry HABITAT_GARDEN = new Entry(AliveWorkplace.id("habitat_garden"), new Vec3i(19, 13, 17));
+	/** The walk runs on through the trilithon to a second pond and the keeper's hide on stilts beside it. */
+	public static final Entry HABITAT_GARDEN_2 = new Entry(AliveWorkplace.id("habitat_garden_2"), new Vec3i(19, 13, 25));
 	/**
 	 * The Habitat Garden's mossy centre stone, a template spot of both tiers (ROADMAP 28.14 puts the village's habitat
-	 * under it; HABITAT_CENTRE in pokemon_jobs.py).
+	 * under it; the Centre in js/habitat_garden/plan.mjs; (7, 0, 7) before the 50.12 rebuild).
 	 */
-	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
+	public static final BlockPos HABITAT_GARDEN_CENTRE = new BlockPos(9, 0, 8);
+	/**
+	 * The centre stone of the old drawing (before the 50.12 rebuild; HABITAT_CENTRE in pokemon_jobs.py,
+	 * blueprint_history/habitat_garden*&#47;v0.145.0.nbt): a garden built from it and not refreshed still has its stone
+	 * here, and {@code VillageHabitats.centre(level, placement)} finds it. Never change it.
+	 */
+	public static final BlockPos V0145_HABITAT_GARDEN_CENTRE = new BlockPos(7, 0, 7);
 	/**
 	 * A stone shed over a lava pool behind glass, ledges round it for tumblestones, the Gem Grower's stonecutter and an
 	 * amethyst niche. All vanilla, like her job: in the table without Cobblemon too.
@@ -387,6 +396,27 @@ public final class StarterBlueprints {
 	 * styles ({@code world/VillageHouses#HOMES}), and the Steward raises one for a hamlet three beds short.
 	 */
 	public static final Entry DAUB_HOUSE = new Entry(AliveWorkplace.id("house_t1_b"), new Vec3i(13, 14, 13));
+	/**
+	 * The cultures the Daub House has a biome look for (ROADMAP 49.10d, {@code tools/blueprints/js/house_t1_b_<culture>};
+	 * see {@link BlueprintLooks}): the house drawn again in a village culture's climate, with the same hall, kitchen, loft,
+	 * four beds, crafting table, doors, furniture spots and size. A village of one of these cultures builds its own look;
+	 * plains (and any culture left out here) the Daub House as drawn. To hold a look back, take its culture out of this
+	 * list (BlueprintLooks reads it) and out of {@code DaubHouseLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> DAUB_HOUSE_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Daub House (one level each), in the order of {@link #DAUB_HOUSE_CULTURES}. */
+	public static final List<Entry> DAUB_HOUSE_LOOKS = DAUB_HOUSE_CULTURES.stream().flatMap(c -> daubHouseLook(c).stream()).toList();
+
+	/** A culture's look of the Daub House: its one level, the size of the house as drawn. */
+	public static List<Entry> daubHouseLook(String culture) {
+		return cultureLook(culture, DAUB_HOUSE);
+	}
+
+	/** A culture's look of {@code levels}, Level I first, each the size and basement of the level drawn ({@code looks/<culture>/<id>}). */
+	private static List<Entry> cultureLook(String culture, Entry... levels) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(levels).map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 
 	/**
 	 * The Artisan's House (34.15, a grade I home; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/artisans_house}):
@@ -557,6 +587,21 @@ public final class StarterBlueprints {
 	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(18, 14, 12));
 	/** A walled dye garden behind: rows of the flowers dyes come from and a tenter frame of dyed cloth. */
 	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(18, 14, 17));
+	/**
+	 * The cultures the Weaver's Cottage has a biome look for (ROADMAP 49.10d, {@code tools/blueprints/js/weavers_cottage_<culture>};
+	 * see {@link BlueprintLooks}): both levels drawn again in a village culture's climate, with the same workroom, loft,
+	 * loom, chests, doors, fold, dye garden, furniture spots and size as the level drawn. A village of one of these
+	 * cultures builds its own look; plains (and any culture left out here) the Weaver's Cottage as drawn. To hold a look
+	 * back, take its culture out of this list (BlueprintLooks reads it) and out of {@code WeaversCottageLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> WEAVERS_COTTAGE_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Weaver's Cottage, both levels, in the order of {@link #WEAVERS_COTTAGE_CULTURES}. */
+	public static final List<Entry> WEAVERS_COTTAGE_LOOKS = WEAVERS_COTTAGE_CULTURES.stream().flatMap(c -> weaversCottageLook(c).stream()).toList();
+
+	/** A culture's look of the Weaver's Cottage's two levels, Level I first. */
+	public static List<Entry> weaversCottageLook(String culture) {
+		return cultureLook(culture, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2);
+	}
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 

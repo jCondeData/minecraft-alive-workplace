@@ -12,6 +12,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.QaJobsShops1117cBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaRebuildHistorySweep1120eBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuildCreate1117e3CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFurnishOrder1117cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTomsCables1117cCompatTests",
@@ -262,6 +263,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTomsPrivateBoxesCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTomsNetworks1108cCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaTomsNetworks1108cBugTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteRaceCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaTrainSiteHeldCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPastureCopyCompatTests",
@@ -291,6 +293,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaPokemonJobSitesVerify1031",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonCenterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ArenaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.OldArenaWatchCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.PokemonBuildsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.BerryBreederCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaFarSiteBerryCompatTests",

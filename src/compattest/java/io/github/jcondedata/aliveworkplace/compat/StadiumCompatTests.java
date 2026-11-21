@@ -10,6 +10,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.MaterialRules;
 import io.github.jcondedata.aliveworkplace.hall.VillageBanners;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
@@ -215,7 +216,7 @@ public class StadiumCompatTests implements FabricGameTest {
 						wrong.add(name + " (a retired job block)");
 					} else if (block == Blocks.CALCITE) {
 						wrong.add(name);
-					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR) {
+					} else if (UNOBTAINABLE.contains(block) || block.asItem() == Items.AIR && MaterialRules.requirements(state, null).isEmpty()) {
 						wrong.add(name + " (no player can get it)");
 					}
 				}

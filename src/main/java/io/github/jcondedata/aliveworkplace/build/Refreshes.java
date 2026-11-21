@@ -68,6 +68,14 @@ public final class Refreshes {
 	@Nullable
 	private static ResourceManager loadedFrom;
 	private static Map<ResourceLocation, List<Old>> history = Map.of();
+	/**
+	 * B1407: by blueprint (a modded library copy's {@code modded/<path>}), the key its older drawing of the day of another
+	 * key ships under ({@code blueprint_history/<path>/aliases.json}, from tools/blueprints/history.py): a modded site
+	 * mid-build finds the key of the VANILLA drawing it was begun from, and the modded copy of that day shipped once, under
+	 * the key of the first commit or release that had it.
+	 */
+	private static Map<ResourceLocation, Map<String, String>> aliases = Map.of();
+	private static final String ALIASES = "aliases.json";
 	/** Older drawings added by hand (tests, or a datapack's own code), by blueprint. */
 	private static final Map<ResourceLocation, List<Old>> EXTRA = new HashMap<>();
 
@@ -91,11 +99,37 @@ public final class Refreshes {
 		if (resources != loadedFrom) {
 			loadedFrom = resources;
 			history = load(resources);
+			aliases = loadAliases(resources);
 			STANDING.clear();
 			DRAWN_AS.clear();
 		}
 		List<Old> out = new ArrayList<>(history.getOrDefault(structure, List.of()));
 		out.addAll(EXTRA.getOrDefault(structure, List.of()));
+		return out;
+	}
+
+	/** B1407: the key {@code structure}'s older drawing of the day of {@code key} ships under ({@code key} if not aliased). */
+	private static synchronized String resolved(MinecraftServer server, ResourceLocation structure, String key) {
+		history(server, structure); // (loads the aliases with the history)
+		return aliases.getOrDefault(structure, Map.of()).getOrDefault(key, key);
+	}
+
+	private static Map<ResourceLocation, Map<String, String>> loadAliases(ResourceManager resources) {
+		Map<ResourceLocation, Map<String, String>> out = new HashMap<>();
+		for (Map.Entry<ResourceLocation, Resource> e : resources.listResources(DIR, id -> id.getPath().endsWith("/" + ALIASES)).entrySet()) {
+			String path = e.getKey().getPath();
+			String folder = path.substring(DIR.length() + 1, path.length() - ALIASES.length() - 1);
+			ResourceLocation structure = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), folder);
+			try (java.io.Reader in = e.getValue().openAsReader()) {
+				com.google.gson.JsonObject json = com.google.gson.JsonParser.parseReader(in).getAsJsonObject();
+				Map<String, String> keys = out.computeIfAbsent(structure, k -> new HashMap<>());
+				for (Map.Entry<String, com.google.gson.JsonElement> alias : json.entrySet()) {
+					keys.put(alias.getKey(), alias.getValue().getAsString());
+				}
+			} catch (Exception ex) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawings' aliases {}: {}", e.getKey(), ex.toString());
+			}
+		}
 		return out;
 	}
 
@@ -167,8 +201,15 @@ public final class Refreshes {
 		if (LATEST.equals(key)) {
 			return latestDrawing(level, structure, furniture).map(furniture::applyAsBuilt);
 		}
-		return history(level.getServer(), historyId(structure, furniture)).stream().filter(o -> o.key().equals(key)).findFirst()
-			.map(o -> furniture.applyAsBuilt(o.drawing()));
+		ResourceLocation id = historyId(structure, furniture);
+		List<Old> olds = history(level.getServer(), id);
+		Optional<Old> old = olds.stream().filter(o -> o.key().equals(key)).findFirst();
+		if (old.isEmpty()) {
+			// B1407: a modded build begun from the vanilla drawing {@code key}: its modded copy of that day ships under another key
+			String alias = resolved(level.getServer(), id, key);
+			old = olds.stream().filter(o -> o.key().equals(alias)).findFirst();
+		}
+		return old.map(o -> furniture.applyAsBuilt(o.drawing()));
 	}
 
 	/**

@@ -30,8 +30,11 @@ import net.minecraft.world.level.block.Rotation;
  */
 public class ModdedLibraryGameTests implements FabricGameTest {
 	private static final ResourceLocation COTTAGE = AliveWorkplace.id("starter_cottage");
-	/** Open-air builds with nothing the building mods dress (no walls, floors, chests or shelves): the same in both libraries. */
-	private static final java.util.Set<String> OPEN_AIR = java.util.Set.of("habitat_garden");
+	/**
+	 * Open-air builds with nothing the building mods dress (no walls, floors, chests or shelves): the same in both libraries.
+	 * None today: the Habitat Garden was one until its 50.12 rebuild, whose roofed bower has planks the modded library dresses.
+	 */
+	private static final java.util.Set<String> OPEN_AIR = java.util.Set.of();
 
 	/** Every home and workshop the Blueprint Table or a villager offers. */
 	static List<ResourceLocation> homesAndWorkshops() {

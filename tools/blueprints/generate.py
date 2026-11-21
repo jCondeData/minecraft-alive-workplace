@@ -190,6 +190,14 @@ REBUILT = {"well", "well_2", "well_house", "fountain", "lily_pond", "footbridge"
            # 50.13, the Terminal Nook ("the Staddle Granary"), both drawings: js/terminal_nook (MC_BUILDER=..., sh build.sh
            # writes the candidates, the vanilla build and its Tom's copy in modded/; LIVE=1 sh build.sh the live ones)
            "terminal_nook",
+           # 50.12, the Habitat Garden (I-II, "the Stone Ring"): js/habitat_garden (MC_BUILDER=..., sh build.sh writes
+           # the candidates; LIVE=1 sh build.sh the live ones; then modded_library.py habitat_garden habitat_garden_2);
+           # pokemon_jobs.habitat_garden* are the old drawings, kept in blueprint_history/
+           "habitat_garden", "habitat_garden_2",
+           # 50.12, the Arena (I-III, "the Market Stadium"): js/arena (MC_BUILDER=..., sh build.sh writes the candidates;
+           # LIVE=1 sh build.sh the live ones; no modded copies); arena.py's ARENAS are the old drawings, kept in
+           # blueprint_history/
+           "arena", "arena_2", "arena_3",
            # 50.12, the Ball Workshop ("the Drying Loft"; the buildable only: the five village ball workshops keep their
            # own looks, village.py and village_looks.py): js/ball_workshop (MC_BUILDER=..., sh build.sh writes the
            # candidate; LIVE=1 sh build.sh the live one; then modded_library.py ball_workshop); workplaces.py's
@@ -427,8 +435,9 @@ if __name__ == "__main__":
             draw().save(MAIN_STRUCTURES, name)
     guildhall().save(MAIN_STRUCTURES, "guildhall")
     guildhall_2().save(MAIN_STRUCTURES, "guildhall_2")
-    for name, draw in ARENAS:  # ROADMAP 28.16: the Arena's three tiers
-        draw().save(MAIN_STRUCTURES, name)
+    for name, draw in ARENAS:  # ROADMAP 28.16: the Arena's three tiers (50.12: rebuilt, REBUILT; arena.py is the old drawing)
+        if name not in REBUILT:
+            draw().save(MAIN_STRUCTURES, name)
     for style in VILLAGE_STYLES:
         builders_workshop(style).save(VILLAGE_STRUCTURES, f"{style}_builders_workshop")
         for name, fit_out in VILLAGE_HOUSES.items():

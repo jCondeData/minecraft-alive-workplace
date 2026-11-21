@@ -180,6 +180,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.MechanicCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.MechanicBeltMendB669CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMechanicFlippedBelt1103eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaBeltMendRebuilt1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.ConductorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaConductorCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCopperTradesPack1116eCompatTests",

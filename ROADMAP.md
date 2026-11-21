@@ -6999,7 +6999,7 @@ and 52 when their Copperline work is done (`sessions.py next` gives each its own
 - [x] **49.10b** (review: pending 2026-11-19) **The biome looks, 2:** the Stone House and the Townhouse, every level, as 49.10a.
 - [x] **49.10c** (review: pending 2026-11-19) **The biome looks, 3:** the Terrace, every level, as 49.10a. (The Manor split
   off as 49.10f, lane-b-1119-0337.)
-- [ ] **49.10d** **The biome looks, 4:** the Weaver's Cottage and the Daub House, as 49.10a. (The Artisan's House split off
+- [x] **49.10d** (review: pending 2026-11-21) **The biome looks, 4:** the Weaver's Cottage and the Daub House, as 49.10a. (The Artisan's House split off
   as 49.10g, lane-b-1119-0938.)
 - [ ] **49.10e** **The biome looks, 5:** the Farmstead and the Ranch, every level, as 49.10a.
 - [x] **49.10f** (review: pending 2026-11-19) **The biome looks, 6:** the Manor, every level, as 49.10a. (Split from 49.10c, lane-b-1119-0337.)

@@ -39,6 +39,13 @@ asks for the steps, `latest.log` and any crash report).
   level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
   under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
   and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Weaver's Cottage and the Daub House in their village's culture**: desert, savanna, snowy and taiga villages now
+  build their own look of both. The Weaver's Cottage, at both levels: a flat-roofed sandstone and mud-brick dyer's house
+  with an arcade over the weaver's window and cloth drying on the roof; a golden thatch house with a veranda and a kraal
+  for the flock; a white calcite loomhouse under a steep snowy slate roof; and a deep-eaved spruce log lodge with a
+  veranda along its front. The Daub House: a little mud kasbah with a tower at each corner; a mud house under one great
+  golden thatch with a veranda; a calcite house under a long snowy slate roof; and a spruce log lodge with its gable to
+  the road. The same rooms, loom, beds and furniture; plains villages keep both as drawn (49.10d).
 - **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
   it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
   porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden

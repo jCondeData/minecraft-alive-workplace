@@ -387,6 +387,27 @@ public final class StarterBlueprints {
 	 * styles ({@code world/VillageHouses#HOMES}), and the Steward raises one for a hamlet three beds short.
 	 */
 	public static final Entry DAUB_HOUSE = new Entry(AliveWorkplace.id("house_t1_b"), new Vec3i(13, 14, 13));
+	/**
+	 * The cultures the Daub House has a biome look for (ROADMAP 49.10d, {@code tools/blueprints/js/house_t1_b_<culture>};
+	 * see {@link BlueprintLooks}): the house drawn again in a village culture's climate, with the same hall, kitchen, loft,
+	 * four beds, crafting table, doors, furniture spots and size. A village of one of these cultures builds its own look;
+	 * plains (and any culture left out here) the Daub House as drawn. To hold a look back, take its culture out of this
+	 * list (BlueprintLooks reads it) and out of {@code DaubHouseLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> DAUB_HOUSE_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Daub House (one level each), in the order of {@link #DAUB_HOUSE_CULTURES}. */
+	public static final List<Entry> DAUB_HOUSE_LOOKS = DAUB_HOUSE_CULTURES.stream().flatMap(c -> daubHouseLook(c).stream()).toList();
+
+	/** A culture's look of the Daub House: its one level, the size of the house as drawn. */
+	public static List<Entry> daubHouseLook(String culture) {
+		return cultureLook(culture, DAUB_HOUSE);
+	}
+
+	/** A culture's look of {@code levels}, Level I first, each the size and basement of the level drawn ({@code looks/<culture>/<id>}). */
+	private static List<Entry> cultureLook(String culture, Entry... levels) {
+		String folder = BlueprintLooks.PREFIX + culture + "/";
+		return java.util.stream.Stream.of(levels).map(e -> new Entry(AliveWorkplace.id(folder + e.id().getPath()), e.size(), e.basement())).toList();
+	}
 
 	/**
 	 * The Artisan's House (34.15, a grade I home; rebuilt from scratch, ROADMAP 49.8, {@code tools/blueprints/js/artisans_house}):
@@ -557,6 +578,21 @@ public final class StarterBlueprints {
 	public static final Entry WEAVERS_COTTAGE = new Entry(AliveWorkplace.id("weavers_cottage"), new Vec3i(18, 14, 12));
 	/** A walled dye garden behind: rows of the flowers dyes come from and a tenter frame of dyed cloth. */
 	public static final Entry WEAVERS_COTTAGE_2 = new Entry(AliveWorkplace.id("weavers_cottage_2"), new Vec3i(18, 14, 17));
+	/**
+	 * The cultures the Weaver's Cottage has a biome look for (ROADMAP 49.10d, {@code tools/blueprints/js/weavers_cottage_<culture>};
+	 * see {@link BlueprintLooks}): both levels drawn again in a village culture's climate, with the same workroom, loft,
+	 * loom, chests, doors, fold, dye garden, furniture spots and size as the level drawn. A village of one of these
+	 * cultures builds its own look; plains (and any culture left out here) the Weaver's Cottage as drawn. To hold a look
+	 * back, take its culture out of this list (BlueprintLooks reads it) and out of {@code WeaversCottageLooksGameTests.LOOKS}.
+	 */
+	public static final List<String> WEAVERS_COTTAGE_CULTURES = List.of("desert", "savanna", "snowy", "taiga");
+	/** Every look of the Weaver's Cottage, both levels, in the order of {@link #WEAVERS_COTTAGE_CULTURES}. */
+	public static final List<Entry> WEAVERS_COTTAGE_LOOKS = WEAVERS_COTTAGE_CULTURES.stream().flatMap(c -> weaversCottageLook(c).stream()).toList();
+
+	/** A culture's look of the Weaver's Cottage's two levels, Level I first. */
+	public static List<Entry> weaversCottageLook(String culture) {
+		return cultureLook(culture, WEAVERS_COTTAGE, WEAVERS_COTTAGE_2);
+	}
 	/** An open eight-sided bandstand with a jukebox (Bard), in the Gardens; it adds 3 to a village's beauty, no upgrade. */
 	public static final Entry BANDSTAND = new Entry(AliveWorkplace.id("bandstand"), new Vec3i(11, 10, 11));
 

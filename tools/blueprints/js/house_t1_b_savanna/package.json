@@ -1,0 +1,10 @@
+{
+  "name": "house-t1-b-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Daub House, the savanna look (ROADMAP 49.10d): the shipped Daub House drawn again as a veranda house: two storeys of packed mud in a grey acacia frame under one golden thatch hip with a pot on its ridge, a thatched veranda across the front, a painted band, the kitchen under a lower half-hip, a tall mud stack. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

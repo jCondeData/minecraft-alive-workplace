@@ -4,7 +4,7 @@ Milestone 49, item 49.8: the Shepherd's workplace (27.14), rebuilt from scratch 
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/weavers_cottage.md`), a blind design, and a
 critic who scored old and new side by side (silhouette, depth, interior and detail 4/4/4/4 against 3/2/2/2) and said
 SHIP (`tools/blueprints/briefs/weavers_cottage_critic.md`).
-Roadmap items: 27.14, 46.2, 49.8
+Roadmap items: 27.14, 46.2, 49.8, 49.10d
 
 ## 1. What a player sees
 
@@ -31,6 +31,18 @@ Roadmap items: 27.14, 46.2, 49.8
   (36.21); the loom and the chest stand in the same cells in the old and new drawings, so a refreshed cottage keeps
   exactly one loom.
 
+- **In its village's culture** (49.10d): a desert village builds both levels as the Dyer's Roof (coursed sandstone
+  below mud brick under a flat roof behind a coping, an arcade of round arches shading the weaver's window, a carved
+  door under a lattice oriel, a windcatcher, and dyed cloth drying on racks on the roof; the fold under a palm-rib
+  shade); a savanna village as the Weaver's Veranda (one golden thatch hip over the whole house, a red granite ground
+  floor below packed mud with a painted band, a thatched veranda on acacia posts along the street, the flock in a kraal
+  with its own little thatched shelter); a snowy village as the Snowbound Loomhouse (white calcite under a steep slate
+  roof carrying snow, the loft in the roof lit by a dormer over the loom, a stone storm porch, a broad stack, a drift
+  round the walls); a taiga village as the Deep-Eaved Lodge (dark spruce logs on a mossy fieldstone course, a broad
+  slate roof swept down over a veranda the whole length of the front, a fieldstone chimney, a split-rail paddock for
+  the sheep). The workroom, the loft, the loom, the chests, the doors, the fold, Level II's dye garden and every
+  furniture spot are the same. Plains villages build the cottage as drawn. The Blueprint Table lists the looks.
+
 ## 2. How it works
 
 - Drawn in JavaScript with the rebuild kit: `tools/blueprints/js/weavers_cottage/` (`plan.mjs`: three concepts, story,
@@ -48,6 +60,12 @@ Roadmap items: 27.14, 46.2, 49.8
   there are no village pieces of this family.
 - Level II is Level I with the garden added: 612 of Level I's 614 blocks stay as they are, so the upgrade builds only
   the garden, the back door and the tenter.
+- The culture looks (49.10d) are drawn in `tools/blueprints/js/weavers_cottage_<culture>/` from the brief and the
+  shipped plan (`look_spots.py` says SAME BUILDING: every furniture spot, the loom, the chests and the doors in the same
+  cells at both levels); `SHIP=1 build.sh` saves them as `structure/looks/<culture>/weavers_cottage[_2]` with their
+  furniture spots. `StarterBlueprints.WEAVERS_COTTAGE_CULTURES` lists the cultures that have a look (`BlueprintLooks`
+  reads it; take a culture out to hold its look back), `weaversCottageLook(culture)` each look's two levels and
+  `WEAVERS_COTTAGE_LOOKS` all of them. Scene: `rebuild_weavers_cottage_looks`.
 
 ## 3. Switches
 
@@ -86,4 +104,6 @@ block, built from its supply report, a Shepherd walks in and takes the loom), `Q
 pen's fences and gate, II's dye garden), `BuilderGameTests.starterUpgradesKeepMostOfTheirBase` and
 `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`, `ModdedLibraryGameTests`, `QaBuildReachGameTests`,
 `QaFurnishedRooms1031GameTests`, `FurnitureSpotGameTests`, `QaChairFacingGameTests`, `QaRefreshHistory1028GameTests`.
-Scene `rebuild_weavers_cottage`.
+Scene `rebuild_weavers_cottage`. `WeaversCottageLooksGameTests` (culture pick, fallbacks, base/upgrade/lock and map
+kind per look, sizes, beds and the one loom per level, Level I of each look built to DONE, a desert site saved mid-build
+reloads as desert). Scene `rebuild_weavers_cottage_looks`.

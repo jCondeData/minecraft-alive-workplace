@@ -1056,6 +1056,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeClimbs1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallRamps1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPalisadeSight1121dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.GolemHaulerRouteGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerGiveUpGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHaulerNoDropBoxGameTests",
@@ -1327,6 +1328,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaShipsMutants1116dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaShipsSinking1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallUpgradeCounts1121dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWallGap1121dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglinsMutants1116d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCovensMutants1116d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampCleanupMutants1117dGameTests",
@@ -1950,10 +1952,17 @@
 			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarkets1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121cLiveGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121cCellarsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltHomes1121bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltShopsWater1121bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bBugTests"
 		]
 	},
 	"depends": {

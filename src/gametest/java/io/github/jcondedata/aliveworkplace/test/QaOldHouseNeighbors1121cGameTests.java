@@ -39,7 +39,8 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  * {@link RebuildDrawings1117e}: the old house is 5x5 (local x 0-4, z 0-4, its bed on row 3 and back wall on row 4), today's
  * drawing under the same id is 7x3 (z 0-2), so the old house's back two rows lie outside today's box. Each place gets a
  * control with a house of today's drawing (the old one in the history), which must keep passing. The older-drawing cases
- * that fail on today's main are {@code QaOldHouseNeighbors1121cBugGameTests} (branch tests/old-house-neighbors-1121c);
+ * that fail on today's main are {@code QaOldHouseNeighbors1121cBugGameTests} (branch tests/old-house-neighbors-1121c; the
+ * homes', the levelling's and the Steward's, B1435 and B1436, moved here once fixed);
  * the hall's map (through MoveFit.others, B1374's fix) already draws the old house as it stands.
  *
  * <ul>
@@ -250,6 +251,71 @@ public class QaOldHouseNeighbors1121cGameTests implements FabricGameTest {
 			helper.assertTrue(found, "the hall's map has no box " + min.getX() + "," + min.getZ() + " to " + max.getX() + "," + max.getZ()
 				+ " for the old 5x5 house: " + boxes);
 			helper.assertTrue(HallMap.buildingAt(view, max.getX(), max.getZ()) >= 0, "the old house's back corner isn't a building on the hall's map");
+			helper.succeed();
+		});
+	}
+
+	// ---- B1435, B1436 (fixed): an older-drawing house read as it stands (from tests/old-house-neighbors-1121c)
+
+	/**
+	 * The old house's own bed (on its row 3, outside today's 7x3 box) gives whoever sleeps there that house as their home,
+	 * as the People table and the home mood read it (grander-homes.md: "The home a bed gives them").
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaNb1121cHomeOld"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaNb1121cHomeOld")
+	public void theBedOfAnOldDrawingHouseIsInThatHome(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.runAfterDelay(2, () -> {
+			Stage s = oldVillage(helper, "homeold");
+			Optional<Homes.Home> home = Homes.at(s.level(), abs(helper, BED_HEAD));
+			helper.assertTrue(home.isPresent() && home.get().structure().equals(s.id()),
+				"the bed in the old house (5x5; bed on its row 3) gives no home: " + home + " (today's drawing is 7x3)");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * The ground under the old house's back wall is that house's (builder.md: LANDSCAPE leaves the ground in and under a
+	 * neighboring finished building alone), so a site behind it never digs or fills it.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaNb1121cGroundOld"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaNb1121cGroundOld")
+	public void theGroundUnderTheBackOfAnOldDrawingHouseIsKeptFromANeighbor(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.runAfterDelay(2, () -> {
+			Stage s = oldVillage(helper, "groundold");
+			BuildSiteManager manager = BuildSiteManager.get(s.level());
+			List<String> open = new ArrayList<>();
+			for (BlockPos local : List.of(OLD_BACK_FLOOR, OLD_BACK_WALL, BED_HEAD, OLD_BACK_FLOOR.below())) {
+				if (!manager.underAnotherBuild(s.level(), neighbor(helper, s), abs(helper, local))) {
+					open.add(local + " (" + s.level().getBlockState(abs(helper, local)).getBlock().getName().getString() + ")");
+				}
+			}
+			helper.assertTrue(open.isEmpty(), "a neighbor's levelling may dig or fill the old house (5x5) at " + open + " (today's drawing ends at row 2)");
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * Steward.md: a plot keeps 2 free blocks beside every building ("exactly 2 free blocks beside it fit, 1 doesn't"). Behind
+	 * the old house (back wall on row 4) rows 5 and 6 must stay free of his plots; today's 7x3 box plus 2 ends at row 4.
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaNb1121cPlotOld"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaNb1121cPlotOld")
+	public void theStewardsPlotsKeepTwoBlocksBehindAnOldDrawingHouse(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		helper.runAfterDelay(2, () -> {
+			Stage s = oldVillage(helper, "plotold");
+			List<BoundingBox> boxes = keptFree(helper, s.level());
+			List<String> open = new ArrayList<>();
+			for (int row = 3; row <= 6; row++) {
+				BlockPos local = new BlockPos(2, 0, row);
+				if (!kept(boxes, abs(helper, local))) {
+					open.add("row " + row);
+				}
+			}
+			helper.assertTrue(open.isEmpty(), "the Steward's plot search leaves the old house's ground free at " + open
+				+ " (its back wall is row 4; kept: " + boxes + ")");
 			helper.succeed();
 		});
 	}

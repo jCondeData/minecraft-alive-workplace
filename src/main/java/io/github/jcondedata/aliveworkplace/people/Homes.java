@@ -85,7 +85,7 @@ public final class Homes {
 			}
 			Vec3i size = size(level, f.structure());
 			if (size != null) {
-				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
+				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), box(level, f, size)));
 			}
 		}
 		return java.util.List.copyOf(out);
@@ -108,7 +108,7 @@ public final class Homes {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedIn(level)) {
 			Vec3i size = size(level, f.structure());
 			if (size != null) {
-				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), BlueprintOutline.bounds(f.placement(), size)));
+				out.add(new Building(new Home(f.structure(), HomeGrades.grade(f.structure())), box(level, f, size)));
 			}
 		}
 		return out;
@@ -123,6 +123,14 @@ public final class Homes {
 			}
 		}
 		return Optional.ofNullable(best);
+	}
+
+	/**
+	 * The box the finished building {@code f} fills, today's drawing's ({@code size}) grown to the older drawing it still
+	 * stands as (B1436: the bed on an old house's back row is in that home).
+	 */
+	private static BoundingBox box(ServerLevel level, BuildSiteManager.Finished f, Vec3i size) {
+		return io.github.jcondedata.aliveworkplace.build.Refreshes.standingBox(level, f, BlueprintOutline.bounds(f.placement(), size), false);
 	}
 
 	/** A blueprint's size, from its structure file (a styled one is its base's size), or null if it's gone. */

@@ -257,6 +257,56 @@ public class GuardCombat extends Behavior<Villager> {
 			e -> e != villager && e != foe && !Guards.isFoe(e, villager) && e.getBoundingBox().inflate(0.6).clip(from, to).isPresent()).isEmpty();
 	}
 
+	/** Heights up a foe's body an archer aims at (fractions of its height), a skeleton's own aim first. */
+	private static final double[] AIM = {0.3333, 0.5, 0.75, 0.95};
+	/** How many ticks of an arrow's flight {@link #reaches} follows (a station's range takes about ten). */
+	private static final int FLIGHT_TICKS = 40;
+
+	/**
+	 * The height to aim at on {@code foe} from a battle station: the lowest of {@link #AIM} whose arrow, loosed along
+	 * ({@code dx}, aim + {@code lift}, {@code dz}) at {@code speed}, reaches the foe before any block. Over a parapet the eye can
+	 * see a foe whose knees it can't: the sight check runs eye to eye, the shot from below the eye to a third of the
+	 * foe's height, so it clips the parapet's top. A skeleton's aim when no height clears (the arrow flies as before).
+	 */
+	private static double aimOver(ServerLevel level, net.minecraft.world.entity.projectile.AbstractArrow arrow, LivingEntity foe, double dx, double dz,
+		double lift, float speed) {
+		net.minecraft.world.phys.Vec3 from = arrow.position();
+		for (double h : AIM) {
+			double y = foe.getY(h);
+			if (reaches(level, arrow, from, new net.minecraft.world.phys.Vec3(dx, y - from.y + lift, dz), speed, foe)) {
+				return y;
+			}
+		}
+		return foe.getY(AIM[0]);
+	}
+
+	/**
+	 * Whether an arrow loosed from {@code from} along {@code direction} at {@code speed} (no spread) meets {@code foe}
+	 * before a block, followed tick by tick the way an arrow moves: a block check along each tick's step, then the air's
+	 * 0.99 and gravity's 0.05.
+	 */
+	private static boolean reaches(ServerLevel level, net.minecraft.world.entity.projectile.AbstractArrow arrow, net.minecraft.world.phys.Vec3 from,
+		net.minecraft.world.phys.Vec3 direction, float speed, LivingEntity foe) {
+		AABB body = foe.getBoundingBox().inflate(0.3); // an arrow hits what its box touches (ProjectileUtil's 0.3)
+		net.minecraft.world.phys.Vec3 at = from;
+		net.minecraft.world.phys.Vec3 motion = direction.normalize().scale(speed);
+		for (int tick = 0; tick < FLIGHT_TICKS; tick++) {
+			net.minecraft.world.phys.Vec3 next = at.add(motion);
+			net.minecraft.world.phys.BlockHitResult block = level.clip(new net.minecraft.world.level.ClipContext(at, next,
+				net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, arrow));
+			boolean blocked = block.getType() != net.minecraft.world.phys.HitResult.Type.MISS;
+			if (body.clip(at, blocked ? block.getLocation() : next).isPresent()) {
+				return true;
+			}
+			if (blocked || next.y < level.getMinBuildHeight()) {
+				return false;
+			}
+			at = next;
+			motion = motion.scale(0.99).add(0, -0.05, 0);
+		}
+		return false;
+	}
+
 	/** Looses an arrow at the foe, like a skeleton; the arrow can't be picked up. */
 	private static void shoot(ServerLevel level, Villager villager, LivingEntity foe) {
 		ItemStack bow = villager.getItemBySlot(EquipmentSlot.OFFHAND);
@@ -269,23 +319,27 @@ public class GuardCombat extends Behavior<Villager> {
 		net.minecraft.world.entity.projectile.AbstractArrow arrow = net.minecraft.world.entity.projectile.ProjectileUtil.getMobArrow(
 			villager, ammo, 1.0f, bow);
 		double dx = foe.getX() - villager.getX();
-		double dy = foe.getY(0.3333) - arrow.getY();
 		double dz = foe.getZ() - villager.getZ();
 		double flat = Math.sqrt(dx * dx + dz * dz);
 		boolean crossbow = Guards.isCrossbow(bow);
 		boolean high = BattleStations.onStation(villager);
+		double lift = crossbow ? flat * 0.1 : high ? 0.0058 * flat * flat : flat * 0.2;
+		float speed = crossbow ? 2.6f : high ? STATION_SPEED : 1.6f;
+		// From a station the aim goes up the foe's body until the arrow's own path clears the parapet (B1439: over the
+		// Palisade's stakes the eye saw a raider 8 out, but a shot at his knees stuck in the stake top in front).
+		double dy = (high ? aimOver(level, arrow, foe, dx, dz, lift, speed) : foe.getY(AIM[0])) - arrow.getY();
 		if (crossbow) {
 			arrow.setCritArrow(true);
-			arrow.shoot(dx, dy + flat * 0.1, dz, 2.6f, 1.5f);
+			arrow.shoot(dx, dy + lift, dz, speed, 1.5f);
 		} else if (high) {
 			// From a station the bow is drawn full: a flatter, faster, truer arrow that carries the longer range. An arrow
 			// hits for its base times its speed, so the base comes down by as much as the speed went up.
 			// (The aim is raised by the arrow's drop over the distance: half of gravity's 0.05 times the ticks of flight
 			// squared, a little more for the air.)
-			arrow.shoot(dx, dy + 0.0058 * flat * flat, dz, STATION_SPEED, 2f);
+			arrow.shoot(dx, dy + lift, dz, speed, 2f);
 			arrow.setBaseDamage(arrow.getBaseDamage() * 1.6 / STATION_SPEED);
 		} else {
-			arrow.shoot(dx, dy + flat * 0.2, dz, 1.6f, 4f);
+			arrow.shoot(dx, dy + lift, dz, speed, 4f);
 		}
 		arrow.setBaseDamage(arrow.getBaseDamage() * Guards.levelBonus(villager)
 			* BattleStations.heightBonus(villager, foe)); // a quarter more at foes 3 or more below a station

@@ -165,6 +165,19 @@ public final class MaterialRules {
 	}
 
 	/**
+	 * Blocks another mod links to others of the same block somewhere else in the building, each keeping its side of the
+	 * link in its own data and dropping it when the other isn't there (Create's Chain Conveyor, by id: a conveyor
+	 * checks its chains on its first tick and drops every one whose other end isn't a conveyor chained back). The Mover
+	 * packs them all before any comes down and puts them all up in one swing (B1149, B1218).
+	 */
+	private static final Set<String> LINKED = Set.of("create:chain_conveyor");
+
+	/** Whether {@code state} is linked to others of the same block and must never stand without them: see {@link #LINKED}. */
+	public static boolean linked(BlockState state) {
+		return LINKED.contains(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()).toString());
+	}
+
+	/**
 	 * B794: the stem pieces of a plant that has no item of its own, placed with the plant's own item as a player lengthens
 	 * it: cave vines with glow berries, weeping and twisting vines, kelp, and a big dripleaf's stem with a big dripleaf.
 	 * B865: a melon's or pumpkin's grown (attached) stem costs the seeds of its stem ({@link #grownAs}).

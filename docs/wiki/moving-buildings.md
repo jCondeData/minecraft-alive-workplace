@@ -123,7 +123,9 @@ With Create installed, a Mechanical Crafter, Weighted Ejector, vault or depot ar
 Deployer's hand, with its filter, and the item on a Placard), and a
 belt of any length comes across whole, with the items on it, and runs at the new spot. A Fluid Tank or Item Vault
 built from several blocks arrives as one tank or vault with all its fluid or items, and a canceled move puts it back
-up as one, reachable through any of its blocks (B1135, B1136). A Mechanical Arm turned with the building still takes
+up as one, reachable through any of its blocks (B1135, B1136); the Mover puts all its blocks up in one swing, so it
+is never split on the way (B1219). Chain Conveyors joined by chains come down and go up together too and arrive still
+joined, their chains turned with the building (B1149, B1218). A Mechanical Arm turned with the building still takes
 from and puts on the same depots and belts: its targets turn with it, as on Create's own contraptions, and turn back
 when a canceled move puts it back, also across a restart. A Display Link keeps pointing at the block it shows on. A
 builder building a blueprint turned, mirrored, or both turns them the same way.
@@ -259,10 +261,17 @@ aren't `Clearable` and spill as they come down; the discard above takes those it
 touching blocks of one kind (`MaterialRules.joined`: Fluid Tank, Creative Fluid Tank, Item Vault) is packed whole too
 (B1135, B1136): `MoveSite.whole` gathers every touching block of that kind still standing and `take` packs each one's
 data before any comes down, since taking one makes Create split the rest (a tank's other block re-shaped and its share
-of the fluid lost, a vault's other block packed as a vault of its own). Its blocks still go up one by one with that
+of the fluid lost, a vault's other block packed as a vault of its own). Its blocks go up in one swing (`put` takes
+`whole(i, PACKED)` for a joined block too, B1219: put up a block a tick, Create joined the ones standing before the last
+was there, which stayed a container of its own, a tank's share of the fluid lost with it), each with that
 data: put back where it stood (a cancel), each block's `LastKnownPos` matches and it is the old container again; at the
 new spot Create sees the position changed, frees each block and joins them again, gathering the contents on the new
-controller. `take` counts a joined block as still there whatever shape properties its neighbors gave it. Some block
+controller. `take` counts a joined block as still there whatever shape properties its neighbors gave it. Blocks linked
+to others of their kind anywhere in the building (`MaterialRules.linked`: Create's Chain Conveyor) are one group as well,
+every one of them (B1149, B1218): a conveyor checks its chains on its first tick and drops
+each whose other end isn't a conveyor chained back, so one put up while its partner was still packed lost the chain, and
+the partner then dropped its own as one-sided. `take` packs them all before any comes down and `put` sets them all
+before loading any data; the offsets turn with the building through `TurnedBlockEntities` like the arm's targets. Some block
 entities keep positions relative to themselves in their data (a Create arm's `InteractionPoints`): after `put` loads the
 data, `build/TurnedBlockEntities` turns it with the building (B1137), and back again for data a canceled move packed at
 the new spot (the packed entry's `turned` flag); `MovePlan.place` and the builder's turned blueprints use it too.
@@ -476,10 +485,11 @@ move at its speed from before, and a Mechanical Arm driven by it carries a diamo
 quarter turned, and with the Mover working one step a tick.
 `QaCreateMoverChains1113eCompatTests` (2, compat suite, the QA lane), with the Mover working one swing a tick as in a
 world: a Sequenced Gearshift keeps its instruction list and a Rotation Speed Controller its 64 RPM, and a Display Link
-put up before its Nixie Tube still aims at the tube, each moved a quarter turn with nothing loose. Two Chain Conveyors
-joined by a chain come back unjoined and the chain is gone: B1218. Moved the same way, an eight-block Item Vault and an
-eight-block Fluid Tank come back with their last block a store of its own, the tank short of 16 of its 40 buckets:
-B1219 (both failing tests are on the tests/create-mover-chains-1113e branch).
+put up before its Nixie Tube still aims at the tube, each moved a quarter turn with nothing loose.
+`QaCreateMoverChains1113eBugCompatTests` (3, compat suite, B1218, B1219), paced the same way: two Chain Conveyors
+joined by a chain arrive joined to each other with nothing loose, an eight-block Item Vault is one vault with its 48
+emeralds, and an eight-block Fluid Tank one tank with all 40 buckets. `QaCreateMoverChains1110fCompatTests` (1, B1149):
+two chained conveyors moved in one go arrive chained, the offsets turned a quarter.
 `QaCreateMoverCrateSpot1111eBugCompatTests` (2, compat suite, the QA lane, B1184): an Item Vault with 48 emeralds and a
 lectern with its book, each moved a quarter turn onto a spot where a Mover's Crate was set down after the move was
 confirmed: all 48 emeralds and the book still exist (dropped on the crate).

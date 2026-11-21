@@ -501,13 +501,17 @@ public final class MoveSite {
 	 * data as the container stands, before taking one makes Create split it (the rest re-shaped, the block taken losing its
 	 * share of the fluid, the others packed as separate containers). They go up one by one, each with the data it had in
 	 * the whole container: put back where it stood it is that container again, and put up at the new spot Create sees its
-	 * blocks have moved and joins them again, the contents gathered on the new controller.
+	 * blocks have moved and joins them again, the contents gathered on the new controller. They go up in one swing too
+	 * (B1219): put up a block a tick, Create joined the ones already standing before the last was there, which then stood
+	 * as a container of its own, and a tank lost that block's share of the fluid. Blocks linked to others of their kind
+	 * (Create's Chain Conveyors, B1149, B1218) come down and go up together the same way, every one of them in the
+	 * building: a conveyor standing while the one it's chained to is packed drops that chain on its next tick.
 	 */
 	private List<Integer> whole(int i, byte in) {
 		List<Integer> group = new ArrayList<>();
 		group.add(i);
 		BlockState state = plan.blocks().get(i).state();
-		if (MaterialRules.laidWhole(state)) {
+		if (MaterialRules.laidWhole(state) || MaterialRules.linked(state)) {
 			for (int j = 0; j < where.length; j++) {
 				if (j != i && where[j] == in && plan.blocks().get(j).state().getBlock() == state.getBlock()) {
 					group.add(j);
@@ -541,10 +545,15 @@ public final class MoveSite {
 	/**
 	 * Puts block {@code i} up from the crates at {@code pos}, whatever stood there taken out of the way first. A block
 	 * laid whole (Create's belt) goes up whole: every packed segment stands before any gets its data, so the belt is never
-	 * half there, and each segment's controller is moved to where its controller now stands (B1128).
+	 * half there, and each segment's controller is moved to where its controller now stands (B1128). A container joined
+	 * from several blocks and conveyors chained to each other go up in the same swing too (B1219, B1218): see {@link #whole}.
 	 */
 	private void put(ServerLevel level, int i, BlockPos pos, BlockState state, byte now) {
-		List<Integer> group = (now == NEW || now == OLD) && MaterialRules.laidWhole(plan.blocks().get(i).state()) ? whole(i, PACKED) : List.of(i);
+		BlockState planned = plan.blocks().get(i).state();
+		boolean laid = MaterialRules.laidWhole(planned);
+		// B1219, B1218: a joined container's blocks and linked conveyors all stand before Create next ticks any of them
+		List<Integer> group = (now == NEW || now == OLD) && (laid || MaterialRules.joined(planned) || MaterialRules.linked(planned))
+			? whole(i, PACKED) : List.of(i);
 		List<Integer> up = new ArrayList<>();
 		List<BlockPos> ats = new ArrayList<>();
 		List<BlockState> states = new ArrayList<>();
@@ -588,7 +597,7 @@ public final class MoveSite {
 					// B1160: a kinetic block comes up at rest (no speed, source or network of the spot it was packed at), so
 					// Create links it to its neighbors here as it does a block just placed
 					CompoundTag loaded = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.atRest(states.get(k), data.copy());
-					be.loadWithComponents(group.size() > 1 ? withController(loaded, now) : loaded, level.registryAccess());
+					be.loadWithComponents(laid && group.size() > 1 ? withController(loaded, now) : loaded, level.registryAccess());
 					// B1137: data holding positions relative to the block (a Create arm's targets) turns with the building
 					TurnedBlockEntities.apply(be, net.minecraft.world.level.block.Mirror.NONE, dataTurn(j, now));
 					be.setChanged();

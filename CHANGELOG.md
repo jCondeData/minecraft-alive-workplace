@@ -48,6 +48,10 @@ asks for the steps, `latest.log` and any crash report).
   stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block
   sends its signal right away instead of staying dark until a block next to it changes. Redstone inside any moved
   building now looks at its surroundings once the whole building stands (B1160, B1216).
+- With Create, a Fluid Tank or Item Vault built from several blocks no longer arrives split after the Mover moves its
+  building (its last block stood as a tank or vault of its own, and a tank lost that block's share of the fluid), and
+  two Chain Conveyors joined by a chain arrive still joined, the chain turned with the building, instead of losing
+  the chain. The Mover now puts such a group up in one swing (B1219, B1218, B1149).
 - A husk piling a sand ramp no longer counts as already over the wall, and gives up its ramp one block high, when it
   stands outside the village beside your own wall (a garden wall) that lines up with the village wall: only the
   village wall the ramp leans on counts now, so it piles the ramp to the top and climbs in (B1419).

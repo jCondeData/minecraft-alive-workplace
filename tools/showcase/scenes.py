@@ -2096,6 +2096,14 @@ SCENES = [
            ("02_outside_back", "From the east: the apse's half octagon with its tall windows, the choir aisles' chapels at its sides, the crossing's lead fleche behind"),
            ("03_outside_west", "From the north: the nave's long roof over its aisles' lean-tos, the clerestory windows, the transept's gable and its chapel on the east wall"),
            ("04_outside_east", "From the south: the mirror of the north side, the towers' spires rising over the west end and the fleche over the crossing")]),
+    # ROADMAP 52.6: the Colossus rebuilt from scratch (REBUILD.md), design A "Astride the Road", filmed whole (its four
+    # stages standing, RebuildScene.WONDERS); a Wonder has no furniture spots, so the four outside views
+    S("rebuild_colossus", "Build families", "The Colossus, rebuilt: from four sides",
+      "the Colossus's whole blueprint (its four stages standing) stands on a cleared lawn and is filmed from four sides; a Wonder has no furniture spots, so there are no rooms to film",
+      40, [("01_outside_front", "The Colossus from the road: the Founder's feet planted either side of the arch in the dark gate, the plaque's seven signs over it, the lantern raised high on the right"),
+           ("02_outside_back", "From the back: the copper cloak falling from the shoulders and pooling on the deck, the gate's pilasters and copper frieze under it"),
+           ("03_outside_west", "From the west: the stride from the side, the left hand holding the rolled plan at the hip, the stairs up the gate's flank"),
+           ("04_outside_east", "From the east: the right arm thrown up with the glowstone lantern in its yellow cage, the braziers on the deck's corners")]),
     # ROADMAP 49.10a: the Starter Cottage in each village culture's climate (desert, savanna, snowy, taiga; plains as
     # drawn), Level I of each built furnished side by side
     S("rebuild_starter_cottage_looks", "Build families", "The Starter Cottage in every village culture: plains, desert, savanna, snowy and taiga",

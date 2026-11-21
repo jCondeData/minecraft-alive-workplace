@@ -40,7 +40,7 @@ final class WonderColossusScene {
 					VILLAGE, entity.ownerName()), 1);
 			})
 			.watching(level -> scaffolding(level, lapse[0]))
-			// from the road 22 out in front of the arch, looking up at the lantern raised over it (y 43-45, x 22)
+			// from the road 22 out in front of the arch, looking up at the lantern raised over it (y 43-45, x 21; 52.6's drawing)
 			.nightView(new double[] {14.5, 4, -22}, new double[] {16.5, 20, 12})
 			.night(level -> nightChecks(level, lapse[0]));
 		return lapse[0];

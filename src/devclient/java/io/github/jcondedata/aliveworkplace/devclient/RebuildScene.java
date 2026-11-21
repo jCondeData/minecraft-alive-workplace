@@ -57,7 +57,7 @@ final class RebuildScene {
 		"apiary_garden", "greenhouse", "flower_shop", "trainers_house", "supply_shop", "market_stall", "compost_yard", "quarry",
 		"sifting_shed", "crushing_mill", "windmill", "hanging_gardens", "great_wall", "train_station", "pump_house", "terminal_nook",
 		"habitat_garden", "ball_workshop", "arena", "research_lab", "great_library", "stadium", "great_cathedral",
-		"colossus");
+		"colossus", "pokemon_center", "pokemon_center_looks");
 	/** The rebuilt Wonders (52.6) among them: filmed as their whole blueprint ({@code wonder/<id>}, every stage standing). */
 	static final Set<String> WONDERS = Set.of("observatory", "lighthouse", "hanging_gardens", "great_wall", "great_library", "stadium",
 		"great_cathedral", "colossus");

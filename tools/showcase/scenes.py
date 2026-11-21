@@ -1968,6 +1968,20 @@ SCENES = [
            ("02_outside_back", "From the back: the back row of seats against its coped wall, the podium in the middle"),
            ("03_outside_west", "From the west: the red box under its canopy and the red flag behind it, the chalk-marked pitch"),
            ("04_outside_east", "From the east: the blue box under its canopy and the blue flag behind it")], furniture=True),
+    # ROADMAP 50.12: the Pokémon Center rebuilt from scratch ("the Red Dome"; Level I filmed, II in the pokemon_center scene)
+    S("rebuild_pokemon_center", "Build families", "The Pokémon Center, rebuilt: from four sides",
+      "the Pokémon Center's blueprint stands on a cleared lawn, built as a server with Cobblemon and the furniture mods builds it; every furniture spot holds its piece and each room gets an eye-level shot from a free floor cell with a clear view",
+      40, [("01_outside_front", "The Pokémon Center from the front: the white octagonal drum under the stepped red dome and its glazed eye, the glass shop-front and canopy over the door"),
+           ("02_outside_back", "From the back: stone pilasters at the drum's corners, windows set back over sills"),
+           ("03_outside_west", "From the west: the dome and its lantern in outline over the drum"),
+           ("04_outside_east", "From the east: the same round outline, nothing else in a village shaped like it")], furniture=True),
+    # ROADMAP 50.12: the Pokémon Center's looks side by side (the Mountain Lodge rebuilt; the Sunny Plaza still the old drawing)
+    S("rebuild_pokemon_center_looks", "Build families", "The Pokémon Center's three looks: the Red Dome, the Mountain Lodge and the Sunny Plaza",
+      "the Pokémon Center as drawn and its two looks stand side by side on a cleared lawn, every furniture spot of each holding the furniture mods' piece",
+      45, [("01_row_front", "The three looks from the front"),
+           ("10_plains", "The Red Dome, as drawn"),
+           ("11_lodge", "The Mountain Lodge: a steep red front gable over a porch deck, a jettied cross gable, a stone chimney and dormer"),
+           ("12_plaza", "The Sunny Plaza")], furniture=True),
     # ROADMAP 50.9: the Apiary Garden rebuilt from scratch (REBUILD.md), "the Skep Wall" (Level I filmed)
     S("rebuild_apiary_garden", "Build families", "The Apiary Garden, rebuilt: from four sides",
       "the Apiary Garden's blueprint stands on a cleared lawn; every furniture spot holds its piece and every room (none: the skep is a store) gets an eye-level shot from a free floor cell with a clear view",

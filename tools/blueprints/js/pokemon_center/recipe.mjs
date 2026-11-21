@@ -178,10 +178,10 @@ function levelTwo(c) {
       else c.set(x, 1, z, plant)
     })
   }
-  // two benches facing the pavilion
+  // two benches facing the pavilion (not recorded as furniture spots: at y = 0 they stand on the plot's own ground,
+  // outside the template, which furniture.py's floor check reads as floating)
   for (const [x, z, facing] of [[4, 19, 'east'], [14, 19, 'west']]) for (const dz of [-1, 0, 1]) {
     stair(c, x, 0, z + dz, `${P.wood}_stairs`, facing === 'east' ? 'west' : 'east')
-    c.spot('bench', [x, 0, z + dz], facing, [[0, 0, 0]], P.wood)
   }
 }
 

@@ -130,19 +130,21 @@ public final class StarterBlueprints {
 	public static final Entry RESEARCH_LAB_3 = new Entry(AliveWorkplace.id("research_lab_3"), new Vec3i(23, 13, 15), 4);
 
 	/**
-	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): a bright hall with a glass front under a red
-	 * roof, Cobblemon's Healing Machine on the counter (the nurse's place), a PC beside it, potions and benches.
+	 * With Cobblemon only (ROADMAP 28.7; see {@link #COBBLEMON_ONLY}): the Red Dome (rebuilt 50.12), a white octagonal
+	 * drum under a stepped red dome with a glazed eye, Cobblemon's Healing Machine in the desk under the eye (the
+	 * Nurse's place), a PC beside it, waiting benches either side of a red aisle.
 	 */
-	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 10, 12));
-	/** A lodge behind it (a Shop Counter's trade corner, four beds upstairs) and a garden with a Pasture Block. */
-	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(13, 17, 26));
+	public static final Entry POKEMON_CENTER = new Entry(AliveWorkplace.id("pokemon_center"), new Vec3i(13, 16, 13));
+	/** A gabled Trade Hall on the east (the Shop Counter) and a planted garden behind with a domed pavilion and the Pasture Block. */
+	public static final Entry POKEMON_CENTER_2 = new Entry(AliveWorkplace.id("pokemon_center_2"), new Vec3i(20, 16, 26));
 	/**
-	 * The Pokémon Center's other looks (ROADMAP 28.7a; tools/blueprints/pokemon_looks.py, see {@link BlueprintLooks}): a
-	 * timber Mountain Lodge under a steep red gable with a porch, and its upgrade with a two-storey wing on the east and
-	 * a pen behind.
+	 * The Pokémon Center's other looks (ROADMAP 28.7a, see {@link BlueprintLooks}): the Mountain Lodge (rebuilt 50.12,
+	 * tools/blueprints/js/pokemon_center_lodge), a log lodge under a steep red gable with a porch deck, a jettied cross
+	 * gable and a stone chimney, and its upgrade carrying the cross gable east into the Trader's wing, with a paddock
+	 * and field shelter behind.
 	 */
-	public static final Entry POKEMON_CENTER_LODGE = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center"), new Vec3i(13, 12, 12));
-	public static final Entry POKEMON_CENTER_LODGE_2 = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center_2"), new Vec3i(21, 14, 18));
+	public static final Entry POKEMON_CENTER_LODGE = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center"), new Vec3i(13, 15, 13));
+	public static final Entry POKEMON_CENTER_LODGE_2 = new Entry(AliveWorkplace.id("looks/lodge/pokemon_center_2"), new Vec3i(21, 15, 26));
 	/** A flat-roofed sandstone Sunny Plaza with a striped awning and a red-capped drum; its upgrade adds a wing and a courtyard. */
 	public static final Entry POKEMON_CENTER_PLAZA = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center"), new Vec3i(13, 11, 12));
 	public static final Entry POKEMON_CENTER_PLAZA_2 = new Entry(AliveWorkplace.id("looks/plaza/pokemon_center_2"), new Vec3i(13, 12, 25));

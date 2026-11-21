@@ -25,6 +25,14 @@ asks for the steps, `latest.log` and any crash report).
   glowstone lantern caged in yellow glass, lit day and night. Same stage names and size. A Colossus already begun or
   finished keeps the old drawing: it still counts as standing, its plaque is still written, and it is repaired and
   finished as it was first drawn.
+- **The Pokémon Center and its Mountain Lodge look are rebuilt from scratch** (50.12, with Cobblemon). The Center is
+  now "the Red Dome": a white eight-sided hall under a stepped red dome with a glazed eye. Inside, benches line a red
+  aisle to the desk, with the Healing Machine right under the eye and a stocked corner of barrels and chests behind.
+  Pokémon Center II adds a gabled Trade Hall with the Shop Counter and a planted garden with a domed pavilion and the
+  Pasture Block. The Mountain Lodge is a log lodge under a steep red gable with a porch deck, a jettied cross gable, a
+  stone chimney and a back porch. Its II carries the cross gable into the Trader's wing and adds a paddock with a field
+  shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
+  keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
 - A furnished house from the modded library that was still being built when its blueprint got a new look keeps the

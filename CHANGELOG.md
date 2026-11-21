@@ -21,6 +21,8 @@ asks for the steps, `latest.log` and any crash report).
 - A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
   look it was begun with after you update, instead of the new design going up over the half-built old one. Use
   "Refresh to the latest look" once it's finished to bring it up to date (B1407).
+- The War Camp's ominous banner and the Blackstone Outpost's piglin banner now face the camp's gate and front,
+  toward players walking up, instead of turning their backs to them (B1175).
 
 ## 0.158.0 — 2026-11-20
 

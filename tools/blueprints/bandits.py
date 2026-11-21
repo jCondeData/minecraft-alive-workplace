@@ -78,7 +78,7 @@ def bandit_camp():
     b.set_nbt(11, 1, 8, Compound({"id": String("minecraft:banner"), "patterns": List[Compound]([
         Compound({"color": String("red"), "pattern": String("minecraft:skull")}),
         Compound({"color": String("red"), "pattern": String("minecraft:border")})])}))
-    b.set(11, 1, 8, "black_banner", rotation="0")
+    b.set(11, 1, 8, "black_banner", rotation="8")  # facing the path in (B1175: rotation 0 faced the back)
     fence(b, 3, 1, 8, "dark_oak_fence")
     b.set(3, 2, 8, "skeleton_skull", rotation="0")
     for y in (1, 2, 3):
@@ -184,7 +184,7 @@ def war_camp():
     # the pole with the ominous banner
     for y in range(1, 7):
         fence(b, 14, y, 10, "dark_oak_fence")
-    ominous_banner(b, 14, 7, 10, rotation="0")
+    ominous_banner(b, 14, 7, 10, rotation="8")  # facing the gateway (B1175: rotation 0 faced the back)
 
     # three canvas tents down the west side, opening east onto the yard
     def side_tent(z0, cloth):
@@ -714,7 +714,7 @@ def blackstone_outpost():
     for y in range(2, 9):
         b.set(BX, y, BZ, "polished_basalt" if y in (2, 8) else "basalt", axis="y")
     b.set(BX, 9, BZ, "chiseled_polished_blackstone")
-    piglin_banner(b, BX, 10, BZ, rotation="0")
+    piglin_banner(b, BX, 10, BZ, rotation="8")  # facing the front (B1175: rotation 0 faced the back)
     piglin_banner(b, BX, 7, BZ + 1, facing="south")
 
     # the hoglin pen, front right: x 14..19, z 2..8

@@ -13,7 +13,7 @@ related: wonders.md, defence.md, builder.md
 
 ![The Great Wall going up, then a night raid gathering on the open side while its sentries watch](https://jcondedata.github.io/minecraft-alive-workplace/wonder_great_wall/anim.gif)
 
-A long gray wall 97 long and 12 high, its stone stepping in over a dark deepslate foot, with buttresses on the field side,
+A gray wall 97 blocks long and 12 high, its stone stepping in over a dark deepslate foot, with buttresses on the field side,
 a walk on top behind battlements and lantern posts, and four square **watchtowers**. Each tower is solid stone up to the
 walk; the walk runs through a guard room (a grindstone, a barrel, a table by the arrow loops) with a ladder up to the
 lookout, where a signal fire burns under a spruce roof. At the center stands the **Great Gate**: a gatehouse with a

@@ -39,9 +39,13 @@ is a CARE building (`VillageMaps`, by id).
   - the cell **above** it is air (or replaceable).
   Today's slots are all at **y = 0, so the grave lies on the ground under the build** (y = -1, the world's own ground
   the builder levels): in each slot cell nothing may be drawn at y = 0 or at y = 1 (no floor, path, slab, carpet, pot,
-  lamp, post, fence, stair or eave). A drawn floor at y = 0 over the slots kills them. Today's list, in fill order:
-  row z = 6 at x 1, 2, 3, 4, 8, 9, 10, 11; row z = 1 at the same x; then x 1, 4, 8, 11 for each z = 2, 3, 4, 5
-  (the way in runs between, x 5 to 7). The designer may keep these 32 cells free, or give a new ordered list of at
+  lamp, post, fence, stair or eave). A drawn floor at y = 0 over the slots kills them. Today's list (B1423), in fill
+  order, each row's left side (x 1 to 4) then its mirror (x 12 - x): z = 6 at x 1, 2, 4; z = 8 at x 1, 2 (the nook
+  behind, by the chapel wall); z = 4 at x 1 to 4; z = 3 at x 1, 3, 4 (Level II's posts stand at (2, 3) and (10, 3));
+  z = 1 at x 1 to 4. The walks left free: the cross-walks z = 2 and z = 5 (x 1 to 4, 8 to 11, stepped into from the way
+  in, x 5 to 7), the back walk z = 7 and the gap to it at (3, 6) and (9, 6), so every slot has a cell a villager stands on
+  right beside it when the yard is full (a path to a grave ends one block above it, so a cell two blocks off on the
+  ground is out of reach). The designer may keep these 32 cells free, or give a new ordered list of at
   least 32 cells (all at y = 0 so the tests' flat-floor placements stay valid); the ship step then rewrites
   `YARD_SLOTS` and the tests' pinned first slots (see "Rules tests check"). Level II must leave every slot of Level I
   free (an upgrade that stands a post or a lamp on a slot loses it for good, since there is one list for both).
@@ -89,7 +93,7 @@ is a CARE building (`VillageMaps`, by id).
     z 9..21, y 2..17), the bench and barrels at x 1..5;
   - the 13 x 13 box is hard-coded in `Graveyards.SIZE` (a grave anywhere inside it counts as resting there, and its
     middle decides which village owns it, B788) and in the tests `B788GameTests.SIZE` and `QaGraveyardRim1102GameTests.SIZE`;
-  - today's slots span x 1..11, z 1..6.
+  - today's slots span x 1..11, z 1..8.
   A different footprint means rewriting `Graveyards`, its slot list and three test classes; don't. A different
   **height** is fine: the ship step changes the `Vec3i` of both `StarterBlueprints.GRAVEYARD` and `GRAVEYARD_2` (sizes
   must match the files, `starterBlueprintsMatchTheirDeclaredSizesAndAreBuildable`), `Graveyards.SIZE` and the two

@@ -467,4 +467,40 @@ public class QaOldDrawings1121cGameTests implements FabricGameTest {
 	public void anUpgradeBlueprintClickedOnTheOldHousesFrontLinesUpWithIt(GameTestHelper helper) {
 		upgradeClick(helper, "clkfront", new BlockPos(1, 1, 0));
 	}
+
+	/**
+	 * B1433 (builder.md: an upgrade blueprint clicked onto the finished building it upgrades lines up with it): clicked onto
+	 * the old house's back wall (outside the rebuilt drawing's 7x3 box, inside the 5x5 house that stands), it lines up with
+	 * the house as it does on the front wall (the control above).
+	 */
+	//$ gametest_ticks_batch AREA '200' '"qaOld1121cClickBack"'
+	@GameTest(template = AREA, timeoutTicks = 200, batch = "qaOld1121cClickBack")
+	public void anUpgradeBlueprintClickedOnTheOldHousesBackLinesUpWithIt(GameTestHelper helper) {
+		upgradeClick(helper, "clkback", new BlockPos(1, 1, 4));
+	}
+
+	/**
+	 * B1432, B1372 ("at the least a take-down that removed nothing doesn't forget the record"): the rebuilt drawing ships WITHOUT
+	 * the old one in the history, so nothing can tell what the house was built from. The sneak take-down then removes
+	 * nothing; the house must stay listed in the hall (it can still be moved, repaired or refreshed).
+	 */
+	//$ gametest_ticks_batch AREA '1500' '"qaOld1121cTdNothing"'
+	@GameTest(template = AREA, timeoutTicks = 1500, batch = "qaOld1121cTdNothing")
+	public void aTakeDownThatRemovesNothingKeepsTheHousesRecord(GameTestHelper helper) {
+		ResourceLocation id = id(helper, "tdnone");
+		Stage s = stage(helper, id, true);
+		standOld(helper, s, true, false);
+		Villager[] builder = {null};
+		helper.runAfterDelay(2, () -> {
+			install(s.level(), id, newBlueprint(id, false)); // no history: the old drawing is unknown
+			reload(helper, s.level(), null);
+			builder[0] = builder(helper, s);
+			takeDown(helper, s, builder[0]);
+		});
+		helper.succeedWhen(() -> {
+			helper.assertTrue(builder[0] != null && sites(s) == 0 && !ModAttachments.BUILDER_JOB.has(builder[0]), "still taking it down");
+			int left = oldBlocks(helper).size() + where(helper, Blocks.RED_BED).size();
+			helper.assertTrue(left == 0 || listed(s), "the take-down left " + left + " of the house's 42 blocks standing and the hall forgot the house");
+		});
+	}
 }

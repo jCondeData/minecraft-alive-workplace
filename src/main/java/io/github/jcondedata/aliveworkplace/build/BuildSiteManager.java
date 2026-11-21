@@ -301,12 +301,17 @@ public final class BuildSiteManager extends SavedData {
 		return out;
 	}
 
-	/** The finished building of {@code structure} whose outline contains {@code pos}, if any. */
+	/**
+	 * The finished building of {@code structure} whose outline contains {@code pos}, if any. A building standing as an older
+	 * drawing of its id is measured by that drawing's box as well as today's (B1433: an upgrade clicked onto its back wall,
+	 * outside today's smaller box, still lines up with it).
+	 */
 	public java.util.Optional<Finished> finishedAt(ServerLevel level, ResourceLocation structure, net.minecraft.core.BlockPos pos) {
 		for (Finished f : finished) {
 			if (f.structure().equals(structure) && f.placement().dimension().equals(Ids.of(level.dimension()))) {
 				boolean inside = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, structure)
-					.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()).isInside(pos))
+					.map(b -> Refreshes.standingBox(level, f,
+						io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), b.size()), false).isInside(pos))
 					.orElse(false);
 				if (inside) {
 					return java.util.Optional.of(f);
@@ -345,7 +350,9 @@ public final class BuildSiteManager extends SavedData {
 				box(level, site.structure(), site.placement()).ifPresent(b -> out.add(new Footprint(site.placement(), b)));
 			}
 			for (Finished f : finishedIn(level)) {
-				box(level, f.structure(), f.placement()).ifPresent(b -> out.add(new Footprint(f.placement(), b)));
+				// B1435: a building standing as an older drawing of its id keeps the ground under that drawing's box too
+				box(level, f.structure(), f.placement()).map(b -> Refreshes.standingBox(level, f, b, true))
+					.ifPresent(b -> out.add(new Footprint(f.placement(), b)));
 			}
 			cache.list = out;
 			cache.changes = changes;

@@ -461,32 +461,63 @@ public final class Walls {
 		return kitFor(level, hall).map(kit -> layout(level, hall, plan, kit)).orElse(List.of());
 	}
 
-	/** Whether {@code piece} stands finished: its own blueprint built on its spot, or an upgrade of it (B1380). */
+	/**
+	 * Whether {@code piece} stands finished: its own blueprint (or an upgrade of it, B1380) built on its spot, every
+	 * column of its footprint. B1425: segments sit a block or two over one another ({@link #run}), so a neighbor's
+	 * blueprint on part of the spot isn't this segment: taken down (or never built), it is a hole in the wall. Pieces
+	 * of its own blueprint covering the whole footprint between them do count (a wall laid out again a little shifted,
+	 * after a road crossing added a gate, still stands where it was built).
+	 */
 	public static boolean stands(ServerLevel level, Piece piece) {
-		return finishedOn(level, piece).flatMap(f -> kitPiece(f.structure())).filter(piece.blueprint()::equals).isPresent();
+		BoundingBox box = piece.box();
+		List<BoundingBox> own = finishedOn(level, piece).stream()
+			.filter(f -> kitPiece(f.structure()).filter(piece.blueprint()::equals).isPresent())
+			.map(BuiltPiece::box).toList();
+		if (own.isEmpty()) {
+			return false;
+		}
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				int cx = x;
+				int cz = z;
+				if (own.stream().noneMatch(b -> b.minX() <= cx && cx <= b.maxX() && b.minZ() <= cz && cz <= b.maxZ())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/** A finished wall piece and where it stands. */
+	record BuiltPiece(ResourceLocation structure, BoundingBox box) {
 	}
 
 	/**
-	 * A wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a time).
-	 * The spot is its footprint, at any height within {@link #GROUND_REACH}: a piece's height is its ground's ({@link #groundY}), and once it is built
-	 * that ground is the piece's own top, so the same piece laid out again sits on itself (B94: builders put towers on
-	 * the towers they had finished).
+	 * Every wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a
+	 * time). The spot is its footprint, at any height within {@link #GROUND_REACH}: a piece's height is its ground's
+	 * ({@link #groundY}), and once it is built that ground is the piece's own top, so the same piece laid out again sits
+	 * on itself (B94: builders put towers on the towers they had finished).
 	 */
-	static Optional<BuildSiteManager.Finished> finishedOn(ServerLevel level, Piece piece) {
+	static List<BuiltPiece> finishedOn(ServerLevel level, Piece piece) {
 		BoundingBox box = piece.box();
-		return BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8 + GROUND_REACH).stream()
-			.filter(f -> isPiece(f.structure()) && BlueprintLibrary.get(level, f.structure())
-				.map(b -> {
-					BoundingBox built = BlueprintOutline.bounds(f.placement(), b.size());
-					return built.minX() <= box.maxX() && built.maxX() >= box.minX() && built.minZ() <= box.maxZ() && built.maxZ() >= box.minZ()
-						&& built.minY() <= box.maxY() + GROUND_REACH && built.maxY() >= box.minY() - GROUND_REACH;
-				}).orElse(false))
-			.findFirst();
+		List<BuiltPiece> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8 + GROUND_REACH)) {
+			if (!isPiece(f.structure())) {
+				continue;
+			}
+			BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+				.filter(built -> onSpot(built, box)).ifPresent(built -> out.add(new BuiltPiece(f.structure(), built)));
+		}
+		return out;
 	}
 
-	/** Whether this piece would replace an older kit's piece standing on its spot (a Town's stone over its palisade). */
+	/**
+	 * Whether this piece would replace an older kit's piece standing on its spot (a Town's stone over its palisade). A
+	 * piece of its own kit beside it (segments overlap a little) is no older kit's (B1425).
+	 */
 	public static boolean replaces(ServerLevel level, Piece piece) {
-		return !stands(level, piece) && finishedOn(level, piece).isPresent();
+		return !stands(level, piece) && finishedOn(level, piece).stream()
+			.anyMatch(f -> kitPiece(f.structure()).filter(piece.blueprint()::equals).isEmpty());
 	}
 
 	/**

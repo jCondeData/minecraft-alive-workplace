@@ -48,6 +48,25 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- A full Graveyard no longer walls in its own graves: once all 32 were taken, the headstones boxed in 18 of them, so
+  mourners couldn't gather there and the Undertaker had to be teleported in. New graves go in rows with grass walks
+  between them, so every grave can be walked up to. Graves already laid stay where they are and
+  are still revived from the Graveyard (B1423).
+- An archer on the Palisade's walk hits raiders again: his arrows stuck in the stake tops in front of him, because he
+  aimed at a raider's knees, which the stakes hid even when he could see the raider. From a battle station he now aims
+  as high up the raider as his arrow needs to clear the wall (B1439).
+- The desert Stone House II, III and IV: the parlor's bed can be reached again. The old hall window's sill, a stone
+  stair, blocked the doorway into the parlor, so nobody got to that bed; the doorway now opens straight in (B1431).
+- Taking down a house whose old look the mod no longer knows now leaves it in the Village Hall: the Builder says he
+  took nothing down instead of reporting it gone, and the house can still be moved, repaired or refreshed (B1432).
+- The next level's blueprint now lines up with a house still standing as an older, bigger look wherever on the house
+  it is clicked, its back wall included, instead of being placed as a new build on top (B1433).
+- A house still standing as an older, deeper drawing of its blueprint is now kept whole by its neighbors: a new build
+  beside it no longer digs or fills under its back rows, the Steward keeps his 2 free blocks behind its real back wall,
+  and a villager sleeping in its back rows has that house as their home again (B1435, B1436).
+- The Great Wall's description in the Village Hall's Wonder list now reads "A gray wall 97 blocks long" instead of "A long gray wall 97 long" (B1438).
+- A village wall with one stretch taken down (or never built) no longer reads finished: the segments on either side
+  don't count for the missing one anymore, so the Steward sends a builder to close the gap (B1425).
 
 - With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer
   stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block

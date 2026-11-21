@@ -494,7 +494,7 @@ public final class Refreshes {
 	}
 
 	/** B1373, B1374: what {@link #standingSize} found for one building, and on which tick. */
-	private record Standing(long tick, @Nullable net.minecraft.core.Vec3i size) {
+	private record Standing(long tick, @Nullable Blueprint drawing) {
 	}
 
 	private record StandingKey(ResourceLocation structure, BlueprintData.Placement placement) {
@@ -507,28 +507,59 @@ public final class Refreshes {
 	/**
 	 * B1373, B1374: the size of the older drawing the finished building {@code f} still stands as (its box is that size at
 	 * its placement), or null when it stands as today's drawing (or no older drawing of its blueprint is shipped): the
-	 * Mover, the Move page and its fit check measure a house of an old drawing as it stands. Kept for a couple of seconds
-	 * per building, since the fit check and the Move page ask it for every building of the village on each click.
+	 * Mover, the Move page and its fit check measure a house of an old drawing as it stands.
 	 */
 	@Nullable
-	public static synchronized net.minecraft.core.Vec3i standingSize(ServerLevel level, BuildSiteManager.Finished f) {
+	public static net.minecraft.core.Vec3i standingSize(ServerLevel level, BuildSiteManager.Finished f) {
+		return standingDrawing(level, f).map(Blueprint::size).orElse(null);
+	}
+
+	/**
+	 * B1373, B1374, B1435, B1436: the older drawing the finished building {@code f} still stands as, as it was built and
+	 * furnished, or empty when it stands as today's drawing (or no older drawing of its blueprint is shipped). Everything
+	 * that reads a finished building's box reads this drawing's when there is one: the Move page as its box, a neighbor's
+	 * levelling, the Steward's plot search and the homes as well as today's ({@link #standingBox}). Kept for a couple of
+	 * seconds per building, since the fit check and the Move page ask it for every building of the village on each click.
+	 */
+	public static synchronized Optional<Blueprint> standingDrawing(ServerLevel level, BuildSiteManager.Finished f) {
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
 		if (history(level.getServer(), historyId(f.structure(), furniture)).isEmpty()) {
-			return null; // (most builds: nothing to look at)
+			return Optional.empty(); // (most builds: nothing to look at)
 		}
 		long now = level.getGameTime();
 		StandingKey key = new StandingKey(f.structure(), f.placement());
 		Standing known = STANDING.get(key);
 		if (known != null && now >= known.tick() && now - known.tick() < STANDING_TICKS) {
-			return known.size();
+			return Optional.ofNullable(known.drawing());
 		}
 		String from = builtFrom(level, f.structure(), f.placement(), furniture);
-		net.minecraft.core.Vec3i size = from == null ? null : drawing(level, f.structure(), from, furniture).map(Blueprint::size).orElse(null);
+		Blueprint drawing = from == null ? null : drawing(level, f.structure(), from, furniture).orElse(null);
 		if (STANDING.size() > 1024) {
 			STANDING.clear();
 		}
-		STANDING.put(key, new Standing(now, size));
-		return size;
+		STANDING.put(key, new Standing(now, drawing));
+		return Optional.ofNullable(drawing);
+	}
+
+	/**
+	 * B1435, B1436: {@code today} (the box today's drawing of the finished building {@code f} fills at its placement)
+	 * grown to also hold the box of the older drawing it still stands as ({@link #standingDrawing}), its basement too when
+	 * {@code basement}. The ground protection round a neighbor's levelling, the Steward's plot search and the homes read a
+	 * finished building by it: a house of an old, deeper drawing keeps its back rows and its beds there, and since which
+	 * drawing a house stands as is read from its blocks (a guess on a damaged house), they never read less than today's box.
+	 */
+	public static net.minecraft.world.level.levelgen.structure.BoundingBox standingBox(ServerLevel level, BuildSiteManager.Finished f,
+			net.minecraft.world.level.levelgen.structure.BoundingBox today, boolean basement) {
+		Optional<Blueprint> old = standingDrawing(level, f);
+		if (old.isEmpty()) {
+			return today;
+		}
+		net.minecraft.world.level.levelgen.structure.BoundingBox was
+			= io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(f.placement(), old.get().size());
+		int down = basement ? old.get().basement() : 0;
+		return new net.minecraft.world.level.levelgen.structure.BoundingBox(Math.min(today.minX(), was.minX()),
+			Math.min(today.minY(), was.minY() - down), Math.min(today.minZ(), was.minZ()),
+			Math.max(today.maxX(), was.maxX()), Math.max(today.maxY(), was.maxY()), Math.max(today.maxZ(), was.maxZ()));
 	}
 
 	/**

@@ -3,7 +3,7 @@
 Milestone 49, item 49.4: the village's second kind of home, rebuilt from scratch with the rebuild kit
 (`tools/blueprints/REBUILD.md`): a blind brief (`tools/blueprints/briefs/stone_house.md`), a blind design, and a critic
 who scored old and new side by side and said SHIP in round 2 (`tools/blueprints/briefs/stone_house_critic.md`).
-Roadmap items: 26.15, 49.4, 49.10b
+Roadmap items: 26.15, 49.4, 49.10b, B1431
 
 ## 1. What a player sees
 
@@ -33,7 +33,8 @@ Roadmap items: 26.15, 49.4, 49.10b
   house (the same rooms, beds, job blocks, chests and furniture places, so it works the same):
   - **Desert:** a cube of coursed sandstone under a flat roof behind a coped parapet, a terracotta frieze, a dark
     lattice oriel over the door and a low slotted windcatcher; II adds the parlor as a lower mud-brick block fronted by
-    an arcade of two round arches, III the back room as a mud-brick block whose roof is a terrace under a pergola.
+    an arcade of two round arches (reached through a doorway from the hall, with the old window's glass kept as a light
+    over it), III the back room as a mud-brick block whose roof is a terrace under a pergola.
   - **Savanna:** a ground story of red granite and an upper story of packed mud between gray acacia posts, under one
     square pyramid of golden thatch with a clay pot at its point; II the parlor under a low hip that runs on over a
     veranda, III the back room under a second low hip.

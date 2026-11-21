@@ -1,0 +1,10 @@
+{"spots": [
+  {"kind":"shelf","pos":[7,2,10],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,3,6],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,3,9],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[3,5,5],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[3,5,9],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[9,5,5],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[9,5,9],"facing":"west","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,11,7],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null}
+]}

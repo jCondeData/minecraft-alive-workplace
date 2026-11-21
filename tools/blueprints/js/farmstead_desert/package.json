@@ -1,0 +1,10 @@
+{
+  "name": "farmstead-desert",
+  "private": true,
+  "type": "module",
+  "description": "Farmstead, the desert look (ROADMAP 49.10e): the shipped Farmstead drawn again as an oasis farm: a flat-roofed mud house under a dovecote, a palm-rib shade over the field walk, a shaduf over the channel, a date palm; II a granary barn with domed grain bins on its roof; III a cool store under the hall. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

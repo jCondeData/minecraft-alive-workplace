@@ -356,3 +356,22 @@ grindstone (2, 1, 5). The fire station and gatehouses leave `owner_rules_baselin
 modded copies are in `blueprint_history/`; the Guard House's village pieces (`village/<style>_guard_house`) keep their
 own looks (`village_looks.py` not redrawn). Scenes `rebuild_barracks`, `rebuild_guard_house`, `rebuild_fire_station`,
 `rebuild_gatehouse`, `rebuild_lookout_tower`.
+
+**QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence
+gates stay shut, nobody stands on fences, walls or headstones) from the street at the z=0 side.
+`QaRebuiltCivic1121cGameTests` (16, 51.4 and 51.6): every Graveyard slot open in both levels and walked to as the yard
+fills in order, one Undertaker site with a chest and a candle; the Chapel's middle a roofed floor a guest walks to;
+the Library's lecterns (1, 2, 3, 3) each walked to, Library III and IV enchanting at full power; every upgrade keeps
+its job blocks and chests in place; the School's Training Post and bed, the Schoolhouse's lectern, the Post Office's
+Mailbox and the Clock Tower's cartography table reached; live: graves sent to a placed Graveyard fill all 32 slots in
+order (a 33rd finds none), two jobless villagers take Library II's two lecterns. `QaRebuiltMarkets1121cGameTests` (8,
+51.5 and 51.7): the Market Square's 9x9 has 36 or more standing cells walked to from the front and open ground round
+its middle, the Cross and Corner walked up to, the Trade Hall's one Shop Counter and bed and the Leader's Hall's post
+reached; live: a market day on the rebuilt square brings all 8 traders each to his own reachable cell, and with no
+bell in the village festivals fall back on the hall. `QaRebuiltDefense1121cGameTests` (15, 51.8 and 51.9): the
+Barracks' grindstones, chests, dummies and beds by level and kept through the upgrades, the Guard House's post, the
+Fire Station's walled-in water and the firewarden walking up to it, a villager through each Gatehouse with its gates
+open (not with them shut), every Lookout Tower and Gatehouse I station climbed to from village-side ground, the Royal
+Hall's vault growing with every chest walked to. Open bugs from it: B1423 (a full Graveyard walls in 18 of its graves),
+B1424 (the fair's banners: 13 of 16 round the new square), B1427 (Gatehouse II's barbican stations out of reach behind
+a wall).

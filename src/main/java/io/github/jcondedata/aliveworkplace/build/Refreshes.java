@@ -65,9 +65,27 @@ public final class Refreshes {
 	private record Old(String key, Blueprint drawing, @Nullable ResourceLocation file) {
 	}
 
+	/** A shipped older drawing's file, listed at a reload but not read yet (B1418). */
+	private record Shipped(String key, ResourceLocation file, Resource resource) {
+	}
+
 	@Nullable
 	private static ResourceManager loadedFrom;
-	private static Map<ResourceLocation, List<Old>> history = Map.of();
+	/**
+	 * B1418: by blueprint, its shipped older drawings' files in key order, listed (not read) when the resources change: the
+	 * history ships over a thousand drawings, and reading them all on the first question froze the server for seconds.
+	 */
+	private static Map<ResourceLocation, List<Shipped>> shipped = Map.of();
+	/** B1418: by blueprint, its shipped older drawings as read, each blueprint's read the first time it is asked about. */
+	private static final Map<ResourceLocation, List<Old>> history = new HashMap<>();
+	/** B1418: how many shipped drawing files have been read since the mod started (for the tests). */
+	private static int filesRead;
+
+	/** B1418: how many shipped drawing files have been read since the mod started (for the tests). */
+	public static synchronized int filesRead() {
+		return filesRead;
+	}
+
 	/**
 	 * B1407: by blueprint (a modded library copy's {@code modded/<path>}), the key its older drawing of the day of another
 	 * key ships under ({@code blueprint_history/<path>/aliases.json}, from tools/blueprints/history.py): a modded site
@@ -98,12 +116,13 @@ public final class Refreshes {
 		ResourceManager resources = server.getResourceManager();
 		if (resources != loadedFrom) {
 			loadedFrom = resources;
-			history = load(resources);
+			shipped = index(resources);
+			history.clear();
 			aliases = loadAliases(resources);
 			STANDING.clear();
 			DRAWN_AS.clear();
 		}
-		List<Old> out = new ArrayList<>(history.getOrDefault(structure, List.of()));
+		List<Old> out = new ArrayList<>(history.computeIfAbsent(structure, Refreshes::read));
 		out.addAll(EXTRA.getOrDefault(structure, List.of()));
 		return out;
 	}
@@ -143,8 +162,9 @@ public final class Refreshes {
 		return history(server, structure).stream().map(Old::key).toList();
 	}
 
-	private static Map<ResourceLocation, List<Old>> load(ResourceManager resources) {
-		Map<ResourceLocation, List<Old>> out = new HashMap<>();
+	/** B1418: every shipped older drawing's file by blueprint, in key order: a listing, no file is read. */
+	private static Map<ResourceLocation, List<Shipped>> index(ResourceManager resources) {
+		Map<ResourceLocation, List<Shipped>> out = new HashMap<>();
 		for (Map.Entry<ResourceLocation, Resource> e : resources.listResources(DIR, id -> id.getPath().endsWith(".nbt")).entrySet()) {
 			String path = e.getKey().getPath().substring(DIR.length() + 1, e.getKey().getPath().length() - ".nbt".length());
 			int slash = path.lastIndexOf('/');
@@ -152,18 +172,39 @@ public final class Refreshes {
 				continue;
 			}
 			ResourceLocation structure = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), path.substring(0, slash));
-			try (InputStream in = e.getValue().open()) {
+			out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Shipped(path.substring(slash + 1), e.getKey(), e.getValue()));
+		}
+		out.values().forEach(list -> list.sort(Comparator.comparing(Shipped::key)));
+		return out;
+	}
+
+	/** B1418: {@code structure}'s shipped older drawings, read from their files (only that blueprint's), in key order. */
+	private static List<Old> read(ResourceLocation structure) {
+		List<Shipped> files = shipped.getOrDefault(structure, List.of());
+		if (files.isEmpty()) {
+			return List.of();
+		}
+		List<Old> out = new ArrayList<>(files.size());
+		for (Shipped file : files) {
+			filesRead++;
+			try (InputStream in = file.resource().open()) {
 				CompoundTag tag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
 				// (with the blueprint's own id, so its basement and features are worked out as for the current drawing)
 				Blueprint drawing = StarterBlueprints.withBasement(StarterBlueprints.withFeatures(
 					Blueprint.fromStructureNbt(structure, tag, Lookup.lookup(BuiltInRegistries.BLOCK))));
-				out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Old(path.substring(slash + 1), drawing, e.getKey()));
+				out.add(new Old(file.key(), drawing, file.file()));
 			} catch (Exception ex) {
-				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawing {}: {}", e.getKey(), ex.toString());
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawing {}: {}", file.file(), ex.toString());
 			}
 		}
-		out.values().forEach(list -> list.sort(Comparator.comparing(Old::key)));
-		return out;
+		return List.copyOf(out);
+	}
+
+	/** B1418: forgets what was listed and read, as a reload of the resources does (for the tests). */
+	public static synchronized void forgetShipped() {
+		loadedFrom = null;
+		shipped = Map.of();
+		history.clear();
 	}
 
 	// ---- what changes ------------------------------------------------------------------------------------------------

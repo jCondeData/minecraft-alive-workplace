@@ -1,0 +1,19 @@
+{
+  "name": "artisans-house-3",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 46
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/artisans_house_savanna/out/artisans-house-3.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/artisans_house_savanna/out/summary.json",
+  "size": [
+    16,
+    21,
+    19
+  ],
+  "blockCount": 1509,
+  "paletteCount": 85,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/artisans_house_savanna/recipe.mjs"
+}

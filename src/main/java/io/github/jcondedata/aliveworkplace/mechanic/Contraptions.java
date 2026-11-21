@@ -137,6 +137,20 @@ public final class Contraptions {
 		return nbt;
 	}
 
+	/**
+	 * B1160: a kinetic block's data for a block put up again somewhere (the Mover): {@code nbt} itself, without its speed,
+	 * source and network. Those belong to where it stood (the source is a world position), and loaded as they were the
+	 * block drops its speed when it finds no source there and nothing starts it again; without them Create links it to
+	 * its neighbors as it does a block just placed (its own contraptions put blocks back the same way). Whatever
+	 * {@code createBuilds} says: a fix, not an option. Any other block's data as it is.
+	 */
+	public static CompoundTag atRest(BlockState state, CompoundTag nbt) {
+		if (KineticParts.ofKineticMod(state.getBlock()) && nbt.contains("Speed")) {
+			RUNNING.forEach(nbt::remove);
+		}
+		return nbt;
+	}
+
 	private static void copy(CompoundTag from, CompoundTag to, String key) {
 		Tag value = from.get(key);
 		if (value != null) {

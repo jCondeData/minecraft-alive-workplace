@@ -244,6 +244,7 @@
 			"io.github.jcondedata.aliveworkplace.test.DaubHouseLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FarmsteadLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RanchLooksGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ArtisansHouseLooksGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArenaGameTests",
 			"io.github.jcondedata.aliveworkplace.test.OldArenaHabitatDrawingGameTests",
 			"io.github.jcondedata.aliveworkplace.test.PokemonBuildsGameTests",
@@ -404,6 +405,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B132GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B640GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B648GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B1418GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
@@ -1936,7 +1938,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCopperTrades1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCopperCityPlan1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaModdedClinicHistoryBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuildHistorySweep1120eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarkets1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cGameTests"
 		]
 	},
 	"depends": {

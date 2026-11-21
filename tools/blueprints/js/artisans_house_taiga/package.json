@@ -1,0 +1,10 @@
+{
+  "name": "artisans-house-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Artisan's House I-III, the taiga look (ROADMAP 49.10g): the Smoke-Kiln Barn, a jettied log izba beside an open slate-roofed kiln barn whose fieldstone stack rises through its ridge. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates to build/rebuild/artisans_house_taiga/.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

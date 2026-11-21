@@ -1,0 +1,10 @@
+{
+  "name": "weavers-cottage-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Weaver's Cottage, the snowy look (ROADMAP 49.10d): the Snowbound Loomhouse, one storey of calcite under a steep snow-capped slate roof with the wool loft in it, a dormer, a storm porch, a broad stack, the fold behind fieldstone lee walls, II a walled dye garden with cloth drying under a hood. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "guildhall",
+  "private": true,
+  "type": "module",
+  "description": "Guildhall (the Market Guildhall, ROADMAP 49): LEVEL=guildhall|guildhall_2|guildhall_3. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": {
+    "build": "for L in guildhall guildhall_2 guildhall_3; do LEVEL=$L node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 || exit 1; done"
+  }
+}

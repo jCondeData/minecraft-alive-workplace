@@ -260,8 +260,25 @@ public class BuilderWork extends Behavior<Villager> {
 		return !villager.isSleeping() && villager.getBrain().isActive(Activity.WORK) && Builders.workSite(level, villager) != null;
 	}
 
+	/** The outline of the site in hand (kept while it is the same site: a styled blueprint is put together on asking). */
+	@Nullable
+	private net.minecraft.world.level.levelgen.structure.BoundingBox area;
+	@Nullable
+	private java.util.UUID areaOf;
+
+	private net.minecraft.world.level.levelgen.structure.BoundingBox area(ServerLevel level, BuildSite site) {
+		if (area == null || !site.id().equals(areaOf)) {
+			area = io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
+				.map(b -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(site.placement(), b.size()))
+				.orElse(new net.minecraft.world.level.levelgen.structure.BoundingBox(site.placement().origin()));
+			areaOf = site.id();
+		}
+		return area;
+	}
+
 	@Override
 	protected void start(ServerLevel level, Villager villager, long gameTime) {
+		area = null;
 		// B845: a restart never gives a free block. The same brain (he woke, a new stint) keeps the wait in hand (the
 		// tick cuts it if the rule went down meanwhile); a fresh one (a load, re-hired) starts a whole wait at today's rule.
 		if (!workTimerSet) {
@@ -296,6 +313,11 @@ public class BuilderWork extends Behavior<Villager> {
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
 		BuildSite site = Builders.workSite(level, villager);
 		if (site == null) {
+			return;
+		}
+		// A build in chunks nobody has loaded (far outside the village, its player away) waits as it is: working out its
+		// plan, its materials or its next block reads the ground there, which would load them (B667).
+		if (!io.github.jcondedata.aliveworkplace.work.SiteChunks.loaded(level, area(level, site))) {
 			return;
 		}
 		BuildPlan plan = site.plan(level);
@@ -1224,8 +1246,9 @@ public class BuilderWork extends Behavior<Villager> {
 			if (!wantedEmpty && (world.canBeReplaced() || skipped)) {
 				return Action.NONE; // placing will overwrite it, or we leave this spot alone
 			}
-			if (isProtected(level, pos, world, bench)) {
-				return Action.NONE;
+			if (isProtected(level, pos, world, bench)
+				&& !(site.refreshFrom() != null && Refreshes.leftoverPiece(level, site.furniture(), site.placement(), pos, world))) {
+				return Action.NONE; // (B1383: a refresh takes away an empty furniture piece the build put there)
 			}
 			if (wantedEmpty && someonesBed(level, pos, world)) {
 				return Action.NONE; // 36.14: a bed a villager sleeps in stays through an upgrade over the room it stands in
@@ -1692,7 +1715,8 @@ public class BuilderWork extends Behavior<Villager> {
 		// B181: the lead of a crew, short of what a helper working close by carries spare of, has it passed over rather
 		// than walk to the chests: the crew had laid everything else of the stage, and stood about while the lead walked
 		// down from the roof and back for one slab (180 ticks, an eighth of a crew of four's build).
-		if (!helping && villager.distanceToSqr(Vec3.atCenterOf(source)) > PASS_DISTANCE * PASS_DISTANCE
+		// B1381: so does a helper whose chests are far from the site.
+		if ((!helping || farFromChests(plan, source)) && villager.distanceToSqr(Vec3.atCenterOf(source)) > PASS_DISTANCE * PASS_DISTANCE
 			&& takeFromCrewmate(level, villager, site, plan, bag, requirement.item(), needed, true)) {
 			return;
 		}
@@ -1706,7 +1730,8 @@ public class BuilderWork extends Behavior<Villager> {
 
 	/**
 	 * At the chest: take what the next stretch of work needs from {@code supplies} (the chests there), current block
-	 * first. Helpers only take a handful for the blocks they are on, so they never sit on the lead's materials.
+	 * first. Helpers take for a short stretch ({@link #helperShare}), so they never sit on the lead's materials; at chests
+	 * far from the site, for the long stretch like the lead (B1381).
 	 */
 	/** The next stretch of work, for what to take and what to keep: later stages, or the rest of the levelling. */
 	private static List<BuildPlan.Step> ahead(BuildSite site, BuildPlan plan) {
@@ -1759,7 +1784,9 @@ public class BuilderWork extends Behavior<Villager> {
 		// 23.5: chests far from the site (a village storehouse, a bench far away): take for a longer stretch, so the
 		// builder walks there less often (each trip was 30 s and more without placing a block).
 		boolean far = farFromChests(plan, source);
-		for (BuildPlan.Step s : helping || crew ? helperShare(level, site, plan) : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
+		// B1381: a helper at chests far from the site takes for the long stretch too, not for 32 steps of what the lead
+		// left there: it walked down the Stone House and back up for 5 to 17 items a trip.
+		for (BuildPlan.Step s : crew || helping && !far ? helperShare(level, site, plan) : far ? ahead(site, plan, FAR_LOOKAHEAD) : ahead(site, plan)) {
 			if (!MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
 				for (MaterialRules.Requirement r : s.requirements()) {
 					wanted.merge(r.item(), r.count(), Integer::sum);
@@ -1841,6 +1868,44 @@ public class BuilderWork extends Behavior<Villager> {
 			any |= rest.getCount() < removed;
 		}
 		return any;
+	}
+
+	/**
+	 * B1381: a helper's share of what the crew carries for a site far from its chests: of the long stretch ahead
+	 * ({@link #FAR_LOOKAHEAD}), the steps with work dealt round the lead and its helpers like cards (the lead first, the
+	 * helpers in the order of their ids). Null for a builder on its own, a helper the site hasn't counted yet, and in the
+	 * build's last stretch (what is left then is the lead's, {@link #stockUpFirst}). The lead stocks up for the whole
+	 * stretch before a helper has joined (688 of the Stone House's 761 items on its first trip: 755 blocks, 16 tall, its
+	 * chests 17 blocks off), and the helper took from it what the block it was on needed and three more: 67 passes, most
+	 * after a walk to the lead, and three or four walks down to the chests and back up for the 5 to 17 items left there.
+	 * Half its time went on that, and it laid 30% of the house. Handed its share at the first pass, it lays 48%, and the
+	 * structure is up in 1,661 ticks, not 2,145.
+	 */
+	@Nullable
+	private Map<Item, Integer> farShare(ServerLevel level, BuildSite site, BuildPlan plan) {
+		List<java.util.UUID> seats = new java.util.ArrayList<>(site.helpers(level.getGameTime()));
+		if (seats.isEmpty() || helping && !seats.contains(self)) {
+			return null;
+		}
+		List<BuildPlan.Step> stretch = ahead(site, plan, FAR_LOOKAHEAD);
+		if (stretch.size() < LOOKAHEAD) {
+			return null;
+		}
+		seats.sort(null);
+		int seat = helping ? 1 + seats.indexOf(self) : 0;
+		int dealt = 0;
+		Map<Item, Integer> share = new LinkedHashMap<>();
+		for (BuildPlan.Step s : stretch) {
+			if (s.requirements().isEmpty() || MaterialRules.matches(level.getBlockState(s.pos()), s.state())) {
+				continue;
+			}
+			if (dealt++ % (seats.size() + 1) == seat) {
+				for (MaterialRules.Requirement r : s.requirements()) {
+					share.merge(r.item(), r.count(), Integer::sum);
+				}
+			}
+		}
+		return share;
 	}
 
 	/**
@@ -2087,6 +2152,22 @@ public class BuilderWork extends Behavior<Villager> {
 			if (take > 0) {
 				mateBag.remove(item, take);
 				bag.addAll(item, take);
+				// B1381: far from the chests, a helper takes the rest of its share from the lead with it
+				Map<Item, Integer> share = helping && !this.crew && id.equals(site.builder()) && site.bench() != null
+					&& farFromChests(plan, site.bench()) ? farShare(level, site, plan) : null;
+				if (share != null) {
+					for (Map.Entry<Item, Integer> e : share.entrySet()) {
+						int keeps = 0;
+						for (MaterialRules.Requirement r : mateStep != null ? mateStep.requirements() : List.<MaterialRules.Requirement>of()) {
+							keeps += r.item() == e.getKey() ? r.count() : 0;
+						}
+						int more = Math.min(Math.min(e.getValue() - bag.count(e.getKey()), mateBag.count(e.getKey()) - keeps), bag.spaceFor(e.getKey()));
+						if (more > 0) {
+							mateBag.remove(e.getKey(), more);
+							bag.addAll(e.getKey(), more);
+						}
+					}
+				}
 				site.supplied();
 				villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new net.minecraft.world.entity.ai.behavior.EntityTracker(mate, true));
 				if (close) {
@@ -2427,7 +2508,8 @@ public class BuilderWork extends Behavior<Villager> {
 	 * through and, through spots that let water through and aren't the box's, reaches past the box's footprint or up to
 	 * its height (water under a jetty's deck, a lake running on below). A pocket in a pond's bed shut in by stone (or a
 	 * hole that holds only the drawing's pool's water) is no way in. {@code known} keeps the answer for each spot looked
-	 * at, so a pocket is searched once.
+	 * at, so a pocket is searched once. B1294: {@code box} and {@code bounds} are the drawing's spots without the ones
+	 * FOUNDATION will fill, which still hold the bed's water and are searched like any other spot under the floor.
 	 */
 	private static boolean openBelow(ServerLevel level, BlockPos below, Set<BlockPos> box, net.minecraft.world.level.levelgen.structure.BoundingBox bounds,
 			Map<BlockPos, Boolean> known) {
@@ -2487,8 +2569,16 @@ public class BuilderWork extends Behavior<Villager> {
 		// the open spots of the box (drawn air, or a block that shuts nothing: a torch, a flower) reached from outside it
 		Set<BlockPos> outside = new HashSet<>();
 		java.util.ArrayDeque<BlockPos> open = new java.util.ArrayDeque<>();
+		// B1294: the footprint and height a way in from below is measured against are the drawing's own. The spots
+		// FOUNDATION will fill under the solid floor (water or air in the bed today) are the plan's too, and with them the
+		// box reached down into a pocket wider than the pool's spot, so the pocket itself stood "at the box's height"
+		// and the room counted as open. They are still what the world holds, so the search goes through them.
+		Set<BlockPos> drawn = new HashSet<>(box);
+		for (BuildPlan.Step s : plan.steps(BuildPlan.Stage.FOUNDATION)) {
+			drawn.remove(s.pos());
+		}
 		net.minecraft.world.level.levelgen.structure.BoundingBox bounds =
-			net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(box).orElse(null);
+			net.minecraft.world.level.levelgen.structure.BoundingBox.encapsulatingPositions(drawn).orElse(null);
 		Map<BlockPos, Boolean> below = new HashMap<>();
 		for (BlockPos p : box) {
 			if (!opens(level, plan, p)) {
@@ -2499,7 +2589,7 @@ public class BuilderWork extends Behavior<Villager> {
 				// floor that shuts nothing (the drawing's own pool, a carpet, a pressure plate) standing on the solid bed
 				// of a pond made the whole room count as open, and nothing was drained
 				if (!box.contains(p.relative(d))
-					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below(), box, bounds, below))) {
+					&& (d != net.minecraft.core.Direction.DOWN || openBelow(level, p.below(), drawn, bounds, below))) {
 					if (outside.add(p)) {
 						open.add(p);
 					}
@@ -2717,6 +2807,102 @@ public class BuilderWork extends Behavior<Villager> {
 		}
 	}
 
+	/**
+	 * B1377: whether placing {@code placed} at {@code pos} could flood a waterloggable block the drawing has dry. In
+	 * vanilla, a spot with two water sources beside it and a floor under it becomes a source itself, and water spreading
+	 * into a slab, stair or other waterloggable block there waterlogs it; the block then pours out over its open side.
+	 * A Fountain's bowl with a slab at an inner corner came out so, spilling. So a water source poured beside such a
+	 * block, or such a block placed beside a water source, goes in quietly: nothing round it is told, and the poured
+	 * water gets no tick of its own, so still water stays as drawn and the block stays dry, as a player's careful build
+	 * would. Anything else (water with no dry block beside it, which may be drawn to run) is placed as before.
+	 */
+	static boolean keepsDrawnDry(ServerLevel level, BuildPlan plan, BlockPos pos, BlockState placed) {
+		boolean water = placed.getBlock() instanceof LiquidBlock && placed.getFluidState().is(net.minecraft.tags.FluidTags.WATER)
+			&& placed.getFluidState().isSource();
+		boolean dry = drawnDry(placed);
+		if (!water && !dry) {
+			return false;
+		}
+		if (water) {
+			return couldFloodDrawnDry(level, plan, pos);
+		}
+		for (Direction d : Direction.Plane.HORIZONTAL) {
+			net.minecraft.world.level.material.FluidState there = level.getFluidState(pos.relative(d));
+			if (there.is(net.minecraft.tags.FluidTags.WATER) && there.isSource()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * B1410: whether water poured at {@code pos} could, by vanilla's two-source rule, waterlog a block the drawing has
+	 * dry on its level. Running water never waterlogs anything; only a new source does, and a spot becomes one with two
+	 * sources beside it and a floor (a solid block or a source) under it. So, taking every water source the drawing or
+	 * the world has round here as poured, the open spots that would turn to sources are added until none more do, and
+	 * the pour is risky only if some dry waterloggable spot ends up with two sources beside it over a floor. A lone tank
+	 * source with a stair or pipe two cells off (B1377 stopped such water from ever running) is placed as usual.
+	 */
+	private static boolean couldFloodDrawnDry(ServerLevel level, BuildPlan plan, BlockPos pos) {
+		final int r = 3;
+		int side = 2 * r + 1;
+		boolean[] source = new boolean[side * side];
+		boolean[] open = new boolean[side * side];
+		boolean[] dry = new boolean[side * side];
+		boolean[] floor = new boolean[side * side];
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dz = -r; dz <= r; dz++) {
+				int i = (dx + r) * side + dz + r;
+				BlockPos at = pos.offset(dx, 0, dz);
+				BlockState state = drawnOrStanding(level, plan, at);
+				net.minecraft.world.level.material.FluidState fluid = state.getFluidState();
+				source[i] = dx == 0 && dz == 0 || fluid.is(net.minecraft.tags.FluidTags.WATER) && fluid.isSource()
+					|| level.getFluidState(at).is(net.minecraft.tags.FluidTags.WATER) && level.getFluidState(at).isSource();
+				dry[i] = !source[i] && drawnDry(state);
+				open[i] = !source[i] && !dry[i] && (state.isAir() || state.getBlock() instanceof LiquidBlock || state.canBeReplaced());
+				BlockState under = drawnOrStanding(level, plan, at.below());
+				floor[i] = under.isSolid() || under.getFluidState().is(net.minecraft.tags.FluidTags.WATER) && under.getFluidState().isSource();
+			}
+		}
+		boolean grew = true;
+		while (grew) {
+			grew = false;
+			for (int x = 0; x < side; x++) {
+				for (int z = 0; z < side; z++) {
+					int i = x * side + z;
+					if (source[i] || !floor[i] || !open[i] && !dry[i]) {
+						continue;
+					}
+					int beside = (x > 0 && source[i - side] ? 1 : 0) + (x < side - 1 && source[i + side] ? 1 : 0)
+						+ (z > 0 && source[i - 1] ? 1 : 0) + (z < side - 1 && source[i + 1] ? 1 : 0);
+					if (beside < 2) {
+						continue;
+					}
+					if (dry[i]) {
+						return true;
+					}
+					source[i] = true;
+					grew = true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** B1410: the block the drawing has at {@code at} (air where it clears a room), or what stands there outside it. */
+	private static BlockState drawnOrStanding(ServerLevel level, BuildPlan plan, BlockPos at) {
+		BlockState drawn = plan.targets().get(at);
+		if (drawn != null) {
+			return drawn;
+		}
+		return plan.drawnAirAt(at) ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : level.getBlockState(at);
+	}
+
+	/** B1377: a waterloggable block drawn without water. */
+	private static boolean drawnDry(@Nullable BlockState state) {
+		return state != null && state.hasProperty(BlockStateProperties.WATERLOGGED) && !state.getValue(BlockStateProperties.WATERLOGGED);
+	}
+
 	private void place(ServerLevel level, Villager villager, BuildSite site, BuildPlan plan, BuilderBag bag, BuildPlan.Step step,
 					   List<MaterialRules.Requirement> requirements, boolean free) {
 		BlockPos pos = step.pos();
@@ -2787,6 +2973,10 @@ public class BuilderWork extends Behavior<Villager> {
 			level.setBlock(pos, state, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 			level.setBlock(step.secondaryPos(), step.secondaryState(), Block.UPDATE_ALL);
 			level.blockUpdated(pos, state.getBlock());
+		} else if (keepsDrawnDry(level, plan, pos, shaped)) {
+			// B1377: placed without waking the water beside it (no neighbour or shape updates, its own fluid tick dropped)
+			level.setBlock(pos, shaped, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+			level.getFluidTicks().clearArea(new net.minecraft.world.level.levelgen.structure.BoundingBox(pos));
 		} else {
 			level.setBlock(pos, shaped, Block.UPDATE_ALL);
 		}

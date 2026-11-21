@@ -104,7 +104,8 @@ public final class Crafting {
 	public static final int PLAN_TRIALS = 500;
 	/**
 	 * The most recipes all of a level's crafters together try in one tick (about 10 ms); once it's used up, plans wait
-	 * for the next tick.
+	 * for the next tick. A plan of what's short that it runs out under says nothing ({@link #planningSpent} then says
+	 * why): half a plan names the wrong thing (B1321: "short of 16 Oak Planks" for the 2 logs that were short).
 	 */
 	public static final int TICK_TRIALS = 1500;
 
@@ -145,7 +146,10 @@ public final class Crafting {
 		return plan == null ? null : new Plan(plan.target(), plan.count(), merged(plan.steps()), plan.takes(), plan.makes());
 	}
 
-	/** What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}. */
+	/**
+	 * What a job of {@code kind} lacks to make {@code count} of {@code target} from {@code usable} (37.14a), as {@link #lacking}.
+	 * Empty, and {@link #planningSpent} true, when the tick's planning ran out before it was all worked out (B1349).
+	 */
 	public static Map<Item, Integer> lacking(ServerLevel level, Kind kind, Item target, int count, Map<Item, Long> usable) {
 		return lacks(shortfall(level, kind, target, count, usable));
 	}
@@ -269,6 +273,11 @@ public final class Crafting {
 		if (!made) {
 			return null;
 		}
+		if (lenient && pool.budget.refused && left < PLAN_TRIALS) {
+			// B1321: the tick's planning ran out part-way (it now reads as used up). What was worked out so far names
+			// whatever the search stopped at, so nothing is said: the crafter asks again later
+			return null;
+		}
 		if (lenient) {
 			// what's short, as negative takes (only {@link #lacking} reads a lenient plan)
 			Map<Item, Integer> lacks = new LinkedHashMap<>();
@@ -290,12 +299,29 @@ public final class Crafting {
 
 	/**
 	 * Whether this tick's planning is used up ({@link #TICK_TRIALS}): a plan now would come back null whatever the
-	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11).
+	 * chests hold, so a crafter going down a long menu stops there and carries on from that dish next time (38.11). A
+	 * shortfall cut short by it is null too (B1349), so what's short asked for in a tick that ends spent is not yet known.
 	 */
 	public static boolean planningSpent(ServerLevel level) {
+		return planningLeft(level) <= 0;
+	}
+
+	/** How many recipes this tick's planning may still try in {@code level} ({@link #TICK_TRIALS} less what plans tried). */
+	public static int planningLeft(ServerLevel level) {
 		synchronized (TICK_USE) {
 			long[] tick = TICK_USE.get(level);
-			return tick != null && tick[0] == level.getGameTime() && tick[1] >= TICK_TRIALS;
+			return tick == null || tick[0] != level.getGameTime() ? TICK_TRIALS : (int) Math.max(0, TICK_TRIALS - tick[1]);
+		}
+	}
+
+	/**
+	 * For the tests: this tick's planning in {@code level} as if nothing had planned in it yet. Tests of one batch start
+	 * within a few ticks of each other in one level, so one that asks for a plan as it starts shares the tick's planning
+	 * with its neighbours, and read "no plan" as the answer when they had used it up (B1321). The game never calls this.
+	 */
+	public static void freshPlanning(ServerLevel level) {
+		synchronized (TICK_USE) {
+			TICK_USE.remove(level);
 		}
 	}
 
@@ -308,6 +334,8 @@ public final class Crafting {
 	private static final class Budget {
 		final int max;
 		int tried;
+		/** Whether a recipe went untried because the plan had tried its most: the plan was cut short. */
+		boolean refused;
 		/** The recipe types this plan may use (a Crafter's bench recipes only while the bench stands: 37.14). */
 		Predicate<RecipeType<?>> types = t -> true;
 		/** Planning what's short ({@link #lacking}): a raw material that's short is noted, and planning goes on. */
@@ -330,6 +358,7 @@ public final class Crafting {
 		/** Counts one more recipe tried; false once the plan has tried its most. */
 		boolean tryOne() {
 			if (tried >= max) {
+				refused = true;
 				return false;
 			}
 			tried++;
@@ -512,6 +541,11 @@ public final class Crafting {
 		// B1277, B1278, B1279: an ingredient's ways that are no way to say what's short when nothing there leads to them
 		boolean ingredient = lenient && depth < pool.budget.topDepth;
 		boolean ownWay = !ingredient || hasOwnWay(level, kind, target, ways, pool.budget);
+		// B1289: the thing asked for itself, when its own mod only unpacks it from its storage block (a slimeball from a slime
+		// block): it is gathered, not made, so another mod's way that uses nothing there is no way to say what's short of
+		// it (Create's Dough and lime dye, down to the Wheat Flour only a millstone makes)
+		boolean gathered = lenient && !ingredient && ownOnlyUnpacks(level, kind, target, ways, pool.budget);
+		boolean bestOwn = false;
 		if (lenient && ways.size() > 1) {
 			// B1267: the thing's own mod's ways are tried first, so the plan's trials (B101) go to them before the rest (the
 			// pack's many other ways to an iron nugget); the ways that loop back still come last (B1255)
@@ -543,6 +577,11 @@ public final class Crafting {
 			// short when none of that thing is there: the line names the Leather a player gathers, not the hide nobody has
 			Item packed = ingredient ? packs(level, recipe, out) : null;
 			if (packed != null && pool.have(packed) <= 0) {
+				if (fromOwnMod(holder, target)) {
+					// B1289: its own mod's way is a packing of what isn't there, so the thing itself is what's short, never
+					// another mod's way round it (a chest minecart's Minecart of 5 iron ingots, not Create's Minecart Contraption)
+					ownWay = false;
+				}
 				continue;
 			}
 			if (!pool.budget.tryOne()) {
@@ -559,6 +598,22 @@ public final class Crafting {
 			// by making its makings from what the other ways use (the glass of the plain panes): that's the long way round
 			int down = loops(level, holder) ? 0 : depth;
 			List<Crafts> in = choose(level, kind, Recipes.ingredients(recipe), times, trial, trialSteps, down, allowed);
+			if (in != null && RecipeStandIns.checksGrid(Recipes.id(holder)) && !theGameMakes(level, in, target)) {
+				// B1378: a stand-in for a special recipe that takes any mix is used only for a grid the game's own table
+				// makes the thing of; four of one plank a plain recipe takes (acacia: Carved Wood's acacia table) is
+				// tried again with at least one other in it (3 acacia and 1 mosaic plank)
+				Item same = allOf(in);
+				in = null;
+				List<Ingredient> others = same == null ? null : withAnother(level, holder, same);
+				if (others != null) {
+					trial = pool.copy();
+					trialSteps = new ArrayList<>();
+					in = choose(level, kind, others, times, trial, trialSteps, down, allowed);
+					if (in != null && !theGameMakes(level, in, target)) {
+						in = null;
+					}
+				}
+			}
 			if (in == null) {
 				continue;
 			}
@@ -585,6 +640,12 @@ public final class Crafting {
 					continue;
 				}
 			}
+			if (fit < 2 && !fromOwnMod(holder, target) && (bestOwn || gathered)) {
+				// B1289: using nothing that's there, another mod's way never outranks the thing's own mod's way that worked out
+				// (a furnace minecart is a furnace and a minecart, not Create's Furnace Minecart Contraption: before, a way
+				// short of items beat one short of a block, the furnace's cobblestone), nor says what's short of a gathered thing
+				continue;
+			}
 			// B1279: then, of two ways that fit as well and are both the thing's own mod's, the one short only of raw metal a
 			// player mines (Create's Raw Zinc, not the Crushed Raw Zinc only a crushing wheel makes)
 			int rank = fit * 4 + (fromOwnMod(holder, target) ? 2 : 0) + (rawOnly(trial) ? 1 : 0);
@@ -594,6 +655,7 @@ public final class Crafting {
 				bestStep = step;
 				bestMade = (long) out.getCount() * times;
 				bestRank = rank;
+				bestOwn = fromOwnMod(holder, target);
 			}
 			if (rank >= RANK_ALL_THERE * 4) {
 				break;
@@ -610,6 +672,67 @@ public final class Crafting {
 			return makeAtBench(level, kind, target, count, pool, steps, depth, allowed);
 		}
 		return false;
+	}
+
+	/** B1378: whether the game's own crafting table makes {@code target} of every craft's grid in {@code crafts}. */
+	private static boolean theGameMakes(ServerLevel level, List<Crafts> crafts, Item target) {
+		for (Crafts c : crafts) {
+			List<ItemStack> grid = new ArrayList<>();
+			c.in().forEach((item, n) -> {
+				for (int i = 0; i < n; i++) {
+					grid.add(new ItemStack(item));
+				}
+			});
+			if (!Recipes.crafted(level, grid).is(target)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/** The one item some craft in {@code crafts} is made of alone, or null if none is. */
+	@Nullable
+	private static Item allOf(List<Crafts> crafts) {
+		for (Crafts c : crafts) {
+			if (c.in().size() == 1) {
+				return c.in().keySet().iterator().next();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * B1378: {@code ingredients} with the first one's {@code same} left out, so every craft takes at least one other thing,
+	 * or null when that one has nothing else.
+	 */
+	@Nullable
+	private static List<Ingredient> withAnother(ServerLevel level, RecipeHolder<?> holder, Item same) {
+		// kept per recipe and item: an Ingredient hashes by identity, so a new one each time would grow the options index
+		Map<Object, java.util.Optional<List<Ingredient>>> kept;
+		synchronized (WITH_ANOTHER) {
+			kept = WITH_ANOTHER.computeIfAbsent(Recipes.manager(level), m -> new java.util.concurrent.ConcurrentHashMap<>());
+		}
+		return kept.computeIfAbsent(List.of(Recipes.id(holder), same),
+			k -> java.util.Optional.ofNullable(withAnother(level, Recipes.ingredients(holder.value()), same))).orElse(null);
+	}
+
+	private static final Map<RecipeManager, Map<Object, java.util.Optional<List<Ingredient>>>> WITH_ANOTHER = new WeakHashMap<>();
+
+	@Nullable
+	private static List<Ingredient> withAnother(ServerLevel level, List<Ingredient> ingredients, Item same) {
+		List<Ingredient> out = new ArrayList<>(ingredients);
+		for (int i = 0; i < out.size(); i++) {
+			if (out.get(i).isEmpty()) {
+				continue;
+			}
+			List<Item> rest = new ArrayList<>(options(level, out.get(i)));
+			if (!rest.remove(same) || rest.isEmpty()) {
+				return null;
+			}
+			out.set(i, Ingredient.of(rest.stream().map(ItemStack::new)));
+			return out;
+		}
+		return null;
 	}
 
 	/**
@@ -711,6 +834,23 @@ public final class Crafting {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * B1289: whether {@code target}'s own mod has ways among {@code ways} (those this plan may use) and each one only
+	 * unpacks a storage block of it: a thing a player gathers.
+	 */
+	private static boolean ownOnlyUnpacks(ServerLevel level, Kind kind, Item target, List<RecipeHolder<?>> ways, Budget budget) {
+		boolean any = false;
+		for (RecipeHolder<?> holder : ways) {
+			if (budget.types.test(holder.value().getType()) && fromOwnMod(holder, target)) {
+				if (!unpacks(level, kind, holder.value(), target)) {
+					return false;
+				}
+				any = true;
+			}
+		}
+		return any;
 	}
 
 	/** The base game's options first (B1273: oak planks before Chipped's mosaic planks in the planks tag), else in order. */
@@ -1107,6 +1247,7 @@ public final class Crafting {
 			boolean triedAll = false;
 			long want = need; // what's left to pick after pre (B1311)
 			List<Map.Entry<Item, Long>> pre = new ArrayList<>();
+			Item downTo = null; // B1333: the option the rest is made from further down, after what's there
 			if (pick == null && makeable && slot.options().size() > 1) {
 				// B1301: no one option can be made in full (one oak and one spruce log: 4 planks of each, not 8 of one);
 				// first one option as before, else each option made as far as it goes and the slot takes the mix
@@ -1134,13 +1275,16 @@ public final class Crafting {
 							List<Map.Entry<Item, Long>> mixPre = new ArrayList<>();
 							long mixMade = madeMix(level, kind, slot, need, mixTrial, mixSteps, depth, allowed, mixPre);
 							boolean keep = mixMade > 0;
+							Item down = null;
 							if (keep && mixMade < need) {
 								// the rest is still said further down when the whole would be: 5 oak logs for 3 barrels, the
 								// last log goes into planks and the rest is short of logs, not of planks (the logs at hand are
-								// what makes going down worth saying, B409, and the mix just used them up)
+								// what makes going down worth saying, B409, and the mix just used them up). B1333: the mix is
+								// kept and only the rest goes down that way, after what's there of every option (4 spruce
+								// planks and an oak and a birch log for 2 chests: 1 log short, not 3 of the first wood)
 								pool.budget.lenient = true;
 								if (makeOne(level, kind, slot, need - mixMade, mixTrial.copy(), new ArrayList<>(), depth, allowed) == null) {
-									keep = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed) == null;
+									down = makeOne(level, kind, slot, need, pool.copy(), new ArrayList<>(), depth, allowed);
 								}
 								pool.budget.lenient = false;
 							}
@@ -1149,6 +1293,7 @@ public final class Crafting {
 								steps.addAll(mixSteps);
 								pre.addAll(mixPre);
 								want = need - mixMade;
+								downTo = down;
 							}
 						} else {
 							triedAll = true; // planning for real, nothing more to try down there
@@ -1156,6 +1301,27 @@ public final class Crafting {
 					}
 				} finally {
 					pool.budget.lenient = lenient;
+				}
+			}
+			if (pick == null && downTo != null) {
+				// B1333: what's there of every option first (planks of another wood), then only the rest made of downTo
+				// from further down, what's short noted there (logs)
+				Pool trial = pool.copy();
+				List<Step> trialSteps = new ArrayList<>();
+				List<Map.Entry<Item, Long>> used = new ArrayList<>(pre);
+				List<Map.Entry<Item, Long>> there = useMix(slot.options(), want, trial);
+				used.addAll(there);
+				long rest = want - there.stream().mapToLong(Map.Entry::getValue).sum();
+				if (rest <= 0 || make(level, kind, downTo, (int) (rest - trial.have(downTo)), trial, trialSteps, depth - 1, allowed)
+						&& trial.have(downTo) >= rest) {
+					if (rest > 0) {
+						trial.use(downTo, rest);
+						used.add(Map.entry(downTo, rest));
+					}
+					pool.set(trial);
+					steps.addAll(trialSteps);
+					taken.add(used);
+					continue;
 				}
 			}
 			if (pick == null && makeable && !triedAll) {

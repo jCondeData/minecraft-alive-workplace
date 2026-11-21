@@ -204,7 +204,7 @@ public final class WonderUpkeep {
 
 	/** Whether the whole of the finished {@code site}'s outline is in loaded chunks (looked at before its blocks are worked out). */
 	private static boolean loaded(ServerLevel level, WonderSite site) {
-		Optional<Blueprint> whole = BlueprintLibrary.get(level, WonderBlueprints.idOf(site.wonder()));
+		Optional<Blueprint> whole = WonderDrawings.whole(level, site); // 52.6: as the drawing it was begun with has it
 		if (whole.isEmpty() || site.placement().isEmpty()) {
 			return true; // (no whole drawing to go by: the blocks' own chunks are looked at)
 		}
@@ -221,7 +221,7 @@ public final class WonderUpkeep {
 	}
 
 	/** Whether every block of {@code blocks} is in a loaded chunk. */
-	private static boolean loaded(ServerLevel level, List<Block> blocks) {
+	static boolean loaded(ServerLevel level, List<Block> blocks) {
 		Set<Long> chunks = new java.util.HashSet<>();
 		for (Block b : blocks) {
 			long chunk = net.minecraft.world.level.ChunkPos.asLong(b.pos().getX() >> 4, b.pos().getZ() >> 4);
@@ -236,16 +236,23 @@ public final class WonderUpkeep {
 	public record Part(ResourceLocation structure, ResourceLocation plain, BlueprintData.Placement placement) {
 	}
 
-	/** Every part of every stage of the finished {@code site}, placed with the Wonder's turn and mirror at its offset. */
+	/**
+	 * Every part of every stage of the finished {@code site}, placed with the Wonder's turn and mirror at its offset: as
+	 * the drawing it was begun with has them (52.6, {@link WonderDrawings}).
+	 */
 	public static List<Part> parts(ServerLevel level, WonderSite site) {
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		return parts(level, site, WonderDrawings.of(level, site), Integer.MAX_VALUE);
+	}
+
+	/** The parts of stages 1 to {@code upTo} of {@code site} as {@code wonder} (one of its drawings) has them. */
+	static List<Part> parts(ServerLevel level, WonderSite site, @Nullable Wonder wonder, int upTo) {
 		if (wonder == null || site.placement().isEmpty()) {
 			return List.of();
 		}
 		BlueprintData.Placement at = site.placement().get();
 		String colours = wonder.villageColours() ? VillageBanners.wonderStyle(VillageBanners.of(level, site.hall())) : null;
 		List<Part> out = new ArrayList<>();
-		for (Wonder.Stage stage : wonder.stages()) {
+		for (Wonder.Stage stage : wonder.stages().subList(0, Math.min(upTo, wonder.stages().size()))) {
 			for (Wonder.Part part : stage.parts()) {
 				BlockPos origin = at.origin().offset(StructureTemplate.transform(part.offset(), at.mirror(), at.rotation(), BlockPos.ZERO));
 				out.add(new Part(BlueprintStyles.styled(part.part(), colours), part.part(),
@@ -257,8 +264,17 @@ public final class WonderUpkeep {
 
 	/** Every block of the finished {@code site} as drawn, a later stage's block over an earlier stage's (air never counts). */
 	public static List<Block> blocks(ServerLevel level, WonderSite site) {
+		return blocks(level, parts(level, site));
+	}
+
+	/** The blocks of stages 1 to {@code upTo} of {@code site} as {@code wonder} (one of its drawings, 52.6) has them. */
+	static List<Block> blocks(ServerLevel level, WonderSite site, Wonder wonder, int upTo) {
+		return blocks(level, parts(level, site, wonder, upTo));
+	}
+
+	private static List<Block> blocks(ServerLevel level, List<Part> parts) {
 		Map<BlockPos, Block> out = new LinkedHashMap<>();
-		for (Part part : parts(level, site)) {
+		for (Part part : parts) {
 			Optional<Blueprint> blueprint = BlueprintLibrary.get(level, part.structure());
 			if (blueprint.isEmpty()) {
 				return List.of(); // a part's drawing is missing: nothing to count it against

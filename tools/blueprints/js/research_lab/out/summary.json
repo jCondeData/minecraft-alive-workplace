@@ -1,0 +1,19 @@
+{
+  "name": "research-lab-3",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 93
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/research_lab/out/research-lab-3.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/research_lab/out/summary.json",
+  "size": [
+    23,
+    17,
+    15
+  ],
+  "blockCount": 1620,
+  "paletteCount": 79,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/research_lab/recipe.mjs"
+}

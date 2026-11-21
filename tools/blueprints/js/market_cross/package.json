@@ -1,0 +1,10 @@
+{
+  "name": "market-cross",
+  "private": true,
+  "type": "module",
+  "description": "The Market Cross (market_cross), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/market_cross.md, REBUILD.md): the Mercat Drum. MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/market_cross/out --data-version 3955 && python3 ../../rebuild.py market_cross market_cross --candidate --nbt ../../../../build/rebuild/market_cross/out/market-cross.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/market_cross/out --data-version 3955"
+  }
+}

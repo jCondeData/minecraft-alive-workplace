@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 11 wide, 12 deep, 14 high (II: 16 wide)
-Tiers: I, II (a fenced schoolyard)
+Size: 11 wide, 13 deep, 16 high (II: 17 wide)
+Tiers: I, II (a reading room and a fenced schoolyard)
 Houses: a Teacher at the lectern
 Where to get it: Blueprint Table
-Main materials: spruce stairs and planks, white concrete, spruce logs, polished diorite
+Main materials: birch planks, stone bricks, deepslate tiles, dark oak logs, spruce planks
 categories: Builds
 related: school-build.md, library-build.md, jobs-services.md
 ```
 
-A one-room school with white walls and a spruce roof, a **lectern** for the teacher at the front and the school **bell** under the porch.
+A tall one-room school of whitewashed boards under a steep slate roof, a green copper bell-cote on its front gable with the school **bell** inside. The schoolroom is open to the roof timbers: two rows of benches face the teacher's **lectern** and the blackboard on the back wall.
 
 ## Getting the blueprint
 
@@ -25,7 +25,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Schoolhouse, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Schoolhouse II** adds a fenced schoolyard with a sandpit.
+- **Schoolhouse II** adds a lower reading room for the little ones on the east side, with a long table, and a fenced schoolyard.
 
 ## What it does for the village
 

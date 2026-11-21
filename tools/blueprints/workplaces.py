@@ -503,7 +503,8 @@ def cross_window(b, x, y, z, axis, mullion=CL_MULLION):
 
 
 def clinic_build():
-    """13 x 11 x 12: the clinic's pavilion and ward."""
+    """The OLD drawing (ROADMAP 50.8: the live clinic.nbt now comes from the rebuild kit, tools/blueprints/js/clinic; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 12: the clinic's pavilion and ward."""
     b = Build(13, 11, 12)
     plinth(b, 1, 6, 11, 10, CL_PLINTH, floor="birch_planks")
     walls(b, 1, 6, 11, 10, 1, 5, CL_PLASTER)
@@ -566,7 +567,9 @@ FE_PROFILE = {0: (4, False), 1: (6, True), 2: (7, False), 3: (8, False), 4: (9, 
 
 
 def ferry_house_build():
-    """9 x 10 x 10: the ferry house, its landing stage to the front."""
+    """The OLD drawing (ROADMAP 50.5: the live ferry_house.nbt now comes from the rebuild kit, tools/blueprints/js/ferry_house;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 10: the ferry house, its landing
+    stage to the front."""
     b = Build(9, 10, 10)
     # The landing stage, rails either side, mooring posts, the light on its mast
     box(b, 0, 0, 0, 8, 0, 2, "spruce_planks")
@@ -639,7 +642,8 @@ TR_RING = Mix((5, "sand"), (2, "smooth_sandstone"), (1, "sandstone"), seed=371)
 
 
 def trainers_house_build():
-    """13 x 10 x 13: the trainer's dojo and sparring ring."""
+    """The OLD drawing (ROADMAP 50.12: the live trainers_house.nbt now comes from the rebuild kit, tools/blueprints/js/trainers_house;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 10 x 13: the trainer's dojo and sparring ring."""
     b = Build(13, 10, 13)
     plinth(b, 2, 5, 10, 11, STONE_MIX, floor="spruce_planks")
     walls(b, 2, 8, 10, 11, 1, 4, TR_BOARDS)
@@ -1041,7 +1045,8 @@ CR_ROOF = DARK_OAK
 
 
 def crafters_workshop():
-    """13 x 11 x 11: the Crafter's workroom and its store."""
+    """The OLD drawing (ROADMAP 50.7: the live crafters_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/crafters_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 11: the Crafter's workroom and its store."""
     b = Build(13, 11, 11)
     plinth(b, 1, 3, 9, 8, STONE_MIX)
     box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")
@@ -1122,7 +1127,8 @@ GB_ROOF = DARK_OAK
 
 
 def glassblowers_workshop():
-    """13 x 12 x 11: the Glassblower's glasshouse, its kiln house and chimney."""
+    """The OLD drawing (ROADMAP 50.7: the live glassblowers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/glassblowers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 11: the Glassblower's glasshouse, its kiln house and chimney."""
     b = Build(13, 12, 11)
     plinth(b, 1, 3, 9, 8, STONE_MIX)
     box(b, 2, 0, 4, 8, 0, 7, "spruce_planks")

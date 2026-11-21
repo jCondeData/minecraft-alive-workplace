@@ -4,16 +4,17 @@ The Waystones mod in village life: each village raises a waystone by its Village
 the hall's Map lists the waystone network (41.2), and caravans and settlers travel by waystone (41.3). Waystones is
 optional like every other mod: without it nothing here is offered and nothing runs.
 
-Roadmap items: 41.1, 41.2, 41.3, B996, B1244
+Roadmap items: 41.1, 41.2, 41.3, B996, B1244, B1310, B1188, 52.4
 
 ## What a player sees
 
 - **A waystone by every Village Hall** (41.1). With Waystones installed, the Steward of a village with a hall proposes
   the **Waystone Plaza** once ("Travelers could find the village by a waystone"), in a Civic zone, nearest the hall
   first. It is a normal build: approved, the village's builder builds it from the store, the waystone included (one of
-  Waystones' own waystone blocks, 1 per plaza). The plaza is 7 by 5 by 7: paving in the village's stone, a two-step
-  dais with the waystone on top, a lamp post on each corner, a bench on each side facing the stone and two potted
-  plants. It is drawn in each village culture's style, the one the hall's biome grows a vanilla village of: plains
+  Waystones' own waystone blocks, 1 per plaza). The plaza is 7 by 5 by 7, a wayshrine (rebuilt from scratch in 52.4):
+  a low hipped roof on four posts, cut open over the waystone so the sky reaches it, lanterns hung from its corners,
+  benches facing the stone on three sides and flower beds in the corners, the front open to the road, and an open walk
+  all round the stone. It is drawn in each village culture's style, the one the hall's biome grows a vanilla village of: plains
   (cobbles and stone, the plain `waystone`), desert (sandstone, `sandy_waystone`), savanna (packed mud, terracotta and
   mud bricks, `mud_bricks_waystone`), snowy (stone bricks, diorite and polished deepslate, `deepslate_waystone`) and
   taiga (mossy cobbles and mossy stone bricks, `mossy_waystone`). Another culture's plaza is tried only where the
@@ -47,10 +48,25 @@ Roadmap items: 41.1, 41.2, 41.3, B996, B1244
   waystone, even with its plaza and stone still standing, and it drops off every other hall's Map. A caravan already
   on its way there turns home with its load. Put the hall back and, after its next round, the village is on the
   network again with its stone named after it.
+- **A plaza stays its own village's** (B1188): a neighboring village doesn't take a ruined village's plaza as its own
+  or rename its stone, so its settlers and caravans keep stepping out of its own stone. Only a village with no plaza
+  of its own (a new hall set down beside the old plaza) takes it over.
 - **A broken stone** is a hole in a finished build: the builder's upkeep puts it back like any other block (asking the
   owner first, as with every repair, under `repairAsk`), from a waystone in the chest; the new stone is registered and
   named again, with the village's name as it is then (a village renamed while its stone lay broken gets a stone with
   the new name; QaWaystoneRenamedBroken1110dCompatTests).
+- **Traveling to a village's stone** costs what Waystones asks for any of its waystones, nothing more or less: the stone
+  is an ordinary one (discovered by using it, not a free global waystone). With Waystones' default config a survival
+  player pays an experience point per 100 blocks from where they stand to the stone, rounded down (705 blocks: 7 points,
+  exactly level 1), and a player short of it, even by one point, isn't sent and keeps their experience; in creative the
+  trip is never refused (QA, `QaWaystones1117dCompatTests`). Server owners change the price in Waystones' own config
+  (its warp requirements).
+- **A moved plaza's stone** (45.1): broken at the plaza's new spot, the builder's upkeep puts it back there, never at the
+  old spot, named after the village as it is then, and it is the village's stone on the network again (QA,
+  `QaWaystones1117dCompatTests`).
+- **A plaza moved by a Mover keeps its stone** (B1310): the stone at the new spot is the same waystone of the
+  Waystones mod's, with the village's name, so every player who had discovered it still has it and the Map still says
+  "discovered". It holds through a save and reload while the stone is packed.
 
 ## How it works
 
@@ -120,6 +136,16 @@ The build: `tools/blueprints/waystones.py` (`waystone_plaza(culture)`), saved as
 Gradle: `deps.compat.waystones = "maven.modrinth:waystones:Ub2AL65v"` (Waystones 21.1.37, compile only, which makes
 `waystones` a Stonecutter constant), Waystones and Balm 21.0.63 (`MBAkmtvl:R6U3hZRZ`) in `tests.compat_mods` and
 `tests.screenshot_waystones` (`-Pwaystones=true`, the catalog's `waystones=True`), `waystones` in `suggests`.
+
+A Mover moving a plaza (B1310): broken, a waystone is taken off the mod's list with every player's discovery of it
+(`WaystoneBlockBase.onRemove` calls `WaystoneManagerImpl.removeWaystone` and `PlayerWaystoneManager.removeKnownWaystone`);
+picked up with Silk Touch it is kept instead, marked transient. `MoveSite.take` calls `VillageWaystones.lifting` before a
+waystone half comes down, and the extension's `lifting(level, pos)` marks both halves' block entities silk-touched (by name: Balm, which their class extends, isn't on the compile classpath), so
+the mod keeps the waystone (saved, transient) and players keep it. `MoveSite.put` calls `VillageWaystones.setDown` once
+the packed data is back in the block entity; the extension's `setDown(level, pos)` reads the waystone's id from that data
+(the block entity's `UUID`) and binds the stone to it with `WaystoneBlockEntityBase.initializeFromExisting` (the new spot, no longer transient),
+what Waystones does for a silk-touched stone placed again; the upper half takes it with `WaystoneBlockEntityBase.initializeFromBase`. `raise`
+does the same before it would place a new waystone, and clears a leftover transient flag.
 
 ## Switches
 
@@ -205,6 +231,10 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
 
 ## Proof
 
+- `QaWaystoneCross1115d3BugCompatTests` (compat suite, B1310): a player who discovered the plaza's stone still has it
+  after a Mover moves the plaza, and the Map reads "discovered"; the same with a save and reload (the move and the
+  Waystones mod's list) while the stone is packed, the moved stone being the same waystone (same id, one in the list,
+  none at the old spot).
 - `WaystonesCompatTests` (compat suite): the rule holds with a hall and the culture's look comes first, each look
   carries its culture's waystone, the builder builds the plaza and its stone is a working, named waystone a player
   discovers; renaming the hall renames it; a broken stone is repaired by upkeep and named again; the switch off, no
@@ -248,6 +278,22 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   there by waystone waits due with its 32 logs and steps out when it loads (control: kept loaded, it steps out on
   time); one from it saved and reloaded mid-trip steps out at home; its stone broken before it unloaded, the caravan
   walks; settlers step out at its stone, and walk the whole road when it breaks mid-trip.
+- `QaWaystones1117dCompatTests` (compat suite, QA): a survival player 705 blocks from a village's stone is asked 7
+  experience points (6 can't pay, 7 can), travels with exactly 7 and lands by the stone with none left; with 6 the trip
+  is refused and they keep their place and experience; a creative player with none travels. A plaza moved a quarter turn
+  by a Mover, its stone broken and the village renamed while it lay broken: the builder's upkeep puts the stone back at
+  the new spot (none at the old one) with the new name, the only stone of the village in Waystones' list and the
+  village's stone on the network.
+- `QaWaystoneLeftover1118aCompatTests` (compat suite, B1375): a plaza another village left 16 blocks west, its hall
+  gone, is taken over by a new hall with no plaza of its own and its stone takes the new village's name (B1188), so the
+  village has two stones once its own plaza stands; the waystone tests now clear such a plaza along with the hall
+  (`RaidHelperCompatTests.clearAround`), and then the village has one stone, its own. B1375's "village listed twice" was
+  this: the plaza of the test standing just west, not a dead entry left by the Mover or the builder.
+- `QaWaystoneChunkMove1121dCompatTests` (compat suite, 8, B1310 and B1375): a plaza whose stone stands at a chunk's
+  edge (local x 0 or 15, z 0 or 15, and a corner) moved by a Mover across one border, two at once, and across and back:
+  the same waystone, one entry in the Waystones list at the new spot with the village's name, discovered for the player
+  who had found it and not for one who hadn't, the same after a save and reload; broken at its new spot and put back by
+  the builder's upkeep, still listed once.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

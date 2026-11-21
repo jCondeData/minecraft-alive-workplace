@@ -146,7 +146,7 @@ public final class SiegeReport {
 		}
 		long now = level.getGameTime();
 		for (Map.Entry<BlockPos, Long> e : held.entrySet()) {
-			if (e.getValue() > now && VillageHalls.area(e.getKey()).contains(villager.position())) {
+			if (e.getValue() > now && VillageHalls.contains(e.getKey(), villager.blockPosition())) {
 				return new LegendPowers.MoodReason(Component.translatable("mood.aliveworkplace.reason.we_held"), HELD_MOOD);
 			}
 		}

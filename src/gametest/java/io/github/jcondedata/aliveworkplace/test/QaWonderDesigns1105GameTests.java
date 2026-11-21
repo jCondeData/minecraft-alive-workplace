@@ -180,7 +180,11 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** "A cistern at the top pours a waterfall down one side into a pool": water on the crown, on every ledge between, and at the foot. */
+	/**
+	 * "A cistern at the top pours a waterfall down one side into a pool" (35.19); since the 52.6 rebuild the Shaft lifts the
+	 * water from the Vaults to the Cistern under the Water Pavilion, and the Reflecting Pools lie at the foot: water on the
+	 * crown, on every terrace between (its field's channels), and at the foot.
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFallsRunFromTheCisternToThePool(GameTestHelper helper) {
@@ -208,7 +212,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The wiki: "on a 39 by 39 foot" (the first terrace; the whole site with the ramp's foot and the pool is 47 by 43), "31 high to its treetops". */
+	/**
+	 * The wiki: "on a 45 by 39 foot" (the Lower Terrace's walls; the whole site with the Forecourt's pools and stair is 47 by
+	 * 44), "33 high to the Water Pavilion's roof" (52.6, rebuilt; the 35.19 Gardens were 39 by 39 on a 47 by 43 site, 31 high).
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaGardensFootAndHeightAsTheWikiSays(GameTestHelper helper) {
@@ -217,11 +224,16 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		int w = b[3] - b[0] + 1;
 		int l = b[5] - b[2] + 1;
 		int h = b[4] + 1;
-		int[] first = box(all, p -> p.getY() == 3 && name(all.get(p)).contains("sandstone") && !name(all.get(p)).contains("stairs"));
-		int fw = Math.min(first[3] - first[0], first[5] - first[2]) + 1; // the ramp's balustrade runs out along the front
-		helper.assertTrue(Math.abs(fw - 39) <= 1, "the first terrace is " + fw + " across, not 39");
-		helper.assertTrue(Math.abs(w - 47) <= 1 && Math.abs(l - 43) <= 1 && Math.abs(h - 31) <= 1,
-			"the Gardens' site is " + w + " x " + l + " and " + h + " high, not 47 x 43 and 31 high");
+		// the Lower Terrace's walls (mud brick and packed mud) at y 3, across a bay (z 23) and from front to back through one
+		// (x 18), between the piers that stand one out
+		java.util.function.Predicate<BlockPos> wall = p -> p.getY() == 3 && name(all.get(p)).matches("minecraft:(mud_bricks|packed_mud)");
+		int[] across = box(all, p -> p.getZ() == 23 && wall.test(p));
+		int[] along = box(all, p -> p.getX() == 18 && wall.test(p));
+		int fw = across[3] - across[0] + 1;
+		int fl = along[5] - along[2] + 1;
+		helper.assertTrue(Math.abs(fw - 45) <= 1 && Math.abs(fl - 39) <= 1, "the Lower Terrace is " + fw + " by " + fl + ", not 45 by 39");
+		helper.assertTrue(Math.abs(w - 47) <= 1 && Math.abs(l - 44) <= 1 && Math.abs(h - 33) <= 1,
+			"the Gardens' site is " + w + " x " + l + " and " + h + " high, not 47 x 44 and 33 high");
 		helper.succeed();
 	}
 
@@ -313,8 +325,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 
 	/**
 	 * 35.23a "give it interiors to walk through like a real football stadium": from outside, a player walks in through
-	 * the gate onto the field, up the stands, to both trainer boxes' Training Posts, the professor's lectern, the nurse's
-	 * brewing stand, and along a covered concourse under the stands.
+	 * the gate onto the field, up the stands, to both trainer boxes' Training Posts, the nurse's brewing stand, and along a
+	 * covered concourse under the stands. Since the 52.6 rebuild ("the Stadium Bowl") the rooms off the concourse are the
+	 * Nurse's Booth, the Refreshment Room (its cakes) and the two changing rooms (their lockers); the 35.23 drawing's
+	 * professor's lectern is gone (the brief names no job block: a lectern is a job site the village would claim).
 	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
@@ -334,7 +348,7 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 				wrong.add("the Training Post at " + post.toShortString());
 			}
 		}
-		for (String block : List.of("minecraft:lectern", "minecraft:brewing_stand")) {
+		for (String block : List.of("minecraft:brewing_stand", "minecraft:cake", "minecraft:spruce_trapdoor")) {
 			List<BlockPos> at = where(all, block);
 			if (at.isEmpty() || at.stream().noneMatch(p -> reaches(walked, p))) {
 				wrong.add("a " + block);
@@ -388,7 +402,10 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** The wiki: "an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners)"; four towers of eight lamps round a detector. */
+	/**
+	 * The wiki: "a brick bowl 59 by 49, 26 high to the gate's banners" (52.6, rebuilt; the 35.23 oval was 53 by 43 and 24
+	 * high); four floodlight masts of eight lamps round a detector.
+	 */
 	//$ gametest_ticks_batch 'FabricGameTest.EMPTY_STRUCTURE' '400' 'BATCH'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400, batch = BATCH)
 	public void qaStadiumSizeAndFloodlightsAsTheWikiSays(GameTestHelper helper) {
@@ -397,11 +414,11 @@ public class QaWonderDesigns1105GameTests implements FabricGameTest {
 		int w = Math.max(b[3] - b[0], b[5] - b[2]) + 1;
 		int l = Math.min(b[3] - b[0], b[5] - b[2]) + 1;
 		int h = b[4] + 1;
-		helper.assertTrue(Math.abs(w - 53) <= 1 && Math.abs(l - 43) <= 1 && Math.abs(h - 24) <= 1,
-			"the Stadium is " + w + " x " + l + " and " + h + " high, the wiki says 53 x 43 and 24 to the banners");
+		helper.assertTrue(Math.abs(w - 59) <= 1 && Math.abs(l - 49) <= 1 && Math.abs(h - 26) <= 1,
+			"the Stadium is " + w + " x " + l + " and " + h + " high, the wiki says 59 x 49 and 26 to the banners");
 		int lamps = count(all, is("minecraft:redstone_lamp"));
 		int detectors = count(all, is("minecraft:daylight_detector"));
-		helper.assertTrue(lamps == 32 && detectors == 4, lamps + " redstone lamps and " + detectors + " daylight detectors, not 4 towers of 8 round one");
+		helper.assertTrue(lamps == 32 && detectors == 4, lamps + " redstone lamps and " + detectors + " daylight detectors, not 4 masts of 8 round one");
 		for (BlockPos d : where(all, "minecraft:daylight_detector")) {
 			long near = where(all, "minecraft:redstone_lamp").stream().filter(p -> p.distManhattan(d) <= 4).count();
 			helper.assertTrue(near >= 8, "the detector at " + d.toShortString() + " has " + near + " lamps round it");

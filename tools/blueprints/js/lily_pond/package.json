@@ -1,0 +1,10 @@
+{
+  "name": "lily-pond",
+  "private": true,
+  "type": "module",
+  "description": "The Lily Pond (lily_pond), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/lily_pond.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py lily_pond lily_pond --candidate --nbt out/lily-pond.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

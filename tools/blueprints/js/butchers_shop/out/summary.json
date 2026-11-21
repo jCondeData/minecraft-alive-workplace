@@ -1,0 +1,19 @@
+{
+  "name": "butchers-shop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 31
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/butchers_shop/out/butchers-shop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/butchers_shop/out/summary.json",
+  "size": [
+    21,
+    17,
+    16
+  ],
+  "blockCount": 1000,
+  "paletteCount": 57,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/butchers_shop/recipe.mjs"
+}

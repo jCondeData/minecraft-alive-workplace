@@ -313,7 +313,8 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 	 * True if {@code cell}'s middle is nearer another Village Hall than this one: such a cell is that village's. B1270:
 	 * nearer across the ground ({@link VillageHalls#across}), as the village's radius and {@link
 	 * io.github.jcondedata.aliveworkplace.work.Reach#claims} measure, so a hall on higher ground still takes a cell it is
-	 * nearer to; the halls are looked up in a square column at any height.
+	 * nearer to; the halls are looked up in a square column at any height. B1266: a hall point of interest with no hall
+	 * standing on it ({@link VillageHalls#standsAt}; one in an unloaded chunk is trusted) is no other village.
 	 */
 	public static boolean nearerAnotherHall(ServerLevel level, BlockPos hall, int cell) {
 		return nearerAnotherHallFrom(level, hall, cellCentre(hall, cell));
@@ -332,7 +333,8 @@ public record CityPlan(List<Zone> zones, List<Road> roads, Optional<Wall> wall, 
 	private static boolean nearerAnotherHallFrom(ServerLevel level, BlockPos hall, BlockPos centre) {
 		long own = VillageHalls.across(centre, hall);
 		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), centre, (int) Math.ceil(Math.sqrt((double) own)) + 1,
-			PoiManager.Occupancy.ANY).map(PoiRecord::getPos).anyMatch(p -> !p.equals(hall) && VillageHalls.across(p, centre) < own);
+			PoiManager.Occupancy.ANY).map(PoiRecord::getPos).anyMatch(p -> !p.equals(hall) && VillageHalls.across(p, centre) < own
+				&& (!level.getServer().isSameThread() || VillageHalls.standsAt(level, p)));
 	}
 
 	// --- changes ----------------------------------------------------------------------------------------------------

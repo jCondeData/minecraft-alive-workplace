@@ -976,9 +976,7 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		Component hint = info != null && info.hint() != null ? info.hint() : Component.translatable("screen.aliveworkplace.list.hint");
 		if (hovered >= 0 && lmTabs.contains(hovered)) {
 			// a rail tab names itself first (only its icon shows, 48.4), then what it is
-			String first = firstLine(icon(hovered));
-			hint = first.isEmpty() ? icon(hovered).getHoverName()
-				: Component.translatable("screen.aliveworkplace.list.tab_whisper", icon(hovered).getHoverName(), first);
+			hint = io.github.jcondedata.aliveworkplace.work.ChoiceList.tabWhisper(icon(hovered));
 		} else if (hovered >= 0 && !firstLine(icon(hovered)).isEmpty()) {
 			hint = Component.literal(firstLine(icon(hovered))); // the whisper line says what's under the mouse (47.1)
 		}
@@ -986,8 +984,16 @@ public class ChoiceTableScreen extends AbstractContainerScreen<ChoiceView> {
 		TableStyle.footerHint(g, font, hint, whisper[0] + 4, whisper[1] + 3, lmWhisperW);
 		// The tooltip of whatever is under the mouse, as the chest showed it: a row, a page arrow, or the menu's
 		// own (the money line).
-		if (hovered >= 0 && !lmTabs.contains(hovered)) {
-			// a rail tab has no floating tooltip (48.4): the whisper line names it, and a tooltip would cover the list
+		if (hovered >= 0 && lmTabs.contains(hovered)) {
+			// a rail tab's whole tooltip too (B1355): the whisper line has room for its name and first line only, and the
+			// rest (the Move Tutor's "N more moves at a higher tier", Research's click line) must stay readable
+			ItemStack tab = icon(hovered);
+			net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+			g.renderTooltip(font, io.github.jcondedata.aliveworkplace.work.ChoiceList.tabTooltip(tab,
+					net.minecraft.world.item.Item.TooltipContext.of(mc.level), mc.player,
+					mc.options.advancedItemTooltips ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED : net.minecraft.world.item.TooltipFlag.Default.NORMAL),
+				tab.getTooltipImage(), mouseX, mouseY);
+		} else if (hovered >= 0) {
 			g.renderTooltip(font, icon(hovered), mouseX, mouseY);
 		} else if (lmInfo >= 0 && lmMoneyW > 0 && mouseX >= lmMoneyX && mouseX < lmMoneyX + lmMoneyW && mouseY >= top + 6 && mouseY < top + 18) {
 			g.renderTooltip(font, icon(lmInfo), mouseX, mouseY);

@@ -131,9 +131,10 @@ public class BasementGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			assertBasementEmpty(helper, s);
-			helper.assertBlockPresent(Blocks.RED_BED, origin.offset(7, 1, 6)); // the cottage's own, kept
-			helper.assertBlockPresent(Blocks.LADDER, origin.offset(8, -2, 3));
-			helper.assertBlockPresent(Blocks.PACKED_MUD, origin.offset(5, -4, 5));
+			// (49.3: the rebuilt cottage's bed in the outshot, the ladder down through the hall's hatch, the cobble floor)
+			helper.assertBlockPresent(Blocks.RED_BED, origin.offset(2, 1, 8)); // the cottage's own, kept
+			helper.assertBlockPresent(Blocks.LADDER, origin.offset(6, -2, 7));
+			helper.assertBlockPresent(Blocks.COBBLESTONE, origin.offset(4, -4, 5));
 			helper.assertTrue(s.site().placed() < total * 0.8, "placed " + s.site().placed() + " of " + total + ": the cottage should have been kept");
 		});
 	}
@@ -149,9 +150,10 @@ public class BasementGameTests implements FabricGameTest {
 		helper.succeedWhen(() -> {
 			assertBuilt(helper, s);
 			assertBasementEmpty(helper, s);
-			helper.assertBlockPresent(Blocks.SMOKER, origin.offset(8, 1, 5));
-			helper.assertBlockPresent(Blocks.BLUE_ICE, origin.offset(5, -4, 5));
-			helper.assertBlockPresent(Blocks.LADDER, origin.offset(3, -1, 3));
+			// ROADMAP 50.4: the rebuilt shop's smoker, the middle of its freezer's blue-ice floor and the top rung of its way down
+			helper.assertBlockPresent(Blocks.SMOKER, origin.offset(18, 1, 8));
+			helper.assertBlockPresent(Blocks.BLUE_ICE, origin.offset(11, -4, 10));
+			helper.assertBlockPresent(Blocks.LADDER, origin.offset(9, -1, 12));
 			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
 		});
 	}

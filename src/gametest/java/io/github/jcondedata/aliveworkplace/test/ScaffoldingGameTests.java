@@ -40,7 +40,7 @@ import net.minecraft.world.level.block.Rotation;
  * blocks high with a 5 x 5 cap overhanging it by two: nothing near its top or under its cap can be reached from the
  * ground, and nothing there can be stood on.
  */
-public class ScaffoldingGameTests implements FabricGameTest {
+public class ScaffoldingGameTests implements FreshPlanning {
 	private static final String BIG = "aliveworkplace_test:big_area";
 	private static final String TALL = "aliveworkplace_test:tall_area";
 	private static final ResourceLocation PILLAR = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "test_pillar");

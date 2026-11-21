@@ -16,11 +16,750 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Added
+- **The Artisan's House in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it, at every level: a flat-roofed mud and sandstone house with a deep arched doorway, a lattice bay, a windcatcher and
+  a domed kiln; a great golden thatch on acacia posts beside a red termite-mound kiln; a tall white gable under steep
+  snowy slate with a closed storm porch; and a jettied dark log house with a timber kiln barn and a horse's head on the
+  ridge. The same rooms, beds, job blocks, furniture and Level III clay cellar; plains villages keep it as drawn (49.10g).
+- **The Farmstead and the Ranch in their village's culture**: desert, savanna, snowy and taiga villages now build their
+  own look of both, at every level. The Farmstead: an oasis farm of mud and sandstone with a dovecote tower and a
+  palm-rib shade along the field; a painted mud house under a squat golden thatch pyramid; a pale stone house under a
+  big white-ridged slate roof with a deep porch gable; and a dark log lodge with a stone byre. The Ranch: mud stall
+  ranges round a crenellated hay tower with a windcatcher; a tiered golden thatch over a mud clerestory; one great
+  snow-capped A with a deep porch mouth; and three stepped log gables with a hay gallery and a horse's head on the
+  ridge. The same rooms, field, job blocks, beds, furniture and Farmstead III root cellar; plains villages keep both as
+  drawn (49.10e).
+### Changed
+- **The Colossus is rebuilt from scratch** (52.6): "Astride the Road", the Founder striding over the main road, his
+  feet planted either side of it so the road and its caravans pass through an arch between them. The base is a dark
+  stone gate with stepped courses, corner piers, pilasters, a copper frieze and a deck ringed with nine braziers, the
+  seven-sign plaque over the arch. The white figure wears a belted tunic under a copper cloak that sweeps down to pool
+  on the deck and weathers green; his left hand holds the rolled founding plan, and his right arm is thrown up with a
+  glowstone lantern caged in yellow glass, lit day and night. Same stage names and size. A Colossus already begun or
+  finished keeps the old drawing: it still counts as standing, its plaque is still written, and it is repaired and
+  finished as it was first drawn.
+- **The Pokémon Center and its Mountain Lodge look are rebuilt from scratch** (50.12, with Cobblemon). The Center is
+  now "the Red Dome": a white eight-sided hall under a stepped red dome with a glazed eye. Inside, benches line a red
+  aisle to the desk, with the Healing Machine right under the eye and a stocked corner of barrels and chests behind.
+  Pokémon Center II adds a gabled Trade Hall with the Shop Counter and a planted garden with a domed pavilion and the
+  Pasture Block. The Mountain Lodge is a log lodge under a steep red gable with a porch deck, a jettied cross gable, a
+  stone chimney and a back porch. Its II carries the cross gable into the Trader's wing and adds a paddock with a field
+  shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
+  keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
+### Fixed
+
+- With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer
+  stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block
+  sends its signal right away instead of staying dark until a block next to it changes. Redstone inside any moved
+  building now looks at its surroundings once the whole building stands (B1160, B1216).
+- A husk piling a sand ramp no longer counts as already over the wall, and gives up its ramp one block high, when it
+  stands outside the village beside your own wall (a garden wall) that lines up with the village wall: only the
+  village wall the ramp leans on counts now, so it piles the ramp to the top and climbs in (B1419).
+- A builder's poured water runs again when a dry stair, slab or Create fluid pipe stands two blocks away: a
+  player's own water wheel or fountain built from a blueprint flows and turns as it did in the original (B1410).
+- Opening the Village Hall first after a restart (or a `/reload`) no longer freezes the server for seconds: the
+  older drawings of the builds are now read only for the buildings asked about, not all thousand at once (B1418).
+- A builder lending a hand on another builder's build now leaves that crew at once when the Steward gives him a
+  build of his own (a house, an upgrade or an old house to take down), and the Steward counts him as free when
+  choosing a builder. His own build used to wait for as long as the build he was helping stayed open, which was for
+  good when its lead stood waiting for materials: an old house's take-down never started. Worlds saved with a build
+  waiting like that pick it up by themselves (B789).
+- The Pump House's tank fills with water now. Its intake pipe dipped into the cistern as a bend, which Create
+  straightened out toward an empty window, so the pump turned but drew nothing. The cistern is now two deep, and the
+  intake runs straight down through it to draw from the bottom (B1411).
+- A Hauler or Farmhand Golem whose foe vanishes mid-fight (despawned or unloaded) goes straight back to work; in rare
+  cases it used to stand about for 20 to 39 seconds first (B769).
+- A villager without a bed who is standing out behind a house at bedtime now takes a free bed up a ladder inside
+  (the Terrace's bedrooms) and walks round to the door to sleep in it, instead of standing behind the house all
+  night (B735).
+- A furnished house from the modded library that was still being built when its blueprint got a new look keeps the
+  look it was begun with after you update, instead of the new design going up over the half-built old one. Use
+  "Refresh to the latest look" once it's finished to bring it up to date (B1407).
+- The War Camp's ominous banner and the Blackstone Outpost's piglin banner now face the camp's gate and front,
+  toward players walking up, instead of turning their backs to them (B1175).
+- With Tom's Simple Storage, a chest that touches the Storehouse's inventory connector and is also faced by a cable
+  connector on the same cables is counted once: the Storehouse (and Tom's own terminal) showed its items and its free
+  room twice, so builders and the board thought the village had double (B1025).
+
+## 0.158.0 — 2026-11-20
+
+### Added
+- **The Stone House in its village's culture**: desert, savanna and taiga villages now build their own look of it at
+  every level (a sandstone house under a flat roof with a lattice oriel and a windcatcher, a granite-and-mud house under
+  one great pyramid of golden thatch, a forester's lodge of mossy fieldstone and spruce logs gable-on to the road), with
+  the same rooms and furniture. Plains and snowy villages keep the rubble house; the Blueprint Table lists every look
+  (49.10b).
+- **The Townhouse in its village's culture**: desert and savanna villages now build their own look of it at every
+  level (a sandstone and mud-brick merchant house under flat roofs with arcades and lattice for shade; a red granite shop
+  under a timber-framed mud storey with a veranda along the street and one great golden thatch), with the same rooms
+  and furniture. Plains, snowy and taiga villages keep the jettied timber house (49.10b).
+- **The Weaver's Cottage and the Daub House in their village's culture**: desert, savanna, snowy and taiga villages now
+  build their own look of both. The Weaver's Cottage, at both levels: a flat-roofed sandstone and mud-brick dyer's house
+  with an arcade over the weaver's window and cloth drying on the roof; a golden thatch house with a veranda and a kraal
+  for the flock; a white calcite loomhouse under a steep snowy slate roof; and a deep-eaved spruce log lodge with a
+  veranda along its front. The Daub House: a little mud kasbah with a tower at each corner; a mud house under one great
+  golden thatch with a veranda; a calcite house under a long snowy slate roof; and a spruce log lodge with its gable to
+  the road. The same rooms, loom, beds and furniture; plains villages keep both as drawn (49.10d).
+- **The Noble's Manor in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
+  it at every level: the Qasr of the Windcatcher (flat sandstone and mud-brick masses behind crenellated parapets, the
+  porch tower a slotted windcatcher, a palm garden round a fountain); the Great House under One Thatch (one broad golden
+  hip over the whole house on a colonnade of acacia posts, the tower rising through it); the White Hall (pale calcite
+  under one steep slate roof, tall pointed gables, snow on the ridges); and the Boyar's Lodge (dark spruce logs on a
+  mossy fieldstone footing under broad slate roofs, verandas on log posts). The same rooms, beds, ballroom, cellar and
+  furniture, and the Noble's Ball is held in any look's ballroom. Plains villages keep the brick Manor (49.10f).
+### Changed
+- **The Habitat Garden, rebuilt from scratch** as "the Stone Ring" (with Cobblemon): a hedged clearing around an old ring
+  of standing stones, the mossy center stone at its heart on the walk from the gate through a trilithon, a reed-edged
+  pond, the keeper's open bower with her chest and the Pasture Block under its eave, and the old Saccharine honey tree.
+  The **Habitat Garden II** walks on to a second pond and the keeper's hide on stilts with a balcony over the water.
+  Gardens already standing keep their old drawing until refreshed, and their keeper still founds the village's habitat
+  under their old center stone.
+- **The Research Lab, rebuilt from scratch** as "the Strata Lab": a tall, steep-gabled lab with walls laid in bands like a
+  cliff face (deepslate, tuff, terracotta, sandstone), a pointed Great Window in the front gable, lightning rods on the
+  gables and the Fossil Analyzer in one tall room open to the roof. The **Research Lab II** adds a museum hall under a
+  glass vault on copper ribs with a skeleton on its dais, and the **Research Lab III** digs a pit under it where a
+  skeleton still lies in the gravel. Labs already standing keep their old drawing until refreshed.
+- **The Arena, rebuilt from scratch** as "the Market Stadium": a chalk-marked pitch with a red box and a blue box under
+  little canopies at its ends, a flag behind each, 12 seats along the back wall and the notice board on the gate's pier.
+  **Arena II** raises a colonnaded stand along the front over the Cup's fair lane, with a judges' loggia over the gate;
+  **Arena III** roofs the back with a brick grandstand (54 seats), a trainers' tower with a Healing Machine at each end
+  and the champion's pole before the gate. Arenas already standing keep their old look until refreshed, and the Cup
+  still seats its crowd on their benches, calls the trainers to their boxes and offers [Watch] at their notice board.
+- **The Ball Workshop, rebuilt from scratch** as "the Drying Loft": from the street it reads like a Poké Ball, a red
+  loft jettied over a white plaster workshop with a black beam band between them and a white boss over the door. The
+  Ball Smith's smithing table, anvil and forge are below, the forge's brick stack climbs the east side, apricorns dry on
+  trays behind the loft's louvers beside his bed and order desk, and a store lean-to behind holds the chests. Workshops
+  already standing keep their old drawing until refreshed; village ball workshops keep their look.
+- **The Trainer's House, rebuilt from scratch** as "the Battle Court" (with Cobblemon, 50.12): a gateway of two banner-hung
+  stone piers onto a marked turf court with the Training Post at its head, a covered bench stand where neighbors watch
+  the battles, a sparring yard with dummies, and a spruce-framed clubhouse with the Trainer's den and his bedroom in a
+  loft that looks down the court. Houses already standing keep their old drawing until refreshed; village trainer's
+  houses keep their look.
+- **The Supply Shop and the Market Stall, rebuilt from scratch** (50.11). The Supply Shop is now "the hoist house": a
+  tall timber street gable jettied out over two glass shop bays, a copper sign band and a hoist with the shop's lantern
+  at the top, and inside the Shop Counter across the room before a stock wall of chests and barrels. The **Supply Shop
+  II** adds the shopkeeper's back room in a lower range behind, **III** a seed and hardware wing under its own little
+  street gable (it no longer has a Mailbox: the Post Office has one), and **IV** a cool cellar under the wing. The Market
+  Stall is now "the shop board": a steep timber booth with its gable to the street, whose front boards fold down into a
+  counter laid with cloth and prop up into a canopy under a red-and-white valance. The **Market Stall II** builds a
+  lock-up shop beside it with the Shop Counter in the booth's counter, and **III** runs the lock-up back into a
+  storeroom with a back door. Builds already standing keep their old drawing until refreshed.
+- **The Flower Shop, rebuilt from scratch** as "the glasshouse florist": the shop is a tall glasshouse on a low brick
+  wall with green copper glazing bars, the Florist's raised beds of tall flowers either side of one aisle from the door
+  to her composter, shelves and hanging pots of flowers, a brick parlor with the counter, a chimney from the stove that
+  warms the glass, and a fenced cutting yard with a pond. The **Flower Shop II** adds a second glass range across the
+  yard and a glazed lantern on the ridge. Shops already standing keep their old drawing until refreshed; village flower
+  shops keep their look.
+- **The Berry Farm, the Apiary Garden and the Greenhouse are rebuilt from scratch** (50.9). The Berry Farm is now "the
+  Lantern Arbor": a hedged garden whose arbor walk runs between berry beds in log curbs to a steep-roofed picking lodge,
+  the composter and the harvest chest under its porch; Level II roofs the whole garden in a lattice hung with glow
+  berries and opens a second bed cloister behind the lodge. The Apiary Garden is now "the Skep Wall": a stone wall of
+  bee boles, each a hive over a smoking campfire, round a great straw skep that holds the honey, and a bee garden round
+  a stone font; at Level II a daughter skep settles at the east end with more smoked hives, and a meadow opens under a
+  cherry. The Greenhouse (with Create) is now "the Leat House": a glasshouse of three glass gables whose leat turns an
+  undershot wheel, the belt running along the west wall under the harvester and the plough to a depot in the front
+  wall. Buildings already standing keep the drawing they were built from until you refresh them.
+- **The Compost Yard is rebuilt from scratch** (50.9) as "the Bin Barn": a steep straw-thatched barn on a rubble plinth
+  whose front opens on the yard as three bins, the heaps graded from fresh green through turning brown to ripe black, under
+  a jettied hoist gable with its loft door and lantern arm; the composter and the scrap chest stand in the dry under that
+  gable, and a turning aisle behind the bins holds the straw and a bone-meal chest. **Compost Yard II** leans a riddling
+  shed on the barn's east side: two more chests, a pile of fine compost, a potting bench of potted saplings and a bed of
+  ferns and lilies grown in the finished compost. Yards already standing keep their old drawing until refreshed.
+- **The Quarry is rebuilt from scratch** (50.10) as "the Headframe": a tall dark oak headframe over the pit, its legs
+  stepping in halfway up to a spoked sheave wheel, a skip and a lantern hanging on chains over the hole, the rail open
+  between its legs where the Miner steps down; beside it a stone hoist house under a deepslate roof, the brick stack
+  rising through its ridge from the blast furnace, with two double chests, lamps and the winch inside, and a spoil heap
+  behind the pit. It no longer has a basement (19 by 14, 17 tall); the pit and the furnace are where they always were.
+- **The Sifting Shed is rebuilt from scratch** (50.10) as "the Tipple": a timber hopper loft on dark oak legs over a
+  stone screen room, under a steep slate gable with a hoist beam, the gravel tipped through a chute into the cauldron
+  below, gravel and sand heaped in board bays under an east lean-to. **Sifting Shed II** adds a covered incline gallery
+  climbing into the loft from the back yard, the second cauldron and chest in its shelter, and red sand and soul sand
+  in board bays. Buildings already standing keep their old drawing until refreshed.
+- **The Terminal Nook, rebuilt from scratch** (50.13) as "the Staddle Granary": a little store room of pale boards on
+  a dark oak frame, lifted on nine stone staddles under a bell-cast slate roof with a louvre on its ridge, and a stone
+  flight along the front up to a railed landing with a lamp. Inside, the Storehouse at the porter's desk by the door,
+  chests along the back wall round the tally, barrels and hay along the sides, and lanterns on the tie beam. Without
+  Tom's Simple Storage it holds 9 chests and 2 barrels; with it, 8 chests on the connector and the
+  storage terminal before it (11 by 12, 15 tall). Nooks already standing keep their old drawing until refreshed.
+- **The Pump House, rebuilt from scratch** (50.13, with Create) as "the Tanner's Water Tower": a stone water tower
+  under a steep green copper cap, water falling from a stone cup down its flank past the wheel, which turns the
+  mechanical pump over a cistern at its foot (seen through its windows). A pipe climbs the tower to the tank, which
+  stands in a glazed room at the top with a door out onto the gallery round it. The Leatherworker's tannery leans on
+  the tower under a deepslate roof, with his cauldron between two chests, a cutting table, a stitching desk and hides
+  on the walls (18 by 13, 17 tall). Pump houses already standing keep their old drawing until refreshed.
+- **The Train Station, rebuilt from scratch** (50.13, with Create) as "the Trainshed": a long brick train shed with
+  the track running right through it under a dark slate roof, both ends open under timber portals with glazed fans and
+  a glazed lantern along the ridge; the station stands on the platform's edge among benches and hanging lanterns. On
+  the street, a booking hall with a round window in its gable, benches, a route map and a barred ticket window into the
+  clerk's office, and a clock tower with three clock faces under a green copper cap (19 by 17, 18 tall). Stations
+  already standing keep their old drawing until refreshed.
+- **The Crushing Mill and the Windmill are rebuilt from scratch** (50.10, with Create). The Crushing Mill is "the Fall
+  House": a stone hall whose glazed, timber-framed front bay shows the two crushing wheels from the road, a tall fall
+  tower behind it pouring water onto the wheel that turns them (a glass slot shows the water falling), and a brick stack
+  over the blast furnace and its chest (14 by 12, 18 tall). The Windmill is "the Stage Mill": a dark timber tower out of
+  a round brick base, a walkway stage round it on brackets, four long sails on a slate cap with a tail pole, and the
+  millstone, composter and chest on the round ground floor (15 by 14, 18 tall). Buildings already standing keep their
+  old drawing until refreshed.
+- **The Royal Hall, rebuilt from scratch** as "the Brick Palace": a red-brick hall entered between two gate towers with
+  green copper caps, a proclamation balcony over the entrance arcade, the throne in its own bay behind the dais, the
+  vault a battlemented strongroom off the dais and the steward's room its twin. The **Royal Hall II** adds an east range
+  with the treasury (eight chests, its own east door), a council chamber upstairs and a belfry with a bell. Halls already
+  standing keep their old drawing until refreshed.
+- **The Observatory is rebuilt from scratch** (52.6): a stepped monument of dark stone, "the Observatory of the Great
+  Gnomon". The Star Terrace with the Chart Hall inside it (a cartography table, lecterns and an amethyst star in the
+  floor) goes up first; then a giant sundial's blade with a stair up its sloping edge and a smooth stone quadrant scale
+  on each side; then the drum and its Observing Room; and last the copper dome with the great telescope reaching out
+  through its glazed shutter. New stage names to match. An Observatory already begun or finished keeps the old drawing:
+  it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Lighthouse is rebuilt from scratch** (52.6): "the Mole Light", a stone arm running out to sea from the quay to a
+  round bastion, the tower at its end climbing from a mossy foot to a pale shaft, a gallery on corbels and a glazed
+  lantern under a hood of 28 lamps that light by themselves at night. The keeper's cottage and a net shed stand on the
+  quay; a ferry landing with a jetty out to the Travel Post (now at the sea-side edge) and a fish stage with a drying
+  rack stand off the mole; inside, a stair winds up past the oil store, the chart room and the keeper's watch room. New
+  stage names to match. A Lighthouse already begun or finished keeps the old drawing: it still counts as standing, and
+  is repaired and finished as it was first drawn.
+- **The Great Cathedral is rebuilt from scratch** (52.6): "the Ship of Stone", a Gothic basilica whose tall nave is
+  held up by flying buttresses leaping the aisle roofs. Two west towers climb by ladder through three floors to louvered
+  belfries with two bells each and slim stone spires; a rose window of four colors stands over the triple portal, a
+  lead spire tops the crossing and the east end steps down to a rounded apse round the gold altar. Inside, a raised
+  choir with its stalls and four chapels, among them the sacristy with its brewing stand. Same stage names. A Great
+  Cathedral already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
+- **The Stadium is rebuilt from scratch** (52.6, with Cobblemon): "the Stadium Bowl", one brick bowl of red and white
+  seats round a chalked grass field, a trainer's box at each end, its back aisle climbing past the top row to a
+  standing alcove in the outer wall. A green copper covered stand shelters the back, a
+  scoreboard on the east end reads "2 - 1" from both the stands and the road, and the gate is a stepped arch between
+  two banner pylons with STADIUM lettered over it. Under the upper stands a lit concourse runs right round to four
+  corner pavilions: the nurse's booth with the Healing Machine, the refreshment room and the home and away changing
+  rooms. Floodlight masts on the pavilions light up at night. Same stage names. A Stadium already begun or finished
+  keeps the old drawing: it still counts as standing, and is repaired and finished as it was first drawn.
+- **The Great Library is rebuilt from scratch** (52.6): "the Scroll Rotunda", a round drum of books at the center of
+  four copper-roofed wings on a stone podium, with a garden in each corner, a ribbed copper dome with a glass lantern
+  over the drum and a portico of six quartz columns at the front. Inside, a walkway climbs twice round a wall of
+  bookshelves with a band of windows riding just above it, so from outside a spiral of glass winds up the drum; the
+  enchanting table stands at its heart, the map room is in the front wing, and each wing has an upper gallery of books
+  and reading tables. Same stage names. A Great Library already begun or finished keeps the old drawing: it still counts
+  as standing, and is repaired and finished as it was first drawn.
+- **The Great Wall is rebuilt from scratch** (52.6): "the Pass Gate", a long gray wall on a dark, battered foot with
+  buttresses, battlements and lantern posts along its walk, four watchtowers whose guard rooms the walk runs through and
+  whose lookouts keep signal fires under spruce caps, and at its center the Great Gate: a gatehouse carrying a two-story
+  timber pavilion under dark tile roofs, a walled barbican with a second gate on the field side, and two broad stairs up
+  the village side. Its sentries now stand on the open walk, one on each stretch between the towers. Same stage names. A
+  Great Wall already begun or finished keeps the old drawing: it still counts as standing, and is repaired and finished
+  as it was first drawn.
+- **The Hanging Gardens are rebuilt from scratch** (52.6): "the Terraced Mount", four mud-brick terraces on vaulted
+  halls, set back toward the rear so the gardens fall to the front in green tiers hung with leaves and vines while the
+  back rises as a sheer brick cliff. A grand stair climbs from a forecourt between two reflecting pools, and a stair up
+  each terrace's face leads past a farm on every level (still four village farms, a composter and a chest at each) to
+  the crown, where the Water Pavilion stands over the cistern that a shaft of water fills from the vaults. Inside are the
+  Vaults with their nursery and seed store, the Gallery's orangery and the Upper Hall. New stage names to match.
+  Hanging Gardens already begun or finished keep the old drawing: they still count as standing, and are repaired and
+  finished as they were first drawn.
+### Fixed
+- Villagers can walk through the Pump House's upper door again: the railing in front of it, out on the gallery, is now
+  a flat panel against the edge instead of a fence post, so a villager steps out onto the gallery standing up (B1405,
+  B1406).
+- A Farmer of carrots or potatoes with ground to till and no hoe, in his hand or in his chests, no longer takes the
+  carrots out of the chest and puts them straight back, over and over with the chest opening and closing every tick:
+  he leaves them there and rests, and fetches them with the hoe as soon as one is in the chest. On a big village the
+  edicts' checks every villager makes every tick (work stopped by a raid, Curfew's bedtime) are quicker too (B455).
+- With Create, blocks a builder builds from an uploaded file, a Scan Tool scan or a Create schematic are now freshly
+  placed ones: a Blaze Burner is built with no fuel (never creative or superheated, B1067), a Copper or Netherite
+  Backtank set down is built plain and empty and gives back a plain backtank (B1069), and a Clipboard, like any other
+  block, keeps none of the item components (enchantments, attribute modifiers) its blueprint's block carried, so it
+  drops a plain one (B1070).
+- With Tom's Simple Storage, a chest cut off from the Storehouse's Inventory Connector by breaking a cable no longer
+  counts twice for the second it takes the connector to notice: the Village Hall, the Storehouse and a builder's
+  shortage check count each item once at every moment (B1358).
+- With Create, a blueprint with a Copper or Netherite Backtank set down now asks for the backtank a player wears
+  instead of an item nobody can get, so the build no longer waits for materials forever (B1068).
+- A long Chronicle entry opened on the Village Hall's Chronicle page now folds up again on a click anywhere on it, even
+  after it is scrolled past its first line, as the hint says (B1394).
+- A siege climber whose ladder stood on a block at the foot of the new Stone Wall (a hay bale, say) now drops into the
+  village instead of stopping on the wall's inner stairs or wandering along its top (B1389).
+- **The Terrace in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of both
+  levels (a row of sandstone and mud-brick houses under flat roofs with a windcatcher each; one long golden thatch over red
+  granite and mud with a veranda; pale calcite gables under steep deepslate roofs, snow on the eaves; a long range of
+  spruce logs under a slate roof with a porch on log posts), with the same homes, beds and furniture. Plains villages
+  keep the Crow-Step Row (49.10c).
+- **More new builds per builder level-up**: a builder's level-up unlocks three new builds again; a build and its biome
+  looks count as one (49.10b).
+- In Festival Cup and Stadium bouts, a Pokémon with no attacking move (a Wobbuffet, a Ditto) now struggles against a
+  Ghost as in the games, instead of doing nothing until the clock ran out, which could hand a Master's bout to a
+  Novice (B1403).
+
+### Dev
+- The `walls` showcase scene stocks its builders from the wall line's drawings as they are now, so the rebuilt
+  Palisade's mud and oak are in their chests (its first segment waited for them every night since 52.3), and a new
+  GameTest has the Steward's palisade go up whole and its gate shut at night (B1400).
+
+## 0.157.0 — 2026-11-18
+
+### Added
+- **The Starter Cottage in every village culture**: desert, savanna, snowy and taiga villages now build their own look
+  of it at every level (a flat-roofed mud-brick house with a shaded loggia, a veranda house under golden thatch, a snowbound
+  log cabin with a mudroom, a spruce cabin under steep gables), with the same rooms and furniture. Plains keep the saltbox;
+  the Blueprint Table lists every look (49.10a).
+- **The Daub House**, a new Level I home (the owner's pick of 36.23's two): mud-brick daub in a dark oak frame under a
+  steep brick roof, a hall round its hearth, a stone kitchen with the plates on its counters, and a loft of four beds.
+  In the Blueprint Table, grown by vanilla villages of all five styles in their own materials, and planned by the
+  Steward for a hamlet three beds short (49.2).
+
+### Changed
+- **The Physician's House and the Healing Center are rebuilt from scratch** (50.8). The Physician's House is now a
+  square stone still-room tower, its slate pyramid cap ending in a vent with a lantern lit in it, where the Physician
+  keeps his brewing stand and his Remedy chest, and a white ward behind it in a spruce frame: four beds each between
+  white linen screens in their own frame bays, with a physic garden of herbs and ferns in the crook of the two. The
+  Healing Center is now "the Spring Infirmary": a white Dispensary under a steep red roof with a dormer gable on each
+  side, the waiting benches inside the door and the brewing stand and its chest behind the counter (I); the Spring Hall
+  across the back with its warm pool (II); a Consulting Room beside the front and a walled herb garden behind (III); and
+  the Cistern dug under the hall, the spring's source with the still room's chests (IV). Buildings already standing keep
+  the drawing they were built from until you refresh them.
+- **The Clinic is rebuilt from scratch** (50.8). It is now "the pavilion ward": one tall white ward with its gable to
+  the street under a steep slate roof, a louvered lantern ventilator on the ridge and a small dormer on its east side.
+  Six white beds stand heads to the long walls with a window between each pair, and the Nurse's station across the
+  front end holds her brewing stand and remedy chest, a medicine cupboard and her desk. The west roof runs on over a
+  sun veranda with seats under the windows and a door in from the ward. Clinics already standing keep the drawing they
+  were built from until you refresh them; the village clinics are unchanged.
+- **The Glassblower's Workshop, the Jeweler's Workshop, the Crafter's Workshop and the Workshop are rebuilt from
+  scratch** (50.7). The Glassblower's Workshop is a brick glass cone 18 blocks tall over the Glass Kiln, narrowing in
+  three even courses to a smoking lip, with a timber-framed glass shop in front (a crown-glass bullseye in its gable)
+  and a fuel shed of sand and wood on its side. The Jeweler's Workshop is "the Stepped Gable": a stone shop with a
+  crow-stepped gable and a green copper roof, a glass case with the amethyst out in the street between the Jeweler's
+  timber door and the buyers' iron door; Level II adds a barrel-vaulted strong room behind with fourteen chests behind
+  bars, and Level III the Deep Vault under it. The retired Crafter's Workshop is "the Saw-Tooth Shop", a brick workroom
+  under three glazed saw teeth with a twin-flue forge stack, now with no job block in it. The Create Workshop is "the
+  head-tank works": a water tower whose head tank pours onto the wheel that drives the belt and the press, seen through
+  a glazed gable, and a brick stack over the Armorer's blast furnace. Builds already standing keep the drawing they
+  were built from until you refresh them; the village jeweler's and crafter's houses are unchanged.
+- **The Fletcher's Lodge, the Tailor's Shop and the Print Shop are rebuilt from scratch** (50.6). The Fletcher's Lodge
+  is a log pen under a long roof with a stone chimney, a porch and an entry gable; its Level II makes it a dogtrot, an
+  open breezeway and a second, front-gabled pen with the second fletching table. The Tailor's Shop is a white shop with
+  a jettied gable over a glazed shopfront of colored cloth, the loom and sewing table inside; Level II raises a slender
+  drying tower at the back corner, its loft hung with dyed cloth, up a ladder through two floors. The Print Shop is
+  "the Lantern Press": a tall brick hall with a dark-oak shopfront and a glazed lantern on the ridge that drops a column
+  of daylight onto the press; Level II adds a reading room lined with bookshelves beside it. Builds already standing
+  keep the drawing they were built from until you refresh them; the village tailor's and print shops are unchanged.
+- **The Artisan's House is rebuilt from scratch** (49.8): a potter's house. Its gable faces the street, a white
+  plaster floor juts out over a stone workroom, and beside it stands a brick bottle kiln that is the house's chimney.
+  Downstairs are the potter's bench, a dining table for four and a kitchen corner. Upstairs are the couple's two beds
+  under the street windows and a sitting room. Level II adds the journeyman's room at the back with the third bed, and
+  a yard for drying pots. Level III digs a clay cellar under the workroom, down a ladder through a hatch. Houses already
+  standing keep their look until you press Refresh on the Village Hall's Repairs page.
+- **The Ranch is rebuilt from scratch** (49.9): a horse barn with a tall center over the stable aisle and the hay loft,
+  two low stall sheds on its sides, a cupola on the ridge and a hay hood with a hoist over the big doors. In front, a
+  ranch gate with the ranch's banner leads into a yard with a trough, with no fence gate in the way, so the Rancher walks
+  straight down the aisle to his smoker and tack chests. Level II adds a feed and bunk wing and a big paddock behind,
+  with a gap a villager can walk through and a horse can't. Ranches already standing keep their look until you press
+  Refresh on the hall's Repairs page.
+- **The Weaver's Cottage is rebuilt from scratch** (49.8): a hill weaver's stone house with the loom behind a long
+  mullioned window and a second band of lights over it for the wool loft, up a stair inside. The sheep fold leans on its
+  gable, so the Shepherd walks from his loom through a door straight in among his flock, and a hoist beam over the fold
+  lifts fleeces to a hatch in the loft. Level II walls a dye garden behind, rows of flowers by color and a frame of dyed
+  cloth. Cottages already standing keep their look until you press Refresh on the hall's Repairs page.
+- **The Farmstead is rebuilt from scratch** (49.9): a whitewashed farmhouse under one slate roof that sweeps down low
+  over a covered walk along the field, where the Farmer's composter and harvest chest stand a step from his crops.
+  Level II carries the roof on into a red barn with the second Farmer's room, stalls, a hay loft and a cupola, beside a
+  second field. Level III digs a root cellar under the house, down a ladder through a hatch by the door. Farmsteads
+  already standing keep their look until you press Refresh on the hall's Repairs page.
+- **The Starter Cottage is rebuilt from scratch** (49.3, the owner's pick of two designs). Level I is a timber-framed
+  saltbox: a tall front over the hearth and a table for two, and a long back roof sweeping down over the bed nook and
+  the work corner (the Fisherman's barrel and the Carpenter's table), a stone stack up the west gable. Level II raises a
+  two-story wing to the road with two more beds upstairs, Level III leans a stone kitchen with its own door on the wing,
+  and Level IV digs a store cellar under the hall. Cottages already standing keep their look until you press Refresh on
+  the Village Hall's Repairs page.
+- **The Noble's Manor is rebuilt from scratch** (49.7): a brick hall-and-cross-wing house dressed in cut stone. A porch
+  tower under a steep pyramid roof leads through an arch into a black-and-white hall with the grand stair, the hearth and
+  a dining table for nine; a crow-gabled west wing holds the parlor and the kitchen, with two chambers and their oriels
+  above, and the Long Gallery and the tower study are up the stair. Manor II walls in a knot garden behind the hall,
+  Manor III completes the front with the east wing's double-height ballroom and its musicians' gallery (where the
+  Noble's Ball gathers), and Manor IV digs a wine cellar under the kitchen. Manors already standing keep their look until
+  you press Refresh on the Village Hall's Repairs page.
+- **The Ferry House is rebuilt from scratch** (50.5): a ferry station. Passengers wait in a stone waiting room with a
+  stove, a table, a bench and the station clock; the Ferryman sleeps in the white plastered room above, and a lookout
+  cupola on the slate roof carries the ferry light. A boarded landing runs the whole front under a canopy with a teal
+  valance, the Travel Post by its steps and benches against the wall. Ferry Houses already standing keep the drawing
+  they were built from until you refresh them; the village ferry houses are unchanged.
+- **The Watermill is rebuilt from scratch** (50.5, with Create): a mill you can read from the street. A mill pond on a
+  terrace behind it feeds a timber launder over the top of the water wheel; the wheel turns the millstone on the stone
+  meal floor, a sack hoist's hood juts from the front gable over the steps, and a granary wing holds the farmer's
+  chests with his composter in the yard. Watermills already standing keep the drawing they were built from until you
+  refresh them.
+- **The Nether Gate, the Waystone Plaza and the Mega Shrine are rebuilt from scratch** (52.4). The Nether Gate is a
+  ceremonial gate: the obsidian frame stands between blackstone piers under a steep, flared crimson roof, up a two-step
+  dais with soul fire either side, and a timbered Provisioning Lodge beside it holds the netherworker's cartography table and
+  his stores; Nether Gate II adds a tall Haul House behind the lodge and a walled nether wart terrace behind
+  the gate. The Waystone Plaza (all five village looks) is a wayshrine: a low hipped roof on four posts, open over the
+  stone, with benches under it for travelers waiting on three sides and the front open to the road. The Mega Shrine is a
+  keystone arch: the pedestal stands under a chiseled meteorite keystone, a straight flight climbs the front to the
+  trainer's stand and twin flights climb the back. Builds already standing keep the drawing they were built from until
+  you refresh them.
+- **The Founder's Statue, the Shift Bell and the three camps of found Legends are rebuilt from scratch** (52.5). The
+  Founder now stands in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his
+  hand on the first stone, on a stepped stone plinth with a copper plaque. The Shift Bell is a little deepslate belfry
+  on the smith's own anvil, lit by four lanterns and capped with a copper roof and spire. By a ruined portal the
+  traveler waits in the door of a banded tipi beside a fire ring, a map on a barrel and a lodestone cairn; at an
+  outpost the prisoner is caged on a bogged-down wagon beside the pillagers' tent and black standard (break a bar to
+  free them, as before); on the beach by a wreck the castaway shelters under the ship's boat turned keel-up, with the
+  broken mast stood up as a signal pole. Statues already standing keep their drawing, and camps already found stay as
+  they are.
+- **The Lost Caravan's five trail marks are rebuilt from scratch** (52.5): the captive carter ties strips of the
+  wagon's white cover high wherever he can, so every mark is a piece of the same wagon standing up with white cloth on
+  it, easy to spot from the last one. A lantern pole with the carter's lantern, a cross-tree with the lost wheel and a
+  burst barrel, the torn cover slumped over its hoop under the settlers' banner, the cart levered up on its tail with
+  its shafts to the sky, and the raiders' arrow-shot crates and black standard over the last rag. Marks already
+  placed stay as they are.
+- **The Lost Caravan's wreck and the raiders' stockade are rebuilt from scratch** (52.5). The wreck: the settlers'
+  wagon rolled onto its side, arrows in its underside, a bare-spoked wheel still on top and the other flung onto the
+  road, the white cover lying slashed along the far side with a hollow you can step into, the load picked over, and a
+  second cart's ruts leading away toward the stockade. The stockade: a ragged ring of dark oak stakes behind spiked
+  posts and a rubble bank, a gate tower, a fighting perch over the west wall, and a tall lookout under a black banner
+  whose foot is the carter's cage, so you see where he is from far off; inside, the caravan's own cover is spread on
+  the ground with the loot being shared out, its cart stripped of its wheels. Sites already placed stay as they are.
+- **The Bandit King's fort is rebuilt from scratch** (52.5), all three stages: a ring of stakes in panels between
+  taller posts with a wall-walk and three roofed fighting stages, a roofed gatehouse, gray tents round the fire and
+  the King's black-skirted pavilion; then two watchtowers on log legs and a stable; then the King's keep, the only
+  stone in the fort, with a throne hall, a chamber up the stair, a war loft under the roof, and the postern deep in a
+  stone porch at its back. A finished fort stays as it is; one still rising takes the new look whole at its next
+  stage.
+- **The Bandit Camp is rebuilt from scratch** (52.5): the Lookout Camp. Two low bunk tents of patched, stolen cloth sit
+  round the fire, with the chief's black-and-red tent across the back holding his bed, his seat and the loot chest. A
+  crow's nest on four legs rises over the camp to a red flag, a stolen bell hung under its deck, and a handcart heaped
+  with plunder stands by the way in. The Bandit King's camps and bounty hideouts get the same look. Camps already
+  standing keep their old look, and still come down whole when their chief falls.
+- **The Winery is rebuilt from scratch** (50.4): a gravity-flow press house. A double stone perron climbs the front to
+  the white, dark-framed press floor, where the Vintner's vat stands on the door's axis; the must goes down to the stone
+  Cask Hall under it, with its racks of casks and chests, and a stone Tasting Room leans on its east side. Winery II
+  plants the vineyard behind it, rows of sweet berries and an arbor hung with glow berries; Winery III digs a vintage
+  vault under the hall, down a ladder from a hatch. Wineries already standing keep the drawing they were built from
+  until you refresh them.
+- **The Butcher's Shop is rebuilt from scratch** (50.4): a white, dark-framed shop with its gable to the street and
+  display boards under a slate pentice, a red-brick smoke tower on its side that smokes at the peak with the Butcher's
+  smoker in its foot. The freezer under the shop's back half is lined with packed ice on stone piers, with a blue-ice
+  floor panel and its chests in the smoker's reach. Shops already standing keep the drawing they were built from until
+  you refresh them, and are never offered a dig of the new freezer.
+- **The Leader's Hall and the Trade Hall are rebuilt from scratch** (51.5, with Cobblemon). The Leader's Hall is a tall
+  stone hall behind a gate-porch, dark piers down its walls and round its back: the challenger walks past benches either
+  side of a sparring ring set into the floor and up to the dais, where the Training Post stands before the Leader's
+  seat (15 x 15 x 17). The Trade Hall is a white counting hall in a proud dark oak frame with a round corner tower whose
+  dark band and white button make it a Poké Ball from afar: the Shop Counter faces the door, a desk sits in the gabled
+  ledger bay at the back and the Trader sleeps up a ladder in the tower (18 x 18 x 19). Buildings already standing keep
+  the drawing they were built from until you refresh them.
+- **The Smithy, the Tinker's Workshop and the Brass Foundry are rebuilt from scratch** (50.3). The Smithy is a stepped
+  stone forge stack beside a low shop: one forge hall with the blast furnace under its hood, the anvil, the quench
+  trough and the grindstone, and a coal cellar down a stair; Level II adds a second stack and a bigger ore store. The
+  Tinker's Workshop is a tower on the street under a copper cap with the workshop behind it; Level II lifts the tower a
+  storey with a stores loft and a lamp room. The Brass Foundry (with Create) is a tall brick hall with a glazed gear
+  lantern on its ridge where the gears turn in daylight, a copper tank on a brick tower feeding the wheel, and the
+  Chef's cookhouse under a catslide; its smoker now stands in the cookhouse. Buildings already standing keep the
+  drawing they were built from until you refresh them, and "Dig the cellar" on an older Smithy digs the cellar of the
+  drawing it was built from, never through its forge.
+- **The Palisade is redrawn from scratch** (52.3): an earthwork now, a cobblestone toe and mud-brick steps up the village
+  side of a rammed-earth bank to a pale stripped-oak walk where 7 archers stand, behind a row of bark-on spruce stakes
+  with pointed heads and an oak rail through them (7 x 5 x 4). Palisade II builds the bank out into a walk three wide
+  (19 archers' places) and plants seven dripstone stakes in a ditch of turned earth outside (7 x 5 x 5). Pieces already
+  standing keep their old look until refreshed.
+- **The Stone Wall, the Wall Tower and the Palisade Gate are redrawn from scratch** (52.3). The Stone Wall climbs its
+  village side by a flight of stone steps to a pale andesite walk behind square merlons, a lantern at the foot; Stone
+  Wall II roofs the walk with dark oak hoardings over a gallery of murder holes. The Wall Tower stands on a sloping
+  foot, with arrow slits, a ring of overhanging stone and a crenelated top where 16 archers stand (7 before), and a
+  guardroom with a table and a store with a chest inside; Wall Tower II roofs the top on stone piers. The Palisade Gate
+  is now a small timber gatehouse, a gable roof over three spruce gates (7 x 9 x 2; the way through is 2 high). Pieces
+  already standing keep their old look until refreshed.
+- **The Stone House is rebuilt from scratch** (all four levels): a two-story mason's house of rubble stone with dressed
+  quoins, a floor band and a stack on the west gable; a hall with the hearth and a table for four, a box room, an open
+  kitchen and a chamber upstairs; II adds a parlor wing, III a back room under a catslide roof, IV a store cellar down a
+  ladder by the hearth. Houses already standing keep their look until you press Refresh on the hall's Repairs page (49.4).
+- **The Burgher's Townhouse is rebuilt from scratch** (all four levels): a tall merchant's house gable-end to the street,
+  a stone shop and kitchen below a timber floor jettied over the street, a steep attic with a hoist beam, the hearth set
+  in the foot of the chimney stack; II adds a counting-house wing with two beds, III a stone strongroom tower with a
+  lookout study, IV a vaulted cellar under the shop. Houses already standing keep their look until you press Refresh
+  on the hall's Repairs page (49.5).
+- **The Terrace is rebuilt from scratch** (both levels): narrow brick houses side by side, each under its own steep
+  slate roof between crow-stepped gables with white copings, a slate canopy and lantern over every door, and a chimney
+  in each back gable; inside, each home has a front room, a kitchen with its table, stove and sink, and a bedroom with
+  two beds up a ladder. Terrace II adds a third house on the east end. Terraces already standing keep their look until
+  you press Refresh on the hall's Repairs page (49.6).
+- **The Market Square is rebuilt from scratch** (51.7, "the Market House", 13 x 13, 16 high). The square is paved
+  round a rosette in its middle, with flowering azaleas in its front corners, and across its back a timber-framed
+  Market Court stands on an open stone undercroft under a steep brick-tile roof, a cross gable and a lantern cupola. A
+  balcony looks out over the middle of the square, an outside stair climbs the east side to the court's door, and a
+  striped stall sells produce on the west. Traders gather on the square and under the undercroft's arches; upstairs
+  the court holds the reeve's tables, the cupboards of weights and a desk. The new square has no bell block (the
+  market's bell is still heard), so festivals and Chapel-less weddings gather at the village's own bell. Market Squares
+  already standing keep their look until you refresh them.
+- **The defenses are rebuilt from scratch** (51.8). Buildings already standing keep their look until you refresh them.
+  - **Barracks** ("the Gate Ward", 13 x 13, 13 high): a square stone gate tower with a vaulted passage and a glazed
+    watch lantern under a slate cap, a barrack range beside it with the two guards' grindstones, two bunks and a
+    hearth, and a walled training court behind with the Training Dummy, an archery butt and a spear rack. Barracks II
+    (21 wide) adds the range's mirror image on the tower's other side, with two more grindstones and two more bunks;
+    Barracks III digs an armory and lock-up under the west range.
+  - **Guard House** ("the Gate Watch", 15 x 11, 15 high): two stone piers with a road arch between them, a guardroom
+    with the grindstone in one and an armory and barred lock-up in the other, and the guard's timber barrack room
+    bridging both on a jetty under one steep slate roof, with a watch desk at the window over the gate. Guard houses
+    that grow in villages keep their own look.
+  - **Fire Station** ("the Hose Tower", 15 x 16, 18 high): a stone engine house with a timber watch loft jettied over
+    its doors under a red tile roof, and a tall hose tower at the front corner rising past the ridge to a lookout
+    gallery. The Firewarden's grindstone stands by the water trough, buckets on racks beside it.
+  - **Gatehouse** (11 x 5, now 16 high): two stout towers clasp the road under crenellated fighting tops, with a
+    gabled fighting loggia for the archers over the portcullis between them. Gatehouse II throws a walled barbican
+    forward with its own gate, portcullis, murder holes and archers' deck. The gates and portcullis work as before.
+  - **Lookout Tower** ("the Hoarded Watchtower", 9 x 9, 16 high): a slim rubble tower on a battered foot carries a
+    timber watch gallery, open on every side, under a steep slate hat. II leans a gear shed with a guard's grindstone
+    and the alarm bell against it, III adds a crenellated guardhouse with a second grindstone, two bunks and a lower
+    fighting roof, and IV digs an armory under the guardhouse.
+- **The Market Corner is rebuilt from scratch** (51.7, 9 x 9, 8 high). An L of market counters along two back edges
+  of a paved court under a red-and-white striped canvas that steps down toward the court, a little booth with its own
+  canvas at the front, dark oak posts and serving hatches on the street sides, and the corner post as a mast flying
+  two banners. Pots, a cake, melons, pumpkins and hay sit on the counters, with lanterns hung over the aisle. Market
+  Corners already standing keep their look until you refresh them.
+- **The Market Cross is rebuilt from scratch** (51.7, "the Mercat Drum", 9 x 9, 8 high). A squat octagonal stone drum
+  with a stair cut into its front: climb it to the walled platform, where a white shaft rises to a head that hangs four
+  lanterns over the square and flies the market flag. Benches line the drum on three sides and flowering azaleas grow
+  in the plinth's corners. Market Crosses already standing keep their look until you refresh them.
+- **The Chapel is rebuilt from scratch** (51.6, "the Blossom Court"). A limewashed bell tower with twin belfry
+  openings and a slate spire stands at the front, lamp posts either side of its door, and behind it one long white nave
+  runs under a single slate roof, stepped stone buttresses down both sides (13 x 17, 16 high). Inside, dark oak pews
+  line an andesite aisle to a stone vow arch wreathed in flowering azalea, where couples stand to marry, and the altar
+  under the rose window. Chapels already standing keep their look until you refresh them.
+- **The Clock Tower is rebuilt from scratch** (51.6, with Create). A slender stone tower carries a timber clock room
+  with a cuckoo clock on every side under a flared copper spire (15 x 15, 26 high). Water pours from a stone spout
+  down the tower's front corner and turns the wheel by the door, and through a slit in the wall you can watch the drive
+  climb to the four clocks; the Cartographer's map room is at its foot. Clock Towers already standing keep their look
+  until you refresh them.
+- **The Post Office and the Graveyard are rebuilt from scratch** (51.6). The Post Office is a brick tower with a
+  steep slate spire and a weathervane, standing forward of a long counter hall: you come in at the tower's foot and
+  walk straight to the Mailbox in the middle of the counter, with a writing table, a bench by the stove and the
+  pigeonholes and sorting desk behind; the Postman sleeps in the tower room over the door, and a red pillar box stands
+  outside (17 x 15 x 15). The Graveyard is a walled churchyard entered under a roofed lychgate: a flagstone path runs
+  between the two grave plots (the same 32 grave rows) to a lantern tower, and the little chapel behind it has the
+  Undertaker's brewing stand as its altar, pews along the walls and a bier under the lamp, with Irish yews either
+  side (13 x 13, now 16 high). Graveyard II is the same yard a generation on: tall yews, lanterns on the wall's piers,
+  a stone cross in each plot, an iron-railed front wall, benches facing the graves and lamp posts by the path.
+  Villages keep their own Postman's house. Buildings already standing keep the drawing they were built from until
+  you refresh them.
+- **The School is rebuilt from scratch** (51.4, with Cobblemon). A timber-framed gatehouse with a round moon window
+  opens onto a paved court, where a sparring ring with straw targets circles the Move Tutor's Training Post; spectators
+  sit under a cloister on the west, and behind the court the Tutor's hall holds a lecture room with a reading table, a
+  desk by the hearth, and his quarters behind a bookshelf screen (17 x 12 x 18). Villages keep their own Tutor's
+  house. Schools already standing keep the drawing they were built from until you refresh them.
+- **The Library and the Schoolhouse are rebuilt from scratch** (51.4). The Library is a tall buttressed
+  stone nave with a rose window over a gabled porch, shelves under its windows, reading desks under hanging lanterns
+  and the lectern closing a blue runner; Level II adds a reading aisle through a wide arch, Level III a spired tower
+  holding the enchanting room, its table ringed by 26 shelves within reach of all three lecterns (18 x 18 x 22), and
+  Level IV an archive dug under it. The Schoolhouse is a whitewashed schoolroom open to its roof timbers under a copper bell-cote, bench rows facing the
+  lectern and blackboard (11 x 16 x 13); Level II adds the little ones' reading room and a fenced schoolyard. Buildings
+  already standing keep the drawing they were built from until you refresh them.
+- **The Builder's Workshop is rebuilt from scratch** (50.1, the owner's pick of two): a rubble-stone workshop under a
+  jettied brick-and-timber loft, one long slate roof sweeping down over a plank store with cart doors, and a timber jib
+  crane in the fenced materials yard lifting a block of stone off the stacks, so the trade shows from down the street.
+  The Blueprint Table and its chest stand by the hearth, three more chests and a lumber rack fill the store, and the
+  Builder sleeps in the loft up a ladder (18 x 16 x 11). Villages grow it too, in their own materials, with its bed
+  downstairs; it no longer has a crafting table, which could take a Carpenter. Workshops already standing keep the
+  drawing they were built from until you refresh them.
+- **The Well** is redrawn from scratch (52.1): a stepped stone dais, a round mossy curb with the windlass and chain
+  between two side posts so the water shows from the road, and a spruce gable roof with dark oak eaves. The Market Well
+  (Level II) adds two stone dipping basins of water, benches, lamp posts, lanterns and a copper vane. Wells already
+  built keep their old look until refreshed.
+- **The Well House, the Fountain, the Lily Pond and the Footbridge** are redrawn from scratch (52.1). The Well House is
+  an open pavilion round the well on a stone podium under a cross-gabled roof with a louver, a stone channel running out
+  on arches to the Well Keeper's cauldron (17 x 15 x 13). The Fountain rises in three brimming tiers from an octagonal
+  basin on a ring of steps, with planters and lamp posts in its corners (9 x 8 x 9). The Lily Pond sits in a grassy
+  knoll with a stone curb seat, a dipping stage and an old flowering azalea leaning over the water (9 x 8 x 7). The
+  Footbridge is a humpback stone arch over a bending stream with a lantern gate at its crown (9 x 8 x 7). Builds
+  already standing keep their old look until refreshed.
+- **The street pieces are redrawn from scratch** (52.2): the Park Bench now sits in the shade of a cherry tree grown
+  from a raised stone bed, a lantern hung over the seat (7 x 9 x 6); the Sundial is a stone half-cylinder dial with hour
+  lines and a chain gnomon on a sandstone dais (9 x 8 x 9); the Flower Planters step up in three tiers of beds round a
+  little court and bench under a spruce pergola (9 x 6 x 8); the Fire Pit's campfire sits in a round stone dais ringed by
+  standing stones, with a trilithon at the back (9 x 6 x 9); the Gazebo is an open octagon of white posts under a flared
+  slate roof with a cupola (11 x 14 x 11); the Topiary Garden is a green room of clipped yew with a hedge archway and a
+  tiered standard (9 x 8 x 9); and the Stag Statue is a carved stag standing broadside on a mossy crag (9 x 8 x 7).
+  Builds already standing keep their old look until refreshed.
+- **The Camp Kitchen is redrawn from scratch** (52.2): a square timber cookhouse of spruce logs and birch boards on a
+  stone terrace, under a steep bell-cast deepslate roof that climbs to a copper louver right over the Campfire Pot,
+  which stands alone on a brick hearth with a bench facing it, the dresser and two chests behind, shutters, lanterns
+  hung by the door and a lean-to of Hearty Grain bales (13 x 15 x 12). Camp Kitchen II adds a stone smokehouse with
+  its own chimney, a smoker and a smoking rack, and a raised, watered Hearty Grain bed behind (20 x 15 x 21). The
+  Camp Kitchens villages grow take the same look in each village's materials. Builds already standing keep their old
+  look until refreshed.
+- **The Mason's Yard, the Sawmill and the Carpenter's Workshop are rebuilt from scratch** (50.2). The Mason's Yard is
+  a stone lodge whose roof sweeps down over an open banker shed, the stonecutter in its bay facing a walled yard with a
+  jib crane; Level II adds a second stonecutter and a tall tracing house where the master draws. The Sawmill (with
+  Create) has a hooped water tank on log legs whose flume drops onto the water wheel, a long saw shed over the belt and
+  both saws, and a lower Lumberjack's lodge. The Carpenter's Workshop is a cruck-framed shop under a steep roof with a
+  dormer, logs, a sawhorse and plank stacks on its porch, and the Carpenter's bed in the loft. Buildings already
+  standing keep the drawing they were built from until you refresh them.
+
+### Fixed
+- With the pack's mods, a crafter's "short of" line keeps to the thing's own recipe when nothing in the chest leads
+  another way: a chest, hopper or TNT minecart is short of 1 Minecart and a furnace minecart of its furnace's
+  cobblestone and a Minecart, never of Create's Minecart Contraption, and a slimeball is never read down to Create's
+  Wheat Flour. A Minecart Contraption in the chest is still used. With the earlier fixes for the smoker's logs and
+  Chipped's planks, all 47 such lines found across every job-made item now read right (B1289).
+- A Builder helping on another Builder's build always brings the materials it fetched back to that Builder's
+  chests, also when the build ended while the helper was away (its chunk unloaded, or the server restarted in
+  between). Before, such a helper emptied its bag into its own chest, and the other Builder's next build could wait
+  forever for materials you had stocked by his bench (B645).
+- A Stadium Day no longer loads a far-off caravan partner's or realm member's village to name its visitor: the
+  visitor is still called by its village's name ("Mara of Riverton"), now read from the realm's record or the caravans'
+  list, so the afternoon no longer stutters the server (B644).
+- Far sites (a quarry, a field, a tree farm, an orchard, a berry plot or a build marked far outside the village) no
+  longer make the server load their chunks when nobody is there. Before, the worker's first moment at work loaded (or
+  generated) the far chunks in the middle of a tick, a hitch for everyone online, and a Miner could call a far quarry
+  finished from his bench without digging it. Now the site waits exactly as it was until its chunks are loaded again
+  (you come back, or `workplaceKeepWorkLoaded` keeps your build or quarry running), and the worker carries on from
+  there. Meanwhile a Lumberjack and an Orchard Keeper go on with the trees and fruit round their own block (B666, B667).
+- With Create, a Mechanic mends a belt a player broke the way a player lays one: the two pulley shafts first (from
+  the store), then the whole belt between them for one belt connector. Before, he put the belt back one piece at a
+  time for free, Create broke every lone piece into a belt connector, and belt connectors piled up on the ground while
+  the belt never came back. With no belt connector in the store he now waits and says so.
+- Archers on a Palisade's walk can see out and shoot again: the fence rail along the stake tops stood right in front
+  of their eyes, so they never saw a raider. The stakes now end one block over the walk; walls already built keep
+  their fence rail until the Palisade is rebuilt.
+- **Refresh to the latest look** now digs and builds what a redrawn build has under the ground where its older drawing
+  had nothing: an Artisan's House III refreshed to the Kiln House kept solid ground where the cellar now runs under the
+  kiln, its new walls and floor unbuilt. Chests, beds in use and job blocks there stay, as everywhere in a refresh.
+- With Chipped and Rechiseled both installed, a builder with polished andesite in his chests no longer says he needs
+  andesite (the Watermill read "Needs Andesite ×10" with full chests): block families that share a block count as one.
+- Village protection now holds against Create's machines: a stranger's Mechanical Drill or Saw just outside a protected
+  village no longer breaks its edge, a Mechanical Piston (or a drill or saw on one) stops at the edge instead of pushing
+  blocks in, a bearing's arm stopped over the village sets nothing down there (its blocks drop beside the bearing), and
+  a Deployer outside places nothing inside. Machines inside the village work as before (B808, B993, B1033, B1015).
+- A stranger's Create funnel, chute or Mechanical Arm outside a protected village no longer takes items out of (or puts
+  them into) its chests and depots, and a stranger's Deployer inside it can't rename the Village Hall (B994, B1015,
+  B844). A Deployer nobody placed no longer becomes the owner of a Village Hall it sets down or of a Mailbox or Shop
+  Counter it clicks; one a player placed still acts for that player (B843).
+- With the pack's building mods, the furnished Level IV homes and cellared Level IIIs (Stone House, Townhouse, Manor
+  and more) keep their furniture spots: their cupboards turn into Handcrafted pieces again instead of staying carved
+  bookshelves, the crockery sits on the tables rather than a floor below, and their floors get the herringbone boards.
+  Refreshing an old furnished house to its rebuilt look also takes away its empty Handcrafted shelves, nightstands and
+  crockery the new drawing moved (one with something in it stays) (B1383).
+- A Blueprint placed far from the Blueprint Table inside a big village (150 blocks off with `villageHallRadius` 160,
+  say), which the Builder does take, no longer says "No Blueprint Table within 128 blocks of this spot" with every
+  material listed as still to bring: its supply report and its Book and Quill material list now find the table by the
+  Builder's own rule (anywhere in the table's village, or within `maxSiteDistance` outside it). A yes to a repair or a
+  refresh likewise reaches a free Builder anywhere in the village, not only one near the building (B619).
+- Desert raiders no longer leave a sand ramp a few blocks high and stand at the wall for the rest of the siege when
+  the husk piling it had to walk round a corner of the walls to reach it: it counted as already over the wall while
+  passing that wall's far side on the outside (B726).
+- A helper on a build far from the builder's chests does its share of a tall house. The builder carries nearly the whole
+  house over on its first trip, and the helper used to be handed three or four blocks' worth at a time and walk down to
+  the chests for the little left there, so it laid under a third of the Stone House; now it is handed its share at
+  once, lays about half, and the two finish the walls and roof a fifth sooner (B1381).
+- With Chipped and Carved Wood, a Carpenter makes a crafting table from a mix of planks (2 oak and 2 acacia, or 3
+  mosaic and 1 oak) whenever a player's crafting table would, instead of saying the builder is short of Oak Planks
+  (B1378).
+- A sum of one CobbleDollar now reads "1 CobbleDollar", not "1 CobbleDollars", wherever money is named (the Village
+  Hall's treasury, quest rewards, retraining and family tree prices, the cup's purse), as at a rate of one CobbleDollar
+  an emerald (B1379).
+- A wall segment you upgraded (the Palisade's fighting step, the Stone Wall's hoardings) still counts as that piece of
+  the village's wall: the wall reads as finished again and counts as one building for the rank, not one more per
+  upgraded segment, and a Town's stone still replaces an upgraded palisade (B1380).
+- A slab, stair or other waterloggable block drawn dry between two drawn water sources (a fountain bowl's inner corner) is built dry: the builder no longer lets the water run into it, flood it and spill out over the rim (B1377).
+- Steward: one damaged entry in his saved record or desk (a hand-edited file, or one a crash cut short) no longer
+  empties the whole record: declined rules no longer come back, renewals of old houses under way are no longer
+  forgotten and proposal numbers no longer restart at 1. Only the bad entry is left out, with a warning in the log (B821).
+- A story arc running in two villages at once: killing one village's foe ("The Boar") no longer also finishes the
+  other village's hunt before that village's own foe has even come (B724).
+- Houses built from an older drawing of a building that was redrawn since stay themselves: Builders repair them back to
+  the drawing they were built from (an undamaged one is no longer "repaired" into a mix of old and new), a take-down
+  takes the whole house down (and one that takes nothing down no longer makes the Village Hall forget the house), and
+  an upgrade from the Upgrades page takes down what of the old level the next one doesn't cover (B1369, B1370, B1372).
+- Moving a house built from an older drawing of a redrawn building: the Mover now moves the whole house as it stands
+  (nothing left behind at the old spot), the Move page shows and plans its real size, and another building can no
+  longer be moved onto part of it (B1373, B1374).
+- A house still being built when its building is redrawn (the mod updated mid-build) is finished as the drawing it
+  was begun from, instead of switching to the new drawing and leaving the old floor's back rows beside it (B1371).
+- Waystones: a village no longer takes over a neighboring village's Waystone Plaza after that village's Village Hall
+  is broken, so its own stone stays its stone on the network (settlers, caravans and Map distances), and a hall put
+  back finds its plaza again (B1188).
+- A desert village's Daub House now has sandstone walls between its jungle beams, not the plains house's mud brick
+  (B1367).
+- A Village Hall's leftover point of interest with no hall standing on it (left by region edits or world-editing mods)
+  no longer counts as a village for work blocks in a far zone, raid dens or village fires, and a fire no longer counts
+  as in a village for a few seconds after its hall is gone (B1356).
+
+### Dev
+- Tests: the Waystones travel-cost and moved-stone checks (`QaWaystones1117dCompatTests`) are in the compat suite. Its
+  "village listed twice" failure (B1375) was the test next door's plaza, taken over by the test's village, not a dead
+  entry in game: the waystone tests now clear such a plaza along with its hall (`QaWaystoneLeftover1118aCompatTests`).
+- The rebuild kit (49.1): `tools/blueprints/REBUILD.md` (blind brief, blind design, critic), a shared JavaScript parts
+  library (`tools/blueprints/js/parts/`), `rebuild.py`, the old-vs-new sheet (`sheet.py`), the owner's three rules in
+  `check.py --owner` with their tests, and the `rebuild_<family>` scene; dry-run on the Well (critic: ship, narrowly).
+### Fixed
+- Villages: a villager out in the corners of the square round a Village Hall, outside the village's circle, no longer
+  comes to its festivals and banquets, becomes a parent of its babies, or counts as one of its villagers anywhere else
+  (guilds, guards, scouts, legends, the cough, Wonders and more) (B555).
+- Villages: the same villager outside the circle no longer counts toward a research tree's villager count, gets the
+  Steward's or the hall's build orders, counts as the village's Scholar for the printing press, or draws a raid's
+  raiders or piglins (B1352).
+- Config file: one unreadable word in `raiderCultures` or `disasters` ("maybe", a typo like "flase") no longer resets the
+  whole map, so a culture or disaster you switched off beside it stays off; that one entry takes its default, on, and
+  the log names it (B1359). Their ids are now read trimmed and in any case, so "Bandits": false switches the bandits
+  off (B1360).
+- List menus: pointing at a tab on the rail shows its whole tooltip again, so the Move Tutor's "N more from a more
+  experienced tutor" and Research's "Click: show this research" can be read; the whisper line still names the tab
+  (B1355).
+- Trainer screen: every Pokémon's level shows whole again. Team cards no longer cut a capped "Lv 40" to "L…" (a team
+  of four now sits two by two), and at GUI scale 3 a party line's "Lv 100" no longer runs into its status glyph (B1351).
+- Builder: a room with a pool in its floor, built on the bed of a pond, no longer ends up flooded when a water-filled
+  hollow in the bed runs under the floor beside the pool (two blocks wide, or L-shaped out to the build's edge). The
+  room ends dry and the pool keeps its water (B1294).
+- Drowned pirates: after a pirate ship sinks, its old hold below the waterline is still sea like the water round it,
+  instead of spots of falling water that pushed a swimmer down (B1317).
+- City Plan: a Village Hall's leftover point of interest with no hall standing on it (left by region edits or
+  world-editing mods) no longer counts as another village, so cells near it can be painted and still count (B1266).
+- Waystones: a village's plaza moved by a Mover keeps its waystone. Everyone who had discovered it still has it
+  (the hall's Map still says "discovered"), instead of having to walk there and find it again (B1310).
+
 ## 0.156.0 — 2026-11-16
 
 ### Fixed
+- With Chipped and Carved Wood (as in the owner's pack), a Carpenter makes a crafting table from four of Chipped's
+  planks in the builder's chest, as a player can with Carved Wood's mixed crafting table recipe, instead of asking for an
+  Oak Log nobody has (B1290).
+- With Create, a builder short of andesite beside a Mason no longer reads "Nobody here makes: Andesite": a stone a
+  player mines that the Mason can't cut from what's there (polished andesite is never cut back into andesite, by a
+  player either) is left to the gathered line above; from Create's cut andesite in the chest he cuts it (B1334).
+- Chapel wedding request: a couple married in the new Chapel get one entry in the Village Hall's Chronicle, "married in
+  the new Chapel, and the whole village sat down to a feast", no longer also "married at the bell" (B1348).
+- Blueprint library: a builder who levels up while out on a job past the village's reach now unlocks his three
+  builds in his own village (his Blueprint Table's) and tells its players, instead of putting them in the server-wide
+  set every later village starts with (B1345).
+- With CobbleDollars: placing a Shop Counter names your server's real CobbleDollar rate ("1,000 per emerald"), not
+  always 100 (B1346), and at a rate of 1 the realm treasury says "Click to give 1 CobbleDollar" (B1347).
+- Showcase page: the Book of Edicts at GUI scale 4 no longer shows as broken. Nothing was missing in the game. The
+  page's checker mistook the reform's dark purple lines on the Copperline panel for the missing-texture pattern (B1343).
+- Mover: a glow lichen on several faces (the floor and two walls) that lands on a Mover's Crate comes back as one
+  Glow Lichen per face (3, not 1) (B1300).
+- Village Hall Chronicle: a Festival Cup entry written late (the Cup ended while the village was unloaded) now sits
+  under its own day, so the day headers stay newest first with one header per day, instead of reading DAY 46, DAY 47,
+  DAY 46 (B1353).
+- Pokemon Trader: at GUI scale 3 (a 320x180 screen) the trader's name plaque is no longer cut off at the top; the
+  window is 10 pixels shorter and keeps an 8-pixel margin like the Village Hall's windows (B1354).
+- Village Gazette: the calendar page no longer dates a market for a village with no Market Square or with market days
+  off, nor a festival with festivals off ("none until the village builds a Market Square", "none planned"), like the
+  Seer; the Observatory's Coming days leaves the market out without a square too (B1361).
+- Market days: the traders leave by dusk whenever the market begins; one that began late in the morning kept them
+  until well into the night (B1362).
+- The villager status card's tooltips stay on screen on small windows (B1357): a grayed-out button's reason now flips
+  left of the mouse, or above it, instead of running off the right edge, and an item line's tooltip goes above or below
+  its row when neither side of the card has room, instead of covering the card's edge and the row's item.
 - Storehouse board: **Give all** now says what a press hands over when two rows ask for the same item (two builders
   short of 16 oak logs and 10 in your pack: "Give all 10", not "Give all 20") (B1338).
+- Crafters: in a busy village, a crafter's "short of" line could briefly name the wrong thing when many crafters planned
+  in the same moment (2 chests from two logs read "short of 16 Oak Planks", not the 2 logs that were short). It now
+  waits a moment and says the right thing (B1321).
+- Crafters: with planks of one wood and logs of another in the chest, the "short of" line now counts them all: 4 spruce
+  planks with an oak and a birch log for 2 chests reads "short of 1 Oak Log", not 3 (B1333).
+- Builder: scaffolding a canceled build (or a builder who died, or a Wonder's part called off) left standing in a chunk
+  nobody had loaded now comes down as soon as that chunk loads, into the chests by the bench, instead of staying up
+  for good (B1322).
+- A crafter's shortage line no longer names the wrong thing on a busy server: when the village's other jobs had used most
+  of that moment's planning, a crafter could say "short of 16 Oak Planks" for chests while holding logs of three woods.
+  He now works it out a moment later and names the logs (B1349).
 - Festival Cup: clicking [I'm ready] when your bout can't start (you're already in a battle) now just says it couldn't
   start and to click again, instead of following that with "You're ready. The bout begins!" (B1291).
 - Village Hall Routes page: a neighboring village saved with a blank name in an older world is listed by its made-up
@@ -1870,7 +2609,7 @@ asks for the steps, `latest.log` and any crash report).
   blueprint is now checked for it, and these were fixed: the Healing Center (front and ward doors), Supply Shop (its
   rug, and the shopkeeper's seat moved aside of the back door), Village Hall and its meeting room (one bench seat and
   the chair at the doorway's end of the council table taken out), Town Hall, Manor (a fanlight over the front door in place
-  of its lintel, since the grand stair starts right inside; the parlour rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
+  of its lintel, since the grand stair starts right inside; the parlor rug), Stone House III, Royal Hall (and the bench seats inside its new doors), Guildhall, Chapel, Pokemon
   Center (every look), Leader's Hall village looks, Tailor's Shop, Jeweler's Workshop II, the Bandit King's throne
   room, the pirate ship's cabin, the Observatory's chart room and the Hanging Gardens' arbors. Builds already standing
   keep theirs: lift the piece of carpet (or the seat) just inside a door where a villager stands stuck (B173).
@@ -2606,7 +3345,7 @@ asks for the steps, `latest.log` and any crash report).
   home ("Dara and Tomas are Burghers and want a grade II home"), and the Steward upgrades their house or builds an
   Artisan's House or a Townhouse for them.
 - **The Noble's Manor (1.8).** A grade III home in the Blueprint Table: a stone house of two storeys behind a
-  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlour, two
+  gravelled forecourt, round a chequered hall with a grand stair up to a gallery, a dining room and a parlor, two
   bedrooms, under a slate roof with dormers. Its II adds a walled formal garden (clipped hedges, a fountain, gravel
   walks) that counts 3 beauty for the people who live there; its III a gatehouse on the street and a ballroom wing,
   where the Noble's Ball is now held. Builders sell it once the village has a Burgher household, and the Steward

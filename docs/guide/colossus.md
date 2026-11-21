@@ -11,10 +11,15 @@ categories: Wonders
 related: wonders.md, village-life.md, jobs-services.md
 ```
 
-The Founder's statue: a robed villager in stone, drawn from the game's own villager so it reads as one from far off,
-nose and all. A copper cloak hangs from its shoulders and weathers green; one hand rests on its chest, the other holds
-up a lantern lit day and night. It stands on a stepped plinth ringed with braziers, over an arch the main road and its
-caravans pass through.
+The Founder's statue, striding over the main road. His feet are planted wide either side of it, so the road and its
+caravans pass through an arch between them, in a dark stone gate of stepped courses, corner piers and pilasters under a
+copper frieze, with nine braziers round its deck. He wears a pleated tunic with a copper belt under a copper cloak that
+sweeps from his shoulders to pool on the deck and weathers green. His left hand holds the rolled founding plan at his
+hip; his right arm is thrown up with a lantern of glowstone caged in yellow glass, lit day and night. His bearded face
+looks down the road from emerald eyes, a copper laurel in his hair.
+
+A Colossus begun or finished before this look (a robed villager on a stepped plinth) keeps its old drawing: it still
+counts as standing, its plaque is still written, and its builder repairs and finishes it as it was first drawn.
 
 ## What it needs
 

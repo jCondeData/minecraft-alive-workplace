@@ -176,6 +176,15 @@ public final class Couples {
 
 	/** {@code a} and {@code b} marry: at the bell, fireworks, everyone in the village the happier for it. */
 	public static void wed(ServerLevel level, BlockPos hall, Villager a, Villager b) {
+		wed(level, hall, a, b, true);
+	}
+
+	/**
+	 * {@code a} and {@code b} marry as {@link #wed(ServerLevel, BlockPos, Villager, Villager)}; without {@code chronicled},
+	 * the chronicle's "married at the bell" line is left to the caller, who records its own (B1348: the chapel-wedding
+	 * request's "married in the new Chapel" line, which is the only one that wedding gets).
+	 */
+	public static void wed(ServerLevel level, BlockPos hall, Villager a, Villager b, boolean chronicled) {
 		long today = Chronicle.day(level);
 		ModAttachments.PARTNER.set(a, new Partner(b.getUUID(), b.getDisplayName(), today, true));
 		ModAttachments.PARTNER.set(b, new Partner(a.getUUID(), a.getDisplayName(), today, true));
@@ -198,8 +207,10 @@ public final class Couples {
 			Chat.chat(player, Component.translatable("message.aliveworkplace.wedding", a.getDisplayName(), b.getDisplayName(), name)
 				.withStyle(ChatFormatting.LIGHT_PURPLE));
 		}
-		Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
-			b.getDisplayName()));
+		if (chronicled) {
+			Chronicle.record(level, hall, Chronicle.Kind.WEDDING, Component.translatable("chronicle.aliveworkplace.wedding", a.getDisplayName(),
+				b.getDisplayName()));
+		}
 		io.github.jcondedata.aliveworkplace.legend.Seer.bless(level, hall, a, b, square); // at the Chapel with the Seer there (29.16)
 		io.github.jcondedata.aliveworkplace.wonder.powers.WeddingsPower.bless(level, hall, a, b, square); // at the Great Cathedral (35.10)
 		io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.ring(level, hall, io.github.jcondedata.aliveworkplace.wonder.powers.WonderBells.Reason.WEDDING);

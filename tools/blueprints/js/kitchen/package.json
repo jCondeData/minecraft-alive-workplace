@@ -1,0 +1,10 @@
+{
+  "name": "kitchen",
+  "private": true,
+  "type": "module",
+  "description": "The Kitchen (the Lantern Kitchen, ROADMAP 49): a square stone great-kitchen under a hipped roof with a smoke louvre, a porch, the Chef's room and a cold larder. MC_BUILDER = the minecraft-builder skill folder. Until the critic says SHIP, 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

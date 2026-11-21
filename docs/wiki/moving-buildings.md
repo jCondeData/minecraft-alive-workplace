@@ -5,7 +5,7 @@ takes it down top-down and puts it up again at the new spot with nothing lost. B
 out (45.3), its residents moving with it (45.4), its belongings arriving as they were (45.5) and the rules that keep
 it safe on a live server (45.6). Player guide: `docs/guide/moving-buildings.md`.
 
-Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, 47.3
+Roadmap items: 45.1, 45.2, 45.2a, 45.3, 45.4, 45.5, 45.6, B1154, B1161, B1163, B1172, B1174, B1182, B1184, B1185, B1230, B1234, B1235, B1236, B1237, B1238, B1259, B1264, B1274, B1275, B1281, B1282, B1283, B1300, 47.3
 
 ## What a player sees
 
@@ -127,6 +127,8 @@ up as one, reachable through any of its blocks (B1135, B1136). A Mechanical Arm 
 from and puts on the same depots and belts: its targets turn with it, as on Create's own contraptions, and turn back
 when a canceled move puts it back, also across a restart. A Display Link keeps pointing at the block it shows on. A
 builder building a blueprint turned, mirrored, or both turns them the same way.
+Machines run again at the new spot: a cogwheel on a Creative Motor turns as before and the arm it drives carries on
+(B1160), and redstone inside the house is as it was, so a Redstone Link beside its redstone block sends at once (B1216).
 
 ## How it works
 
@@ -265,7 +267,13 @@ entities keep positions relative to themselves in their data (a Create arm's `In
 data, `build/TurnedBlockEntities` turns it with the building (B1137), and back again for data a canceled move packed at
 the new spot (the packed entry's `turned` flag); `MovePlan.place` and the builder's turned blueprints use it too.
 `compat/create` fills it with Create's `StructureTransform.apply`, which runs each block entity's own transform; without
-it the data goes in as saved, which is right for vanilla blocks. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
+it the data goes in as saved, which is right for vanilla blocks. A kinetic block's data goes in at rest (B1160):
+`put` loads it through `Contraptions.atRest`, without `Speed`, `Source` (a world position) and `Network`, so Create
+links the block to its neighbors as it does one just placed; loaded as packed, a cogwheel looked for its source at the
+old spot, dropped its speed and nothing started it again. Blocks go up one at a time without neighbor updates, so when
+the whole building stands (`MoveSite.settle`, at the new spot or back at the old one) every block of it gets one
+neighbor update and tells its six neighbors (B1216): a block that read its surroundings while the house was half up
+(a Redstone Link before its redstone block) reads them again. Shapes aren't updated. Capture uses `MovePlan.thingsIn` too, so the plan includes outer-wall frames.
 
 ## Items, blocks, jobs, commands
 
@@ -336,7 +344,8 @@ loads with none, and an entry that doesn't read is skipped, never the rest. A pl
   one block are 3 eggs, though vanilla's turtle egg loot gives one per break (a player breaks that block three times;
   `MoveSite.eachOfMany` adds one break's item for each of the others when the loot gives no more for the whole block
   than for one, so candles, sea pickles and pink petals, whose loot counts them, are left as they drop, never doubled:
-  B1258; a double slab is 2 slabs). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
+  B1258; a double slab is 2 slabs; a glow lichen or any block on several faces is one item per face, 3 faces 3 glow
+  lichen, though vanilla's glow lichen loot counts faces only for shears: B1300). Its loot is worked out as if someone broke it (an unspawned marker where it stands), since some loot drops
   nothing without one: 1 to 7 snow layers are that many snow, never snowballs (B1274: vanilla's snow loot asks for a
   breaking entity, so they came back as 1 snow), and 8 layers are 8 snow, also when the site is saved and loaded back with the snow packed, or the crate was set down on
   the snow's new spot after the move was confirmed (B1281, B1282: vanilla's Silk Touch loot is one
@@ -460,8 +469,11 @@ a wall, each moved a quarter turn: the hand, the filter and the placard's item a
 turned wall, nothing dropped while the house comes down or loose after.
 `QaCreateMoverLinks1111eCompatTests` (1, compat suite, the QA lane): a Redstone Link powered by a redstone block beside
 it keeps its two frequency items through the move, sends nothing while packed, and at the new spot breaking and putting
-back its redstone block turns its receiver off and on (no transmitter left at the old spot). Right after the move, before
-anything next to it changes, it stays dark: B1216 (its failing test is on the tests/create-mover-link-1111e branch).
+back its redstone block turns its receiver off and on (no transmitter left at the old spot).
+`QaCreateMoverLinks1111eBugCompatTests` (1, B1216): right after the move, before anything next to it changes, the link
+lights its receiver. `QaCreateMoverTurns1110hBugCompatTests` (4, B1160): a cogwheel on a Creative Motor turns after the
+move at its speed from before, and a Mechanical Arm driven by it carries a diamond between its depots moved unturned, a
+quarter turned, and with the Mover working one step a tick.
 `QaCreateMoverChains1113eCompatTests` (2, compat suite, the QA lane), with the Mover working one swing a tick as in a
 world: a Sequenced Gearshift keeps its instruction list and a Rotation Speed Controller its 64 RPM, and a Display Link
 put up before its Nixie Tube still aims at the tube, each moved a quarter turn with nothing loose. Two Chain Conveyors

@@ -6,7 +6,7 @@ described as data the way the raider cultures are (see [Raids and threats](raids
 32.16 ([Village fire and the Firewarden](village-fire.md)) and the drought with 32.17 ([Drought and the Well
 Keeper](drought.md)) and the plague with 32.18 ([Plague and the Physician](plague.md)); a datapack can add its own.
 
-Roadmap items: 32.15, 32.19
+Roadmap items: 32.15, 32.19, 52.1, 50.8
 
 ## What a player sees
 
@@ -19,10 +19,13 @@ Roadmap items: 32.15, 32.19
   "Drought foretold (days until it strikes: 1)"). What next? lists it, and names the job that answers it when the village has none.
 - **Houses for the answering jobs** (32.19). The Blueprint Table has three one-tier builds, each with its job's block
   and no other job block: the **Fire Station** (a stone ground floor with the Firewarden's grindstone, a water basin
-  and buckets on racks, a ladder up to a timber watch loft with windows all round), the **Well House** (a roofed well
-  on a stone platform, its shaft three deep down to water, the Well Keeper's cauldron, a water trough and benches) and
-  the **Physician's House** (a white ward with the brewing stand on a counter of herbs, four beds each between white
-  screens, the quarantine ward, and a herb garden out front). A builder builds them from the chests like any blueprint;
+  and buckets on racks, a ladder up to a timber watch loft with windows all round), the **Well House** (redrawn in
+  52.1 with the rebuild kit, 17 x 15 x 13: an open spruce pavilion round a well on a stone cistern podium, under a
+  cross-gabled dark oak roof with a louver at the crossing; benches face the windlass, and a stone channel runs out east
+  on arches to the Well Keeper's cauldron at its head; Well Houses already built keep their old look until refreshed) and
+  the **Physician's House** (rebuilt from scratch in 50.8: a stone still-room tower with a lit vent on its slate cap,
+  the brewing stand and its chest inside, and a white ward behind it with four beds each between white screens, the
+  quarantine ward, round a physic garden; Physician's Houses already built keep their old look until refreshed). A builder builds them from the chests like any blueprint;
   hand a jobless villager there the job's item (a water bucket, a shovel, a glistering melon slice) and they take the
   job at that block. On the Village Map the Fire Station is a defense, the other two care.
 - **What next? suggests them** (32.19): "Drought can come here: build a Well House", with "No Well Keeper answers it

@@ -166,15 +166,14 @@ public final class WonderGoods {
 	/** Whether the village round {@code hall} has a grown villager of {@code job} (a Chef, for the bread). */
 	public static boolean hasMaker(ServerLevel level, BlockPos hall, ResourceLocation job) {
 		VillagerProfession profession = profession(job);
-		return profession != null && !level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == profession).isEmpty();
+		return profession != null && !VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == profession).isEmpty();
 	}
 
 	// ---------------------------------------------------------------- the lines
 
 	/** The goods lines of {@code site}'s current stage (empty once finished, or for a Wonder no longer loaded). */
 	public static List<Wonder.Good> goods(WonderSite site) {
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.recorded(null, site);
 		if (wonder == null || site.done() || site.stage() < 1 || site.stage() > wonder.stages().size()) {
 			return List.of();
 		}
@@ -580,7 +579,7 @@ public final class WonderGoods {
 		if (!Wonders.ENABLED || site.started() || !site.goingUp() || site.stone().isEmpty() || site.placement().isEmpty() || !isDay(level)) {
 			return false;
 		}
-		Wonder wonder = Wonders.loaded().get(site.wonder());
+		Wonder wonder = WonderDrawings.of(level, site);
 		List<Line> lines = lines(level, site);
 		if (wonder == null || !lines.stream().allMatch(Line::full)) {
 			return false;

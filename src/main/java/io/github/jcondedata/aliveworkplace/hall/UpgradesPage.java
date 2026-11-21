@@ -14,6 +14,7 @@ import io.github.jcondedata.aliveworkplace.build.Employer;
 import io.github.jcondedata.aliveworkplace.build.Friends;
 import io.github.jcondedata.aliveworkplace.build.MaterialFamilies;
 import io.github.jcondedata.aliveworkplace.build.MaterialRules;
+import io.github.jcondedata.aliveworkplace.build.Refreshes;
 import io.github.jcondedata.aliveworkplace.city.StewardSafety;
 import io.github.jcondedata.aliveworkplace.mc.Chat;
 import io.github.jcondedata.aliveworkplace.mc.Ids;
@@ -39,7 +40,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -47,7 +47,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -128,7 +127,10 @@ public final class UpgradesPage {
 	/** The next level of {@code built}: its cost, its space and whether it's under way. Empty if a blueprint is missing. */
 	static Optional<Upgrade> check(ServerLevel level, BuildSiteManager.Finished built) {
 		ResourceLocation next = BlueprintUpgrades.upgradeOf(built.structure());
-		Optional<Blueprint> base = BlueprintLibrary.get(level, built.structure());
+		// B1370: the level as it stands: a level of an older drawing (its family rebuilt since) by the drawing it was built from
+		String from = Refreshes.builtFrom(level, built.structure(), built.placement(), BuildSiteManager.get(level).furniture(built.placement()));
+		Optional<Blueprint> base = from == null ? BlueprintLibrary.get(level, built.structure())
+			: Refreshes.drawing(level, built.structure(), from, BuildSiteManager.get(level).furniture(built.placement()));
 		Optional<Blueprint> up = BlueprintLibrary.get(level, next);
 		if (base.isEmpty() || up.isEmpty()) {
 			return Optional.empty();
@@ -306,7 +308,7 @@ public final class UpgradesPage {
 			Optional<Builders.Split> split = Builders.splitOff(level, builders(level, hall, centre, v -> Friends.mayCommand(player, v)), centre);
 			if (split.isPresent()) {
 				Villager helper = split.get().builder();
-				Builders.start(level, helper, owner, ownerName, upgrade.next(), placement);
+				overOld(level, upgrade, Builders.start(level, helper, owner, ownerName, upgrade.next(), placement));
 				Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.upgrade_ordered",
 					player.getDisplayName(), helper.getDisplayName(), Blueprints.displayName(upgrade.next()), Blueprints.displayName(upgrade.built().structure())));
 				onSplit.accept(split.get());
@@ -320,13 +322,25 @@ public final class UpgradesPage {
 		Villager villager = builder.get();
 		boolean busy = Builders.activeSite(level, villager) != null;
 		if (busy) {
-			Builders.enqueue(level, villager, owner, ownerName, upgrade.next(), placement);
+			overOld(level, upgrade, Builders.enqueue(level, villager, owner, ownerName, upgrade.next(), placement));
 		} else {
-			Builders.start(level, villager, owner, ownerName, upgrade.next(), placement);
+			overOld(level, upgrade, Builders.start(level, villager, owner, ownerName, upgrade.next(), placement));
 		}
 		Chronicle.record(level, hall, Chronicle.Kind.PLANS, Component.translatable("chronicle.aliveworkplace.upgrade_ordered",
 			player.getDisplayName(), villager.getDisplayName(), Blueprints.displayName(upgrade.next()), Blueprints.displayName(upgrade.built().structure())));
 		return busy ? Outcome.QUEUED : Outcome.STARTED;
+	}
+
+	/**
+	 * B1370: an upgrade over a level that stands as an older drawing of its (since rebuilt) family takes down what of that
+	 * level the next one doesn't cover, so no half of the old house is left beside the new one.
+	 */
+	private static void overOld(ServerLevel level, Upgrade upgrade, @Nullable BuildSite site) {
+		BuildSiteManager.Finished built = upgrade.built();
+		String from = Refreshes.builtFrom(level, built.structure(), built.placement(), BuildSiteManager.get(level).furniture(built.placement()));
+		if (site != null && from != null) {
+			site.setBuiltFrom(built.structure(), from);
+		}
 	}
 
 	/**
@@ -348,16 +362,15 @@ public final class UpgradesPage {
 
 	/** The village's Builders among those {@code allowed} whose bench reaches a build centred on {@code centre}, nearest first. */
 	static List<Villager> builders(ServerLevel level, BlockPos hall, BlockPos centre, Predicate<Villager> allowed) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)
+		return VillageHalls.villagers(level, hall, // B1352: the village's circle
+				v -> Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && allowed.test(v)
 					&& io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, Builders.benchPos(v).get(), centre, Builders.MAX_SITE_DISTANCE)).stream()
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(centre.getX(), centre.getY(), centre.getZ()))).toList();
 	}
 
 	/** The name of whoever hired the village's nearest Builder that {@code player} may not command ("" if none). */
 	static String othersEmployer(ServerLevel level, BlockPos hall, ServerPlayer player) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && !Friends.mayCommand(player, v)).stream()
+		return VillageHalls.villagers(level, hall, v -> Builders.isBuilder(v) && !Friends.mayCommand(player, v)).stream() // B1352
 			.sorted(Comparator.comparingDouble(v -> v.distanceToSqr(player)))
 			.map(v -> ModAttachments.BUILDER_EMPLOYER.get(v)).filter(java.util.Objects::nonNull).map(Employer::name)
 			.findFirst().orElse("");

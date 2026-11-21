@@ -1,0 +1,19 @@
+{
+  "name": "daycare-2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 27
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/daycare/out/daycare-2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/daycare/out/summary.json",
+  "size": [
+    19,
+    14,
+    27
+  ],
+  "blockCount": 994,
+  "paletteCount": 65,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/daycare/recipe.mjs"
+}

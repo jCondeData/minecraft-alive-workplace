@@ -26,11 +26,12 @@ import net.minecraft.world.level.block.Rotation;
  * item wanted), now and once its water has settled.
  */
 public class QaCreateGoneUpkeepGameTests implements FabricGameTest {
-	private static final String HUGE = "aliveworkplace_test:huge_area";
+	/** 30 tall (ROADMAP 50.3): the rebuilt Brass Foundry is 21 tall, over the huge area's 20. */
+	private static final String TALL = "aliveworkplace_test:tall_area";
 	private static final BlockPos AT = new BlockPos(2, 2, 2);
 
-	//$ gametest_ticks_batch HUGE '600' '"qa_create_gone_upkeep"'
-	@GameTest(template = HUGE, timeoutTicks = 600, batch = "qa_create_gone_upkeep")
+	//$ gametest_ticks_batch TALL '600' '"qa_create_gone_upkeep"'
+	@GameTest(template = TALL, timeoutTicks = 600, batch = "qa_create_gone_upkeep")
 	public void aCreateBuildStandingWithoutCreateNeedsNoRepair(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();

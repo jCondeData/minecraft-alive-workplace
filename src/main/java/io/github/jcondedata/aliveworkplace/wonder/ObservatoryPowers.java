@@ -208,12 +208,12 @@ public final class ObservatoryPowers {
 		if (Festivals.ENABLED) {
 			out.add(new Coming(Items.CAKE, Component.translatable("screen.aliveworkplace.coming.festival"), Festivals.nextDay(level, hall, entity), Optional.empty()));
 		}
-		if (MarketDays.ENABLED) {
-			out.add(new Coming(Items.EMERALD, Component.translatable("screen.aliveworkplace.coming.market"), MarketDays.nextDay(level, hall, entity.lastMarketDay()),
-				MarketDays.square(level, hall)));
+		long market = MarketDays.foretold(level, hall, entity.lastMarketDay()); // none without a Market Square (B1361)
+		if (market >= 0) {
+			out.add(new Coming(Items.EMERALD, Component.translatable("screen.aliveworkplace.coming.market"), market, MarketDays.square(level, hall)));
 		}
 		Set<UUID> seen = new HashSet<>();
-		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive)) {
+		for (Villager v : VillageHalls.villagers(level, hall, Villager::isAlive)) {
 			Couples.Partner p = Couples.partner(v);
 			if (Couples.ENABLED && p != null && !p.married() && seen.add(v.getUUID()) && seen.add(p.id())) {
 				out.add(new Coming(Items.POPPY, Component.translatable("screen.aliveworkplace.coming.wedding", v.getDisplayName(), p.name()),
@@ -233,7 +233,7 @@ public final class ObservatoryPowers {
 					VillageHalls.name(level, other)), day, Optional.of(other)));
 			}
 		}
-		Optional<Villager> innkeeper = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Innkeepers.isInnkeeper(v)).stream().findFirst();
+		Optional<Villager> innkeeper = VillageHalls.villagers(level, hall, v -> v.isAlive() && Innkeepers.isInnkeeper(v)).stream().findFirst();
 		if (innkeeper.isPresent()) {
 			boolean thisMorning = timeOfDay < Innkeepers.MORNING && Innkeepers.arrivedOn(innkeeper.get(), level.getDayTime() / VillageNeeds.DAY) < Innkeepers.arrivalsPerMorning(innkeeper.get());
 			out.add(new Coming(Items.WHITE_BED, Component.translatable("screen.aliveworkplace.coming.traveller"), thisMorning ? today : today + 1,

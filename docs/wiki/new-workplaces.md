@@ -16,18 +16,27 @@ job block: "1 job here has no workplace of its trade".
 
 **The buildings.**
 
-- **Smithy**: a stone forge under a timber roof with an open front, an anvil, a quench trough and a chimney with a
-  campfire; a blast furnace, a smithing table and a grindstone. Smithy II adds a coal and ore store and a second
-  blast furnace.
-- **Mason's Yard**: a fenced yard of cut stone with a lean-to over a stonecutter. Its II has a second stonecutter.
-- **Fletcher's Lodge**: a log cabin with a log pile, a straw target and a fletching table. Its II has a second
-  fletching table.
+- **Smithy**: a stepped stone forge stack beside a low shop, one forge hall inside with the blast furnace under its
+  hood, the smithing table, the grindstone, an anvil and a quench trough, iron-bar vents and a smoking campfire on the
+  stack, and a coal cellar down a stair with bins, lanterns and a cart run (rebuilt from scratch in 50.3). Smithy II
+  adds a second stack with a second blast furnace and a bigger coal and ore store.
+- **Mason's Yard**: a stone lodge whose roof sweeps down at the front over an open banker shed, the stonecutter in its
+  bay facing a walled yard with a jib crane, the Mason's chest and desk in the lodge behind (rebuilt from scratch in
+  50.2). Its II adds a second stonecutter and a tall tracing house on the east end, where the master draws templates
+  upstairs.
+- **Fletcher's Lodge** (rebuilt from scratch in 50.6): a log pen under a long roof with a stone chimney, a porch and an
+  entry gable, a fletching table and a chest inside; 9 x 11 x 10. Its II (16 wide) is a dogtrot: an open breezeway and
+  a second, front-gabled pen with a second fletching table. Lodges already standing keep their old drawing until
+  refreshed.
 - **Map Room**: a narrow tower house with a cartography table and a lookout at the top (no upgrade).
-- **Farmstead**: a farmhouse with one bed and a composter beside a 9x5 field round a water channel, with a scarecrow.
-  Farmstead II adds a barn and a second field.
+- **Farmstead**: a farmhouse with one bed and a composter beside a 9x5 field round a water channel, with a scarecrow
+  (rebuilt in 49.9: [The Farmstead](farmstead.md), the composter on a gallery under the long roof). Farmstead II adds
+  a barn and a second field.
 - **Fisher's Hut**: a shore hut with a jetty on log posts and a barrel. Its plot must be on a shore: water near its
   front, at most 3 deep under the jetty. Fisher's Hut II adds a smokehouse with a smoker.
-- **Weaver's Cottage**: a cottage with a loom and a fenced sheep pen. Its II adds a dye garden.
+- **Weaver's Cottage**: a two-story stone weaver's house with the loom at its long front window, a wool loft and a
+  fenced sheep fold on its gable (rebuilt in 49.8: [The Weaver's Cottage](weavers-cottage.md)). Its II adds a walled
+  dye garden with a tenter frame of dyed cloth.
 - **Bandstand**: an open eight-sided bandstand with a jukebox, in the Gardens zone. It counts 3 for beauty, like the
   other decorations; the workplaces count nothing.
 
@@ -75,7 +84,6 @@ none (a built workplace is an ordinary finished building)
 ## Known limits
 
 - The rules ask only when a worker has lost his block, not when the village wants a job nobody can take.
-- Mason's Yard II's hoist is two chains.
 
 ## Proof
 

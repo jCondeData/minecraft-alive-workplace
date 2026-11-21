@@ -100,6 +100,48 @@ public class VillageHabitatCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * 50.12 and saves: a Habitat Garden still standing in its old drawing (built before the rebuild, never refreshed; a
+	 * finished building records no drawing version) has its centre stone at the old drawing's spot. The Expert keeper
+	 * founds the village's habitat there, in place of the stone, and taking the garden down removes it.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"village_habitat_old"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "village_habitat_old")
+	public void anExpertKeeperFoundsTheHabitatInAnOldDrawingGarden(GameTestHelper helper) {
+		ServerLevel level = helper.getLevel();
+		BlockPos centre = helper.absolutePos(CENTRE);
+		BlockPos origin = centre.subtract(StarterBlueprints.V0145_HABITAT_GARDEN_CENTRE);
+		BlueprintData.Placement placement = new BlueprintData.Placement(level.dimension().location(), origin, Rotation.NONE, Mirror.NONE);
+		helper.setBlock(CENTRE, Blocks.MOSSY_COBBLESTONE); // the old drawing's centre stone; today's spot (two east, one south) is open ground
+		BuildSiteManager.get(level).recordFinished(StarterBlueprints.HABITAT_GARDEN.id(), placement, UUID.randomUUID());
+		PartnerShowsCompatTests.after(helper, () -> {
+			BuildSiteManager.get(level).forgetFinished(placement);
+			level.removeBlockEntity(centre);
+			level.setBlock(centre, Blocks.AIR.defaultBlockState(), 3);
+		});
+		helper.assertTrue(VillageHabitats.centre(level, placement).equals(centre), "the old garden's centre is read at "
+			+ helper.relativePos(VillageHabitats.centre(level, placement)) + ", not at its stone " + CENTRE);
+		Villager keeper = expert(helper);
+		if (!PokemonFeatures.HABITATS.available()) {
+			helper.runAfterDelay(300, () -> {
+				helper.assertTrue(level.getBlockState(centre).is(Blocks.MOSSY_COBBLESTONE), "Cobblemon 1.7: the centre stone became " + level.getBlockState(centre));
+				helper.succeed();
+			});
+			return;
+		}
+		helper.succeedWhen(() -> {
+			helper.assertTrue(VillageHabitats.isNatural(level.getBlockState(centre)), "no natural Habitat Block at the old garden's stone yet: " + level.getBlockState(centre));
+			VillageHallBlockEntity hall = (VillageHallBlockEntity) helper.getBlockEntity(HALL);
+			helper.assertTrue(centre.equals(hall.habitat()), "the hall keeps " + hall.habitat());
+			helper.assertTrue(VillageHabitats.centre(level, placement).equals(centre), "the founded habitat isn't read as the old garden's centre");
+			helper.assertTrue(VillageHabitats.foundingSpot(level, keeper, helper.absolutePos(new BlockPos(2, 2, 2))) == null, "a second habitat would be founded");
+			// taken down: the habitat goes too, and the hall forgets it
+			VillageHabitats.onTakenDown(level, StarterBlueprints.HABITAT_GARDEN.id(), placement);
+			helper.assertTrue(level.getBlockState(centre).isAir() && hall.habitat() == null,
+				"the old garden taken down left " + level.getBlockState(centre) + ", the hall keeps " + hall.habitat());
+		});
+	}
+
 	/** The pool files: every biome named in 28.14 has its pool, and anywhere else is the Zen Garden. */
 	//$ gametest 'AREA'
 	@GameTest(template = AREA)

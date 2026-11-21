@@ -1,0 +1,10 @@
+{
+  "name": "fire_pit",
+  "private": true,
+  "type": "module",
+  "description": "The Fire Pit (fire_pit), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/fire_pit.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Build output goes to build/rebuild/fire_pit/out; until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/fire_pit/out --data-version 3955 && python3 ../../rebuild.py fire_pit fire_pit --candidate --nbt ../../../../build/rebuild/fire_pit/out/fire-pit.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/fire_pit/out --data-version 3955"
+  }
+}

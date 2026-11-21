@@ -1,0 +1,10 @@
+{
+  "name": "healing-center",
+  "private": true,
+  "type": "module",
+  "description": "The Healing Center (the Spring Infirmary), drawn from scratch for ROADMAP 49 (tools/blueprints/briefs/healing_center.md, REBUILD.md): a candidate for the critic. LEVEL=1..4 picks the level; build.sh builds and saves all four. MC_BUILDER = the minecraft-builder skill's folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

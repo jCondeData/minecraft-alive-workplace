@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13
 
 ## What a player sees
 
@@ -20,7 +20,8 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   within 32 blocks of the toolbox (measured to the build's nearest block, so a big build next to the toolbox counts
   however far off its corner lies, B598), the Mechanic fetches the part from the chest by the toolbox, carries it over and
   puts it back as the blueprint has it (the same axis and facing): shafts first, then the cogwheels on them, then
-  belts. Without the part in the chest the hole waits, and the status over the Mechanic says what's needed ("needs
+  belts. A broken belt goes back whole, the way a player lays one: its two pulley shafts first, then one Belt Connector
+  from the chest strung between them (never segment by segment, which only dropped connectors, B669). Without the part in the chest the hole waits, and the status over the Mechanic says what's needed ("needs
   Shaft to mend the Drive Line"). Between repairs the Mechanic walks a round of the village's millstones: what's been
   milled goes to the chest, and a millstone that turns and is empty gets up to 16 wheat from the chest. A millstone
   that doesn't turn is fed nothing ("the Millstone has stopped turning"). The Mechanic trades Create parts and tools
@@ -44,29 +45,52 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   workstation, are left alone: nothing of theirs is fed in, taken out or carried off.
 
 - **Create-powered builds** (39.4). The Blueprint Table offers three new workplaces, only with Create installed: the
-  **Watermill**, a stone-and-timber mill house whose water wheel on the west wall is turned by water falling from a
-  header tank into a walled mill race, its shaft running through the wall to a gearbox and a millstone inside, with
-  the farmer's composter and the store chest; the **Windmill**, a seven-square stone tower with a windmill bearing and
-  24 sails on its front and a shaft down the middle to the millstone; and the **Workshop**, a brick shop whose water
-  wheel drives a belt to a depot under a mechanical press (driven up a column of cogwheels from the belt's far
-  pulley), with the armorer's blast furnace and the store chest. The water is placed last, so the wheels turn as
+  **Watermill** (rebuilt from scratch in 50.5), a stone-and-timber mill on a stone undercroft: a mill pond on a terrace
+  against its back wall feeds a timber launder along the west side, over the top of the water wheel and down into a
+  stone pit, and the wheel's shaft runs through the wall to a gearbox under the millstone on the meal floor; a sack
+  hoist's hood (the lucam) juts from the front gable over the entrance steps, the grain loft is under the steep roof,
+  and a granary wing on the east holds the farmer's chests, his composter in the yard by its door (standing Watermills
+  keep their old drawing until refreshed); the **Windmill** (rebuilt from scratch in 50.10, "the Stage Mill",
+  15 x 18 x 14), a tarred timber smock tower stepping in twice out of a round brick drum, a reefing stage on brackets
+  round the drum's top and a slate boat cap whose nose holds the windmill bearing and four long sails (44 sail blocks),
+  a tail pole raking down to the stage; the upright shaft drops through both floors to a gearbox under the meal floor
+  that turns the millstone, with the farmer's composter and store chest beside it (standing Windmills keep their old
+  drawing until refreshed); and the **Workshop** (rebuilt from scratch in
+  50.7, "the head-tank works"), a timber plate shop on a stone dado between two verticals: on the west a stone water
+  tower banded in dark tiles, whose hooped head tank pours one source down the tower's corner onto a water wheel, its
+  axle through the wall into a stack of cogwheels that turns the belt and the mechanical press over its depot; on the
+  east a brick stack with the armorer's blast furnace at its foot and his two store chests beside it. A glazed press
+  gable on the street lets you watch the press come down (standing Workshops keep their old drawing until refreshed). The water is placed last, so the wheels turn as
   soon as the builder is done; the builder starts the windmill's bearing the way a player does, with an empty hand.
 
 - **More Create builds** (39.8). Six more workplaces at the Blueprint Table, again only with Create, each driven by a
-  water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry**, a brick
-  hall under a deepslate roof whose wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
+  water wheel from a header tank like the Watermill's and turning as soon as it's built: the **Brass Foundry** (rebuilt
+  from scratch in 50.3), a tall brick hall under a weathered copper roof with a glazed gear lantern on its ridge where
+  the gear train turns in daylight, a copper tank on a brick tower feeding the wheel, and a cookhouse under a catslide;
+  its wheel turns a belt out to a depot and, geared up from 8 to 32 RPM through two
   large-to-small cogwheel steps, a mechanical mixer over a basin and a blaze burner (the chef's mixer; a smoker as the
-  job block); the **Sawmill**, a timber mill with a log store whose belt runs through two mechanical saws to a depot
-  (fletching table); the **Crushing Mill**, an andesite-and-cobble mill whose two crushing wheels turn the opposite
-  ways through a gearbox train, Create's crusher working in the gap under a feed belt, a pit and an item drain below
-  (blast furnace); the **Greenhouse**, a glass house on a brick knee wall with a stepped glass roof on spruce
-  rafters, farmland beds watered by two channels, and a belt from the wheel down the aisle to a depot, a little cart
-  of andesite casing on it carrying a mechanical harvester and a mechanical plough (ready to be fixed to a
-  contraption: Create's harvester and plough only work moving) (composter); the **Clock Tower**, a stone tower with a
-  plastered belfry under a dark oak hip roof and a cuckoo clock in its front, turned by a shaft up the middle of the
-  tower from the wheel at its foot (cartography table; purely for show); and the **Pump House**, a small brick house
-  where the wheel's cogwheel turns a mechanical pump between an intake pipe over a four-source sump (it refills) and a
-  two-high fluid tank (cauldron). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
+  job block); the **Sawmill** (rebuilt from scratch in 50.2), a hooped water tank whose flume drops onto the wheel, a long saw
+  shed whose belt runs through two mechanical saws to a depot, and a Lumberjack's lodge (fletching table); the **Crushing Mill** (rebuilt from scratch in 50.10, "the Fall
+  House", 14 x 18 x 12), a stone crushing hall with its gable to the street and a timber-framed glazed bay that shows
+  the two crushing wheels from the road, a tall fall tower behind whose tank pours down a shaft (a glass slot shows the
+  water) onto the wheel in its face, the drive running through gearboxes to wheels that turn the opposite ways, Create's
+  crusher working in the gap under a feed belt, a pit and an item drain below, and a brick stack up the east side over
+  the blast furnace and the miner's chest (standing Crushing Mills keep their old drawing until refreshed); the **Greenhouse** (rebuilt from scratch in 50.9, "the Leat House", 18 x 13 x 14), a ridge-and-furrow
+  glasshouse of three glass gables with a raised nave, a brick boiler and stack behind; the leat in an open stone trough
+  on its west side turns an undershot wheel whose shaft drives a belt along the inside of the west wall to a depot in a
+  front-wall hatch, a mechanical harvester and a mechanical plough standing over the belt (Create's harvester and plough
+  only work moving), farmland beds either side of the walk (composter); the **Clock Tower** (rebuilt in 51.6, "the Water
+  Clock", 15 x 26 x 15), a slender stone shaft under a jettied timber clock chamber with a cuckoo clock on every face and
+  a bell-cast copper spire: water poured into a spout pier's cup falls down the tower's front corner past the wheel by
+  the door, whose drive runs in through the wall, up a corner shaft (seen through a slit) and out through the chamber's
+  gearboxes to the four clocks (cartography table in the map room at its foot; purely for show); and the **Pump House** (18 x 17 x 13; rebuilt
+  from scratch in 50.13 as "the Tanner's Water Tower"), a stone water tower under a steep green copper cap: water poured
+  into a stone cup on its flank falls past the wheel into a trough, the wheel's cogwheel turns a mechanical pump over a
+  cistern two sources deep at the tower's foot (it refills; seen through the front windows; the pump draws through a
+  pipe standing straight down in it, as Create keeps a pipe only bent between two pipes, pumps or tanks), and a riser climbs the tower to
+  a two-high fluid tank in a glazed belvedere, a door out onto the gallery round it; the Leatherworker's tannery leans
+  on the tower under a deepslate gable (his cauldron between two chests, a cutting table, a stitching desk, hides;
+  standing pump houses keep their old drawing until refreshed). `createBuilds` lists and hides all nine. Turned or flipped at the table before it's
   handed over, a Create build is built whole and works the same: its belts run the other way, the crushing wheels
   still turn into the gap. Switching `createBuilds` off while one is going up only takes them off the table: the build
   under way is finished and turns.
@@ -95,8 +119,12 @@ Nothing yet: the gate is shut until 2.3 ships. Then, and only with Create instal
   A Schematic written without its size (by a command or another mod) gets it from its file when it is used on the
   table, so holding it afterwards can't crash Create (B189).
 
-- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (13 x 9 x 8): a Create station
-  on the edge of a platform beside a straight run of Create track, under a timber shelter with benches and lanterns.
+- **Trains between villages** (39.7). The Blueprint Table offers a **Train Station** (19 x 18 x 17; rebuilt from scratch in
+  50.13 as "the Trainshed"): a Create station on the edge of a platform beside a straight run of Create track through
+  a brick train shed, open at both ends under timber portals, with a glazed lantern along its ridge, benches and hung
+  lanterns on the platform, a booking hall on the street with benches, a route map and a barred ticket window into the
+  clerk's office, and a clock tower with three faces under a green copper cap (standing stations keep their old drawing
+  until refreshed).
   When two villages with a caravan route both have a Create station within their hall's reach (the Train Station's, or
   any a player placed) and a village's half of the road between them is built (27.17), one of its idle builders takes
   a "Railway" site and lays Create track down the middle of that half, from the village's store like any material;
@@ -333,6 +361,14 @@ order is finished, the positions of its blocks with a `Speed` in their saved dat
 (a wheel's water takes a moment to fall), then the parts that don't turn (`Speed` 0, or gone) are kept with the
 finished building (`not_turning`) and the owner is told.
 
+A built Create block is a freshly placed one (`BlockEntityData`), from a scan, an uploaded file or a Create schematic
+alike. A **Blaze Burner** is built with no fuel: never creative, never with the heat its blueprint's burner had left
+(B1067; its goggles and train hat stay, they are looks). A **Copper or Netherite Backtank** set down costs the backtank
+a player wears (`MaterialRules.BUILT_FROM`; Create's own "placeable" item can't be had in survival, B1068) and is built
+plain and empty: no enchantments, no air, and a right-click takes a plain backtank off it (B1069). No built block keeps
+the item components its blueprint's block was placed with, so a **Clipboard** (or any block that gives them back on the
+item it drops) drops a plain one, whatever a hand-written file says (B1070).
+
 Everything goes by Create's ids alone: block and item ids, block state names, block entity data read by name (a
 machine's `Speed`, a belt's length), recipe types such as `create:milling`, and the schematic item's data components.
 The mod has no Create classes and compiles without it, so Create stays optional: it's in the mod's `suggests`, never
@@ -429,11 +465,14 @@ The planned fields of later items, each with its default, are listed in the desi
 
 - Blueprints (39.6): `aliveworkplace:create_schematics/<player>/<name>`, one for each uploaded schematic.
 
-- Blueprint (39.7): `aliveworkplace:train_station` (13 x 9 x 8), drawn in `tools/blueprints/create_builds.py`,
+- Blueprint (39.7): `aliveworkplace:train_station` (19 x 18 x 17), drawn by the rebuild kit in `tools/blueprints/js/train_station`
+  (50.13; the old 13 x 9 x 8 drawing in `create_builds.py` is kept in `blueprint_history/`),
   listed only with Create and `villageTrains` (`city/CaravanTrains.listed`). Track sites are named "Railway".
 
-- Blueprints (39.4): `aliveworkplace:watermill` (11 x 11 x 9), `aliveworkplace:windmill` (9 x 17 x 9) and
-  `aliveworkplace:workshop` (14 x 10 x 9), drawn in `tools/blueprints/create_builds.py`, unlocked from the start and
+- Blueprints (39.4): `aliveworkplace:watermill` (17 x 16 x 17 since its 50.5 rebuild, drawn by the rebuild kit in
+  `tools/blueprints/js/watermill`), `aliveworkplace:windmill` (15 x 18 x 14 since its 50.10 rebuild,
+  drawn by the rebuild kit in `tools/blueprints/js/windmill`) and
+  `aliveworkplace:workshop` (15 x 18 x 13 since its 50.7 rebuild, drawn by the rebuild kit in `tools/blueprints/js/workshop`), unlocked from the start and
   listed only with Create (`mechanic/CreateBuilds`).
 
 No items or blocks of our own. The ids the milestone reads from Create (the machines, the drive-train parts, the sails, the
@@ -518,12 +557,19 @@ Post its name and finder (B986).
 Create's funnels and chutes take nothing out of a Shop Counter or a Mailbox, and a funnel pushing into a counter,
 mailbox or drop box loses and doubles nothing (a counter refuses it). A Mechanical Drill breaking a Mailbox, Shop
 Counter, Drop Box, Builder's Bench, Blueprint Table or Village Hall drops what a player breaking it gets (a named
-hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him; one nobody placed still
-becomes the owner of a hall it sets down and of an unowned Mailbox or Shop Counter it clicks (B843), and a stranger's
-deployer can place blocks in and rename the hall of a protected village (B844).
-From outside a protected village, Create's Mechanical Piston pushes blocks into it and its Mechanical Drill breaks
-blocks at its edge, which a vanilla piston can't (B993); a Mechanical Piston inside the village works there as usual. A Create funnel outside on the side of a chest in the
-village's last column empties it (B994).
+hall keeps its name). A Deployer acts as a fake player: one a player placed acts for him (his hall set down is his);
+one nobody placed acts for nobody, so a hall it sets down stays unowned until a player claims it, and an unowned
+Mailbox, Shop Counter or Storehouse it places or clicks stays unowned (B843). A stranger's deployer in a protected
+village can do only what the stranger may: it places no block and renames, opens or hands nothing in at the hall
+(B844).
+Create's machines keep out of a protected village the way a vanilla piston does (B808, B993, B1033): one standing
+outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing, a
+Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or saw rides on it), a bearing's arm
+sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
+setting them down there, and a Deployer places no block inside (B1015). The same machines inside the village, or
+with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
+inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
+onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Portable Storage Interface.
 
 ## Proof
 
@@ -542,6 +588,9 @@ village's last column empties it (B994).
   `aBuilderBuildsThePumpHouseAndItTurns` (the pump; pipes and both tank blocks in place): each built from exact
   materials, nothing skipped, the job block a job site, the machine's `Speed` read by name. Scene `create_builds_more`:
   the six set down in two rows, every machine turning. Renders: `tools/blueprints/render/preview.sh greenhouse ...`.
+- `QaPumpHouseTank1121eCompatTests` (B1411, lane E's QA): the Pump House turned a quarter, and flipped and turned
+  round, each has water in its tank within a minute of the build's end; as drawn, the tank ends up holding two buckets
+  more than every water source standing in the build when it finished (the cistern refills; the full tank is 16 buckets).
 - `QaCreateBuildsTurnedCompatTests` (39.4, 39.5, 39.8, with Create; lane E's QA): the Workshop flipped and turned round,
   the Watermill, the Sawmill and the Crushing Mill flipped, the Brass Foundry and the Pump House turned a quarter
   (either way): each built from exact materials, nothing skipped, the job block a job site, its machines turning, and
@@ -552,7 +601,12 @@ village's last column empties it (B994).
   naming it, and makes no blueprint. `QaMechanicMendSaysCompatTests` (39.2): "Mechanic: fetching Shaft for the ..."
   and "Mechanic: putting back a Shaft in the ..." while a broken shaft goes back. `QaCreateItemsHeldCompatTests` (lane E's QA): a depot, a
   deployer and a basin, each holding a diamond, scanned into a blueprint and built from exactly its material list, are
-  built holding nothing. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
+  built holding nothing. `QaCreateFileClipboard1108eCompatTests` (B1070): a Clipboard from an uploaded file whose data
+  carries Sharpness 255 and +1000 attack damage as item components is built from a plain clipboard and drops a plain
+  one. `QaCreateSchematicBacktank1108eCompatTests` (2, B1068, B1069): a schematic of a player's Protection IV, Mending
+  Copper Backtank asks for one Copper Backtank, is built from a plain one, and taking the built one gives a plain
+  backtank. `QaCreateSchematicBurner1108eCompatTests` (B1067): a schematic of a creative Blaze Burner and of one
+  superheated for years is built from two Blaze Burners with no fuel. `QaCreateFluidsCompatTests`, `QaCreateDrainFluidsCompatTests` and
   `QaCreateSchematicFluidsCompatTests` (B486): a fluid tank, spout, basin and item drain holding lava, scanned or
   uploaded as a schematic, are built empty. `QaCreateTankKeptCompatTests` (lane E's QA of B486): a two-tall tank of lava
   is built empty but still one tall tank (it takes more than one tank block holds), and a player's bucket of lava in a
@@ -580,8 +634,11 @@ village's last column empties it (B994).
   `QaCreateMachinesOnOurBlocks1102eCompatTests` (lane E's QA, 15): funnels and chutes on a counter, mailbox and drop
   box, and a drill breaking each of the mod's item-holding blocks, each against a control (a chest, a player).
   `QaCreateDeployerOnOurThings1102eCompatTests` (lane E's QA, 7): a deployer an owner placed sets down his hall, names a
-  hall and a villager, hands in an insignia once; a stranger's stick changes nothing. The failing cases (B843, B844)
-  are on `tests/create-deployer-1102`.
+  hall and a villager, hands in an insignia once; a stranger's stick changes nothing.
+  `QaCreateDeployerOnOurThings1102eBugCompatTests` (5): a deployer nobody placed owns nothing it sets down or clicks
+  (B843), and a stranger's deployer in a protected village places nothing and can't rename the hall (B844).
+  `QaCreateFunnelAtProtectedVillage1107eBugCompatTests` (B994) and `QaCreateMoreMachinesProtection1107eBugCompatTests`
+  (B1015: saw, deployer and arm at the edge), with their open-village controls.
 - `CreateBuildsGameTests` (39.4, 39.8, without Create): `hiddenWithoutCreate` and `theSwitchHoldsThemBack`; (39.6)
   `noSchematicsWithoutCreate`: a file in the uploaded folder stays out of the library when a table opens.
 - `CreateSchematicCompatTests` (39.6, with Create): `anUploadedSchematicAppearsAtTheTable` (opened with an empty hand,
@@ -773,5 +830,9 @@ village's last column empties it (B994).
   restarted is built whole whether the new one is the same size (25 planks, no old bricks left), bigger (5x2x5, all 50)
   or smaller (3x1x3 of the same bricks); the same file uploaded again is harmless (all 25 bricks); replaced with no
   restart, the old pad is finished whole.
+
+- `QaTableCreate1117eCompatTests` (QA, lane E, 2026-11-17; 2): at the Copperline Blueprint Table (48.1) every
+  Create build's materials name real items with Create's among them, its preview draws Create's blocks, every style on
+  its rail has details and a preview, and Get Blueprint hands each one out (none refused).
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

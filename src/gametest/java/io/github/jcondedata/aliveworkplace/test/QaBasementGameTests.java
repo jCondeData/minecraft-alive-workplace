@@ -59,16 +59,13 @@ public class QaBasementGameTests implements FabricGameTest {
 
 	/**
 	 * Every basement's way down comes up through the ground floor: some ladder or stair on the basement's top layer
-	 * (y = -1) has room to climb out above it, on y = 0 and y = 1. (The Quarry's pit is left out: it is open to the sky.)
+	 * (y = -1) has room to climb out above it, on y = 0 and y = 1.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void everyBasementsWayDownComesUpThroughTheGroundFloor(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		for (StarterBlueprints.Entry entry : StarterBlueprints.WITH_BASEMENTS) {
-			if (entry == StarterBlueprints.QUARRY) {
-				continue; // an open pit under the sky (36.12), not a room under a floor: its steps go down from the ground
-			}
 			Blueprint blueprint = blueprint(helper, entry);
 			Map<BlockPos, BlockState> blocks = blocks(blueprint);
 			boolean out = false;
@@ -226,7 +223,7 @@ public class QaBasementGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * Every build with a basement (but the Quarry's open pit) can be walked into from outside and down to its basement
+	 * Every build with a basement can be walked into from outside and down to its basement
 	 * floor, and every chest or barrel down there is within a player's reach of a spot reached that way: two blocks or
 	 * less across, one up or down (36.7: "keeps its workers' chests reachable"; the Jeweller's vault keeps its stock
 	 * chests behind iron bars, opened from the floor in front of the cage), and from the deepest spot reached the walk
@@ -238,9 +235,6 @@ public class QaBasementGameTests implements FabricGameTest {
 	public void everyBasementAndItsChestsCanBeWalkedToFromOutside(GameTestHelper helper) {
 		List<String> problems = new ArrayList<>();
 		for (StarterBlueprints.Entry entry : StarterBlueprints.WITH_BASEMENTS) {
-			if (entry == StarterBlueprints.QUARRY) {
-				continue;
-			}
 			Blueprint blueprint = blueprint(helper, entry);
 			Map<BlockPos, BlockState> blocks = blocks(blueprint);
 			int sx = blueprint.size().getX();

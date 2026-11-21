@@ -1,0 +1,10 @@
+{
+  "name": "starter-cottage-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, taiga look (ROADMAP 49.10a): the Log Cabin and its Loft Pen. MC_BUILDER = the minecraft-builder skill folder. build writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

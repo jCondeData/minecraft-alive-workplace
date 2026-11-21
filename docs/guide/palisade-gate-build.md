@@ -3,8 +3,8 @@
 ```infobox
 type: Build
 Kind: gate
-Size: 7 wide, 6 tall, 2 deep
-Blocks: about 33 (spruce logs and fences, three spruce fence gates, two lanterns)
+Size: 7 wide, 9 tall, 2 deep
+Blocks: about 83 (spruce and stripped oak logs, spruce stairs, three spruce fence gates, two lanterns)
 Upgrade: none
 Gates: shut at nightfall, open in the morning (with a hall and a guard)
 Where: the Blueprint Table
@@ -12,8 +12,9 @@ categories: Builds, Defense
 related: palisade-build.md, palisade-tower-build.md, defence.md, raids.md
 ```
 
-The way in through a [Palisade](palisade-build.md): the same sharpened spruce logs, with a three-wide spruce gate in
-the middle and a lantern either side.
+The way in through a [Palisade](palisade-build.md): a small timber gatehouse. Two log jambs on cobblestone feet carry
+a pale oak lintel over a three-wide spruce gate, and a steep spruce gable roof with a king post sits over them, two
+lanterns hanging under it over the way in. The way through is two blocks high, and archers can stand on the lintel.
 
 ## Building it
 

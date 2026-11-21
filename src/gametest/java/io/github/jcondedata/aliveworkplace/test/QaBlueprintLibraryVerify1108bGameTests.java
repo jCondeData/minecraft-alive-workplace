@@ -107,8 +107,10 @@ public class QaBlueprintLibraryVerify1108bGameTests implements net.fabricmc.fabr
 				expected.add(id("pokemon_center"));
 			}
 			List<TablePayloads.Entry> listing = TableServer.listing(level, hall);
+			// (49.10a: a build's looks, looks/desert/starter_cottage, are listed beside it and count as that build)
 			Set<ResourceLocation> unlocked = listing.stream().filter(TablePayloads.Entry::unlocked).map(TablePayloads.Entry::id)
-				.filter(BlueprintUnlocks::managed).collect(Collectors.toCollection(TreeSet::new));
+				.filter(BlueprintUnlocks::managed).map(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks::base)
+				.collect(Collectors.toCollection(TreeSet::new));
 			helper.assertTrue(unlocked.equals(expected), "the new village's unlocked builds aren't the wiki's starting set: extra "
 				+ unlocked.stream().filter(i -> !expected.contains(i)).toList() + ", missing " + expected.stream().filter(i -> !unlocked.contains(i)).toList());
 			Set<ResourceLocation> listed = listing.stream().map(TablePayloads.Entry::id).collect(Collectors.toSet());
@@ -292,7 +294,8 @@ public class QaBlueprintLibraryVerify1108bGameTests implements net.fabricmc.fabr
 			List<ResourceLocation> rares = new ArrayList<>();
 			for (ResourceLocation id : BlueprintLibrary.list(level.getServer(), false)) {
 				State s = BlueprintUnlocks.state(level, hall, id);
-				if (s == State.LOCKED && !keep.contains(id)) {
+				// a biome look counts as its base build (49.10a), so unlocking looks/desert/stone_house_3 unlocks Stone House III
+				if (s == State.LOCKED && !keep.contains(io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.base(id))) {
 					BlueprintUnlocks.unlock(level, hall, id, List.of());
 				} else if (s == State.HIDDEN) {
 					rares.add(id);

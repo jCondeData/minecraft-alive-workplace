@@ -1,0 +1,13 @@
+{
+	"required": false,
+	"package": "io.github.jcondedata.aliveworkplace.compat.toms.mixin",
+	"plugin": "io.github.jcondedata.aliveworkplace.compat.toms.mixin.TomsMixinPlugin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"TomsBlockAccessMixin",
+		"TomsMergeMixin"
+	],
+	"injectors": {
+		"defaultRequire": 0
+	}
+}

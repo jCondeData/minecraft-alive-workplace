@@ -1,0 +1,10 @@
+{
+  "name": "village-hall-b",
+  "private": true,
+  "type": "module",
+  "description": "Village Hall, Version B (the Moot House), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/village_hall.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "for L in 1 2 3; do ID=village_hall; [ $L = 1 ] || ID=village_hall_$L; LEVEL=$L node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py village_hall_b $ID --candidate --nbt out/$(echo $ID | tr _ -).nbt || exit 1; done",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

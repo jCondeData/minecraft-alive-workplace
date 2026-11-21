@@ -24,7 +24,7 @@ import net.minecraft.world.item.crafting.RecipeType;
  * The crafters' recipe index is now built when the server starts and after every {@code /reload}, so no lookup in a
  * tick goes through them; it gives the same answers as the old lookup, and a new set of recipes gets its own index.
  */
-public class RecipeIndexGameTests implements FabricGameTest {
+public class RecipeIndexGameTests implements FreshPlanning {
 	/** The items an ingredient gave the planner before B101 (the old code, kept here as the reference). */
 	private static List<Item> oldOptions(Ingredient ingredient) {
 		List<Item> options = new ArrayList<>();

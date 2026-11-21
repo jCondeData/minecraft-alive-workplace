@@ -54,6 +54,14 @@ Roadmap items: 32.9, B382, B437, B828
   slab or a stair's lower step one up counts as down inside; B330).
   It drops in at the first column past the wall with nothing from two above the foot up, and once wholly in or past
   that column it is let go whatever the ground's height there, a terrace two up as well (B331).
+  Only a raider that was on the ramp's top, or has the ramp's wall standing beside it, counts as down inside: one
+  walking round a corner of the walls to its ramp, past the end of that wall on the outside, stays with the ramp and
+  goes on piling (B726). That wall means the village wall the ramp leans on, standing unbroken along its line from
+  the ramp to beside the raider: a player's own wall farther along the same line past a gap (a garden wall outside)
+  doesn't count, and a raider beside it is still outside (B1419). While the sand goes up a climber waits two blocks out from the ramp's
+  outer end; where that spot can't be reached (a ledge, a player's blocks) and the nearest it gets is a block of the
+  ramp still to be piled, it waits two blocks to the side of the ramp's outer end instead, since no sand is piled
+  onto a raider.
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.

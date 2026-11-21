@@ -1,0 +1,11 @@
+{
+  "name": "terrace",
+  "private": true,
+  "type": "module",
+  "description": "Terrace, the Crow-Step Row (ROADMAP 49): two levels. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/terrace.nbt"
+  }
+}

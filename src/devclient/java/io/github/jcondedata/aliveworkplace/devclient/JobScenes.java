@@ -1480,12 +1480,14 @@ final class JobScenes {
 		// side by side as a builder leaves them, facing the camera. Water falls from the header tanks through the two wheels,
 		// the windmill's bearing is started as the builder starts it, and every machine turns: both millstones and the press.
 		SCENES.put("create_builds", new Job("the Watermill's wheel, the Windmill's sails and the Workshop's wheel and belt all turned, and with them both millstones and the press",
-			900, new Vec3(0.5, -49.0, -16.5), new Vec3(0.5, -55.0, 8.0), (level, player) -> {
+			900, new Vec3(0.5, -47.0, -21.5), new Vec3(0.5, -55.0, 10.0), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			Showcase.check(contraptionBufferTakesVertices(), "Create's contraption buffer takes a quad written vertex by vertex, as Sodium writes one with shaders on (B231)");
 			List<BlockPos> machines = new java.util.ArrayList<>();
-			int x = -20;
+			// ROADMAP 50.5: the rebuilt Watermill is 17 wide, so the row starts further west and the camera stands further
+			// back to take it all in; 50.10: the rebuilt Windmill is 15 wide, so the row (17 + 3 + 15 + 3 + 15) starts at -27
+			int x = -27;
 			for (StarterBlueprints.Entry entry : StarterBlueprints.FIRST_CREATE_BUILDS) {
 				BlockPos at = STATION.offset(x, 0, 4);
 				level.getStructureManager().get(entry.id()).orElseThrow().placeInWorld(level, at, at,
@@ -1494,8 +1496,8 @@ final class JobScenes {
 					net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
 				BuildSiteManager.get(level).recordFinished(entry.id(), placement, player.getUUID());
 				io.github.jcondedata.aliveworkplace.mechanic.CreateBuilds.finished(level, entry.id(), placement, player);
-				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(4, 2, 4)
-					: entry == StarterBlueprints.WINDMILL ? new BlockPos(4, 2, 5) : new BlockPos(4, 3, 2)));
+				machines.add(at.offset(entry == StarterBlueprints.WATERMILL ? new BlockPos(5, 3, 9) // ROADMAP 50.5: the rebuilt mill's millstone
+					: entry == StarterBlueprints.WINDMILL ? new BlockPos(9, 1, 7) : new BlockPos(4, 3, 2))); // 50.10: the rebuilt windmill's millstone
 				x += entry.size().getX() + 3;
 			}
 			return l -> machines.stream().allMatch(m -> io.github.jcondedata.aliveworkplace.mechanic.MachineWork.turning(l, m, 0.01f));
@@ -1557,8 +1559,8 @@ final class JobScenes {
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create"), "Create is loaded");
 			java.util.Map<StarterBlueprints.Entry, BlockPos> machine = java.util.Map.of(StarterBlueprints.BRASS_FOUNDRY, new BlockPos(8, 4, 8),
 				StarterBlueprints.SAWMILL, new BlockPos(4, 1, 4), StarterBlueprints.CRUSHING_MILL, new BlockPos(5, 2, 5),
-				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(6, 10, 1),
-				StarterBlueprints.PUMP_HOUSE, new BlockPos(6, 1, 4));
+				StarterBlueprints.GREENHOUSE, new BlockPos(6, 1, 9), StarterBlueprints.CLOCK_TOWER, new BlockPos(7, 15, 3),
+				StarterBlueprints.PUMP_HOUSE, new BlockPos(13, 2, 3)); // 50.13: the rebuilt water tower's pump
 			List<BlockPos> machines = new java.util.ArrayList<>();
 			for (int row = 0; row < 2; row++) {
 				List<StarterBlueprints.Entry> builds = StarterBlueprints.MORE_CREATE_BUILDS.subList(row * 3, row * 3 + 3);
@@ -1590,7 +1592,9 @@ final class JobScenes {
 		// 39.7d: Thornholm has a Conductor (maroon cap and tunic) at its station as well as the jobless villager: he takes
 		// the seat, and calls the stop when the train comes in at Ashford.
 		SCENES.put("village_train", new Job("Thornholm's builder built the train, its Conductor took the seat, and the caravan's 32 oak logs filled its chest at Thornholm and came out of it at Ashford",
-			4000, new Vec3(2.5, -50.0, 34.0), new Vec3(2.5, -59.0, 6.0), (level, player) -> {
+			// ROADMAP 50.13: the rebuilt Trainshed runs the track through its shed (z 12), so the camera looks down the line
+			// from past the east station's open end, through both sheds
+			4000, new Vec3(32.5, -55.0, 16.5), new Vec3(-8.0, -58.0, 16.5), (level, player) -> {
 			level.setDayTime(2000);
 			Showcase.check(io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create")
 				&& io.github.jcondedata.aliveworkplace.city.CaravanTrains.live()
@@ -1601,10 +1605,10 @@ final class JobScenes {
 				level.getStructureManager().get(StarterBlueprints.TRAIN_STATION.id()).orElseThrow().placeInWorld(level, at, at,
 					new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), net.minecraft.util.RandomSource.create(1L), 2);
 			}
-			BlockState track = level.getBlockState(west.offset(0, 1, 6));
-			for (int x = west.getX() + 13; x < east.getX(); x++) { // the track laid between the two stations
-				level.setBlockAndUpdate(new BlockPos(x, west.getY(), west.getZ() + 6), Blocks.GRAVEL.defaultBlockState());
-				level.setBlockAndUpdate(new BlockPos(x, west.getY() + 1, west.getZ() + 6), track);
+			BlockState track = level.getBlockState(west.offset(0, 1, 12)); // 50.13: the rebuilt station's track (x 0..18, z 12)
+			for (int x = west.getX() + 19; x < east.getX(); x++) { // the track laid between the two stations
+				level.setBlockAndUpdate(new BlockPos(x, west.getY(), west.getZ() + 12), Blocks.GRAVEL.defaultBlockState());
+				level.setBlockAndUpdate(new BlockPos(x, west.getY() + 1, west.getZ() + 12), track);
 			}
 			BlockPos thornholm = STATION.offset(-10, 0, -6);
 			BlockPos ashford = STATION.offset(14, 0, -6);
@@ -1615,7 +1619,7 @@ final class JobScenes {
 				level.setBlockAndUpdate(hall.east(3).north(2), Blocks.CHEST.defaultBlockState());
 				data.remove(hall);
 			}
-			for (BlockPos platform : List.of(west.offset(4, 1, 3), east.offset(8, 1, 3))) { // a villager waiting on each platform
+			for (BlockPos platform : List.of(west.offset(5, 1, 10), east.offset(12, 1, 10))) { // a villager waiting on each platform (50.13: z 8..11)
 				Villager waiting = EntityType.VILLAGER.spawn(level, platform, MobSpawnType.COMMAND);
 				waiting.setNoAi(true);
 			}
@@ -1632,7 +1636,7 @@ final class JobScenes {
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, thornholm, data); // both stations known (B193)
 			io.github.jcondedata.aliveworkplace.city.CaravanTrains.noteStations(level, ashford, data);
 			Showcase.check(io.github.jcondedata.aliveworkplace.city.CaravanTrains.rides(data, thornholm, ashford), "the two villages are on a railway");
-			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(6, 1, 3), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor
+			Villager conductor = EntityType.VILLAGER.spawn(level, west.offset(9, 1, 10), MobSpawnType.COMMAND); // 39.7d: Thornholm's Conductor (50.13: beside the station at 9,1,11)
 			conductor.setNoAi(true);
 			io.github.jcondedata.aliveworkplace.work.Stations.assign(level, conductor, data.stations(thornholm).get(0),
 				io.github.jcondedata.aliveworkplace.registry.ModVillagers.CONDUCTOR);
@@ -2755,19 +2759,38 @@ final class JobScenes {
 				.addRoad(new io.github.jcondedata.aliveworkplace.city.CityPlan.Road(List.of(new BlockPos(0, 0, -4), new BlockPos(0, 0, -18)),
 					io.github.jcondedata.aliveworkplace.city.CityPlan.Road.STREET, "", true))
 				.withWall(wall.approvedWith("palisade")));
+			// B1400: the benches hold what the wall line's drawings are made of, counted from the drawings as they are now
+			// (a quarter over, shared round the three chests), not a list of the old palisade's blocks: after the 52.3
+			// rebuild its mud and oak were in no chest and the first segment waited for ever
+			java.util.Map<net.minecraft.world.item.Item, Integer> need = new java.util.LinkedHashMap<>();
+			for (var piece : io.github.jcondedata.aliveworkplace.city.Walls.pieces(level, hallAt)) {
+				for (var e : io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, piece.blueprint()).orElseThrow().blocks()) {
+					net.minecraft.world.item.Item item = e.state().getBlock().asItem();
+					if (!e.state().isAir() && item != Items.AIR) {
+						need.merge(item, 1, Integer::sum);
+					}
+				}
+			}
+			need.merge(Items.DIRT, 64, Integer::sum); // the foundation's fill
+			List<ItemStack> stacks = new ArrayList<>();
+			for (var n : need.entrySet()) {
+				for (int left = n.getValue() * 5 / 4 + 1; left > 0; left -= 64) {
+					stacks.add(new ItemStack(n.getKey(), Math.min(64, left)));
+				}
+			}
 			for (int i = 0; i < 3; i++) {
 				// East of the hall, clear of the cottage (B94: at z=10 the tables and their builders stood inside its floor)
 				BlockPos table = STATION.offset(7, 0, -7 + i * 5);
 				level.setBlockAndUpdate(table, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
-				chest(level, table.south(), new ItemStack(Items.SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_LOG, 64),
-					new ItemStack(Items.STRIPPED_SPRUCE_LOG, 64), new ItemStack(Items.SPRUCE_FENCE, 64), new ItemStack(Items.SPRUCE_SLAB, 64),
-					new ItemStack(Items.SPRUCE_PLANKS, 64), new ItemStack(Items.SPRUCE_FENCE_GATE, 16), new ItemStack(Items.DARK_OAK_STAIRS, 64),
-					new ItemStack(Items.DARK_OAK_SLAB, 16), new ItemStack(Items.DARK_OAK_PLANKS, 16), new ItemStack(Items.LADDER, 32),
-					new ItemStack(Items.LANTERN, 16), new ItemStack(Items.COBBLESTONE, 64), new ItemStack(Items.STONE, 64),
-					new ItemStack(Items.ANDESITE, 64), new ItemStack(Items.DIRT, 64),
-					// and the street's (B94: the builders waited for its Coarse Dirt, Gravel and Cobblestone Stairs)
+				List<ItemStack> mine = new ArrayList<>(List.of(
+					// the street's (B94: the builders waited for its Coarse Dirt, Gravel and Cobblestone Stairs)
 					new ItemStack(Items.COARSE_DIRT, 64), new ItemStack(Items.GRAVEL, 32), new ItemStack(Items.COBBLESTONE_STAIRS, 16),
-					new ItemStack(Items.COBBLESTONE_SLAB, 16));
+					new ItemStack(Items.COBBLESTONE_SLAB, 16)));
+				for (int k = i; k < stacks.size(); k += 3) {
+					mine.add(stacks.get(k).copy());
+				}
+				Showcase.check(mine.size() <= 27, "the wall's materials fit the benches' chests (" + mine.size() + " stacks in one)");
+				chest(level, table.south(), mine.subList(0, Math.min(27, mine.size())).toArray(ItemStack[]::new));
 				Villager builder = EntityType.VILLAGER.spawn(level, table.east(), MobSpawnType.COMMAND);
 				ScreenshotHarness.fileRecords(level, table, 1); // the table's record now, not in vanilla's next task, so the builder keeps his job
 				io.github.jcondedata.aliveworkplace.build.Builders.employ(level, builder, table);
@@ -3284,8 +3307,9 @@ final class JobScenes {
 				level.dimension().location(), origin, net.minecraft.world.level.block.Rotation.NONE, net.minecraft.world.level.block.Mirror.NONE);
 			net.minecraft.world.level.levelgen.structure.BoundingBox pit = io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.pit(placement);
 			net.minecraft.util.RandomSource rock = net.minecraft.util.RandomSource.create(3612);
-			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit
-			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 17, origin.getY() - 1, origin.getZ() + 12)) {
+			// A hill of rock to dig the pit in (the superflat ground is too thin), grass on top round the pit (50.10: under the
+			// rebuilt Headframe's whole 19 x 14 footprint and a block round it)
+			for (BlockPos p : BlockPos.betweenClosed(origin.getX() - 2, -60, origin.getZ() - 1, origin.getX() + 19, origin.getY() - 1, origin.getZ() + 14)) {
 				boolean inPit = pit.isInside(p);
 				BlockState state;
 				if (inPit) {
@@ -3297,7 +3321,7 @@ final class JobScenes {
 				level.setBlock(p, state, 2);
 			}
 			level.getStructureManager().get(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT).orElseThrow().placeInWorld(level,
-				origin.below(5), origin.below(5), new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
+				origin, origin, new net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings(), level.getRandom(), 2);
 			io.github.jcondedata.aliveworkplace.build.BuildSiteManager.get(level).recordFinished(io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.BLUEPRINT,
 				placement, player.getUUID());
 			io.github.jcondedata.aliveworkplace.mine.QuarryBuilds.PER_DAY = 1200; // a block every second, for the film
@@ -4174,8 +4198,8 @@ final class JobScenes {
 				return false;
 			};
 		}, null));
-		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: a stepped plinth, a copper plaque and the Founder in stone with a hand raised",
-			6000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
+		SCENES.put("legend_founder", new Job("the Founder asked for a statue, and the village's builder raised it by the hall from the materials in the barrels: the Founder in weathering copper under a broad-brimmed hat, his lantern burning on a staff above him and his hand on the first stone, on a stepped stone plinth with a copper plaque",
+			7000, new Vec3(3.5, -53.5, 10.5), new Vec3(-5, -58, -5), (level, player) -> {
 			// ROADMAP 29.23: the Village Hall, the Founder (a burgundy mantle, a gold chain of office) by it, and a builder
 			// at a Blueprint Table with barrels holding the statue's materials. The hall's round hands the builder the
 			// Founder's statue on open ground near the hall, and the GIF shows it going up.
@@ -5995,6 +6019,10 @@ final class JobScenes {
 					level.setBlock(e.getKey(), e.getValue(), 2 | 16);
 				}
 				BuildSiteManager.get(level).recordFinished(house, placement, player.getUUID());
+				// B1401: since 49.4 rebuilt the Stone House, the refresh from this drawing is a near-whole rebuild (about 950
+				// clears and placements): at the default 8 ticks a block that is some 8,500 ticks, past the scene's wait.
+				// One tick a block leaves about 950 ticks of block work plus the walks to the chests.
+				level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(1, level.getServer());
 				BlockPos bench = new BlockPos(4, -60, -3);
 				place(level, bench, ModBlocks.BUILDERS_BENCH);
 				Villager builder = EntityType.VILLAGER.create(level);
@@ -6046,7 +6074,7 @@ final class JobScenes {
 						m.press(io.github.jcondedata.aliveworkplace.hall.RepairsPage.REFRESH, player);
 					}
 					player.closeContainer();
-				}, 3600)),
+				}, 6000)), // B1401: about 2,000-3,000 ticks of work at one tick a block, with a margin
 			(level, player) -> BuildSiteManager.get(level).finishedIn(level).stream()
 				.filter(f -> f.structure().equals(StarterBlueprints.STONE_HOUSE.id()) && f.placement().origin().equals(STATION.offset(-5, 0, -15)))
 				.findFirst().map(f -> io.github.jcondedata.aliveworkplace.build.Refreshes.siteOf(level, f.placement()) == null

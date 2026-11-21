@@ -1,0 +1,11 @@
+{
+  "name": "fire-station",
+  "private": true,
+  "type": "module",
+  "description": "Fire Station (the Hose Tower, 49): rebuilt from its brief (tools/blueprints/briefs/fire_station.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate until the critic says SHIP.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py fire_station fire_station --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/fire-station.nbt"
+  }
+}

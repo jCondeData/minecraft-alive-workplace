@@ -130,4 +130,35 @@ public class QaCupBoutGameTests implements FabricGameTest {
 			"the Magikarp with no attacking move never struggled: " + moves);
 		helper.succeed();
 	}
+	/**
+	 * Struggle has no type in the sums, as in the games (B1403): a Pokémon with no attacking move (a Wobbuffet, a Ditto)
+	 * hurts a Ghost and wins by knockout instead of stalling to the clock and losing on time, and a Normal-type gets no
+	 * same-type bonus on it.
+	 */
+	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
+	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
+	public void struggleHitsAGhostAndGetsNoSameTypeBonus(GameTestHelper helper) {
+		List<CupBout.Fighter> wobbuffet = List.of(fighter("wobbuffet", List.of("psychic"), 400, 120, 30, List.of()));
+		List<CupBout.Fighter> ghost = List.of(fighter("poltchageist", List.of("grass", "ghost"), 60, 20, 60,
+			List.of(new CupBout.Move("absorb", "grass", 20, 0, false))));
+		for (long seed = 1; seed <= 6; seed++) {
+			CupBout first = bout(wobbuffet, ghost, seed);
+			List<CupBout.Action> log = first.playOut();
+			helper.assertTrue(first.over() && !first.onTime && first.winner == 0, "seed " + seed + ": the moveless Wobbuffet (side 0) didn't knock the Ghost out: winner "
+				+ first.winner + ", on time " + first.onTime + ", health " + first.share(0) + " against " + first.share(1));
+			helper.assertTrue(log.stream().anyMatch(a -> a.side() == 0 && a.move() == CupBout.STRUGGLE && a.damage() > 0 && a.effectiveness() == 1),
+				"seed " + seed + ": Struggle never hurt the Ghost: " + log);
+			CupBout second = bout(ghost, wobbuffet, seed);
+			second.playOut();
+			helper.assertTrue(second.over() && !second.onTime && second.winner == 1, "seed " + seed + ": the moveless Wobbuffet (side 1) didn't knock the Ghost out: winner "
+				+ second.winner + ", on time " + second.onTime);
+		}
+		CupBout.Fighter ditto = fighter("ditto", List.of("normal"), 100, 80, 50, List.of());
+		CupBout.Fighter karp = fighter("magikarp", List.of("water"), 100, 80, 50, List.of());
+		CupBout.Fighter target = fighter("rattata", List.of("normal"), 100, 40, 50, List.of());
+		int normal = CupBout.damage(ditto, target, CupBout.STRUGGLE, 1, new java.util.Random(5));
+		int water = CupBout.damage(karp, target, CupBout.STRUGGLE, 1, new java.util.Random(5));
+		helper.assertTrue(normal == water && normal > 0, "Struggle from a Normal-type did " + normal + ", from a Water-type " + water + " (no same-type bonus on it)");
+		helper.succeed();
+	}
 }

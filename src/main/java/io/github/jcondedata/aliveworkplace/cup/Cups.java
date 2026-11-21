@@ -189,7 +189,7 @@ public final class Cups {
 	/** The village's delegate, live: its senior Trainer Leader, else its best Trainer; null if it has neither. */
 	@Nullable
 	public static Caravans.Leader liveDelegate(ServerLevel level, BlockPos hall) {
-		List<Villager> trainers = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && Trainers.isTrainer(v) && !CupDays.isDelegate(v));
+		List<Villager> trainers = VillageHalls.villagers(level, hall, v -> v.isAlive() && Trainers.isTrainer(v) && !CupDays.isDelegate(v));
 		Villager best = trainers.stream().min(seniority()).orElse(null);
 		return best == null ? null : record(best);
 	}
@@ -244,7 +244,7 @@ public final class Cups {
 			}
 		}
 		if (level.isLoaded(host)) {
-			List<Villager> mine = level.getEntitiesOfClass(Villager.class, VillageHalls.area(host), v -> v.isAlive() && Trainers.isTrainer(v)
+			List<Villager> mine = VillageHalls.villagers(level, host, v -> v.isAlive() && Trainers.isTrainer(v)
 				&& !CupDays.isDelegate(v) && !in.contains(v.getUUID()));
 			mine.sort(seniority());
 			for (int i = 0; i < mine.size() && i < HOST_TRAINERS && out.size() < capacity; i++) {

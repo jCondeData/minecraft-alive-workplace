@@ -1,0 +1,10 @@
+{
+  "name": "print-shop",
+  "private": true,
+  "type": "module",
+  "description": "The Print Shop (ROADMAP 49): the Lantern Press, a brick hall built round its press's skylight, and its Reading Room (II). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

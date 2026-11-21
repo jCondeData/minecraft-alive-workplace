@@ -18,37 +18,33 @@ Apprentice on, the Townhouse once the builder's village has a household of Artis
 Noble's Manor once it has a household of Burghers or higher, and each upgrade comes from the builder who finishes the
 tier below:
 
-- **Artisan's House** (a grade I home). A narrow house under a red tile gambrel roof (a barn-shaped roof, steep low
-  down and shallow on top), its gable to the street with a loft door and a hoist beam with a lamp on it: a stone
-  workroom below (a workbench, an anvil, a chest of stock, a ladder up) and an upper floor clad in pale weatherboards,
-  jettied a block out over the street on brackets, with two beds. A brick chimney runs up the side.
-- **Artisan's House II** (grade II). A stone workshop wing at the back, through a doorway in the back wall: a long
-  bench, a loom, a barrel and a third bed in the corner, under its own lower red gambrel.
-- **Burgher's Townhouse** (grade II). Three stories: a rusticated stone shop below with a shop window either side of
-  the door and a stall board under each, a counter and shelves inside; two stories of warm sandstone stucco above
-  between stone quoins and string courses, the first jettied over the street with a little iron balcony at each
-  window, with the main bedroom (two beds) and a second bedroom (one bed); a loft in a slate mansard roof (steep sides
-  with dormer windows, a flat top); a brick chimney up the side.
-- **Townhouse II** (grade III). A walled courtyard garden behind, through a back door: brick walls with stone caps, a
-  gate, flower beds in their own soil, an azalea, a bench and a lamp; and the loft fitted out as a third bedroom.
-- **Townhouse III** (grade III). A stone corner tower, a block proud of the street front, four stories up to a study
-  under a slate cap: shelves of books, a desk, a reading chair and windows every way, reached from the main bedroom
-  and up ladders.
-- **Noble's Manor** (a grade III home). A stone house of two stories standing back behind a graveled forecourt with
-  clipped hedges and two lamps. Inside, a double-height hall with a chequered floor, a three-wide grand stair up to a
-  gallery and a chandelier; the dining room (a long table, chairs down both sides) to the west and a parlor to the
-  east; upstairs the main bedroom (two beds) and a second bedroom. Andesite quoins, dark oak string courses, a hipped
-  slate roof with two dormers front and back and a tall chimney stack at each end.
-- **Manor II** (grade III). A walled formal garden behind, through the back door: gravel walks round a fountain and
-  across to the side walls, four parterres of clipped hedges with flowers inside them, lamps at the walks' corners and
-  a gate at the back. **Its garden counts 3 beauty for the people who live there**, which is a Noble's beauty need on
-  its own.
-- **Manor III** (grade III). A gatehouse on the street (an arched passage with a porter's room over it, under a slate
-  hip roof), the forecourt walled in, and a **ballroom wing** on the east: one tall room with a chequered floor, tall
-  windows between pilasters, three chandeliers, a musicians' dais with a jukebox and note blocks, under a roof hipped
-  like the house's, through a doorway from the parlor. **The Noble's Ball is held in the ballroom.**
+- **Artisan's House** (a grade I home; rebuilt from scratch in 49.8, [its own page](artisans-house.md)). A potter's
+  house gable-end to the street: a rubble-stone workroom and hall below, a white plaster floor in a spruce frame jettied
+  out over the street with the couple's two beds and a sitting room, a steep dark-tiled roof, and beside it a brick
+  bottle kiln that is its chimney, with a lean-to fuel shed behind it.
+- **Artisan's House II** (grade II). The journeyman's room, a lower framed wing at the back through a doorway in the
+  hall's back wall, with the third bed; and a yard behind the shed for drying pots.
+- **Burgher's Townhouse** (grade II; rebuilt from scratch in 49.5, [its own page](townhouse.md)). A tall merchant's
+  house standing gable-end to the street: a stone shop and kitchen below, a timber-framed floor jettied out over the
+  street on dark brackets with the hall and the parents' chamber, a steep red-tiled attic with the children's two beds,
+  a hoist beam at the gable's peak and the chimney stack up the back gable over the kitchen hearth.
+- **Townhouse II** (grade III). A counting-house wing on the east with its own small street gable and door: the clerks'
+  table below, two beds above under the open roof.
+- **Townhouse III** (grade III). A square stone strongroom tower behind the wing, under a steep pyramid roof: the
+  strongroom, a library, a bedroom and a lookout study at the top, up ladders.
+- **Noble's Manor** (a grade III home; rebuilt from scratch in 49.7, [its own page](manor.md)). A brick hall and
+  cross-wing house dressed in cut stone: a porch tower under a steep pyramid roof on the front of the hall, a
+  crow-gabled west wing with the parlor and kitchen below and two chambers above, a black-and-white hall with the
+  grand stair right inside the arch, the hearth and the dining table for nine, and the Long Gallery and the tower study
+  up the stair. Two chimney stacks.
+- **Manor II** (grade III). A walled garden behind the hall: brick walls with stone piers and lanterns, four
+  box-edged knots of tulips round a lamp, clipped yews and a bench. **Its garden counts 3 beauty for the people who
+  live there**, which is a Noble's beauty need on its own.
+- **Manor III** (grade III). The east cross-wing, taller than the west, completing the front: a double-height
+  **ballroom** with a parquet floor, a great cross-window, tall windows down the side, chandeliers, a jukebox and a
+  musicians' gallery over its back end; the garden runs on behind it. **The Noble's Ball is held in the ballroom.**
 
-**Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed one under a spruce roof; the
+**Every kind of home looks different** (26.11): the Starter Cottage is the timber-framed saltbox under a long spruce catslide (49.3); the
 Stone House a stone croft with crow-stepped gables (the gable walls rise above the slate roof in steps), a chimney
 breast and a woodpile, rising a full story in stone at II and growing a crow-gabled wing at III; the Terrace a brick
 row with a stone string course and cornice, a bay window between two stone piers and a hooded door for each home,
@@ -125,7 +121,8 @@ worked out from the finished buildings already saved.
 
 - Blueprints `aliveworkplace:artisans_house`, `aliveworkplace:artisans_house_2`, `aliveworkplace:townhouse`,
   `aliveworkplace:townhouse_2`, `aliveworkplace:townhouse_3`, `aliveworkplace:manor`, `aliveworkplace:manor_2`,
-  `aliveworkplace:manor_3` (`blueprint.aliveworkplace.townhouse` and the others), drawn in `tools/blueprints/houses.py`.
+  `aliveworkplace:manor_3` (`blueprint.aliveworkplace.townhouse` and the others), drawn with the rebuild kit
+  (`tools/blueprints/js/townhouse/` and `js/manor/`; the Artisan's House in `tools/blueprints/houses.py`).
   On the village map they are homes.
 - Data files `aliveworkplace:townhouse` and `aliveworkplace:manor` in `homes/`.
 - Steward rules `aliveworkplace:homes_class`, `aliveworkplace:homes_class_artisans_house`,

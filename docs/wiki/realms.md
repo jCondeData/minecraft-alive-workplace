@@ -4,7 +4,7 @@ ROADMAP 33.11 (part of 1.7, "From village to realm"; switched on in 1.0 with eve
 itself as the capital and gathers its owner's other villages into it: a Barony, then a County, a Duchy and a Kingdom.
 The realm's treasury, research, relief riders and edicts (33.13 on) build on this page.
 
-Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22, 33.22a
+Roadmap items: 33.11, 33.12, 33.13, 33.14, 33.15, 33.16, 33.17, 33.22, 33.22a, B1346, B1347, 51.9
 
 ## What a player sees
 
@@ -232,16 +232,21 @@ creative) and gives the Royal Hall blueprint in the capital's style ("Drawn: Roy
 so. The treasury's tooltip adds "The Royal Hall by the capital: 2 times the cap" (or 3), and its "Holds x of y" counts
 the raised cap. On the village map a Royal Hall is marked as a hall.
 
-**The builds** (`tools/blueprints/realm.py`, renders as drawn and in the five styles in `docs/media/royal-hall-front.png`,
-`-back.png`, `royal-hall-2-front.png`, `-back.png`):
-- Royal Hall (`realm/royal_hall`, 19 x 16 x 25): a stone great hall (15 x 17) with pilasters and buttresses, tall
-  windows four to a side, a deepslate gable roof front to back with a rose window in the front gable, a gabled porch
-  with the realm's red-and-gold banners; inside a red runner to a two-step dais with the seat of state (a dark oak
-  throne on gold) under banners, banners down both walls, benches, a minstrels' gallery over the door (ladder), beams
-  with hanging lanterns; behind the dais the vault, a lower annex with four chests.
-- Royal Hall II (`realm/royal_hall_2`, 27 x 22 x 25, the upgrade on the same origin): a four-floor keep tower with a
-  crenellated top and the realm's banner on a pole, and a treasury wing with chests along both walls, a counting table
-  and barred windows, both through doors from the hall's east bays.
+**The builds** (rebuilt from scratch in 51.9, `tools/blueprints/js/royal_hall/` from the brief
+`tools/blueprints/briefs/royal_hall.md`; the old drawings stay in `blueprint_history/realm/`; renders as drawn and in the
+five styles in `SCENE=realm_builds`, furnished in `SCENE=rebuild_royal_hall`):
+- Royal Hall (`realm/royal_hall`, 19 x 25 x 25, "the Brick Palace"): a red-brick hall (walls x 3-15, z 6-20) under a
+  hipped deepslate roof with a ridge louver, entered between two brick gate towers (x 1-5 and 13-17, z 1-6, laddered
+  floors at y 5 and 11) under green copper caps on corbelled rings; an open arcade between them under the proclamation
+  balcony (doors from both towers at y 6) and a crow-stepped gable with the realm's banner. Inside: two feast tables with
+  chairs, chandeliers under tie beams, a red runner to the dais (x 4-14, z 16-19, one step up), the seat of state in the
+  throne bay (x 7-11, z 20-23) between two standards. The vault (x 0-3, z 13-20; four chests, barred slits) through the
+  door (3,2,17) on the dais's west side; the steward's room (x 15-18) through (15,2,17) on the east.
+- Royal Hall II (`realm/royal_hall_2`, 27 x 25 x 25, the upgrade on the same origin): the east range (x 18-25, z 8-20)
+  through the steward's room and down a step: the treasury on the ground floor (eight chests, a counting table, the east
+  door (25,1,14) with lamps on posts) and the council chamber above (a stair up the west wall, a council table for
+  eight); the belfry (x 20-25, z 20-24) with a bell behind iron bars and a copper cap. The strip between hall and range is
+  built up solid and leaded over.
 
 **How it works.** `RoyalHalls.multiplier` looks at the build site manager's finished buildings whose origin is within
 32 blocks of the capital's hall: a Royal Hall II (any style, `BlueprintStyles.base`) gives 3, a Royal
@@ -261,6 +266,10 @@ capital moved to another village, changes the cap at once. `realm/` blueprints a
   under the cap again.
 - The Colony Camp's flag is a plain white banner: the realm's arms can't go on a placed template's banner without new
   code in the arrival, left for the arms work.
+
+QA (lane-c-1121-0953, `QaRebuiltDefense1121cGameTests.qaTheRoyalHallsVaultGrowsAndEveryChestIsWalkedTo`): no job
+block (the belfry's bell allowed), at least 4 chests and more in Level II, Level I's chests in the same cells in Level
+II, every chest walked to from the front, and Level II has its way in from the east.
 
 ## Shared research (33.15)
 

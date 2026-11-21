@@ -1,0 +1,10 @@
+{
+  "name": "school",
+  "private": true,
+  "type": "module",
+  "description": "The School (the Move Tutor's, 49 A): the Sparring Court. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py school school --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

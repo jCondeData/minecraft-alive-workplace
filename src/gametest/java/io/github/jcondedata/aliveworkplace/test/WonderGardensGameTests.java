@@ -343,7 +343,7 @@ public class WonderGardensGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The whole Gardens built in the area (the drawing's blocks set, the falls running): each of its four farm corners
+	 * The whole Gardens built in the area (the drawing's blocks set, its water standing): each of its four farm corners
 	 * (a composter and a chest) has its terrace's field within a farmer's reach, and a farmer whose composter is the
 	 * first terrace's takes on its field by themselves, harvests it and brings in the Gardens' extra.
 	 */
@@ -387,8 +387,8 @@ public class WonderGardensGameTests implements FabricGameTest {
 			helper.assertTrue(blocks.stream().anyMatch(b -> b.state().is(Blocks.CHEST) && b.pos().distManhattan(c) <= 2), "no chest by the composter at " + c);
 			helper.assertTrue(io.github.jcondedata.aliveworkplace.farm.Fields.farmNear(level, c).isPresent(), "no field within reach of the composter at " + c);
 		}
-		BlockPos composter = origin.offset(3, 7, 5); // the first terrace's
-		BlockPos firstField = origin.offset(5, 6, 5);
+		BlockPos composter = origin.offset(16, 7, 9); // the Lower Terrace's (Farm I; the 52.6 rebuild, js/hanging_gardens/plan.mjs FARMS)
+		BlockPos firstField = origin.offset(14, 6, 8);
 		helper.assertTrue(composters.contains(composter) && level.getBlockState(firstField).is(Blocks.FARMLAND), "the first terrace's farm corner moved");
 		net.minecraft.world.level.block.state.BlockState composterState = level.getBlockState(composter);
 		level.setBlockAndUpdate(composter, Blocks.AIR.defaultBlockState()); // set again, so its point of interest is there

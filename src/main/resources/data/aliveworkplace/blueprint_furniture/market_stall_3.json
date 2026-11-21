@@ -1,0 +1,6 @@
+{"spots": [
+  {"kind": "lamp", "pos": [10, 2, 4], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}, {"at": [0, 1, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 2, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 3, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [10, 2, 9], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}, {"at": [0, 1, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 2, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}, {"at": [0, 3, 0], "state": "minecraft:chain[axis=y,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [4, 3, 2], "facing": "north", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["ceiling"]},
+  {"kind": "lamp", "pos": [1, 3, 3], "facing": "west", "wood": "spruce", "blocks": [{"at": [0, 0, 0], "state": "minecraft:lantern[hanging=true,waterlogged=false]"}], "support": ["wall", "ceiling"]}
+]}

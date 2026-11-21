@@ -55,9 +55,9 @@ public class TerraceSleepGameTests implements net.fabricmc.fabric.api.gametest.v
 		return new Terrace(origin, box, beds);
 	}
 
-	/** A villager standing in the east home's kitchen (blueprint 8, 1, 5), by its ladder. */
+	/** A villager standing in the east home's kitchen (blueprint 9, 1, 5), by its ladder (10, 1..5, 5; the rebuilt Terrace, 49.6). */
 	private static Villager inEastKitchen(GameTestHelper helper, Terrace t) {
-		BlockPos at = t.origin().offset(8, 1, 5);
+		BlockPos at = t.origin().offset(9, 1, 5);
 		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(at));
 		villager.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
 		return villager;
@@ -114,6 +114,38 @@ public class TerraceSleepGameTests implements net.fabricmc.fabric.api.gametest.v
 		helper.succeedWhen(() -> {
 			helper.assertTrue(villager.getBrain().getMemory(MemoryModuleType.HOME).filter(g -> free.contains(g.pos())).isPresent(),
 				"the villager hasn't claimed a free bed of the west home: " + where(helper, villager));
+			helper.assertTrue(villager.isSleeping() && villager.getSleepingPos().filter(free::contains).isPresent(),
+				"not asleep in the west home: " + where(helper, villager));
+		});
+	}
+
+	/**
+	 * B735: a villager with no bed stands on the grass behind the Terrace at bedtime, level with the party wall and five
+	 * blocks out. The back has no door, so the way to a ladder is round the house and in at the front, 30 blocks' walk;
+	 * vanilla's path search (48 blocks, roughly counted) gave up before the end of it, so from there no free bed up a
+	 * ladder was ever claimed, and a villager without a bed, outdoors at night, walks nowhere by himself: he stood there
+	 * until morning. (The homeless villager of the test above ended there once in a while, by his first stroll.) He
+	 * claims a free bed of the west home, walks round, climbs to it and sleeps.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"terraceSleepBehind"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "terraceSleepBehind")
+	public void aVillagerWithoutABedBehindTheTerraceTakesAFreeOneAndSleeps(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		helper.setDayTime(2000);
+		Terrace t = terrace(helper, 3042L);
+		for (BlockPos taken : t.beds().subList(2, 4)) {
+			level.getPoiManager().take(h -> h.is(PoiTypes.HOME), (h, p) -> p.equals(taken), taken, 1); // someone else's
+		}
+		List<BlockPos> free = t.beds().subList(0, 2);
+		helper.setDayTime(13000); // night before he is there: he rests from his first tick, with no stroll first
+		BlockPos at = t.origin().offset(7, 0, 14); // behind the back wall (blueprint z = 9), five blocks out
+		helper.assertTrue(level.getBlockState(at).isAir() && level.canSeeSky(at), "setup: the villager's spot behind the Terrace isn't open ground");
+		Villager villager = helper.spawn(EntityType.VILLAGER, helper.relativePos(at));
+		villager.moveTo(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, 0, 0);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(villager.getBrain().getMemory(MemoryModuleType.HOME).filter(g -> free.contains(g.pos())).isPresent(),
+				"the villager behind the Terrace hasn't claimed a free bed of the west home: " + where(helper, villager));
 			helper.assertTrue(villager.isSleeping() && villager.getSleepingPos().filter(free::contains).isPresent(),
 				"not asleep in the west home: " + where(helper, villager));
 		});

@@ -83,6 +83,9 @@ final class CupDayScene {
 				look(server, arena.fairLane().orElseThrow().offset(0, 0, -10), 9, 12);
 			});
 		}
+		if (tick > 60 && tick < 220 && tick % 10 == 0 && !delegatesCame) { // B556: a bounded wait, before noon's walk-in
+			server.execute(() -> delegatesCame = CupDays.delegates(server.overworld(), HALL).size() == 2);
+		}
 		if (tick == 100) {
 			ScreenshotHarness.shot(mc, "01_fair");
 		}

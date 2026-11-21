@@ -175,6 +175,7 @@ public class ScreenshotHarness implements ClientModInitializer {
 	private final Lazy<LuxuryWorkshopsScene> luxuryWorkshops = new Lazy<>(() -> new LuxuryWorkshopsScene());
 	private final Lazy<GrandHousesScene> grandHouses = new Lazy<>(() -> new GrandHousesScene());
 	private final Lazy<FurnishedHomeScene> furnishedHome = new Lazy<>(() -> new FurnishedHomeScene());
+	private RebuildScene rebuild;
 	private final Lazy<FurnitureAnyModScene> furnitureAnyMod = new Lazy<>(() -> new FurnitureAnyModScene());
 	private final Lazy<FurnishedWorkplacesScene> furnishedWorkplaces = new Lazy<>(() -> new FurnishedWorkplacesScene());
 	private final Lazy<SeatsAndBedsScene> seatsAndBeds = new Lazy<>(() -> new SeatsAndBedsScene());
@@ -422,6 +423,13 @@ public class ScreenshotHarness implements ClientModInitializer {
 		}
 		if ("grand_houses".equals(System.getProperty("aliveworkplace.scene"))) {
 			grandHouses.get().tick(mc, mc.getSingleplayerServer());
+			return;
+		}
+		if (rebuild != null || System.getProperty("aliveworkplace.scene", "").startsWith("rebuild_")) {
+			if (rebuild == null) {
+				rebuild = new RebuildScene(System.getProperty("aliveworkplace.scene").substring("rebuild_".length())); // 49.1: any family
+			}
+			rebuild.tick(mc, mc.getSingleplayerServer());
 			return;
 		}
 		if ("furnished_home".equals(System.getProperty("aliveworkplace.scene"))) {
@@ -1095,27 +1103,20 @@ public class ScreenshotHarness implements ClientModInitializer {
 		return best;
 	}
 
-	/** Moves the mouse into the middle of {@code screen}'s reading pane, as a player crossing over from the list. */
-	private static void intoPane(Minecraft mc, io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
-		double scale = mc.getWindow().getGuiScale();
-		int[] at = screen.paneCentre();
-		setMouse(mc, at[0] * scale, at[1] * scale);
-	}
-
-	/** Turns the wheel down over the pane until the reading's last line shows (at most 40 notches). */
-	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.ChoiceTableScreen screen) {
-		int[] at = screen.paneCentre();
-		for (int i = 0; i < 40 && screen.readingScroll()[0] < screen.readingScroll()[1]; i++) {
-			screen.mouseScrolled(at[0], at[1], 0, -1);
+	/** Turns the wheel down over the chronicle until its last line shows (at most 40 notches; the next frame stops it at the end). */
+	private static void scrollToEnd(io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hall, int[] at) {
+		for (int i = 0; i < 40 && hall.chronicleScroll()[0] < hall.chronicleScroll()[1]; i++) {
+			hall.mouseScrolled(at[0], at[1], 0, -1);
 		}
 	}
 
 	private int readingSlot = -1;
 
 	/**
-	 * 36.5: reading a long entry without clicking it. In the hall's chronicle a long entry (a war party's victory naming
-	 * every guard) is hovered, the mouse moves into the pane and it stays read out, and the wheel there scrolls to its
-	 * last line; then the Storehouse board does the same with its longest row. Nothing is clicked.
+	 * 36.5, as Copperline has it (48.4, B1344): reading a long entry. The hall's chronicle has no reading pane any more:
+	 * a long entry (a war party's victory naming every guard) is pointed at, one click opens it to its whole text in the
+	 * list, and the wheel scrolls the list to its last line; then the Storehouse board shows its longest row in its
+	 * icon's tooltip.
 	 */
 	private void hallReadingScene(Minecraft mc, MinecraftServer server) {
 		tick++;
@@ -1184,22 +1185,24 @@ public class ScreenshotHarness implements ClientModInitializer {
 		if (tick == 185) {
 			Showcase.check(screen != null && readingSlot >= 0, "the chronicle page opened with entries (" + (screen == null ? "no screen" : screen.listSlots()) + ")");
 			shot(mc, "01_chronicle_hovered");
-			if (screen != null) {
-				intoPane(mc, screen);
+			if (screen != null && readingSlot >= 0) {
+				int[] at = screen.centre(readingSlot); // the player's own click, where the mouse already is
+				screen.mouseClicked(at[0], at[1], 0);
 			}
 		}
+		io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen hallScreen =
+			screen instanceof io.github.jcondedata.aliveworkplace.client.VillageHallMenuScreen h ? h : null;
 		if (tick == 200) {
-			int[] at = screen == null ? new int[]{0, 0} : screen.paneCentre();
-			Showcase.check(screen != null && screen.readingAt(at[0], at[1]) == readingSlot && screen.pinned() < 0,
-				"the hovered entry stays read out with the mouse in the pane, nothing clicked (" + (screen == null ? "no screen" : screen.readingAt(at[0], at[1]) + " of " + readingSlot) + ")");
+			Showcase.check(hallScreen != null && readingSlot >= 0 && hallScreen.chronicleOpen() == readingSlot,
+				"one click opened the long entry to its whole text (" + (hallScreen == null ? "no hall screen" : hallScreen.chronicleOpen() + " of " + readingSlot) + ")");
 			shot(mc, "02_chronicle_held");
-			if (screen != null) {
-				scrollToEnd(screen);
+			if (hallScreen != null && readingSlot >= 0) {
+				scrollToEnd(hallScreen, hallScreen.centre(readingSlot));
 			}
 		}
 		if (tick == 215) {
-			int[] scroll = screen == null ? new int[]{-1, -1} : screen.readingScroll();
-			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel in the pane scrolled the long entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
+			int[] scroll = hallScreen == null ? new int[]{-1, -1} : hallScreen.chronicleScroll();
+			Showcase.check(scroll[1] > 0 && scroll[0] == scroll[1], "the wheel over the chronicle scrolled the open entry to its last line (" + scroll[0] + " of " + scroll[1] + ")");
 			shot(mc, "03_chronicle_last_line");
 			server.execute(() -> io.github.jcondedata.aliveworkplace.store.StorehouseBoard.open(server.getPlayerList().getPlayers().get(0), storehouse));
 		}
@@ -1761,15 +1764,17 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take 21 of
-				// the logs, which the Carpenter never touches, so 20 left him none to saw (until 46.1 he made the carpets from
-				// the spare wool, which is the Shepherd's work now, and the scene passed on those): a stack, and the rest of
-				// the stall's list as it is today.
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.STRIPPED_SPRUCE_LOG, 3},
-					{net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
-					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 16}, {net.minecraft.world.item.Items.WHITE_WOOL, 9},
-					{net.minecraft.world.item.Items.RED_CARPET, 8}, {net.minecraft.world.item.Items.WHITE_CARPET, 6}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
-					{net.minecraft.world.item.Items.DANDELION, 1}, {net.minecraft.world.item.Items.RED_TULIP, 1}};
+				// Everything for a Market Stall but the woodwork: spruce logs instead. B1151: the stall's own posts take some of
+				// the logs (32 since the 50.11 rebuild), which the Carpenter never touches, so a short stock left him none to saw
+				// (until 46.1 he made the carpets from the spare wool, which is the Shepherd's work now, and the scene passed on
+				// those): a stack, and the rest of the stall's list as it is today (50.11's Shop Board).
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.DARK_OAK_STAIRS, 36},
+					{net.minecraft.world.item.Items.DARK_OAK_PLANKS, 6}, {net.minecraft.world.item.Items.WHITE_TERRACOTTA, 15}, {net.minecraft.world.item.Items.GLASS_PANE, 2},
+					{net.minecraft.world.item.Items.SPRUCE_FENCE_GATE, 1}, {net.minecraft.world.item.Items.CAKE, 1}, {net.minecraft.world.item.Items.RED_BANNER, 2},
+					{net.minecraft.world.item.Items.MELON, 2}, {net.minecraft.world.item.Items.PUMPKIN, 2}, {net.minecraft.world.item.Items.LANTERN, 3},
+					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.RED_WOOL, 4}, {net.minecraft.world.item.Items.WHITE_WOOL, 3},
+					{net.minecraft.world.item.Items.RED_CARPET, 2}, {net.minecraft.world.item.Items.WHITE_CARPET, 2}, {net.minecraft.world.item.Items.FLOWER_POT, 2},
+					{net.minecraft.world.item.Items.CORNFLOWER, 1}, {net.minecraft.world.item.Items.POPPY, 1}};
 				for (int i = 0; i < stock.length; i++) {
 					chest.setItem(i, new ItemStack((net.minecraft.world.item.Item) stock[i][0], (Integer) stock[i][1]));
 				}
@@ -1832,9 +1837,12 @@ public class ScreenshotHarness implements ClientModInitializer {
 				level.setBlockAndUpdate(bench, ModBlocks.BLUEPRINT_TABLE.defaultBlockState());
 				level.setBlockAndUpdate(bench.west(), Blocks.CHEST.defaultBlockState().setValue(net.minecraft.world.level.block.ChestBlock.FACING, Direction.SOUTH));
 				BaseContainerBlockEntity chest = (BaseContainerBlockEntity) level.getBlockEntity(bench.west());
-				// Everything for a Market Stall in its rawest form: the jobs make the rest.
-				// B1151: a stack of logs (the stall's own posts take 21, which the Carpenter leaves alone)
-				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 1}, {net.minecraft.world.item.Items.PUMPKIN, 1},
+				// Everything for a Market Stall in its rawest form: the jobs make the rest (50.11's Shop Board: what no job here
+				// makes, the dark oak roof, the limewash, the glass, the gate and the cake, comes as it is).
+				// B1151: a stack of logs (the stall's own posts take 32, which the Carpenter leaves alone)
+				Object[][] stock = {{net.minecraft.world.item.Items.SPRUCE_LOG, 64}, {net.minecraft.world.item.Items.MELON, 2}, {net.minecraft.world.item.Items.PUMPKIN, 2},
+					{net.minecraft.world.item.Items.DARK_OAK_STAIRS, 36}, {net.minecraft.world.item.Items.DARK_OAK_PLANKS, 6}, {net.minecraft.world.item.Items.WHITE_TERRACOTTA, 15},
+					{net.minecraft.world.item.Items.GLASS_PANE, 2}, {net.minecraft.world.item.Items.SPRUCE_FENCE_GATE, 1}, {net.minecraft.world.item.Items.CAKE, 1},
 					{net.minecraft.world.item.Items.RAW_IRON, 1}, {net.minecraft.world.item.Items.COAL, 1}, {net.minecraft.world.item.Items.TORCH, 1},
 					{net.minecraft.world.item.Items.HAY_BLOCK, 2}, {net.minecraft.world.item.Items.WHITE_WOOL, 35}, {net.minecraft.world.item.Items.POPPY, 20}};
 				for (int i = 0; i < stock.length; i++) {

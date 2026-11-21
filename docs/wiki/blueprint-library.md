@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4
 
 ## 1. What a player sees
 
@@ -51,6 +51,10 @@ Ways to unlock, all for the village round the nearest hall:
 1. Buying a Blueprint from any villager or trader (builders, the other jobs' blueprint trades, market-day traders).
    The item is still sold.
 2. A builder of the village leveling up: the next 3 locked builds (lowest tier first, then by id; never a rare one).
+   The village is his Blueprint Table's, wherever he stands (out on a job past the village's reach too), and every
+   player in that village is told; where he stands counts only for a builder with no Table. Before (B1345), one
+   leveling up past the village's reach put them in the server-wide set. `QaLevelUpVillage1116bGameTests` (2),
+   `QaLevelUpVillage1116bBugGameTests` (1).
 3. Questbook rewards (FTB Quests, The Builder chapter): Starter Cottage II and III, Stone House II and III, Terrace II.
    Unlike the others, a reward (`/workplace unlock {p} <id>`, `BlueprintUnlocks.unlockFor`) goes to the claiming
    player's own village wherever they stand when they claim it (B1318, `hall/HomeVillages`): the village they stand in
@@ -165,9 +169,9 @@ full inventory is refused rather than dropped, so nothing lands on the floor by 
 - The job line counts job blocks, not workers: a build with two smokers shows "(2)" even if one villager works there.
 
 - Stored blueprints are shared by everyone who can reach the table; there is no lock or owner (36.13).
-- 36.23: a new Level I house is drawn two ways (the Hearthstead and the Daub House) on branch `wip/house-t1`; neither
-  is on the Table or in villages until the owner picks one (36.23a). The Daub House's hall has no shelves by the door;
-  its plates stand on the kitchen counters (36.23c).
+- 36.23: a new Level I house was drawn two ways (the Hearthstead and the Daub House); the owner picked the Daub House,
+  which is on the Table since 49.2 (locked at first, like most builds; [The Daub House](daub-house.md)). The Hearthstead
+  stays unused on branch `wip/house-t1`.
 
 ## 8. Proof
 
@@ -237,3 +241,137 @@ is still handed out after.
 Showcase scenes: `table` and `table_preview` (the dev client runs with the switch on, so the Table there shows the
 starting set unlocked and the rest locked or ???; `table` checks the Starter Cottage's "Beds:" line shows, then types "smith" and checks the list narrowed, a search
 for nothing lists nothing, and an emptied box lists everything).
+
+## Rebuilding the library (49.1)
+
+From 49.2 on, every blueprint the mod ships is being redrawn from scratch with the rebuild kit
+(`tools/blueprints/REBUILD.md`): a brief written from what the building must do, a designer who never sees the old
+building, and a critic who ships the new one only when it is clearly better. Ids never change, so standing buildings
+and sites mid-build keep their old drawing until refreshed. Showcase scenes `rebuild_<family>` film each rebuilt
+family from four sides and at eye level in every room. Rebuilt so far include the Nether Gate (13 by 16 by 9; II, 15 by
+16 by 14: an obsidian frame between blackstone piers under a flared crimson roof, with a lodge for the netherworker's cartography table),
+the Waystone Plaza and the Mega Shrine (52.4).
+
+**51.4: the Library and the Schoolhouse** (the School followed in round 3, below). Recipes
+`tools/blueprints/js/{library,schoolhouse}/`
+(`build.sh` writes the Library's four levels and the Schoolhouse's two; Library IV with `--basement 4 --cellar
+out/cellar.txt`), saved live by `rebuild.py`; briefs and the critics' scorecards in `tools/blueprints/briefs/`
+(`library.md`, `school.md`, `schoolhouse.md`, `library_school_critic.md`: all three SHIP in round 2). Sizes:
+`library` 13 x 15 x 12, `library_2` 18 x 15 x 12, `library_3` and `library_4` 18 x 18 x 22 (IV 4 deep below),
+`schoolhouse` 11 x 16 x 13, `schoolhouse_2` 17 x 16 x 13. The old drawings are in `blueprint_history/` (and
+`modded/`); the vanilla village houses `<style>_schoolhouse` keep their own looks (`village_looks.py`), as the
+Carpenter's Workshop's did in 50.2. `check.py` counts a modded wood ladder (Carved Wood's, in the modded Library IV)
+as a ladder. Scenes `rebuild_library`, `rebuild_schoolhouse`; `furnished_workplaces`' schoolroom shot stands inside the
+new front wall. The School's round-2 rebuild (17 x 14 x 20, 1,410 blocks against the old 759) did not ship: in the
+School's build test (`WorkplacesGameTests`' generated workplaceBuilt_school) the builder was still on STRUCTURE at
+12,000 ticks (the brief's limit), stuck 2,400 ticks on the gate roof's back barge stair over the west cloister's
+lean-to.
+
+**51.4: the School** (round 3, "the Half Court", critic SHIP). Recipe `tools/blueprints/js/school/` (`npm run cut`
+with `MC_BUILDER=<minecraft-builder skill>`), then `rebuild.py school school`. `school` is now 17 x 12 x 18, 903 blocks
+(about 45 stacks of the 81 budget): the gatehouse with a moon window in both gables, the court with its sparring ring
+round the Training Post (8, 1, 8), one cloister on the west (`holes.py` ALLOW for its open side at (2, 1, 9)), a low
+yard wall with lantern piers and targets on the east, and the Tutor's hall behind (lecture room, quarters behind a
+bookshelf screen, one bed, one chest). The brief now caps it at about 900 blocks with no roof, barge or eave over
+another roof, so the builder never stands on one roof to lay the next. The bed's foot (13, 1, 14) stands diagonal to
+the screen doorway (12, 1, 13): `check.py`'s doorway rule looks at the doorway cell and the cells straight in front of
+and behind it, (11, 1, 13) and (13, 1, 13), both open floor, so the way through is clear. The old drawing (and its
+modded copy) is in `blueprint_history/school/` as v0.145.0; the village houses `<style>_school` keep their own looks
+(`village.py`'s staffed house). Scene `rebuild_school`.
+
+**51.6: the Post Office and the Graveyard** (critic SHIP). Recipes `tools/blueprints/js/{post_office,graveyard}/`
+(`npm run cut` with `MC_BUILDER=<minecraft-builder skill>`, `LEVEL=2` for `graveyard_2`), then `rebuild.py post_office
+post_office --nbt out/post-office.nbt` and `rebuild.py graveyard <id> --nbt out/<graveyard|graveyard-2>.nbt`.
+`post_office` ("the Signal Tower") is now 17 x 15 x 15, 885 blocks: a 5 x 5 brick tower (lobby below, the Postman's
+room with his bed at floor y 5, a slate spire to y 13 and a lightning-rod vane) forward of a 15 x 9 counter hall, the
+Mailbox (8, 1, 9) in the middle of a counter of eight, the sorting room behind it with the pigeonholes, the sorting
+desk and two parcel chests; 33 furniture spots, recorded in `blueprint_furniture/post_office.json`. It leaves
+`owner_rules_baseline.json`. `graveyard` and `graveyard_2` ("the Lantern Yard") are 13 x 16 x 13 (was 13 x 11 x 13),
+570 and 652 blocks: the coped rubble wall, the lychgate over x 4..8, the 32 grave slots exactly where they were
+(`Graveyards`' YARD_SLOTS; nothing drawn at y 0 or 1 in one), the lantern tower x 5..7, z 6..8, to y 15, and the
+chapel behind with the Undertaker's brewing stand (6, 1, 11) and his chest (8, 1, 11). The designer drew the old
+Undertaker's Table, which is no longer craftable, so the ship swapped it for a brewing stand (the Undertaker's
+workstation, and the old drawing's). Level II's benches on the cross walk stand on the ground at y 0, which the
+drawing has no floor under, so they are plain stair benches rather than furniture spots. `StarterBlueprints.GRAVEYARD`,
+`GRAVEYARD_2` and `Graveyards.SIZE` are 13 x 16 x 13. The old drawings (and modded copies) are in `blueprint_history/`
+as v0.145.0; the village houses `<style>_post_office` keep their own looks (`village.py`'s staffed house). Scenes
+`rebuild_post_office`, `rebuild_graveyard`.
+
+**51.6: the Clock Tower** (critic SHIP, round 1). Recipe `tools/blueprints/js/clock_tower/` (`npm run cut`), then
+`rebuild.py clock_tower clock_tower --nbt out/clock-tower.nbt`. `clock_tower` ("the Water Clock", Create only) is now
+15 x 26 x 15 (was 11 x 19 x 9), 896 blocks: a stone shaft x 4..10, z 4..10, a jettied clock chamber (y 13..17) with a
+cuckoo clock on every face, a bell-cast copper spire to y 25. The builder pours one water source into the spout pier's
+cup (4, 7, 3); it falls past the water wheel (5, 2, 3), whose drive goes through a gearbox (5, 2, 5), up the corner
+shaft (5, 3..14, 5) and out through the gearboxes (5, 15, 5) and (7, 15, 7) to the four clocks (the north one at
+(7, 15, 3)). The cartography table is at (7, 1, 9). It leaves `owner_rules_baseline.json`; its 12 furniture spots are in
+`blueprint_furniture/clock_tower.json`; the old drawing is in `blueprint_history/clock_tower/` as v0.151.1.
+`aBuilderBuildsTheClockTowerAndItTurns` and its `qaReleaseRefresh_clock_tower` run in the tall area (30 tall). Scene
+`rebuild_clock_tower`.
+
+**51.7: the Market Square, Market Cross and Market Corner** (critics SHIP; sheets
+`tools/blueprints/briefs/market_{cross,corner,square}_sheet.png`, scorecards in `markets_51_7_critic.md`). Recipes
+`tools/blueprints/js/{market_cross,market_corner,market_square}/`. `market_square` ("the Market House") is 13 x 16 x 13,
+754 blocks: a paved forecourt with a rosette and a jettied timber hall on an open stone undercroft, 79 trader cells in
+the middle 9 x 9. The new square has no bell (the brief made one optional), so a village whose only bell was its square
+loses that meeting point after a refresh. The Market Cross ("the Mercat Drum") and Market Corner are 9 x 8 x 9 (see
+[More decorations](more-decorations.md)). The old drawings are in `blueprint_history/` as v0.145.0.
+
+**51.6: the Chapel** (critic SHIP, round 3). Recipe `tools/blueprints/js/chapel/` (`npm run cut`), then
+`rebuild.py chapel chapel --nbt build/rebuild/chapel/out/chapel.nbt`. `chapel` ("the Blossom Court") is now 13 x 16 x 17
+(was 11 x 16 x 16), 879 blocks: a gate tower x 4..8, z 1..5 (belfry y 11..12, slate spire to y 15), a nave x 2..10,
+z 5..15 under one slate roof (ridge y 10), stepped buttresses at z 8 and z 11. The middle the code reads for weddings
+(`Couples.venue`, the plot's middle) is (6, 1, 8), the rose under the vow arch, open and reachable. It leaves
+`owner_rules_baseline.json`; its 25 furniture spots are in `blueprint_furniture/chapel.json`; the old drawing is in
+`blueprint_history/chapel/` as v0.145.0. Scene `rebuild_chapel`.
+
+**51.5: the Leader's Hall and the Trade Hall** (critic SHIP: the Leader's Hall in round 1, "the Challenge Hall"; the
+Trade Hall in round 3, "the Ball Tower"; scorecards in `tools/blueprints/briefs/halls_51_5_critic.md`, briefs
+`leaders_hall.md` and `trade_hall.md`). Recipes `tools/blueprints/js/{leaders_hall,trade_hall}/` (`node
+"$MC_BUILDER/scripts/run-build.mjs" recipe.mjs --out-dir out --data-version 3955`), then `rebuild.py <family> <family>`.
+`leaders_hall` is 15 x 15 x 17, 1,026 blocks, the Training Post on the dais at (7, 2, 13); `trade_hall` is 18 x 18 x 19,
+1,427 blocks, the Shop Counter at (6, 1, 8) and the Trader's bed in the tower room at (13, 7, 3), its head to the front wall, up a ladder. Ship-step
+changes: the Leader's Hall's piers are carried round its back wall (the critic's polish); its hall lanterns hang on
+long chains to y 4 and the Trade Hall's tower lantern to y 10, so each lamp counts with its room's furniture in the
+eye-level shots; the Trade Hall gets two more lanterns (the ledger shelves and the bay desk), as `check.py`'s
+dark-room rule asked once the drawings went live. The critic's other polish (a straight gable trim on the Leader's
+Hall; a second tower window, the loft and the back gable on the Trade Hall) waits for a run that can render it. The old
+drawings (and their modded copies) are in `blueprint_history/` as v0.145.0; the village houses `<style>_leaders_hall`
+and `<style>_trade_hall` keep their own looks (`village.py`'s staffed house). Scenes `rebuild_leaders_hall`,
+`rebuild_trade_hall`.
+
+**51.8: the defenses** (all five critics SHIP, `tools/blueprints/briefs/defense_51_8_critic.md`). Recipes
+`tools/blueprints/js/{barracks,guard_house,fire_station,gatehouse,lookout_tower}/`; the barracks and lookout tower
+through `build.sh` (LIVE=1 for the barracks; III / IV with `--basement 4 --cellar` from `out/cellar.txt`), the others
+`npm run cut` (LEVEL=2 for `gatehouse_2`), then `rebuild.py <family> <id> --nbt out/<id with dashes>.nbt`. Sizes:
+`barracks` 13 x 13 x 13 (was 13 x 10 x 11), `barracks_2` and `barracks_3` 21 x 13 x 13 (III + 4 below; was 19 x 10 x
+11); `guard_house` 15 x 15 x 11 (was 11 x 13 x 11); `fire_station` 15 x 18 x 16 (was 11 x 14 x 11); `gatehouse` 11 x 16
+x 5 and `gatehouse_2` 11 x 16 x 10 (was 9 high; every gate and portcullis cell is where it was); `lookout_tower` 9 x 16
+x 9, `_2` 13 x 16 x 9, `_3` and `_4` 19 x 16 x 9 (IV + 4 below; was 7 x 14 x 7 to 14 x 23 x 7). Two changes at the ship
+step: the Lookout Tower's two job blocks, drawn as Guard Posts, are grindstones (the Guard Post has no recipe, so no
+builder could be stocked with one), and the Barracks' straw targets are `hay_block` (the recipe had a block id that
+doesn't exist). The Barracks' bunks stand at z 8 and 9 (drawn at z 7 and 9): a refresh keeps a job block, and the
+old Barracks' grindstone at (3, 1, 7) sat under the first bunk's foot, so a refreshed Barracks III lost that bunk
+(`qaReleaseRefresh_barracks_3`). The Fire Station's standing spot in `answeringHouseBuilt_fire_station` moves to (4, 1, 5), two from the
+grindstone (2, 1, 5). The fire station and gatehouses leave `owner_rules_baseline.json`. The old drawings and their
+modded copies are in `blueprint_history/`; the Guard House's village pieces (`village/<style>_guard_house`) keep their
+own looks (`village_looks.py` not redrawn). Scenes `rebuild_barracks`, `rebuild_guard_house`, `rebuild_fire_station`,
+`rebuild_gatehouse`, `rebuild_lookout_tower`.
+
+**QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence
+gates stay shut, nobody stands on fences, walls or headstones) from the street at the z=0 side.
+`QaRebuiltCivic1121cGameTests` (16, 51.4 and 51.6): every Graveyard slot open in both levels and walked to as the yard
+fills in order, one Undertaker site with a chest and a candle; the Chapel's middle a roofed floor a guest walks to;
+the Library's lecterns (1, 2, 3, 3) each walked to, Library III and IV enchanting at full power; every upgrade keeps
+its job blocks and chests in place; the School's Training Post and bed, the Schoolhouse's lectern, the Post Office's
+Mailbox and the Clock Tower's cartography table reached; live: graves sent to a placed Graveyard fill all 32 slots in
+order (a 33rd finds none), two jobless villagers take Library II's two lecterns. `QaRebuiltMarkets1121cGameTests` (8,
+51.5 and 51.7): the Market Square's 9x9 has 36 or more standing cells walked to from the front and open ground round
+its middle, the Cross and Corner walked up to, the Trade Hall's one Shop Counter and bed and the Leader's Hall's post
+reached; live: a market day on the rebuilt square brings all 8 traders each to his own reachable cell, and with no
+bell in the village festivals fall back on the hall. `QaRebuiltDefense1121cGameTests` (15, 51.8 and 51.9): the
+Barracks' grindstones, chests, dummies and beds by level and kept through the upgrades, the Guard House's post, the
+Fire Station's walled-in water and the firewarden walking up to it, a villager through each Gatehouse with its gates
+open (not with them shut), every Lookout Tower and Gatehouse I station climbed to from village-side ground, the Royal
+Hall's vault growing with every chest walked to. Open bugs from it: B1423 (a full Graveyard walls in 18 of its graves),
+B1424 (the fair's banners: 13 of 16 round the new square), B1427 (Gatehouse II's barbican stations out of reach behind
+a wall).

@@ -1,0 +1,7 @@
+{"spots": [
+  {"kind":"table","pos":[11,1,5],"facing":"west","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"brown"},
+  {"kind":"chair","pos":[10,1,5],"facing":"east","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[11,3,4],"facing":"north","cells":[[0,0,0],[0,1,0],[0,2,0],[0,3,0],[0,4,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,3,4],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"lamp","pos":[6,3,7],"facing":"north","cells":[[0,0,0]],"wood":"spruce","colour":null}
+]}

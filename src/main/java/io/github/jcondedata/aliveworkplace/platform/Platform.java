@@ -75,6 +75,14 @@ public interface Platform {
 		return null;
 	}
 
+	/**
+	 * B843: whether {@code player} is a machine's stand-in (a fake player, such as Create's Deployer) rather than a person
+	 * logged in; {@link io.github.jcondedata.aliveworkplace.hall.StandIns} says whom it acts for.
+	 */
+	default boolean isFakePlayer(net.minecraft.world.entity.player.Player player) {
+		return false;
+	}
+
 	Path configDir();
 
 	/** The roots (a jar's root, or class folders in a dev run) this mod's own files are loaded from; empty if unknown. */

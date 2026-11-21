@@ -150,7 +150,7 @@ public final class MovePlan {
 	 * Steward), or empty if its blueprint is gone or its box holds nothing.
 	 */
 	public static Optional<MovePlan> capture(ServerLevel level, BuildSiteManager.Finished building) {
-		Vec3i size = size(level, building.structure());
+		Vec3i size = size(level, building);
 		if (size == null) {
 			return Optional.empty();
 		}
@@ -162,7 +162,7 @@ public final class MovePlan {
 	/** The finished building the Village Hall at {@code hall} knows that holds {@code pos}, captured; empty if none. */
 	public static Optional<MovePlan> captureAt(ServerLevel level, BlockPos hall, BlockPos pos) {
 		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedInVillage(level, hall)) {
-			Vec3i size = size(level, f.structure());
+			Vec3i size = size(level, f);
 			if (size != null && BlueprintOutline.bounds(f.placement(), size).isInside(pos)) {
 				return capture(level, f);
 			}
@@ -260,11 +260,25 @@ public final class MovePlan {
 			&& !(entity instanceof LightningBolt) && !entity.isPassenger();
 	}
 
-	/** The box a finished building stands in (its blueprint's size at its placement), or null if its blueprint is gone. */
+	/**
+	 * The box a finished building stands in (the size of the drawing it stands as, at its placement), or null if its
+	 * blueprint is gone.
+	 */
 	@Nullable
 	public static BoundingBox box(ServerLevel level, BuildSiteManager.Finished building) {
-		Vec3i size = size(level, building.structure());
+		Vec3i size = size(level, building);
 		return size == null ? null : BlueprintOutline.bounds(building.placement(), size);
+	}
+
+	/**
+	 * B1373, B1374: the size of a finished building as it stands: the older drawing's it still stands as once its family's
+	 * drawing was rebuilt under the same id ({@link io.github.jcondedata.aliveworkplace.build.Refreshes#standingSize}),
+	 * else its blueprint's today. Null if its blueprint is gone.
+	 */
+	@Nullable
+	public static Vec3i size(ServerLevel level, BuildSiteManager.Finished building) {
+		Vec3i old = io.github.jcondedata.aliveworkplace.build.Refreshes.standingSize(level, building);
+		return old != null ? old : size(level, building.structure());
 	}
 
 	@Nullable

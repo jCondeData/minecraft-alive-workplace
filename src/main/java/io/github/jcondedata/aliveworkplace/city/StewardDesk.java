@@ -40,13 +40,11 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -93,7 +91,7 @@ public final class StewardDesk {
 			Codec.LONG.optionalFieldOf("day", 0L).forGetter(Proposal::day),
 			Codec.INT.optionalFieldOf("skip", 0).forGetter(Proposal::skip),
 			Codec.BOOL.optionalFieldOf("searching", false).forGetter(Proposal::searching),
-			StewardJobs.Job.CODEC.listOf().optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(StewardJobs.Job.CODEC, "steward proposal job").optionalFieldOf("jobs", List.of()).forGetter(Proposal::jobs),
 			Codec.STRING.optionalFieldOf("topic", "").forGetter(Proposal::topic),
 			Codec.STRING.optionalFieldOf("wall_kit", "").forGetter(Proposal::wallKit),
 			Codec.INT.listOf().optionalFieldOf("house", List.of()).forGetter(Proposal::house)
@@ -187,8 +185,8 @@ public final class StewardDesk {
 						long shopDay, Renewals.Book renewals) {
 		public static final State EMPTY = new State(List.of(), Map.of(), -1, -1, 1, -1, -1, -1, Renewals.Book.EMPTY);
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Proposal.CODEC.listOf().optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
-			Codec.unboundedMap(Codec.STRING, Codec.LONG).optionalFieldOf("declined", Map.of()).forGetter(State::declined),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Proposal.CODEC, "steward proposal").optionalFieldOf("proposals", List.of()).forGetter(State::proposals),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.map(Codec.STRING, Codec.LONG, "steward declined rule").optionalFieldOf("declined", Map.of()).forGetter(State::declined),
 			Codec.LONG.optionalFieldOf("told", -1L).forGetter(State::told),
 			Codec.LONG.optionalFieldOf("ran", -1L).forGetter(State::ran),
 			Codec.INT.optionalFieldOf("next", 1).forGetter(State::next),
@@ -533,12 +531,14 @@ public final class StewardDesk {
 
 	/** The builders of the village: villagers with the job and a bench, by the hall. */
 	static List<Villager> builders(ServerLevel level, BlockPos hall) {
-		return level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS),
-				v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent())
+		return VillageHalls.villagers(level, hall, v -> Builders.isBuilder(v) && Builders.benchPos(v).isPresent()) // B1352: the circle
 			.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(hall.getX(), hall.getY(), hall.getZ()))).toList();
 	}
 
-	/** Which builder would build {@code proposal}: the nearest idle one whose bench reaches it, else the one with the shortest queue. */
+	/**
+	 * Which builder would build {@code proposal}: the nearest idle one whose bench reaches it (one lending a hand on
+	 * another's build counts as idle), else the one with the shortest queue.
+	 */
 	public static Optional<Builder> builderFor(ServerLevel level, BlockPos hall, Proposal proposal) {
 		return builderFor(level, hall, proposal, false);
 	}
@@ -566,7 +566,8 @@ public final class StewardDesk {
 			if (inReach && !io.github.jcondedata.aliveworkplace.work.Reach.inReach(level, bench, centre, Builders.MAX_SITE_DISTANCE)) {
 				continue;
 			}
-			BuildSite active = Builders.activeSite(level, v);
+			// (B789: a helper on another builder's build is free for one of his own, and leaves the crew for it)
+			BuildSite active = Builders.hasOwnBuild(level, v) ? Builders.activeSite(level, v) : null;
 			int queue = active == null ? 0 : 1 + Builders.queue(level, v).size();
 			if (queue <= Builders.MAX_QUEUE && queue < bestQueue) {
 				List<BuildSite> waiting = Builders.queue(level, v);
@@ -639,7 +640,7 @@ public final class StewardDesk {
 		Villager villager = builder.get().villager();
 		UUID owner = entity.owner() != null ? entity.owner() : player != null ? player.getUUID() : villager.getUUID();
 		String ownerName = entity.owner() != null ? entity.ownerName() : player != null ? player.getGameProfile().getName() : "";
-		boolean busy = Builders.activeSite(level, villager) != null;
+		boolean busy = Builders.hasOwnBuild(level, villager); // (B789: a helper on another's build starts it at once)
 		BuildSite site = busy
 			? Builders.enqueue(level, villager, owner, ownerName, proposal.blueprint(), proposal.placement())
 			: Builders.start(level, villager, owner, ownerName, proposal.blueprint(), proposal.placement());

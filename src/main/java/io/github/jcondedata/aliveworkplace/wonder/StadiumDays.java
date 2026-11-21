@@ -17,6 +17,7 @@ import io.github.jcondedata.aliveworkplace.hall.Guilds;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.legend.LegendPowers;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.realm.RealmData;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
@@ -336,6 +337,21 @@ public final class StadiumDays {
 		return RandomSource.create(site.getMostSignificantBits() ^ site.getLeastSignificantBits() * 31 ^ day * 0x9E3779B97F4A7C15L);
 	}
 
+	/**
+	 * The name of a visitor's village without loading its chunk (B644): the hall's own where it's loaded, else as the
+	 * realm's record keeps it, else as the caravans' list does (or the made-up one).
+	 */
+	static Component homeName(ServerLevel level, BlockPos home) {
+		if (level.isLoaded(home)) {
+			return VillageHalls.name(level, home);
+		}
+		RealmData.Known known = RealmData.get(level.getServer()).known(GlobalPos.of(level.dimension(), home));
+		if (known != null && known.name() != null && !known.name().getString().isBlank()) {
+			return known.name();
+		}
+		return VillageHalls.nameIfLoaded(level, home);
+	}
+
 	/** The visitors come: {@code min_visitors} to {@code max_visitors} (the day's random), each in a box, facing the field. */
 	public static List<Villager> arrive(ServerLevel level, WonderSite site, Spots spots, StadiumDaysPower p, long day) {
 		Data.get(level).setHeld(site.id(), day);
@@ -354,7 +370,7 @@ public final class StadiumDays {
 			v.setVillagerData(v.getVillagerData().setProfession(ModVillagers.TRAINER).setLevel(c.tier()));
 			v.setVillagerXp(c.xp());
 			if (c.home().isPresent()) {
-				Component village = VillageHalls.name(level, c.home().get());
+				Component village = homeName(level, c.home().get());
 				v.setCustomName(c.name().isEmpty() ? Component.translatable("entity.aliveworkplace.stadium_visitor", village)
 					: Component.translatable("entity.aliveworkplace.cup_delegate", c.name(), village));
 			} else {
@@ -432,8 +448,7 @@ public final class StadiumDays {
 
 	/** The village's own trainers who take the visitors on: the highest rank first. */
 	public static List<Villager> homeTrainers(ServerLevel level, BlockPos hall) {
-		List<Villager> out = new ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isSleeping() && Trainers.isTrainer(v) && !isVisitor(v) && !CupDays.isDelegate(v)));
+		List<Villager> out = new ArrayList<>(VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping() && Trainers.isTrainer(v) && !isVisitor(v) && !CupDays.isDelegate(v)));
 		out.sort(Comparator.<Villager>comparingInt(v -> -Trainers.tier(v)).thenComparingInt(v -> -v.getVillagerXp()).thenComparing(Villager::getUUID));
 		return out;
 	}
@@ -540,6 +555,7 @@ public final class StadiumDays {
 			return;
 		}
 		Map<BlockPos, Boolean> claimed = new HashMap<>();
+		// The square and the Stadium's surroundings on purpose (B555): the nearest-hall check below picks this village's own.
 		for (Villager v : level.getEntitiesOfClass(Villager.class, VillageHalls.area(site.hall()).minmax(around), v -> v.isAlive() && !v.isSleeping()
 			&& !v.isPassenger() && !v.isBaby() && !isVisitor(v) && !CupDays.isDelegate(v) && !Trainers.isTrainer(v) && CupDays.offWork(v)
 			&& VillageHalls.nearest(level, v.blockPosition()).map(site.hall()::equals).orElse(false))) {

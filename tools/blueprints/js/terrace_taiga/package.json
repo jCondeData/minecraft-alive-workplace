@@ -1,0 +1,10 @@
+{
+  "name": "terrace-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Terrace, the taiga look (ROADMAP 49.10c): the shipped row as the Logging Row, one long low spruce log range under a broad slate roof, a veranda on log posts the length of the front, a fieldstone stack through the ridge on every wall line. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

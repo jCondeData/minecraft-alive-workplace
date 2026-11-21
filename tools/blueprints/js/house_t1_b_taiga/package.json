@@ -1,0 +1,10 @@
+{
+  "name": "house-t1-b-taiga",
+  "private": true,
+  "type": "module",
+  "description": "Daub House, the taiga look (ROADMAP 49.10d): the shipped Daub House drawn again as a log lodge: a spruce log pen with notched corners, a broad 45-degree slate gable to the road over a recessed porch and a pent on log posts, a log kitchen cross-wing with its own gable, a fieldstone stack up the back gable. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

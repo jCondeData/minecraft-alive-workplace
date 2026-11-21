@@ -1,6 +1,7 @@
 package io.github.jcondedata.aliveworkplace.cup;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
+import io.github.jcondedata.aliveworkplace.blueprint.BlueprintData;
 import io.github.jcondedata.aliveworkplace.build.BuilderLevels;
 import io.github.jcondedata.aliveworkplace.hall.Arenas;
 import io.github.jcondedata.aliveworkplace.hall.Caravans;
@@ -144,7 +145,7 @@ public final class CupChampions {
 		for (BlockPos hall : villages) {
 			if (level.isLoaded(hall) && level.getBlockEntity(hall) instanceof VillageHallBlockEntity) {
 				fly(level, hall);
-				level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive).forEach(Moods::forget);
+				VillageHalls.villagers(level, hall, Villager::isAlive).forEach(Moods::forget);
 			}
 		}
 	}
@@ -259,8 +260,11 @@ public final class CupChampions {
 		if (arena.isPresent() && arena.get().championPole().isPresent() && VillageHalls.nearest(level, arena.get().ring()).map(hall::equals).orElse(false)) {
 			BlockPos pole = arena.get().championPole().get();
 			if (!level.getBlockState(pole).isAir()) {
-				for (BlockPos side : List.of(Arenas.world(arena.get().placement(), Arenas.CHAMPION_POLE.north()),
-					Arenas.world(arena.get().placement(), Arenas.CHAMPION_POLE.south()))) {
+				// the pole's template north and south faces, turned with the build (50.12: from the pole found, so an Arena of
+				// the old drawing, whose pole stands elsewhere, gets its banners on its own pole)
+				BlueprintData.Placement placed = arena.get().placement();
+				BlockPos north = Arenas.world(placed, BlockPos.ZERO.north()).subtract(Arenas.world(placed, BlockPos.ZERO));
+				for (BlockPos side : List.of(pole.offset(north), pole.subtract(north))) {
 					Direction facing = Direction.getNearest(side.getX() - pole.getX(), 0, side.getZ() - pole.getZ());
 					if (level.getBlockState(side).canBeReplaced() && level.getFluidState(side).isEmpty()) {
 						Block wall = VillageBanners.wallBanner(design.base());

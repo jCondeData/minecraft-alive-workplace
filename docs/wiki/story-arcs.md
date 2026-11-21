@@ -5,7 +5,7 @@ players, named foes, builds out in the land and an ending. This page is the engi
 themselves have their own pages (the Bandit King, the Sickness, the Lost Caravan, the Professor's Thesis, the reforms).
 Part of the 1.5 expansion: switched on when Milestone 31 is complete.
 
-Roadmap items: 31.4
+Roadmap items: 31.4, B724
 
 ## What a player sees
 
@@ -22,7 +22,8 @@ Roadmap items: 31.4
 - **The villagers** talk of the running chapter as village news.
 - **Talk.** A `talk` step asks the player to right-click the villager the arc named ("Talk to Ilse"); they say their
   line. A villager of the village who isn't cast doesn't count, and neither does one another arc (or the same arc in
-  another village) cast in a part of the same name; a `kill` of a `role:` foe counts only the one this arc cast too.
+  another village) cast in a part of the same name; a `kill` of a `role:` foe counts only the one this arc spawned too,
+  never the same arc's foe of another village, even before this village's own has come.
 - **Foes and builds.** A spawned foe has its name, gear, extra health and a boss bar, and keeps near its spot. A build
   out in the land goes up only once a player comes within 96 blocks of it, on natural ground and plants only (never on
   a floor or road someone laid), and only once; a map can lead there.

@@ -407,6 +407,7 @@ public class CupGameTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "cupSaved")
 	public void cupCalendarFromTheRoundAndSavedAndReloaded(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		Leftovers.finished(helper); // an Arena another batch left finished here would still be the village's after this test forgets its own
 		List<BlueprintData.Placement> arenas = new ArrayList<>();
 		cleanUp(helper, arenas, () -> {
 		});

@@ -11,6 +11,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.SupplyContainers;
 import io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture;
+import io.github.jcondedata.aliveworkplace.furnish.FurnishingTable;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot;
 import io.github.jcondedata.aliveworkplace.furnish.FurnitureSpot.Kind;
@@ -59,7 +60,8 @@ public class FurnishedWorkplacesCompatTests implements FabricGameTest {
 
 	private static Map<Kind, String> expected() {
 		Map<Kind, String> out = new EnumMap<>(Kind.class);
-		for (Kind kind : List.of(Kind.COUNTER, Kind.DESK, Kind.CHAIR, Kind.BENCH, Kind.TABLE, Kind.SHELF, Kind.CROCKERY)) {
+		// ROADMAP 50.6: the rebuilt Print Shop has cupboards, and Handcrafted has a cupboard (furnishings/handcrafted.json)
+		for (Kind kind : List.of(Kind.COUNTER, Kind.DESK, Kind.CHAIR, Kind.BENCH, Kind.TABLE, Kind.SHELF, Kind.CROCKERY, Kind.CUPBOARD)) {
 			out.put(kind, "handcrafted");
 		}
 		for (Kind kind : List.of(Kind.PICTURE, Kind.TRELLIS, Kind.HANGING_POT, Kind.LAMP, Kind.BLINDS)) {
@@ -106,6 +108,11 @@ public class FurnishedWorkplacesCompatTests implements FabricGameTest {
 					if (placed == null && FurnishedHomesCompatTests.standing(spots.get(i), "beautify").equals("minecraft")
 						&& spots.get(i).kind() == Kind.PICTURE) {
 						continue; // B260: a picture on a wall stays a banner (Beautify's frame stands on a table)
+					}
+					FurnitureSpot spot = spots.get(i);
+					if (placed == null && Furnishings.MODS.stream().noneMatch(mod -> FurnishingTable.of(mod)
+						.map(t -> t.pieces().get(spot.kind())).filter(p -> spot.supports(p.needs())).isPresent())) {
+						continue; // 51.4: no listed mod has a piece that stands here (a lantern hung from the ceiling: every mod's lamp stands on a floor)
 					}
 					helper.assertTrue(placed != null, name + ": " + spots.get(i).kind() + " at " + spots.get(i).pos().toShortString() + " stayed vanilla");
 					if (spots.get(i).kind() == Kind.DESK) {

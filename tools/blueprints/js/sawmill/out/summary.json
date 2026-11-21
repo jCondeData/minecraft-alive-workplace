@@ -1,0 +1,19 @@
+{
+  "name": "sawmill",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 19
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sawmill/out/sawmill.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sawmill/out/summary.json",
+  "size": [
+    15,
+    11,
+    14
+  ],
+  "blockCount": 650,
+  "paletteCount": 66,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/sawmill/recipe.mjs"
+}

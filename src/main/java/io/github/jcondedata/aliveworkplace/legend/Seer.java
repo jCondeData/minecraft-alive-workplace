@@ -277,10 +277,9 @@ public final class Seer {
 		}
 		boolean guestToday = guests.values().stream().anyMatch(t -> t.day() == today && t.legend().isPresent());
 		LegendGuests.rollAhead(level, hall, today + 1, guestToday, random).forEach((place, told) -> guests.put(key(place, told.day()), told));
-		long festival = Festivals.nextDay(level, hall, entity);
-		boolean festivalOn = entity.festivalDay() >= festival || Festivals.ENABLED && villagers >= Festivals.MIN_VILLAGERS;
-		long market = MarketDays.ENABLED && MarketDays.square(level, hall).isPresent() ? MarketDays.nextDay(level, hall, entity.lastMarketDay()) : -1;
-		State state = new State(today, night.raid(), night.angle(), night.at(), false, festivalOn ? festival : -1, market, Map.copyOf(guests));
+		long festival = Festivals.foretold(level, hall, entity, villagers);
+		long market = MarketDays.foretold(level, hall, entity.lastMarketDay());
+		State state = new State(today, night.raid(), night.angle(), night.at(), false, festival, market, Map.copyOf(guests));
 		entity.setSeer(state);
 		List<Component> lines = lines(level, hall, state);
 		double r = VillageHalls.RADIUS + 32;
@@ -413,7 +412,7 @@ public final class Seer {
 	/** A blessed couple of the village round {@code hall} whose first baby is due (within its days, both there), or empty. */
 	public static List<Villager> blessedCouple(ServerLevel level, BlockPos hall) {
 		long today = Chronicle.day(level);
-		List<Villager> village = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby());
+		List<Villager> village = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby());
 		for (Villager v : village) {
 			Blessing b = ModAttachments.SEER_BLESSING.get(v);
 			Couples.Partner p = Couples.partner(v);

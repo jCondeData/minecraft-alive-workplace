@@ -1,0 +1,10 @@
+{
+  "name": "butchers-shop",
+  "private": true,
+  "type": "module",
+  "description": "The Butcher's Shop (ROADMAP 49): the shambles shop and its smoke tower, the freezer under it. MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -6,8 +6,6 @@ import io.github.jcondedata.aliveworkplace.guard.VillageRaids;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
 import io.github.jcondedata.aliveworkplace.people.Sickness;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
-import java.util.Map;
-import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -45,10 +43,12 @@ public final class Conscription {
 	/** How long the work gate's answer is kept for a villager. */
 	private static final long CHECK_TICKS = 20;
 
-	private record Kept(boolean stopped, long until) {
+	/** The work gate's answer for a villager; {@code round} is {@link #forgotten} at the time (an older one is asked again). */
+	private record Kept(boolean stopped, long until, int round) {
 	}
 
-	private static final Map<Villager, Kept> STOPPED = new WeakHashMap<>();
+	/** Counts {@link #forget}: every answer kept before it is stale. */
+	private static volatile int forgotten;
 
 	public static void init() {
 		Platform.get().onEntityLoad((entity, level) -> {
@@ -79,17 +79,16 @@ public final class Conscription {
 			return false;
 		}
 		long now = level.getGameTime();
-		Kept kept;
-		synchronized (STOPPED) {
-			kept = STOPPED.get(villager);
-		}
-		if (kept != null && now < kept.until() && now >= kept.until() - CHECK_TICKS) {
+		// kept on the villager (CivicMemo): every brain asks this every tick, and the shared map the answers used to be
+		// in (a WeakHashMap under a lock) was most of the 0.7 to 1.1% of a City's tick this took (B455)
+		CivicMemo memo = (CivicMemo) villager;
+		int round = forgotten;
+		if (memo.aliveworkplace$workGate() instanceof Kept kept && kept.round() == round && now < kept.until()
+			&& now >= kept.until() - CHECK_TICKS) {
 			return kept.stopped();
 		}
 		boolean stopped = check(level, villager);
-		synchronized (STOPPED) {
-			STOPPED.put(villager, new Kept(stopped, now + CHECK_TICKS));
-		}
+		memo.aliveworkplace$workGate(new Kept(stopped, now + CHECK_TICKS, round));
 		return stopped;
 	}
 
@@ -200,9 +199,7 @@ public final class Conscription {
 
 	/** Forget every villager's work-gate answer (tests, and when a raid or an edict changes in one). */
 	public static void forget() {
-		synchronized (STOPPED) {
-			STOPPED.clear();
-		}
+		forgotten++;
 	}
 
 	private Conscription() {

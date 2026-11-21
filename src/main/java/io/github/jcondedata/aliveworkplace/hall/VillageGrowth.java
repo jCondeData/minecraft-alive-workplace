@@ -115,7 +115,7 @@ public final class VillageGrowth {
 		// A married couple first; else the two grown villagers nearest the bed.
 		List<Villager> parents = io.github.jcondedata.aliveworkplace.people.Couples.coupleNear(level, hall, bed);
 		if (parents.isEmpty()) {
-			parents = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
+			parents = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
 				&& !io.github.jcondedata.aliveworkplace.guard.Mercenaries.isMercenary(v) && !CaravanSights.isParty(v))
 				.stream().sorted(Comparator.comparingDouble(v -> v.distanceToSqr(bed.getCenter()))).limit(2).toList();
 		}
@@ -195,7 +195,7 @@ public final class VillageGrowth {
 		level.playSound(null, baby.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1.3f);
 		if (io.github.jcondedata.aliveworkplace.people.FamilyBook.ENABLED) {
 			// Named at once, so the chronicle can say who was born and whose grandchild they are (34.21).
-			List<Villager> village = new java.util.ArrayList<>(level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive));
+			List<Villager> village = new java.util.ArrayList<>(VillageHalls.villagers(level, hall, Villager::isAlive));
 			if (!village.contains(baby)) {
 				village.add(baby);
 			}

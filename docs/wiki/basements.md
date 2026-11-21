@@ -6,7 +6,7 @@ freezer, the Smith's coal store, the Cook's cold larder and the Storehouse's vau
 should also get basements in a new Level 4 version, but some buildings should get basements in general at any level,
 like a butcher maybe has a freezer").
 
-Roadmap items: 26.15, B923, B924, B958
+Roadmap items: 26.15, B923, B924, B958, 50.8
 
 ## 1. What a player sees
 
@@ -17,23 +17,24 @@ floor above, and has a ladder or a stone stair down from inside.
 
 | Build | The basement | Way down |
 |---|---|---|
-| Starter Cottage IV | a root cellar: bins of pumpkins and melons, hay, sacks (chests), mushrooms in pots on a shelf, a sorting table | ladder by the kitchen door |
-| Stone House IV | a wine cellar: racks of casks, chests and pots of wine, a tasting table with two chairs and a candle | ladder by the front door |
-| Burgher's Townhouse IV | a brick-vaulted cellar of casks with the coal store in a corner | stone stair from the hall |
-| Noble's Manor IV | a great wine cellar under the hall, held up by two stone columns | stone stair beside the hall's table |
-| Supply Shop IV | a stockroom: chests two high, bolts of cloth, crates, a packing table | ladder behind the counter |
+| Starter Cottage IV | a store cellar under the hall (49.3): two chests along the back, shelves, kelp and hay, pumpkins and a melon, a summer beam across the ceiling | ladder through a hatch in the hall floor |
+| Stone House IV | a store cellar (49.4): casks two high, shelves, a workbench with its lamp and a chest, a summer beam on one post | ladder by the hearth |
+| Burgher's Townhouse IV | a vaulted cellar under the shop (49.5): casks two high, shelves, a chest and a workbench with its lamp, two stone ribs | ladder down from the shop |
+| Noble's Manor IV | a vaulted wine cellar under the kitchen and the hall (49.7): casks along both ends, the family's chests between decorated pots, a spine wall with two doorways | ladder through a hatch in the kitchen floor |
+| Supply Shop IV | a cool cellar under the wing (rebuilt 50.11): chests, a rack of shelves, a packing table, casks of logs | ladder in the wing |
 | Library IV | an archive: bookshelves round the walls, chests of old ledgers, a reading table | stair along the back of the reading room |
-| Healing Center IV | a cool store: shelves of potted herbs and fungi, kelp and moss, chests of remedies | ladder in the back room |
+| Healing Center IV | the Cistern (rebuilt in 50.8): the spring's source pool, the still room's chests and herb shelves, treatment benches | stone stair from the Spring Hall's west end |
 | Lookout Tower IV | an armory and lock-up: a cell behind iron bars, an anvil, chests of kit, hay targets | ladder by the guardroom door |
 
 Cellars from Level 1:
 
-- **Butcher's Shop** (new). A brick-and-plaster shop under a dark oak roof with a red-and-white awning, sides of meat
-  hanging in the shop windows, a stone counter, the smoker (the Butcher's) in a brick chimney breast, a fenced pen
-  behind. Under it the **freezer**: walls of packed ice, a blue-ice path down the floor, sides of meat and bones on
-  chains along the walls, chests of frozen stock, snow heaped in a corner. The ice never melts (packed and blue ice
-  don't).
-- **Smithy** (and Smithy II): a **coal store** down a ladder by the forge: heaps of coal behind boards, raw iron, chests of ore.
+- **Butcher's Shop**. A white, dark-framed shop with its steep gable to the street, wide display boards under its
+  front windows and a slate pentice over them; a red-brick smoke tower on its east side under a slate pyramid cap,
+  smoking at the peak, with the smoker (the Butcher's) in its foot and a woodpile against it. Under the shop's back
+  half the **freezer**, down a ladder through a hatch: walls of packed ice on stone piers, a blue-ice panel in the
+  floor, hooks, snow and ice stacked, two chests within the smoker's reach and two hanging lanterns. The ice never melts (packed and blue ice don't). Rebuilt from scratch in 50.4; a shop already standing
+  keeps the drawing it was built from, freezer and all, and is never offered a dig of the new freezer.
+- **Smithy** (and Smithy II): a **coal store** down a stair from the forge hall: bins of coal and ore, lanterns and a cart run.
 - **Kitchen** (the Steward's workplace): a **cold larder** down a ladder inside the door: a stone counter under sides of
   meat and pumpkins, a shelf of jars, chests of flour and salt.
 - **Storehouse** (and II and III): a **vault** down a ladder beside the loft's: chests two high round a stone room, a
@@ -66,8 +67,10 @@ Cellars from Level 1:
   Waterlogged blocks in that earth (glow lichen, dripstone, a buried stair) are drained and kept, and seagrass or
   kelp is plugged like water (B958); water that has already run into the room is taken away, never plugged with
   dirt, so the room is left open as drawn. A waterlogged block the blueprint draws stays as drawn.
+- "Dig the cellar" digs the cellar of the drawing a building was built from (50.3): a Smithy of the drawing before
+  its rebuild gets its old cellar, never the new drawing's (whose stair would come up through the old forge).
 - No job block in a basement but the job's own: casks are spruce or dark oak log ends, stock is in chests, so a cellar
-  never hands a villager a job. The Butcher's Shop has the smoker upstairs.
+  never hands a villager a job. The Butcher's Shop has the smoker upstairs, in its smoke tower.
 - Unlocks: the Level 4s come the way every upgrade does (the builder who finishes the III sells it; a builder's level-up
   unlocks the next tiers at the Table). The Townhouse IV and Manor IV are sold by builders only, like their other
   tiers. The Butcher's Shop is a one-tier build in the Blueprint Table, unlocked by a builder's level-up.

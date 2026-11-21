@@ -30,7 +30,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  */
 public class B788GameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
-	private static final Vec3i SIZE = new Vec3i(13, 11, 13);
+	private static final Vec3i SIZE = new Vec3i(13, 16, 13);
 	private static final BlockPos OAK_HALL = new BlockPos(2, 2, 2);
 	private static final BlockPos OAK_YARD = new BlockPos(3, 2, 3);
 	private static final BlockPos ELM_HALL = new BlockPos(26, 2, 26);

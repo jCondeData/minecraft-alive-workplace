@@ -61,11 +61,11 @@ public class QaJobBuildsCompatTests implements FabricGameTest {
 
 	private static List<Job> jobs() {
 		return List.of(
-			new Job(ModVillagers.CAMP_COOK, StarterBlueprints.CAMP_KITCHEN, StarterBlueprints.CAMP_KITCHEN_2, new BlockPos(6, 1, 5),
+			new Job(ModVillagers.CAMP_COOK, StarterBlueprints.CAMP_KITCHEN, StarterBlueprints.CAMP_KITCHEN_2, new BlockPos(6, 1, 6),
 				"cobblemon:campfire", item("cobblemon:hearty_grains")),
 			new Job(ModVillagers.BERRY_BREEDER, StarterBlueprints.BERRY_NURSERY, StarterBlueprints.BERRY_NURSERY_2, new BlockPos(5, 1, 8),
 				"minecraft:composter", item("cobblemon:oran_berry")),
-			new Job(ModVillagers.HABITAT_KEEPER, StarterBlueprints.HABITAT_GARDEN, StarterBlueprints.HABITAT_GARDEN_2, new BlockPos(14, 1, 7),
+			new Job(ModVillagers.HABITAT_KEEPER, StarterBlueprints.HABITAT_GARDEN, StarterBlueprints.HABITAT_GARDEN_2, new BlockPos(14, 1, 6),
 				"cobblemon:pasture", Items.HONEY_BOTTLE),
 			new Job(ModVillagers.DAYCARE_KEEPER, StarterBlueprints.DAYCARE, StarterBlueprints.DAYCARE_2, new BlockPos(7, 1, 12),
 				"cobblemon:pasture", Items.EGG),

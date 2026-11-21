@@ -568,7 +568,7 @@ def clinic_garden_front(b):
 
 
 def healing_center():
-    """11 x 10 x 10: a white clinic under a red roof, dark posts, a gabled porch with a red heart over the door (with
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 10 x 10: a white clinic under a red roof, dark posts, a gabled porch with a red heart over the door (with
     Cobblemon the counter holds a Healing Machine; without, that block loads as air and the builder skips it)."""
     b = Build(11, 10, 10)
     clinic_hall(b)
@@ -620,7 +620,7 @@ def clinic_ward(b):
 
 
 def healing_center_2():
-    """Upgrade of the Healing Center: a ward with four beds behind the hall under its own lower roof, a chimney beside
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Healing Center: a ward with four beds behind the hall under its own lower roof, a chimney beside
     it. 11 x 10 x 16."""
     b = healing_center().grow(11, 10, 16)
     clinic_ward(b)
@@ -630,7 +630,7 @@ def healing_center_2():
 
 # --- Healing Center III: a berry garden behind the ward -------------------------------------------------
 def healing_center_3():
-    """Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of Healing Center II: a fenced garden behind the ward, sweet berry bushes either side of a path, a
     composter and a chest (hand the villager there sweet berries and they become the orchard keeper and pick the
     berries), lamps and benches, and a back door out of the ward. 11 x 10 x 22."""
     b = healing_center_2().grow(11, 10, 22)
@@ -1025,7 +1025,7 @@ def storehouse_3():
 
 # --- Berry Farm: an orchard keeper's garden --------------------------------------------------------------
 def berry_farm():
-    """11 x 5 x 9: raised beds of sweet berry bushes edged in stone either side of a gravel path, a fence all round with a
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/berry_farm; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 5 x 9: raised beds of sweet berry bushes edged in stone either side of a gravel path, a fence all round with a
     gate, and a little lean-to with a composter and a chest by the back fence (hand the villager there sweet berries
     and they become the orchard keeper and pick the berries)."""
     b = Build(11, 5, 9)
@@ -1069,7 +1069,7 @@ def berry_farm():
 
 
 def berry_farm_2():
-    """Upgrade of the Berry Farm: through a gate in the back fence, a pergola on log posts with glow berries hanging from
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/berry_farm; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Berry Farm: through a gate in the back fence, a pergola on log posts with glow berries hanging from
     its beams, more bushes underneath and a bench. 11 x 6 x 15."""
     b = berry_farm().grow(11, 6, 15)
     walls(b, 0, 8, 10, 14, 0, 0, STONE_MIX)
@@ -1107,7 +1107,8 @@ def berry_farm_2():
 
 # --- Research Lab: the fossil scientist's -------------------------------------------------------------
 def research_lab():
-    """11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
+    """The OLD drawing (ROADMAP 50.12: the live research_lab.nbt now comes from the rebuild kit, tools/blueprints/js/research_lab;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 9 x 11: a stone lab under a copper hip roof (it greens with the years) with a glass skylight, a columned
     porch, Cobblemon's Fossil Analyzer at the back (hand the villager there a fossil and they become the fossil scientist,
     ROADMAP 21.1c; without Cobblemon the spot stays empty), bookshelves, a glass case and a bone skeleton on show."""
     b = Build(11, 9, 11)
@@ -1160,7 +1161,7 @@ def research_lab():
 
 
 def research_lab_2():
-    """Upgrade of the Research Lab: a museum hall to the east through a doorway, under a glass roof on stone ribs, with
+    """The OLD drawing (ROADMAP 50.12: kept in blueprint_history/, no longer saved). Upgrade of the Research Lab: a museum hall to the east through a doorway, under a glass roof on stone ribs, with
     a big skeleton of bone blocks and cases either side. 18 x 10 x 11."""
     b = research_lab().grow(18, 10, 11)
     b.clear(10, 0, 0, 10, 9, 10)
@@ -2280,7 +2281,7 @@ def garden_ground(b, x0, z0, x1, z1):
 
 
 def apiary_garden():
-    """11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/apiary_garden; this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 6 x 11: a beekeeper's garden — a meadow of flowers inside a low fence, four beehives on posts (one over a
     smouldering campfire), and a honey shed at the back with the beekeeper's hive, a chest and the honey. The fence
     stands on the garden's grass (y 0), a block above the beds, not beside them."""
     b = Build(11, 8, 11)
@@ -2310,7 +2311,7 @@ def apiary_garden():
 
 
 def apiary_garden_2():
-    """Upgrade of the Apiary Garden (same origin and front): the meadow runs on to the east with four more hives and a
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/apiary_garden; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Apiary Garden (same origin and front): the meadow runs on to the east with four more hives and a
     bench among the flowers. 17 x 6 x 11."""
     b = apiary_garden().grow(17, 8, 11)
     b.clear(10, 1, 1, 10, 1, 9)  # the old east fence

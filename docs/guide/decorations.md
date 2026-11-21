@@ -49,10 +49,10 @@ All of them are in the Blueprint Table. An upgrade counts instead of the build i
 Besides the big pieces there are fourteen small decorations, quick to build and easy to stock, each a different kind
 of thing:
 
-- **Market Cross**: a stepped stone plinth with a tall shaft, lanterns hanging from its arms.
-- **Stag Statue**: a stone stag with spreading antlers on a plinth.
-- **Flower Planters**: a two-tier brick planter full of flowers, a lantern at each end. Every village has this one
-  from the start.
+- **Market Cross**: an octagonal stone drum you climb by a stair in its front, a white shaft in the middle of its platform hanging four lanterns and flying the market flag, benches round the drum to sit and wait.
+- **Stag Statue**: a carved stag standing broadside on a mossy crag, pale antlers branching, lanterns at the front.
+- **Flower Planters**: a horseshoe of flower beds stepping up in three tiers round a little paved court and a bench,
+  under a spruce pergola hung with lanterns. Every village has this one from the start.
 - **Signpost**: a post with four fingerboards and a lantern on top. When it's finished, each board names what lies
   that way: the nearest other village and how far, or the nearest building, or your village's name and "Welcome". The
   boards keep up by themselves when a village is renamed or a new one appears.
@@ -61,10 +61,10 @@ of thing:
 - **Hay Cart**: a cart loaded with hay bales, left by the road.
 - **Notice Board**: a roofed board with notices pinned to it.
 - **Lantern Pergola**: a walk under slats grown over with azalea, lanterns hanging over the path, benches either side.
-- **Fire Pit**: a campfire in a ring of stones with log seats round it.
-- **Sundial**: a round stone plaza with hour stones and a sundial in the middle.
-- **Topiary Garden**: clipped hedges round four topiary shapes and an urn of azalea.
-- **Market Corner**: crates, sacks, hay and produce under a striped awning.
+- **Fire Pit**: a campfire sunk in a round stone dais, standing stones round it, a lintelled trilithon at the back, benches and a woodpile.
+- **Sundial**: a stone half-cylinder dial with hour lines on a raised sandstone dais, its chain gnomon held by two pylons.
+- **Topiary Garden**: a green room of clipped yew: a hedge archway in, a tiered standard in the middle, urns and a bench.
+- **Market Corner**: an L of market counters on a paved court under two striped canvases, a banner mast on the street corner, a little booth at the front.
 - **Footbridge**: a little plank bridge over a channel of water with lily pads.
 
 The rest start locked at the Blueprint Table: a traveling trader on [market day](market-days.md) may sell any of them,

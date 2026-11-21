@@ -44,6 +44,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class CreateBuildsCompatTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_compat:huge_area";
+	/** 30 tall (ROADMAP 50.3): the rebuilt Brass Foundry is 21 tall, over the huge area's 20. */
+	private static final String TALL_AREA = "aliveworkplace_compat:tall_area";
 
 	/** A block that must stand at a template spot when the build is done. */
 	private record Expect(BlockPos spot, String block) {
@@ -69,16 +71,19 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"watermill_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "watermill_build")
 	public void aBuilderBuildsTheWatermillAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.WATERMILL, List.of(at(7, 1, 2, "minecraft:composter"), at(1, 1, 4, "create:water_wheel"),
-			at(4, 1, 4, "create:gearbox")), new BlockPos(4, 2, 4));
+		// ROADMAP 50.5 (the rebuilt Watermill): the composter in the yard, the wheel on the west wall, the gearbox and the
+		// millstone over it at the end of the shaft through the wall
+		build(helper, StarterBlueprints.WATERMILL, List.of(at(15, 0, 3, "minecraft:composter"), at(2, 2, 9, "create:water_wheel"),
+			at(5, 2, 9, "create:gearbox")), new BlockPos(5, 3, 9));
 	}
 
 	/** The Windmill: the builder starts the bearing, its sails turn the millstone at the foot of the tower. */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"windmill_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "windmill_build")
 	public void aBuilderBuildsTheWindmillAndStartsIt(GameTestHelper helper) {
-		build(helper, StarterBlueprints.WINDMILL, List.of(at(2, 1, 6, "minecraft:composter"), at(4, 9, 1, "create:windmill_bearing")),
-			new BlockPos(4, 2, 5));
+		// ROADMAP 50.10: the rebuilt Stage Mill (composter, bearing and millstone moved with the drawing)
+		build(helper, StarterBlueprints.WINDMILL, List.of(at(9, 1, 4, "minecraft:composter"), at(7, 11, 1, "create:windmill_bearing")),
+			new BlockPos(9, 1, 7));
 	}
 
 	/** The Workshop: the wheel drives the belt, and the belt's far pulley the press over the depot. */
@@ -90,10 +95,10 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 	}
 
 	/** The Brass Foundry (39.8): the gear train takes the wheel's 8 RPM up to 32, so the mixer over the basin works (from 30). */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"brass_foundry_build"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "brass_foundry_build")
+	//$ gametest_ticks_batch TALL_AREA '30000' '"brass_foundry_build"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "brass_foundry_build")
 	public void aBuilderBuildsTheBrassFoundryAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.BRASS_FOUNDRY, List.of(at(9, 1, 2, "minecraft:smoker"), at(8, 4, 8, "create:mechanical_mixer"),
+		build(helper, StarterBlueprints.BRASS_FOUNDRY, List.of(at(16, 1, 5, "minecraft:smoker"), at(8, 4, 8, "create:mechanical_mixer"),
 			at(8, 2, 8, "create:basin"), at(8, 1, 8, "create:blaze_burner"), at(4, 1, 2, "create:depot"), at(4, 1, 4, "create:belt")),
 			new BlockPos(8, 4, 8), (level, origin) -> {
 				float speed = speed(level, origin.offset(8, 4, 8));
@@ -146,21 +151,28 @@ public class CreateBuildsCompatTests implements FabricGameTest {
 			});
 	}
 
-	/** The Clock Tower (39.8): the wheel's drive goes up the tower's shaft and forward to the cuckoo clock, which turns. */
-	//$ gametest_ticks_batch HUGE_AREA '30000' '"clock_tower_build"'
-	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "clock_tower_build")
+	/**
+	 * The Clock Tower (39.8, rebuilt 51.6 as the Water Clock, 26 tall: the tall area): the wheel's drive goes in through
+	 * the front wall, up the tower's corner shaft and out through the chamber's gearboxes to the cuckoo clocks, which turn.
+	 */
+	//$ gametest_ticks_batch TALL_AREA '30000' '"clock_tower_build"'
+	@GameTest(template = TALL_AREA, timeoutTicks = 30000, batch = "clock_tower_build")
 	public void aBuilderBuildsTheClockTowerAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.CLOCK_TOWER, List.of(at(8, 1, 2, "minecraft:cartography_table"), at(6, 10, 1, "create:cuckoo_clock"),
-			at(6, 10, 5, "create:gearbox"), at(6, 5, 5, "create:shaft")), new BlockPos(6, 10, 1));
+		build(helper, StarterBlueprints.CLOCK_TOWER, List.of(at(7, 1, 9, "minecraft:cartography_table"), at(7, 15, 3, "create:cuckoo_clock"),
+			at(5, 2, 5, "create:gearbox"), at(5, 15, 5, "create:gearbox"), at(7, 15, 7, "create:gearbox"), at(5, 8, 5, "create:shaft")),
+			new BlockPos(7, 15, 3));
 	}
 
-	/** The Pump House (39.8): the wheel's cogwheel turns the pump beside it, between the sump's pipe and the fluid tank. */
+	/**
+	 * The Pump House (39.8; rebuilt in 50.13 as a water tower, 18 x 17 x 13): the wheel's cogwheel turns the pump over the
+	 * cistern, between its two pipes, under the riser up to the two-high tank in the tower's top.
+	 */
 	//$ gametest_ticks_batch HUGE_AREA '30000' '"pump_house_build"'
 	@GameTest(template = HUGE_AREA, timeoutTicks = 30000, batch = "pump_house_build")
 	public void aBuilderBuildsThePumpHouseAndItTurns(GameTestHelper helper) {
-		build(helper, StarterBlueprints.PUMP_HOUSE, List.of(at(10, 1, 2, "minecraft:cauldron"), at(6, 1, 4, "create:mechanical_pump"),
-			at(5, 1, 4, "create:fluid_pipe"), at(7, 1, 4, "create:fluid_pipe"), at(8, 1, 4, "create:fluid_tank"),
-			at(8, 2, 4, "create:fluid_tank"), at(6, 1, 5, "create:cogwheel")), new BlockPos(6, 1, 4));
+		build(helper, StarterBlueprints.PUMP_HOUSE, List.of(at(7, 1, 10, "minecraft:cauldron"), at(13, 2, 3, "create:mechanical_pump"),
+			at(12, 2, 3, "create:fluid_pipe"), at(14, 2, 3, "create:fluid_pipe"), at(13, 8, 3, "create:fluid_tank"),
+			at(13, 9, 3, "create:fluid_tank"), at(13, 2, 4, "create:cogwheel")), new BlockPos(13, 2, 3));
 	}
 
 	/** The saved {@code Speed} of the block entity at {@code pos}, read by name (0 if there's none). */

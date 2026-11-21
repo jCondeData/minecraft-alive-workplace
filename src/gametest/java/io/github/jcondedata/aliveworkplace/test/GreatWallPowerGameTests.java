@@ -356,7 +356,9 @@ public class GreatWallPowerGameTests implements FabricGameTest {
 	@GameTest(template = HUGE, timeoutTicks = 700, batch = "greatWallDamaged")
 	public void aDamagedGreatWallTurnsBothOff(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
-		BlockPos hall = hall(helper, new BlockPos(5, 2, 24));
+		// the hall in front of the little wall's footprint (its part, the Great Wall's stage_1_0, is 27 deep since the 52.6
+		// rebuild's barbican: a hall at z 24 stood inside it, where no arc is drawn)
+		BlockPos hall = hall(helper, new BlockPos(5, 2, 28));
 		little(helper);
 		walk(helper);
 		Leftovers.after(helper, () -> Wonders.ENABLED = true);

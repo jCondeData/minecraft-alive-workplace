@@ -45,8 +45,8 @@ round the village faster.
 
 ## The Physician's House
 
-The **Blueprint Table** has a **Physician's House** for your builder to put up: a white ward with the brewing stand on
-a counter of herbs, four beds each between white screens (the quarantine ward) and a herb garden out front. Stand a
+The **Blueprint Table** has a **Physician's House** for your builder to put up: a stone still-room tower with the brewing stand and its
+chest, and a white ward of four beds each between white screens (the quarantine ward) round a physic garden. Stand a
 villager by its brewing stand and hand them a glistering melon slice, and the village has its Physician. When a Town
 has no Physician, **What next?** at the hall suggests it.
 

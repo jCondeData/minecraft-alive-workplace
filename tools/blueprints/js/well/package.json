@@ -1,0 +1,10 @@
+{
+  "name": "well",
+  "private": true,
+  "type": "module",
+  "description": "The Well (well, well_2), rebuilt from scratch for ROADMAP 49.1 (tools/blueprints/briefs/well.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py well well --candidate --nbt out/well.nbt && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py well well_2 --candidate --nbt out/well-2.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

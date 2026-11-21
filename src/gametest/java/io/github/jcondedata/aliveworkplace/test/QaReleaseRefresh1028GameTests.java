@@ -54,6 +54,8 @@ import net.minecraft.world.level.block.state.BlockState;
  */
 public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
+	/** 30 tall: the Townhouse rebuilt in 49.5 (22 and 26 tall) and the Clock Tower rebuilt in 51.6 (26) are taller than the huge area (20), whose barrier ceiling they would meet. */
+	private static final String TALL = "aliveworkplace_test:tall_area";
 	private static final BlockPos HOUSE = new BlockPos(7, 2, 2);
 	private static final BlockPos HALL = new BlockPos(1, 2, 1);
 	private static final BlockPos BENCH = new BlockPos(3, 2, 27);
@@ -86,7 +88,8 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 		List<TestFunction> out = new ArrayList<>();
 		for (String[] r : REDRAWN) {
 			String name = "qaReleaseRefresh_" + r[0].replace('/', '_');
-			out.add(new TestFunction(name, name, HUGE, 200, 0, true, helper -> refreshesToAFreshBuild(helper, AliveWorkplace.id(r[0]), r[1])));
+			String area = r[0].startsWith("townhouse") || r[0].equals("clock_tower") ? TALL : HUGE;
+			out.add(new TestFunction(name, name, area, 200, 0, true, helper -> refreshesToAFreshBuild(helper, AliveWorkplace.id(r[0]), r[1])));
 		}
 		return out;
 	}
@@ -121,6 +124,15 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 		for (Map.Entry<BlockPos, BlockState> e : was.entrySet()) {
 			level.setBlock(e.getKey(), e.getValue(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 		}
+		// the old drawing's cellar as its builder left it: dug out (its air under the ground), not left as the area's stone
+		// (49.3: the redrawn Starter Cottage IV's cellar holds other things in other cells than 0.151.0's)
+		for (Blueprint.Entry e : old.blocks()) {
+			if (e.state().isAir() && e.pos().getY() < 0) {
+				BlockPos at = placement.origin().offset(e.pos());
+				touched.add(at);
+				level.setBlock(at, Blocks.AIR.defaultBlockState(), Block.UPDATE_CLIENTS);
+			}
+		}
 		helper.setBlock(HALL, ModBlocks.VILLAGE_HALL);
 		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
 		helper.setBlock(BENCH.east(), Blocks.CHEST);
@@ -147,14 +159,16 @@ public class QaReleaseRefresh1028GameTests implements FabricGameTest {
 			helper.assertTrue(key.equals(site.refreshFrom()), id + " was built from 0.151.0's drawing " + key + " but is refreshed from " + site.refreshFrom());
 			BuildPlan plan = site.plan(level);
 			Map<BlockPos, BlockState> now = BuildPlan.create(current, placement).targets();
-			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+			// (FOUNDATION too, as the Builder does: 49.8's Artisan's House III sets its kiln's footing under the ground)
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.FOUNDATION, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
 				for (BuildPlan.Step step : plan.steps(stage)) {
 					level.setBlock(step.pos(), step.state(), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-					if (step.state().getBlock() instanceof BedBlock) { // (as the Builder puts a bed: both halves at once)
-						BlockPos other = step.pos().relative(BedBlock.getConnectedDirection(step.state()));
-						if (now.containsKey(other)) {
-							level.setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
-						}
+					// (as the Builder puts a two-block block: both halves at once, a bed's other half and a door's top with its
+					// bottom, MaterialRules.secondaryPos; the rebuilt Townhouse's upstairs door stands where 0.151.0 drew air)
+					BlockPos other = step.state().getBlock() instanceof BedBlock ? step.pos().relative(BedBlock.getConnectedDirection(step.state()))
+						: io.github.jcondedata.aliveworkplace.build.MaterialRules.secondaryPos(step.pos(), step.state());
+					if (other != null && now.containsKey(other)) {
+						level.setBlock(other, now.get(other), Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
 					}
 				}
 			}

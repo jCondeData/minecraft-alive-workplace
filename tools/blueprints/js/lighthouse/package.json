@@ -1,0 +1,10 @@
+{
+  "name": "lighthouse",
+  "private": true,
+  "type": "module",
+  "description": "The Lighthouse Wonder, rebuilt (ROADMAP 49): the Mole Light. MC_BUILDER = the minecraft-builder skill's folder. STAGE=1..4 picks the stage; stages.py saves all four as candidates in build/rebuild/lighthouse/.",
+  "scripts": {
+    "build": "python3 stages.py",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

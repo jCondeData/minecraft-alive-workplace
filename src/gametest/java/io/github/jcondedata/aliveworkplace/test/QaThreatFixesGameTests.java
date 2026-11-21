@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
@@ -190,6 +191,14 @@ public class QaThreatFixesGameTests implements FabricGameTest {
 	 * area changed.
 	 */
 	static void rampOver(GameTestHelper helper, Map<BlockPos, Block> mine) {
+		rampOver(helper, mine, 14.5, 23.5, null);
+	}
+
+	/**
+	 * As above with the husk coming from ({@code x}, {@code z}); {@code where}, if given, is handed the raiders' sand
+	 * (relative positions) once the siege says ramped, to check which wall the ramp stands at.
+	 */
+	static void rampOver(GameTestHelper helper, Map<BlockPos, Block> mine, double x, double z, @org.jetbrains.annotations.Nullable Consumer<List<BlockPos>> where) {
 		Yard yard = yard(helper, pilers(helper));
 		ServerLevel level = yard.level();
 		Map<BlockPos, Block> placed = new HashMap<>();
@@ -198,7 +207,7 @@ public class QaThreatFixesGameTests implements FabricGameTest {
 			placed.put(helper.absolutePos(rel), block);
 		});
 		Map<BlockPos, BlockState> before = blocks(helper);
-		Mob climber = climber(helper, yard, 14.5, 23.5);
+		Mob climber = climber(helper, yard, x, z);
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(climber));
 		boolean[] ramped = {false};
 		BlockPos base = helper.absolutePos(BlockPos.ZERO);
@@ -217,6 +226,9 @@ public class QaThreatFixesGameTests implements FabricGameTest {
 			Optional<ThreatData.Siege> siege = Sieges.siege(level, yard.hall());
 			if (siege.isPresent() && siege.get().ramped) {
 				ramped[0] = true;
+				if (where != null) {
+					where.accept(sand.stream().map(p -> p.subtract(base)).toList());
+				}
 				climber.discard();
 				VillageRaids.forget(yard.hall());
 				Sieges.lift(level, siege.get());
@@ -244,6 +256,26 @@ public class QaThreatFixesGameTests implements FabricGameTest {
 			mine.put(new BlockPos(x, 3, FRONT + 1), Blocks.SAND);
 		}
 		rampOver(helper, mine);
+	}
+
+	/**
+	 * B726: a climber whose way to the hall ends at another side of the walls walks round the corner to its ramp. Here the
+	 * husk comes from outside the west wall's front corner, its ramp is at the back wall, and on its way north along the
+	 * west wall it passes, on the outside, the strip behind the back wall where a raider over the ramp lands. It must not
+	 * count as over the wall there (it was let go, and left the ramp three or four blocks high for the rest of the
+	 * siege): the ramp at the back wall still reaches the top. The test area ends where that ramp does, so the husk's
+	 * waiting spot out from it is over a ledge; the nearest it gets is the ramp's last block to be piled, and it must wait
+	 * beside the ramp instead (without that, 3 of 40 runs stalled one block short of the last stage).
+	 */
+	//$ gametest_ticks_batch HUGE '900' '"qaFixRampRoundTheCorner"'
+	@GameTest(template = HUGE, timeoutTicks = 900, batch = "qaFixRampRoundTheCorner")
+	public void qaAClimberWalkingRoundTheCornerToItsRampStillPilesItToTheTop(GameTestHelper helper) {
+		rampOver(helper, Map.of(), 3.5, 17.5, sand -> {
+			helper.assertTrue(!sand.isEmpty() && sand.stream().allMatch(p -> p.getZ() < BACK && p.getX() > WEST && p.getX() < EAST),
+				"the ramp isn't at the back wall, so the husk never walked round the corner to it: " + sand.stream().map(BlockPos::toShortString).toList());
+			helper.assertTrue(sand.stream().anyMatch(p -> p.getY() == 5 && p.getZ() == BACK - 1),
+				"the ramp at the back wall isn't up to the wall's top (4 high): " + sand.stream().map(BlockPos::toShortString).toList());
+		});
 	}
 
 	// ---------------------------------------------------------------- B383: level 3 for every lair culture.

@@ -282,20 +282,25 @@ public final class VillageFire {
 
 	// Where the villages are, and which blocks their builders placed.
 
-	/** The hall whose village {@code pos} is in, if any (cached by chunk for a few seconds: fire asks often). */
+	/**
+	 * The hall whose village {@code pos} is in, if any (cached by chunk for a few seconds: fire asks often). B1356: a hall
+	 * point with no hall standing (a block swapped without an update) is no village, and a cached hall that no longer
+	 * stands is looked up again ({@link VillageHalls#standsAt}; a point in an unloaded chunk is trusted).
+	 */
 	public static Optional<BlockPos> hall(ServerLevel level, BlockPos pos) {
 		Map<Long, HallAt> halls = HALLS.computeIfAbsent(dim(level), k -> new ConcurrentHashMap<>());
 		long key = (long) (pos.getX() >> 4) << 32 | ((pos.getZ() >> 4) & 0xffffffffL);
 		long now = level.getGameTime();
 		HallAt known = halls.get(key);
-		if (known == null || now >= known.until() || now < known.until() - 200) {
+		if (known == null || now >= known.until() || now < known.until() - 200
+			|| known.hall() != null && !VillageHalls.standsAt(level, known.hall())) {
 			if (halls.size() > 4096) {
 				halls.clear();
 			}
 			BlockPos centre = new BlockPos((pos.getX() & ~15) + 8, pos.getY(), (pos.getZ() & ~15) + 8);
 			// (from the chunk's middle, reaching a chunk's half-diagonal further: any block of the chunk may be in its area)
-			known = new HallAt(now + 100, level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI), centre, VillageHalls.RADIUS + 12,
-				PoiManager.Occupancy.ANY).orElse(null));
+			known = new HallAt(now + 100, level.getPoiManager().findClosest(h -> h.is(ModVillagers.VILLAGE_HALL_POI),
+				p -> VillageHalls.standsAt(level, p), centre, VillageHalls.RADIUS + 12, PoiManager.Occupancy.ANY).orElse(null));
 			halls.put(key, known);
 		}
 		BlockPos hall = known.hall();

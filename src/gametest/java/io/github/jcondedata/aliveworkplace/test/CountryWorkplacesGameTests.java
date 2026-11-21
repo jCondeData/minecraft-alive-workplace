@@ -260,6 +260,14 @@ public class CountryWorkplacesGameTests implements net.fabricmc.fabric.api.gamet
 		boolean[] hired = {false};
 		long[] hiredAt = {0};
 		boolean[] working = {false};
+		// As in WorkplacesGameTests (B1384): a builder works from 1000 to dusk (11000), so from 2000 a build of over 1,000
+		// blocks (the Farmstead II) runs out of day, not of time, and waits for the next morning. The clock is held in
+		// working hours while it goes up; stopping at dusk is QaBuilderFixes1103GameTests'.
+		helper.onEachTick(() -> {
+			if (!hired[0] && level.getDayTime() % 24000 > 9000) {
+				helper.setDayTime(2000);
+			}
+		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage());
 			if (!hired[0]) {

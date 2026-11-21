@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 11 wide, 10 deep, 11 high (II: 13 wide)
-Tiers: I, II (a drying-rack wing)
+Size: 9 wide, 10 deep, 11 high (II: 16 wide)
+Tiers: I, II (a second pen across an open breezeway)
 Houses: a Fletcher (or a Lumberjack) at the fletching table; two at tier II
 Where to get it: Blueprint Table
-Main materials: spruce logs, dark oak stairs, spruce planks, cobblestone
+Main materials: oak logs, dark oak stairs, spruce planks, cobblestone
 categories: Builds
 related: jobs-crafts.md, jobs-land.md, barracks-build.md
 ```
 
-A log cabin with a log pile and a straw target outside and a **fletching table** inside.
+A log pen under a long dark roof, a stone chimney up its gable and a porch along the front under an entry gable, with a **fletching table** and a chest inside (rebuilt from scratch: a lodge already standing keeps its old look until refreshed).
 
 ## Getting the blueprint
 
@@ -25,7 +25,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Fletcher's Lodge, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Fletcher's Lodge II** adds a drying-rack wing with a second fletching table.
+- **Fletcher's Lodge II** makes it a dogtrot: an open breezeway, then a second, front-gabled pen with a second fletching table and its own chests, so the Fletcher and the Lumberjack get a pen each.
 
 ## What it does for the village
 

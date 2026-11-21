@@ -27,7 +27,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
  */
 public class QaGraveyardRim1102GameTests implements FabricGameTest {
 	private static final String HUGE = "aliveworkplace_test:huge_area";
-	private static final Vec3i SIZE = new Vec3i(13, 11, 13);
+	private static final Vec3i SIZE = new Vec3i(13, 16, 13);
 	private static final BlockPos OAK_HALL = new BlockPos(2, 2, 8);
 
 	/** Oak at {@link #OAK_HALL} and Elm at {@code elmHall}, radius 12, everything put back (halls removed) after. */

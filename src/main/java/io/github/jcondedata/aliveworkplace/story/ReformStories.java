@@ -593,7 +593,7 @@ public final class ReformStories {
 			e.dummies = dummies(level, hall);
 		}
 		List<BlockPos> dummies = e.dummies;
-		List<Villager> who = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
+		List<Villager> who = VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && !v.isSleeping()
 			&& (!dummies.isEmpty() || v.getVillagerData().getProfession() == ModVillagers.GUARD));
 		BlockPos square = hall;
 		for (int i = 0; i < who.size(); i++) {

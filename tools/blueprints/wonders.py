@@ -759,6 +759,8 @@ def stage_4(b):
 
 
 def great_cathedral():
+    """The 35.x Great Cathedral, replaced by great_cathedral_drawn (52.6); its parts are kept in blueprint_history, and
+    this drawing stays as the record of what older sites were built from."""
     b = StagedBuild(CW_, CH_, CD_)
     roof = roof_layer()
     b.begin(1)
@@ -770,6 +772,18 @@ def great_cathedral():
     b.begin(4)
     stage_4(b)
     return b
+
+
+def great_cathedral_drawn():
+    """The new Great Cathedral (ROADMAP 52.6, rebuilt from scratch, design A "the Ship of Stone"):
+    js/great_cathedral_a/recipe.mjs, its four stage snapshots joined by js/great_cathedral_a/stages.py. Needs node and
+    MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_cathedral_a", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_cathedral_a_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 # --- the Lighthouse ------------------------------------------------------------------------------------------------------
@@ -1299,6 +1313,8 @@ def stage_l4(b):
 
 
 def lighthouse():
+    """The 35.x Lighthouse, replaced by lighthouse_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (lighthouse_at_sea)."""
     b = StagedBuild(LW, LH, LD)
     b.begin(1)
     stage_l1(b)
@@ -1309,6 +1325,17 @@ def lighthouse():
     b.begin(4)
     stage_l4(b)
     return b
+
+
+def lighthouse_drawn():
+    """The new Lighthouse (ROADMAP 52.6, rebuilt from scratch): js/lighthouse/recipe.mjs, its four stage snapshots joined
+    by js/lighthouse/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "lighthouse", "stages.py")
+    spec = importlib.util.spec_from_file_location("lighthouse_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def lighthouse_at_sea(stage=None):
@@ -1973,6 +2000,8 @@ def stage_g4(b):
 
 
 def great_library():
+    """The 35.x Great Library, replaced by great_library_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (great_library_stage, great_library_section)."""
     b = StagedBuild(GW, GH, GD)
     b.begin(1)
     stage_g1(b)
@@ -1983,6 +2012,17 @@ def great_library():
     b.begin(4)
     stage_g4(b)
     return b
+
+
+def great_library_drawn():
+    """The new Great Library (ROADMAP 52.6, rebuilt from scratch, "the Scroll Rotunda"): js/great_library/recipe.mjs, its
+    four stage snapshots joined by js/great_library/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_library", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_library_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def great_library_stage(stage=None):
@@ -2462,7 +2502,20 @@ def stage_o4(b):
     o_orrery(b)
 
 
+def observatory_drawn():
+    """The new Observatory (ROADMAP 52.6, rebuilt from scratch): js/observatory/recipe.mjs, its four stage snapshots
+    joined by js/observatory/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "observatory", "stages.py")
+    spec = importlib.util.spec_from_file_location("observatory_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
+
+
 def observatory():
+    """The 35.x Observatory, replaced by observatory_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (observatory_stage, observatory_section)."""
     b = StagedBuild(OW, OH, OD)
     b.begin(1)
     stage_o1(b)
@@ -3099,6 +3152,8 @@ def stage_w4(b):
 
 
 def great_wall():
+    """The 35.x Great Wall, replaced by great_wall_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (great_wall_stage, great_wall_piece, great_wall_eye)."""
     b = StagedBuild(WW, WH, WD)
     b.begin(1)
     stage_w1(b)
@@ -3111,6 +3166,17 @@ def great_wall():
     b.begin(4)
     stage_w4(b)
     return b
+
+
+def great_wall_drawn():
+    """The new Great Wall (ROADMAP 52.6, rebuilt from scratch, "the Pass Gate"): js/great_wall/recipe.mjs, its four stage
+    snapshots joined by js/great_wall/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "great_wall", "stages.py")
+    spec = importlib.util.spec_from_file_location("great_wall_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def great_wall_stage(stage=None):
@@ -3836,6 +3902,8 @@ def h_low_moss(b):
 
 
 def hanging_gardens():
+    """The 35.x Hanging Gardens, replaced by hanging_gardens_drawn (52.6); its parts are kept in blueprint_history, and this
+    drawing stays for its renders (hanging_gardens_stage, hanging_gardens_running)."""
     b = StagedBuild(HW, HH, HD)
     b.begin(1)
     b.fill(H_OX, 0, H_OZ, H_OX + 38, 0, H_OZ + 38, "smooth_sandstone")
@@ -3863,6 +3931,17 @@ def hanging_gardens():
     h_falls(b)
     h_low_moss(b)
     return b
+
+
+def hanging_gardens_drawn():
+    """The new Hanging Gardens (ROADMAP 52.6, rebuilt from scratch): js/hanging_gardens/recipe.mjs, its four stage
+    snapshots joined by js/hanging_gardens/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "hanging_gardens", "stages.py")
+    spec = importlib.util.spec_from_file_location("hanging_gardens_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def hanging_gardens_stage(stage=None):
@@ -4148,6 +4227,8 @@ def co_head(b):
 
 
 def colossus():
+    """The 35.x Colossus, replaced by colossus_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays as the record of what older sites were built from."""
     b = StagedBuild(COW, COH, COD)
     b.begin(1)
     co_plinth(b)
@@ -4164,6 +4245,17 @@ def colossus_stage(stage=None):
     """For the renders only: the Colossus as it stands after a stage (whole by default)."""
     stages = colossus().stage_builds()
     return stages[(stage or len(stages)) - 1]
+
+
+def colossus_drawn():
+    """The new Colossus (ROADMAP 52.6, rebuilt from scratch, design A "Astride the Road"): js/colossus_a/recipe.mjs, its
+    four stage snapshots joined by js/colossus_a/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "colossus_a", "stages.py")
+    spec = importlib.util.spec_from_file_location("colossus_a_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 # --- the Stadium (with Cobblemon) ---------------------------------------------------------------------------------------
@@ -5020,6 +5112,8 @@ def stage_s4(b):
 
 
 def stadium():
+    """The 35.x Stadium, replaced by stadium_drawn (52.6); its parts are kept in blueprint_history, and this drawing
+    stays for its renders (stadium_stage, stadium_interiors)."""
     b = StagedBuild(SW, SH, SD)
     b.begin(1)
     stage_s1(b)
@@ -5030,6 +5124,17 @@ def stadium():
     b.begin(4)
     stage_s4(b)
     return b
+
+
+def stadium_drawn():
+    """The new Stadium (ROADMAP 52.6, rebuilt from scratch, "the Stadium Bowl"): js/stadium/recipe.mjs, its four stage
+    snapshots joined by js/stadium/stages.py. Needs node and MC_BUILDER (the minecraft-builder skill)."""
+    import importlib.util
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "js", "stadium", "stages.py")
+    spec = importlib.util.spec_from_file_location("stadium_stages", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.staged()
 
 
 def stadium_stage(stage=None):
@@ -5053,7 +5158,7 @@ from wonder_goods import GOODS  # each stage's goods and their pacing (35.7a, 35
 
 WONDERS = {
     "great_cathedral": {
-        "draw": great_cathedral,
+        "draw": great_cathedral_drawn,  # 52.6: rebuilt from scratch (js/great_cathedral_a/)
         "icon": "minecraft:bell",
         "crew": 12,
         "requirements": [
@@ -5071,7 +5176,7 @@ WONDERS = {
         ],
     },
     "lighthouse": {
-        "draw": lighthouse,
+        "draw": lighthouse_drawn,  # 52.6: rebuilt from scratch (js/lighthouse/)
         "icon": "minecraft:sea_lantern",
         "crew": 12,
         "requirements": [
@@ -5089,7 +5194,7 @@ WONDERS = {
         ],
     },
     "great_library": {
-        "draw": great_library,
+        "draw": great_library_drawn,  # 52.6: rebuilt from scratch (js/great_library/)
         "icon": "minecraft:enchanting_table",
         "crew": 12,
         "requirements": [
@@ -5104,7 +5209,7 @@ WONDERS = {
         ],
     },
     "observatory": {
-        "draw": observatory,
+        "draw": observatory_drawn,  # 52.6: rebuilt from scratch (js/observatory/)
         "icon": "minecraft:spyglass",
         "crew": 12,
         "requirements": [
@@ -5119,7 +5224,7 @@ WONDERS = {
         ],
     },
     "great_wall": {
-        "draw": great_wall,
+        "draw": great_wall_drawn,  # 52.6: rebuilt from scratch (js/great_wall/)
         "icon": "minecraft:stone_brick_wall",
         "crew": 12,
         "requirements": [
@@ -5132,13 +5237,14 @@ WONDERS = {
         "goods": GOODS["great_wall"],  # 35.7a/b: tools/blueprints/wonder_goods.py
         "powers": [
             {"type": "raid_barrier", "margin_degrees": 10},
-            # 35.16: a sentry in each tower's alcove (the cell on the walk's side, at the walk), west to east
+            # 52.6: a sentry on the walk of each of the four runs, west to east (js/great_wall/plan.mjs POSTS; its
+            # verify() checks each post and walk spot holds a golem on solid floor)
             {"type": "sentries", "count": 4, "range": 16,
-             "posts": [[t + 8, W_WALK + 1, 8] for t in W_TOWERS] + [[WW - 1 - (t + 8), W_WALK + 1, 8] for t in reversed(W_TOWERS)]},
+             "posts": [[15, 10, 7], [34, 10, 7], [62, 10, 7], [81, 10, 7]]},
         ],
     },
     "hanging_gardens": {
-        "draw": hanging_gardens,
+        "draw": hanging_gardens_drawn,  # 52.6: rebuilt from scratch (js/hanging_gardens/)
         "icon": "minecraft:flowering_azalea",
         "crew": 12,
         "requirements": [
@@ -5154,7 +5260,7 @@ WONDERS = {
         ],
     },
     "colossus": {
-        "draw": colossus,
+        "draw": colossus_drawn,  # 52.6: rebuilt from scratch (js/colossus_a/)
         "icon": "minecraft:lantern",
         "crew": 12,
         "requirements": [
@@ -5170,7 +5276,7 @@ WONDERS = {
         ],
     },
     "stadium": {
-        "draw": stadium,
+        "draw": stadium_drawn,  # 52.6: rebuilt from scratch (js/stadium/)
         # only with Cobblemon: without it the file isn't loaded, so the Stadium isn't on the Wonders page
         "load_conditions": [{"condition": "fabric:all_mods_loaded", "values": ["cobblemon"]}],
         "icon": "cobblemon:poke_ball",
@@ -5194,6 +5300,11 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
     """Saves a Wonder's stage parts (kit.wonder_stages) and writes its data file (docs/design/M35.md's format) with those
     parts. Each stage is checked as it will stand, on the stages before it (check.py's lines, as for any build)."""
     from check import check
+    import wonder_history
+    shipped = structures == MAIN_STRUCTURES and data == WONDER_DATA
+    if shipped:
+        # 52.6: the drawing standing Wonders were begun with stays in blueprint_history before this one replaces it
+        wonder_history.archive(wonder_id, quiet=True)
     w = WONDERS[wonder_id]
     b = w["draw"]()
     stages = b.stage_builds()
@@ -5227,6 +5338,8 @@ def save_wonder(wonder_id, structures=MAIN_STRUCTURES, data=WONDER_DATA):
     os.makedirs(data, exist_ok=True)
     with open(os.path.join(data, wonder_id + ".json"), "w") as f:
         f.write(text + "\n")
+    if shipped:
+        wonder_history.archive(wonder_id)  # the new drawing's key in its data file ("drawing"), and it archived too
 
 
 def save_test_folly():

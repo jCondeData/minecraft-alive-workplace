@@ -193,7 +193,9 @@ public class QaPiglins1108dGameTests implements FabricGameTest {
 		BlockPos hall = village(helper, new BlockPos(3, 2, 3));
 		ServerLevel level = helper.getLevel();
 		Culture culture = piglins(helper);
-		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(22, 2, 22));
+		// 19 east and 1 south of the hall: inside the village's circle of 20 (B1352: at 19 and 19 off, 26.9 across, he
+		// stood in the square's corner, no village's, and a raid goes for its village's villagers).
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(22, 2, 4));
 		villager.setNoAi(true);
 		villager.setInvulnerable(true);
 		Mob piglin = raider(helper, culture, EntityType.PIGLIN, new BlockPos(2, 2, 27));

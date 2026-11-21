@@ -212,7 +212,7 @@ public class StewardJobsGameTests implements FabricGameTest {
 			VillageHalls.RADIUS = RADIUS;
 			ground(helper);
 			BuildSiteManager.get(level).recordFinished(AliveWorkplace.id("berry_farm"), farm, helper.makeMockServerPlayerInLevel().getUUID());
-			BlockPos composter = new BlockPos(6, 2, 6); // inside the farm (11 by 9 from 3,3)
+			BlockPos composter = new BlockPos(6, 2, 6); // inside the farm (13 by 13 from 3,3; 50.9)
 			helper.setBlock(composter, Blocks.COMPOSTER);
 			helper.setBlock(new BlockPos(24, 2, 24), ModBlocks.BLUEPRINT_TABLE);
 			Villager builder = jobless(helper, new BlockPos(24, 2, 23));

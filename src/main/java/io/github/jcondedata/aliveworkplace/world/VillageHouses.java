@@ -123,6 +123,18 @@ public final class VillageHouses {
 		return out;
 	}
 
+	/**
+	 * Homes villages grow besides vanilla's, by name and weight (ROADMAP 49.2): the Daub House, the Level I home of 36.23,
+	 * in each style ({@code village/<style>_house_t1_b}), with four beds and a jobless villager from the worker pool. No job
+	 * block, so it isn't one of the staffed {@link #houseNames()}. (-Daliveworkplace.houseWeight overrides it for screenshots.)
+	 */
+	public static final java.util.Map<String, Integer> HOMES = java.util.Map.of("house_t1_b", Integer.getInteger("aliveworkplace.houseWeight", 2));
+
+	/** The village piece of the home {@code home} ({@link #HOMES}) in {@code style}. */
+	public static ResourceLocation home(String style, String home) {
+		return AliveWorkplace.id("village/" + style + "_" + home);
+	}
+
 	/** The staffed houses (besides the workshop) villages grow here, by name. */
 	public static java.util.List<String> houseNames() {
 		boolean cobblemon = Platform.get().isModLoaded("cobblemon");
@@ -181,6 +193,9 @@ public final class VillageHouses {
 			add(pool, workshop(style), WEIGHT, none);
 			for (String house : houseNames()) {
 				add(pool, AliveWorkplace.id("village/" + style + "_" + house), HOUSES.get(house), none);
+			}
+			for (var home : HOMES.entrySet()) {
+				add(pool, home(style, home.getKey()), home.getValue(), none);
 			}
 		}
 	}

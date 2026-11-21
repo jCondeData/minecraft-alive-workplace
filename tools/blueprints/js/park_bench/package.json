@@ -1,0 +1,10 @@
+{
+  "name": "park-bench",
+  "private": true,
+  "type": "module",
+  "description": "The Park Bench (park_bench, the Blossom Seat), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/park_bench.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate (build output goes to build/rebuild/park_bench/out).",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/park_bench/out --data-version 3955 && python3 ../../rebuild.py park_bench park_bench --candidate --nbt ../../../../build/rebuild/park_bench/out/park-bench.nbt",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/park_bench/out --data-version 3955"
+  }
+}

@@ -58,8 +58,8 @@ public final class StewardWishes {
 		public static final State EMPTY = new State(-1, List.of(), Map.of());
 		public static final Codec<State> CODEC = RecordCodecBuilder.create(i -> i.group(
 			Codec.LONG.optionalFieldOf("day", -1L).forGetter(State::day),
-			Wish.CODEC.listOf().optionalFieldOf("wishes", List.of()).forGetter(State::wishes),
-			Codec.unboundedMap(Codec.STRING, Used.CODEC).optionalFieldOf("used", Map.of()).forGetter(State::used)
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Wish.CODEC, "steward wish").optionalFieldOf("wishes", List.of()).forGetter(State::wishes),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.map(Codec.STRING, Used.CODEC, "steward rule use").optionalFieldOf("used", Map.of()).forGetter(State::used)
 		).apply(i, State::new));
 
 		public State {
@@ -300,7 +300,7 @@ public final class StewardWishes {
 		return plotFor(wish).map(request -> request.blueprints().size() == 1
 				? new Plots.Request(io.github.jcondedata.aliveworkplace.hall.VillageWaystones.isPlaza(request.blueprints().get(0))
 					? io.github.jcondedata.aliveworkplace.hall.VillageWaystones.forVillage(level, hall) // 41.1: the village culture's own plaza first
-					: io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(request.blueprints().get(0), hall),
+					: io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.forVillage(level, request.blueprints().get(0), hall), // 49.10a: by culture where drawn so
 					request.zoneKind(), request.skip(), request.near())
 				: request)
 			.map(request -> near.isPresent() && near.get().equals(StewardRules.Effect.NEAR_DARK_BEDS)

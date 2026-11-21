@@ -16,9 +16,23 @@ public final class TrainerLayout {
 	/** The copper button's index in the button row (Challenge, as TrainerScreens.BUTTON_KEYS orders them). */
 	public static final int COPPER = 0;
 	public static final int BUTTON_H = 14;
-	/** A team card's height, and its narrowest width before the grid drops a column. */
+	/** A team card's height. */
 	public static final int CARD_H = 30;
-	public static final int CARD_MIN_W = 64;
+	/** A team card's inner margin: left of its model well, between the well and the text, and right of the text. */
+	public static final int CARD_PAD = 3;
+	/** A team card's model well: the card's height less a 2-pixel margin above and below. */
+	public static final int CARD_WELL = CARD_H - 4;
+	/** The room a level brought down to the cap gives its warning glyph: the 8-pixel glyph and 2 pixels after it. */
+	public static final int LEVEL_GLYPH = 10;
+	/**
+	 * The text room a card keeps for its level whole (B1351): a capped "Lv 100" in the game's font (34 pixels) after its
+	 * warning glyph, so every level reads in full, as it did before Copperline.
+	 */
+	public static final int LEVEL_ROOM = LEVEL_GLYPH + 34;
+	/** A team card's narrowest width before the grid drops a column: the well, the level's room and the margins (B1351). */
+	public static final int CARD_MIN_W = CARD_PAD + CARD_WELL + CARD_PAD + LEVEL_ROOM + CARD_PAD;
+	/** The room a party row keeps for its level before the status glyph (B1351): "Lv 100" (34 pixels) and a 4-pixel gap. */
+	public static final int PARTY_LEVEL_ROOM = 38;
 	public static final int CARD_GAP = 4;
 	/** The stage's scroll bar's room at its right. */
 	public static final int SCROLL_W = 6;
@@ -116,6 +130,29 @@ public final class TrainerLayout {
 			out[i] = new int[]{x + (i % cols) * (cw + CARD_GAP), y + (i / cols) * (CARD_H + CARD_GAP), cw, CARD_H};
 		}
 		return out;
+	}
+
+	/** A card's model well {x, y, w, h}: {@link #CARD_PAD} in from its left, centered top to bottom. */
+	public static int[] cardWell(int[] card) {
+		return new int[]{card[0] + CARD_PAD, card[1] + (card[3] - CARD_WELL) / 2, CARD_WELL, CARD_WELL};
+	}
+
+	/** A card's text column {x, y, w, h} (its name over its level): right of the well, {@link #CARD_PAD} before its right. */
+	public static int[] cardText(int[] card) {
+		int[] well = cardWell(card);
+		int tx = well[0] + well[2] + CARD_PAD;
+		return new int[]{tx, card[1], Math.max(0, card[0] + card[2] - CARD_PAD - tx), card[3]};
+	}
+
+	/**
+	 * A party row's columns in a stage {@code w} wide, as offsets from the row's text start ({@code x + 4}): {level, status}.
+	 * The status glyph sits at 58% of the width; the level at 42%, or further left when that would leave it less than
+	 * {@link #PARTY_LEVEL_ROOM} (B1351: at GUI scale 3 a "Lv 100" ran into the glyph), so the name is the one trimmed.
+	 */
+	public static int[] partyColumns(int w) {
+		int state = w * 58 / 100;
+		int level = Math.max(0, Math.min(w * 42 / 100, state - PARTY_LEVEL_ROOM));
+		return new int[]{level, state};
 	}
 
 	/** The grid's height for {@code n} cards in {@code w} pixels. */

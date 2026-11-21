@@ -1,0 +1,275 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "cobblemon"
+      ]
+    }
+  ],
+  "name": "wonder.aliveworkplace.stadium.name",
+  "description": "wonder.aliveworkplace.stadium.description",
+  "icon": "cobblemon:poke_ball",
+  "enabled": true,
+  "crew": 12,
+  "village_colours": true,
+  "requirements": [
+    {
+      "type": "rank_at_least",
+      "rank": "town"
+    },
+    {
+      "type": "legend",
+      "id": "aliveworkplace:pokemon_professor",
+      "stand_in": [
+        {
+          "type": "pastured_pokemon",
+          "count": 25,
+          "types": 10
+        }
+      ]
+    }
+  ],
+  "stages": [
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.1",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_0",
+          "offset": [0, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_1",
+          "offset": [48, 0, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_2",
+          "offset": [0, 0, 48]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_1_3",
+          "offset": [48, 0, 48]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:diamond_horse_armor",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:beastmaster"
+            }
+          }
+        },
+        {
+          "item": "minecraft:coast_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 7,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "cobblemon:great_ball",
+          "count": 2,
+          "job": "aliveworkplace:ball_smith"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.2",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_2_0",
+          "offset": [7, 1, 6]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_2_1",
+          "offset": [48, 1, 13]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:trident",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "minecraft:fisherman",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "minecraft:music_disc_pigstep",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 18,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:bard_laureate"
+            }
+          }
+        },
+        {
+          "item": "minecraft:netherite_upgrade_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "job_level",
+              "job": "aliveworkplace:netherworker",
+              "level": 5,
+              "count": 1
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:gold_circlet",
+          "count": 2,
+          "job": "aliveworkplace:jeweller"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.3",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_0",
+          "offset": [1, 1, 1]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_1",
+          "offset": [48, 1, 2]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_3_2",
+          "offset": [19, 1, 48]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:totem_of_undying",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:merchant_prince"
+            }
+          }
+        },
+        {
+          "item": "minecraft:ominous_trial_key",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pathfinder"
+            }
+          }
+        },
+        {
+          "item": "minecraft:flow_armor_trim_smithing_template",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 14,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "cobblemon:ultra_ball",
+          "count": 2,
+          "job": "aliveworkplace:ball_smith"
+        }
+      ]
+    },
+    {
+      "name": "wonder.aliveworkplace.stadium.stage.4",
+      "parts": [
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_4_0",
+          "offset": [1, 1, 0]
+        },
+        {
+          "part": "aliveworkplace:wonder/stadium/stage_4_1",
+          "offset": [55, 6, 1]
+        }
+      ],
+      "goods": [
+        {
+          "item": "minecraft:nether_star",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 36,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:golem_smith"
+            }
+          }
+        },
+        {
+          "item": "minecraft:heavy_core",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 32,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:pokemon_ranger"
+            }
+          }
+        },
+        {
+          "item": "minecraft:enchanted_golden_apple",
+          "count": 1,
+          "found": true,
+          "helper": {
+            "days": 22,
+            "condition": {
+              "type": "legend",
+              "id": "aliveworkplace:grand_chef"
+            }
+          }
+        },
+        {
+          "item": "aliveworkplace:noble_robes",
+          "count": 2,
+          "job": "aliveworkplace:tailor"
+        }
+      ]
+    }
+  ],
+  "powers": [
+    {
+      "type": "stadium_days",
+      "every_days": 2,
+      "min_visitors": 2,
+      "max_visitors": 4
+    },
+    {
+      "type": "tournament_host"
+    }
+  ],
+  "drawing": "drawn_7109baaeb"
+}

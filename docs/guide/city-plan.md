@@ -44,7 +44,7 @@ grid is centered on the hall. Cells nearer another village's hall are left out.
   Enter) to end it. Right-click a road to take it off. See [Roads](roads.md).
 - **Wall** draws the wall line round the village, **Open** or **Closed**. See [Walls](walls.md).
 
-Only the hall's owner, their friends and operators may change it; anyone else sees it read-only.
+Only the hall's owner, their friends and operators may change it; anyone else sees it read-only ("View only" at the top).
 
 ![The plan on the ground](https://jcondedata.github.io/minecraft-alive-workplace/city_plan_ground/still-1.jpg)
 

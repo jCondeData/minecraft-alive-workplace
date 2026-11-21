@@ -43,7 +43,8 @@ def _wheel(b, x, y, z):
 
 
 def watermill():
-    """11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
+    """The OLD drawing (ROADMAP 50.5: the live watermill.nbt now comes from the rebuild kit, tools/blueprints/js/watermill; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 9: the Watermill. A seven-square stone-and-spruce mill house under a dark oak gable, its water wheel
     on the west wall turned by water falling from a header tank into a walled mill race. The wheel's shaft runs
     through the wall into a gearbox on the floor with the millstone over it (the farmer's machine, 39.3); the farmer's
     composter and the store chest beside it, hay by the back wall."""
@@ -103,7 +104,7 @@ def _sails(b, cx, cy, z):
 
 
 def windmill():
-    """9 x 17 x 9: the Windmill. A seven-square stone tower with a spruce frame under a spruce hip roof; on its
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/windmill; this one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 17 x 9: the Windmill. A seven-square stone tower with a spruce frame under a spruce hip roof; on its
     front, a windmill bearing carries 24 sails in a pinwheel. The bearing's shaft runs back to a gearbox and straight
     down the middle of the tower to a pair of gearboxes on the floor, with the millstone (the farmer's machine, 39.3)
     on the second. The builder starts the bearing when the build is done (or leaves a sign saying how)."""
@@ -143,7 +144,8 @@ def windmill():
 
 
 def workshop():
-    """14 x 10 x 9: the Workshop. A nine-wide brick-and-spruce shop under a spruce gable with a water wheel on its west
+    """The OLD drawing (ROADMAP 50.7: the live workshop.nbt now comes from the rebuild kit, tools/blueprints/js/workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 10 x 9: the Workshop. A nine-wide brick-and-spruce shop under a spruce gable with a water wheel on its west
     wall (header tank and mill race as the Watermill's). Inside, the wheel's shaft drives a belt running to the front,
     which ends at a depot under a mechanical press (the armorer's machine, 39.3); the press is driven from the belt's
     far pulley by a column of cogwheels. The armorer's blast furnace and the store chest by the back wall."""
@@ -193,7 +195,8 @@ FOUNDRY_FRAME = "stripped_dark_oak_log"
 
 
 def brass_foundry():
-    """13 x 14 x 11 (ROADMAP 39.8): the Brass Foundry. A nine-square brick hall on a stone-brick plinth, framed in dark
+    """The OLD drawing (ROADMAP 50.3: the live brass_foundry.nbt now comes from the rebuild kit, tools/blueprints/js/brass_foundry; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 14 x 11 (ROADMAP 39.8): the Brass Foundry. A nine-square brick hall on a stone-brick plinth, framed in dark
     oak under a deepslate gable, a brick chimney smoking at the back corner; the water wheel on its west wall (header
     tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running out to a depot by the door,
     and from the belt's pulley a gearbox sends the drive up a shaft to two stacked steps of large and small cogwheels
@@ -260,7 +263,8 @@ SAW_FRAME = "spruce_log"
 
 
 def sawmill():
-    """15 x 11 x 12 (ROADMAP 39.8): the Sawmill. An eleven-by-ten timber mill, spruce posts and oak plank walls over a
+    """The OLD drawing (ROADMAP 50.2: the live sawmill.nbt now comes from the rebuild kit, tools/blueprints/js/sawmill;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 11 x 12 (ROADMAP 39.8): the Sawmill. An eleven-by-ten timber mill, spruce posts and oak plank walls over a
     cobblestone plinth under a dark oak gable, a log store under a lean-to on its east side; the water wheel on the
     west wall (header tank and mill race as the Watermill's). Inside, the wheel's shaft turns a belt running to the
     front, through two mechanical saws facing up (each driven from the belt's far pulley by a column of cogwheels; the
@@ -324,7 +328,7 @@ CRUSH_STONE = Mix((5, "cobblestone"), (3, "andesite"), (2, "stone"), seed=399)
 
 
 def crushing_mill():
-    """14 x 12 x 11 (ROADMAP 39.8): the Crushing Mill. A nine-by-nine andesite-and-cobble mill house framed in spruce
+    """The OLD drawing (ROADMAP 50.10: the live .nbt now comes from the rebuild kit, tools/blueprints/js/crushing_mill; this one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 12 x 11 (ROADMAP 39.8): the Crushing Mill. A nine-by-nine andesite-and-cobble mill house framed in spruce
     under a spruce gable; the water wheel on its west wall (header tank and mill race as the Watermill's). Inside, a
     pair of crushing wheels (their axles along z, a block apart: Create puts its crusher in the gap) turned the opposite
     ways through a train of gearboxes, a short belt over them dropping into the gap, and under the gap a pit where the
@@ -389,7 +393,7 @@ GLASS_FRAME = "stripped_spruce_log"
 
 
 def greenhouse():
-    """15 x 11 x 13 (ROADMAP 39.8): the Greenhouse. An eleven-square glass house on a stone-brick knee wall, framed in
+    """The OLD drawing (ROADMAP 50.9: the live .nbt now comes from the rebuild kit, tools/blueprints/js/greenhouse; this one is kept in blueprint_history/ and no longer saved by generate.py). 15 x 11 x 13 (ROADMAP 39.8): the Greenhouse. An eleven-square glass house on a stone-brick knee wall, framed in
     stripped spruce, under a stepped glass roof on spruce rafters (one glass type: glass blocks); the water wheel on its
     west wall (header tank and mill race as the Watermill's). Inside, beds of farmland watered by two channels, and down
     the aisle between them a belt from the wheel's shaft, running to a depot by the front: the harvest line, with a
@@ -478,7 +482,8 @@ CLOCK_FRAME = "dark_oak_log"
 
 
 def clock_tower():
-    """11 x 19 x 9 (ROADMAP 39.8): the Clock Tower. A seven-square tower: a stone-brick shaft two storeys high, then a
+    """The OLD drawing (ROADMAP 51.6: the live clock_tower.nbt now comes from the rebuild kit, tools/blueprints/js/clock_tower;
+    this one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 19 x 9 (ROADMAP 39.8): the Clock Tower. A seven-square tower: a stone-brick shaft two storeys high, then a
     plastered belfry storey framed in dark oak, under a dark oak hip roof; a cuckoo clock set in the front of the
     belfry under a little stair hood. The water wheel at its foot on the west side (header tank and mill race as the
     Watermill's) turns the clock: its shaft through the wall, gearboxes, a shaft straight up the middle of the tower and
@@ -540,7 +545,7 @@ PUMP_BRICK = Mix((8, "bricks"), (2, "granite"), seed=403)
 
 
 def pump_house():
-    """14 x 10 x 9 (ROADMAP 39.8): the Pump House. A small nine-by-seven brick house framed in spruce under a dark oak
+    """The OLD drawing (ROADMAP 50.13: the live .nbt now comes from the rebuild kit, tools/blueprints/js/pump_house; this one is kept in blueprint_history/ and no longer saved by generate.py). 14 x 10 x 9 (ROADMAP 39.8): the Pump House. A small nine-by-seven brick house framed in spruce under a dark oak
     gable, a lean-to store on its east side; the water wheel on its west wall (header tank and mill race as the
     Watermill's). Inside, the wheel's shaft ends in a cogwheel turning a mechanical pump beside it; the pump draws from
     a sump of four water sources in the floor (so it refills) through an intake pipe and pushes up a pipe into a fluid
@@ -602,7 +607,7 @@ BALLAST = Mix((5, "gravel"), (3, "andesite"), (2, "cobblestone"), seed=397)
 
 
 def train_station():
-    """13 x 9 x 8: the Train Station (ROADMAP 39.7), a village's stop for the caravans' train. A straight run of Create
+    """The OLD drawing (ROADMAP 50.13: the live .nbt now comes from the rebuild kit, tools/blueprints/js/train_station; this one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 9 x 8: the Train Station (ROADMAP 39.7), a village's stop for the caravans' train. A straight run of Create
     track along the back (z 6, the whole width, on a ballast bed of gravel and andesite) with a Create station block on
     the platform's edge beside it (z 4, the middle); the platform of polished andesite under a dark oak shelter on
     spruce posts, closed on the street side by a birch-and-spruce wall with a doorway in the middle (a step before it)

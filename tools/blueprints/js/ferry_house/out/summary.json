@@ -1,0 +1,19 @@
+{
+  "name": "ferry-house",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 53
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ferry_house/out/ferry-house.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ferry_house/out/summary.json",
+  "size": [
+    15,
+    17,
+    11
+  ],
+  "blockCount": 769,
+  "paletteCount": 57,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ferry_house/recipe.mjs"
+}

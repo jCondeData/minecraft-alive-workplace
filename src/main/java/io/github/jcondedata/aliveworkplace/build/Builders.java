@@ -42,6 +42,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.AABB;
 import io.github.jcondedata.aliveworkplace.work.Reach;
 import org.jetbrains.annotations.Nullable;
@@ -68,6 +69,33 @@ public final class Builders {
 	/** True if the build of {@code structure} at {@code placement} is in reach of the bench at {@code bench} (the one rule placing uses). */
 	public static boolean inReach(ServerLevel level, BlockPos bench, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
 		return Reach.inReach(level, bench, spot(level, structure, placement), MAX_SITE_DISTANCE);
+	}
+
+	/**
+	 * The Blueprint Table or Builder's Bench a build of {@code structure} at {@code placement} would be built from: the
+	 * nearest one that has it in reach ({@link #inReach}). B619: the Blueprint's supply report and material list looked
+	 * only {@code maxSiteDistance} round the spot, and found no table for a build its builder takes across the village.
+	 */
+	public static Optional<BlockPos> benchFor(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement) {
+		return Reach.workBlocks(level, h -> h.is(ModVillagers.BLUEPRINT_TABLE_POI) || h.is(ModVillagers.BUILDERS_BENCH_POI),
+			spot(level, structure, placement), MAX_SITE_DISTANCE).findFirst();
+	}
+
+	/**
+	 * The living Builders among those passing {@code filter} whose bench has the build in reach ({@link #inReach}),
+	 * nearest it first. B619: they were looked for in a box of twice {@code maxSiteDistance} round the build, which a
+	 * Builder across a big village is outside of; the box is as wide as a bench in reach can be away ({@link Reach#span}),
+	 * plus {@code maxSiteDistance} for a Builder away from their bench.
+	 */
+	public static List<Villager> reaching(ServerLevel level, net.minecraft.resources.ResourceLocation structure, BlueprintData.Placement placement,
+			java.util.function.Predicate<Villager> filter) {
+		BlockPos spot = spot(level, structure, placement);
+		List<Villager> builders = new java.util.ArrayList<>(level.getEntities(EntityType.VILLAGER,
+			new AABB(spot).inflate(Reach.span(level, spot, MAX_SITE_DISTANCE) + MAX_SITE_DISTANCE),
+			v -> v.isAlive() && isBuilder(v) && benchPos(v).isPresent() && filter.test(v)
+				&& Reach.inReach(level, benchPos(v).get(), spot, MAX_SITE_DISTANCE)));
+		builders.sort(java.util.Comparator.comparingDouble(v -> v.distanceToSqr(spot.getX(), spot.getY(), spot.getZ())));
+		return builders;
 	}
 
 	/** How many blueprints a builder accepts on top of the one they are building. */
@@ -113,9 +141,12 @@ public final class Builders {
 		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
 		if (job != null) {
 			BuildSite site = BuildSiteManager.get(level).get(job.siteId());
-			if (site != null && !site.isQueued() && !(job.helper() && site.isDone())) {
+			if (site != null && !site.isQueued() && !(job.helper() && site.isDone()) && !(lendsAHand(job, site) && hasQueue(level, villager))) {
 				return site;
 			}
+			// (B789: a helper with a build of his own waiting leaves the crew for it, as when a player hands him a blueprint.
+			// A site queued for him while he helped, by the Steward or the hall, waited for as long as the build he helped
+			// stayed open: for good when its lead stood waiting for materials. Worlds saved so pick it up here too.)
 			if (job.helper()) {
 				stopHelping(level, villager);
 			} else {
@@ -129,6 +160,30 @@ public final class Builders {
 			return crew;
 		}
 		return startNext(level, villager);
+	}
+
+	/** True for a helper on another builder's build; a Wonder's crew is not lending a hand, it is called (35.5). */
+	private static boolean lendsAHand(BuilderJob job, BuildSite site) {
+		return job.helper() && site.wonder() == null;
+	}
+
+	private static boolean hasQueue(ServerLevel level, Villager villager) {
+		for (BuildSite site : BuildSiteManager.get(level).all()) {
+			if (site.isQueued() && villager.getUUID().equals(site.builder())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * True while {@code villager} has a build of their own under way. Lending a hand on another builder's build is not
+	 * one (B789): a build given to a helper starts at once, and he leaves the crew for it ({@link #start}).
+	 */
+	public static boolean hasOwnBuild(ServerLevel level, Villager villager) {
+		BuildSite site = activeSite(level, villager);
+		BuilderJob job = ModAttachments.BUILDER_JOB.get(villager);
+		return site != null && !(job != null && job.siteId().equals(site.id()) && lendsAHand(job, site));
 	}
 
 	/** The site to work on this shift: their own (or next queued) build, else one nearby to help with. */
@@ -179,7 +234,7 @@ public final class Builders {
 			}
 		}
 		if (best != null) {
-			ModAttachments.BUILDER_JOB.set(villager, new BuilderJob(best.id(), true));
+			ModAttachments.BUILDER_JOB.set(villager, BuilderJob.helping(best));
 			best.seen(villager.getUUID(), level.getGameTime());
 		}
 		return best;
@@ -195,7 +250,11 @@ public final class Builders {
 		}
 		// 35.5: a Wonder's crew member whose part is finished (its site gone) hands what it carries back to the stockpile
 		// round the Wonder's stone, where the next stage takes it from, not to its own bench.
-		BlockPos bench = site != null && site.bench() != null ? site.bench()
+		// B645: a helper whose site is already gone (the build ended while it was unloaded or out of sendHelpersBack's
+		// reach) still takes its bag to the lead's bench it joined at, not to its own, out of the lead's reach.
+		BlockPos leads = site == null && job != null && job.helper() ? job.bench().filter(at -> level.isLoaded(at)
+			&& level.getBlockState(at).is(io.github.jcondedata.aliveworkplace.registry.ModBlocks.BUILDERS_BENCH)).orElse(null) : null;
+		BlockPos bench = site != null && site.bench() != null ? site.bench() : leads != null ? leads
 			: io.github.jcondedata.aliveworkplace.wonder.WonderCrews.stockpile(level, villager).orElseGet(() -> benchPos(villager).orElse(villager.blockPosition()));
 		emptyBag(level, villager, bench, SupplyContainers.find(level, bench, null));
 		villager.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
@@ -238,7 +297,7 @@ public final class Builders {
 		/** The new job didn't start after all: back to the crew it left. */
 		public void undo(ServerLevel level) {
 			if (!ModAttachments.BUILDER_JOB.has(builder) && !left.isDone()) {
-				ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(left.id(), true));
+				ModAttachments.BUILDER_JOB.set(builder, BuilderJob.helping(left));
 				left.seen(builder.getUUID(), level.getGameTime());
 			}
 		}
@@ -1079,11 +1138,13 @@ public final class Builders {
 			return;
 		}
 		if (site.isDeconstruction()) {
-			BuildSiteManager.get(level).forgetFinished(site.placement());
-			io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
-		} else if (site.wonder() == null) {
-			// (B143: a Wonder's part is no building of its own: no "X was built" line with the part's name, nothing on the
-			// books, no upgrade, no lane; the Wonder's own begun, dedicated and finished lines tell it, 35.4/35.7/35.8)
+			// B1372: a take-down that took nothing down while the building still stands (its plan didn't match what stands)
+			// leaves it known to the hall, to be moved, repaired, refreshed or taken down again
+			if (site.placed() > 0 || !stillStands(level, site)) {
+				BuildSiteManager.get(level).forgetFinished(site.placement());
+				io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
+			}
+		} else {
 			BuildSiteManager.get(level).recordFinished(site.structure(), site.placement(), site.owner());
 			BuildSiteManager.get(level).setFurniture(site.placement(), site.isRefresh() // 37.3: upkeep keeps what was built
 				? Refreshes.refreshedFurniture(level, site.structure(), site.furniture()) : site.furniture()); // B642: a refresh's, by today's spots
@@ -1109,6 +1170,36 @@ public final class Builders {
 		endJob(level, villager, site);
 		BuilderLevels.onFinished(level, villager, site);
 		io.github.jcondedata.aliveworkplace.city.Renewals.siteFinished(level, villager, site); // 27.21: the old house down, the new one next
+	}
+
+	/**
+	 * B1372: whether a block of the building on {@code site}'s spot (as today's drawing or the one it was built from has
+	 * it) still stands there, not counting what always stays (a chest, a job block, a bed someone sleeps in).
+	 */
+	private static boolean stillStands(ServerLevel level, BuildSite site) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		if (manager.finishedIn(level).stream().noneMatch(f -> f.placement().equals(site.placement()))) {
+			return false; // (not a building the hall knows)
+		}
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(site.placement());
+		java.util.Set<String> from = new java.util.LinkedHashSet<>();
+		from.add("");
+		java.util.Optional.ofNullable(site.builtFrom()).ifPresent(from::add);
+		java.util.Optional.ofNullable(Refreshes.builtFrom(level, site.structure(), site.placement(), furniture)).ifPresent(from::add);
+		for (String key : from) {
+			java.util.Optional<io.github.jcondedata.aliveworkplace.blueprint.Blueprint> drawing = Refreshes.drawing(level, site.structure(), key, furniture);
+			if (drawing.isEmpty()) {
+				continue;
+			}
+			for (java.util.Map.Entry<BlockPos, net.minecraft.world.level.block.state.BlockState> e
+				: BuildPlan.create(drawing.get(), site.placement()).targets().entrySet()) {
+				net.minecraft.world.level.block.state.BlockState world = level.getBlockState(e.getKey());
+				if (!e.getValue().isAir() && !world.isAir() && MaterialRules.matches(world, e.getValue()) && !Refreshes.kept(level, e.getKey(), world)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

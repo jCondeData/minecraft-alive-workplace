@@ -62,7 +62,7 @@ counts and pay, one a day; the villagers talk about it and the chronicle tells e
 
 | Story | Asked by | Ending |
 |---|---|---|
-| The Shift Bell | the Toolsmith (else any smith) | a bell on two posts beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
+| The Shift Bell | the Toolsmith (else any smith) | a little deepslate belfry on the smith's own anvil, lit by four lanterns under its deck and capped with a weathered copper roof and spire, beside the hall, on natural ground, ringing at the start (tick 2000) and end (tick 9000) of the work day |
 | The Common Granary | a Farmer | a harvest supper at the hall the next evening: a festival's feast, no fireworks |
 | The Midwives | the Nurse (else a mother, else anyone) | a midwife comes to stay, a Nurse at Journeyman |
 | The Watchful Gate | a Guard | an old soldier comes to stay, a Guard at Expert in iron armor with an iron sword |

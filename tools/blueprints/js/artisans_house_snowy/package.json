@@ -1,0 +1,10 @@
+{
+  "name": "artisans-house-snowy",
+  "private": true,
+  "type": "module",
+  "description": "Artisan's House, the snowy look (ROADMAP 49.10g): the potter's house as the Snowbound Kiln House, a steep white calcite gable to the road beside a snow-banked brick beehive kiln and its stone stack, the journeyman's wing (II) and the clay cellar (III). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "lookout-tower",
+  "private": true,
+  "type": "module",
+  "description": "The Lookout Tower (lookout_tower .. lookout_tower_4), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/lookout_tower.md, REBUILD.md): the Hoarded Watchtower. MC_BUILDER = the minecraft-builder skill's folder. LEVEL=1..4 picks the level; build.sh builds and saves all four as candidates.",
+  "scripts": { "build": "sh build.sh" }
+}

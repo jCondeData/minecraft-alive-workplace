@@ -30,12 +30,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.tags.PoiTypeTags;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -63,23 +61,54 @@ public final class Refreshes {
 	public static final int DECORATION = 0, FURNITURE = 1, BLOCK = 2;
 
 	private static final String DIR = "blueprint_history";
-	private record Old(String key, Blueprint drawing) {
+	/** An older drawing; {@code file} is the shipped file it was read from (null for one added by hand). */
+	private record Old(String key, Blueprint drawing, @Nullable ResourceLocation file) {
+	}
+
+	/** A shipped older drawing's file, listed at a reload but not read yet (B1418). */
+	private record Shipped(String key, ResourceLocation file, Resource resource) {
 	}
 
 	@Nullable
 	private static ResourceManager loadedFrom;
-	private static Map<ResourceLocation, List<Old>> history = Map.of();
+	/**
+	 * B1418: by blueprint, its shipped older drawings' files in key order, listed (not read) when the resources change: the
+	 * history ships over a thousand drawings, and reading them all on the first question froze the server for seconds.
+	 */
+	private static Map<ResourceLocation, List<Shipped>> shipped = Map.of();
+	/** B1418: by blueprint, its shipped older drawings as read, each blueprint's read the first time it is asked about. */
+	private static final Map<ResourceLocation, List<Old>> history = new HashMap<>();
+	/** B1418: how many shipped drawing files have been read since the mod started (for the tests). */
+	private static int filesRead;
+
+	/** B1418: how many shipped drawing files have been read since the mod started (for the tests). */
+	public static synchronized int filesRead() {
+		return filesRead;
+	}
+
+	/**
+	 * B1407: by blueprint (a modded library copy's {@code modded/<path>}), the key its older drawing of the day of another
+	 * key ships under ({@code blueprint_history/<path>/aliases.json}, from tools/blueprints/history.py): a modded site
+	 * mid-build finds the key of the VANILLA drawing it was begun from, and the modded copy of that day shipped once, under
+	 * the key of the first commit or release that had it.
+	 */
+	private static Map<ResourceLocation, Map<String, String>> aliases = Map.of();
+	private static final String ALIASES = "aliases.json";
 	/** Older drawings added by hand (tests, or a datapack's own code), by blueprint. */
 	private static final Map<ResourceLocation, List<Old>> EXTRA = new HashMap<>();
 
 	/** Adds an older drawing of {@code structure} under {@code key} (as a shipped one would be). */
 	public static synchronized void addHistory(ResourceLocation structure, String key, Blueprint drawing) {
 		EXTRA.computeIfAbsent(structure, k -> new ArrayList<>()).removeIf(o -> o.key().equals(key));
-		EXTRA.get(structure).add(new Old(key, drawing));
+		EXTRA.get(structure).add(new Old(key, drawing, null));
+		DRAWN_AS.clear();
+		STANDING.clear();
 	}
 
 	public static synchronized void removeHistory(ResourceLocation structure) {
 		EXTRA.remove(structure);
+		STANDING.clear();
+		DRAWN_AS.clear();
 	}
 
 	/** The older drawings of {@code structure}: those the mod ships, then any added. */
@@ -87,10 +116,39 @@ public final class Refreshes {
 		ResourceManager resources = server.getResourceManager();
 		if (resources != loadedFrom) {
 			loadedFrom = resources;
-			history = load(resources);
+			shipped = index(resources);
+			history.clear();
+			aliases = loadAliases(resources);
+			STANDING.clear();
+			DRAWN_AS.clear();
 		}
-		List<Old> out = new ArrayList<>(history.getOrDefault(structure, List.of()));
+		List<Old> out = new ArrayList<>(history.computeIfAbsent(structure, Refreshes::read));
 		out.addAll(EXTRA.getOrDefault(structure, List.of()));
+		return out;
+	}
+
+	/** B1407: the key {@code structure}'s older drawing of the day of {@code key} ships under ({@code key} if not aliased). */
+	private static synchronized String resolved(MinecraftServer server, ResourceLocation structure, String key) {
+		history(server, structure); // (loads the aliases with the history)
+		return aliases.getOrDefault(structure, Map.of()).getOrDefault(key, key);
+	}
+
+	private static Map<ResourceLocation, Map<String, String>> loadAliases(ResourceManager resources) {
+		Map<ResourceLocation, Map<String, String>> out = new HashMap<>();
+		for (Map.Entry<ResourceLocation, Resource> e : resources.listResources(DIR, id -> id.getPath().endsWith("/" + ALIASES)).entrySet()) {
+			String path = e.getKey().getPath();
+			String folder = path.substring(DIR.length() + 1, path.length() - ALIASES.length() - 1);
+			ResourceLocation structure = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), folder);
+			try (java.io.Reader in = e.getValue().openAsReader()) {
+				com.google.gson.JsonObject json = com.google.gson.JsonParser.parseReader(in).getAsJsonObject();
+				Map<String, String> keys = out.computeIfAbsent(structure, k -> new HashMap<>());
+				for (Map.Entry<String, com.google.gson.JsonElement> alias : json.entrySet()) {
+					keys.put(alias.getKey(), alias.getValue().getAsString());
+				}
+			} catch (Exception ex) {
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawings' aliases {}: {}", e.getKey(), ex.toString());
+			}
+		}
 		return out;
 	}
 
@@ -99,8 +157,14 @@ public final class Refreshes {
 		return history(server, structure).stream().filter(o -> o.key().equals(key)).findFirst().map(Old::drawing);
 	}
 
-	private static Map<ResourceLocation, List<Old>> load(ResourceManager resources) {
-		Map<ResourceLocation, List<Old>> out = new HashMap<>();
+	/** The keys of every older drawing of {@code structure}, as shipped (or added), in key order. */
+	public static List<String> olderKeys(MinecraftServer server, ResourceLocation structure) {
+		return history(server, structure).stream().map(Old::key).toList();
+	}
+
+	/** B1418: every shipped older drawing's file by blueprint, in key order: a listing, no file is read. */
+	private static Map<ResourceLocation, List<Shipped>> index(ResourceManager resources) {
+		Map<ResourceLocation, List<Shipped>> out = new HashMap<>();
 		for (Map.Entry<ResourceLocation, Resource> e : resources.listResources(DIR, id -> id.getPath().endsWith(".nbt")).entrySet()) {
 			String path = e.getKey().getPath().substring(DIR.length() + 1, e.getKey().getPath().length() - ".nbt".length());
 			int slash = path.lastIndexOf('/');
@@ -108,18 +172,39 @@ public final class Refreshes {
 				continue;
 			}
 			ResourceLocation structure = ResourceLocation.fromNamespaceAndPath(e.getKey().getNamespace(), path.substring(0, slash));
-			try (InputStream in = e.getValue().open()) {
+			out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Shipped(path.substring(slash + 1), e.getKey(), e.getValue()));
+		}
+		out.values().forEach(list -> list.sort(Comparator.comparing(Shipped::key)));
+		return out;
+	}
+
+	/** B1418: {@code structure}'s shipped older drawings, read from their files (only that blueprint's), in key order. */
+	private static List<Old> read(ResourceLocation structure) {
+		List<Shipped> files = shipped.getOrDefault(structure, List.of());
+		if (files.isEmpty()) {
+			return List.of();
+		}
+		List<Old> out = new ArrayList<>(files.size());
+		for (Shipped file : files) {
+			filesRead++;
+			try (InputStream in = file.resource().open()) {
 				CompoundTag tag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
 				// (with the blueprint's own id, so its basement and features are worked out as for the current drawing)
 				Blueprint drawing = StarterBlueprints.withBasement(StarterBlueprints.withFeatures(
 					Blueprint.fromStructureNbt(structure, tag, Lookup.lookup(BuiltInRegistries.BLOCK))));
-				out.computeIfAbsent(structure, k -> new ArrayList<>()).add(new Old(path.substring(slash + 1), drawing));
+				out.add(new Old(file.key(), drawing, file.file()));
 			} catch (Exception ex) {
-				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawing {}: {}", e.getKey(), ex.toString());
+				io.github.jcondedata.aliveworkplace.AliveWorkplace.LOG.warn("Couldn't read the older drawing {}: {}", file.file(), ex.toString());
 			}
 		}
-		out.values().forEach(list -> list.sort(Comparator.comparing(Old::key)));
-		return out;
+		return List.copyOf(out);
+	}
+
+	/** B1418: forgets what was listed and read, as a reload of the resources does (for the tests). */
+	public static synchronized void forgetShipped() {
+		loadedFrom = null;
+		shipped = Map.of();
+		history.clear();
 	}
 
 	// ---- what changes ------------------------------------------------------------------------------------------------
@@ -157,8 +242,15 @@ public final class Refreshes {
 		if (LATEST.equals(key)) {
 			return latestDrawing(level, structure, furniture).map(furniture::applyAsBuilt);
 		}
-		return history(level.getServer(), historyId(structure, furniture)).stream().filter(o -> o.key().equals(key)).findFirst()
-			.map(o -> furniture.applyAsBuilt(o.drawing()));
+		ResourceLocation id = historyId(structure, furniture);
+		List<Old> olds = history(level.getServer(), id);
+		Optional<Old> old = olds.stream().filter(o -> o.key().equals(key)).findFirst();
+		if (old.isEmpty()) {
+			// B1407: a modded build begun from the vanilla drawing {@code key}: its modded copy of that day ships under another key
+			String alias = resolved(level.getServer(), id, key);
+			old = olds.stream().filter(o -> o.key().equals(alias)).findFirst();
+		}
+		return old.map(o -> furniture.applyAsBuilt(o.drawing()));
 	}
 
 	/**
@@ -202,7 +294,39 @@ public final class Refreshes {
 		if (was.isEmpty()) {
 			return BuildPlan.repair(current, placement, level, BuildSiteManager.get(level).gaveUp(placement));
 		}
-		return BuildPlan.refresh(current, was.get(), placement, level, (pos, state) -> kept(level, pos, state));
+		return BuildPlan.refresh(current, was.get(), placement, level,
+			(pos, state) -> kept(level, pos, state) && !leftoverPiece(level, built, placement, pos, state));
+	}
+
+	/**
+	 * B1383: whether {@code world} at {@code pos} is a furniture mod's piece that {@code built} (the build's furniture, as
+	 * built) put there and that holds nothing: a refresh takes it away like any other piece of the older drawing (B642),
+	 * though it has a block entity (a Handcrafted shelf, nightstand or crockery set). One with something in it stays, as a
+	 * container does; never a bed someone sleeps in or a job block.
+	 */
+	public static boolean leftoverPiece(ServerLevel level, @Nullable io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice built,
+										BlueprintData.Placement placement, BlockPos pos, BlockState world) {
+		if (built == null || built.spots().isEmpty() || BuiltInRegistries.BLOCK.getKey(world.getBlock()).getNamespace().equals("minecraft")
+			|| world.getBlock() instanceof BedBlock || PoiTypes.forState(world).isPresent()) {
+			return false;
+		}
+		boolean placed = false;
+		for (io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice.Placed piece : built.spots().values()) {
+			for (Map.Entry<BlockPos, BlockState> cell : piece.cells().entrySet()) {
+				if (cell.getValue().getBlock() == world.getBlock() && pos.equals(placement.origin().offset(
+					net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(piece.pos().offset(cell.getKey()),
+						placement.mirror(), placement.rotation(), BlockPos.ZERO)))) {
+					placed = true;
+				}
+			}
+		}
+		if (!placed) {
+			return false;
+		}
+		if (level.getBlockEntity(pos) instanceof net.minecraft.world.Container container && !container.isEmpty()) {
+			return false;
+		}
+		return !io.github.jcondedata.aliveworkplace.platform.Platform.get().items().hasMatching(level, pos, stack -> !stack.isEmpty());
 	}
 
 	/**
@@ -218,23 +342,12 @@ public final class Refreshes {
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
 		List<Old> olds = new ArrayList<>(history(level.getServer(), historyId(f.structure(), furniture)));
 		if (furniture.staleFor(io.github.jcondedata.aliveworkplace.furnish.BlueprintFurniture.of(f.structure()))) {
-			latestDrawing(level, f.structure(), furniture).ifPresent(d -> olds.add(new Old(LATEST, d))); // B641
+			latestDrawing(level, f.structure(), furniture).ifPresent(d -> olds.add(new Old(LATEST, d, null))); // B641
 		}
 		if (olds.isEmpty()) {
 			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
 		}
-		Map<BlockPos, BlockState> now = BuildPlan.create(current.get(), f.placement()).targets();
-		Old best = null;
-		int bestScore = 0;
-		for (Old old : olds) {
-			// B642: as it was built, its pieces where they were put (the spots of their day), not as today's spots would furnish it
-			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.applyAsBuilt(old.drawing()), f.placement()).targets();
-			int score = score(level, was, now);
-			if (score > bestScore) {
-				best = old;
-				bestScore = score;
-			}
-		}
+		Old best = best(level, current.get(), olds, f.placement(), furniture);
 		if (best == null) {
 			return Optional.empty();
 		}
@@ -254,6 +367,168 @@ public final class Refreshes {
 		}
 		Change change = new Change(best.key(), added, removed);
 		return change.total() == 0 ? Optional.empty() : Optional.of(change);
+	}
+
+	/** The older drawing among {@code olds} the build on {@code placement} stands as better than {@code current}, or null. */
+	@Nullable
+	private static Old best(ServerLevel level, Blueprint current, List<Old> olds, BlueprintData.Placement placement,
+							io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		Map<BlockPos, BlockState> now = BuildPlan.create(current, placement).targets();
+		Old best = null;
+		int bestScore = 0;
+		for (Old old : olds) {
+			// B642: as it was built, its pieces where they were put (the spots of their day), not as today's spots would furnish it
+			Map<BlockPos, BlockState> was = BuildPlan.create(furniture.applyAsBuilt(old.drawing()), placement).targets();
+			int score = score(level, was, now);
+			if (score > bestScore) {
+				best = old;
+				bestScore = score;
+			}
+		}
+		return best;
+	}
+
+	// ---- the drawing a standing build was built from (B1369, B1370, B1372) ----------------------------------------------
+
+	/**
+	 * B1369, B1370, B1372: the older drawing (its key in the shipped history) the finished build of {@code structure} on
+	 * {@code placement} still stands as, better than today's drawing; null when it stands as today's (or no older drawing
+	 * is shipped). Once a family's drawing is rebuilt under the same id, a house of the old drawing keeps it until it is
+	 * refreshed (tools/blueprints/REBUILD.md): its repairs, its take-down and its upgrade go by this drawing, not today's.
+	 */
+	@Nullable
+	public static String builtFrom(ServerLevel level, ResourceLocation structure, BlueprintData.Placement placement,
+								   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		List<Old> olds = history(level.getServer(), historyId(structure, furniture));
+		if (olds.isEmpty()) {
+			return null; // (most builds: nothing to look at)
+		}
+		Optional<Blueprint> current = BlueprintLibrary.get(level, structure)
+			.map(b -> refreshedFurniture(level, structure, furniture).apply(b, structure));
+		if (current.isEmpty()) {
+			return null;
+		}
+		Old best = best(level, current.get(), olds, placement, furniture);
+		return best == null ? null : best.key();
+	}
+
+	// ---- the drawing a site mid-build was begun from (B1371) -----------------------------------------------------------
+
+	/** B1371: {@link BuildSite#fingerprint} of each older drawing as the library would have read it, by blueprint and key. */
+	private static final Map<ResourceLocation, Map<String, Integer>> DRAWN_AS = new HashMap<>();
+
+	/**
+	 * B1371: the key of the older drawing of {@code structure} that, as the blueprint library read it when it was today's
+	 * drawing, has the fingerprint {@code drawnHash} (what a site begun from it saved, B1049); null if none has. Exact, not
+	 * a likeness: a site mid-build when its family's drawing is rebuilt keeps the drawing it was begun from
+	 * (tools/blueprints/REBUILD.md), and a blueprint replaced with no older drawing shipped (a Create schematic uploaded
+	 * again) still restarts as the new one (B1049).
+	 */
+	@Nullable
+	static synchronized String drawnAs(MinecraftServer server, ResourceLocation structure, int drawnHash) {
+		List<Old> olds = history(server, structure);
+		if (olds.isEmpty()) {
+			return null;
+		}
+		Map<String, Integer> known = DRAWN_AS.computeIfAbsent(structure, k -> new HashMap<>());
+		for (Old old : olds) {
+			Integer print = known.get(old.key());
+			if (print == null) {
+				print = libraryPrint(server, structure, old);
+				known.put(old.key(), print);
+			}
+			if (print == drawnHash) {
+				return old.key();
+			}
+		}
+		return null;
+	}
+
+	/** The fingerprint of {@code old} read as {@link BlueprintLibrary} reads a drawing: loaded into a structure template first. */
+	private static int libraryPrint(MinecraftServer server, ResourceLocation structure, Old old) {
+		try {
+			CompoundTag tag = null;
+			if (old.file() != null) {
+				Optional<Resource> file = server.getResourceManager().getResource(old.file());
+				if (file.isPresent()) {
+					try (InputStream in = file.get().open()) {
+						tag = NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap());
+					}
+				}
+			}
+			if (tag == null) {
+				tag = io.github.jcondedata.aliveworkplace.blueprint.io.BlueprintFiles.toStructureNbt(old.drawing());
+			}
+			net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate template
+				= new net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate();
+			template.load(Lookup.lookup(BuiltInRegistries.BLOCK), tag);
+			return BuildSite.fingerprint(StarterBlueprints.withBasement(StarterBlueprints.withFeatures(
+				Blueprint.fromTemplate(structure, template, Lookup.lookup(BuiltInRegistries.BLOCK)))));
+		} catch (Exception ex) {
+			return BuildSite.fingerprint(old.drawing()); // (unreadable: as it was read for the history)
+		}
+	}
+
+	/**
+	 * B1371: the older drawing {@code key} of {@code structure} as a build begun from it is built and furnished, with no
+	 * fallback to today's drawing.
+	 */
+	static Optional<Blueprint> olderAsBuilt(ServerLevel level, ResourceLocation structure, String key,
+										   io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		return LATEST.equals(key) ? Optional.empty() : asBuilt(level, structure, key, furniture);
+	}
+
+	/**
+	 * The drawing of {@code structure} the builder works a standing build by: the older drawing {@code from} as the build
+	 * was built and furnished from it, or (null, or that drawing no longer shipped) today's, with what it was built with.
+	 */
+	public static Optional<Blueprint> drawing(ServerLevel level, ResourceLocation structure, @Nullable String from,
+											  io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		if (from != null && !from.isEmpty() && !LATEST.equals(from)) {
+			Optional<Blueprint> old = asBuilt(level, structure, from, furniture);
+			if (old.isPresent()) {
+				return old;
+			}
+		}
+		return BlueprintLibrary.get(level, structure).map(b -> furniture.apply(b, structure));
+	}
+
+	/** B1373, B1374: what {@link #standingSize} found for one building, and on which tick. */
+	private record Standing(long tick, @Nullable net.minecraft.core.Vec3i size) {
+	}
+
+	private record StandingKey(ResourceLocation structure, BlueprintData.Placement placement) {
+	}
+
+	/** How long (ticks) a building's {@link #standingSize} is kept before it is looked at again. */
+	private static final int STANDING_TICKS = 40;
+	private static final Map<StandingKey, Standing> STANDING = new HashMap<>();
+
+	/**
+	 * B1373, B1374: the size of the older drawing the finished building {@code f} still stands as (its box is that size at
+	 * its placement), or null when it stands as today's drawing (or no older drawing of its blueprint is shipped): the
+	 * Mover, the Move page and its fit check measure a house of an old drawing as it stands. Kept for a couple of seconds
+	 * per building, since the fit check and the Move page ask it for every building of the village on each click.
+	 */
+	@Nullable
+	public static synchronized net.minecraft.core.Vec3i standingSize(ServerLevel level, BuildSiteManager.Finished f) {
+		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = BuildSiteManager.get(level).furniture(f.placement());
+		if (history(level.getServer(), historyId(f.structure(), furniture)).isEmpty()) {
+			return null; // (most builds: nothing to look at)
+		}
+		long now = level.getGameTime();
+		StandingKey key = new StandingKey(f.structure(), f.placement());
+		Standing known = STANDING.get(key);
+		if (known != null && now >= known.tick() && now - known.tick() < STANDING_TICKS) {
+			return known.size();
+		}
+		String from = builtFrom(level, f.structure(), f.placement(), furniture);
+		net.minecraft.core.Vec3i size = from == null ? null : drawing(level, f.structure(), from, furniture).map(Blueprint::size).orElse(null);
+		if (STANDING.size() > 1024) {
+			STANDING.clear();
+		}
+		STANDING.put(key, new Standing(now, size));
+		return size;
 	}
 
 	/**
@@ -373,20 +648,16 @@ public final class Refreshes {
 		}
 		BuildSiteManager.get(level).setRefreshAsked(f.get().placement(), true);
 		BlockPos origin = Builders.spot(level, f.get().structure(), f.get().placement()); // B615: measured as placing measures
-		List<Villager> builders = new ArrayList<>(level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && !ModAttachments.BUILDER_JOB.has(v)
-				&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement())));
-		builders.sort(Comparator.comparingDouble(v -> v.distanceToSqr(origin.getX(), origin.getY(), origin.getZ())));
+		// B619: every builder whose bench reaches it, wherever in the village (nearest first)
+		List<Villager> builders = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> !ModAttachments.BUILDER_JOB.has(v)
+			&& Builders.activeSite(level, v) == null && !Builders.isHelping(v) && Upkeep.looksAfter(level, v, f.get().owner()));
 		for (Villager v : builders) {
 			if (start(level, v, f.get()) != null) {
 				return said(player, f.get(), Outcome.STARTED);
 			}
 		}
 		// B1110: every builder busy: a helper who looks after it is taken off another build's crew (which keeps its lead)
-		List<Villager> crews = level.getEntities(EntityType.VILLAGER, new AABB(origin).inflate(Builders.MAX_SITE_DISTANCE * 2),
-			v -> v.isAlive() && Builders.isBuilder(v) && Builders.benchPos(v).isPresent() && Upkeep.looksAfter(level, v, f.get().owner())
-				&& Builders.inReach(level, Builders.benchPos(v).get(), f.get().structure(), f.get().placement()));
+		List<Villager> crews = Builders.reaching(level, f.get().structure(), f.get().placement(), v -> Upkeep.looksAfter(level, v, f.get().owner()));
 		Optional<Builders.Split> split = Builders.splitOff(level, crews, origin);
 		if (split.isPresent()) {
 			if (start(level, split.get().builder(), f.get()) != null) {

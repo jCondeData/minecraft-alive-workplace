@@ -1,0 +1,19 @@
+{
+  "name": "pump-house-cut2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 14
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/pump_house/out/pump-house-cut2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/pump_house/out/summary.json",
+  "size": [
+    18,
+    17,
+    13
+  ],
+  "blockCount": 238,
+  "paletteCount": 43,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/pump_house/recipe.mjs"
+}

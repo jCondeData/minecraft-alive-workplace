@@ -98,11 +98,23 @@ public final class MaterialFamilies {
 	}
 
 	private static void addFamily(Map<Item, List<Item>> out, List<Item> members) {
+		// B1387: families that share a block are one family (Chipped's andesite tag and Rechiseled's andesite with its
+		// polished andesite): each converts freely through the shared block. Kept apart, key(polished andesite) was
+		// andesite while accepted(andesite) left polished andesite out, so chests full of it still read "Needs Andesite".
+		java.util.LinkedHashSet<Item> merged = new java.util.LinkedHashSet<>();
+		for (Item item : members) {
+			List<Item> known = out.get(item);
+			if (known != null) {
+				merged.addAll(known);
+			}
+		}
+		merged.addAll(members);
+		List<Item> all = new ArrayList<>(merged);
 		// Vanilla block first: it is what players have and what messages should name.
-		members.sort((a, b) -> Boolean.compare(!isVanilla(a), !isVanilla(b)));
-		List<Item> family = List.copyOf(members);
+		all.sort((a, b) -> Boolean.compare(!isVanilla(a), !isVanilla(b)));
+		List<Item> family = List.copyOf(all);
 		for (Item item : family) {
-			out.putIfAbsent(item, family);
+			out.put(item, family);
 		}
 	}
 

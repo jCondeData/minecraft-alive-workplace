@@ -2,7 +2,6 @@ package io.github.jcondedata.aliveworkplace.build;
 
 import com.google.common.collect.ImmutableMap;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
-import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprints;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import java.util.Map;
@@ -146,7 +145,9 @@ public final class Upkeep {
 		}
 		io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture = manager.furniture(f.placement());
 		// 37.3: what it was built with; a piece whose mod is gone was dropped, so its vanilla piece goes back
-		Optional<Blueprint> blueprint = BlueprintLibrary.get(level, f.structure()).map(b -> furniture.apply(b, f.structure()));
+		// B1369: by the drawing it was built from (an older one of a rebuilt family stays its own until it is refreshed)
+		String from = Refreshes.builtFrom(level, f.structure(), f.placement(), furniture);
+		Optional<Blueprint> blueprint = Refreshes.drawing(level, f.structure(), from, furniture);
 		if (blueprint.isEmpty()) {
 			return null;
 		}
@@ -171,6 +172,7 @@ public final class Upkeep {
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(f.owner());
 		BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
 		site.setRepair();
+		site.setBuiltFrom(null, from);
 		site.setFurniture(furniture);
 		site.setBuilder(builder.getUUID());
 		site.setBench(bench);

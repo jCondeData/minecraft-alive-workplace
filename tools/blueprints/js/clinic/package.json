@@ -1,0 +1,11 @@
+{
+  "name": "clinic",
+  "private": true,
+  "type": "module",
+  "description": "The Clinic (the pavilion ward, ROADMAP 49 / 50.8): the Nurse's station at its front end, a sun veranda under a catslide. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate (build/rebuild/clinic/); LIVE=1 the live drawing.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/clinic.nbt"
+  }
+}

@@ -4,12 +4,12 @@ Villages the world generates now and then grow one of our houses, a workplace wi
 it, so a player meets Builders, Guards, Nurses and the rest without having to make them. Every house and every
 villager stands where it should: no holes in the ground and nobody stuck in a wall.
 
-Roadmap items: B5, B6
+Roadmap items: B5, B6, 50.1
 
 ## What a player sees
 
 - In a plains, desert, savanna, snowy or taiga village, now and then a house of ours among the vanilla ones, built in
-  that village's style: a **Builder's Workshop** (a Builder's Bench and a chest of building supplies) in about every
+  that village's style: a **Builder's Workshop** (a Blueprint Table, a chest of building supplies and a jib crane in its yard) in about every
   other village, and the staffed houses (a Guard House, Clinic, Post Office, Storehouse, Carpenter's Workshop,
   Kitchen, Ferry House with a Travel Post, Orchard House, Flower Shop, Ranch House, Schoolhouse, Inn Room, Mortuary,
   Tinker's Shop, Sifting Shed, Compost Yard...). Each has a bed and a villager who takes its job block.

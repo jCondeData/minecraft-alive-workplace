@@ -312,33 +312,37 @@ public class QaBuilderFixes1027bGameTests implements FabricGameTest {
 	// ---------------------------------------------------------------- B487
 
 	/**
-	 * Healing Center IV (no walk covered it): from its back garden in by the garden door (5,1,14 above ground; the
-	 * template's y + 4 for its 4-deep herb store, so the origin sits 4 below the floor), turned a quarter round.
+	 * Healing Center IV (no walk covered it): from its back garden in by the garden door (6,1,19 above ground since the
+	 * 50.8 rebuild, was 5,1,14; the template's y + 4 for its 4-deep Cistern, so the origin sits 4 below the floor), turned
+	 * a quarter round.
 	 */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487Healing4Turned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487Healing4Turned")
 	public void aVillagerWalksInByTheTurnedHealingCenterIVsGardenDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_4", Rotation.CLOCKWISE_90, new BlockPos(25, -2, 4), new int[] {5, 5, 18}, new int[] {5, 5, 12}, new int[] {5, 5, 14});
+		QaDoorwayClearanceGameTests.walkIn(helper, "healing_center_4", Rotation.CLOCKWISE_90, new BlockPos(25, -2, 4), new int[] {6, 4, 23}, new int[] {6, 5, 15}, new int[] {6, 5, 19});
 	}
 
-	/** The Pokemon Center lodge look II, turned counterclockwise: from inside (6,1,8) out by the front door (6,1,10) to the path (6,1,13). */
+	/**
+	 * The Pokemon Center lodge look II, turned counterclockwise: from inside (6,1,8) out by the door to the path (6,1,13).
+	 * 50.12 rebuilt the lodge: that door moved from (6,1,10) to the Nurse's back door (6,1,11); (6,1,10) is open floor.
+	 */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487LodgeOutTurned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487LodgeOutTurned")
 	public void aVillagerWalksOutByTheTurnedLodgesFrontDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.COUNTERCLOCKWISE_90, new BlockPos(4, 2, 25), new int[] {6, 1, 8}, new int[] {6, 1, 13}, new int[] {6, 1, 10});
+		QaDoorwayClearanceGameTests.walkIn(helper, "looks/lodge/pokemon_center_2", Rotation.COUNTERCLOCKWISE_90, new BlockPos(4, 2, 25), new int[] {6, 1, 8}, new int[] {6, 1, 13}, new int[] {6, 1, 11});
 	}
 
-	/** Royal Hall II: from the hall floor (15,2,17) out by the east door (16,1,17) to (19,1,17). */
+	/** Royal Hall II: from the treasury (23,1,15) out by the east door (25,1,14) to its step (26,1,14) (51.9's drawing). */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487RoyalHallEastOut"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487RoyalHallEastOut")
 	public void aVillagerWalksOutByRoyalHallIIsEastDoor(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {15, 2, 17}, new int[] {19, 1, 17}, new int[] {16, 1, 17});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall_2", Rotation.NONE, new BlockPos(1, 2, 2), new int[] {23, 1, 15}, new int[] {26, 1, 14}, new int[] {25, 1, 14});
 	}
 
-	/** The Royal Hall turned half round: from the dais (13,2,17) into the vault (9,1,21) by its door (11,2,19). */
+	/** The Royal Hall turned half round: from the dais (6,2,17) into the vault (2,2,16) by its door (3,2,17) (51.9's drawing). */
 	//$ gametest_ticks_batch HUGE '500' '"qaB487VaultInTurned"'
 	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaB487VaultInTurned")
 	public void aVillagerWalksIntoTheTurnedRoyalHallsVaultFromTheDais(GameTestHelper helper) {
-		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.CLOCKWISE_180, new BlockPos(23, 2, 27), new int[] {13, 2, 17}, new int[] {9, 1, 21}, new int[] {11, 2, 19});
+		QaDoorwayClearanceGameTests.walkIn(helper, "realm/royal_hall", Rotation.CLOCKWISE_180, new BlockPos(23, 2, 27), new int[] {6, 2, 17}, new int[] {2, 2, 16}, new int[] {3, 2, 17});
 	}
 }

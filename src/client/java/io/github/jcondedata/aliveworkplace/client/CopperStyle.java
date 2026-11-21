@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.client;
 
 import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.ui.CopperLayout;
+import io.github.jcondedata.aliveworkplace.ui.StatusCardLayout;
 import java.util.List;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -525,15 +526,8 @@ public final class CopperStyle {
 
 	/** A tooltip: a title in Quartz, lines in Tuff, an optional status line (its glyph and word in its color). */
 	public static void tooltip(GuiGraphics g, Font font, Component title, List<Component> lines, Status status, Component statusWord, int x, int y) {
-		int w = font.width(title);
-		for (Component line : lines) {
-			w = Math.max(w, font.width(line));
-		}
-		if (status != null) {
-			w = Math.max(w, font.width(statusWord) + 10);
-		}
-		w += 10;
-		int h = 6 + 10 + lines.size() * 10 + (status != null ? 10 : 0) + 3;
+		int w = tooltipWidth(font, title, lines, status, statusWord);
+		int h = StatusCardLayout.tooltipHeight(lines.size(), status != null);
 		g.pose().pushPose();
 		g.pose().translate(0, 0, 400);
 		g.blitSprite(TOOLTIP, x, y, w, h);
@@ -548,6 +542,18 @@ public final class CopperStyle {
 			g.drawString(font, statusWord, x + 15, ly, status.color, true);
 		}
 		g.pose().popPose();
+	}
+
+	/** The width {@link #tooltip} draws for these parts (so a screen can place it before drawing). */
+	public static int tooltipWidth(Font font, Component title, List<Component> lines, Status status, Component statusWord) {
+		int w = font.width(title);
+		for (Component line : lines) {
+			w = Math.max(w, font.width(line));
+		}
+		if (status != null) {
+			w = Math.max(w, font.width(statusWord) + 10);
+		}
+		return w + 10;
 	}
 
 	/** A toast: the Lantern edge, a 16 px icon, a title and a line. */

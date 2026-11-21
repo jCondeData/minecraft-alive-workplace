@@ -1,0 +1,64 @@
+{
+ "basement": 0,
+ "frames": [
+  {
+   "at": [
+    7,
+    7,
+    10
+   ],
+   "facing": "north"
+  },
+  {
+   "at": [
+    8,
+    7,
+    10
+   ],
+   "facing": "north"
+  },
+  {
+   "at": [
+    9,
+    7,
+    10
+   ],
+   "facing": "north"
+  },
+  {
+   "at": [
+    10,
+    2,
+    10
+   ],
+   "facing": "north"
+  },
+  {
+   "at": [
+    23,
+    7,
+    6
+   ],
+   "facing": "west",
+   "wing": true
+  },
+  {
+   "at": [
+    20,
+    2,
+    10
+   ],
+   "facing": "north",
+   "wing": true
+  },
+  {
+   "at": [
+    17,
+    12,
+    6
+   ],
+   "facing": "east",
+   "wing": true
+  }
+ ]
+}

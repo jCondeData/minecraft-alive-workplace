@@ -1,0 +1,10 @@
+{
+  "name": "waystone-plaza",
+  "private": true,
+  "type": "module",
+  "description": "The Waystone Plaza (waystone_plaza and its four culture looks, the Wayshrine), rebuilt from scratch for ROADMAP 52 (tools/blueprints/briefs/waystone_plaza.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes candidates to build/rebuild/waystone_plaza/.",
+  "scripts": {
+    "build": "OUT=../../../../build/rebuild/waystone_plaza/out; for L in plains desert savanna snowy taiga; do ID=looks/$L/waystone_plaza; [ $L = plains ] && ID=waystone_plaza; mkdir -p ../../../../build/rebuild/waystone_plaza/$(dirname $ID); LOOK=$L node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir $OUT --data-version 3955 && python3 ../../rebuild.py waystone_plaza $ID --candidate --nbt $OUT/waystone-plaza-$L.nbt || exit 1; done",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir ../../../../build/rebuild/waystone_plaza/out --data-version 3955"
+  }
+}

@@ -7,6 +7,7 @@ import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -43,7 +44,7 @@ import net.minecraft.world.level.block.Blocks;
  * this class found (a sticky piston naming Create's Wheat Flour, no leather naming Rabbit Hide) are
  * QaCreateRivals1115cBugCompatTests.
  */
-public class QaCreateRivals1115cCompatTests implements FabricGameTest {
+public class QaCreateRivals1115cCompatTests implements FreshPlanning {
 	static final String AREA = "aliveworkplace_compat:huge_area";
 	static final String SMALL = CompatGameTests.AREA;
 	static final BlockPos CHEST = new BlockPos(2, 2, 4);

@@ -112,7 +112,8 @@ def tinkers_corner(b):
 
 
 def tinkers_workshop():
-    """12 x 11 x 10: a brick workshop gable-on to the street, a hoist with a barrel on its chain over the door, a forge
+    """The OLD drawing (ROADMAP 50.3: the live tinkers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/tinkers_workshop; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 12 x 11 x 10: a brick workshop gable-on to the street, a hoist with a barrel on its chain over the door, a forge
     lean-to under a catslide roof with a big smoking brick chimney; inside the tinkerer's smithing table and its chests,
     an anvil and a redstone lamp kept lit for show."""
     b = Build(12, 11, 10)
@@ -137,7 +138,8 @@ def tinkers_workshop():
 
 
 def tinkers_workshop_2():
-    """12 x 11 x 14: the hall run back to twice the length — a storage loft over the back half (ladder up the east wall),
+    """The OLD drawing (ROADMAP 50.3: the live tinkers_workshop_2.nbt now comes from the rebuild kit, tools/blueprints/js/tinkers_workshop; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 12 x 11 x 14: the hall run back to twice the length — a storage loft over the back half (ladder up the east wall),
     a cart track in through an arch at the back, more windows, and a lightning rod on the ridge."""
     b = Build(12, 11, 14)
     depth = 12
@@ -322,7 +324,8 @@ def smithy_floor(b):
 
 
 def smithy():
-    """13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
+    """The OLD drawing (ROADMAP 50.3: the live smithy.nbt now comes from the rebuild kit, tools/blueprints/js/smithy; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 10: a stone forge under a dark oak roof, its gable to the street over an open front: the anvil and a
     quench trough inside, a blast furnace in a brick chimney breast (Armorer, or Miner with a pickaxe), its stack up the
     west wall with a campfire smoking on top, a smithing table (Toolsmith) at the back, and a lean-to on the east side
     over a grindstone (Weaponsmith). Under the hall, down a ladder by the forge, the coal store (ROADMAP 26.15), 4 below."""
@@ -377,7 +380,8 @@ def smithy_store(b):
 
 
 def smithy_2():
-    """13 x 12 x 13: the smithy with a coal and ore store in a stone wing behind, under a lower roof of its own: bins of
+    """The OLD drawing (ROADMAP 50.3: the live smithy_2.nbt now comes from the rebuild kit, tools/blueprints/js/smithy; this one
+    is kept in blueprint_history/ and no longer saved by generate.py). 13 x 12 x 13: the smithy with a coal and ore store in a stone wing behind, under a lower roof of its own: bins of
     coal and raw ore and a second blast furnace (a second armorer, or a miner) with its own brick flue."""
     b = smithy().grow(13, 12, 13)
     smithy_store(b)
@@ -636,7 +640,8 @@ def lodge_target(b, x):
 
 
 def fletchers_lodge():
-    """11 x 11 x 10: a log cabin of spruce logs crossing at the corners, a dark oak roof with its gable to the street, a stone
+    """The OLD drawing (ROADMAP 50.6: the live fletchers_lodge.nbt now comes from the rebuild kit, tools/blueprints/js/fletchers_lodge; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 10: a log cabin of spruce logs crossing at the corners, a dark oak roof with its gable to the street, a stone
     chimney up the west side, a log pile against the east wall and a straw target in front; inside the fletching table
     (Fletcher; Lumberjack with an axe)."""
     b = Build(11, 11, 10)
@@ -687,7 +692,8 @@ def lodge_wing(b):
 
 
 def fletchers_lodge_2():
-    """13 x 11 x 10: the cabin with a drying-rack wing on the east under a lower roof of its own, open on its sides, its
+    """The OLD drawing (ROADMAP 50.6: the live fletchers_lodge_2.nbt now comes from the rebuild kit, tools/blueprints/js/fletchers_lodge; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 13 x 11 x 10: the cabin with a drying-rack wing on the east under a lower roof of its own, open on its sides, its
     racks hung with bundles, and a second fletching table (a second fletcher, or a lumberjack); the log pile moved to the
     back of the cabin, the target to the wing's corner."""
     b = fletchers_lodge().grow(13, 11, 10)
@@ -940,7 +946,8 @@ def winery_inside(b):
 
 
 def winery():
-    """13 x 14 x 12: a stone press house over a half-sunk cellar: earth banked up the cellar's sides and back, its door
+    """The OLD drawing (ROADMAP 50.4: the live one comes from tools/blueprints/js/winery, this one is kept in
+    blueprint_history/). 13 x 14 x 12: a stone press house over a half-sunk cellar: earth banked up the cellar's sides and back, its door
     under the landing of the outside stair, the press room above under a clay-tile roof with a gabled porch; the
     cauldron vat (Vintner) by the door, a press, racks of casks (spruce log ends) and a cellar of chests."""
     b = Build(13, 14, 12)
@@ -977,7 +984,8 @@ def winery_terrace(b, x0, x1, z0, z1, top):
 
 
 def winery_2():
-    """13 x 14 x 20: the knoll behind the press house: a back door onto a tasting porch (a table, stools, a cask, a
+    """The OLD drawing (ROADMAP 50.4: the live one comes from tools/blueprints/js/winery, this one is kept in
+    blueprint_history/). 13 x 14 x 20: the knoll behind the press house: a back door onto a tasting porch (a table, stools, a cask, a
     railing) under a lean-to of the same tiles, steps down to two terraces of sweet berry rows held by dry-stone edges,
     and over the lower one a pergola hung with glow berries; a lamp at each foot of the garden."""
     b = winery().grow(13, 14, 20)
@@ -1143,7 +1151,8 @@ def tailors_gable(b, z, y, window_at=None):
 
 
 def tailors_shop():
-    """11 x 11 x 12: a timber shop, dark oak and white plaster under a spruce roof: the door between two banners, a bay
+    """The OLD drawing (ROADMAP 50.6: the live tailors_shop.nbt now comes from the rebuild kit, tools/blueprints/js/tailors_shop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 12: a timber shop, dark oak and white plaster under a spruce roof: the door between two banners, a bay
     window with dress forms on show, a lower wing behind for the fitting room; inside the loom (Tailor), a counter
     and bolts of coloured wool."""
     b = Build(11, 11, 12)
@@ -1158,7 +1167,8 @@ def tailors_shop():
 
 
 def tailors_shop_2():
-    """11 x 15 x 12: a cutting-room storey above the shop (a cutting table with cloth laid out, bolts of cloth on racks
+    """The OLD drawing (ROADMAP 50.6: the live tailors_shop_2.nbt now comes from the rebuild kit, tools/blueprints/js/tailors_shop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 15 x 12: a cutting-room storey above the shop (a cutting table with cloth laid out, bolts of cloth on racks
     along the walls) and a drying loft in the roof: its front open behind a rail, dyed wool hung from the rafters, a
     bale on the hoist over the street; a ladder up through both floors."""
     b = Build(11, 15, 12)
@@ -1285,7 +1295,8 @@ def print_shop_roof(b):
 
 
 def print_shop():
-    """11 x 11 x 9: a brick shop in a spruce frame, its plastered gable to the street under a dark oak roof: the
+    """The OLD drawing (ROADMAP 50.6: the live print_shop.nbt now comes from the rebuild kit, tools/blueprints/js/print_shop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 9: a brick shop in a spruce frame, its plastered gable to the street under a dark oak roof: the
     cartography table as the press (Printer) under a skylight, a counter for buyers, paper and ink on shelves."""
     b = Build(11, 11, 9)
     print_shop_ground(b)
@@ -1296,7 +1307,8 @@ def print_shop():
 
 
 def print_shop_2():
-    """11 x 11 x 16: a lower wing behind the shop: the bindery (a bench of sheets, a chest of paper) and a reading
+    """The OLD drawing (ROADMAP 50.6: the live print_shop_2.nbt now comes from the rebuild kit, tools/blueprints/js/print_shop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 11 x 11 x 16: a lower wing behind the shop: the bindery (a bench of sheets, a chest of paper) and a reading
     room lined with bookshelves three high, a chair on a carpet under a lantern, a shuttered window at the back."""
     b = print_shop().grow(11, 11, 16)
     b.clear(4, 1, 8, 6, 4, 8)
@@ -1421,7 +1433,8 @@ def jewellers_roof(b):
 
 
 def jewellers_workshop():
-    """9 x 10 x 9: a small shop of cut stone under a slate roof: an iron door, iron shutters, the stonecutter
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 9: a small shop of cut stone under a slate roof: an iron door, iron shutters, the stonecutter
     (Jeweller) at a bench under a lantern, a counter, an amethyst cluster in a glass case; a plank door in the east
     wall for the jeweller."""
     b = Build(9, 10, 9)
@@ -1433,7 +1446,8 @@ def jewellers_workshop():
 
 
 def jewellers_workshop_2():
-    """9 x 10 x 14: a strong room behind the shop, lower and windowless: through an iron door, a vault of ten chests
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop_2.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 14: a strong room behind the shop, lower and windowless: through an iron door, a vault of ten chests
     behind iron bars with an iron door of its own, a lantern on the wall."""
     b = jewellers_workshop().grow(9, 10, 14)
     b.clear(3, 1, 8, 5, 4, 8)

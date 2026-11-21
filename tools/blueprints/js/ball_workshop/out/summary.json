@@ -1,0 +1,19 @@
+{
+  "name": "ball-workshop",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 48
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ball_workshop/out/ball-workshop.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ball_workshop/out/summary.json",
+  "size": [
+    15,
+    18,
+    17
+  ],
+  "blockCount": 1250,
+  "paletteCount": 78,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/ball_workshop/recipe.mjs"
+}

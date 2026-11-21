@@ -2,16 +2,16 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 15 wide, 11 deep, 17 high
 Tiers: one
 Houses: a Ferryman at the Travel Post
 Where to get it: Blueprint Table
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: deepslate tile stairs, spruce planks and logs, cobblestone, white concrete
 categories: Builds
 related: jobs-services.md, fishers-hut-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Travel Post**: everything one worker needs to live and work in the same place.
+A ferry station on the water's edge. A boarded landing runs the whole front under a canopy, with the **Travel Post** by its steps and benches against the wall. Inside, passengers wait in a stone room with a stove, a table, a bench and the station clock; the Ferryman's bedroom is up the stair, in the white plastered floor under the slate roof, and a lookout on the ridge carries the ferry light: everything one worker needs to live and work in the same place.
 
 ## Getting the blueprint
 

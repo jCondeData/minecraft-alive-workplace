@@ -12,6 +12,7 @@ import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemVariant;
 import net.fabricmc.fabric.api.transfer.v1.storage.Storage;
 import net.fabricmc.fabric.api.transfer.v1.storage.StorageUtil;
+import net.fabricmc.fabric.api.transfer.v1.storage.StorageView;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.Item;
@@ -30,6 +31,49 @@ final class FabricItemStores implements ItemStores {
 	@Nullable
 	private static Storage<ItemVariant> storage(Level level, BlockPos pos) {
 		return ItemStorage.SIDED.find(level, pos, null);
+	}
+
+	/**
+	 * Reads every slot of a list of stores once (B1358): a slot an earlier store of the list already showed is passed
+	 * over in the later one. Two stores can show the same container for a while: a Tom's Simple Storage inventory
+	 * connector keeps showing a chest for up to a second after a cable to it is cut (it looks again every 20 ticks),
+	 * while the Storehouse already lists that chest as a store of its own. Slots are told apart by their view (Fabric
+	 * hands out the same slot objects for a container whoever asks, and Tom's merged storage passes them through), so a
+	 * store that makes its own views is read in full, as before. Only earlier stores count, never the store itself: a
+	 * storage that reuses one view object for all its slots loses nothing.
+	 */
+	private static final class Once {
+		@Nullable
+		private final Set<Object> earlier;
+		private final List<Object> mine = new ArrayList<>();
+
+		Once(List<BlockPos> stores) {
+			earlier = stores.size() > 1 ? java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>()) : null;
+		}
+
+		/** Whether no earlier store showed this slot; call {@link #nextStore} after each store's slots. */
+		boolean fresh(StorageView<ItemVariant> view) {
+			if (earlier == null) {
+				return true;
+			}
+			StorageView<ItemVariant> under = view;
+			for (int depth = 0; depth < 8; depth++) {
+				StorageView<ItemVariant> next = under.getUnderlyingView();
+				if (next == null || next == under) {
+					break;
+				}
+				under = next;
+			}
+			mine.add(under);
+			return !earlier.contains(under);
+		}
+
+		void nextStore() {
+			if (earlier != null) {
+				earlier.addAll(mine);
+				mine.clear();
+			}
+		}
 	}
 
 	@Override
@@ -51,16 +95,18 @@ final class FabricItemStores implements ItemStores {
 	@Override
 	public int freeSlots(Level level, List<BlockPos> stores) {
 		int free = 0;
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
 				continue;
 			}
 			for (var view : s) {
-				if (view.isResourceBlank()) {
+				if (once.fresh(view) && view.isResourceBlank()) {
 					free++;
 				}
 			}
+			once.nextStore();
 		}
 		return free;
 	}
@@ -80,6 +126,7 @@ final class FabricItemStores implements ItemStores {
 		int freeStacks = 0;
 		long freeItems = 0;
 		boolean bigSlots = false;
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
@@ -91,6 +138,9 @@ final class FabricItemStores implements ItemStores {
 			Set<Item> kinds = new HashSet<>(); // every item it holds, with or without components
 			long cobblestoneRoom = 0; // the room for more cobblestone in slots already holding some
 			for (var view : s) {
+				if (!once.fresh(view)) {
+					continue;
+				}
 				long capacity = view.getCapacity();
 				if (view.isResourceBlank()) {
 					blanks++;
@@ -108,6 +158,7 @@ final class FabricItemStores implements ItemStores {
 					}
 				}
 			}
+			once.nextStore();
 			freeSlots += blanks;
 			if (blanks == 0) {
 				continue;
@@ -198,14 +249,18 @@ final class FabricItemStores implements ItemStores {
 	@Override
 	public int slots(Level level, List<BlockPos> stores) {
 		int slots = 0;
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
 				continue;
 			}
-			for (var ignored : s) {
-				slots++;
+			for (var view : s) {
+				if (once.fresh(view)) {
+					slots++;
+				}
 			}
+			once.nextStore();
 		}
 		return slots;
 	}
@@ -214,15 +269,17 @@ final class FabricItemStores implements ItemStores {
 	public long count(Level level, List<BlockPos> stores, Item item) {
 		ItemVariant variant = ItemVariant.of(item);
 		long total = 0;
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s != null) {
 				// The slots' amounts, not a simulated take: Sophisticated Storage gives at most a stack a slot each time.
 				for (var view : s.nonEmptyViews()) {
-					if (view.getResource().equals(variant)) {
+					if (once.fresh(view) && view.getResource().equals(variant)) {
 						total += view.getAmount();
 					}
 				}
+				once.nextStore();
 			}
 		}
 		return total;
@@ -231,6 +288,7 @@ final class FabricItemStores implements ItemStores {
 	@Override
 	public Map<Item, Long> contents(Level level, List<BlockPos> stores) {
 		Map<Item, Long> out = new HashMap<>();
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
@@ -238,10 +296,11 @@ final class FabricItemStores implements ItemStores {
 			}
 			for (var view : s.nonEmptyViews()) {
 				ItemVariant variant = view.getResource();
-				if (variant.getComponents().isEmpty()) {
+				if (once.fresh(view) && variant.getComponents().isEmpty()) {
 					out.merge(variant.getItem(), view.getAmount(), Long::sum);
 				}
 			}
+			once.nextStore();
 		}
 		return out;
 	}
@@ -320,16 +379,18 @@ final class FabricItemStores implements ItemStores {
 	public long countMatching(Level level, List<BlockPos> stores, ItemStack template) {
 		ItemVariant variant = ItemVariant.of(template);
 		long total = 0;
+		Once once = new Once(stores);
 		for (BlockPos p : stores) {
 			Storage<ItemVariant> s = storage(level, p);
 			if (s == null) {
 				continue;
 			}
 			for (var view : s.nonEmptyViews()) {
-				if (view.getResource().equals(variant)) {
+				if (once.fresh(view) && view.getResource().equals(variant)) {
 					total += view.getAmount();
 				}
 			}
+			once.nextStore();
 		}
 		return total;
 	}

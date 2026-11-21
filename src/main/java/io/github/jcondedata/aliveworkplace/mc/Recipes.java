@@ -81,11 +81,40 @@ public final class Recipes {
 		return net.minecraft.core.registries.BuiltInRegistries.RECIPE_SERIALIZER.getKey(recipe.getSerializer());
 	}
 
+	/**
+	 * What the game's own crafting table makes of {@code grid} (up to nine things, laid out row by row in a 2x2 grid when
+	 * there are four or fewer, else a 3x3), or empty when no loaded recipe takes it (B1378: a special recipe's stand-in is
+	 * checked against the real recipe).
+	 */
+	public static ItemStack crafted(ServerLevel level, List<ItemStack> grid) {
+		int side = grid.size() <= 4 ? 2 : 3;
+		if (grid.size() > side * side) {
+			return ItemStack.EMPTY;
+		}
+		List<ItemStack> cells = new java.util.ArrayList<>(grid);
+		while (cells.size() < side * side) {
+			cells.add(ItemStack.EMPTY);
+		}
+		net.minecraft.world.item.crafting.CraftingInput input = net.minecraft.world.item.crafting.CraftingInput.of(side, side, cells);
+		return find(manager(level), RecipeType.CRAFTING, input, level)
+			.map(holder -> holder.value().assemble(input, level.registryAccess()))
+			.orElse(ItemStack.EMPTY);
+	}
+
 	/** A shapeless crafting recipe, in memory only, making {@code result} from any one of {@code options} (B1302's stand-ins). */
 	public static RecipeHolder<?> shapeless(ResourceLocation id, ItemStack result, List<net.minecraft.world.item.Item> options) {
+		return shapeless(id, result, options, 1);
+	}
+
+	/** As {@link #shapeless(ResourceLocation, ItemStack, List)}, from {@code count} of them (B1290: a crafting table from four planks). */
+	public static RecipeHolder<?> shapeless(ResourceLocation id, ItemStack result, List<net.minecraft.world.item.Item> options, int count) {
 		Ingredient ingredient = Ingredient.of(options.stream().map(ItemStack::new));
+		net.minecraft.core.NonNullList<Ingredient> slots = net.minecraft.core.NonNullList.withSize(count, Ingredient.EMPTY);
+		for (int i = 0; i < count; i++) {
+			slots.set(i, ingredient);
+		}
 		return new RecipeHolder<>(id, new net.minecraft.world.item.crafting.ShapelessRecipe("",
-			net.minecraft.world.item.crafting.CraftingBookCategory.MISC, result, net.minecraft.core.NonNullList.of(Ingredient.EMPTY, ingredient)));
+			net.minecraft.world.item.crafting.CraftingBookCategory.MISC, result, slots));
 	}
 
 	private Recipes() {

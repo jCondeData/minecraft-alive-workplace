@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024, B1025, 50.13
 
 ## 1. What a player sees
 
@@ -66,8 +66,8 @@ checks every shipped one. The Stone House was redone for it: the table by the we
 lamp hung from the ridge), and upstairs in II two beds with their heads to the back wall, a nightstand by each.
 
 The workplaces are furnished too (37.5), at every level: the Supply Shop's counter boards either side of the Shop
-Counter are counters, with a shelf of cups and a picture on the back wall, pots hanging from chains in the display
-windows and a trellis either side of the door (open trapdoors flat on the wall); the Library's reading tables are
+Counter are counters (rebuilt in 50.11: cloth-covered display tables by the door, shelves of cups by the front bays, a
+picture, pots hanging in the bays and a trellis on the side wall); the Library's reading tables are
 desks with their chairs, pictures by the door and hanging pots over the desks; the Schoolhouse's rows and the Village
 Hall's are benches, the Healing Center has waiting benches and a nurse's desk, the Schoolhouse a teacher's desk by the
 lectern, the Print Shop a printer's desk by the press and its buyers' counter, Village Hall II a council table with
@@ -76,7 +76,7 @@ Handcrafted counters, desks, chairs, benches, shelves and crockery and Beautify 
 hanging pots of vines. The Healing Center's and Schoolhouse's desks are CobbleFurnies' Poké Ball desks whenever
 CobbleFurnies is in the list (the owner's answer), in every style too: a city zone's style or one picked at the Table
 swaps only the wood and stone (B903). No piece ever stands on a job block, a bed or a chest: the
-workplaces' beds (the Healing Center's ward, the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
+workplaces' beds (the shopkeeper's, the cook's) stay vanilla beds, and every job still finds
 its block and exactly its own chests and barrels, because the furniture mods' pieces that hold items (Handcrafted's
 counters, desks, shelves, drawers, cupboards, nightstands and side tables, Cozy Home's storage counters, CobbleFurnies'
 cabinets) are never read as chests while furnished builds are on.
@@ -100,7 +100,8 @@ coming in by the other home's door climbed the wrong ladder and gave his bed up.
 the bed counts only if a villager can get through it, as vanilla's walking sees doors: a wooden one (he opens it) or
 any door standing open. A shut iron door is a wall to him, so a bed behind one up a ladder isn't claimed (B876). A villager
 without a bed who is already up in the wrong bedroom at bedtime (both its beds someone else's) takes a free bed next
-door too: he goes down his own ladder, along to the other home's door and up its ladder (B925).
+door too: he goes down his own ladder, along to the other home's door and up its ladder (B925). So does one standing
+out behind the house at bedtime, the long way round from its door (B735).
 
 Every home of a multi-home build is furnished alike (B641): a Terrace or Terrace II furnished before B281 (its spots
 file then had no table and chair for the east kitchen, whose table stands against the party wall) kept spruce stand-ins
@@ -146,7 +147,9 @@ cable connector on its cables faces. The board's first line counts the connector
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
 cable connector) and it is a store of its own again at once. Two connectors on one network are read as one: the
-Storehouse goes through just one of them, so nothing counts twice. A storage or crafting terminal on the network is Tom's
+Storehouse goes through just one of them, so nothing counts twice. A chest reached two ways (it touches the connector
+and a cable connector on the same cables faces it too) also counts once, in the Storehouse and in Tom's own terminal
+(B1025). A storage or crafting terminal on the network is Tom's
 own: a player opens it and sees, and takes, the village's goods (place the terminal against the connector or a cable,
 its screen facing you, and click it from within Tom's reach of 6 blocks). With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
@@ -175,8 +178,7 @@ vanilla chests and barrels underneath).
 
 **Two build libraries** (37.12). Every blueprint as it ships is the **vanilla library**, never changed. The **modded
 library** is a copy of every home and workshop (130 builds: every tier of the homes, workshops, job builds and the
-Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none, and the open-air Habitat Garden
-has nothing to dress) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
+Cobblemon workplaces; decorations, walls, the arenas and the Create builds have none) with the same shape, doors, beds, job blocks and furniture spots, dressed with the pack's
 building mods: the plaster and the birch infill of the timber frames are Supplementaries daub, with a brace in a
 panel's bottom corner beside a post; covered wooden floors are Chipped herringbone boards of the same wood; polished
 andesite is Rechiseled andesite tiles and covered cobblestone floors Rechiseled cobblestone brick paving; chests,
@@ -195,14 +197,17 @@ Storehouse block takes a porter, and the village and the Village Map count it as
 14: a long stone-and-birch hall with a porch, 27 chests and barrels in an island round an inventory connector, a
 counter by the door with a storage terminal and a crafting terminal either side of the Storehouse and the Carpenter's
 crafting table, two filing cabinets
-for the paper and maps on the back wall), the **Terminal Nook** (9 x 10 x 9: a small room that fits beside a house, six
-chests round a connector along its back wall, a storage terminal before it) and the **Warehouse** (19 x 16 x 16: two
+for the paper and maps on the back wall), the **Terminal Nook** (11 x 15 x 12; rebuilt from scratch in 50.13 as "the Staddle
+Granary": a store room of pale boards on a dark oak frame, lifted on nine stone staddles under a bell-cast slate roof
+with a louver on its ridge, a stone flight along the front up to a railed landing; inside, the Storehouse at the
+porter's desk by the door, eight chests round a connector along the back wall with a storage terminal before it,
+barrels and hay along the sides; standing nooks keep their old drawing until refreshed) and the **Warehouse** (19 x 16 x 16: two
 floors under a long roof, four racks of chests and barrels below and two in the loft, 60 in all, a crafting terminal and a
 crafting table at the packing counter by the loading doors, a lean-to loading bay with a handcart). With Tom's Simple Storage installed
 they are built of Tom's blocks and every chest, barrel and cabinet is on the connector's network: the Storehouse reads
 them through it (each item once) and the terminals show them in Tom's own screen. Without Tom's (or with
 `moddedLibrary` or `furnishedBuilds` off) they are the vanilla builds: a chest where the connector stands, a counter
-stair for the crafting terminal, a counter block (or nothing, in the Nook) for the storage terminal, boards and spruce
+stair for the crafting terminal, a counter block (in the Nook a dark oak post, the tally desk) for the storage terminal, boards and spruce
 logs for the cables and trims, chests for the filing cabinets; every chest and barrel is then the Storehouse's own store. The crafting table is in
 both versions at the same spot (B388: a crafting terminal is no job site, so the copies once took the Carpenter's).
 
@@ -318,6 +323,13 @@ every lookup. `Village.stashes` treats a connector as all its inventories: a che
 builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
 Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
 
+B1025: Tom's merges a network's inventories in `MultiInventoryAccess.build` and tells them apart by the object
+reading them, one per block face, so a chest touching the connector and faced by a cable connector was merged twice
+and the connector's storage showed its slots twice. `compat/toms` (two mixins by class name, applied only with Tom's
+installed, `aliveworkplace.toms.mixins.json`) takes a later reader out of the merged list when it shows exactly the
+slot objects an earlier one shows; readers behind a Tom's filter, blocks whose faces show different slots and storage
+that makes new slot objects each time are left alone. Off with `moddedStorageNetworks`.
+
 A style rule can also carry `"requires_switch"` (37.7): it applies only while that switch is on, as if its block didn't
 exist otherwise, so Grand's Rechiseled rules sit in front of its vanilla ones under `furnishedBuilds`. The swaps are
 cached per style and per state of its rules' switches. Job blocks: Carved Wood adds its lecterns to the Librarian's
@@ -347,6 +359,10 @@ for one with a ladder within 8 blocks whose top comes up in the bed's room (a wa
 top to the bed: nothing taller than a step underfoot, nothing at head height, doors open) and whose foot the villager
 can walk to; that bed is claimed as vanilla claims any. At bedtime `BedLadders` takes the villager to the foot of a
 ladder that comes up in his bed's room, before any nearer one that doesn't (when none does, the nearest, as before).
+The walk to a ladder's foot is looked for up to 96 blocks long (`BedLadders.walkTo`; a villager's everyday path search
+stops at 48, roughly counted): from a few blocks behind the Terrace, 30 blocks' walk from a ladder round by the front
+door, the 48-block search found no way, and a villager without a bed, outdoors at night, walks nowhere by himself, so
+he stood there until morning (B735). The longer search visits no more nodes than any other.
 Nothing is saved.
 
 ## 3. Switches

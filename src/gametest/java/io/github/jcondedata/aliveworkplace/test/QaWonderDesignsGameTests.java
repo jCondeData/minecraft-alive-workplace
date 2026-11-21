@@ -177,38 +177,43 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 		helper.assertTrue(b[1] == 0, id + " starts at y " + b[1] + ", not on the clicked block");
 		switch (id) {
 			case "great_cathedral" -> {
-				// "about 27 wide (39 across the transepts) and 55 long, its two west towers 44 high under stone spires reaching 52"
+				// 52.6, rebuilt (briefs/great_cathedral.md, js/great_cathedral_a/plan.mjs, "the Ship of Stone"): 39 across the
+				// transepts and 56 long with its apse, the two west towers' spires reaching 52 (the brief's 51-53), the nave and
+				// aisles 25 wide at z 25. The same kinds of check as the 35.9 pins (which read 55 long and 27 wide at z 25).
 				near(wrong, "its width across the transepts", w, 39, 2);
-				near(wrong, "its length", l, 55, 2);
+				near(wrong, "its length", l, 56, 2);
 				near(wrong, "its spires' tops", b[4], 52, 1);
 				int mid = (b[0] + b[3]) / 2;
 				near(wrong, "the north-west tower's spire top", box(all, p -> p.getZ() <= 12 && p.getX() < mid)[4], 52, 1);
 				near(wrong, "the south-west tower's spire top", box(all, p -> p.getZ() <= 12 && p.getX() > mid)[4], 52, 1);
 				int nave = box(all, p -> p.getZ() == 25 && p.getY() == 2)[3] - box(all, p -> p.getZ() == 25 && p.getY() == 2)[0] + 1;
-				near(wrong, "the nave and aisles' width (z 25)", nave, 27, 2);
+				near(wrong, "the nave and aisles' width (z 25)", nave, 25, 2);
 			}
 			case "lighthouse" -> {
-				// "about 25 x 33 and 46 high ... a round tower that tapers from 13 across to 9 ... a gallery on stone corbels at 38"
+				// 52.6, rebuilt (briefs/lighthouse.md, js/lighthouse/plan.mjs): "25 x 33 and 46 high: a round tower that
+				// telescopes in from its foot (13 across) through its waist (11) to the pale shaft (9), a gallery on two corbel
+				// courses at 37". The same kinds of check as the 35.11 pins: the plot, the tower's widest and narrowest measured
+				// by its building stone round the sea lantern, the gallery's level.
 				near(wrong, "its width", w, 25, 1);
 				near(wrong, "its length", l, 33, 1);
 				near(wrong, "its height", h, 46, 1);
 				int[] lantern = boxOf(all, is("minecraft:sea_lantern"));
 				int cx = lantern[0];
 				int cz = lantern[2];
+				Predicate<BlockState> stone = is("minecraft:stone_bricks", "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:quartz_bricks");
 				int low = Integer.MIN_VALUE;
 				int high = Integer.MAX_VALUE;
-				for (int y = 4; y <= 36; y++) {
+				for (int y = 5; y <= 36; y++) { // over the bastion's deck (walked at y 4) to the shaft's top
 					final int yy = y;
-					int[] row = box(all, p -> p.getY() == yy && Math.abs(p.getX() - cx) <= 8 && Math.abs(p.getZ() - cz) <= 8
-						&& name(all.get(p)).endsWith("terracotta"));
+					int[] row = box(all, p -> p.getY() == yy && Math.abs(p.getX() - cx) <= 8 && Math.abs(p.getZ() - cz) <= 8 && stone.test(all.get(p)));
 					if (row[0] != Integer.MAX_VALUE) {
 						int across = Math.max(row[3] - row[0], row[5] - row[2]) + 1;
 						low = Math.max(low, across);
 						high = Math.min(high, across);
 					}
 				}
-				near(wrong, "the tower's widest", low, 13, 2);
-				near(wrong, "the tower's narrowest", high, 9, 0);
+				near(wrong, "the tower's widest (its foot)", low, 13, 1);
+				near(wrong, "the tower's narrowest (the shaft)", high, 9, 0);
 				int gallery = -1;
 				int widest = 0;
 				for (int y = 30; y <= 42; y++) {
@@ -219,16 +224,21 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 						gallery = y;
 					}
 				}
-				near(wrong, "the gallery's level", gallery, 38, 1);
+				near(wrong, "the gallery's level", gallery, 37, 1);
+				near(wrong, "the gallery's width", widest, 13, 0);
+				int[] post = boxOf(all, is("aliveworkplace:travel_post"));
+				near(wrong, "the Travel Post's x (the plot's sea-side edge)", post[0], 24, 0);
 			}
 			case "great_library" -> {
-				// "about 41 x 41 and 34 high: a rotunda 19 across"
+				// 52.6, rebuilt (briefs/great_library.md, js/great_library/plan.mjs): "41 x 41 and 34 high", the brief kept the 35.13
+				// size, so these pins stand
 				near(wrong, "its width", w, 41, 1);
 				near(wrong, "its length", l, 41, 1);
 				near(wrong, "its height", h, 34, 1);
 			}
 			case "great_wall" -> {
-				// "97 long, 7 thick and 12 high ... five towers (9 x 9, 18 high, hipped roofs) ... a 17-wide gatehouse"
+				// 52.6, rebuilt (briefs/great_wall.md, js/great_wall/plan.mjs): "97 long; the runs 12 high and 7 thick at y 6; four
+				// watchtowers 9 x 9, 18 high in stone under spruce hip caps; the Great Gate's middle at x 48"
 				near(wrong, "its length", w, 97, 0);
 				for (int[] run : new int[][] {{31, 36}, {79, 84}}) {
 					int[] wall = box(all, p -> p.getX() >= run[0] && p.getX() <= run[1]);
@@ -252,28 +262,46 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				near(wrong, "the gateway's middle (its fence gates)", (gate[0] + gate[3]) / 2, 48, 1);
 			}
 			case "observatory" -> {
-				// "on a raised terrace about 31 x 31: a round tower 15 across and 30 high"
+				// 52.6, rebuilt (briefs/observatory.md, js/observatory/plan.mjs): "a court about 31 x 31; a stair up the gnomon's
+				// sloping edge from the court to the drum's door; a round drum 13 across, 15 high over its floor, under a dome
+				// whose tinted shutter and telescope stand over it". The same kinds of check as the 35.17 pins: the plot, the
+				// tower's width at y 20, its height over the floor of its lowest door, the tinted glass over its top.
 				near(wrong, "its width", w, 31, 1);
 				near(wrong, "its length", l, 31, 1);
 				int[] glass = boxOf(all, is("minecraft:tinted_glass"));
 				int[] tower = box(all, p -> p.getY() == 20);
-				near(wrong, "the tower's width at y 20", tower[3] - tower[0] + 1, 15, 1);
-				near(wrong, "the tower's depth at y 20", tower[5] - tower[2] + 1, 15, 1);
+				near(wrong, "the drum's width at y 20", tower[3] - tower[0] + 1, 13, 1);
+				near(wrong, "the drum's depth at y 20", tower[5] - tower[2] + 1, 13, 1);
 				int floor = box(all, p -> p.getX() >= tower[0] && p.getX() <= tower[3] && p.getZ() >= tower[2] && p.getZ() <= tower[5]
 					&& all.get(p).getBlock() instanceof DoorBlock)[1] - 1;
-				int top = box(all, p -> p.getY() > 10 && name(all.get(p)).contains("blackstone") && p.getX() >= tower[0] && p.getX() <= tower[3]
+				int top = box(all, p -> p.getY() > 10 && name(all.get(p)).contains("deepslate") && p.getX() >= tower[0] && p.getX() <= tower[3]
 					&& p.getZ() >= tower[2] && p.getZ() <= tower[5])[4];
-				near(wrong, "the tower's height over the terrace", top - floor, 30, 2);
-				helper.assertTrue(glass[1] > top - 2, "the dome's tinted slit (y " + glass[1] + ") isn't over the tower (top " + top + ")");
+				near(wrong, "the drum's height over its floor", top - floor, 15, 2);
+				helper.assertTrue(glass[1] > top - 2, "the dome's tinted shutter (y " + glass[1] + ") isn't over the drum (top " + top + ")");
+				int[] stair = box(all, p -> p.getX() >= 12 && p.getX() <= 18 && p.getZ() <= tower[2] && is("minecraft:deepslate_brick_stairs").test(all.get(p)));
+				near(wrong, "the gnomon stair's foot (z)", stair[2], 1, 1);
+				near(wrong, "the gnomon stair's top, at the drum's door floor", stair[4], floor, 1);
 			}
 			case "hanging_gardens" -> {
-				// "four terraces (39, 31, 23 and 15 across, 6 high each)"
-				int[] across = {39, 31, 23, 15};
+				// 52.6, rebuilt (briefs/hanging_gardens.md, js/hanging_gardens/plan.mjs): "the Terraced Mount", a plot 47 x 44 and
+				// 33 high; four terraces of mud brick 6 high each (45, 35, 27 and 19 wide, 47, 37, 29 and 21 with their piers), set
+				// back toward the rear, so the front falls in steps (fronts at z 4, 14, 22 and 30) and the back rises nearly sheer
+				// (backs at z 42, 41, 40 and 39). The same kinds of check as the 35.19 pins: the plot, each terrace's width in its
+				// walls' stone, how it steps, and a village farm's chest and composter on each terrace's top.
+				near(wrong, "its width", w, 47, 1);
+				near(wrong, "its length", l, 44, 1);
+				near(wrong, "its height", h, 33, 1);
+				int[] across = {47, 37, 29, 21};
+				int[] fronts = {4, 14, 22, 30};
+				int[] backs = {42, 41, 40, 39};
+				Predicate<BlockState> brick = is("minecraft:mud_bricks", "minecraft:packed_mud");
 				for (int k = 0; k < 4; k++) {
 					final int y = 6 * k + 3;
-					int[] t = box(all, p -> p.getY() == y && name(all.get(p)).contains("sandstone"));
-					int narrow = Math.min(t[3] - t[0], t[5] - t[2]) + 1;
-					near(wrong, "terrace " + (k + 1) + "'s width (y " + y + ")", narrow, across[k], 1);
+					int[] t = box(all, p -> p.getY() == y && brick.test(all.get(p)));
+					near(wrong, "terrace " + (k + 1) + "'s width (y " + y + ")", t[3] - t[0] + 1, across[k], 1);
+					int[] bay = box(all, p -> p.getY() == y && p.getX() >= 16 && p.getX() <= 18 && brick.test(all.get(p))); // the bay between the piers at x 15 and 19
+					near(wrong, "terrace " + (k + 1) + "'s front (z, y " + y + ")", bay[2], fronts[k], 0);
+					near(wrong, "terrace " + (k + 1) + "'s back (z, y " + y + ")", bay[5], backs[k], 0);
 					final int top = 6 * k + 7;
 					int chests = count(filter(all, p -> p.getY() == top), is("minecraft:chest"));
 					int composters = count(filter(all, p -> p.getY() == top), is("minecraft:composter"));
@@ -282,7 +310,9 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				}
 			}
 			case "colossus" -> {
-				// "47 high ... on a 13-high stepped plinth with an arch through it (5 wide, 6 high) for the main road"
+				// "47 high ... on a 13-high stepped plinth with an arch through it (5 wide, 6 high) for the main road"; 52.6, rebuilt
+				// (briefs/colossus.md, js/colossus_a/plan.mjs, "Astride the Road"): the same 47 high, the arch x 12-16 crowned 6
+				// high, the last layer 13 or more across at y 13 (the deck's balustrade), the figure from y 14. Unchanged checks.
 				near(wrong, "its height", h, 47, 0);
 				int[] open = new int[b[3] + 1];
 				for (int x = b[0]; x <= b[3]; x++) {
@@ -319,7 +349,8 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 				helper.assertTrue(figure[1] >= 12, "the figure starts at y " + figure[1]);
 			}
 			case "stadium" -> {
-				// "about 47 x 37 and 16 high" (35.23a: "a little bigger") "a battle field 31 x 21 of grass with white lines"
+				// "about 47 x 37 and 16 high" (35.23a: "a little bigger") "a battle field 31 x 21 of grass with white lines"; the
+				// 52.6 rebuild is 59 x 49 and 26 high, its field 31 x 23 inside the pitch wall with 167 chalk blocks at y 0
 				helper.assertTrue(w >= 47 && w <= 60 && l >= 37 && l <= 50 && h >= 16 && h <= 26,
 					"the Stadium is " + w + " x " + l + " and " + h + " high, not a little bigger than 47 x 37 and 16 high");
 				int[] field = box(all, p -> p.getY() == 0 && (name(all.get(p)).equals("minecraft:grass_block") || name(all.get(p)).equals("minecraft:white_concrete")));
@@ -352,84 +383,142 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 
 	static List<Feature> features(String id) {
 		return switch (id) {
-			case "great_cathedral" -> List.of(new Feature("three bells", 3, "minecraft:bell"),
+			// 52.6: the rebuilt Cathedral's named parts (js/great_cathedral_a/plan.mjs), the minimums raised to the new design
+			case "great_cathedral" -> List.of(new Feature("four bells, two in each belfry", 4, "minecraft:bell"),
 				new Feature("a rose window's white glass", 1, "minecraft:white_stained_glass_pane", "minecraft:white_stained_glass"),
 				new Feature("a rose window's light blue glass", 1, "minecraft:light_blue_stained_glass_pane", "minecraft:light_blue_stained_glass"),
 				new Feature("a rose window's yellow glass", 1, "minecraft:yellow_stained_glass_pane", "minecraft:yellow_stained_glass"),
 				new Feature("a rose window's red glass", 1, "minecraft:red_stained_glass_pane", "minecraft:red_stained_glass"),
-				new Feature("pews (dark oak stairs)", 10, "minecraft:dark_oak_stairs"),
-				new Feature("an altar of gold", 1, "minecraft:gold_block"), new Feature("candles", 1, "minecraft:white_candle", "minecraft:candle"),
-				new Feature("banners on the piers", 2, "minecraft:red_wall_banner", "minecraft:white_wall_banner", "minecraft:blue_wall_banner"),
-				new Feature("lecterns in three side chapels", 3, "minecraft:lectern"),
+				new Feature("pews and choir stalls (dark oak stairs)", 80, "minecraft:dark_oak_stairs"),
+				new Feature("an altar of gold", 1, "minecraft:gold_block"), new Feature("candles on the altar and the chapel altars", 6, "minecraft:white_candle", "minecraft:candle"),
+				new Feature("banners in the sanctuary and the transepts", 4, "minecraft:red_wall_banner", "minecraft:white_wall_banner", "minecraft:blue_wall_banner"),
+				new Feature("lecterns in three chapels", 3, "minecraft:lectern"),
 				new Feature("a sacristy's brewing stand", 1, "minecraft:brewing_stand"),
-				new Feature("polished andesite piers", 50, "minecraft:polished_andesite"),
-				new Feature("a deepslate-tile roof", 200, "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tiles"),
-				new Feature("cracked and mossy stone bricks", 50, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
-			case "lighthouse" -> List.of(new Feature("a lantern room of sea lanterns", 1, "minecraft:sea_lantern"),
-				new Feature("a ring of redstone lamps", 8, "minecraft:redstone_lamp"),
-				new Feature("a daylight detector", 1, "minecraft:daylight_detector"),
-				new Feature("a lightning-rod vane", 1, "minecraft:lightning_rod"),
-				new Feature("a copper cupola", 10, "minecraft:cut_copper", "minecraft:cut_copper_stairs", "minecraft:copper_block"),
-				new Feature("white bands", 50, "minecraft:white_terracotta"), new Feature("red bands", 50, "minecraft:red_terracotta"),
-				new Feature("the keeper's bed", 2, "minecraft:red_bed", "minecraft:white_bed", "minecraft:blue_bed", "minecraft:brown_bed"),
-				new Feature("a barrel for a fisherman", 1, "minecraft:barrel"),
-				new Feature("a Travel Post at the jetty's end", 1, "aliveworkplace:travel_post"),
-				new Feature("mooring posts and a timber jetty (spruce)", 50, "minecraft:spruce_log", "minecraft:spruce_planks", "minecraft:spruce_fence"));
-			case "great_library" -> List.of(new Feature("an enchanting table", 1, "minecraft:enchanting_table"),
-				new Feature("a lectern at the centre and four in the wings", 5, "minecraft:lectern"),
-				new Feature("a map room's cartography table", 1, "minecraft:cartography_table"),
-				new Feature("bookshelf galleries", 200, "minecraft:bookshelf"),
-				new Feature("a copper dome", 100, "minecraft:copper_block", "minecraft:cut_copper", "minecraft:cut_copper_stairs"),
-				new Feature("a quartz portico", 20, "minecraft:quartz_block", "minecraft:quartz_pillar", "minecraft:chiseled_quartz_block", "minecraft:smooth_quartz"),
-				new Feature("polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
-				new Feature("dark oak floors", 200, "minecraft:dark_oak_planks"),
-				new Feature("a glass lantern", 1, "minecraft:glass_pane", "minecraft:glass"));
-			case "great_wall" -> List.of(new Feature("a portcullis of iron bars", 6, "minecraft:iron_bars"),
-				new Feature("a gateway of fence gates", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate", "minecraft:dark_oak_fence_gate"),
-				new Feature("braziers along the walk", 4, "minecraft:campfire"),
-				new Feature("a grindstone for each tower's guard", 4, "minecraft:grindstone"),
-				new Feature("banners on the towers", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
-				new Feature("a deepslate-brick plinth", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
-				new Feature("mossy and cracked stone low down", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
-				new Feature("spruce roofs", 100, "minecraft:spruce_stairs"),
-				new Feature("stairs inside the towers", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
-			case "observatory" -> List.of(new Feature("a slit of tinted glass", 3, "minecraft:tinted_glass"),
-				new Feature("a telescope of cut copper", 12, "minecraft:cut_copper"),
-				new Feature("a star-chart room's cartography table", 1, "minecraft:cartography_table"),
-				new Feature("a star-chart room's lectern", 1, "minecraft:lectern"),
-				new Feature("an orrery's gold sun", 1, "minecraft:gold_block"),
-				new Feature("planets hung on chains", 3, "minecraft:chain"),
-				new Feature("amethyst in the courtyard paving", 4, "minecraft:amethyst_block"),
-				new Feature("deepslate bricks and tiles", 500, "minecraft:deepslate_bricks", "minecraft:deepslate_tiles"),
-				new Feature("polished blackstone trim", 100, "minecraft:polished_blackstone", "minecraft:polished_blackstone_bricks"),
-				new Feature("a sundial's stone face", 4, "minecraft:smooth_stone_slab", "minecraft:smooth_stone"));
-			case "hanging_gardens" -> List.of(new Feature("a chest on each terrace", 4, "minecraft:chest"),
-				new Feature("a composter on each terrace", 4, "minecraft:composter"),
+				new Feature("polished andesite piers and floor", 1500, "minecraft:polished_andesite"),
+				new Feature("a deepslate-tile roof and floor", 3500, "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tiles"),
+				new Feature("cracked and mossy stone bricks", 600, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
+			case "lighthouse" -> List.of( // 52.6: the rebuilt Lighthouse's named parts (js/lighthouse/plan.mjs)
+				new Feature("the Lantern's sea lantern on its pedestal", 1, "minecraft:sea_lantern"),
+				new Feature("the Hood's eave of night lamps", 24, "minecraft:redstone_lamp"),
+				new Feature("a daylight detector over each lamp", 24, "minecraft:daylight_detector"),
+				new Feature("a lightning rod on the Hood", 1, "minecraft:lightning_rod"),
+				new Feature("the Lantern's posts and the Hood's stepped roof of copper", 100, "minecraft:waxed_oxidized_cut_copper",
+					"minecraft:waxed_oxidized_cut_copper_stairs", "minecraft:waxed_oxidized_cut_copper_slab", "minecraft:waxed_oxidized_copper"),
+				new Feature("the Shaft's pale quartz bricks", 250, "minecraft:quartz_bricks"),
+				new Feature("dark string courses and window sills", 100, "minecraft:polished_andesite", "minecraft:polished_andesite_slab", "minecraft:polished_andesite_stairs"),
+				new Feature("mossy sea stone on the Mole, the Bastion and the Foot", 300, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks"),
+				new Feature("rip-rap round the Bastion", 50, "minecraft:cobblestone", "minecraft:mossy_cobblestone", "minecraft:andesite", "minecraft:stone"),
+				new Feature("the Gallery's iron rail", 30, "minecraft:iron_bars"),
+				new Feature("the winding stair", 30, "minecraft:spruce_stairs"),
+				new Feature("the Cottage's slate roof", 40, "minecraft:deepslate_tile_stairs", "minecraft:deepslate_tiles"),
+				new Feature("the keeper's bed in the Watch room", 2, "minecraft:red_bed", "minecraft:white_bed", "minecraft:blue_bed", "minecraft:brown_bed"),
+				new Feature("a barrel for a fisherman on the Fish Stage", 1, "minecraft:barrel"),
+				new Feature("the Fish Stage's drying rack", 1, "minecraft:dried_kelp_block"),
+				new Feature("a Travel Post at the Ferry Jetty's end", 1, "aliveworkplace:travel_post"),
+				new Feature("the Jetty, the Landing and the Fish Stage of spruce", 50, "minecraft:spruce_log", "minecraft:spruce_planks", "minecraft:spruce_fence"));
+			case "great_library" -> List.of( // 52.6: the rebuilt Great Library's named parts (js/great_library/plan.mjs, "the Scroll Rotunda")
+				new Feature("the enchanting table at the Rotunda's heart", 1, "minecraft:enchanting_table"),
+				new Feature("a lectern at the Rotunda's center and one in each wing's stacks", 5, "minecraft:lectern"),
+				new Feature("the Map Room's cartography table", 1, "minecraft:cartography_table"),
+				new Feature("the Rotunda's wall of books and the Stacks' and Galleries' shelves", 1500, "minecraft:bookshelf"),
+				new Feature("the ribbed copper dome and the wings' copper roofs", 1000, "minecraft:copper_block", "minecraft:cut_copper", "minecraft:cut_copper_stairs"),
+				new Feature("the quartz portico", 100, "minecraft:quartz_block", "minecraft:quartz_pillar", "minecraft:chiseled_quartz_block", "minecraft:smooth_quartz"),
+				new Feature("the portico's six quartz columns", 30, "minecraft:quartz_pillar"),
+				new Feature("pale walls of polished diorite and smooth stone", 4000, "minecraft:polished_diorite", "minecraft:smooth_stone"),
+				new Feature("the stone-brick podium and its steps", 1000, "minecraft:stone_bricks", "minecraft:stone_brick_stairs"),
+				new Feature("dark oak floors", 400, "minecraft:dark_oak_planks"),
+				new Feature("the helix walk of dark oak slabs", 100, "minecraft:dark_oak_slab"),
+				new Feature("the drum's spiral of glass and the dome's lantern", 200, "minecraft:glass"),
+				new Feature("a tree in each corner garden", 40, "minecraft:oak_leaves"));
+			case "great_wall" -> List.of( // 52.6: the rebuilt Great Wall's named parts (js/great_wall/plan.mjs, "the Pass Gate")
+				new Feature("the Great Gate's portcullis and the towers' barred loops", 6, "minecraft:iron_bars"),
+				new Feature("the Great Gate's inner leaves", 2, "minecraft:spruce_fence_gate", "minecraft:oak_fence_gate"),
+				new Feature("the Barbican's outer gate", 2, "minecraft:dark_oak_fence_gate"),
+				new Feature("a signal fire on each tower's Crown", 4, "minecraft:campfire"),
+				new Feature("a grindstone in each tower's guard room", 4, "minecraft:grindstone"),
+				new Feature("banners on the towers and the gate", 4, "minecraft:blue_wall_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
+				new Feature("the curtain's dark battered foot", 100, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_brick_stairs"),
+				new Feature("aged stone on the curtain and towers", 50, "minecraft:mossy_stone_bricks", "minecraft:cracked_stone_bricks", "minecraft:mossy_cobblestone"),
+				new Feature("the towers' spruce hip caps", 100, "minecraft:spruce_stairs"),
+				new Feature("the Gate Pavilion's tile roofs", 100, "minecraft:deepslate_tile_stairs"),
+				new Feature("a ladder up each guard room to its Crown", 4, "minecraft:ladder"),
+				new Feature("the Horse Stairs up the village face", 1, "minecraft:stone_brick_stairs", "minecraft:spruce_stairs", "minecraft:cobblestone_stairs"));
+			case "observatory" -> List.of( // 52.6: the rebuilt Observatory's named parts (js/observatory/plan.mjs)
+				new Feature("the dome's tinted shutter and lens", 20, "minecraft:tinted_glass"),
+				new Feature("a dome and telescope of cut copper", 300, "minecraft:cut_copper"),
+				new Feature("the Chart Hall's cartography table", 1, "minecraft:cartography_table"),
+				new Feature("lecterns in the Chart Hall and the Observing Room", 3, "minecraft:lectern"),
+				new Feature("gold noon marks and telescope bands", 12, "minecraft:gold_block"),
+				new Feature("chandeliers hung on chains", 6, "minecraft:chain"),
+				new Feature("an amethyst star in the Chart Hall's floor", 8, "minecraft:amethyst_block"),
+				new Feature("deepslate bricks and tiles", 2000, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks", "minecraft:deepslate_tiles"),
+				new Feature("polished blackstone plinths and courses", 300, "minecraft:polished_blackstone", "minecraft:polished_blackstone_bricks"),
+				new Feature("the quadrants' smooth stone scales", 30, "minecraft:smooth_stone_slab", "minecraft:smooth_stone"),
+				new Feature("the drum's glazed windows", 100, "minecraft:glass", "minecraft:glass_pane"),
+				new Feature("the Chart Hall's books", 20, "minecraft:bookshelf"));
+			case "hanging_gardens" -> List.of( // 52.6: the rebuilt Gardens' named parts (js/hanging_gardens/plan.mjs)
+				new Feature("a chest at each terrace's farm corner", 4, "minecraft:chest"),
+				new Feature("a composter at each terrace's farm corner", 4, "minecraft:composter"),
 				new Feature("wheat", 1, "minecraft:wheat"), new Feature("carrots", 1, "minecraft:carrots"),
-				new Feature("beetroots", 1, "minecraft:beetroots"), new Feature("water channels and the falls", 20, "minecraft:water"),
-				new Feature("sweet berry beds", 1, "minecraft:sweet_berry_bush"),
-				new Feature("glow berries hanging over the arches", 1, "minecraft:cave_vines", "minecraft:cave_vines_plant"),
-				new Feature("vines over the arches", 10, "minecraft:vine"),
+				new Feature("beetroots", 1, "minecraft:beetroots"),
+				new Feature("the Shaft, the Cistern, the pools and the fields' water", 20, "minecraft:water"),
+				new Feature("lily pads on the Reflecting Pools", 1, "minecraft:lily_pad"),
+				new Feature("glow berries on the Pergola", 1, "minecraft:cave_vines", "minecraft:cave_vines_plant"),
+				new Feature("the Hanging Curtains' vines", 100, "minecraft:vine"),
+				new Feature("the Hanging Curtains' leaves", 200, "minecraft:azalea_leaves", "minecraft:flowering_azalea_leaves", "minecraft:oak_leaves"),
 				new Feature("flowering azaleas", 1, "minecraft:flowering_azalea", "minecraft:flowering_azalea_leaves"),
-				new Feature("oaks", 1, "minecraft:oak_log"), new Feature("beehives", 1, "minecraft:beehive", "minecraft:bee_nest"),
-				new Feature("sandstone arcades", 1000, "minecraft:smooth_sandstone", "minecraft:cut_sandstone", "minecraft:chiseled_sandstone"),
-				new Feature("terracotta trim", 50, "minecraft:terracotta"));
-			case "colossus" -> List.of(new Feature("a lantern of glowstone", 1, "minecraft:glowstone"),
-				new Feature("the lantern's glass cage", 4, "minecraft:glass_pane", "minecraft:glass"),
-				new Feature("braziers round the plinth", 4, "minecraft:campfire"),
-				new Feature("the Founder's plaque, a row of signs", 3, "minecraft:dark_oak_wall_sign", "minecraft:oak_wall_sign", "minecraft:spruce_wall_sign"),
-				new Feature("a figure of polished diorite and smooth stone", 500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
-				new Feature("a cloak of cut copper", 150, "minecraft:cut_copper", "minecraft:cut_copper_stairs", "minecraft:cut_copper_slab"));
-			case "stadium" -> List.of(new Feature("two Training Posts", 2, "aliveworkplace:training_post"),
-				new Feature("a nurse's brewing stand", 1, "minecraft:brewing_stand"),
+				new Feature("palms of jungle wood with dates", 20, "minecraft:jungle_log"), new Feature("the palms' dates", 1, "minecraft:cocoa"),
+				new Feature("the Cypress Walk", 10, "minecraft:spruce_log"),
+				new Feature("the Gallery's orangery of potted azaleas", 20, "minecraft:potted_azalea_bush", "minecraft:potted_flowering_azalea_bush"),
+				new Feature("the Vaults' nursery of potted saplings", 20, "minecraft:potted_oak_sapling", "minecraft:potted_birch_sapling",
+					"minecraft:potted_jungle_sapling", "minecraft:potted_acacia_sapling", "minecraft:potted_cherry_sapling"),
+				new Feature("the Vaults' seed store of hay", 10, "minecraft:hay_block"),
+				new Feature("lanterns hung in the halls and on the piers", 30, "minecraft:lantern"),
+				new Feature("the arcades' glazed windows", 50, "minecraft:glass_pane"),
+				new Feature("terrace walls of mud brick", 3000, "minecraft:mud_bricks", "minecraft:packed_mud"),
+				new Feature("a baked-brick plinth", 300, "minecraft:bricks", "minecraft:brick_stairs"),
+				new Feature("sandstone dressings, floors and parapets", 1000, "minecraft:smooth_sandstone", "minecraft:cut_sandstone", "minecraft:chiseled_sandstone"),
+				new Feature("the frieze of blue glazed tiles under every cornice", 200, "minecraft:blue_glazed_terracotta"));
+			// 52.6: the rebuilt Colossus's named parts (js/colossus_a/plan.mjs, "Astride the Road"), the minimums raised to the new design
+			case "colossus" -> List.of(new Feature("the Lantern's three glowstone", 3, "minecraft:glowstone"),
+				new Feature("the Lantern's yellow glass cage", 16, "minecraft:yellow_stained_glass", "minecraft:yellow_stained_glass_pane"),
+				new Feature("the Lantern's copper grate band", 4, "minecraft:copper_grate"),
+				new Feature("nine braziers: the corner piers, the deck's corners and the eternal flame", 9, "minecraft:campfire"),
+				new Feature("the Plaque, seven dark oak signs over the arch", 7, "minecraft:dark_oak_wall_sign"),
+				new Feature("the Head's emerald eyes", 2, "minecraft:emerald_block"),
+				new Feature("the Arms' rolled founding plan", 3, "minecraft:bone_block"),
+				new Feature("the vault's shroomlights", 5, "minecraft:shroomlight"),
+				new Feature("a figure and deck of polished diorite and smooth stone", 1500, "minecraft:polished_diorite", "minecraft:smooth_stone"),
+				new Feature("the Cloak, belt, frieze and laurel of copper", 300, "minecraft:cut_copper", "minecraft:cut_copper_stairs", "minecraft:cut_copper_slab",
+					"minecraft:copper_block", "minecraft:chiseled_copper"),
+				new Feature("the Gate die's deepslate bricks", 3500, "minecraft:deepslate_bricks", "minecraft:cracked_deepslate_bricks"),
+				new Feature("the polished deepslate pilasters and cornice", 500, "minecraft:polished_deepslate", "minecraft:polished_deepslate_stairs",
+					"minecraft:polished_deepslate_wall"),
+				new Feature("the Steps' cracked and mossy stone bricks", 500, "minecraft:cracked_stone_bricks", "minecraft:mossy_stone_bricks"));
+			case "stadium" -> List.of( // 52.6: the rebuilt Stadium's named parts (js/stadium/plan.mjs, "the Stadium Bowl")
+				new Feature("two Training Posts", 2, "aliveworkplace:training_post"),
+				new Feature("the Nurse's Booth's brewing stand", 1, "minecraft:brewing_stand"),
 				new Feature("four floodlights' daylight detectors", 4, "minecraft:daylight_detector"),
-				new Feature("floodlights of redstone lamps", 4, "minecraft:redstone_lamp"),
-				new Feature("iron for the floodlights", 1, "minecraft:iron_block", "minecraft:iron_bars"),
-				new Feature("red seats", 20, "minecraft:red_carpet", "minecraft:red_wool", "minecraft:red_terracotta"),
-				new Feature("white seats", 20, "minecraft:white_carpet", "minecraft:white_wool", "minecraft:white_terracotta"),
-				new Feature("banners on the gateway", 1, "minecraft:red_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
-				new Feature("a grass field", 300, "minecraft:grass_block"),
-				new Feature("spruce", 20, "minecraft:spruce_slab", "minecraft:spruce_log", "minecraft:spruce_planks"));
+				new Feature("the floodlights' redstone lamps", 32, "minecraft:redstone_lamp"),
+				new Feature("the floodlight masts' iron", 40, "minecraft:iron_block", "minecraft:iron_bars"),
+				new Feature("red seats", 300, "minecraft:red_carpet", "minecraft:red_wool", "minecraft:red_terracotta"),
+				new Feature("white seats", 300, "minecraft:white_carpet", "minecraft:white_wool", "minecraft:white_terracotta"),
+				new Feature("banners on the Gate's pylons", 4, "minecraft:red_banner", "minecraft:red_wall_banner", "minecraft:white_wall_banner"),
+				new Feature("a grass field", 400, "minecraft:grass_block"),
+				new Feature("the field's chalk lines", 150, "minecraft:white_concrete"),
+				new Feature("the pitch wall of polished blackstone", 200, "minecraft:polished_blackstone_bricks", "minecraft:polished_blackstone_brick_slab"),
+				new Feature("the Outer Wall's brick", 2500, "minecraft:bricks"),
+				new Feature("quartz pilasters, piers and dressings", 700, "minecraft:quartz_pillar", "minecraft:smooth_quartz", "minecraft:chiseled_quartz_block"),
+				new Feature("the Covered Stand's and the pavilions' copper roofs", 400, "minecraft:waxed_oxidized_cut_copper",
+					"minecraft:waxed_oxidized_cut_copper_slab", "minecraft:waxed_oxidized_cut_copper_stairs"),
+				new Feature("the Scoreboard's black faces", 60, "minecraft:black_concrete"),
+				new Feature("the Concourse's hanging lanterns", 17, "minecraft:lantern"),
+				new Feature("doors into the Concourse and the pavilions", 20, "minecraft:spruce_door"),
+				new Feature("the Outer Wall's windows", 60, "minecraft:glass_pane"),
+				new Feature("the red crosses of the Nurse's Booth", 10, "minecraft:red_concrete"),
+				new Feature("the Refreshment Room's cakes", 2, "minecraft:cake"),
+				new Feature("the changing rooms' lockers", 16, "minecraft:spruce_trapdoor"),
+				new Feature("spruce benches", 20, "minecraft:spruce_slab", "minecraft:spruce_log", "minecraft:spruce_planks"));
 			default -> throw new IllegalStateException(id);
 		};
 	}
@@ -750,12 +839,13 @@ public class QaWonderDesignsGameTests implements FabricGameTest {
 	static {
 		TITLES.put("great_cathedral", List.of("Great Cathedral", "The Foundations and the West Front", "The Nave", "The Transepts and the Choir",
 			"The Towers and the Rose Window"));
-		TITLES.put("lighthouse", List.of("Lighthouse", "The Mole and the Quay", "The Tower", "The Gallery", "The Lantern and the Keeper's House"));
+		TITLES.put("lighthouse", List.of("Lighthouse", "The Quay, the Mole and the Bastion", "The Keeper's Cottage and the Ferry Landing", "The Shaft and the Gallery",
+			"The Lantern and the Hood"));
 		TITLES.put("great_library", List.of("Great Library", "The Stacks", "The Galleries", "The Rotunda", "The Dome and the Portico"));
 		TITLES.put("great_wall", List.of("Great Wall", "The Great Gate", "The West Run", "The East Run", "The Walk and the Towers' Crowns"));
-		TITLES.put("observatory", List.of("Observatory", "The Terrace and the Courtyard", "The Tower", "The Dome", "The Great Telescope and the Orrery"));
-		TITLES.put("hanging_gardens", List.of("Hanging Gardens", "The First Terrace and the Cistern Vaults", "The Second Terrace", "The Third Terrace",
-			"The Crown Garden and the Falls"));
+		TITLES.put("observatory", List.of("Observatory", "The Star Terrace and the Chart Hall", "The Great Gnomon and the Quadrants", "The Drum and the Observing Room", "The Copper Dome and the Great Telescope"));
+		TITLES.put("hanging_gardens", List.of("Hanging Gardens", "The Vaults and the Lower Terrace", "The Gallery and the Middle Terrace",
+			"The Upper Terrace and its Hall", "The Crown Garden and the Water Pavilion")); // 52.6: the rebuilt stages
 		TITLES.put("colossus", List.of("Colossus", "The Plinth and the Road Arch", "The Robes", "The Arms and the Cloak", "The Head and the Lantern"));
 		// 35.23: "Grand Stadium" only if M28 shipped a smaller Stadium; it shipped the Arena (ROADMAP Notes), so "Stadium"
 		TITLES.put("stadium", List.of("Stadium", "The Field", "The Lower Stands", "The Upper Stands and the Covered Stand", "The Gate and the Floodlights"));

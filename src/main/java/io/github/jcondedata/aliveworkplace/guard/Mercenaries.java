@@ -40,6 +40,7 @@ public final class Mercenaries {
 
 	/** The band at the hall now (hired and not gone yet). */
 	public static List<Villager> near(ServerLevel level, BlockPos hall) {
+		// The square on purpose (B555): a hired band wandering past the village's rim still counts, so no second band is hired.
 		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && isMercenary(v) && !Relief.isRider(v));
 	}
 

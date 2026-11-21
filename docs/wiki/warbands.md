@@ -5,14 +5,14 @@ ROADMAP 32.7. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) with a lair (see [Lairs and the Defense page](lairs.md)) that lays sieges (see
 [Sieges](sieges.md)).
 
-Roadmap items: 32.7
+Roadmap items: 32.7, B1175
 
 ## What a player sees
 
 - **A war camp.** By a Town or a City in the plains, meadows, forests (birch, dark, flower, cherry), the taiga, the
   snowy lands or the savanna, a pillager warband may make its War Camp 80 to 104 blocks out: a ring of sharpened logs
   with a gate, three canvas tents, the Warlord's dark tent with the loot chest, a ravager pen, a siege yard of logs and
-  ladders, and a pole flying the ominous banner. Chat says so ("War drums beyond Thornholm: Warlord Grath Ironmaw and his
+  ladders, and a pole flying the ominous banner, which faces the gate. Chat says so ("War drums beyond Thornholm: Warlord Grath Ironmaw and his
   pillager warband have raised a war camp 92 blocks south").
 - **The Warlord.** A vindicator in iron with the ominous banner on his head and 40 more health, with one of twenty
   names ("Warlord Kael Blackthorne") over his head. His band: pillagers with crossbows (the climbers, 55%) and

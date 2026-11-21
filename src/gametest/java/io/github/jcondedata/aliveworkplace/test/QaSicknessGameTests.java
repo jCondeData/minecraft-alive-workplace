@@ -275,6 +275,9 @@ public class QaSicknessGameTests implements FabricGameTest {
 	public void thePassOnReachesEightBlocksNotNine(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		settings(helper);
+		// Every villager here sits up to 10 blocks off the hall on both axes (14.1 across); the village is a circle (B555),
+		// so it is made wide enough to hold them all (settings puts the radius back).
+		VillageHalls.RADIUS = 15;
 		ServerLevel level = helper.getLevel();
 		hall(helper);
 		BlockPos hall = helper.absolutePos(HALL);
@@ -305,6 +308,9 @@ public class QaSicknessGameTests implements FabricGameTest {
 	public void thePassOnGoesByWhereTheyWorkAndSleep(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		settings(helper);
+		// Every villager here sits up to 10 blocks off the hall on both axes (14.1 across); the village is a circle (B555),
+		// so it is made wide enough to hold them all (settings puts the radius back).
+		VillageHalls.RADIUS = 15;
 		ServerLevel level = helper.getLevel();
 		hall(helper);
 		BlockPos hall = helper.absolutePos(HALL);

@@ -298,7 +298,7 @@ def library_4():
 
 
 def healing_center_4():
-    """Upgrade of the Healing Center III: a cool store of herbs and remedies under the front (walls x 1-9, z 2-8), down a
+    """The OLD drawing (ROADMAP 50.8: the live .nbt now comes from the rebuild kit, tools/blueprints/js/healing_center; this one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Healing Center III: a cool store of herbs and remedies under the front (walls x 1-9, z 2-8), down a
     ladder in the back room. 11 x 10 x 22, 4 below."""
     from starter import healing_center_3
     b = healing_center_3().grow(11, 10, 22, basement=BASEMENT)
@@ -405,7 +405,9 @@ BUTCHER_ROOF = DARK_OAK
 
 
 def butchers_shop():
-    """13 x 11 x 13: the Butcher's Shop, its freezer 4 below."""
+    """The OLD drawing (ROADMAP 50.4: the live butchers_shop.nbt now comes from the rebuild kit,
+    tools/blueprints/js/butchers_shop; this one is kept in blueprint_history/ and no longer saved by generate.py).
+    13 x 11 x 13: the Butcher's Shop, its freezer 4 below."""
     b = Build(13, 11, 13, basement=BASEMENT)
     plinth(b, 1, 2, 9, 8, STONE_MIX, floor="smooth_stone")
     walls(b, 1, 2, 9, 8, 1, 1, "bricks")
@@ -487,8 +489,9 @@ def butchers_shop():
     return b
 
 
-LEVEL_4 = (("starter_cottage_4", starter_cottage_4), ("stone_house_4", stone_house_4), ("townhouse_4", townhouse_4),
-           ("manor_4", manor_4), ("supply_shop_4", supply_shop_4), ("library_4", library_4),
+# (starter_cottage_4, stone_house_4, townhouse_4 and manor_4 are drawn by the rebuild kit since ROADMAP 49.3, 49.4, 49.5
+# and 49.7: tools/blueprints/js/)
+LEVEL_4 = (("supply_shop_4", supply_shop_4), ("library_4", library_4),
            ("healing_center_4", healing_center_4), ("lookout_tower_4", lookout_tower_4))
 
 

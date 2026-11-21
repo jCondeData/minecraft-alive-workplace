@@ -92,7 +92,7 @@ def rack(b, x0, x1, z, ys, facing, flip=0):
 # --- the Terminal Nook --------------------------------------------------------------------------------------------
 
 def terminal_nook(toms=False):
-    """9 x 10 x 9: the Terminal Nook, a small store room that fits beside a house. A stone-footed, birch-and-spruce room
+    """The OLD drawing (ROADMAP 50.13: both live .nbts, the vanilla build and its Tom's copy, now come from the rebuild kit, tools/blueprints/js/terminal_nook; these are kept in blueprint_history/ and no longer saved by generate.py). 9 x 10 x 9: the Terminal Nook, a small store room that fits beside a house. A stone-footed, birch-and-spruce room
     under a dark oak gable; inside along the back wall, six chests round an inventory connector (a chest without
     Tom's) with a potted fern on it (a lantern can't stand on a chest); a storage terminal in front of the connector,
     its screen to the door (without Tom's a counter block there); the Storehouse by the side wall, a barrel and hay by the door."""
@@ -358,8 +358,11 @@ def warehouse(toms=False):
 BUILDS = (("storage_hall", storage_hall), ("terminal_nook", terminal_nook), ("warehouse", warehouse))
 
 
-def save_all(main, modded):
-    """Each build into `main` and its Tom's copy into `modded` (the modded library's folder)."""
+def save_all(main, modded, skip=()):
+    """Each build into `main` and its Tom's copy into `modded` (the modded library's folder), but those in `skip` (drawn
+    by the rebuild kit: the Terminal Nook since ROADMAP 50.13, both its drawings from js/terminal_nook)."""
     for name, draw in BUILDS:
+        if name in skip:
+            continue
         draw().save(main, name)
         draw(toms=True).save(modded, name, checked=False)

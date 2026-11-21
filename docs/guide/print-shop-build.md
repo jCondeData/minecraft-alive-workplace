@@ -4,19 +4,20 @@
 type: Build
 expansion: M34
 image: https://jcondedata.github.io/minecraft-alive-workplace/luxury_workshops/still-3.jpg
-caption: The Print Shop: brick and timber, the skylight over the press
-Size: 11 wide, 9 deep, 11 high (II: 16 deep)
-Tiers: I, II (a bindery and a reading room behind)
+caption: The Print Shop: a brick hall with a lantern over the press
+Size: 11 wide, 11 deep, 12 high (II: 17 wide)
+Tiers: I, II (a reading room beside it)
 Workstation: a cartography table, the [Printer](printer.md)'s press
 Where to get it: Blueprint Table, or a Journeyman Printer for 12 emeralds
-Main materials: dark oak stairs, spruce logs, bricks, spruce planks, spruce trapdoors, glass panes
+Main materials: bricks, deepslate tile stairs, spruce planks, stone bricks, glass panes, dark oak trapdoors
 categories: Builds, Classes
 related: printer.md, luxuries.md, winery-build.md, tailors-shop-build.md, jewelers-workshop-build.md
 ```
 
-A brick shop in a spruce frame, its plastered gable to the street under a dark oak roof. The cartography table is the
-press: it stands in the middle of the room under a skylight. By the door a counter for buyers, and behind it shelves of
-paper and ink.
+A tall brick hall with its gable to the street under a dark slate roof, and on the ridge a glazed lantern that drops a
+column of daylight onto the press. A dark-oak shopfront has a display window either side of the door. Inside, the
+cartography table (the press) stands alone in the middle of the room; by the door a counter for buyers, and shelves of
+paper and ink (rebuilt from scratch; a shop already standing keeps its old look until refreshed).
 
 ## Getting the blueprint
 
@@ -29,8 +30,8 @@ hand it to the builder. See [The Builder and blueprints](builder.md).
 
 ## Upgrades
 
-**Print Shop II** adds a lower wing behind: the bindery (a bench with sheets laid out, a chest of paper) and a reading
-room lined with bookshelves three high, with a chair on a red carpet under a lantern.
+**Print Shop II** adds a lower reading room beside the hall, its gable set back from the street, lined with
+bookshelves.
 
 ## What it does for the village
 

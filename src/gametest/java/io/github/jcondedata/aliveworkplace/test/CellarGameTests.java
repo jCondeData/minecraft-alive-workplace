@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import io.github.jcondedata.aliveworkplace.build.BuildPlan;
 import io.github.jcondedata.aliveworkplace.build.BuildSite;
 import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
+import io.github.jcondedata.aliveworkplace.build.Refreshes;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.build.Cellars;
 import io.github.jcondedata.aliveworkplace.build.UpgradeOffers;
@@ -63,6 +64,10 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 public class CellarGameTests implements FabricGameTest {
 	private static final String HUGE_AREA = "aliveworkplace_test:huge_area";
 	private static final int GROUND = 6;
+	/** 50.3: the Smithy's drawing before its rebuild, as blueprint_history ships it. */
+	private static final String OLD_SMITHY = "v0.145.0";
+	/** 50.4: the Butcher's Shop's drawing before its rebuild, as blueprint_history ships it. */
+	private static final String OLD_BUTCHERS_SHOP = "v0.145.0";
 	private static final BlockPos BENCH = new BlockPos(2, GROUND + 1, 2);
 	private static final BlockPos CHEST = new BlockPos(2, GROUND + 1, 4);
 	private static final BlockPos VILLAGER = new BlockPos(3, GROUND + 1, 3);
@@ -147,10 +152,18 @@ public class CellarGameTests implements FabricGameTest {
 	 * builder digs the cellar out of the earth and fits it out, and leaves the Level II as it stood (its chests too).
 	 */
 	private static void levelThreeOverLevelTwo(GameTestHelper helper, StarterBlueprints.Entry two, StarterBlueprints.Entry three) {
+		levelThreeOverLevelTwo(helper, two, three, 6, 9);
+	}
+
+	/**
+	 * {@code two} stands finished on real ground (6 deep) with its corner at {@code x}, {@code z}; a builder given
+	 * {@code three} digs its cellar and keeps the Level II (the workers' chests where they were, under 60% of it placed again).
+	 */
+	static void levelThreeOverLevelTwo(GameTestHelper helper, StarterBlueprints.Entry two, StarterBlueprints.Entry three, int x, int z) {
 		Leftovers.clear(helper);
 		ServerLevel level = helper.getLevel();
 		ground(helper, 30);
-		BlockPos origin = new BlockPos(6, GROUND + 1, 9);
+		BlockPos origin = new BlockPos(x, GROUND + 1, z);
 		BlueprintData.Placement placement = placement(helper, origin);
 		level.getStructureManager().get(two.id()).orElseThrow()
 			.placeInWorld(level, helper.absolutePos(origin), helper.absolutePos(origin), new StructurePlaceSettings(), RandomSource.create(1L), 2);
@@ -364,6 +377,125 @@ public class CellarGameTests implements FabricGameTest {
 			helper.assertBlockPresent(Blocks.GOLD_BLOCK, marker);
 			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped after the reload");
 		});
+	}
+
+	/**
+	 * 50.3: a Smithy of the drawing before its rebuild (0.145.0's), saved before its cellar was dug. The rebuilt Smithy's
+	 * cellar lies elsewhere (its way down under the old forge's blast furnace), so "Dig the cellar" digs the old drawing's
+	 * cellar: the whole old Smithy stands as it was built, its cellar dug, and it is no longer offered.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '16000' '"cellar_old_drawing"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 16000, batch = "cellar_old_drawing")
+	public void anOldDrawingsSmithyDigsItsOwnCellar(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ground(helper, 30);
+		BlockPos origin = new BlockPos(9, GROUND + 1, 9);
+		ResourceLocation id = StarterBlueprints.SMITHY.id();
+		BlueprintData.Placement placement = placement(helper, origin);
+		helper.assertTrue(Refreshes.olderDrawing(level.getServer(), id, OLD_SMITHY).isPresent(), "0.145.0's Smithy isn't shipped in blueprint_history");
+		Blueprint old = Refreshes.drawing(level, id, OLD_SMITHY, BuildSiteManager.get(level).furniture(placement)).orElseThrow();
+		Blueprint now = BlueprintLibrary.get(level, id).orElseThrow();
+		helper.assertTrue(old.basement() > 0, "precondition: the old Smithy has no cellar");
+		// the new drawing's cellar spots the old Smithy builds on: what a dig by today's drawing would break into
+		Map<BlockPos, BlockState> oldBlocks = new HashMap<>();
+		old.blocks().forEach(e -> oldBlocks.put(e.pos(), e.state()));
+		List<BlockPos> wouldBreak = now.blocks().stream().filter(e -> e.pos().getY() <= 0 && e.state().isAir()
+			&& oldBlocks.containsKey(e.pos()) && !oldBlocks.get(e.pos()).isAir()).map(Blueprint.Entry::pos).toList();
+		helper.assertTrue(!wouldBreak.isEmpty(), "precondition: the new Smithy's cellar lies where the old one's was");
+		// the old Smithy as it was built before its cellar: everything above y = 0 as drawn, its cellar ground, the way down floored
+		Set<Long> columns = new HashSet<>();
+		old.blocks().stream().filter(e -> e.pos().getY() < 0).forEach(e -> columns.add(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ())));
+		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+		for (Blueprint.Entry e : old.blocks()) {
+			BlockPos world = helper.absolutePos(origin).offset(e.pos());
+			BlockState state = e.state();
+			if (e.pos().getY() < 0) {
+				state = (e.pos().getY() >= -2 ? Blocks.DIRT : Blocks.STONE).defaultBlockState();
+			} else if (e.pos().getY() == 0 && columns.contains(BlockPos.asLong(e.pos().getX(), 0, e.pos().getZ()))
+					&& (state.is(BlockTags.TRAPDOORS) || state.is(Blocks.LADDER) || state.isAir())) {
+				state = Blocks.COBBLESTONE.defaultBlockState();
+			}
+			level.removeBlockEntity(world);
+			level.setBlock(world, state, flags);
+		}
+		BuildSiteManager.get(level).recordFinished(id, placement, UUID.randomUUID());
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
+		helper.assertTrue(Cellars.needsDigging(level, id, placement), "the old Smithy without its cellar doesn't need it dug");
+		// the builder's offer, given back to them
+		helper.setDayTime(2000);
+		level.getGameRules().getRule(ModGameRules.BUILD_DELAY).set(2, level.getServer());
+		level.getGameRules().getRule(ModGameRules.BUILDERS_HELP).set(false, level.getServer());
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		Builders.employ(level, villager, helper.absolutePos(BENCH));
+		helper.assertTrue(Cellars.offer(level, villager).size() == 1, "the builder doesn't offer to dig the old Smithy's cellar");
+		MerchantOffer trade = digTrade(villager, id, placement).orElseThrow(() -> new GameTestAssertException("no \"Dig the cellar\" trade"));
+		List<ItemStack> stock = new ArrayList<>();
+		BuildPlan.create(Cellars.cellarOnly(old), placement).materials().forEach((item, count) -> stock.addAll(stacks(item, count)));
+		fill(helper, stock);
+		BlueprintData data = BlueprintItem.data(trade.getResult()).orElseThrow();
+		BuildSite site = Builders.start(level, villager, null, data.structure(), data.placement().orElseThrow());
+		helper.assertTrue(site.isCellarOnly(), "the job's blueprint didn't start a cellar dig");
+		BuildPlan plan = site.plan(level);
+		helper.assertTrue(plan != null, "no plan for the dig");
+		for (BlockPos p : wouldBreak) {
+			BlockPos world = placement.origin().offset(p);
+			for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.CLEAR, BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
+				helper.assertTrue(plan.steps(stage).stream().noneMatch(step -> step.pos().equals(world) && !step.state().equals(oldBlocks.get(p))),
+					"the dig works the new drawing's cellar under the old Smithy at " + p.toShortString());
+			}
+		}
+		Setup s = new Setup(level, new Villager[]{villager}, site, plan, old);
+		helper.succeedWhen(() -> {
+			assertBuilt(helper, s);
+			assertBasementEmpty(helper, s);
+			assertWholeBuildStands(helper, s, origin.above(40));
+			helper.assertTrue(s.site().skipped() == 0, s.site().skipped() + " step(s) skipped");
+			helper.assertTrue(!Cellars.needsDigging(level, id, placement), "the old Smithy's dug cellar still needs digging");
+		});
+	}
+
+	/**
+	 * 50.4: a Butcher's Shop of the drawing before its rebuild (0.145.0's), standing finished with its freezer (a
+	 * Butcher's Shop always went up with it, 26.15). The rebuilt shop's freezer lies elsewhere, under earth there, but
+	 * the shop was built from the old drawing, whose freezer is dug: no "Dig the cellar" for it, from its builder or
+	 * the hall's advice.
+	 */
+	//$ gametest_ticks_batch HUGE_AREA '200' '"cellar_old_butcher"'
+	@GameTest(template = HUGE_AREA, timeoutTicks = 200, batch = "cellar_old_butcher")
+	public void anOldDrawingsButchersShopIsNotOfferedTheNewFreezer(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		ServerLevel level = helper.getLevel();
+		ground(helper, 30);
+		BlockPos origin = new BlockPos(9, GROUND + 1, 9);
+		ResourceLocation id = StarterBlueprints.BUTCHERS_SHOP.id();
+		BlueprintData.Placement placement = placement(helper, origin);
+		helper.assertTrue(Refreshes.olderDrawing(level.getServer(), id, OLD_BUTCHERS_SHOP).isPresent(), "0.145.0's Butcher's Shop isn't shipped in blueprint_history");
+		Blueprint old = Refreshes.drawing(level, id, OLD_BUTCHERS_SHOP, BuildSiteManager.get(level).furniture(placement)).orElseThrow();
+		Blueprint now = BlueprintLibrary.get(level, id).orElseThrow();
+		helper.assertTrue(old.basement() == 4, "precondition: the old Butcher's Shop's freezer is 4 deep");
+		// the old shop as it was built, its freezer dug; every other cell of the ground stays earth
+		int flags = Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE;
+		for (Blueprint.Entry e : old.blocks()) {
+			BlockPos world = helper.absolutePos(origin).offset(e.pos());
+			level.removeBlockEntity(world);
+			level.setBlock(world, e.state(), flags);
+		}
+		// the new drawing's freezer: what today's drawing would call an undug cellar there
+		long buried = now.blocks().stream().filter(e -> e.pos().getY() < 0 && e.state().isAir())
+			.filter(e -> !level.getBlockState(helper.absolutePos(origin).offset(e.pos())).isAir()).count();
+		helper.assertTrue(buried > 0, "precondition: the new freezer lies where the old shop left earth");
+		BuildSiteManager.get(level).recordFinished(id, placement, UUID.randomUUID());
+		Leftovers.after(helper, () -> BuildSiteManager.get(level).forgetFinished(placement));
+		helper.assertFalse(Cellars.needsDigging(level, id, placement), "the old Butcher's Shop with its freezer is offered a dig of the new freezer ("
+			+ buried + " of its cells under earth)");
+		helper.setBlock(BENCH, ModBlocks.BUILDERS_BENCH);
+		Villager villager = helper.spawn(EntityType.VILLAGER, VILLAGER);
+		Builders.employ(level, villager, helper.absolutePos(BENCH));
+		helper.assertTrue(Cellars.offer(level, villager).isEmpty(), "the builder offers to dig the old Butcher's Shop's freezer");
+		helper.assertTrue(Cellars.toDig(level, helper.absolutePos(origin), 64).isEmpty(), "the hall's advice would list a freezer to dig");
+		helper.succeed();
 	}
 
 	// --- helpers ------------------------------------------------------------------------------------------------------

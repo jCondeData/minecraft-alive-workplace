@@ -1,0 +1,10 @@
+{
+  "name": "palisade_gate",
+  "private": true,
+  "type": "module",
+  "description": "The Palisade kit's palisade_gate, rebuilt from scratch for ROADMAP 52.3 (tools/blueprints/briefs/palisade_gate.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. Until the critic says SHIP, 'build' writes a candidate; ../palisade/selfcheck.py checks the kit's pins.",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py palisade_gate palisade_gate --candidate --nbt out/palisade-gate.nbt",
+    "check": "python3 ../palisade/selfcheck.py"
+  }
+}

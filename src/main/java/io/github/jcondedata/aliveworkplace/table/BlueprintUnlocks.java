@@ -153,15 +153,23 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		return starting;
 	}
 
+	/**
+	 * The build {@code id} is in the library: its base style, and a look (49.10a, {@code looks/desert/starter_cottage_2})
+	 * as the build drawn ({@code starter_cottage_2}), so a look is locked and unlocked with it.
+	 */
+	private static ResourceLocation family(ResourceLocation id) {
+		return io.github.jcondedata.aliveworkplace.blueprint.BlueprintLooks.base(BlueprintStyles.base(id));
+	}
+
 	/** Whether {@code id} can be locked at all: one of the mod's own builds (any style of it) or a Wonder. */
 	public static boolean managed(ResourceLocation id) {
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = family(id);
 		return MANAGED.contains(base) || WonderBlueprints.wonderOf(base).isPresent();
 	}
 
 	/** Whether a locked {@code id} shows as "???": in {@code rare.json}, a builder-only grander home, or a Wonder. */
 	public static boolean rare(ResourceLocation id) {
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = family(id);
 		return rare.contains(base) || BlueprintLibrary.soldOnly(base) || WonderBlueprints.wonderOf(base).isPresent();
 	}
 
@@ -194,12 +202,12 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		BuildSiteManager sites = BuildSiteManager.get(level);
 		int radius = VillageHalls.RADIUS;
 		for (BuildSiteManager.Finished f : sites.finishedNear(level, hall, radius)) {
-			ids.add(BlueprintStyles.base(f.structure()));
+			ids.add(family(f.structure()));
 		}
 		ResourceLocation dimension = Ids.of(level.dimension());
 		for (BuildSite site : sites.all()) {
 			if (site.placement().dimension().equals(dimension) && site.placement().origin().distSqr(hall) <= (double) radius * radius) {
-				ids.add(BlueprintStyles.base(site.structure()));
+				ids.add(family(site.structure()));
 			}
 		}
 		ids.addAll(Wild.get(level.getServer()).ids);
@@ -212,7 +220,7 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		if (!ENABLED || !managed(id)) {
 			return State.UNLOCKED;
 		}
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = family(id);
 		boolean open = starting.contains(base) || unlocked(level, hall).contains(base);
 		if (WonderBlueprints.wonderOf(base).isPresent()) {
 			return open ? State.VIEW_ONLY : State.HIDDEN;
@@ -229,7 +237,7 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		if (state != State.LOCKED && state != State.HIDDEN) {
 			return false;
 		}
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = family(id);
 		if (hall != null && level.getBlockEntity(hall) instanceof VillageHallBlockEntity entity) {
 			entity.unlockBlueprint(base);
 		} else {
@@ -280,25 +288,36 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 		return id.isPresent() && unlockAt(level, table, id.get(), player);
 	}
 
-	/** A builder of the village levelled up: the next {@link #PER_LEVEL} locked builds (not the rare ones) unlock. */
+	/**
+	 * A builder of the village levelled up: the next {@link #PER_LEVEL} locked builds (not the rare ones) unlock in the
+	 * library his Table uses, wherever he stands (B1345: one out on a job past the village's reach unlocked them in the
+	 * server-wide set, which every later village takes in, and his own village was never told). Where he stands only when
+	 * he has no Table in this dimension.
+	 */
 	public static void onLevelUp(Villager villager) {
 		if (!ENABLED || villager.getVillagerData().getProfession() != ModVillagers.BUILDER || !(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
-		BlockPos hall = village(level, villager.blockPosition());
-		BlockPos centre = hall != null ? hall : villager.blockPosition();
+		BlockPos anchor = io.github.jcondedata.aliveworkplace.build.Builders.benchPos(villager).orElse(villager.blockPosition());
+		BlockPos hall = village(level, anchor);
+		BlockPos centre = hall != null ? hall : anchor;
 		List<ServerPlayer> near = level.getPlayers(p -> p.blockPosition().distSqr(centre) <= (double) VillageHalls.RADIUS * VillageHalls.RADIUS);
 		for (ResourceLocation id : nextForLevelUp(level, hall)) {
 			unlock(level, hall, id, near);
 		}
 	}
 
-	/** What a builder's next level-up unlocks: the locked builds the Table lists, lowest tier first, then by name. */
+	/**
+	 * What a builder's next level-up unlocks: the locked builds the Table lists, lowest tier first, then by name, each
+	 * counted once as its base build (a biome look or style unlocks with its base, so a look and its base are one pick,
+	 * not two: 49.10b).
+	 */
 	public static List<ResourceLocation> nextForLevelUp(ServerLevel level, @Nullable BlockPos hall) {
 		List<ResourceLocation> locked = new ArrayList<>();
 		for (ResourceLocation id : BlueprintLibrary.list(level.getServer(), false)) {
-			if (state(level, hall, id) == State.LOCKED) {
-				locked.add(id);
+			ResourceLocation base = family(id);
+			if (!locked.contains(base) && state(level, hall, base) == State.LOCKED) {
+				locked.add(base);
 			}
 		}
 		locked.sort(Comparator.comparingInt(BlueprintUpgrades::tier).thenComparing(ResourceLocation::toString));
@@ -321,7 +340,7 @@ public final class BlueprintUnlocks implements ResourceManagerReloadListener {
 
 	/** The lang key of the line that says how to get {@code id} ("Sold by a Journeyman Builder"). */
 	public static String hint(ResourceLocation id) {
-		ResourceLocation base = BlueprintStyles.base(id);
+		ResourceLocation base = family(id);
 		String key = "screen.aliveworkplace.table.hint.";
 		if (WonderBlueprints.wonderOf(base).isPresent()) {
 			return key + "wonder";

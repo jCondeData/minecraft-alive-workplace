@@ -42,7 +42,7 @@ import net.minecraft.world.level.block.Rotation;
  * takes any wool but its own color, so each color goes down into another: blue wool from nothing names
  * {lapis_lazuli=2, ink_sac=1, black_dye=1, blue_wool=2}.
  */
-public class QaDyedWoolLine1115bBugTests {
+public class QaDyedWoolLine1115bBugTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

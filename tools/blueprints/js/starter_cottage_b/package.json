@@ -1,0 +1,11 @@
+{
+  "name": "starter-cottage-b",
+  "private": true,
+  "type": "module",
+  "description": "Starter Cottage, Version B (the Saltbox and its cross-wing), rebuilt from scratch for ROADMAP 49 (tools/blueprints/briefs/starter_cottage.md, REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates, 'ship' the live drawings (the owner picked B, 2026-11-17; shipped in 49.3).",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "ship": "LIVE=1 sh build.sh"
+  }
+}

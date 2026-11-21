@@ -4,7 +4,7 @@ The roads and the wall you draw on a City Plan get built by the village's builde
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
 themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753
+Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753, B1380, B1382, 52.3
 
 ## What a player sees
 
@@ -23,7 +23,8 @@ at a milestone: a stone post with a lantern and a sign naming the other village 
 
 After a raid (or with a bandit camp preying on the village) the Steward proposes a wall on his desk. The line goes on the plan first,
 so you see what he means before you approve it. A Hamlet or Village gets a palisade; a Town or City gets stone, and a
-Town replaces its palisade a piece at a time.
+Town replaces its palisade a piece at a time. A segment you upgrade yourself (the Palisade's fighting step, the Stone Wall's
+hoardings) is still that piece of the wall: the wall still reads as finished and still counts as one building (B1380).
 
 ## How it works
 
@@ -62,6 +63,19 @@ If a piece's builder dies (in a raid, say), its site stays open with everything 
 next round hands it to the next free builder, who finishes it where it stands; new pieces wait until it has someone
 (B488: the half-built tower was forgotten and a second one went up on its roof).
 
+**What the pieces look like (52.3, rebuilt).** The **Stone Wall** is a cobblestone footing and stone-brick curtain
+with a flight of steps up its village side to a pale andesite walk behind square merlons (7 x 6 x 3); **Stone Wall II**
+roofs the walk with dark oak hoardings, a gallery with murder holes out over the foot (7 x 9 x 4). The **Wall Tower**
+stands on a sloping foot with andesite quoins, arrow slits and a ring of overhanging stone under a crenelated top of
+16 battle stations, a furnished guardroom and store inside (5 x 10 x 5); **Wall Tower II** roofs the top on stone piers
+with a lantern on every side (5 x 12 x 5). The **Palisade Gate** is a small timber gatehouse: log jambs on stone feet,
+a pale lintel over three spruce gates (the way through 2 high), a steep gable roof with lanterns under it (7 x 9 x 2).
+The **Palisade** is an earthwork: a cobble toe and mud-brick steps up the village side of a rammed-earth bank to a
+stripped-oak walk of 7 battle stations, behind a row of bark-on spruce stakes with an oak rail through them, waist-high above the walk so the archers on it
+can see and shoot out (B1382: the old pointed heads hid everything outside) (7 x 4 x 4; every column the same, so overlapping segments agree); **Palisade II** builds the bank out into a walk
+three wide (19 stations, the steps kept as its stair) and plants seven dripstone stakes in a ditch of turned earth
+outside (7 x 4 x 5). Pieces already standing keep their old look until refreshed.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -98,6 +112,8 @@ The generated blueprints for stretches are saved the way the Shape Planner saves
 
 - 27.15: roads are not buildings. They are kept on the plan, so they never raise a village's rank.
 - 27.18: a whole wall counts as one building for the rank, not one per piece.
+- B1380: a wall piece's upgrade (`palisade_2`, `stone_wall_2`, any tier, going by the upgrade's name) counts as that
+  piece: it stands for its kit's wall, and a Town's stone still replaces an upgraded palisade.
 - 27.15: a road goes round a player's fence or house and leaves it standing; it never clears what a player placed.
 - 27.17: no chunk is ever loaded to plan or build a road between villages; the work waits until a player is near.
 - 27.18: a wall is only proposed after a raid in the last 7 days or with a bandit camp near; a village never raided
@@ -140,7 +156,10 @@ Well, a finished Wonder or one waiting for its goods, each opening the next piec
 B753: a Well sharing one corner column holds a piece and one column clear doesn't; six held pieces in a row skipped to
 the first free one; held pieces still skipped after a restart; a piece opens once its Well is gone and its Wonder
 canceled; a street between two Wells goes round a waiting Wonder, a turned finished Wonder, and a waiting Wonder read
-back from its save).
+back from its save). `QaWallUpgradeCounts1121dGameTests` (5, B1380: one upgraded palisade or stone segment
+keeps the wall finished and counted once, stands on its own with its neighbors gone, and once removed the wall isn't
+finished and the piece is back on the list; upgraded stone towers and gates, a styled `palisade_2`; ordinary buildings
+still count and another mod's `palisade_2` is not a wall piece).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

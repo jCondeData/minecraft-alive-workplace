@@ -1,0 +1,10 @@
+{
+  "name": "sifting-shed",
+  "private": true,
+  "type": "module",
+  "description": "Sifting Shed, Levels I and II (the Tipple, ROADMAP 49 rebuild). MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates; LIVE=1 ./build.sh saves the live drawings once the critic says SHIP.",
+  "scripts": {
+    "build": "./build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -13,6 +13,7 @@ import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModGameRules;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import io.github.jcondedata.aliveworkplace.work.Village;
 import java.util.HashMap;
@@ -47,13 +48,13 @@ import net.minecraft.world.level.block.Rotation;
  * when short, the line counts the whole tag; a crafter uses exactly what the plan says) with the whole pack loaded.
  * MixedTagSlotGameTests covers vanilla woods; here the planks come from Cobblemon (apricorn and saccharine planks are
  * in minecraft:planks, checked from its jar). In the pack, Carved Wood (default config) turns the base game's #planks
- * Chest and Crafting Table recipes off for one-wood ones, so those must NOT be made from a mix (a crafting table in the
- * pack refuses too); the Fletching Table and Create's Large Cogwheel (a shaft and two of #planks) still take any
+ * Chest and Crafting Table recipes off for one-wood ones, so those are made from a mix only when the game's own table
+ * makes them of it (B1378: Carved Wood's mixed recipe makes Minecraft's crafting table of mixed planks); the Fletching Table and Create's Large Cogwheel (a shaft and two of #planks) still take any
  * planks. Create's Andesite Alloy is two recipes (two iron OR two zinc nuggets), never made from one of each. A real
  * Carpenter makes Large Cogwheels from a three-wood chest through his own work loop, also saved and loaded mid-plan,
  * and with a plank taken out of the chest under his plan. Nothing here is random.
  */
-public class QaMixedTagPack1115eCompatTests implements FabricGameTest {
+public class QaMixedTagPack1115eCompatTests implements FreshPlanning {
 	private static final String AREA = CompatGameTests.AREA;
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
@@ -194,17 +195,26 @@ public class QaMixedTagPack1115eCompatTests implements FabricGameTest {
 
 	/**
 	 * The pack's own rule wins: Carved Wood (default config) turns the base game's #planks crafting table and chest off and
-	 * makes each from one wood only, so a crafting table in the pack makes no Crafting Table from 2 oak and 2 apricorn
-	 * planks; nor may a crafter. 4 oak planks still make one.
+	 * makes each from one wood only; its mixed crafting table recipe then makes Minecraft's crafting table from any 2x2 of
+	 * planks no other recipe takes, mixed kinds included (B1378: this test first said the pack's table refuses 2 oak and 2
+	 * apricorn planks, but the game's own table makes a Crafting Table of them). So a crafter plans a Crafting Table from
+	 * them exactly when the game's table makes one of them, taking exactly those. 4 oak planks still make one.
 	 */
 	//$ gametest 'FabricGameTest.EMPTY_STRUCTURE'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE)
 	public void withCarvedWoodACraftingTableIsNeverPlannedFromMixedPlanks(GameTestHelper helper) {
 		planksAreInTheTag(helper);
 		ServerLevel level = helper.getLevel();
+		net.minecraft.world.item.crafting.CraftingInput grid = net.minecraft.world.item.crafting.CraftingInput.of(2, 2,
+			List.of(new ItemStack(Items.OAK_PLANKS), new ItemStack(Items.OAK_PLANKS), new ItemStack(apricorn()), new ItemStack(apricorn())));
+		boolean gameMakes = level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, grid, level)
+			.map(r -> r.value().assemble(grid, level.registryAccess()).is(Items.CRAFTING_TABLE)).orElse(false);
 		Crafting.Plan mixed = Crafting.plan(level, Crafting.Kind.CRAFTING, Items.CRAFTING_TABLE, 1, Map.of(Items.OAK_PLANKS, 2L, apricorn(), 2L));
-		helper.assertTrue(mixed == null, "a Crafting Table planned from 2 oak and 2 apricorn planks, which the pack's crafting table refuses: " + (mixed == null ? null
-			: mixed.steps()));
+		helper.assertTrue((mixed != null) == gameMakes, "2 oak and 2 apricorn planks: the game's table " + (gameMakes ? "makes" : "refuses")
+			+ " a Crafting Table, the plan is " + (mixed == null ? null : mixed.steps()));
+		if (gameMakes) {
+			plannedFromExactly(helper, Items.CRAFTING_TABLE, 1, Map.of(Items.OAK_PLANKS, 2L, apricorn(), 2L));
+		}
 		plannedFromExactly(helper, Items.CRAFTING_TABLE, 1, Map.of(Items.OAK_PLANKS, 4L));
 		helper.succeed();
 	}

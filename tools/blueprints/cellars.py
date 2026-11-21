@@ -68,7 +68,9 @@ def barrel_vault(b, x0, z0, x1, z1, ladder):
 
 
 def winery_3():
-    """Upgrade of the Winery II: a barrel vault under the barrel cellar, down a ladder in its north-west corner. 13 x 14 x
+    """The OLD drawing (ROADMAP 50.4: the live winery_3.nbt now comes from the rebuild kit, tools/blueprints/js/winery;
+    this one is kept in blueprint_history/ and no longer saved by generate.py).
+    Upgrade of the Winery II: a barrel vault under the barrel cellar, down a ladder in its north-west corner. 13 x 14 x
     20, 4 below."""
     from workshops import winery_2
     b = winery_2().grow(13, 14, 20, basement=BASEMENT)
@@ -178,7 +180,7 @@ def lower_lab(b, x0, z0, x1, z1, ladder):
 
 
 def research_lab_3():
-    """Upgrade of the Research Lab II: a lower lab under the lab, down a ladder by its front wall. 18 x 10 x 11, 4
+    """The OLD drawing (ROADMAP 50.12: kept in blueprint_history/, no longer saved). Upgrade of the Research Lab II: a lower lab under the lab, down a ladder by its front wall. 18 x 10 x 11, 4
     below."""
     from starter import research_lab_2
     b = research_lab_2().grow(18, 10, 11, basement=BASEMENT)
@@ -217,7 +219,8 @@ def jewel_vault(b, x0, z0, x1, z1, ladder):
 
 
 def jewellers_workshop_3():
-    """Upgrade of the Jeweller's Workshop II: a vault under the shop, down a ladder in its north-west corner. 9 x 10 x
+    """The OLD drawing (ROADMAP 50.7: the live jewellers_workshop_3.nbt now comes from the rebuild kit, tools/blueprints/js/jewellers_workshop; this
+    one is kept in blueprint_history/ and no longer saved by generate.py). Upgrade of the Jeweller's Workshop II: a vault under the shop, down a ladder in its north-west corner. 9 x 10 x
     14, 4 below."""
     from workshops import jewellers_workshop_2
     b = jewellers_workshop_2().grow(9, 10, 14, basement=BASEMENT)
@@ -236,6 +239,6 @@ def artisans_house_3():
     return b
 
 
+# (artisans_house_3 is drawn by the rebuild kit since ROADMAP 49.8: tools/blueprints/js/artisans_house/)
 LEVEL_3 = (("inn_3", inn_3), ("winery_3", winery_3), ("farmstead_3", farmstead_3), ("guildhall_3", guildhall_3),
-           ("barracks_3", barracks_3), ("research_lab_3", research_lab_3), ("jewellers_workshop_3", jewellers_workshop_3),
-           ("artisans_house_3", artisans_house_3))
+           ("barracks_3", barracks_3), ("research_lab_3", research_lab_3), ("jewellers_workshop_3", jewellers_workshop_3))

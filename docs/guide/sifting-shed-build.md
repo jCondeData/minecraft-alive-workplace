@@ -2,16 +2,20 @@
 
 ```infobox
 type: Build
-Size: 9 by 9, 9 high (II: 11 by 13)
-Tiers: I, II (a second sieve and a lean-to)
+Size: 10 by 9, 15 high (II: 10 by 14)
+Tiers: I, II (an incline gallery and a second sieve)
 Houses: a Sifter at the cauldron; two at tier II
 Where to get it: Blueprint Table
-Main materials: dark oak stairs, spruce planks, cobblestone, polished andesite, gravel
+Main materials: dark oak logs, birch planks, spruce, deepslate tiles, cobblestone, gravel
 categories: Builds
 related: jobs-land.md, masons-yard-build.md
 ```
 
-A timber shed on a stone footing over a **cauldron**, with bins of gravel and sand.
+Rebuilt from scratch as "the Tipple": a timber hopper loft standing on dark oak legs over a stone-walled screen
+room, under a steep slate gable with a hoist beam and its lantern at the top. Gravel is tipped from the loft through a
+hatch and a funnel into the **cauldron** below, where the Sifter works; the gravel and sand heaps lie in board bays under
+a lean-to on the east side, and sieves hang drying on a rail on the west. Buildings already standing keep their old
+drawing until you refresh them.
 
 ## Getting the blueprint
 
@@ -25,7 +29,7 @@ Hold the blueprint and right-click the ground where its front should go (the gol
 
 Once a builder finishes the Sifting Shed, they sell its upgrade's blueprint as well (the Blueprint Table has it too). Right-click the finished building with the upgrade and it lines up exactly over it; the builder only builds what's new. The Village Hall's **What next?** page reminds you of upgrades waiting.
 
-- **Sifting Shed II** is twice the depth, with a second cauldron, a side door and a lean-to over stone bins.
+- **Sifting Shed II** adds a covered incline gallery climbing from the back yard up into the loft, a second cauldron and chest in its shelter (through a back door from the screen room), and heaps of red sand and soul sand in board bays either side of its foot.
 
 ## What it does for the village
 

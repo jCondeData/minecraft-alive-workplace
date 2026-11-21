@@ -129,7 +129,7 @@ public final class Renewals {
 	public record Book(List<Renewal> active, long lastDay) {
 		public static final Book EMPTY = new Book(List.of(), -100L);
 		public static final Codec<Book> CODEC = RecordCodecBuilder.create(i -> i.group(
-			Renewal.CODEC.listOf().optionalFieldOf("active", List.of()).forGetter(Book::active),
+			io.github.jcondedata.aliveworkplace.mc.Lenient.list(Renewal.CODEC, "renewal under way").optionalFieldOf("active", List.of()).forGetter(Book::active),
 			Codec.LONG.optionalFieldOf("last_day", -100L).forGetter(Book::lastDay)
 		).apply(i, Book::new));
 
@@ -415,6 +415,7 @@ public final class Renewals {
 		}
 		List<Occupant> sleepers = new ArrayList<>();
 		List<Occupant> workers = new ArrayList<>();
+		// Twice the village's reach on purpose (B1352): whoever sleeps or works in the old house, even out of the village just now.
 		for (Villager v : level.getEntities(EntityType.VILLAGER, new AABB(hall).inflate(VillageHalls.RADIUS * 2), Villager::isAlive)) {
 			v.getBrain().getMemory(MemoryModuleType.HOME).filter(g -> g.dimension().equals(level.dimension()) && oldBox.get().isInside(g.pos()))
 				.ifPresent(g -> sleepers.add(new Occupant(v.getUUID(), "")));
@@ -424,7 +425,7 @@ public final class Renewals {
 		Villager villager = builder.get().villager();
 		UUID owner = entity.owner() != null ? entity.owner() : player != null ? player.getUUID() : villager.getUUID();
 		String ownerName = entity.owner() != null ? entity.ownerName() : player != null ? player.getGameProfile().getName() : "";
-		boolean busy = Builders.activeSite(level, villager) != null;
+		boolean busy = Builders.hasOwnBuild(level, villager); // (B789: a helper on another's build starts it at once)
 		BlueprintData.Placement old = new BlueprintData.Placement(Ids.of(level.dimension()),
 			new BlockPos(oldBox.get().minX(), oldBox.get().minY(), oldBox.get().minZ()), Rotation.NONE, Mirror.NONE);
 		BuildSite site = busy ? Builders.enqueue(level, villager, owner, ownerName, scan, old) : Builders.start(level, villager, owner, ownerName, scan, old);
@@ -616,6 +617,7 @@ public final class Renewals {
 	/** Someone else, not one of {@code ours}, took the place at {@code at} while the house went up: they let it go. */
 	private static void takeBack(ServerLevel level, MemoryModuleType<GlobalPos> memory, GlobalPos at, Set<UUID> ours) {
 		boolean released = false;
+		// A wide box round the place on purpose (B1352): anyone holding it lets it go, of this village or not.
 		for (Villager other : level.getEntities(EntityType.VILLAGER, new AABB(at.pos()).inflate(VillageHalls.RADIUS * 2),
 				o -> !ours.contains(o.getUUID()) && o.getBrain().getMemory(memory).filter(at::equals).isPresent())) {
 			other.getBrain().eraseMemory(memory);

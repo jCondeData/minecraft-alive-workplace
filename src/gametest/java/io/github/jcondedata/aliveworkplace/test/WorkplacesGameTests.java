@@ -332,9 +332,18 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		List<TestFunction> out = new ArrayList<>();
 		for (Workplace w : workplaces()) {
 			String name = "workplaceBuilt_" + w.entry().id().getPath();
-			out.add(new TestFunction(name, name, HUGE_AREA, 12000, 0, true, helper -> build(helper, w)));
+			out.add(new TestFunction(name, name, HUGE_AREA, timeout(w), 0, true, helper -> build(helper, w)));
 		}
 		return out;
+	}
+
+	/**
+	 * Ticks a workplace's build test may take: 12,000, and 20,000 for the 51.5 halls (the Leader's Hall about 1,000 blocks,
+	 * the Trade Hall about 1,400), which finished at ticks 9,343 and 11,391 with the clock held in working hours (B1384):
+	 * the Trade Hall had only about 600 ticks to spare under 12,000.
+	 */
+	static int timeout(Workplace w) {
+		return w.entry() == StarterBlueprints.LEADERS_HALL || w.entry() == StarterBlueprints.TRADE_HALL ? 20000 : 12000;
 	}
 
 	static void build(GameTestHelper helper, Workplace w) {
@@ -381,6 +390,15 @@ public class WorkplacesGameTests implements net.fabricmc.fabric.api.gametest.v1.
 		BlockPos min = helper.absolutePos(HOUSE);
 		BlockPos max = min.offset(blueprint.size().getX() - 1, blueprint.size().getY() - 1, blueprint.size().getZ() - 1);
 		long[] built = {-1};
+		// B1384: a builder works from 1000 to dusk (11000), so from 2000 he has 9,000 ticks of this 12,000: a hall of 1,000
+		// blocks and more ran out of day, not of time, and he stood off work on his last block (skipped 0) until the
+		// timeout, read as a hang. The clock is held in working hours while it goes up, as in the other long build tests
+		// (QaBuilderStages1103bGameTests.keepDay); stopping at dusk and going on next morning is QaBuilderFixes1103GameTests'.
+		helper.onEachTick(() -> {
+			if (built[0] < 0 && level.getDayTime() % 24000 > 9000) {
+				helper.setDayTime(2000);
+			}
+		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage());
 			List<BlockPos> blocks = BlockPos.betweenClosedStream(min, max).filter(p -> level.getBlockState(p).is(w.block()))

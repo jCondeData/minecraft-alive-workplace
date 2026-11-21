@@ -98,15 +98,20 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 				+ ", feet over " + (floor + minFeet) + ")"));
 	}
 
-	/** The Healing Center: in by the front door (template 5,1,2) and up its red carpet, which starts a block in. */
+	/**
+	 * The Healing Center: in by the front door and up its rug to the counter. Since the rebuild (50.8) the door is template
+	 * (6,1,2), up a step from the walk, and the waiting room's rug runs (6,1,4)-(6,1,6) to the Dispensary's counter.
+	 */
 	//$ gametest_ticks_batch AREA '400' '"b173HealingCenter"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "b173HealingCenter")
 	public void aVillagerWalksInByTheHealingCentersFrontDoor(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
-		place(helper, "healing_center", new BlockPos(8, 1, 6));
-		// template (5, 1, 0) is the walk in front of the door; (5, 1, 5) the carpet's end by the counter
-		walkIn(helper, new BlockPos(13, 2, 6), new BlockPos(13, 2, 11), 10, 0.05);
+		place(helper, "healing_center", new BlockPos(8, 2, 6)); // 50.8: its y = 0 layer ON the floor, as a site sits
+		// template (6, 0, 0) is the ground in front of the step and the door (50.8; was 5, 1, 0 with the drawing's own ground
+		// layer on the floor: the rebuilt drawing's y = 0 layer is air outside, so it stands on the floor now, as on a site);
+		// (6, 1, 6) the rug's end by the counter
+		walkIn(helper, new BlockPos(14, 2, 6), new BlockPos(14, 3, 12), 10, 0.05);
 	}
 
 	/**
@@ -121,8 +126,8 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	public void aVillagerOpensTheHealingCentersShutFrontDoorAndWalksIn(GameTestHelper helper) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
-		place(helper, "healing_center", new BlockPos(8, 1, 6));
-		walkIn(helper, new BlockPos(13, 2, 6), new BlockPos(13, 2, 11), 10, 0.05, new BlockPos(2, 2, 2));
+		place(helper, "healing_center", new BlockPos(8, 2, 6)); // 50.8: its y = 0 layer ON the floor, as a site sits
+		walkIn(helper, new BlockPos(14, 2, 6), new BlockPos(14, 3, 12), 10, 0.05, new BlockPos(2, 2, 2));
 	}
 
 	/** B203: the Manor's front door shut, as built, opened by the villager on its way onto the grand stair. */
@@ -132,7 +137,8 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		place(helper, "manor", new BlockPos(5, 1, 6));
-		walkIn(helper, new BlockPos(14, 2, 9), new BlockPos(14, 2, 14), 14, 0.45, new BlockPos(2, 2, 2));
+		// (49.7's drawing: template (13, 1, -1) in front of the porch tower's door, (14, 1, 6) the grand stair's first step)
+		walkIn(helper, new BlockPos(18, 2, 5), new BlockPos(19, 2, 12), 12, 0.45, new BlockPos(2, 2, 2));
 	}
 
 	/**
@@ -149,13 +155,13 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		helper.setDayTime(2000);
 		// B1292: a job block an earlier batch left outside its area is a free job site this jobless villager could take
 		Leftovers.jobSites(helper);
-		place(helper, "healing_center", new BlockPos(8, 1, 6));
-		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(13, 2, 4));
+		place(helper, "healing_center", new BlockPos(8, 2, 6)); // 50.8: its y = 0 layer ON the floor, as a site sits
+		Villager villager = helper.spawn(EntityType.VILLAGER, new BlockPos(14, 2, 4));
 		villager.getRandom().setSeed(203L);
-		// the brewing stand is template (3, 1, 7), behind the door (5, 1, 2)
+		// the brewing stand is template (10, 1, 9), behind the door (6, 1, 2) and the counter (50.8; was 3, 1, 7 and 5, 1, 2)
 		double past = helper.absolutePos(new BlockPos(0, 0, 10)).getZ();
-		BlockPos stand = helper.absolutePos(new BlockPos(11, 2, 13));
-		BlockPos door = helper.absolutePos(new BlockPos(13, 2, 8));
+		BlockPos stand = helper.absolutePos(new BlockPos(18, 3, 15));
+		BlockPos door = helper.absolutePos(new BlockPos(14, 3, 8));
 		// (a job of the brewing stand's: the Cleric or, since 36.17 and at random, one of ours who share it)
 		helper.succeedWhen(() -> helper.assertTrue(villager.getZ() > past && villager.getVillagerData().getProfession() != VillagerProfession.NONE
 			&& io.github.jcondedata.aliveworkplace.work.Stations.at(net.minecraft.world.level.block.Blocks.BREWING_STAND).orElseThrow()
@@ -175,7 +181,9 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 	/**
 	 * The Manor: in by the front door (template 9,1,7) and onto the grand stair right inside it, under a fanlight now. A
 	 * stair's back half is a full block up, and a villager's back is still in the doorway when it climbs onto it: under
-	 * the old lintel, and under a slab lintel tried first, it stood in the doorway with its feet on the floor.
+	 * the old lintel, and under a slab lintel tried first, it stood in the doorway with its feet on the floor. Since the
+	 * rebuild (49.7) the door is in the porch tower's front (template 13,1,1), through the porch and the arch, and the
+	 * grand stair's first step (14,1,6) is right inside the arch.
 	 */
 	//$ gametest_ticks_batch AREA '400' '"b173Manor"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "b173Manor")
@@ -183,8 +191,8 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		place(helper, "manor", new BlockPos(5, 1, 6));
-		// template (9, 1, 3) is the gravel walk in front; (9, 1, 8) the stair's first step, just inside the door
-		walkIn(helper, new BlockPos(14, 2, 9), new BlockPos(14, 2, 14), 14, 0.45);
+		// template (13, 1, -1) is the ground in front of the door's step; (14, 1, 6) the stair's first step, just inside the arch
+		walkIn(helper, new BlockPos(18, 2, 5), new BlockPos(19, 2, 12), 12, 0.45);
 	}
 
 	/**
@@ -252,10 +260,11 @@ public class DoorwayHeadroomGameTests implements net.fabricmc.fabric.api.gametes
 		Leftovers.halls(helper);
 		BlockPos cottage = new BlockPos(5, 1, 5);
 		place(helper, "starter_cottage", cottage);
-		// template cells (y = 1 is the ground floor): the room by the rug, and the chair (stairs) at the table's north side
-		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(5, 1, 4));
+		// template cells (y = 1 is the ground floor): the hall's walk past the couch, and the chair (stairs) at the table's
+		// north side, under the front east window (49.3: the rebuilt cottage)
+		Villager villager = helper.spawn(EntityType.VILLAGER, cottage.offset(4, 1, 5));
 		nitwit(helper, villager);
-		BlockPos chair = helper.absolutePos(cottage.offset(3, 1, 3));
+		BlockPos chair = helper.absolutePos(cottage.offset(6, 1, 3));
 		double floor = helper.absolutePos(cottage.offset(0, 1, 0)).getY();
 		helper.onEachTick(() -> {
 			villager.getBrain().setMemory(MemoryModuleType.LOOK_TARGET, new BlockPosTracker(chair));

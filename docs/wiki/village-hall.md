@@ -3,7 +3,7 @@
 The block that turns a group of villagers into a village the mod looks after: its people, food, beds, rank, calendar,
 treasury and pages. Most other systems (edicts, guilds, Legends, classes, the Steward) hang off a hall.
 
-Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2
+Roadmap items: 22.5, 22.6, 30.4a, 26.12, B37, 36.5, 36.9, 36.9a, 36.15, 36.14, 36.18, B301, B303, B362, B406, B413, 40.1, 40.2, 40.3, 40.4, B546, B547, B19, B749, B745, B744, B153, B787, B620, B796, B807, B885, B886, B880, B990, B999, B1000, B1110, B1173, B1224, B805, B1270, B1271, 47.2, B555, B1352, B1356, B1266
 
 ## What a player sees
 
@@ -207,7 +207,8 @@ the owner and their friends can order one. The tab says how many builds can go u
 
 The buttons open the hall's pages: Quests (a journal), the Chronicle (what happened, day by day, anywhere in the
 village: within its radius across and 32 blocks up or down, so a death on its rim up a hill is written too, B780;
-"(1 entry)" on its button for a chronicle of one, B744), trade routes
+"(1 entry)" on its button for a chronicle of one, B744; newest day first with one header per day, even for a Cup entry
+written late when its village loads again, B1353), trade routes
 (caravans to other halls), "What next?" (advice, or the Steward's desk when there is a Steward), the village map, the
 Book of Edicts, the calendar, Legends, the Festival Cup and Classes. The bell calls everyone home. A cake calls a
 festival. A festival or a Grand Chef's banquet goes on only while someone is near the village: once everyone has left, nothing of it
@@ -257,6 +258,9 @@ village: left out"; `QaZoneNearerHall1115cGameTests`, 6: the tie and one block e
 radius, the hall broken and put back, a Wall Tower and the rank, a save and load).
 Nearer means across the ground, as the radius measures it, so a hall on higher ground still takes a cell it is nearer
 to across (B1270, `QaZoneNearerHall1115bBugTests`).
+Only a hall that really stands is another village here: a hall's point of interest left behind with no hall block on
+it (in a loaded chunk) refuses no painting and takes no painted cell (B1266, `OrphanHallPointGameTests`: the stroke
+paints whole and a Stone Wall there still walls the village; a real hall on the spot refuses the next stroke).
 A building also counts by its corner (B620, so nothing that counted before stops counting), but only when its middle
 doesn't lie nearer another hall (B1271): a Stone Wall whose middle is in a cell nearer hall B is village B's only, even
 with its corner in a cell village A painted or inside A's radius (`QaZoneNearerHall1115bBugTests`). A building whose
@@ -265,7 +269,11 @@ Lookups that mean a distance (free ground for a statue, roads, maps, a Wonder's 
 
 **The village is a circle.** Everyone and everything within `villageHallRadius` blocks of the hall (64 by default, 32
 up and down) belongs to it; its villagers and its beds are counted by that one circle, so a villager and the bed beside him are
-always both in or both out (B361, `VillageHalls.contains`). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
+always both in or both out (B361, `VillageHalls.contains`). The same circle decides who comes to a festival or a
+banquet, who can be a new baby's parent, who a friend asked for by name, a guild, a war party or a cough can reach, and
+every other "the village's villagers": a villager out in the corners of the square round the hall belongs to none of it
+(B555, `VillageHalls.villagers`). The same goes for the research trees' villager count, the builders the Steward and the
+hall's build pages give orders to, the press's Scholar, and whom a raid's raiders and piglins go for (B1352). A villager is housed only while his bed is still there: a bed broken at noon houses nobody from that moment, though vanilla forgets it only at bedtime (B362, `VillageNeeds.bed` checks the bed's point of interest). Once every 600 ticks the hall counts its people, beds, food, guards and light; that count
 feeds everything else.
 
 **Clearing-out quests follow the world's foes (B301).** "Clear out 8 monsters" (a `kill` of `monster`, a `slay` reform
@@ -416,6 +424,14 @@ bar says whose they are and that they can add the player with `/workplace friend
   only while the Map section is open, so the other sections send nothing more; `HallMap.layout` places the map, the
   legend and Draw a map. `CopperLayout.body` is the box a screen draws its own body in.
 
+**The first open after a restart doesn't stall (B1418).** The advice's cellar tip asks, for each finished building,
+which drawing it was built from (`Cellars.toDig` -> `Refreshes.builtFrom`), and that looks at the blueprint's shipped
+older drawings (`data/aliveworkplace/blueprint_history/`, over a thousand files). They used to be read all at once on the
+first question after a start or `/reload`, freezing the server for 3 to 4 seconds on the first hall open. Now a reload
+only lists the files by blueprint, and a blueprint's own drawings are read the first time it is asked about, then kept
+until the next reload; a blueprint with no older drawing reads nothing. The answers are the same as reading them all
+(same keys, same order, same drawings), proven by `B1418GameTests`.
+
 ## Switches
 
 | Key | Default | What it does |
@@ -448,7 +464,7 @@ empty unless a default is given here:
   edit) is left out with a warning in the log; the hall's other quests and data load as usual.
 - Likewise one damaged entry of `edicts`, `guilds`, `reforms`, `services` or `piece_looks`, a zone or road of `plan`,
   or a level of `research` is left out with a warning, and the rest of that list loads (B796; before, the whole list
-  was lost without a word). The Steward's `steward` and `steward_desk` are still read whole (B821).
+  was lost without a word). The same holds for the Steward's `steward` and `steward_desk` (B821, see the Steward's page).
 - A village on the caravan list (`aliveworkplace_caravans`) whose saved name is missing or can't be read (an old or
   hand-edited save) keeps its trade routes, wants, banner color, stations and tracks and is named by its made-up name
   (B1233; before, the whole entry was dropped).
@@ -537,6 +553,23 @@ point of interest, saved by Minecraft).
   whose area the piston isn't in, the move fails if the head's cell (extending), any pushed block or its destination,
   or any block it would break is in that area. An extending piston then stays put; a sticky one retracts without
   pulling. Halls further than reach + 14 columns away are skipped first; protection off skips it all.
+- B808, B993, B1033 (Create, only when it is installed: `aliveworkplace.create.mixins.json`, whose plugin skips it
+  otherwise): `VillageProtection.mayMachineChange` asks the same question for any machine, judged where the change
+  lands: not in the area of a protected hall the machine isn't in. A drill's or saw's own break
+  (`BlockBreakingKineticBlockEntity`) is judged at its block; a drill or saw on a contraption, a piston, gantry or
+  pulley step (a refused step counts as a collision, also before the contraption is put together) and the blocks a
+  stopped contraption sets down (dropped at the machine instead) are judged at the contraption's controller.
+- B1015: `BlockItemMixin` refuses `BlockItem.place` where the placing player may not change things, judged where the
+  block lands, so a machine's stand-in player (Create's Deployer) can't place inside a village its owner may not
+  change; a real player's click was already judged there (B741).
+- B994, B1015 (Create): item transport is judged where the items are. Create's inventory behavior (funnels, chutes)
+  sees no inventory at a block inside a protected village it stands outside of, and a Mechanical Arm outside takes
+  nothing from and puts nothing onto its points inside; both are asked at each use, so switching protection takes
+  effect at once.
+- B843, B844: machines that act as players (fake players, `Platform.isFakePlayer`) are judged by whom they act for
+  (`StandIns`; Create's Deployer acts for the player who placed it, one nobody placed for nobody). One acting for
+  nobody never becomes the owner of a hall, mailbox, shop counter or storehouse, and a stranger's machine at a
+  protected hall gets a refusal instead of the price board, so it can't go on to rename it.
 - Villages keep working with no player near (23.6, owner's call): see `keepVillagesWorking` on
   [Config switches](config-switches.md).
 
@@ -551,7 +584,8 @@ point of interest, saved by Minecraft).
   hall's side; how the head count splits shared villagers was not checked for this page.
 - The hall's numbers are up to 600 ticks (30 seconds) old.
 - Nothing in the mod changes with the seasons except festivals, the Festival Cup and the Harvest Idol.
-- A hall placed by a machine has no owner until a player turns its protection on.
+- A hall placed by a machine nobody placed has no owner until a player turns its protection on; one set down by a
+  player's own Deployer is that player's.
 - Free job blocks: a villager given a block walks there with the usual brain; at night or in a festival their
   schedule may take them elsewhere first. Blocks past the 36th aren't clickable until nearer ones fill. Only grown
   villagers in the hall's circle are offered.
@@ -566,6 +600,10 @@ point of interest, saved by Minecraft).
   whole). Long and non-Latin names come back exactly (`CaravanSavedNameB1233GameTests`, `QaCaravanNames1114c3GameTests`).
 
 ## Proof
+
+`B1418GameTests` (B1418: the cellar question about a Stone House after a reload reads only the Stone House's older
+drawings, once, and a blueprint with none reads nothing; read one blueprint at a time, the history matches reading it
+all at once).
 
 `HallBoardGameTests` (47.2: the Overview's cards and "Needs you" read from a hall opened by hand, each going where it
 says; an empty village; the Map section's village map only while it is open, with Draw a map still working; a map click
@@ -668,8 +706,8 @@ two broken entries get their own made-up names, a good name stays, and the hall'
 the village by its made-up name).
 
 Showcase scenes: `hall` (the screen, a villager read out and kept in the pane, the calendar, GUI scales 3 and 4), `hall_pages` (chronicle and trade routes), `hall_quests`,
-`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry read and scrolled to its end
-from the pane without a click, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
+`hall_treasury` (treasury, protection and the ledger), `hall_reading` (a long chronicle entry opened with a click and scrolled
+to its end, then the Storehouse board), `hall_jobs` (the Free job blocks page, the Storehouse's
 takers, Dara picked as its Porter), `hall_upgrade` (the Upgrades page: the Starter Cottage free, the Stone House II
 blocked by a garden fence, a click sending Bram to build the Starter Cottage II), `hall_people_job` (40.3: Job ▾ on
 Dara's row, Mason clicked once for the price, then paid).
@@ -680,6 +718,8 @@ A villager's hall is the nearest Village Hall within the hall radius (`VillageHa
 point of interest). Only a hall that really stands counts: a point of interest left behind with no hall block on it
 (a block swapped without a block update, as region edits and some world-editing mods do) is skipped, so the villager
 keeps the nearest real hall, and with it their hearts, gifts and personal requests (B427, `VillageHalls.standsAt`). A
-point in a chunk that isn't loaded is trusted.
+point in a chunk that isn't loaded is trusted. The same holds for a work block's village past the radius (a painted
+zone), a raid den's nearest hall and the village a fire breaks out in, and a hall swapped away is no village for fires
+at once, not a few seconds later (B1356, `OrphanHallLookupGameTests`).
 
 See also: [House looks](house-looks.md), the page the Builds button opens.

@@ -10,7 +10,7 @@ Cobblemon, the Stadium) are built, behind the 2.0 gate (`Expansions.M35`), which
 expansion; the full plan is the design note,
 docs/design/M35.md.
 
-Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750, B755, B921
+Roadmap items: 35.1, 35.2, 35.3, 35.4, 35.5, 35.7, 35.7a, 35.7b, 35.8, 35.8a, 35.9, 35.10, 35.11, 35.12, 35.13, 35.14, 35.15, 35.15a, 35.16, 35.17, 35.18, 35.18a, 35.19, 35.20, 35.21, 35.22, 35.23, 35.23a, 35.24, B139, B141, B140, B138, B678, B703, B270, B308, B326, B461, B707, B748, B750, B755, B921, 52.6
 
 ## What a player sees
 
@@ -89,7 +89,7 @@ else the builder it was handed to; each next stage goes to the highest-level bui
   time): the crew lays a given-up block once nothing stands in it, and the wall goes on from there. If nobody can lay
   it and the crew has stood still for 10 seconds, the lead gives up the block over it too (every block waiting so at once, B270), so a
   part may end with a hole but never with a block in the air (B254); given-up blocks stay given up after a restart (B139). A
-  villager boxed in where a block goes, with nowhere in reach to step to (inside the Colossus's lantern, in the ring of panes
+  villager boxed in where a block goes, with nowhere in reach to step to (inside the Colossus's lantern, in the glass cage
   round its glowstone), is moved to the nearest free spot further off (up to 16 blocks), so the block isn't given up (B308). A block
   the crew laid that then changes by itself (farmland drying out to dirt before its water comes) is left as it is,
   not laid again, and a crop due on dried-out farmland is planted once the builder has tilled it again.
@@ -241,13 +241,22 @@ on."
 
 Every Wonder also needs the Master Architect (stand-in: a Master builder).
 
-**The Great Cathedral** (35.9) is drawn: a Gothic cathedral on a cross plan, 39 blocks across the transepts, 55 long,
-its two west towers 44 high under stone spires reaching 52; about 14,250 blocks. A deep west door under three stepped
-pointed arches, a rose window of white, light blue, yellow and red glass over it; a nave of five bays with flying
-buttresses over the aisles and tall lancet windows; transepts with gable windows over their doors; a choir ending in a
-rounded apse; open belfries with three bells. Inside: pews either side of a red runner, banners and lanterns on the
-polished andesite piers, an altar of gold and candles, three side chapels with lecterns, and a sacristy with a brewing
-stand. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
+**The Great Cathedral** (35.9; rebuilt from scratch in 52.6: "the Ship of Stone") is a Gothic basilica on a cross
+plan, 39 blocks across the transepts and 56 long, its two west towers' spires reaching 52; about 14,200 blocks
+(14,225). The west front is a gabled triple portal (two doors round a stone trumeau) under the stone ring of a rose
+window of white, light blue, yellow and red glass, its gable stepping up to a pinnacle; the towers either side rise
+with clasping buttresses through three floors joined by a ladder, each with its own side portal, to louvered belfries
+with two bells each on a beam (four in all, at y 31), a corbelled cornice, a parapet with corner pinnacles and a slim
+octagonal deepslate spire. The nave stands over lower aisles: clerestory walls to y 20 on a pointed arcade, lancets
+over the aisle roofs, a stone vault with polished ribs, a steep roof (ridge at y 35) and four flying buttresses a side
+leaping the aisles' lean-to roofs. The transepts carry coped gables with a tall twin lancet and a pointed oculus, and
+their roofs meet the main roof in valleys; a lead fleche stands on the crossing. The choir is raised a step, with its
+stalls, and ends in a half-octagon apse with tall windows round the altar (gold and candles before a carved reredos).
+The aisles end in two chapels, and each transept has a chapel on its east wall: the sacristy (a brewing stand) and the
+Lady chapel; three chapels have a lectern and a candle altar. Inside the nave, dark oak pews either side of a red
+runner, banners in the sanctuary and the transepts, and chain lanterns. The floor is a checker of polished andesite and
+deepslate tiles inside the walls. A Great Cathedral already begun or finished keeps the old drawing (the 35.9 one): it
+still counts as standing, and is repaired and finished as it was first drawn. It goes up in four stages, each leaving the site tidy: I *The Foundations and the West Front*, II *The Nave*,
 III *The Transepts and the Choir*, IV *The Towers and the Rose Window*. Its goods (found, with the rare worker who
 finds each and in how many days; then what a workshop makes): I a Prize Pottery Sherd (a Master Sifter, 9 days), a
 Ghast Tear (a Master Netherworker, 7 days); made: 2 Fine Clothes (Tailor); II the music disc otherside (the Bard
@@ -276,16 +285,27 @@ days); made: 2 Gold Circlets (Jeweler).
   a raid beginning, as a player's hit rings them, so raiders near them glow.
 - **Beauty** (`beauty`): 8 to the village's beauty.
 
-**The Lighthouse** (35.11) is drawn: a coastal landmark 25 by 33 and 46 high, about 5,000 blocks, its back half in the
-sea. A round tower banded in white and red terracotta tapers from 13 across to 9 on a stepped stone mole (mossy at the
-waterline, steps up to the door, mooring posts round its foot, an arm along the back sheltering a little harbor). Its
-gallery at 38 stands on stone corbels behind an iron railing; above it a lantern room of glass round sea lanterns, a
-ring of redstone lamps that an inverted daylight detector lights at night, and a copper cupola with a lightning-rod
-vane. Inside, a spiral stair of spruce climbs past five rooms from the door to the lantern. At its foot: the keeper's
-cottage (a stone ground floor, an upper story of white terracotta in a spruce frame, a slate roof; a bed upstairs, the
-fisherman's barrel by the stove), a spruce boathouse half over the water, a stone quay with mooring posts, and a
-timber jetty out over the sea to a ferry stop, the Travel Post under a little roof. Its stages: I *The Mole and the
-Quay*, II *The Tower*, III *The Gallery*, IV *The Lantern and the Keeper's House*. Its goods (found, with the rare
+**The Lighthouse** (35.11, rebuilt from scratch in 52.6: "the Mole Light") is a harbor arm with its light at the far
+end, 25 by 33 and 46 high, about 5,200 blocks: from 20 blocks it reads as one low stone arm running out to sea and one
+tall tower at its end. The front (z 0) is the land side: a paved quay across it, with the keeper's cottage at its west
+end and a grassed green with an open net shed at its east. Stage I is the Quay, the Mole and the Bastion: a solid stone
+mole 7 wide, three steps up from the quay, runs out to a round bastion 17 across with a parapet all round, rip-rap
+heaped round its foot, and the tower's first courses. Stage II adds the Keeper's Cottage (a stone plinth, a spruce frame
+with limewash infill, a slate roof, a chimney with a campfire, a loft up a ladder), the Ferry Landing a step below the
+mole's east flank with the Ferry Jetty out to the plot's east edge and the Travel Post at its end (24, 2, 13), the Fish
+Stage off the west flank (the fisherman's barrel and a drying rack of kelp) and the tower's foot: a mossy drum 13 across,
+then a waist 11 across, each topped by a weathering ledge. Stage III is the Shaft and the Gallery: a pale shaft of quartz
+bricks 9 across with dark string courses at its landings, and the gallery on two corbel courses at 37 behind an iron
+rail. Stage IV is the Lantern and the Hood: a glazed room 7 by 7 on copper posts round the sea lantern on its pedestal, a
+copper door onto the gallery, and the hood over it, an eave of 28 redstone lamps with an inverted daylight detector on
+each and a stepped copper roof under a lightning rod. Inside the tower, a spruce stair winds up the wall from the door to
+the gallery past four rooms: the Entry (a chest for rope), the Oil store (racked lamp-oil casks), the Chart room (a chart
+table, a cupboard, the flag) and the keeper's Watch room (his bed, a desk at the sea window). Every window is framed by a
+dark sill and a drip hood. Every stage stands, grounded and tidy, on its own, and no stage replaces a block an earlier one
+laid. Its stages: I *The Quay, the Mole and the Bastion*, II *The Keeper's Cottage and the Ferry Landing*, III *The Shaft
+and the Gallery*, IV *The Lantern and the Hood*. A Lighthouse begun before 52.6 keeps the 35.11 drawing (a tower banded in
+white and red terracotta on a stepped mole, with B656's window fix): it is counted, repaired and finished from that
+drawing (`WonderDrawings`, `blueprint_history/wonder/lighthouse/`). Its goods (found, with the rare
 worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Pathfinder, 11
 days), a Coast Armor Trim Template (a Master Fisherman, 7 days); made: 2 Emerald Brooches (Jeweler); II a Trident
 (the Beastmaster, 14 days), a Sponge (the Founder, 18 days), an Angler Pottery Sherd (the Grand Chef, 11 days); made:
@@ -308,19 +328,31 @@ Wine (Vintner).
 
 Each factor is kept between 1/16 and 16. Damaged (or with Wonders off) all four are off; nothing of them is saved.
 
-**The Great Library** (35.13) is drawn: a domed library on a cross plan, 41 by 41 and 34 high, about 14,600 blocks, on
-a square terrace of smooth stone with a garden in each corner (azalea hedges, flowers, a bench and a lamp) behind a
-diorite balustrade. A grand stair of three quartz steps climbs to a portico of six quartz columns (a wider bay before
-the door) under a low pediment with a round window. Behind it the rotunda, 19 across, rises above four wings of
-reading halls under deepslate-tile roofs: a drum of polished diorite with clerestory windows and a cornice, a shallow
-copper dome with eight ribs (it weathers green), coffered inside in smooth stone and diorite, and a glass lantern on
-top. Each wing has two stories of tall windows between smooth stone pilasters; inside, bookshelf stacks out from the
-walls under a dark oak gallery on both sides (two floors of bookshelf galleries, a ladder up to each), carrels under
-the windows, reading tables with lanterns and low bookcases down the middle, and a coffered dark oak ceiling. The
-rotunda has three rings of bookshelves with two galleries round them; at its center an Enchanting Table ringed by
-fifteen bookshelves, open towards the door, with the librarian's lectern before it and four reading desks round it. A
-lectern for a scholar stands in each wing; the west wing's end is the map room, a carpet map of seas and islands round
-a cartography table. Its stages: I *The Stacks*, II *The Galleries*, III *The Rotunda*, IV *The Dome and the Portico*.
+**The Great Library** (35.13, rebuilt from scratch in 52.6: "the Scroll Rotunda") is a round drum of books at the
+center of a cross of four short gabled wings, 41 by 41 and 34 high, about 15,000 blocks (14,967). It stands on a podium of
+stone bricks (y 0-2) behind a polished diorite balustrade, with two steps round its foot, the front steps across the
+portico's width, lamp posts at the steps and corners and a raised garden bed in each corner court (a smooth-stone curb,
+flowers and a small oak). The four wings (the Stacks; front and back 13 by 7, west and east 9 by 13) have pale walls of
+polished diorite and smooth stone, a ground floor (y 3-8) with tall windows between proud smooth-stone pilasters, each
+under a sill and a hood, a trim band at the upper-floor line, and a gallery floor (y 11-12) under an open copper roof
+from the eave at y 13 to the ridge at y 20. Inside, books line every wall between the windows; the front wing is the Map
+Room (the cartography table and a lectern), the west and east wings have three desks with chairs under their windows
+and a lectern, the back wing a desk and a lectern, and in each a dark oak flight climbs to the gallery through a hatch
+folded back against the wall; the galleries hold shelf rows, desks and reading tables. The drum (center (20, 22), 23
+across, three thick) rises from the court between the wings to a cornice at y 23: a wall of bookshelves two deep lines
+it all the way up, and a walkway of dark oak slabs climbs two full turns up the books from the back door to y 19, lit by
+lanterns at every quarter turn, with a band of windows riding just above it, so outside the drum's four open quarters
+carry a spiral of glass winding up toward the dome, and a ring of clerestory windows runs round it above the wing
+ridges. Its inner ceiling is coffered round a glass oculus, hung with four chandeliers. At the center the Enchanting
+Table (20, 3, 22) in a ring of bookshelves open toward the front door (26 shelves count for it), the center lectern
+behind it. Over the drum a ribbed copper dome with twelve ribs and a glass lantern on top (it weathers green), and at
+the front a portico of six quartz columns with bases and capitals under an entablature, a coffered soffit and a copper
+gable with a quartz pediment. Its stages: I *The Stacks* (the podium, the four wings' ground floors round an open court,
+the gardens), II *The Galleries* (each wing's upper floor and copper roof), III *The Rotunda* (the drum, its wall of
+books, the helix walk and its spiral of windows, the table), IV *The Dome and the Portico*. Every stage stands on its
+own and only adds to the ones before. A Great Library begun before 52.6 keeps the 35.13 drawing (a rotunda of three
+rings of bookshelves with two galleries under a shallow dome, wings under deepslate-tile roofs, a terrace of smooth
+stone): it is counted, repaired and finished from that drawing (`WonderDrawings`, `blueprint_history/wonder/great_library/`).
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Heart
 Pottery Sherd (a Master Sifter, 14 days), a Dune Armor Trim Template (the Pathfinder, 9 days); made: an Illuminated
 Book (Printer); II an Eye Armor Trim Template (the Seer, 18 days), the music disc Relic (the Bard Laureate, 16 days),
@@ -355,21 +387,23 @@ the rest to nothing, bags take no new stacks past 27 (nothing in them is lost), 
 ("Scholarship waits for the Great Library to be repaired") and the row reads "Needs the Great Library" again, "the
 levels are kept". Realm members get only the first tier's levels from their capital.
 
-**The Observatory** (35.17) is drawn: a round tower 15 across and 30 high under a copper dome, on a raised terrace 31
-by 31 (42 high to the dome's vane, about 8,400 blocks) of deepslate bricks behind a polished blackstone balustrade, a
-wide stair up its front. The tower is deepslate bricks and tiles with polished blackstone bands at its floors, eight
-blackstone pilasters up its height and tall windows; inside, a dark oak spiral stair climbs past the Seer's study
-(bookshelves and a lectern), a store of chests and barrels and the instrument room (a cartography table, a lectern) to
-the top, where a walk behind a blackstone parapet runs round the dome: the viewing platform. The dome, of cut copper
-on a blackstone drum (it weathers green), has a slit of tinted glass three wide from its foot to its crown on the
-courtyard side and a door onto the walk at the back; the great telescope, a cut copper barrel 12 long on a blackstone
-mount, leans up and out of the slit over the courtyard. Two low wings under hipped deepslate-tile roofs flank the
-tower: the star-chart room (a cartography table on a carpet chart of the night sky, a lectern, chart shelves) and the
-Seer's lodging (a bed, a brewing stand, a barrel). The courtyard is paved in deepslate tiles ruled by blackstone, with
-amethyst set in it: a compass star round the sundial (a round stone face and its gnomon), studs along the path and a
-ring round the tower's foot. Opposite the sundial stands the orrery: a gold sun on a chain under a blackstone frame,
-with five planets (iron, copper, lapis, redstone and raw gold) hung on chains round it. Its stages: I *The Terrace and
-the Courtyard*, II *The Tower*, III *The Dome*, IV *The Great Telescope and the Orrery*. Its goods (found, with the
+**The Observatory** (35.17, rebuilt from scratch in 52.6: "the Observatory of the Great Gnomon") is a stepped
+monument of deepslate 31 by 31 and 43 high to the dome's crown, about 8,500 blocks. The village first reads the sun's
+shadow on stone, then climbs that same shadow line to read the night. A paved court with lamp posts and flowered front
+corners leads to the Star Terrace (stage I), a deepslate podium 5 high with a parapet and twin flights up its front
+corners; inside it is the Chart Hall, reached by two doors at the front: a cartography table between two lecterns at the
+back under the bookshelves, reading tables and chairs in both aisles, lanterns hung from the deck and an amethyst star set
+in the floor. Stage II is the Great Gnomon: a sundial's blade 7 wide that rises one block up for each block back from
+the court to y 16, a deepslate stair climbing its sloping edge, with a blind arch at its foot, gold noon marks along it
+and a quarter-circle scale of smooth stone ruled in blackstone against each side. Stage III is the upper terrace and the
+drum, 13 across and two blocks thick, its door at the top of the gnomon's stair and tall glass windows all round; inside,
+the Observing Room has a bench round the back wall, lanterns on posts and a lectern. Stage IV is the copper dome, a glazed
+shutter strip of tinted glass down its east side, the great telescope of cut copper with gold bands reaching out through
+it, and two chandeliers on chains inside. Every stage stands, grounded and tidy, on its own. Its stages: I *The Star
+Terrace and the Chart Hall*, II *The Great Gnomon and the Quadrants*, III *The Drum and the Observing Room*, IV *The
+Copper Dome and the Great Telescope*. An Observatory begun before 52.6 keeps the 35.17 drawing (a round tower 15 across
+under a copper dome on a raised terrace, with an orrery in the courtyard): it is counted, repaired and finished from
+that drawing (`WonderDrawings`, `blueprint_history/wonder/observatory/`). Its goods (found, with the
 rare worker who finds each and in how many days; then what a workshop makes): I a Heart of the Sea (the Merchant
 Prince, 11 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 spyglasses (Toolsmith); II an Echo Shard (the
 Old Sage, 18 days), an Eye Armor Trim Template (the Pathfinder, 18 days), the music disc Precipice (the Bard Laureate,
@@ -383,26 +417,29 @@ Its search and the chart itself are built (`wonder/SkyChart`): one region of one
 the server's tick has room, at most one kind an in-game hour, saved as it goes; the hall's map button hands it over
 (35.18).
 
-**The Great Wall** (35.15) is drawn: a defense 97 long, placed like the other walls (stand in the village and place it
-facing out: its stairs are on your side), about 12,300 blocks. A curtain 7 thick and 12 high on a battered plinth of
-deepslate bricks, faced with stone bricks to the field (mossy and cracked on the low courses, a buttress every four or
-five blocks) and cobblestone to the village; on top a walk paved six wide behind a breastwork corbeled out over the
-field, crenellated, with a low parapet on the village side carrying braziers (campfires on chiseled stone). Four towers
-9 by 9 and 18 high under hipped spruce roofs, one at each end and two at the quarters. Since 35.15a each tower is solid
-stone from the ground to the walk, on a solid base a block wider all round (deepslate bricks under a battered step, the
-plinth stepping out round it again), with buttresses up its corners, a ledge of upside-down stairs round it at the walk
-with lanterns on its corners, a banner over a blind slit to the field and a lit niche under a keystone and a banner to
-the village. You enter a tower from the walk: a room at the walk (doors onto the walk, a guard's grindstone, and on the
-side facing the gate an alcove 3 wide and 3 high open to the walk, where a sentry golem stands), a stair on up to a top
-room with windows on three sides, a banner to the field and a watch lantern on the roof's peak. Along the runs a banner
-hangs in every bay on the field side under an arrow slit, taller chiseled merlons stand over the buttresses, vines grow
-on the low courses, lanterns stand on the parapet between the braziers and on corbels on the village side. At the center the Great Gate, a gatehouse 17 wide and as high
-as the towers under a long hipped roof: a vaulted gateway 5 wide with spruce fence gates two high across it under a
-portcullis of iron bars, which runs up a slot into the hall and hangs from a windlass; a guardroom either side with its
-own stair, a hall at the walk, a top room opening onto a crenellated bretèche over the gate, buttresses either side of
-the gateway and at its corners, the towers' ledge at the walk, braziers at both its mouths and banners beside them. Two stairs of ten steps climb the village side to
-landings by the gatehouse. Its stages: I *The Great Gate*, II *The West Run*, III *The East Run*, IV *The Walk and the
-Towers' Crowns* (the walk, breastwork and braziers, the towers' top rooms and roofs). Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
+**The Great Wall** (35.15, rebuilt from scratch in 52.6: "the Pass Gate") is a defense 97 long, placed like the other
+walls (stand in the village and place it facing out: its stairs are on your side), 26 high to the Gate Pavilion's
+roof and 27 deep with the barbican, about 13,300 blocks. The curtain runs (x 11-19, 29-38, 58-67, 77-85) stand on a dark
+foot of deepslate bricks 11 thick, battered in to 9 and then 7 of stone bricks (mossy, cracked, a little andesite), with
+dark buttresses on the field face and pilasters on the village face, a drip course on both faces, spouts under the
+village edge and ivy here and there; the walk on top (y 9) runs between a plain inner parapet with lantern posts and a
+field parapet corbeled out, merlons on every other cell. The wall's two ends are broken off, stepped down and mossed over:
+it goes on into the hills. Four watchtowers 9 by 9 at x 2, 20, 68 and 86, solid stone to the walk on a stepped plinth,
+with deepslate quoins and a blue banner to the village; the walk runs through each tower's guard room (a spruce door
+each way, a grindstone, a barrel, a slab table with a candle and a chair under the barred loops, a glazed window to the
+village, a ladder up) to the Crown, a lookout on stone piers with propped spruce shutters round a signal fire, under a
+stone cornice and a spruce hip cap with a lightning rod. At the center the Great Gate: a gatehouse (x 39-57) solid to
+the walk but for its passage 5 wide, shut by spruce fence gates two high under an iron portcullis; behind it on the
+field side the Barbican, a walled court with its own outer gate of dark oak fence gates; on top the Gate Pavilion, a
+two-story timber hall under flared roofs of deepslate tiles (the lower hall with the captain's table, benches, a
+windlass, stores and an anvil, the walk passing through it; the lantern room over it with windows all round). Two broad
+Horse Stairs of ten steps climb the village face either side of the gate to landings on the walk. Its stages: I *The
+Great Gate* (the site cleared, the gatehouse, barbican and pavilion), II *The West Run*, III *The East Run* (each run's
+curtain and its two towers to their guard rooms), IV *The Walk and the Towers' Crowns* (the walk and battlements, the
+crowns, their signal fires and caps). Every stage stands on its own and only adds to the ones before. A Great Wall begun
+before 52.6 keeps the 35.15 drawing (a cobblestone-faced curtain, towers with top rooms and the sentries' alcoves, a
+gatehouse under a long hipped roof): it is counted, repaired and finished from that drawing (`WonderDrawings`,
+`blueprint_history/wonder/great_wall/`); its sentries take today's posts, which fall on that drawing's open walk too. Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I a Sentry
 Armor Trim Template (the Beastmaster, 9 days), a Ghast Tear (a Master Netherworker, 7 days); made: 2 Emerald Brooches
 (Jeweler); II a Totem of Undying (the Merchant Prince, 22 days), an Ominous Trial Key (the Pathfinder, 14 days), a
 Rib Armor Trim Template (the Seer, 14 days); made: 2 Vintage Wine (Vintner); III a Wither Skeleton Skull (the Founder,
@@ -421,8 +458,9 @@ and the Golem Smith (or 4 iron golems and a Master Tinkerer while Legends are of
   as ever. A siege's ladders never go up against it, and its Great Gate is no siege's breach: the rams only go for the
   village's own gate builds.
 - **Sentries** (`sentries`, `count` 4, `range` 16, `posts`): four Wall Sentries, the Golem Smith's (twice a golem's
-  health, their blows throwing foes back), come with the finished Wall and stand in the towers' alcoves on the walk. A
-  sentry fights any foe within 16 blocks of the wall as a golem does, and once none is left goes back to its alcove;
+  health, their blows throwing foes back), come with the finished Wall and stand on the walk, one on each run between the towers (posts x 15, 34, 62
+  and 81, at z 7). A
+  sentry fights any foe within 16 blocks of the wall as a golem does, and once none is left goes back to its post;
   while foes are about further out (within 80 blocks), it steps out onto the walk and watches them. Pushed or knocked
   off the Wall it walks back up, and where there is no way up it climbs the wall's face. A sentry lost is replaced the
   next morning (the hall's round before 2000 ticks of the day) by the village's Golem Smith, or a Tinkerer standing in,
@@ -455,30 +493,36 @@ their marks for when it's repaired, and nobody is replaced.
 Damaged (or with Wonders off) both are paused: the search waits, the map button draws only the village map and the
 calendar has no Coming days; what was found stays in the hall.
 
-**The Hanging Gardens** (35.19) are drawn: a stepped garden mountain on a 39 by 39 foot (a 47 by 43 site with the ramp's foot and the pool), 31 high to its treetops,
-about 16,200 blocks. Four terraces 6 high, each 4 in from the one below (39, 31, 23 and 15 across), each faced all
-round with an arcade of 3-wide arches on cut sandstone columns with chiseled capitals, under a terracotta band and a
-cut sandstone coping; behind each arcade a gallery runs round the terrace under its garden, lit by glow berries
-hanging in the arch heads and lanterns. Inside the first terrace are the Cistern Vaults: a hall 29 by 29 of 36 columns
-round a pool with a chain pump, a doorway from the gallery on each side. Each ledge is a garden on the gallery's roof:
-a hedge of azalea and oak leaves on the coping, fields of wheat, carrots and beetroots between water channels, sweet
-berry beds, glow berry arbors, flower beds with azaleas, beehives, and on the corners oaks, flowering azalea trees and
-a farm corner with a composter and a chest on each level (four village farms). Vines hang down the columns and over
-the arches. A ramp spirals up, a stair with a balustrade on each side in turn: along the front from the ground, up the
-second terrace's east face, the third's back and the crown's west face. On the crown a cistern with a fountain pours
-down a channel to the east edge: the falls drop from a basin on each ledge to the next and into a pool with lily pads
-at the foot, past a blind, mossy stretch of arcade. Its stages: I *The First Terrace and the Cistern Vaults*, II *The
-Second Terrace*, III *The Third Terrace*, IV *The Crown Garden and the Falls* (the crown, its garden and cistern, the
-last ramp and the water, poured from buckets). Its goods (found, with the rare worker who finds each and in how many
+**The Hanging Gardens** (35.19, rebuilt from scratch in 52.6: "the Terraced Mount") are a man-made mountain of
+gardens on a 45 by 39 foot (a 47 by 44 site with the Forecourt), 33 high to the Water Pavilion's roof, about 15,600
+blocks. Four terraces of mud brick, 6 high each (45, 35, 27 and 19 wide), each a vaulted hall under a garden, are set
+back toward the rear: to the front the gardens fall in deep green steps to the Forecourt, and the back rises nearly
+sheer, a cliff of brick. Every face stands on a plinth of baked brick, with piers every four blocks, glazed arcade
+windows, a frieze of blue glazed tiles under a sandstone cornice and a sandstone parapet; leaves of azalea and oak spill
+over the edge in every other bay, with vines hanging below them (the Hanging Curtains). Stage I is the Vaults and the
+Lower Terrace: the Forecourt's Processional Stair up the axis between two Reflecting Pools with lily pads, the Vaults
+inside (brick piers with capitals, hanging lamps, the nursery of potted saplings, the seed store of hay and the Well of
+the Shaft, two doors from the Forecourt), and on top Farm I (wheat), the Palm Basin, palms, cypresses and lawns. Stage
+II, the Gallery and the Middle Terrace: the Gallery Stair up the second terrace's face, the Gallery inside (an orangery
+of potted azaleas behind the glazed arcade, its door from the Lower Terrace), and on top Farm II (carrots), the
+Glow-Berry Pergola and the Lily Basin. Stage III, the Upper Terrace and its Hall: the Cistern Stair, the Upper Hall
+inside and on top Farm III (beetroots) and the Cypress Walk. Stage IV, the Crown Garden and the Water Pavilion: the Crown
+Stair, Farm IV (all three crops) and crown palms, and the Water Pavilion, a colonnade of sandstone with an open oculus
+over the Cistern at the top of the Shaft, a column of still water from the Vaults' floor, seen through a window in every
+hall. Each terrace's farm corner is a village farm: a composter, a chest beside it and a field round a channel of water,
+six apart in height, so no field joins another. Every stage stands on its own, and no stage replaces a block an
+earlier one laid; a player walks from the ground up every stair to the crown. Its stages: I *The Vaults and the Lower
+Terrace*, II *The Gallery and the Middle Terrace*, III *The Upper Terrace and its Hall*, IV *The Crown Garden and the
+Water Pavilion*. Hanging Gardens begun before 52.6 keep the 35.19 drawing (four sandstone terraces of arcades round a
+spiral ramp, the falls down the east side): they are counted, repaired and finished from that drawing (`WonderDrawings`,
+`blueprint_history/wonder/hanging_gardens/`). Its goods (found, with the rare worker who finds each and in how many
 days; then what a workshop makes): I a Sniffer Egg (the Beastmaster, 14 days), a Wild Armor Trim Template (the
 Pathfinder, 11 days); made: 2 Berry Wine (Vintner); II a Pitcher Pod (the Beastmaster, 18 days), Torchflower Seeds
 (the Old Sage, 7 days), a Heart Pottery Sherd (a Master Sifter, 14 days); made: 2 Vintage Wine (Vintner); III an
 Enchanted Golden Apple (the Seer, 22 days), a Heart of the Sea (the Pathfinder, 11 days), a Sponge (the Bard Laureate,
 18 days); made: 2 Gold Circlets (Jeweler); IV a Totem of Undying (the Merchant Prince, 22 days), a Nether Star (the
 Golem Smith, 36 days), a Conduit (the Founder, 18 days); made: 2 Noble Robes (Tailor). It needs a Town and the Grand
-Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off). The crown has a field of its own by
-its farm corner (wheat and carrots either side of a channel, 35.20), so all four farm corners have a field in a
-farmer's reach.
+Chef (or a Master Chef and 8 kinds of meal in the store while Legends are off).
 
 **The Hanging Gardens' powers** (35.20), while they are finished and stand (`wonderStanding`):
 
@@ -494,18 +538,25 @@ farmer's reach.
 - **Its terraces are four village farms**: a farmer whose composter is a farm corner's takes on that terrace's fields
   by themselves, as at any composter with a chest by it.
 
-**The Colossus** (35.21) is drawn: the Founder's statue, 47 high on a 29 by 29 site, about 9,000 blocks, standing over
-the village's main road. It is a villager drawn a pixel to a block from the game's own model, so it reads as one from
-far off: the tall head (9 across, 10 high), the long nose hanging past the chin, a dark unibrow over white eyes with
-emerald pupils, and a robe of polished diorite trimmed with smooth stone at the hem, the belt and down the front,
-flaring at the hem over two feet. Its left arm folds across the chest, the hand resting on it; its right arm rises
-clear of the head and holds up the lantern, a cage of glass panes round glowstone under a copper cap, lit day and
-night. A cloak of cut copper (about 370 blocks with the lantern's copper) hangs from the shoulders to the pedestal in
-three pleats, and weathers green over the weeks. The plinth is 13 high in three steps of stone bricks (mossy and
-cracked low down) on a skirt of deepslate brick: polished andesite pilasters and a cornice, a terrace with a
-balustrade and nine braziers round it, and a smooth stone pedestal. The road passes front to back through an arch 5
-wide and 6 high, with lantern niches down the passage and lamp posts at both mouths; over the front arch is the
-Founder's plaque, a row of seven dark oak signs on a dark oak panel (35.22 writes them). The arm and the head need
+**The Colossus** (35.21; rebuilt from scratch in 52.6: "Astride the Road") is the Founder's statue, 47 high on a 29 by
+29 site, about 8,800 blocks (8,786), standing over the village's main road. The Founder strides over the road: his
+feet are planted wide either side of it, the left forward and the right back, so the road runs through an arch between
+his own feet. The arch is 5 wide and 6 high at its crown, vaulted in deepslate tiles with shroomlights let into the
+crown, with voussoirs and a chiseled keystone at both mouths. The base is a dark gate: three stair-edged courses of
+stone bricks (cracked and mossy among them) all round, four corner piers with a brazier each, and a die of deepslate
+bricks between proud polished deepslate pilasters with recessed panels and hanging lanterns, a copper frieze, an
+overhanging cornice and a smooth stone deck (y 12) behind a low balustrade with a brazier at each corner and the
+eternal flame before the Founder's feet: nine braziers in all. Over the road arch is the Founder's plaque, seven dark
+oak signs (35.22 writes them). The figure is white: bare shins in sandals, a pleated knee-length tunic of smooth stone,
+a copper belt with a chiseled buckle, a sash across the chest and polished diorite skin. His left hand holds the
+rolled founding plan (bone) at his hip; his right arm is thrown up, and on the fist stands the lantern: three
+glowstone (y 43 to 45) caged in yellow glass on all four sides, a copper grate band and a copper cap with a chiseled
+crown at the top (y 46), lit day and night. The bearded head looks down the road from deep-set emerald eyes under a
+brow, the nose standing out past them, a copper laurel in the hair. A cloak of cut copper falls from the shoulders,
+spreading like a bell and gathering again, its train pooling on the deck; with the belt, frieze, laurel and lantern
+it is 398 copper blocks, none waxed, and it weathers green over the weeks. A Colossus already begun or finished keeps
+the old drawing (the 35.21 one, a robed villager on a stepped plinth): it still counts as standing, its plaque is
+still written on its own seven signs, and it is repaired and finished as it was first drawn. The arm and the head need
 scaffolding (35.6). Its stages: I *The Plinth and the Road Arch*, II *The Robes*, III *The Arms and the Cloak*, IV
 *The Head and the Lantern*. Its goods (found, with the rare worker who finds each and in how many days; then what a
 workshop makes): I a Heart of the Sea (the Pathfinder, 11 days), a Coast Armor Trim Template (the Merchant Prince, 7
@@ -536,28 +587,31 @@ Founder (or City rank while Legends are off).
   has forgotten it reads "long ago". A sign broken and put back is written again on the next round (every 5 seconds),
   with the names as they are then.
 
-**The Stadium** (35.23, only with Cobblemon; made bigger, with more dressing and walk-through interiors, by 35.23a) is
-drawn: an oval arena 53 by 43, its bowl 18 high (24 to the gate's banners, about 12,100 blocks), round a grass battle
-field 31 by 21 ruled in white (its edge, the
-half-way line, a center circle; no logos) inside a smooth stone apron and a stone barrier. The stands step up two at a
-time, seven tiers along the long sides and five at the ends, climbed by zig-zag aisles of stone brick stairs, with red and white carpet seats in wedges round the bowl;
-in a village with a Village Banner the red and the white are built in its banner's two colors instead (the base and
-the first other color of its pattern; the field's white lines stay white). A trainer's box is cut into each end, a
-stone room under a spruce roof with a Training Post facing the field, and the professor's box stands raised in the
-middle of the south stand, a lectern behind its rail. The west end is the covered stand, under a lean-to canopy of
-spruce slabs on four spruce columns; over the east end stands the scoreboard, black terracotta in a stone frame under
-a red header, showing 2 - 1 on both faces, to the stands and to the road outside. Outside, the back wall has pilasters (buttresses on the straight sides) and bays that take
-turns as open, lit entrances (a banner over each) and barred windows with flower beds at their foot, two bands of red
-and white terracotta and a parapet with lanterns and banners. Inside it, under the stands, everything is walkable and
-lit, three high: a concourse two wide right round; eight vomitories climbing as stairs from it into the front rows; on
-the north the first-aid room by the nurse's booth (cots, a red-cross banner), two food kiosks serving onto the concourse
-through a hatch, and a trophy room; on the south the players' tunnel from the concourse to the pitch under the
-professor's box, with the home and away dressing rooms off it (lockers, a bench, their banner), the referees' room and
-the groundsman's store; doors from the trainer boxes onto the concourse; two covered dugouts on the apron. The gateway on the north side is a
-tunnel through the stand under two piers and a lintel banded red and white, with standing banners on the piers and
-banners hung over the stand. Four floodlight towers stand at the corners, each an iron head with eight redstone lamps
-wired round a daylight detector that lights them at night. In the corners outside are the nurse's booth (a striped
-stall with a Healing Machine and a brewing stand) and seven market pitches, three with stalls on them. Its stages: I
+**The Stadium** (35.23, only with Cobblemon; rebuilt from scratch in 52.6: "the Stadium Bowl") is one continuous
+bowl drawn on the stadium shape (a rounded rectangle: straight sides, round ends), 59 by 49 and 26 high to the gate's
+banners, about 12,100 blocks (12,094). At its heart is a grass battle field 31 by 23 inside a white touchline, its chalk
+marking a center line, a center circle and a box round each end's Training Post (the trainer boxes), inside a
+pitch wall of polished blackstone. Round it the Lower Stands rise in three rows of red and white carpet seats on stone
+brick risers and smooth stone treads, then a walk, then the Upper Stands' three rows; 676 seats in all, climbed by
+aisles of stone brick stairs. The back aisle climbs one step past the top row to a standing alcove in the outer wall,
+under the Covered Stand, the highest place a spectator can stand. In a village with a Village Banner the red and the white are built in its banner's two
+colors instead (the base and the first other color of its pattern; the field's chalk stays white). Along the back the
+Covered Stand shelters the upper rows under a green copper lean-to with lanterns hung under it; on the east end stands
+the scoreboard, two blocks thick, with "2 - 1" in white on black on each face under the two teams' colors, so it reads
+the right way round from the stands and from the road. The outer wall is red brick to a quartz cornice and coping, its
+order a block proud of the brick: a stone brick plinth, quartz pilasters every five blocks, a string course, and windows
+set back on quartz sills. Under the Upper Stands runs the Concourse, a hall three high right round the bowl, lit by
+hanging lanterns, with benches along its inner wall, doors out at both ends and into the gate's cut. Off it, in the
+four corners the round ends leave free, stand the corner pavilions, brick with quartz corners under copper roofs: at
+the front right the Nurse's Booth (the Healing Machine, a brewing stand and a counter, a red cross on a white panel
+over its door and another on its roof), at the front left the Refreshment Room (a counter with cakes, a table for two,
+a striped awning outside), and at the back the home and away changing rooms (benches under lockers, each in its team's
+colors). The Gate is a frontispiece across the front: two banner pylons, a stepped arch with a quartz lintel and
+keystone, a Poké Ball crest in a niche and STADIUM lettered on a quartz attic, read from the road; the way in runs
+through the cut in the bowl straight onto the field. Four floodlight masts of iron stand on the pavilions' outer
+corners, each with eight redstone lamps wired round a daylight detector that lights them at night. A Stadium already
+begun or finished keeps the old drawing (the 35.23 oval arena): it still counts as standing, and is repaired and
+finished as it was first drawn. Its stages: I
 *The Field*, II *The Lower Stands*, III *The Upper Stands and the Covered Stand*, IV *The Gate and the Floodlights*.
 Its goods (found, with the rare worker who finds each and in how many days; then what a workshop makes): I Diamond
 Horse Armor (the Beastmaster, 14 days), a Coast Armor Trim Template (the Merchant Prince, 7 days); made: 2 Great Balls
@@ -812,23 +866,24 @@ and its `week` (absent: -1, a search begun anew). 35.16 saves nothing new: a Gre
   item, so canceling never hands back something nobody found.
 - The goods lists live in `tools/blueprints/wonder_goods.py` with their hour estimates and the pacing reckoning;
   `wonders.py` takes them from there, so drawing the Wonders again writes the same lines.
-- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9): nine parts, two of stage I only
-  clearing the air up to the spires' tips (y 48 to 52), and the spires' last few blocks a small part of stage IV.
-- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): the rose's ring is built
-  with the nave (II) and its glass with the towers (IV), as the roadmap splits them; nothing hangs in the air between
-  stages.
-- The Lighthouse is about 5,000 blocks, not the 7,500 first planned (35.11): a tower 13 to 9 across with the cottage,
-  boathouse, quay and jetty fills 25 by 33 by 46 that way, and only solid masonry would reach 7,500. Its base is solid
-  round the stair and its wall three thick low down, as a sea tower's is.
-- The Lighthouse's sea is the land behind its quay (35.11): the front (z 0) is the land side, where the village is; the
-  mole, the boathouse's open end and the jetty stand in the water from 11 back. The jetty's deck is top slabs on log
-  posts, so it gets no foundation, as the Fisher's Hut's; the mole's bottom course is filled down to the sea bed.
-- The Lighthouse's lamps are redstone lamps under redstone dust that an inverted daylight detector on the lantern's roof
-  powers (35.11): lit at night, dark by day, with no clock. The lamps' lit state is not checked as damage.
-- The Great Library's walls are two leaves (35.13), diorite outside and smooth stone inside, with deep windows, and it
-  stands on a solid terrace three high.
-- The Great Library's sixteenth bookshelf place round the Enchanting Table is left open towards the door (35.13), so the
-  librarian can walk in; fifteen shelves still give the table its full power.
+- The Great Cathedral's stages are cut by `wonder_stages()` on a 48-block grid (35.9; the 52.6 drawing has ten parts):
+  two of stage I only clearing the air up to the spires' tips (y 48 to 52), the fleche's tip a small part of stage III
+  and the spires' last few blocks a small part of stage IV.
+- A stage's round rose opening and the nave's open east end wait for the next stage (35.9): in the 52.6 drawing the
+  rose's stone ring is built with the west front (I) and its glass with the towers (IV), as the roadmap splits them;
+  nothing hangs in the air between stages.
+- The Lighthouse is about 5,200 blocks, not the 7,500 first planned (35.11; 5,175 since its 52.6 rebuild): a tower 13
+  to 9 across with the cottage, the landings and the mole fills 25 by 33 by 46 that way, and only solid masonry would
+  reach 7,500.
+- The Lighthouse's sea is the land behind its quay (35.11): the front (z 0) is the land side, where the village is. Since
+  52.6 the mole, the bastion, the Ferry Landing and its jetty and the Fish Stage stand in the water from 9 back; the
+  Travel Post is at the jetty's end on the plot's east edge, so a ferry's boat has water beside it.
+- The Lighthouse's lamps are redstone lamps, each with an inverted daylight detector on top of it open to the sky (52.6:
+  the hood's eave of 28), so each lights at night and is dark by day with no clock and no other power. The lamps' lit
+  state is not checked as damage.
+- The Great Library stands on a solid podium three high (35.13, kept by the 52.6 rebuild), its drum's wall three thick.
+- The Great Library's ring of bookshelves round the Enchanting Table is left open toward the door (35.13, kept by the
+  52.6 rebuild), so the scholar can walk in and stand facing the table; the shelves still give the table its full power.
 - One Legend can serve two Wonders (the Seer for the Cathedral and the Observatory): a requirement only checks that the
   Legend lives in the village.
 - The Master Architect requirement is added to every Wonder by the mod, so a server owner's own Wonder needs it too.
@@ -947,7 +1002,7 @@ is skipped quietly (not on the page, no mistake logged), and the colors style an
 
 Showcase scenes: wonders_page (group Wonders: the folly's card, then the placed plan's see-through tower) and
 wonder_gallery (each of our Wonders placed whole, from the front and from behind; the Lighthouse with its sea flooded
-in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens' falls are on their east side; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).
+in, so the mole and the jetty stand in the water; the Great Wall's front is its village side; the Hanging Gardens are filmed from the front, where their terraces step back; the Colossus faces its front, down the road through its arch; the Stadium needs Cobblemon, so the scene is filmed with it; its card shows four of the stills, the rest are in its gallery).
 
 GameTests in `WonderFinishedGameTests` (35.8): the folly raised through its plan has its test mood (+4, "proud of the
 Test Folly" among a villager's reasons) and beauty (+2) on; 15% of it broken, the next day's count turns them off, the
@@ -1029,7 +1084,7 @@ two are born in a day with two free beds, not a third sooner; damaged, both off,
 built in the area, each of its four farm corners has a chest and a field in reach, and a farmer at the first terrace's
 composter takes on its field by themselves, harvests it and brings in the extra; the file's numbers and the page's
 lines. Showcase scene `wonder_hanging_gardens` (group Wonders): the Gardens' time-lapse with a crew of ten, the
-festival's fireworks, then the next morning the falls running and a farmer at each farm corner taking on its terrace.
+festival's fireworks, then the next morning its water standing and a farmer at each farm corner taking on its terrace.
 
 GameTests in `GreatWallPowerGameTests` (35.16): the Great Wall placed north of a hall covers about 195 degrees of its
 compass with the margin; 50 raids started with a fixed random gather outside it, none of their raiders behind the
@@ -1089,7 +1144,7 @@ whole columns), and a turned Wonder holds the ground it turned onto (QA's `QaWon
 
 QA GameTests in `QaWonders1101GameTests` (16; 35.3 with the real designs, 35.9, 35.11, 35.13, 35.15, 35.17): for each
 of the five Wonders, its whole blueprint (`wonder/<id>`, the one its plan carries) holds exactly the blocks its stages
-leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,011, Library 14,574, Wall 12,338, Observatory 8,438)
+leave standing, of the same kinds (Cathedral 14,252, Lighthouse 5,175 and Observatory 8,504 since their 52.6 rebuilds, Library 14,967 since its 52.6 rebuild, Wall 12,338)
 and its plan carries that size; its plan goes down centered on the hall in all four turns, mirrored or not, and is
 refused once its center is past the hall's 64 blocks ("Its center must be in Testville, within 64 blocks of the
 hall ..."); its file asks a Town, its Legend with the stand-in its item names and its other requirement, with the

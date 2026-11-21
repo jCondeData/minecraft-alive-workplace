@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCo
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
 import io.github.jcondedata.aliveworkplace.registry.ModBlocks;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ import net.minecraft.world.level.block.Blocks;
  * logs there of the recipe's 4 (1 short, not 4), another mod's log the tag takes counts, the bundles themselves in the
  * chest are used (as a slime block is for a slimeball; Carved Wood packs 4 logs into 4 bundles, each unpacks into 1), and a campfire's 3 logs; then the bundle through a builder's request.
  */
-public class QaUnpackedLogs1115bCompatTests implements FabricGameTest {
+public class QaUnpackedLogs1115bCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** The one-ingredient crafting recipe that makes oak logs (Carved Wood's bundle unpacked), or null. */

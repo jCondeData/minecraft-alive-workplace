@@ -48,14 +48,10 @@ NEAR_OK = ("_door", "ladder", "_bed", "lantern", "fence_gate", "scaffolding", "j
 # Found on purpose: (blueprint, position) -> why. Listed with --all; they don't fail the run.
 LOG_NOTCH = "a log-cabin corner: the crossing logs stick out on every other course"
 TENT = "inside a tent: a low space by the bed or the hay"
-FOUNTAIN = "the garden fountain's top under the house's back eave, not a roof"
-EMBRASURE = "an embrasure between the hoarding's posts"
 ALLOW = {
     ("fletchers_lodge", (8, 2, 8)): LOG_NOTCH, ("fletchers_lodge_2", (8, 2, 2)): LOG_NOTCH,
     ("fletchers_lodge_2", (8, 2, 8)): LOG_NOTCH,
-    ("manor_2", (9, 4, 17)): FOUNTAIN, ("manor_3", (9, 4, 17)): FOUNTAIN, ("manor_4", (9, 4, 17)): FOUNTAIN,
-    ("stone_wall_2", (1, 5, 2)): EMBRASURE, ("stone_wall_2", (5, 5, 2)): EMBRASURE,
-    ("camp/bandit_camp", (5, 1, 11)): TENT, ("camp/colony_camp", (2, 2, 5)): TENT,
+    ("camp/colony_camp", (2, 2, 5)): TENT,
     ("camp/colony_camp", (12, 2, 5)): TENT, ("camp/settlers_camp", (3, 2, 4)): TENT, ("camp/war_camp", (9, 1, 15)): TENT,
     ("camp/coven_hut", (7, 1, 4)): "under the stilted deck, behind its steps: out of sight",
 }
@@ -67,6 +63,72 @@ ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) f
 # The Lantern Pergola (26.14) is an open lattice of slats with azalea grown over some of the gaps, not a roof
 ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
               for p in ((2, 5, 1), (1, 5, 5), (2, 5, 5), (3, 5, 3))})
+# The Well (49.1 rebuild, shipped in 52.1) is an open well-head: a roof on two uprights over the water, open on all
+# four sides on purpose (you lean on the rim and draw from any side); the air under the roof is its mouth, not a room
+ALLOW.update({(n, p): "an open well-head under its roof, not a room" for n in ("well", "well_2")
+              for p in ((2, 3, 3),)})
+# The Well House (49 rebuild) is an open pavilion round the well on purpose: railings and benches between its posts,
+# no walls, so villagers see and reach the windlass and the channel's head from every side
+ALLOW.update({(n, (2, 4, 7)): "the Well House's open pavilion round the well, not a walled room"
+              for n in ("well_house", "modded/well_house")})
+# The Gazebo (49 rebuild) is an open pavilion on purpose: eight posts under a tent roof, railings and benches in three
+# bays, flower urns in four, the front bay its way in; the air under the roof is a sheltered seat, not a walled room
+ALLOW.update({(n, (2, 2, 3)): "the Gazebo's open bays under its roof, not a walled room" for n in ("gazebo", "modded/gazebo")})
+# The School (49 rebuild, round 3) is a court with an open cloister on purpose: a colonnade of posts faces the sparring
+# ring so spectators on the bench watch the lesson; the walk is a loggia, not a room
+ALLOW.update({(n, p): "the School's open cloister facing the sparring ring, not a walled room"
+              for n in ("school", "modded/school") for p in ((2, 1, 9),)})
+# The Guildhall (51.5 rebuild) is a market guildhall on purpose: an open stone arcade where the village trades out of the
+# rain, the guild's closed hall jettied over it (its stair boxed in behind a door); the arcade is a market, not a room
+# (round 3: its west stall's stock chest stands at (2, 1, 6) against the pier, so the opening is reported one up)
+ALLOW.update({(n, (2, 2, 6)): "the Guildhall's open market arcade under the closed hall, not a walled room"
+              for n in ("guildhall", "guildhall_2", "guildhall_3")})
+# The Market Square (51.7 rebuild, "the Market House") stands its Market Court on an open stone undercroft: the
+# market's covered trading floor, trader and banquet ground inside the square's 9x9, which glazing would cut off
+ALLOW.update({(n, (2, 1, 8)): "the Market Square's open undercroft, the market's covered trading floor under the "
+              "Market Court, not a walled room" for n in ("market_square",)})
+
+# The Prisoner Cage (49 rebuild) is a cage wagon on purpose: its bed rides on four wheels at wheel-top height, open
+# underneath between them but for the axles; the air under the bed is under a cart, not a room ("prisoner_cage" is how
+# a rebuild candidate is named, "legend/prisoner_cage" the shipped one)
+ALLOW.update({(n, (2, 1, 2)): "the open underside of the cage wagon's bed between its wheels, not a room"
+              for n in ("prisoner_cage", "legend/prisoner_cage")})
+
+# The Royal Hall (51.9 rebuild, "the Brick Palace") is entered through an open arcade between its two gate towers, under
+# the proclamation balcony: a porch, not a room ("royal_hall" a rebuild candidate, "realm/royal_hall" the shipped one)
+ALLOW.update({(n, (6, 1, 2)): "the Royal Hall's open entrance arcade under the balcony, between the gate towers, not a room"
+              for n in ("royal_hall", "royal_hall_2", "realm/royal_hall", "realm/royal_hall_2")})
+
+# The Clinic (49 rebuild) has a sun veranda on purpose: the ward's west slope runs on as a catslide over an open deck on
+# posts, where the mending sit out in the sun on seats under the windows; the air under it is a porch, not a room
+ALLOW.update({(n, (2, 1, 4)): "the Clinic's open sun veranda under its catslide, not a walled room"
+              for n in ("clinic", "modded/clinic")})
+
+# The Quarry (50.10 rebuild, "the Headframe") leaves the Gap in its pit rail open on purpose: the Miner's way from the
+# hoist house's pit door down to the pit (QuarrySite.planStairs starts at the pit's edge there); the walk between the
+# shed's west wall and the headframe's back legs, under the eave and the frame's beams, is a covered landing, not a room
+ALLOW.update({(n, (9, 1, 6)): "the Quarry's open Gap to the pit under the headframe and the hoist house's eave, not a room"
+              for n in ("quarry", "modded/quarry")})
+# The Train Station (49/50.13 rebuild, "the Trainshed") is a train shed on purpose: the track runs through it from edge
+# to edge, so both gable ends are open portals under their tie beams (the brief: the line runs on past both sides)
+ALLOW[("train_station", (2, 6, 8))] = "the Train Station's open shed ends, where the track runs in and out, not a walled room"
+# The Trainer's House (49 rebuild, "the Battle Court") has a covered bench stand along the court's west side on purpose:
+# seats under a lean-to between posts on the curb, open to the field so neighbours watch the battles; not a room
+ALLOW.update({(n, (2, 2, 7)): "the Trainer's House's open bench stand facing the court, not a walled room"
+              for n in ("trainers_house", "modded/trainers_house")})
+# The Arena (49 rebuild, "the Market Stadium") is open on purpose: II's front stand is a colonnade, arcaded on both faces,
+# whose covered walk is the Festival Cup's fair lane (traders stand there), with the judges' loggia open over the gate;
+# III's grandstand is open to the pitch so its rows see the bouts. Walks and stands, not rooms
+ALLOW.update({(n, p): "the Arena's open colonnade over the fair lane, its loggia over the gate" for n in ("arena_2", "arena_3")
+              for p in ((4, 3, 2), (8, 3, 2), (16, 3, 2), (10, 7, 3))})
+ALLOW.update({("arena_3", (5, 3, 18)): "the Arena's grandstand, open to the pitch, not a walled room"})
+# The Habitat Garden (49 rebuild, "the Stone Ring") is open air: the keeper's bower is an open-fronted lean-to with the
+# pasture at its eave, the honey tree's crown shades the ground round its trunk, and (Level II) the hide stands on stilts
+# with open ground under its floor where its ladder rises: none of them is a walled room
+ALLOW.update({(n, p): why for n in ("habitat_garden", "habitat_garden_2", "modded/habitat_garden", "modded/habitat_garden_2")
+              for p, why in (((15, 1, 6), "the Habitat Garden's open-fronted bower, not a walled room"),
+                             ((12, 1, 13), "the shade under the Habitat Garden's honey tree, not a room"),
+                             ((2, 1, 18), "the open ground under the Habitat Garden's hide on its stilts, not a room"))})
 
 
 def load(path, props=False):
@@ -414,7 +476,11 @@ def main(argv):
     for path in blueprints(args):
         size, cells, states = load(path, props=True)
         name = os.path.relpath(path, STRUCTURES)[:-4]
+        if name.startswith(".."):  # a rebuild candidate (build/rebuild/<family>/<id>.nbt): known by its id
+            name = os.path.basename(path)[:-4]
         deep = under.get(name, under.get(name[len("modded/"):], 0) if name.startswith("modded/") else 0)
+        if name.startswith("looks/"):  # a biome look (49.10) keeps its level's basement (StarterBlueprints.cultureLook)
+            deep = under.get(os.path.basename(name), 0)
         if deep:
             size = (size[0], size[1] - deep, size[2])
             cells = {(x, y - deep, z): c for (x, y, z), c in cells.items() if y >= deep}

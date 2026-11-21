@@ -34,9 +34,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **A Palisade Gate holds about 10 seconds, a Gatehouse about a minute**: its portcullis has to go first, then the
   fence gate behind it.
 - **The defense upgrades** (32.20): each wall and gate build has a II, clicked over the finished one so the builder
-  adds only what's new. **Palisade II** gets a fighting step (a timber along the walkway to stand on, high enough to shoot over the low
-  points, and a row of archers' battle stations, as many as the Palisade's walkway) and a
-  ditch of pointed dripstone stakes in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
+  adds only what's new. **Palisade II** gets a fighting step (52.3: the bank built out into a walk three wide behind the stakes, 19
+  battle stations to the Palisade's 7, at least as many as the Palisade's walkway) and a
+  ditch of seven pointed dripstone stakes in turned earth in front; **Stone Wall II** timber hoardings over the battlements (a roofed walkway,
   a gallery out over the wall's foot with murder holes); **Wall Tower II** a roofed top with an archers' gallery, two
   stations a side; **Gatehouse II** a barbican in front with a second gate and portcullis and murder holes over the
   gateway. In a siege **both portcullises drop** and the rams meet the **barbican's gate first**: they break all of
@@ -164,8 +164,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   archer closes in on a raider or shoots from the ground for want of a station.
   - A station is a block of a finished wall, gate or Lookout Tower blueprint, at least 2 above its floor row, with a
     whole top face and nothing in the two blocks above it, that is not a merlon (a spot one higher than a spot beside
-    it). Each blueprint is read once and kept in memory. A Wall Tower has 7: its top floor's planks without the
-    ladder's hole and the lantern's plank.
+    it). Each blueprint is read once and kept in memory. A Wall Tower has 16 (52.3): its top's deck round the
+    ladder's hole and the crenels between its merlons, all at one height.
   - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
     built over or with its floor gone is skipped, and a guard on it gets another.
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
@@ -425,6 +425,13 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   begun there, and once let out it goes back, finishes the first (5 rungs) and gets over.
 - `LadderGameTests.aLadderGoesUpInAirBesideAPlayersBlockNotOverIt`: a player's hay bale where the ladder would go is
   never replaced; the ladder goes up in air beside it and the climber is still over the wall within 600 ticks.
+- `QaSiegeClimbs1121dGameTests` (QA, B1389 and B726): a climber over the rebuilt Stone Wall (from a bale, from flat
+  ground, onto ground one block higher inside, with and without a bale) and over a Palisade comes down off the inner
+  stairs onto the ground and shoots his target, never standing up on the wall for 5 seconds; a husk walking round the
+  corner to a side-wall ramp is never let go while outside, piles the ramp to the top and gets in, and so does one
+  whose waiting spot is fenced off (it waits beside the ramp). B1419: a husk starting beside a player's garden wall
+  that stands on the ramp wall's line outside the yard, past a gap, is not counted over there (only the village wall
+  the ramp leans on counts, unbroken from the ramp to beside the raider); it piles the ramp to the top and gets in.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

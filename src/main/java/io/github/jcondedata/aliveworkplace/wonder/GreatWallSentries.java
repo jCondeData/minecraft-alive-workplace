@@ -34,14 +34,14 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The Great Wall's sentries (ROADMAP 35.16), {@code sentries}: while a finished, standing Wonder with the power guards a
- * village, iron golems keep its walk, one at each of its posts (the towers' alcoves). They are the Golem Smith's Wall
- * Sentries ({@link GolemSmith#build}, role {@code sentry}, twice a golem's health), marked {@link #TAG}, their post
- * their {@code golem_post}: so everything a sentry is lives on the golem and is saved with it.
+ * village, iron golems keep its walk, one at each of its posts (on the walk, one per run since the 52.6 rebuild). They
+ * are the Golem Smith's Wall Sentries ({@link GolemSmith#build}, role {@code sentry}, twice a golem's health), marked
+ * {@link #TAG}, their post their {@code golem_post}: so everything a sentry is lives on the golem and is saved with it.
  * <ul>
  * <li>Four come with the finished Wall ({@link #man}, from {@code WonderCelebration.finished}).</li>
  * <li>On duty ({@link WatchGoal}, ranked above everything a golem does) a sentry fights any foe ({@code Guards.isFoe})
  * within the power's {@code range} of the wall, as a golem does, and once none is left goes back to its post; while
- * foes are about further out, it steps out of its alcove onto the walk and watches them. Pushed or knocked off the
+ * foes are about further out, it steps out to its walk spot and watches them. Pushed or knocked off the
  * wall, it walks back up, or where there's no way it climbs the wall's face.</li>
  * <li>A lost sentry is replaced the next morning ({@link #morning}, the hall's round before {@link #MORNING_TO}): by the
  * village's Golem Smith, or a Tinkerer as stand-in, from {@link #IRON} iron blocks and a pumpkin in the Wonder's
@@ -261,8 +261,7 @@ public final class GreatWallSentries {
 		if (smith.isPresent()) {
 			return smith;
 		}
-		return level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall),
-			v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.TINKERER).stream().findFirst();
+		return VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isBaby() && v.getVillagerData().getProfession() == ModVillagers.TINKERER).stream().findFirst();
 	}
 
 	/** The nearest foe within the power's range of the wall, for {@code golem} keeping {@code post}. */

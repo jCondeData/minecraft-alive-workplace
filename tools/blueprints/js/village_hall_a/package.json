@@ -1,0 +1,7 @@
+{
+  "name": "village-hall-a",
+  "private": true,
+  "type": "module",
+  "description": "Village Hall, Version A (the Bell Porch, ROADMAP 49/51.1): a candidate for the critic. LEVEL=1..3 picks the level; build.sh builds and saves all three.",
+  "scripts": { "build": "sh build.sh" }
+}

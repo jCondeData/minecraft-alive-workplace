@@ -108,7 +108,7 @@ another session pushed first. `python3 tools/agent/test_sessions.py` tests it on
 | `review <id> FILE… --as <you> --message "<text>"` | Hands in a review package: commits it to the `reviews` branch for the next digest. |
 | `verify <id>… --as <you> --note "<what was tested>"` | QA: marks landed items `(verified …)`. |
 | `ship --as <you>` | QA: lands the passing tests on a `qa/…` branch (merge `main`, build, push). |
-| `reply "<his words>" --as <you>` | Records the owner's `approve` / `veto` / `change`. |
+| `reply "<his words>" --as <you>` | Records the owner's answers on `main` in one push, in plain words: `approve 22.3, B1`, `approve all` (every item pending review; `approve all bugs`, `approve all except 49.2`), `pick 49.3 B` (adds `(picked: B, date)` to the item; the lane that ships it builds that version), `veto 22.3: why`, `change 22.3: what`; several lines at once are fine. It prints `RECORDED ON MAIN:` with one line per thing, re-reads `main` to check each, and exits 1 with `FAIL` lines if any part was not understood or not recorded. Never summarize its output from memory: relay it to him. |
 | `bug "<what, when, expected; Test: name>" --as <you>` | Adds the next `B<n>` under Bugs. |
 | `handoff "<in progress, next, traps>" --as <you>` | Replaces your lane's previous handoff in the Notes. |
 
@@ -207,7 +207,9 @@ the new jar and nothing is lost. Report it in the Notes.
   3. **The evening digest releases** (CLAUDE.md "Releasing") when something new landed since the last release,
      whether or not `main` is green at that moment: CI tags the first green build with the new version (owner,
      2026-10-05). Pending reviews don't hold it back. Report the version and whether it is tagged yet.
-  4. Stay for his replies and record each one with `sessions.py reply`.
+  4. Stay for his replies and record each one with `sessions.py reply "<his exact words>"`, then **tell him exactly
+     what it printed**: the items recorded (and that `main` was re-read to check), or plainly that it failed and
+     why (every `FAIL` line). Never say "recorded" without that output; if the command can't run, say so.
 
 ## Merging cleanly
 

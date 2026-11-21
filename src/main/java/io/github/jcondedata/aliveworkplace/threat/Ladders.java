@@ -542,16 +542,24 @@ public final class Ladders {
 		return -1;
 	}
 
-	/** How many blocks in from the foot of {@code site} the first column stands free from the ground to over the wall. */
+	/**
+	 * How many blocks in from the foot of {@code site} the first column stands free from the ground to over the wall: free
+	 * down to the foot's own level first, so the climber drops at least as low as he set out; failing that (ground inside
+	 * higher than outside), free down to one above it. B1389: with only the second, a ladder whose foot stood on a block
+	 * (a player's hay bale at the wall) counted the column over the Stone Wall's inner stairs as free, and the climber was let
+	 * go onto a stair, half-way down.
+	 */
 	private static int inside(ServerLevel level, Site site) {
-		for (int k = 2; k <= 8; k++) {
-			BlockPos column = site.foot.relative(site.into, k);
-			boolean free = true;
-			for (int y = site.foot.getY() + 1; y <= site.top + 1 && free; y++) {
-				free = !blocked(level, column.atY(y));
-			}
-			if (free) {
-				return k;
+		for (int from = site.foot.getY(); from <= site.foot.getY() + 1; from++) {
+			for (int k = 2; k <= 8; k++) {
+				BlockPos column = site.foot.relative(site.into, k);
+				boolean free = true;
+				for (int y = from; y <= site.top + 1 && free; y++) {
+					free = !blocked(level, column.atY(y));
+				}
+				if (free) {
+					return k;
+				}
 			}
 		}
 		return 2;

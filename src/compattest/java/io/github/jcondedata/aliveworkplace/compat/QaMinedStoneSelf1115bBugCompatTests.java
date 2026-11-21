@@ -3,6 +3,7 @@ package io.github.jcondedata.aliveworkplace.compat;
 import io.github.jcondedata.aliveworkplace.compat.QaCrafterOwnModdedStore1111eCompatTests.Asker;
 import io.github.jcondedata.aliveworkplace.craft.CraftJobs;
 import io.github.jcondedata.aliveworkplace.craft.Crafting;
+import io.github.jcondedata.aliveworkplace.test.FreshPlanning;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ import net.minecraft.world.level.block.Blocks;
  * names what the chest is short of to make it, so a builder short of andesite never reads "short of 3 Andesite to make 3
  * Andesite" (a Mason can't make andesite out of andesite).
  */
-public class QaMinedStoneSelf1115bBugCompatTests implements FabricGameTest {
+public class QaMinedStoneSelf1115bBugCompatTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_compat:huge_area";
 
 	/** From nothing, by the stonecutter's plan: none of the mined stones names itself. */

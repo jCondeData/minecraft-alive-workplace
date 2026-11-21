@@ -1,0 +1,10 @@
+{
+  "name": "artisans-house-savanna",
+  "private": true,
+  "type": "module",
+  "description": "Artisan's House, the savanna look (ROADMAP 49.10g): the shipped Artisan's House drawn again as the savanna village's potter's house: one golden thatch hip over red granite and packed mud with a painted band, the upper storey carried over a shaded stoep on acacia posts, and beside it a mound kiln of red termite-mound earth whose flue spire smokes over the ridge; (II) the journeyman's wing, a drying bench and an open firing pit; (III) the clay cellar. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes candidates.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "well-house",
+  "private": true,
+  "type": "module",
+  "description": "Well House (ROADMAP 49): the Well Keeper's workplace, rebuilt from its brief. MC_BUILDER = the minecraft-builder skill's folder. 'build' writes a candidate (build/rebuild/well_house/).",
+  "scripts": {
+    "build": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py well_house well_house --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/well-house.nbt"
+  }
+}

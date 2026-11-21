@@ -2,20 +2,20 @@
 
 ```infobox
 type: Build
-Size: 9 wide, 10 deep, 10 high
+Size: 17 wide, 18 deep, 12 high
 Tiers: one
 Houses: a Move Tutor at the Training Post
 Where to get it: Blueprint Table (with Cobblemon)
-Main materials: spruce stairs, white concrete, oak logs and planks, cobblestone
+Main materials: stone bricks, brick stairs, dark oak logs, white concrete, spruce planks
 categories: Builds, Pokémon
 related: pokemon.md, schoolhouse-build.md
 ```
 
-A cozy village house of white walls in an oak frame under a spruce roof, with a bed and a campfire, and for its worker a **Training Post**: everything one worker needs to live and work in the same place.
+A timber-framed gatehouse with a round moon window in its gable opens onto a paved court, where a sparring ring with straw targets circles the **Training Post**. Spectators sit on a bench under the cloister along the west side. Behind the court stands the Tutor's hall: a lecture room with a reading table for four, cupboards of move books and a desk by the hearth, and his quarters with his bed behind a bookshelf screen.
 
 ## Getting the blueprint
 
-It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, which takes a Blank Blueprint (paper and blue dye make two). It's listed only when Cobblemon is installed. Newly explored villages often have one of these houses already, with its worker inside.
+It's in the **Blueprint Table**: pick it there and press **Get Blueprint**, which takes a Blank Blueprint (paper and blue dye make two). It's listed only when Cobblemon is installed. Newly explored villages often have a smaller Tutor's house of their own, with its Training Post and its worker inside.
 
 ## Building it
 

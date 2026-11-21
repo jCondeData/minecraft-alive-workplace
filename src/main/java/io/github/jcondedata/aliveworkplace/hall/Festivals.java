@@ -115,6 +115,15 @@ public final class Festivals {
 		return entity.festivalDay() == Chronicle.day(level) && t >= START && t < Curfew.festivalEnd(entity); // Curfew: over at dusk
 	}
 
+	/**
+	 * The next festival to tell of (the Seer, the Gazette): {@link #nextDay}, or -1 when none will come (festivals switched
+	 * off, or fewer than {@link #MIN_VILLAGERS} villagers), unless one is already planned (B1361).
+	 */
+	public static long foretold(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity, int villagers) {
+		long day = nextDay(level, hall, entity);
+		return entity.festivalDay() >= day || ENABLED && villagers >= MIN_VILLAGERS ? day : -1;
+	}
+
 	/** The day of the village's next festival (today if it's still to come or on). */
 	public static long nextDay(ServerLevel level, BlockPos hall, VillageHallBlockEntity entity) {
 		settle(level, entity);
@@ -331,7 +340,7 @@ public final class Festivals {
 		boolean bannered = underBanner(level, hall);
 		net.minecraft.world.item.Item dish = io.github.jcondedata.aliveworkplace.cup.CupDays.dish(level, hall); // a Cup's dish first (28.19)
 		boolean ball = NobleBalls.today(level, hall);
-		List<Villager> guests = level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), Villager::isAlive);
+		List<Villager> guests = VillageHalls.villagers(level, hall, Villager::isAlive);
 		for (Villager villager : guests) {
 			villagers++;
 			ModAttachments.FESTIVAL_DAY.set(villager, today);
@@ -418,7 +427,7 @@ public final class Festivals {
 			}
 			BlockPos square = square(level, hall);
 			if (!io.github.jcondedata.aliveworkplace.trainer.MegaShrines.tick(level, hall)) { // the Mega Shrine's show first (38.7)
-				for (Villager villager : level.getEntitiesOfClass(Villager.class, VillageHalls.area(hall), v -> v.isAlive() && !v.isSleeping())) {
+				for (Villager villager : VillageHalls.villagers(level, hall, v -> v.isAlive() && !v.isSleeping())) {
 					gather(level, villager, square);
 				}
 			}

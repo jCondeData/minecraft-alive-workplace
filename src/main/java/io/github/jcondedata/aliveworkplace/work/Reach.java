@@ -6,11 +6,15 @@ import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiRecord;
+import net.minecraft.world.entity.ai.village.poi.PoiType;
 
 /**
  * How far a worker's job may be from the block they work at (36.20, the owner's "village-wide"): a spot is in reach when
@@ -29,7 +33,8 @@ public final class Reach {
 	 * The hall whose village {@code workBlock} stands in ({@link #claims}), if any; the nearest across if two claim it.
 	 * B550/B557: the City Plan's grid is a square, so a zone painted in its corner lies past the hall's radius, where
 	 * {@link VillageHalls#nearest} (a search within the radius) doesn't find the hall; the halls are looked up in a square
-	 * column as wide as the grid, at any height.
+	 * column as wide as the grid, at any height. B1356: a hall point with no hall standing (a block swapped without an
+	 * update) is no village, as {@link VillageHalls#nearest} has it ({@link VillageHalls#standsAt}).
 	 */
 	public static Optional<BlockPos> village(ServerLevel level, BlockPos workBlock) {
 		Optional<BlockPos> near = VillageHalls.nearest(level, workBlock);
@@ -39,7 +44,7 @@ public final class Reach {
 		int reach = Math.max(VillageHalls.RADIUS, CityPlan.half()) + 1;
 		return level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), workBlock, reach, PoiManager.Occupancy.ANY)
 			.map(PoiRecord::getPos)
-			.filter(hall -> claims(level, hall, workBlock))
+			.filter(hall -> VillageHalls.standsAt(level, hall) && claims(level, hall, workBlock))
 			.min(Comparator.comparingLong(hall -> VillageHalls.across(hall, workBlock)));
 	}
 
@@ -66,6 +71,31 @@ public final class Reach {
 	/** True if {@code spot} is in reach of the worker's block at {@code workBlock}, {@code outside} blocks being the long reach. */
 	public static boolean inReach(ServerLevel level, BlockPos workBlock, BlockPos spot, int outside) {
 		return within(workBlock, spot, outside) || inSameVillage(level, workBlock, spot);
+	}
+
+	/**
+	 * How far across the ground a work block with {@code spot} in reach ({@link #inReach}) can stand from it (B619: the
+	 * searches that go from a spot to its workers looked only {@code outside} blocks round it, and missed a worker across
+	 * the village). A spot in no village: the long reach. A spot some village claims: a block anywhere in that village,
+	 * which is at most the village's own half-width ({@link #village}'s square) from its hall on either side.
+	 */
+	public static int span(ServerLevel level, BlockPos spot, int outside) {
+		int village = Math.max(VillageHalls.RADIUS, CityPlan.half()) + 1;
+		boolean claimed = level.getPoiManager().getInSquare(h -> h.is(ModVillagers.VILLAGE_HALL_POI), spot, village, PoiManager.Occupancy.ANY)
+			.map(PoiRecord::getPos)
+			.anyMatch(hall -> VillageHalls.standsAt(level, hall) && claims(level, hall, spot));
+		return claimed ? Math.max(outside, 2 * village) : outside;
+	}
+
+	/**
+	 * The work blocks of {@code kind} that have {@code spot} in reach ({@link #inReach}, the rule the worker's own job
+	 * uses), nearest it across the ground first: going from a spot to the block a worker would work it from (B619).
+	 */
+	public static Stream<BlockPos> workBlocks(ServerLevel level, Predicate<Holder<PoiType>> kind, BlockPos spot, int outside) {
+		return level.getPoiManager().getInSquare(kind, spot, span(level, spot, outside), PoiManager.Occupancy.ANY)
+			.map(PoiRecord::getPos)
+			.filter(block -> inReach(level, block, spot, outside))
+			.sorted(Comparator.comparingDouble((BlockPos block) -> across(block, spot)).thenComparingDouble(block -> block.distSqr(spot)));
 	}
 
 	/** True if {@code spot} lies in the village {@code workBlock} stands in. */

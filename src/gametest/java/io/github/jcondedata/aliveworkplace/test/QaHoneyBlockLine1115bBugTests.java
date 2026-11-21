@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.Blocks;
  * bottles; a honey bottle is unpacked from a honey block with 4 glass bottles. From nothing the line should name the
  * Honey Bottles, never Honey Blocks to make Honey Blocks (with glass bottles and glass for the round trip).
  */
-public class QaHoneyBlockLine1115bBugTests {
+public class QaHoneyBlockLine1115bBugTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos STATION = new BlockPos(14, 2, 2);
 

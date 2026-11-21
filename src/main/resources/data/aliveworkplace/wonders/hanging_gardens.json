@@ -72,7 +72,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/hanging_gardens/stage_2_0",
-          "offset": [4, 7, 7]
+          "offset": [5, 7, 12]
         }
       ],
       "goods": [
@@ -126,7 +126,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/hanging_gardens/stage_3_0",
-          "offset": [8, 13, 11]
+          "offset": [9, 13, 20]
         }
       ],
       "goods": [
@@ -178,7 +178,7 @@
       "parts": [
         {
           "part": "aliveworkplace:wonder/hanging_gardens/stage_4_0",
-          "offset": [10, 0, 15]
+          "offset": [13, 19, 28]
         }
       ],
       "goods": [
@@ -237,5 +237,6 @@
       "meals": 12,
       "per_day": 2
     }
-  ]
+  ],
+  "drawing": "drawn_1c1b28a91"
 }

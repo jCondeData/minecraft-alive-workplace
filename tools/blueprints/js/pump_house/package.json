@@ -1,0 +1,6 @@
+{
+  "name": "pump-house",
+  "private": true,
+  "type": "module",
+  "description": "The Pump House (Create build, 49/50.13): the Tanner's Water Tower. MC_BUILDER = the minecraft-builder skill folder; ./build.sh writes a candidate."
+}

@@ -51,7 +51,7 @@ import net.minecraft.world.level.block.Rotation;
  * after a reload. A Crafter from an old save becomes jobless. Each test has its own batch: they share the jobs' claims.
  * The chair through the whole chain and the Furnicrafter's piece are the compat suite's (CrafterFurnitureCompatTests).
  */
-public class JobChainGameTests {
+public class JobChainGameTests implements FreshPlanning {
 	private static final String AREA = "aliveworkplace_test:build_area";
 	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
 	private static final BlockPos CHEST = new BlockPos(2, 2, 4);

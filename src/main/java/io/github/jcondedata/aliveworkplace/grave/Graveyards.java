@@ -35,8 +35,8 @@ import org.jetbrains.annotations.Nullable;
 public final class Graveyards {
 	/** Whether Undertakers move graves to the graveyard ({@code gravesToGraveyard}, on). Off: graves stay where they fall. */
 	public static boolean ENABLED = true;
-	/** The Graveyard blueprint's size (13 × 11 × 13, {@code StarterBlueprints.GRAVEYARD}). */
-	static final Vec3i SIZE = new Vec3i(13, 11, 13);
+	/** The Graveyard blueprint's size (13 × 16 × 13, {@code StarterBlueprints.GRAVEYARD}). */
+	static final Vec3i SIZE = new Vec3i(13, 16, 13);
 	/** The hall plot: rows of this many graves, this many rows, a grave every other block. */
 	static final int PLOT_ROW = 4, PLOT_ROWS = 3, PLOT_STEP = 2;
 	/** How near and how far from the hall the plot may lie. */

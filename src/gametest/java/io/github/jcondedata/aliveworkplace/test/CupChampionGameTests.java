@@ -53,11 +53,11 @@ import net.minecraft.world.level.block.entity.BannerBlockEntity;
  */
 public class CupChampionGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
-	/** Thornholm, the host: Arena III on record, its champion's pole at (15, 7, 1). */
+	/** Thornholm, the host: Arena III on record, its champion's mast at (15, 13, 1). */
 	private static final BlockPos HALL = new BlockPos(15, 2, 15);
 	/** Ashford, a neighbour on the host's circuit, 2 villages away from the host's Arena. */
 	private static final BlockPos ASHFORD = new BlockPos(3, 2, 27);
-	private static final BlockPos POLE = new BlockPos(15, 7, 1);
+	private static final BlockPos POLE = new BlockPos(15, 13, 1); // Arenas.CHAMPION_POLE (12, 12, 0) of the Arena III at (3, 1, 1)
 	private static final ResourceLocation THEME = AliveWorkplace.id("test_cup_champions");
 
 	private static CupThemes.Theme theme() {
@@ -85,8 +85,8 @@ public class CupChampionGameTests implements FabricGameTest {
 		s.entity.setCustomName(Component.literal("Thornholm"));
 		s.arena = new BlueprintData.Placement(level.dimension().location(), s.host.offset(-12, -1, -14), Rotation.NONE, Mirror.NONE);
 		BuildSiteManager.get(level).recordFinished(StarterBlueprints.ARENAS.get(2).id(), s.arena, UUID.randomUUID());
-		helper.setBlock(POLE, Blocks.STRIPPED_SPRUCE_LOG);
-		helper.setBlock(POLE.above(), Blocks.GOLD_BLOCK);
+		helper.setBlock(POLE, Blocks.SPRUCE_LOG);
+		helper.setBlock(POLE.above(), Blocks.LANTERN);
 		s.themes = new LinkedHashMap<>(CupThemes.loaded());
 		CupThemes.setForTest(Map.of(THEME, theme()));
 		Cups.COBBLEMON = true;

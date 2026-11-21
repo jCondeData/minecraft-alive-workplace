@@ -1,0 +1,13 @@
+{
+  "name": "fishers-hut",
+  "private": true,
+  "type": "module",
+  "description": "Fisher's Hut (fishers_hut, fishers_hut_2), the Upturned Boat and the Net Shop, rebuilt blind for ROADMAP 49 (tools/blueprints/REBUILD.md). MC_BUILDER = the minecraft-builder skill's folder. LEVEL=1|2 picks the level; 'build' writes both candidates.",
+  "scripts": {
+    "build": "npm run build:1 && npm run build:2",
+    "build:1": "rm -rf out && LEVEL=1 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py fishers_hut fishers_hut --candidate",
+    "build:2": "rm -rf out && LEVEL=2 node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955 && python3 ../../rebuild.py fishers_hut fishers_hut_2 --candidate",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955",
+    "preview": "node \"$MC_BUILDER/scripts/preview.mjs\" --nbt out/fishers-hut.nbt"
+  }
+}

@@ -23,8 +23,10 @@ top left and your money ("1,250 CobbleDollars" or "40 emeralds") at the top righ
 party, the open one gold. Then the chosen Pokémon's lessons, one row each: the move, its type and kind (and "Egg move"),
 its price (green when you can pay it, red when you can't) and a **Teach** button. Click Teach and the row turns gold and
 the button says **Confirm**; click again to pay and teach. Lessons the tutor isn't experienced enough for are gray rows
-with no button and the rank they need ("Expert tutors and up"). Pointing at a row, a tab or the money shows the same
-tooltip the chest showed (power, accuracy, the price and what a click does). The footer says what to do, and the page
+with no button and the rank they need ("Expert tutors and up"). Pointing at a row or the money shows the same
+tooltip the chest showed (power, accuracy, the price and what a click does); a tab shows its whole tooltip too (its
+moves to learn and "N more from a more experienced tutor"), and the whisper line gives its name and its tooltip's first
+line. The footer says what to do, and the page
 arrows sit at its right when there are more lessons than one page holds.
 
 The Cobblemon menus that followed (42.2) look the same, with their own rows:
@@ -265,6 +267,9 @@ caught.
 QA (lane D, 2026-11-14, B1189): `QaShopSoldOut1114dCompatTests` (3, CobbleDollars): goods swapped to a lot with exactly
 one lot in stock ask to Confirm again and sell; one short is sold out and takes nothing; a price raised on a lot one short
 is sold out, never "The price changed".
+B1355 (lane A, 2026-11-17): `QaListTabTooltip1117aBugTests` (2): a rail tab's tooltip (`ChoiceList.tabTooltip`, what the
+screen draws under the mouse) keeps every line, the Research Realm tab's click line and a tutor tab's "N more from a more
+experienced tutor", and the whisper line (`ChoiceList.tabWhisper`) gives the name and first line.
 
 Showcase scenes: `shapes`, `style_menu`, `shop`, `ferry_menu` (42.4, and the Price Tag in `counter`), `tutor`, `professor`, `daycare`, `daycare_keeper`, `smith_orders`, `gem_orders`, `habitat_lures` (and the
 list in `scholar`'s research still, `innkeeper`'s hire still, `berry_breeder`'s book still and `legend_guest`'s terms)

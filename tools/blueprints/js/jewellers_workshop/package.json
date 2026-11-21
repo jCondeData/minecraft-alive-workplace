@@ -1,0 +1,10 @@
+{
+  "name": "jewellers-workshop",
+  "private": true,
+  "type": "module",
+  "description": "The Jeweler's Workshop (ROADMAP 49/50.7): the Stepped Gable, a crow-gabled stone shop with a glass case on the street, its barrel-vaulted Strong Room (II) and the Deep Vault under it (III). MC_BUILDER = the minecraft-builder skill folder.",
+  "scripts": {
+    "build": "sh build.sh",
+    "cut": "node \"$MC_BUILDER/scripts/run-build.mjs\" recipe.mjs --out-dir out --data-version 3955"
+  }
+}

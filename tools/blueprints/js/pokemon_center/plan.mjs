@@ -27,14 +27,17 @@
 // Named parts:
 //   Drum      the octagonal wall (railCells round (6, 6), r 5: x 1..11, z 1..11), white, y 1..3, a red band at y 4.
 //   Skirt     a grey stone ring at y 0 one block out from the drum (stairs, the plinth's depth), the sills sit on it.
-//   Cornice   a white ring at y 5 (top slabs) over the band; the dome springs from it.
-//   Dome      red, radius 6 round (6, y 6, 6), white-lined inside over the hall, an eye (cupola) on top at y 12..14.
+//   Bays      (round 2) the west, east and back faces stand one proud on the skirt's ring: diorite pilasters at the
+//             octagon's vertices from the plinth to the cornice, the band carried round, windows set back behind reveals.
+//   Cornice   a white ring at y 5 over the band, its lip (upside-down stairs) the one even overhang; the dome springs from it.
+//   Dome      red, on the drum's ring (6, y 6..10, 6), coffered inside (its own stepped courses), an eye (cupola) at y 11..13.
 //   Front     the flat front face (z 1, x 3..9): glass either side of the door, a white canopy on two piers at z 0.
-//   Lobby     z 2..6: the runner from the door to the desk, two settees, two lamps, plants.
+//   Lobby     z 2..6: the runner from the door to the desk, two rows of waiting seats facing it, two lamps, plants.
 //   Desk      the counter across z 7 (x 3..9), the machine in its middle, the PC at its east end, a gap at x 2.
-//   Back room the Nurse's side, z 8..10: her cell (6, 8), two chests, two cupboards, a window to the garden.
+//   Back room the Nurse's side, z 8..10: her cell (6, 8), two chests, cupboards, her lamp-lit writing table and chair.
 //   Wing (II) the Trade Hall, x 12..18, z 2..10, a red 45-degree gable to the street, its own door, the Shop Counter.
-//   Garden (II) z 12..25: a fenced garden, a paved path, the domed pavilion over the Pasture Block, a pond, benches.
+//   Garden (II) z 12..25: a fenced garden, walks meeting a spur to the domed pavilion over the Pasture Block, four
+//             kerbed beds of soil, planted, benches, lamp posts.
 
 export const SIZE = { 1: [13, 16, 13], 2: [20, 16, 26] }
 
@@ -60,10 +63,24 @@ export const PALETTE = {
   post: 'diorite_wall',
   path: 'gravel',
   paving: [['stone_bricks', 3], ['polished_andesite', 1]],
+  bedRim: 'stone_bricks', bedCap: 'stone_brick_slab', soil: 'coarse_dirt', // the garden's beds (II)
 }
 
-export const DRUM = { cx: 6, cz: 6, r: 5, wallTop: 3, bandY: 4, corniceY: 5, domeY: 6, dome: [11, 11, 10, 10, 9, 8, 6], eyeY: 11, // dome: each ring's top, crown (0) to eave (6)
+// dome: each ring's top, crown (0) to the drum's own wall ring (5). Round 2: the dome springs straight off the drum's
+// white cornice, whose lip is the one even overhang all round (round 1 hung a red eave ring over the lip that stepped
+// unevenly against the next ring up); a steep shoulder (ring 4, two courses) then flatter rings to the eye
+export const DRUM = { cx: 6, cz: 6, r: 5, wallTop: 3, bandY: 4, corniceY: 5, domeY: 6,
+  dome: (process.env.DOME ?? '10,10,9,9,8,6').split(',').map(Number), eyeY: 11, // the eye's lantern stands on ring 1
   vertices: [[3, 1], [9, 1], [1, 4], [11, 4], [1, 8], [11, 8], [3, 11], [9, 11]] }
+
+// Bays (round 2): the drum's three flat faces (west, east, back) stand one block proud of the diagonals on the skirt's
+// ring, a diorite pilaster at each octagon vertex from the plinth to the eave and the windows set back a block in the
+// drum's wall behind an open reveal, a moulded sill at its foot. The front's canopy piers are the fourth bay. [x, z]
+export const BAYS = [
+  { out: 'west', cells: [[0, 4], [0, 5], [0, 6], [0, 7], [0, 8]], pilasters: [[0, 4], [0, 8]], open: [[0, 6]] },
+  { out: 'east', cells: [[12, 4], [12, 5], [12, 6], [12, 7], [12, 8]], pilasters: [[12, 4], [12, 8]], open: [[12, 6]] },
+  { out: 'south', cells: [[3, 12], [4, 12], [5, 12], [6, 12], [7, 12], [8, 12], [9, 12]], pilasters: [[3, 12], [9, 12]], open: [[4, 12], [6, 12], [8, 12]] },
+]
 
 export const FIXED = {
   machine: [6, 1, 7], nurse: [6, 1, 8], pc: [10, 1, 7], camera: [8.5, 2.7, 4.2],
@@ -83,23 +100,44 @@ export const OPENINGS = {
   wingBackDoor: { at: [15, 1, 10] },
 }
 
+// II, the garden (round 2): the cross walk's row, and four raised beds of soil in the corners, each with its planting
+// (a two-high plant as { id, tall }); rims x0..x1, z0..z1, soil inside; each kerbed flush (no coping:
+// the soil and the planting read, not a stone box)
+const ROSE = { id: 'rose_bush', tall: true }, PEONY = { id: 'peony', tall: true }, LILAC = { id: 'lilac', tall: true }
+export const GARDEN = {
+  crossZ: 15,
+  beds: [
+    { x0: 1, x1: 4, z0: 13, z1: 16, plants: [ROSE, 'allium', 'poppy', PEONY] },
+    { x0: 16, x1: 18, z0: 13, z1: 16, plants: [LILAC, 'white_tulip'] },
+    { x0: 1, x1: 6, z0: 21, z1: 24, plants: ['poppy', 'oxeye_daisy', 'red_tulip', 'white_tulip', ROSE, 'azure_bluet', 'poppy', PEONY] },
+    { x0: 12, x1: 18, z0: 21, z1: 24, plants: ['white_tulip', 'poppy', ROSE, 'azure_bluet', 'red_tulip', 'oxeye_daisy', PEONY, 'poppy', 'allium', 'white_tulip'] },
+  ],
+}
+
 // Every piece of furniture, footprint first (furniture.py kinds; fixtures are blocks the game uses as themselves).
 export const FURNITURE = [
-  // Lobby: two settees facing each other under the side walls, lamps on side tables in the front corners, plants
-  { level: 1, room: 'Lobby', kind: 'couch', part: 'couch', pos: [2, 1, 4], facing: 'east', length: 2, wood: 'birch', colour: 'red' },
-  { level: 1, room: 'Lobby', kind: 'couch', part: 'couch', pos: [10, 1, 5], facing: 'west', length: 2, wood: 'birch', colour: 'red' },
+  // Lobby (round 2): two rows of waiting seats facing the desk either side of the runner, lamps on side tables in the
+  // front corners, ferns by the door, azaleas in the corners behind the seats
+  { level: 1, room: 'Lobby', kind: 'couch', part: 'couch', pos: [5, 1, 5], facing: 'south', length: 4, wood: 'birch', colour: 'red' },
+  { level: 1, room: 'Lobby', kind: 'couch', part: 'couch', pos: [10, 1, 5], facing: 'south', length: 4, wood: 'birch', colour: 'red' },
   { level: 1, room: 'Lobby', kind: 'lamp', part: 'tableLamp', pos: [3, 1, 3], facing: 'east', wood: 'birch' },
   { level: 1, room: 'Lobby', kind: 'lamp', part: 'tableLamp', pos: [9, 1, 3], facing: 'west', wood: 'birch' },
   { level: 1, room: 'Lobby', kind: 'fixture', part: 'pot', pos: [4, 1, 2], block: 'potted_fern' },
   { level: 1, room: 'Lobby', kind: 'fixture', part: 'pot', pos: [8, 1, 2], block: 'potted_fern' },
+  { level: 1, room: 'Lobby', kind: 'fixture', part: 'pot', pos: [2, 1, 4], block: 'potted_flowering_azalea_bush' },
+  { level: 1, room: 'Lobby', kind: 'fixture', part: 'pot', pos: [10, 1, 4], block: 'potted_flowering_azalea_bush' },
   { level: 1, room: 'Lobby', kind: 'rug', part: 'rug', cellsAbs: [[6, 1, 3], [6, 1, 4], [6, 1, 5], [6, 1, 6]], colour: 'red' },
   // The desk: counters either side of the machine (the Nurse uses them facing north, toward the lobby)
   { level: 1, room: 'Desk', kind: 'counter', part: 'desk', cells: [[3, 1, 7], [4, 1, 7], [5, 1, 7], [7, 1, 7], [8, 1, 7], [9, 1, 7]], facing: 'north', wood: 'birch' },
-  // Back room: two chests for the remedies against the drum, two cupboards against the back wall, the Nurse's lamp
+  // Back room, the Nurse's corner: two chests for the remedies against the drum, a cupboard, a bookcase with her
+  // flowers, and her writing table under the east back window with a lamp on it and a chair at it
   { level: 1, room: 'Back room', kind: 'fixture', part: 'chest', pos: [3, 1, 9], facing: 'east', block: 'chest' },
   { level: 1, room: 'Back room', kind: 'fixture', part: 'chest', pos: [9, 1, 9], facing: 'west', block: 'chest' },
+  { level: 1, room: 'Back room', kind: 'fixture', part: 'bookcase', pos: [4, 1, 10], plant: 'potted_red_tulip' },
   { level: 1, room: 'Back room', kind: 'cupboard', part: 'cupboard', pos: [5, 1, 10], facing: 'north', wood: 'birch' },
   { level: 1, room: 'Back room', kind: 'cupboard', part: 'cupboard', pos: [7, 1, 10], facing: 'north', wood: 'birch' },
+  { level: 1, room: 'Back room', kind: 'lamp', part: 'tableLamp', pos: [8, 1, 10], facing: 'north', wood: 'birch' },
+  { level: 1, room: 'Back room', kind: 'chair', part: 'chair', pos: [8, 1, 9], facing: 'south', wood: 'birch' },
   // the hall's lamp: a lantern on a long chain from the eye's cap, over the desk (drawn after the dome)
   { level: 1, room: 'Lobby', kind: 'lamp', part: 'hangingLamp', pos: [6, 5, 6], facing: 'north', chain: 8, wood: 'birch' },
 
@@ -122,5 +160,5 @@ export const WALK = [
   [6, 0, 0], [6, 1, 1], [6, 1, 2], [6, 1, 3], [6, 1, 4], [6, 1, 5], [6, 1, 6], [5, 1, 6], [4, 1, 6], [3, 1, 6],
   [2, 1, 6], [2, 1, 7], [2, 1, 8], [3, 1, 8], [4, 1, 8], [5, 1, 8], [6, 1, 8],
   [7, 1, 6], [8, 1, 6], [9, 1, 6], [10, 1, 6], [11, 1, 6], [12, 1, 6], [13, 1, 6], [14, 1, 6], [15, 1, 6],
-  [15, 1, 8], [15, 1, 9], [15, 1, 10], [15, 1, 11], [15, 1, 12], [12, 1, 15], [10, 1, 18],
+  [15, 1, 8], [15, 1, 9], [15, 1, 10], [15, 1, 11], [15, 1, 12], [15, 1, 15], [9, 1, 15], [9, 1, 16], [9, 1, 18],
 ]

@@ -67,3 +67,41 @@ keystone (6, 4, 0) over the middle arch; the declared sizes change (default 13 x
 
 Not drawn here: the five village variants (`village/<style>_pokemon_center`), a separate contract built by
 `village.py`; left as they are.
+
+## Round 2 (the default look; critic's notes, `briefs/cobblemon_50_12_critic.md`, "Pokémon Center ... round 1")
+
+Renders: `build/rebuild/pokemon_center_r2_renders/` (five views per level, cutaways y <= 3 and y <= 7 per level). I is
+718 blocks (round 1: 762), II 1,324; II keeps 98.9 % of I by block and position and every block entity in place.
+
+1. **Flat drum walls (I right, back).** The three flat faces (west, east, back) now stand one block proud on the skirt's
+   ring as bays (`BAYS` in plan.mjs): a diorite pilaster at each octagon vertex from the stone plinth to the cornice
+   (the red band carried round the bay between them, the cornice's lip capping it), and the windows set back a block in
+   the drum's wall behind an open reveal with a moulded diorite sill at its foot (west and east: one each; back: three,
+   between two piers). The front's canopy piers are the fourth bay, so the octagon reads as four proud bays with the
+   diagonals recessed between them. II: the east bay is the wing's west wall and keeps I's pilasters there.
+2. **Uneven eave rings (I left, right).** The red eave ring that hung over the cornice's lip (and stepped unevenly
+   against the ring above, which was round where the drum is octagonal) is gone: `ringDome` takes the rings from the
+   recipe (`rings`, new and optional) so the dome's last ring is the drum's own wall ring and the dome springs straight
+   off the white cornice, whose lip is now the one even overhang all round. Profile 10, 10, 9, 9, 8, 6: one stair course
+   on the drum, a steep two-course shoulder, then flatter rings to the eye (tried 9, 8, 7, 6: a stepped pyramid; and a
+   high shoulder: a tower; both read less as a dome).
+3. **Interior (I cutaway y <= 3).** The white lining ring is gone (note 5); the lobby has two rows of four waiting
+   seats facing the desk either side of the runner (couch spots), azaleas in the corners behind them, the lamps and
+   ferns by the door; the Nurse's corner behind the desk has her writing table under the east back window with a lamp
+   on it and a chair at it, a bookcase with a tulip, two cupboards and the two remedy chests.
+4. **Bare garden (II back).** Four kerbed beds of soil (coarse dirt in a stone-brick kerb) in the garden's corners,
+   planted with roses, peonies, lilac, tulips, poppies, daisies, alliums and bluets (`GARDEN` in plan.mjs); the walks
+   from both back doors meet a cross walk, a spur leaves it between two lamp posts and climbs the pavilion's steps to
+   the Pasture Block, and a walk goes on from the pavilion's far side to the gate.
+5. **Block count (I).** 762 -> 718 with the bays and furniture added. The lining went first: `ringDome`'s new optional
+   `coffered` leaves the rings over the hall with neither lining nor the block behind each step, so the vault seen from
+   the hall is the dome's own stepped courses (each step a coffer shut by the tall half of the stair outside it; a coffer
+   stays filled where a stair shows it a side), and the eave ring went with note 2. Detail was not trimmed. 718 is
+   above the ~650 asked: the next cuts would be detail (the eye, the bays) or the dome's shoulder (690 with a high
+   shoulder, which reads as a tower); left for the critic and `buildsPokemonCenter`'s 12,000-tick run to judge.
+
+Part changes (`parts/pokemon_clinic.mjs`): `ringDome` gained two optional inputs, `rings` and `coffered`; without them it
+draws exactly as before. Pins unchanged from round 1: Healing Machine (6, 1, 7), Nurse cell (6, 1, 8), PC (10, 1..2, 7),
+Shop Counter (15, 1, 7), Pasture Block (9, 1..2, 19). Checks run: `build.sh` (no CHECK line), `holes.py` on both
+candidates (0), a walk from the street reaches the Nurse's cell, the machine's and PC's fronts, and every chest, job
+block and the Pasture Block within reach.

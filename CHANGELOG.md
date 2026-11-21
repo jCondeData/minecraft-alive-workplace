@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   "Refresh to the latest look" once it's finished to bring it up to date (B1407).
 - The War Camp's ominous banner and the Blackstone Outpost's piglin banner now face the camp's gate and front,
   toward players walking up, instead of turning their backs to them (B1175).
+- With Tom's Simple Storage, a chest that touches the Storehouse's inventory connector and is also faced by a cable
+  connector on the same cables is counted once: the Storehouse (and Tom's own terminal) showed its items and its free
+  room twice, so builders and the board thought the village had double (B1025).
 
 ## 0.158.0 — 2026-11-20
 

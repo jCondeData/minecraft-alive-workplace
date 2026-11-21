@@ -5,7 +5,7 @@ server has them, and Sophisticated Storage and Tom's Simple Storage as village s
 modded storage (2.1), behind its expansion gate (`Expansions.M37`), which stays closed until the release that finishes
 it. The plan is the design note `docs/design/M37.md`.
 
-Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024, 50.13
+Roadmap items: 37.1, 37.2, 37.3, 37.4, 37.5, 37.6, 37.7, 37.8, 37.9, 37.10, 37.11, 37.12, 37.13, 37.17, B238, B260, B262, B281, B300, B304, B305, B310, B339, B371, B402, B403, B641, B820, B848, B876, B945, B967, B677, B957, B1028, B1024, B1025, 50.13
 
 ## 1. What a player sees
 
@@ -146,7 +146,9 @@ cable connector on its cables faces. The board's first line counts the connector
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
 cable connector) and it is a store of its own again at once. Two connectors on one network are read as one: the
-Storehouse goes through just one of them, so nothing counts twice. A storage or crafting terminal on the network is Tom's
+Storehouse goes through just one of them, so nothing counts twice. A chest reached two ways (it touches the connector
+and a cable connector on the same cables faces it too) also counts once, in the Storehouse and in Tom's own terminal
+(B1025). A storage or crafting terminal on the network is Tom's
 own: a player opens it and sees, and takes, the village's goods (place the terminal against the connector or a cable,
 its screen facing you, and click it from within Tom's reach of 6 blocks). With `moddedStorageNetworks` off, every chest on the
 network is its own store and the connector is passed over, as before.
@@ -320,6 +322,13 @@ joining most going first, then the nearest; nothing is saved, the walk is done a
 every lookup. `Village.stashes` treats a connector as all its inventories: a chest of it listed in an earlier stash (a
 builder's own chests) turns the connector into its remaining chests one by one, so nothing counts twice across stashes.
 Every other job's lists still pass over Tom's blocks (`ModdedBlocks.STORAGE_NETWORK`) and read the chests themselves.
+
+B1025: Tom's merges a network's inventories in `MultiInventoryAccess.build` and tells them apart by the object
+reading them, one per block face, so a chest touching the connector and faced by a cable connector was merged twice
+and the connector's storage showed its slots twice. `compat/toms` (two mixins by class name, applied only with Tom's
+installed, `aliveworkplace.toms.mixins.json`) takes a later reader out of the merged list when it shows exactly the
+slot objects an earlier one shows; readers behind a Tom's filter, blocks whose faces show different slots and storage
+that makes new slot objects each time are left alone. Off with `moddedStorageNetworks`.
 
 A style rule can also carry `"requires_switch"` (37.7): it applies only while that switch is on, as if its block didn't
 exist otherwise, so Grand's Rechiseled rules sit in front of its vanilla ones under `furnishedBuilds`. The swaps are

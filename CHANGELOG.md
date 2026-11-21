@@ -44,6 +44,10 @@ asks for the steps, `latest.log` and any crash report).
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
 
+- With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer
+  stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block
+  sends its signal right away instead of staying dark until a block next to it changes. Redstone inside any moved
+  building now looks at its surroundings once the whole building stands (B1160, B1216).
 - A husk piling a sand ramp no longer counts as already over the wall, and gives up its ramp one block high, when it
   stands outside the village beside your own wall (a garden wall) that lines up with the village wall: only the
   village wall the ramp leans on counts now, so it piles the ramp to the top and climbs in (B1419).

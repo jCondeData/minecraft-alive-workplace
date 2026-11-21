@@ -413,6 +413,23 @@ public class QaSiegeClimbs1121dGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * A player's garden wall (cobblestone, two high) stands on the west wall's line outside the yard, x 8, z 22 to 26, with
+	 * a gap at z 20 and 21. It is a different wall from the ramp's: the husk starting beside it, in the strip in from the
+	 * ramp's foot, must not be counted over the wall there, and still piles its ramp and gets in.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"qaClimbs1121dGardenWall"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaClimbs1121dGardenWall")
+	public void qaAHuskBesideAGardenWallOnTheRampWallsLineIsNotCountedOver(GameTestHelper helper) {
+		Yard yard = rampYard(helper);
+		Map<BlockPos, Block> garden = new LinkedHashMap<>();
+		for (int z = 22; z <= 26; z++) {
+			garden.put(new BlockPos(R_WEST, 2, z), Blocks.COBBLESTONE);
+			garden.put(new BlockPos(R_WEST, 3, z), Blocks.COBBLESTONE);
+		}
+		rampRun(helper, yard, "garden wall on the west wall's line", 10.5, 24.5, garden);
+	}
+
+	/**
 	 * A player's fenced pen (x 1 to 3, z 6 to 20) covers the spot out from the side-wall ramp where the husk would wait
 	 * while the sand goes up (two blocks out from the ramp's outer end, x 2). It can't get there, so it waits beside the
 	 * ramp: the ramp is still piled to the top, and the husk gets over.

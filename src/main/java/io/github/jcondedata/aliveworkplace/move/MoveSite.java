@@ -380,6 +380,7 @@ public final class MoveSite {
 					}
 				}
 				if (stage == Stage.DECORATION) {
+					settle(level, NEW);
 					if (things == PACKED) {
 						placeThings(level, newMin, rotation);
 						things = NEW;
@@ -411,6 +412,7 @@ public final class MoveSite {
 						return Optional.of(pos);
 					}
 				}
+				settle(level, OLD);
 				if (things == PACKED) {
 					placeThings(level, oldMin, Rotation.NONE);
 					things = OLD;
@@ -583,7 +585,10 @@ public final class MoveSite {
 			if (data != null) {
 				BlockEntity be = level.getBlockEntity(at);
 				if (be != null) {
-					be.loadWithComponents(group.size() > 1 ? withController(data.copy(), now) : data.copy(), level.registryAccess());
+					// B1160: a kinetic block comes up at rest (no speed, source or network of the spot it was packed at), so
+					// Create links it to its neighbors here as it does a block just placed
+					CompoundTag loaded = io.github.jcondedata.aliveworkplace.mechanic.Contraptions.atRest(states.get(k), data.copy());
+					be.loadWithComponents(group.size() > 1 ? withController(loaded, now) : loaded, level.registryAccess());
 					// B1137: data holding positions relative to the block (a Create arm's targets) turns with the building
 					TurnedBlockEntities.apply(be, net.minecraft.world.level.block.Mirror.NONE, dataTurn(j, now));
 					be.setChanged();
@@ -593,6 +598,28 @@ public final class MoveSite {
 			io.github.jcondedata.aliveworkplace.hall.VillageWaystones.setDown(level, at, states.get(k)); // B1310: the same waystone again
 			where[j] = now;
 			MoveResidents.placed(level, this, j, at, now); // a resident's bed or workstation is theirs again at once (45.4)
+		}
+	}
+
+	/**
+	 * B1216: the whole building stands again ({@code now}: at the new spot, or back at the old one), so every block of it
+	 * looks at what's round it once, and tells its neighbors it's there. Blocks go up one at a time without neighbor
+	 * updates (nothing pops off or reacts to a half-built house), so a block that reads its surroundings as it's placed
+	 * (a Create Redstone Link put up before the redstone block beside it, a lamp, a piston) read a house that wasn't
+	 * there yet. Shapes aren't touched: the blocks stand as they were packed. Run again after a reload it changes nothing.
+	 */
+	private void settle(ServerLevel level, byte now) {
+		for (int i = 0; i < where.length; i++) {
+			if (where[i] != now) {
+				continue;
+			}
+			BlockPos pos = now == NEW ? newPos(i) : oldPos(i);
+			BlockState state = level.getBlockState(pos);
+			if (state.isAir()) {
+				continue; // broken since it went up
+			}
+			level.neighborChanged(pos, state.getBlock(), pos);
+			level.updateNeighborsAt(pos, state.getBlock());
 		}
 	}
 

@@ -41,30 +41,60 @@ public final class Graveyards {
 	static final int PLOT_ROW = 4, PLOT_ROWS = 3, PLOT_STEP = 2;
 	/** How near and how far from the hall the plot may lie. */
 	static final int PLOT_MIN = 6, PLOT_MAX = 20;
-	/** The Graveyard's grave slots, in its own coordinates (y 0, the yard's ground; z 0 is the gate side), in the order filled. */
+	/**
+	 * The Graveyard's grave slots, in its own coordinates (y 0, the yard's ground; z 0 is the gate side), in the order filled
+	 * (B1423). Each side of the way in (x 5 to 7) is a plot 4 wide (x 1 to 4; x 8 to 11) with two cross-walks, z 2 and z 5,
+	 * stepped into from the way in, and a back walk, z 7 (Level II's benches), reached through z 6 at x 3 (x 9). The graves
+	 * lie in the rows between (z 6, z 4, z 3, z 1; not at Level II's posts (2, 3) and (10, 3)) and in the nook behind (z 8 at
+	 * x 1, 2 and 10, 11), so every grave has a walk or the way in right beside it, reached from the street and the job
+	 * block, also when all 32 are taken. A villager's path to a grave ends one block above it (the grave is solid), so a
+	 * walk two blocks off on the ground is out of reach: each grave needs one beside it.
+	 */
 	static final List<BlockPos> YARD_SLOTS = yardSlots();
+	/**
+	 * The slots before B1423 (rows z 6 and z 1 at x 1 to 4 and 8 to 11, then x 1, 4, 8, 11 for z 2 to 5), which walled the
+	 * graves in once full. Graves already laid in them on old saves still rest in the Graveyard and are revived from there;
+	 * no new grave is laid in one that is not a slot today.
+	 */
+	static final List<BlockPos> OLD_YARD_SLOTS = oldYardSlots();
 
 	private static List<BlockPos> yardSlots() {
 		List<BlockPos> out = new ArrayList<>();
-		int[] row = {1, 2, 3, 4, 8, 9, 10, 11}; // either side of the way in (x 5 to 7)
-		for (int z : new int[] {6, 1}) {
-			for (int x : row) {
-				out.add(new BlockPos(x, 0, z));
+		int[][] rows = { // {z, x...} on the gate's left; the right side mirrors them (x to 12 - x)
+			{6, 1, 2, 4}, {8, 1, 2}, {4, 1, 2, 3, 4}, {3, 1, 3, 4}, {1, 1, 2, 3, 4}};
+		for (int[] row : rows) {
+			for (int i = 1; i < row.length; i++) {
+				out.add(new BlockPos(row[i], 0, row[0]));
 			}
-		}
-		for (int z = 2; z <= 5; z++) { // along the walls and the way in, beside the old headstones
-			for (int x : new int[] {1, 4, 8, 11}) {
-				out.add(new BlockPos(x, 0, z));
+			for (int i = row.length - 1; i >= 1; i--) {
+				out.add(new BlockPos(12 - row[i], 0, row[0]));
 			}
 		}
 		return List.copyOf(out);
 	}
 
+	private static List<BlockPos> oldYardSlots() {
+		List<BlockPos> out = new ArrayList<>();
+		for (int z : new int[] {6, 1}) {
+			for (int x : new int[] {1, 2, 3, 4, 8, 9, 10, 11}) {
+				out.add(new BlockPos(x, 0, z));
+			}
+		}
+		for (int z = 2; z <= 5; z++) {
+			for (int x : new int[] {1, 4, 8, 11}) {
+				out.add(new BlockPos(x, 0, z));
+			}
+		}
+		out.removeAll(yardSlots());
+		return List.copyOf(out);
+	}
+
 	/**
 	 * Where the graves of the village round {@code pos} rest: its Graveyards (nearest the hall first), then the hall plot.
-	 * {@code hall} is the village's hall, null round a table with no hall.
+	 * {@code hall} is the village's hall, null round a table with no hall. {@code older} are the yards' slots from before
+	 * B1423 ({@link #OLD_YARD_SLOTS}), where graves laid on old saves still rest; no new grave goes there.
 	 */
-	public record Resting(@Nullable BlockPos hall, List<BoundingBox> yards, List<BlockPos> slots) {
+	public record Resting(@Nullable BlockPos hall, List<BoundingBox> yards, List<BlockPos> slots, List<BlockPos> older) {
 		public boolean holds(BlockPos grave) {
 			return slots.contains(grave) || yards.stream().anyMatch(b -> b.isInside(grave));
 		}
@@ -100,16 +130,20 @@ public final class Graveyards {
 		yards.sort(Comparator.comparingDouble(f -> f.placement().origin().distSqr(centre)));
 		List<BoundingBox> boxes = new ArrayList<>();
 		List<BlockPos> slots = new ArrayList<>();
+		List<BlockPos> older = new ArrayList<>();
 		for (BuildSiteManager.Finished f : yards) {
 			boxes.add(BlueprintOutline.bounds(f.placement(), SIZE));
 			for (BlockPos local : YARD_SLOTS) {
 				slots.add(toWorld(f.placement(), local));
 			}
+			for (BlockPos local : OLD_YARD_SLOTS) {
+				older.add(toWorld(f.placement(), local));
+			}
 		}
 		if (withPlot && yards.isEmpty() && hall.isPresent()) {
 			slots.addAll(plot(level, hall.get()));
 		}
-		return new Resting(hall.orElse(null), boxes, slots);
+		return new Resting(hall.orElse(null), boxes, slots, older);
 	}
 
 	/**
@@ -219,10 +253,15 @@ public final class Graveyards {
 		return village.isEmpty() || village.get().equals(resting.hall());
 	}
 
-	/** The graves that rest in the village's graveyard (to be revived from there as from anywhere). */
+	/**
+	 * The graves that rest in the village's graveyard (to be revived from there as from anywhere): in its slots, then in
+	 * the slots of before B1423 where old saves laid some.
+	 */
 	public static List<BlockPos> resting(ServerLevel level, Resting resting) {
 		List<BlockPos> out = new ArrayList<>();
-		for (BlockPos slot : resting.slots()) {
+		List<BlockPos> cells = new ArrayList<>(resting.slots());
+		cells.addAll(resting.older());
+		for (BlockPos slot : cells) {
 			if (level.isLoaded(slot) && level.getBlockState(slot).is(ModBlocks.GRAVE)) {
 				out.add(slot);
 			}

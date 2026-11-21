@@ -3,7 +3,7 @@
 ROADMAP 32.4 (rams and gates), 32.5 (ladders) and 32.6 (battle stations and the morning after), the three parts of sieges. Part of Milestone 32 (1.6), switched on for players in 1.0 with every other expansion (`Expansions.M32`); GameTests and the showcase run with it on. `docs/design/M32.md` is the plan; raids are on
 [Raids and threats](raids.md), camps and the Defense page on [Lairs and the Defense page](lairs.md).
 
-Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130, B1225
+Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B432, B983, B1032, B1052, B1053, B1066, B1079, B1080, B1085, B1116, B1126, B1130, B1225, B1439
 
 ## What a player sees
 
@@ -79,6 +79,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
 - **From a station an archer shoots 24 blocks** (16 from the ground) and does a quarter more damage to a foe 3 or
   more blocks below. On a station he never climbs down to chase: when the raider he is shooting at goes out of his
   sight (under the walkway, hacking at the gate), he turns to the nearest raider he can see and reach (B252).
+  Over a parapet he aims as high up the raider as it takes for the arrow itself to clear it (B1439): a raider he can
+  see over the Palisade's stakes is one his arrows reach, not one whose knees are hidden behind the stake tops.
 - **An archer takes the station with a view** (B252): on the same build, the spot from which he sees the most of
   the ground in front of the gate, so he stands in a gap of the battlements (a crenel), not behind a merlon, where
   he saw nothing below. The ground right at the foot of a wall stays hidden from any walkway (only murder holes see

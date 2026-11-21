@@ -1,0 +1,19 @@
+{
+  "name": "cut2",
+  "dataVersion": 3955,
+  "compression": "gzip",
+  "updateBlockStates": true,
+  "blockStateUpdates": {
+    "updatedBlocks": 18
+  },
+  "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stone_house_desert/out/cut2.nbt",
+  "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stone_house_desert/out/summary.json",
+  "size": [
+    13,
+    16,
+    11
+  ],
+  "blockCount": 441,
+  "paletteCount": 51,
+  "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/stone_house_desert/recipe.mjs"
+}

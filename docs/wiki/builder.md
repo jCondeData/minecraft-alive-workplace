@@ -578,7 +578,11 @@ claims and trip counts.
   copy it was begun from: its site saved the vanilla drawing of its day, and each modded folder's `aliases.json` (from
   `history.py`, checked by `--check`) names the key that day's modded copy ships under (B1407: 39 modded sites of 23
   blueprints, among them the Library, Inn and Manor, were restarted on today's look, half old and half new). A build of an older drawing not shipped and an imported or uploaded build
-  show no button. A furnished build (37.3) is matched as it was furnished:
+  show no button. Until it is refreshed, a build of a shipped older drawing is repaired (asked about only for what is
+  missing from its own drawing), taken down, upgraded from the Upgrades page and moved as the drawing it was built from,
+  across restarts too (B1369-B1374, `QaOldDrawings1121cGameTests`). Not yet: a take-down of a build of an older drawing
+  that isn't shipped takes nothing down and the hall forgets the build anyway, and an upgrade blueprint clicked onto a
+  part of an older-drawing build that today's drawing doesn't cover doesn't line up with it. A furnished build (37.3) is matched as it was furnished:
   its saved pieces stand where the spots file of its day put them, so they are the Builder's and come away; today's
   spots keep a piece only where one of the same kind already stands, and the others are furnished as a new build is
   (B642). A furnished build whose spots file has gained spots since it was furnished (the Terraces before B281) is

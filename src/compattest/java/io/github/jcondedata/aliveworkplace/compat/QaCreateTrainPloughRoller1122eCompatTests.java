@@ -49,8 +49,8 @@ import net.minecraft.world.phys.AABB;
  * <li>a Mechanical Roller in its default mode (tunnel pave) with a cobblestone filter and a chest of cobblestone glued
  * on: in its lane under it, planks to clear and a hole to pave, outside and inside. A protected village's cells stay as
  * they were; an open village's are paved or cleared. The same roller set to straight fill (nothing to clear, a hole one
- * block deep in each cell) fills an open village's holes; that it fills none of a protected one's fails today, as does the
- * plough's tilling there (QaCreateTrainPloughRoller1122eBugCompatTests (B1502, B1503; on tests/create-plough-roller-1122e)).</li>
+ * block deep in each cell) fills an open village's holes; that it fills none of a protected one's, and the
+ * plough's tilling none there, are B1502 and B1503 ({@link QaCreateTrainPloughRoller1122eBugCompatTests}).</li>
  * </ul>
  */
 public class QaCreateTrainPloughRoller1122eCompatTests implements FabricGameTest {
@@ -346,7 +346,7 @@ public class QaCreateTrainPloughRoller1122eCompatTests implements FabricGameTest
 
 	/**
 	 * A Plough on a stranger's train breaks no torch or flower in Frank's protected village. (That it tills none of its
-	 * ground either fails today: QaCreateTrainPloughRoller1122eBugCompatTests (B1502, B1503; on tests/create-plough-roller-1122e).)
+	 * ground either is B1502: {@link QaCreateTrainPloughRoller1122eBugCompatTests}.)
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"qa_e1122c_train_plough_protected"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa_e1122c_train_plough_protected")
@@ -377,7 +377,7 @@ public class QaCreateTrainPloughRoller1122eCompatTests implements FabricGameTest
 
 	/**
 	 * The control: the same filling roller train fills the holes of an open village. (That it fills none in a protected
-	 * one fails today: QaCreateTrainPloughRoller1122eBugCompatTests (B1502, B1503; on tests/create-plough-roller-1122e).)
+	 * one is B1503: {@link QaCreateTrainPloughRoller1122eBugCompatTests}.)
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"qa_e1122c_train_roller_fill_open"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qa_e1122c_train_roller_fill_open")

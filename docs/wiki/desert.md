@@ -66,7 +66,9 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479, B1493
   ramp still to be piled, it waits two blocks to the side of the ramp's outer end instead, since no sand is piled
   onto a raider. It does the same when the only way to its spot runs over the sand already piled (B1434): a climber
   never uses its half-built ramp as a step, which let one up onto a player's fence and down into the pen round its
-  spot, stuck there for good. A path counts as ending at a wall when it ends within five of the hall with a column two
+  spot, stuck there for good. A climber whose search for the way to its ramp doesn't get there searches once more
+  with twice the room to walk (B1506): the game's search gives up early on a target close by that is a long way
+  round, and a climber between its finished ramp and a player's pen stood there for good. A path counts as ending at a wall when it ends within five of the hall with a column two
   high on the straight line to it (B1445, B1479); a second path then asked right up to the hall (within two) says
   whether the climber can walk in round it, past a lamp post or through an open doorway beside the line, and then it
   walks in and no sand is piled (B1493). A gap only one high, or a shut wooden door, is no way in: the climber ramps the

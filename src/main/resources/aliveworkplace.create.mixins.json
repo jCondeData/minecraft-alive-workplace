@@ -10,8 +10,12 @@
 		"ContraptionColliderMixin",
 		"ContraptionPlacementMixin",
 		"ControlledContraptionAccessor",
+		"ElevatorCabinMixin",
+		"HarvesterMixin",
 		"InventoryReachMixin",
-		"MovingBreakerMixin"
+		"MovingBreakerMixin",
+		"PloughMixin",
+		"RollerFillMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

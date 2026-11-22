@@ -64,7 +64,8 @@ doesn't take a barrel standing within 8 blocks across and 4 up or down of a free
 the Supply Shop's barrels behind its Shop Counter, and takes that job block instead. Once it is taken, the barrels
 count again (with the cap above). Only a job block a jobless villager could really take counts (B1476, B1477): not
 one taken only with an item (a crafting table, a jukebox, a beehive or bee nest, a mailbox), not one walled in with
-nowhere to stand beside or on top, and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
+nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one whose job is
+switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
 still hires its Fisherman at the barrel beside its smoker. With the cap switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
@@ -429,7 +430,8 @@ from the bag and hotbar first, then the off hand. Armor you wear never pays.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
 with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
-four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+four deep, a hoist (its crank's lever hangs on the end of the hoist drum, B1485: on a fence post, as first
+rebuilt, the Builder could never place it), and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
 y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
 finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
 who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,

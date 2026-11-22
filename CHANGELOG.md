@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Desert husks behind a wall now pile their sand ramp when the village hall stands just a few blocks inside it. Before,
+  a husk that got right up against the wall near the hall counted as already in, so it waited at the wall's foot all
+  siege and never began a ramp.
 - Archers can get up onto Gatehouse II's barbican again. Set in a stone wall with its gates shut, the barbican's roof
   was out of reach from inside the town, so archers sent up there stood on the ground all siege. Each barbican wall
   now has a passage inside it, entered from the guardroom, and guards climb up from there. Archers are also only sent

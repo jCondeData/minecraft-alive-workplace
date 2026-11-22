@@ -179,9 +179,8 @@ public class QaRebuiltCobblemon1122dCompatTests implements FabricGameTest {
 			if (analyzers.size() != 1) {
 				problems.add(n + ": " + analyzers.size() + " fossil analyzers " + analyzers + ", the brief says exactly one");
 			}
-			// (the brief's "no other workstation anywhere": a Carpenter's crafting table stands in all three today, filed
-			// as a bug with its own test; every other job site is still barred here)
-			problems.addAll(d.otherJobSites(Set.of(FOSSIL_ANALYZER, BuiltInRegistries.BLOCK.getKey(Blocks.CRAFTING_TABLE))));
+			// (the brief's "no other workstation anywhere"; the Carpenter's crafting table went in B1468)
+			problems.addAll(d.otherJobSites(Set.of(FOSSIL_ANALYZER)));
 			Set<BlockPos> walked = d.walk(false);
 			for (BlockPos a : analyzers) {
 				if (a.getY() < 0) {

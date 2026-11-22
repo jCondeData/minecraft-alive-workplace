@@ -155,9 +155,18 @@ holes = [(x, z) for x in (4, 5, 6) for z in (4, 5, 6) if (x, 4, z) not in cells 
 ok(len(roof) >= 4 and len(holes) >= 1, f"murder holes: {len(roof)} roof cells, holes {holes}")
 ok(all((5, y, z) not in cells or short(cells[(5, y, z)]).endswith(GATES) for y in (1, 2) for z in range(10)),
    "headroom over the middle way, z 0..9")
-for x in (2, 3, 7, 8):
+for x in (1, 3, 7, 9):
     ok(all((x, y, z) in cells and collides(cells[(x, y, z)]) for y in (1, 2, 3) for z in range(5, 10)), f"barbican wall x {x} shut at y 1..3")
+# B1427: the galleries in the barbican's walls (x 2 / 8), shut at their far end, are the guards' way in under the deck
+for x in (2, 8):
+    ok(all((x, y, 9) in cells and collides(cells[(x, y, 9)]) for y in (1, 2, 3)), f"the gallery x {x} shut at its far end (z 9)")
+    ok(all((x, y, z) not in cells or not collides(cells[(x, y, z)]) for y in (1, 2) for z in range(1, 9)), f"the gallery x {x} open from the guardroom (z 1..8)")
+    door = 3 if x == 2 else 7
+    ok(all((door, y, 1) not in cells or not collides(cells[(door, y, 1)]) for y in (1, 2)), f"the guardroom's doorway ({door}, 1..2, 1) off the gateway open")
 st2 = stations(cells, states)
+galleries = [(x, 1, z) for x in (2, 8) for z in range(5, 9)]
+far = [p for p in st2 if p[2] >= 4 and not any((g[0] - p[0]) ** 2 + (g[2] - p[2]) ** 2 <= 3.5 ** 2 for g in galleries)]
+ok(not far, f"every barbican station within climbing reach (3.5 flat) of a gallery: {far}")
 ok(any(p[2] >= 4 for p in st2), f"a station on the barbican (z >= 4): {[p for p in st2 if p[2] >= 4][:6]}")
 same, total = kept(base_cells, base_states, cells, states)
 ok(same >= 0.6 * total, f"keeps {same} of Level I's {total} blocks exactly ({100 * same // total}% >= 60%)")

@@ -186,7 +186,9 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
   - **The climb**: villagers cannot path up a ladder. A guard walks as near his station as his path gets; once he
     is within 3.5 blocks of it and below it he is set on it, with a ladder's step sound.
   - On the way an archer shoots only at what comes within 8 blocks, and keeps walking while he does (B1494: he used to
-    stop and shoot from the ground all siege at a raider standing near his tower's foot). From a station his bow's arrow flies faster and
+    stop and shoot from the ground all siege at a raider standing near his tower's foot). A foe within 4.5 blocks he
+    fights with his sword, as any guard, and stays on the ground while it lasts: a tough raider standing in his way at
+    the tower's door keeps him off his station until it falls (QA 2026-11-22). From a station his bow's arrow flies faster and
     flatter so that it carries the range; its damage is scaled back so only the height rule adds to it.
   - A knight or medic fights only a foe within 6 blocks of his spot, so the gate's defenders wait for what comes
     through instead of pressing against the bars.
@@ -343,6 +345,11 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
 
 ## Proof
 
+- QA (lane D, 2026-11-22), B1494: `QaLookoutSight1122dVerifyGameTests` (5): an archer gets up Lookout Tower I turned
+  clockwise and half round (from the south-east and the south-west) and hits a raider at its foot from there; up
+  Lookout Tower II from the far side of the area and Lookout Tower III turned half round from the far corner, and
+  stays up; with Lookout Tower I walled round he is passed over for each of its stations and stands on the
+  Palisade's within 450 ticks (102 in the runs).
 - QA (lane D, 2026-11-03): `QaGates1103dGameTests` (4): the night gates shut at 12,500 and not at 12,499, open at 23,500
   and not at 23,499, on day 0 and day 3; a Gatehouse turned a quarter and mirrored has its own gates shut; a broken gate
   and one swapped for a fence are left alone while the third still shuts, a gate opened by hand at night is shut on the

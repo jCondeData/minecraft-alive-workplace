@@ -1996,6 +1996,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefense1121cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltDefenseLive1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampPens1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRampSiegeMutants1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltStorySites1121dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWallGround1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.LookoutTowerSightB1469GameTests",

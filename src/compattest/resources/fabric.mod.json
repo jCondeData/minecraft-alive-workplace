@@ -11,11 +11,13 @@
 			"io.github.jcondedata.aliveworkplace.test.MockPlayerSweep"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.compat.QaPumpHouseDoor1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateGantryPulley1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateOwnVillage1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovingMachines1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePortableTrains1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOwners1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreatePsi1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRefreshPieces1122e2CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaterHistory1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMoneyWording1121dCompatTests",

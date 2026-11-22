@@ -2005,6 +2005,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrels1122cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrels1122c2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHooksParlour1122cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHelperOwnBuild1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",

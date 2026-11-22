@@ -74,6 +74,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaStadiumVisitorsCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaWaystoneOwnerlessHallCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.WaystoneMapQaCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaHallWaystonesMap1122dCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CrafterFurnitureCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QuestbookCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.CobblemonCompatTests",

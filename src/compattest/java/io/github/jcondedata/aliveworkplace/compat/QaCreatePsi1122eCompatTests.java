@@ -338,8 +338,8 @@ public class QaCreatePsi1122eCompatTests implements FabricGameTest {
 	}
 
 	/** The control: with the village open a stranger's piston outside docks its PSI at Frank's edge PSI and is loaded. */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_piston_open"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_piston_open")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_piston_open"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_piston_open")
 	public void aStrangersPistonPsiOutsideAnOpenVillageIsLoadedAtItsEdge(GameTestHelper helper) {
 		pistonRun(helper, false, true);
 	}
@@ -347,22 +347,22 @@ public class QaCreatePsi1122eCompatTests implements FabricGameTest {
 	// ---------------------------------------------------------------- carts
 
 	/** The control: with the village open a stranger's cart docking at Frank's PSI is loaded from his chest. */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_open"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_open")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_open"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_open")
 	public void aStrangersCartDockingAtAPsiInAnOpenVillageIsLoaded(GameTestHelper helper) {
 		run(helper, Cart.STRANGER, false, false, true);
 	}
 
 	/** The control for the reload case: saved and loaded on its way, the cart still docks and loads in an open village. */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_open_reloaded"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_open_reloaded")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_open_reloaded"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_open_reloaded")
 	public void aCartSavedAndLoadedOnTheWayStillDocksAtAPsiInAnOpenVillage(GameTestHelper helper) {
 		run(helper, Cart.STRANGER, false, true, true);
 	}
 
 	/** Over-protection guard: Frank's own cart, put together inside his protected village, loads at his own dock. */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_owner"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_owner")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_owner"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_owner")
 	public void theOwnersCartDocksAtHisPsiInHisProtectedVillage(GameTestHelper helper) {
 		run(helper, Cart.OWNER, true, false, true);
 	}

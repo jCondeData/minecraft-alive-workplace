@@ -62,6 +62,14 @@ public class QaBlueprintNames1122dGameTests implements FabricGameTest {
 		return bad;
 	}
 
+	/**
+	 * A build the mod (or a data pack) ships, not one saved into this world (a Structure Block save, an import, a renewal
+	 * snapshot, other tests' saves): those carry the player's own name, which is not the lang file's to give.
+	 */
+	private static boolean shipped(MinecraftServer server, ResourceLocation id) {
+		return server.getResourceManager().getResource(ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "structure/" + id.getPath() + ".nbt")).isPresent();
+	}
+
 	/** Every mod build the Blueprint Table lists (unlocked and locked, not the "???" stand-ins) reads a name of its own. */
 	//$ gametest EMPTY_STRUCTURE
 	@GameTest(template = EMPTY_STRUCTURE)
@@ -70,6 +78,7 @@ public class QaBlueprintNames1122dGameTests implements FabricGameTest {
 		TableServer.listing(helper.getLevel(), null).stream()
 			.map(e -> e.id())
 			.filter(id -> id.getNamespace().equals(AliveWorkplace.MOD_ID) && !id.getPath().startsWith("hidden/"))
+			.filter(id -> shipped(helper.getLevel().getServer(), id))
 			.forEach(ids::add);
 		helper.assertTrue(ids.size() > 100, "the Table lists only " + ids.size() + " of the mod's builds");
 		helper.assertTrue(ids.contains(AliveWorkplace.id("stone_wall_2")), "the Table doesn't list stone_wall_2: " + ids.stream().filter(i -> i.getPath().startsWith("stone")).toList());
@@ -89,6 +98,7 @@ public class QaBlueprintNames1122dGameTests implements FabricGameTest {
 		List<ResourceLocation> ids = BlueprintLibrary.list(server, true).stream()
 			.filter(id -> id.getNamespace().equals(AliveWorkplace.MOD_ID) && !BlueprintLibrary.isWorldgenPiece(id))
 			.filter(id -> LEVEL.matcher(id.getPath()).matches() || id.getPath().startsWith("looks/"))
+			.filter(id -> shipped(server, id))
 			.toList();
 		long levels = ids.stream().filter(id -> !id.getPath().contains("/")).count();
 		long looks = ids.stream().filter(id -> id.getPath().startsWith("looks/")).count();

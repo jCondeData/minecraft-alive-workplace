@@ -1987,7 +1987,10 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintPiecesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStoneTownLooks1121cGameTests",
-			"io.github.jcondedata.aliveworkplace.test.BlueprintLangNamesB1467GameTests"
+			"io.github.jcondedata.aliveworkplace.test.BlueprintLangNamesB1467GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests"
 		]
 	},
 	"depends": {

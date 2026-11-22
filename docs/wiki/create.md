@@ -566,7 +566,7 @@ Create's machines keep out of a protected village the way a vanilla piston does 
 outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing, a
 Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or saw rides on it), a bearing's arm
 sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
-setting them down there, and a Deployer places no block inside (B1015). A Mechanical Harvester, Plough or Roller
+setting them down there, and a Deployer places no block inside (B1015). A Mechanical Harvester, Plow or Roller
 riding on a stranger's contraption (a train, a cart, a piston's head) reaps, tills and fills nothing inside (B1498,
 B1502, B1503), and a stranger's Elevator Pulley outside leaves the village's blocks out of its cabin (B1487). The same machines inside the village, or
 with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
@@ -842,7 +842,7 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   Create build's materials name real items with Create's among them, its preview draws Create's blocks, every style on
   its rail has details and a preview, and Get Blueprint hands each one out (none refused).
 - `QaCreateTrainActors1122eBugCompatTests` (B1498), `QaCreateTrainPloughRoller1122eBugCompatTests` (B1502, B1503) and
-  `QaCreateGantryPulley1122eBugCompatTests` (B1487) (QA, lane E, 2026-11-22; 4): a stranger's harvester, plough and
+  `QaCreateGantryPulley1122eBugCompatTests` (B1487) (QA, lane E, 2026-11-22; 4): a stranger's harvester, plow and
   filling roller on a real train change nothing in a protected village, and his elevator's cabin takes none of its
   blocks; the open-village controls are in the matching `…CompatTests` classes.
 

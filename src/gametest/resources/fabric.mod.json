@@ -2014,13 +2014,15 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHooksParlour1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperOwnBuild1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.ArcherStationPatrolB1474GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPocketDrainWide1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBanners1122bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests"
 		]
 	},
 	"depends": {

@@ -61,6 +61,9 @@ public class GuardPatrol extends Behavior<Villager> {
 	@Nullable
 	private BlockPos waypoint;
 	private int wait;
+	/** Ticks spent walking back to the post from outside the patrol's square (given up after {@link #HOMEWARD_TICKS}). */
+	private int homeward;
+	private static final int HOMEWARD_TICKS = 600;
 	/** The next point of the guard's patrol route (see {@link PatrolMapItem}). */
 	private int routeIndex;
 	private int gearTimer;
@@ -116,8 +119,12 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		if (GuardCombat.isFighting(villager) || GuardRally.isRallying(villager)) {
+		// A guard with a place in a siege keeps it (B1474): the patrol doesn't start then, but one already under way went on
+		// whenever he had nobody to fight. It picked a point near the post, and as an archer on his station made no way
+		// toward it (BattleStations.stay holds him), the walker hopped him there, off the wall, 80 ticks later.
+		if (GuardCombat.isFighting(villager) || GuardRally.isRallying(villager) || BattleStations.stationed(villager)) {
 			waypoint = null;
+			walker.reset();
 			return;
 		}
 		var leader = Escorts.leader(villager);
@@ -192,6 +199,14 @@ public class GuardPatrol extends Behavior<Villager> {
 				return;
 			}
 			int r = night ? NIGHT_RADIUS : DAY_RADIUS;
+			// Outside the square (a fight or the bell took him off; B1475: after a night raid he stood where the fight ended,
+			// as every point under the barrier ceiling of a GameTest area was refused): back to the post first.
+			if (Math.max(Math.abs(villager.getBlockX() - post.getX()), Math.abs(villager.getBlockZ() - post.getZ())) > r + 1) {
+				waypoint = post;
+				homeward = 0;
+				walker.reset();
+				return;
+			}
 			int x = post.getX() + level.random.nextInt(r * 2 + 1) - r;
 			int z = post.getZ() + level.random.nextInt(r * 2 + 1) - r;
 			int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
@@ -200,7 +215,7 @@ public class GuardPatrol extends Behavior<Villager> {
 			walker.reset();
 			return;
 		}
-		if (walker.walkTo(level, villager, waypoint, 2.0) || walker.noSpot()) {
+		if (walker.walkTo(level, villager, waypoint, 2.0) || walker.noSpot() || waypoint.equals(post) && ++homeward > HOMEWARD_TICKS) {
 			boolean routed = io.github.jcondedata.aliveworkplace.registry.ModAttachments.PATROL_ROUTE.has(villager);
 			waypoint = null;
 			wait = routed ? 20 + level.random.nextInt(40) : 60 + level.random.nextInt(100);

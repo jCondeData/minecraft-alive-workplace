@@ -114,7 +114,11 @@ Roads and walls have their own switches: see [Roads and walls](roads-and-walls.m
   rule, a renewal under way) is left out with a warning in the log, and the rest of the record loads (B821; before,
   the whole record was lost without a word: declined rules came back, renewals under way were forgotten and proposal
   ids restarted at 1). Proof: QA's `QaStewardSavesOneBadEntry1102BugTests` (2: one empty wish, rule use, proposal or
-  renewal each keeps the record's good fields; one empty person in the Book of Families keeps the other two).
+  renewal each keeps the record's good fields; one empty person in the Book of Families keeps the other two) and
+  `QaStewardSaves1122cGameTests` (5: several bad entries at once, first, middle and last, empty, with a field of the
+  wrong type or missing one, are each skipped and logged and the rest loads exactly as saved; saved again and reloaded,
+  the good entries stay; in the world, declined rules stay declined, the next proposal takes the saved id and the
+  renewal under way is kept; a bad turn in the Book of Families keeps the good one).
 - On the Steward: the attachment `steward_round_day` (the day of his last finished round).
 - Per dimension: `aliveworkplace_player_built`, the ledger of where players placed or broke blocks inside a hall's
   area. Older worlds start with an empty ledger.

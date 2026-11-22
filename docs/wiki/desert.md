@@ -64,7 +64,9 @@ Roadmap items: 32.9, B382, B437, B828
   2026-11-21, not fixed). While the sand goes up a climber waits two blocks out from the ramp's
   outer end; where that spot can't be reached (a ledge, a player's blocks) and the nearest it gets is a block of the
   ramp still to be piled, it waits two blocks to the side of the ramp's outer end instead, since no sand is piled
-  onto a raider.
+  onto a raider. It does the same when the only way to its spot runs over the sand already piled (B1434): a climber
+  never uses its half-built ramp as a step, which let one up onto a player's fence and down into the pen round its
+  spot, stuck there for good.
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.

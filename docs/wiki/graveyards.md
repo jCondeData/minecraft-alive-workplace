@@ -120,6 +120,11 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - QA's `QaRebuiltCivic1121cBugTests.qaEveryGraveInAFullGraveyardCanBeWalkedTo` (B1423): the Graveyard placed with a
   grave in each of its 32 slots; the game's pathfinder finds a villager in the street a way to within reach of every
   grave. `qaAGraveLaidInAnOldSlotStillRestsInTheGraveyard`: a grave in a pre-B1423 slot is still revived from the yard.
+- QA's `QaGraveyard1122cGameTests` (B1423, 6): both levels full, as drawn and built turned (a quarter turn, and turned
+  around), every grave reached by the pathfinder from the street and from beside the brewing stand, and an old-slot grave
+  in the turned yard still rests there; a Builder dies in the street and the Undertaker lays her in the last free slot,
+  in the middle of a nearly full Level II, walks to it without a stuck-teleport and leaves an old-slot grave where it
+  lies; a mourner called from the street walks into a full yard to a grave in its middle.
 - QA's `QaVillagerFixes1104c2GameTests.qaWithAnAppleInTheChestAStreetGraveIsRevivedNotMoved`: with a golden apple
   already in the chest, the street grave is revived where it lies (name kept, apple used) and never laid in the Graveyard.
 - B779: QA's `QaVillageReachGraves1101BugTests.aGraveInTheNextVillageIsNotLaidInThisVillagesGraveyard` (the next

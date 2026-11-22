@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467
 
 ## 1. What a player sees
 
@@ -78,6 +78,9 @@ Ways to unlock, all for the village round the nearest hall:
 - Only the mod's own builds (the lists in `StarterBlueprints`, any style of them) and the Wonders can be locked. Imports,
   uploads, scans, structure-block saves and other datapacks' builds are always unlocked. Styles share their base's
   unlock; each upgrade tier is its own build.
+- Every build has a name in the lang file: upgrade tiers read "Stone Wall II", "Wall Tower II", "Palisade II",
+  "Gatehouse II", and a culture's look reads "<build>: <Culture>" ("Starter Cottage: Desert"), never a fallback like
+  "Stone Wall 2" (B1467, `BlueprintLangNamesB1467GameTests`).
 - The starting and rare sets are data: `data/<ns>/blueprint_unlocks/starting.json` and `rare.json`, each a
   `blueprints` list, merged across namespaces and read on every reload.
 - A Table's village is `VillageHalls.nearest` to the Table. With no hall in reach, one server-wide set is used; the
@@ -222,6 +225,11 @@ client receives.
 `QaPreviewSafe1108GameTests` (4, QA): a connected sofa's provider sees its partner beside it and the floor under it in the preview's level, a basement block under y = 0 is there too; typed block-entity lookups are empty, the glowstone's own light reads 15, the light engine answers without throwing, a box holds just the build's blocks; the viewer's biome grass, foliage and water colors reach a provider (all white without a biome); a provider casting the level to a world or reading a missing block entity draws untinted and is logged. The `table_preview_safe` scene does it in the real client: with Cozy-Home-like providers on the cottage's spruce stairs and brown carpet and always-failing ones on its fence and glass, the held blueprint's ghosts and the Table's 3D preview keep drawing, the Cozy-like ones are only ever asked with a level holding that very block, and only the failing ones are logged.
 
 QA's `QaBlueprintLibraryVerify1108bGameTests` (8): a new village's unlocked builds are exactly the starting set above, the builder's four trades locked and each rare build a ??? never named; each builder trade's and questbook tier's hint word for word; the refusals for a locked Market Stall and a ??? Chapel, word for word, with no Blank Blueprint used; a creative player refused too; one player's found Fountain unlocks it for another at the same Table, and only the first is told; a level-up takes the lowest tier first, then by id, and one short of three takes what's left, never a rare build; the server-wide set through a save and reload; the switch off and on again (the village keeps nothing, and a blueprint taken out meanwhile unlocks it).
+
+**Names (B1467).** Every build has its own name, levels in Roman numerals ("Stone Wall II", "Gatehouse II") and a
+culture's look after a colon ("Starter Cottage II: Desert"), never the name made from its id ("Stone Wall 2").
+`BlueprintLangNamesB1467GameTests` (1): every shipped blueprint shown by name (all but the village pieces, modded
+copies, Wonder parts, camps, story pieces and road segments) reads its own name through the same lookup the game uses.
 
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.

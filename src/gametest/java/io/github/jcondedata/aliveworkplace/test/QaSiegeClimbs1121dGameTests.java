@@ -401,15 +401,22 @@ public class QaSiegeClimbs1121dGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The husk comes from outside the front wall, east of the Stone Wall; its ramp goes at the west (side) wall, so it walks
-	 * west along the front wall's outside and round the south-west corner. On the way it passes, outside, the strip in
-	 * from the ramp's foot where a raider over the ramp lands (x 9 to 12): it must not be let go there.
+	 * The husk comes from outside the front wall, in the strip in from the ramp's foot where a raider over the ramp lands
+	 * (x 9 to 12); its ramp goes at the west (side) wall, so it walks west along the front wall's outside and round the
+	 * south-west corner. It must not be let go while it is out there.
+	 *
+	 * <p>B1460: it started at (16.5, 22.5), in front of the Stone Wall, until CI once piled its ramp at the front wall
+	 * (13, 2, 20). Where its way to the hall ends (the ramp's spot) is the game's pathfinder's nearest point within its
+	 * search, and from 2 to 4 blocks south-east of that start (where the husk can stroll before its first try) the search
+	 * sometimes ends at the front wall instead of the west one (measured: 1 to 12 start cells per run, all x 16 to 21,
+	 * z 24 to 26; every cell x 8 to 15, z 20 to 26 ends at the west wall in every run). The side ramp is what this test
+	 * is about, so it starts at (12.5, 22.5), the strip's east edge, still outside the front wall and round the corner.
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"qaClimbs1121dSideRamp"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaClimbs1121dSideRamp")
 	public void qaAHuskWalkingRoundTheCornerToASideWallRampPilesItAndGetsOver(GameTestHelper helper) {
 		Yard yard = rampYard(helper);
-		rampRun(helper, yard, "side-wall ramp round the corner", 16.5, 22.5, Map.of());
+		rampRun(helper, yard, "side-wall ramp round the corner", 12.5, 22.5, Map.of());
 	}
 
 	/**

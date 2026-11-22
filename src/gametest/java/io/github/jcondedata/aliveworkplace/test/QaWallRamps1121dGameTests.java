@@ -393,17 +393,23 @@ public class QaWallRamps1121dGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * A long straight wall (two high, x 8, from the ramp at z 0 to z 34, past the area's edge, its ground laid out
-	 * there): husks beside it 29 and 32 blocks along from the block the ramp leans on are within the 32 the wall is
-	 * followed and are counted over; one 33 along is past it and is not.
+	 * A long straight wall (two high, x 8, from the ramp at z -4 to z 31, past the area's edges both ways, its ground laid
+	 * out there): husks beside it 29 and 32 blocks along from the block the ramp leans on (z 25 and 28) are within the 32
+	 * the wall is followed and are counted over; one 33 along (z 29) is past it and is not.
+	 *
+	 * <p>B1449: the wall ran from z 0, so the husks stood at z 29, 32 and 33, the last two outside the 30-block area,
+	 * where whether an entity ticks depends on the machine's chunk borders (it failed 3 of 3 in one container). The whole
+	 * setup moved 4 north, so every husk is inside the area; the ramp's foot and the wall's ends are blocks outside it.
 	 */
 	//$ gametest_ticks_batch AREA '400' '"qaWallRamps1121dLong"'
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "qaWallRamps1121dLong")
 	public void qaAlongALongWallHusksWithin32BlocksAreCountedOverAndOnePastItIsNot(GameTestHelper helper) {
 		Yard yard = village(helper, new BlockPos(22, 2, 15));
-		for (int z = 0; z <= 35; z++) {
+		int start = -4;
+		for (int z = start; z <= 31; z++) {
+			boolean outside = z < 0 || z >= 30;
 			for (int x = 6; x <= 13; x++) {
-				if (z >= 30) {
+				if (outside) {
 					setKept(helper, new BlockPos(x, 1, z), Blocks.SMOOTH_STONE);
 					for (int y = 2; y <= 5; y++) {
 						if (x != WEST || y > 3) {
@@ -413,20 +419,20 @@ public class QaWallRamps1121dGameTests implements FabricGameTest {
 				}
 			}
 			for (int y = 2; y <= 3; y++) {
-				if (z >= 30) {
+				if (outside) {
 					setKept(helper, new BlockPos(WEST, y, z), Blocks.STONE_BRICKS);
 				} else {
 					helper.setBlock(new BlockPos(WEST, y, z), Blocks.STONE_BRICKS);
 				}
 			}
 		}
-		cell(helper, WEST + 2, 29, true);
-		Mob at29 = husk(helper, yard, WEST + 2, 29);
-		cell(helper, WEST + 1, 32, true);
-		Mob at32 = husk(helper, yard, WEST + 1, 32);
-		cell(helper, WEST + 3, 33, true);
-		Mob at33 = husk(helper, yard, WEST + 3, 33);
-		siege(helper, yard, List.of(at29, at32, at33), new BlockPos(WEST - 1, 2, 0), new BlockPos(27, 2, 15));
+		cell(helper, WEST + 2, start + 29, true);
+		Mob at29 = husk(helper, yard, WEST + 2, start + 29);
+		cell(helper, WEST + 1, start + 32, true);
+		Mob at32 = husk(helper, yard, WEST + 1, start + 32);
+		cell(helper, WEST + 3, start + 33, true);
+		Mob at33 = husk(helper, yard, WEST + 3, start + 33);
+		siege(helper, yard, List.of(at29, at32, at33), new BlockPos(WEST - 1, 2, start), new BlockPos(27, 2, 15));
 		expect(helper, yard, "a long straight wall", List.of(at29, at32), List.of(at33));
 	}
 

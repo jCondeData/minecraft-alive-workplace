@@ -16,7 +16,8 @@ import net.minecraft.world.phys.AABB;
  * {@link #RADIUS} blocks of the barrel (the config's {@code villageRadius}, as for the worker cap).
  * <p>
  * Once a village has its fishermen, a jobless villager's job search doesn't see free barrels there, so he takes another
- * free workstation instead ({@code WorkerLimits.hideFull}); a barrel picked anyway is let go on the way
+ * free workstation instead ({@code WorkerLimits.hideFull}), and nor does he see a barrel in supply reach of a free
+ * workstation of another job, the stock of that workshop (B1463, {@code WorkerLimits.storeOfAFreeWorkstation}); a barrel picked anyway is let go on the way
  * ({@code WorkerLimits.holdBack}) and the job is refused at the last moment ({@code WorkerLimits.refuse}). A fisherman
  * the village already has keeps his job when it is over the cap (nothing is saved, nobody is fired), and a job given by
  * order (the hall's job menu, the admin tools) isn't capped.

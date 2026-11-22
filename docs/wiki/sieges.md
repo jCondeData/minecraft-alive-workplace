@@ -434,6 +434,9 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   whose waiting spot is fenced off (it waits beside the ramp). B1419: a husk starting beside a player's garden wall
   that stands on the ramp wall's line outside the yard, past a gap, is not counted over there (only the village wall
   the ramp leans on counts, unbroken from the ramp to beside the raider); it piles the ramp to the top and gets in.
+  B1434: `qaAHuskNeverStepsOffTheHalfBuiltRampIntoAFencedPen`, the fenced spot with the last stage held back by a
+  player's cobblestone for 120 ticks once its outer block is piled: the husk never gets onto the pen's fence (before
+  the fix it walked up that outer block onto the fence and into the pen, 4 runs of 4), and gets over once it's gone.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

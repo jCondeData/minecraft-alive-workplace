@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467, B1469
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467, B1469, B1468
 
 ## 1. What a player sees
 
@@ -374,6 +374,14 @@ All four levels and their modded copies are regenerated (`build.sh`'s steps, the
 released drawings are kept by `history.py`. Tests: `QaRebuiltDefenseLive1122dGameTests` (a live siege: the archer
 climbs Lookout Tower I and hits a raider 19 out; each level, turned four ways, has a station that sees the ground 3
 to 15 out on every side).
+
+**B1468: the Research Lab's one job site.** The rebuilt Research Lab (every level) had a crafting table as the Prep
+Room's worktop, and a crafting table is the Carpenter's job site, so a jobless villager could walk in and take a
+second job there. The worktop is now a third stone-topped counter of the lab bench under the front window
+(`js/research_lab/plan.mjs`); all three levels and their modded copies are regenerated (`build.sh`, then
+`modded_library.py`), the released drawings kept by `history.py`. Test:
+`QaRebuiltCobblemon1122dCompatTests.theResearchLabsHaveNoJobSiteButTheAnalyzer` (no block of any level or modded copy
+is any profession's job site but the Fossil Analyzer's).
 
 **QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence
 gates stay shut, nobody stands on fences, walls or headstones) from the street at the z=0 side.

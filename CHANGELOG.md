@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Research Lab no longer takes in a stray Carpenter. Its Prep Room had a crafting table for a worktop, and any
+  villager without a job could walk in and claim it as a Carpenter's workstation. The worktop is now part of the stone
+  lab bench, so the Fossil Analyzer is the only workstation in every level of the lab.
 - Archers on the Lookout Tower shoot again. The rebuilt tower's railing ran all the way round its top at eye height,
   so an archer up there couldn't see a single raider on the ground. The railing now has an open gap every other
   block on every side, and archers stand in those gaps to shoot (all four levels).

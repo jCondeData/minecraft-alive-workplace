@@ -553,7 +553,10 @@ claims and trip counts.
   nothing loads chunks for it (B666, B667: every job asks `work/SiteChunks.loaded` for its site's box and 4 blocks round
   it before it reads a block there; while the answer is no, the Builder, the Miner, the farmer and the Berry Breeder
   wait with the site, its cursor and its lists untouched, and the Lumberjack and the Orchard Keeper leave the far area
-  out and work round their own block; `FarSiteUnloadedGameTests`, `QaFarReach1028BugTests`, `QaFarReach1028bBugTests`). A world from before keeps its sites, and a config file holding the old default 48 moves to
+  out and work round their own block; `FarSiteUnloadedGameTests`, `QaFarReach1028BugTests`, `QaFarReach1028bBugTests`;
+  QA's `QaFarsites1122cGameTests`: the Orchard Keeper's far orchard, also saved and loaded while it waits, a field half
+  in unloaded chunks or ending on the last loaded column, a far field going on once it's back, and with
+  `workplaceKeepWorkLoaded` on and the build's owner online the far build is kept loaded and built). A world from before keeps its sites, and a config file holding the old default 48 moves to
   128 (format 5); any other number stays.
   Everything that goes from a build to its table uses that same rule (B619): a placed Blueprint's supply report and
   its Book and Quill material list count the chests by the nearest table that has the spot in reach, so a spot 150

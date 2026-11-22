@@ -16,8 +16,8 @@ public class QaRebuiltWorkshops1121bBugTests {
 
 	/**
 	 * carpenters_workshop.md in the world: a Builder builds the Carpenter's Workshop from exactly its materials across a
-	 * save and reload mid-STRUCTURE; it ends DONE with every block right (fails today: the tripwire hook at (8, 3, 8)
-	 * faces north onto the glass pane at (8, 3, 9), can't stand, and is skipped) and nothing left over; the built workshop has one
+	 * save and reload mid-STRUCTURE; it ends DONE with every block right (B1451, fixed 2026-11-21: the tripwire hook at (8, 3, 8) once
+	 * faced north onto the glass pane at (8, 3, 9), couldn't stand, and was skipped) and nothing left over; the built workshop has one
 	 * crafting table, a job site, a chest within 8 / 4 of it and a bed.
 	 */
 	//$ gametest_ticks_batch HUGE '40000' '"qaWorkshops1121bCarpenterBuild"'

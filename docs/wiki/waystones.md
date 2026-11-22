@@ -294,6 +294,11 @@ The Waystone Plaza blueprint (five looks). No new items or blocks: the stone is 
   the same waystone, one entry in the Waystones list at the new spot with the village's name, discovered for the player
   who had found it and not for one who hadn't, the same after a save and reload; broken at its new spot and put back by
   the builder's upkeep, still listed once.
+- `QaWaystoneHallless1121dCompatTests` (compat suite, B1188): three villages on the network, the middle one's hall
+  destroyed with its plaza and stone standing: the village now nearest that plaza and the other go round in both orders
+  and through a rename, each keeps its own stone with its own name, the hall-less plaza's stone keeps its village's
+  name and that village stays off the network; whose plaza is whose survives a save and reload, and the hall put back
+  takes its own stone again, all three linked.
 - `VillageWaystonesGameTests` (main suite, no Waystones): the rule stands aside for the missing mod and no wish is the
   plaza; the hall's Map lists no network.
 - Showcase scenes `village_waystone` and `hall_waystones` (41.2: the Map's network, one village of each state).

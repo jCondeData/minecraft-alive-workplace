@@ -181,6 +181,7 @@ public final class Walls {
 		int segW = segment.get().size().getX();
 		int gateW = gate.get().size().getX();
 		int towerW = tower.get().size().getX();
+		List<BoundingBox> built = wallBoxes(level);
 		List<Piece> out = new ArrayList<>();
 		for (int i = 0; i + 1 < points.size(); i++) {
 			BlockPos a = points.get(i);
@@ -189,20 +190,20 @@ public final class Walls {
 			Direction outward = outward(hall, a, b);
 			List<BlockPos> crossings = crossingsOn(level, hall, plan, a, b); // the roads crossing this run
 			// the corner's tower: behind the corner along this run, so it fills the corner outside both of its runs
-			add(out, level, hall, Kind.TOWER, kit.cornerTower(), tower.get().size(), a.relative(along.getOpposite(), towerW - 1), along, outward, towerW);
+			add(out, level, hall, built, Kind.TOWER, kit.cornerTower(), tower.get().size(), a.relative(along.getOpposite(), towerW - 1), along, outward, towerW);
 			int to = (int) Math.sqrt(a.distSqr(b)); // the run's length: a piece from s covers s .. s + width - 1
 			for (int[] piece : run(crossings, a, along, to, segW, towerW, gateW)) {
 				Kind kind = Kind.values()[piece[2]];
 				ResourceLocation blueprint = kind == Kind.GATE ? kit.gate() : kind == Kind.TOWER ? kit.cornerTower() : kit.segment();
 				Vec3i size = (kind == Kind.GATE ? gate : kind == Kind.TOWER ? tower : segment).get().size();
-				add(out, level, hall, kind, blueprint, size, a.relative(along, piece[0]), along, outward, piece[1]);
+				add(out, level, hall, built, kind, blueprint, size, a.relative(along, piece[0]), along, outward, piece[1]);
 			}
 		}
 		if (!closed(plan) && points.size() >= 2) {
 			BlockPos last = points.get(points.size() - 1);
 			BlockPos before = points.get(points.size() - 2);
 			Direction along = Direction.getNearest(last.getX() - before.getX(), 0, last.getZ() - before.getZ());
-			add(out, level, hall, Kind.TOWER, kit.cornerTower(), tower.get().size(), last, along, outward(hall, before, last), towerW);
+			add(out, level, hall, built, Kind.TOWER, kit.cornerTower(), tower.get().size(), last, along, outward(hall, before, last), towerW);
 		}
 		return List.copyOf(out);
 	}
@@ -272,9 +273,32 @@ public final class Walls {
 		return out;
 	}
 
-	/** Adds one piece: it starts at {@code at} along the run, its inside face on the line, at its own ground height. */
-	private static void add(List<Piece> out, ServerLevel level, BlockPos hall, Kind kind, ResourceLocation blueprint, Vec3i size,
-							BlockPos at, Direction along, Direction outward, int width) {
+	/**
+	 * B1457: the boxes of every wall piece, of any kit or tier, finished or with its site open, in {@code level}: where
+	 * the wall itself stands is no ground for laying it out ({@link #groundY}).
+	 */
+	static List<BoundingBox> wallBoxes(ServerLevel level) {
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		List<BoundingBox> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : manager.finishedIn(level)) {
+			if (isPiece(f.structure())) {
+				BlueprintLibrary.get(level, f.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(f.placement(), b.size())));
+			}
+		}
+		for (BuildSite site : manager.all()) {
+			if (isPiece(site.structure()) && site.placement().dimension().equals(Ids.of(level.dimension()))) {
+				BlueprintLibrary.get(level, site.structure()).ifPresent(b -> out.add(BlueprintOutline.bounds(site.placement(), b.size())));
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * Adds one piece: it starts at {@code at} along the run, its inside face on the line, at its own ground height (the
+	 * wall's own pieces, {@code built}, aren't its ground: {@link #groundY}).
+	 */
+	private static void add(List<Piece> out, ServerLevel level, BlockPos hall, List<BoundingBox> built, Kind kind, ResourceLocation blueprint,
+							Vec3i size, BlockPos at, Direction along, Direction outward, int width) {
 		Rotation rotation = rotationFor(outward);
 		// the footprint: `width` along the run from `at`, `depth` outward from the line
 		BlockPos far = at.relative(along, width - 1).relative(outward, size.getZ() - 1);
@@ -282,7 +306,7 @@ public final class Walls {
 		int minZ = Math.min(at.getZ(), far.getZ());
 		int maxX = Math.max(at.getX(), far.getX());
 		int maxZ = Math.max(at.getZ(), far.getZ());
-		int y = groundY(level, (minX + maxX) / 2, (minZ + maxZ) / 2, hall.getY());
+		int y = groundY(level, (minX + maxX) / 2, (minZ + maxZ) / 2, hall.getY(), built);
 		BlockPos corner = net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.transform(
 			new BlockPos(size.getX() - 1, 0, size.getZ() - 1), Mirror.NONE, rotation, BlockPos.ZERO);
 		BlockPos origin = new BlockPos(minX - Math.min(0, corner.getX()), y, minZ - Math.min(0, corner.getZ()));
@@ -308,11 +332,20 @@ public final class Walls {
 		return middle.relative(side, 4).distSqr(hall) > middle.relative(side.getOpposite(), 4).distSqr(hall) ? side : side.getOpposite();
 	}
 
-	/** The top of the ground at {@code x, z} near the hall's height: a piece's blocks start on the block above it. */
-	static int groundY(ServerLevel level, int x, int z, int nearY) {
+	/**
+	 * The top of the ground at {@code x, z} near the hall's height: a piece's blocks start on the block above it. Blocks
+	 * inside {@code built} (the boxes of wall pieces finished or going up, {@link #wallBoxes}) are no ground: B1457, segments
+	 * sit a block or two over one another ({@link #run}), so once one stood, the one beside it was laid out on top of it,
+	 * and each built in turn lifted the other onto itself, stacking the wall up till the builders' stone ran out. A piece
+	 * laid out again over itself sits where it was built (B94, B283).
+	 */
+	static int groundY(ServerLevel level, int x, int z, int nearY, List<BoundingBox> built) {
 		int top = Math.min(level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z), nearY + GROUND_REACH);
 		for (int y = top; y >= nearY - GROUND_REACH; y--) {
 			BlockPos p = new BlockPos(x, y, z);
+			if (built.stream().anyMatch(b -> b.isInside(p))) {
+				continue;
+			}
 			BlockState state = level.getBlockState(p);
 			if (!state.isAir() && level.getFluidState(p).isEmpty() && !state.canBeReplaced()) {
 				return y + 1;
@@ -461,32 +494,63 @@ public final class Walls {
 		return kitFor(level, hall).map(kit -> layout(level, hall, plan, kit)).orElse(List.of());
 	}
 
-	/** Whether {@code piece} stands finished: its own blueprint built on its spot, or an upgrade of it (B1380). */
+	/**
+	 * Whether {@code piece} stands finished: its own blueprint (or an upgrade of it, B1380) built on its spot, every
+	 * column of its footprint. B1425: segments sit a block or two over one another ({@link #run}), so a neighbor's
+	 * blueprint on part of the spot isn't this segment: taken down (or never built), it is a hole in the wall. Pieces
+	 * of its own blueprint covering the whole footprint between them do count (a wall laid out again a little shifted,
+	 * after a road crossing added a gate, still stands where it was built).
+	 */
 	public static boolean stands(ServerLevel level, Piece piece) {
-		return finishedOn(level, piece).flatMap(f -> kitPiece(f.structure())).filter(piece.blueprint()::equals).isPresent();
+		BoundingBox box = piece.box();
+		List<BoundingBox> own = finishedOn(level, piece).stream()
+			.filter(f -> kitPiece(f.structure()).filter(piece.blueprint()::equals).isPresent())
+			.map(BuiltPiece::box).toList();
+		if (own.isEmpty()) {
+			return false;
+		}
+		for (int x = box.minX(); x <= box.maxX(); x++) {
+			for (int z = box.minZ(); z <= box.maxZ(); z++) {
+				int cx = x;
+				int cz = z;
+				if (own.stream().noneMatch(b -> b.minX() <= cx && cx <= b.maxX() && b.minZ() <= cz && cz <= b.maxZ())) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/** A finished wall piece and where it stands. */
+	record BuiltPiece(ResourceLocation structure, BoundingBox box) {
 	}
 
 	/**
-	 * A wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a time).
-	 * The spot is its footprint, at any height within {@link #GROUND_REACH}: a piece's height is its ground's ({@link #groundY}), and once it is built
-	 * that ground is the piece's own top, so the same piece laid out again sits on itself (B94: builders put towers on
-	 * the towers they had finished).
+	 * Every wall piece of any kit finished on {@code piece}'s spot (an older kit's: this piece replaces it a piece at a
+	 * time). The spot is its footprint, at any height within {@link #GROUND_REACH}: a piece's height is its ground's
+	 * ({@link #groundY}), and once it is built that ground is the piece's own top, so the same piece laid out again sits
+	 * on itself (B94: builders put towers on the towers they had finished).
 	 */
-	static Optional<BuildSiteManager.Finished> finishedOn(ServerLevel level, Piece piece) {
+	static List<BuiltPiece> finishedOn(ServerLevel level, Piece piece) {
 		BoundingBox box = piece.box();
-		return BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8 + GROUND_REACH).stream()
-			.filter(f -> isPiece(f.structure()) && BlueprintLibrary.get(level, f.structure())
-				.map(b -> {
-					BoundingBox built = BlueprintOutline.bounds(f.placement(), b.size());
-					return built.minX() <= box.maxX() && built.maxX() >= box.minX() && built.minZ() <= box.maxZ() && built.maxZ() >= box.minZ()
-						&& built.minY() <= box.maxY() + GROUND_REACH && built.maxY() >= box.minY() - GROUND_REACH;
-				}).orElse(false))
-			.findFirst();
+		List<BuiltPiece> out = new ArrayList<>();
+		for (BuildSiteManager.Finished f : BuildSiteManager.get(level).finishedNear(level, piece.placement().origin(), 8 + GROUND_REACH)) {
+			if (!isPiece(f.structure())) {
+				continue;
+			}
+			BlueprintLibrary.get(level, f.structure()).map(b -> BlueprintOutline.bounds(f.placement(), b.size()))
+				.filter(built -> onSpot(built, box)).ifPresent(built -> out.add(new BuiltPiece(f.structure(), built)));
+		}
+		return out;
 	}
 
-	/** Whether this piece would replace an older kit's piece standing on its spot (a Town's stone over its palisade). */
+	/**
+	 * Whether this piece would replace an older kit's piece standing on its spot (a Town's stone over its palisade). A
+	 * piece of its own kit beside it (segments overlap a little) is no older kit's (B1425).
+	 */
 	public static boolean replaces(ServerLevel level, Piece piece) {
-		return !stands(level, piece) && finishedOn(level, piece).isPresent();
+		return !stands(level, piece) && finishedOn(level, piece).stream()
+			.anyMatch(f -> kitPiece(f.structure()).filter(piece.blueprint()::equals).isEmpty());
 	}
 
 	/**

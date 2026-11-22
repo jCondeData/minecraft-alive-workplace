@@ -28,8 +28,11 @@
 //               band at the mid floor y 4), a battered foot of stairs round it at y 0; arrow loops in every face.
 //   Corbels     upside-down stone-brick stairs round the shaft's top at y 7 (x 1..7, z 1..7), carrying the jetty.
 //   Gallery     the watch deck at y 8 over x 1..7, z 1..7, open on every side: corner posts, knee braces, a rail
-//               at y 9, a beam ring at y 11 and a plank ceiling inside it, a spruce king post in the middle carrying
-//               the hat's apex. The archers' stations are the deck inside the rail (x 2..6, z 2..6), round the post.
+//               at y 9 broken by an open shooting cell every other cell (x or z 3 and 5 on each side: B1469, a
+//               villager's eyes are 1.62 up and a fence 1.5, so behind an unbroken rail no station saw the ground), a
+//               beam ring at y 11 and a plank ceiling inside it, a spruce king post in the middle carrying the hat's
+//               apex. The archers' stations are the deck inside the rail (x 2..6, z 2..6), round the post, and the
+//               open cells at its edge, the ones that see the ground.
 //               The ladder comes up through a hatch beside the post.
 //   Hat         a hipped slate roof from the eave ring (x 0..8, z 0..8) at y 11 to a tiled cap at y 14, a copper
 //               lightning rod on it (y 15); two lanterns hung from the gallery ceiling.
@@ -74,7 +77,7 @@ export const MASSES = {
 export const ROOMS = [
   { level: 1, name: 'Foot', use: 'the way in, the ladder up; II: the watchman\'s Guard Post', box: [3, 1, 3, 5, 3, 5] },
   { level: 1, name: 'Loop room', use: 'a landing half way, a loop to every side', box: [3, 5, 3, 5, 7, 5] },
-  { level: 1, name: 'Gallery', use: 'the battle stations: the deck inside the rail, open on every side', box: [2, 9, 2, 6, 10, 6] },
+  { level: 1, name: 'Gallery', use: 'the battle stations: the deck inside the rail and its open shooting cells on every side', box: [2, 9, 2, 6, 10, 6] },
   { level: 2, name: 'Gear Shed', use: 'the watch\'s gear chest, a bench and table', box: [7, 1, 3, 10, 3, 5] },
   { level: 3, name: 'Guardhouse', use: 'two bunks, the second Guard Post, a table, the ladder to the roof', box: [12, 1, 2, 16, 4, 6] },
   { level: 3, name: 'Roof walk', use: 'the second tier of stations inside the parapet', box: [11, 6, 1, 17, 7, 7] },

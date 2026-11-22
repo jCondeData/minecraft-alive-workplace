@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296, 47.4
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296, 47.4, B1476, B1477, B1485
 
 ## What a player sees
 
@@ -59,6 +59,14 @@ of the barrel. Once a village has its fishermen, a jobless villager passes free 
 workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
 over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back. Only living
 fishermen within the radius count: when one dies, or stands farther from the barrel, the barrel is free for the next.
+A workshop's stock barrels aren't a Fisherman's while its own job block is free (B1463): a jobless villager
+doesn't take a barrel standing within 8 blocks across and 4 up or down of a free workstation of another job, such as
+the Supply Shop's barrels behind its Shop Counter, and takes that job block instead. Once it is taken, the barrels
+count again (with the cap above). Only a job block a jobless villager could really take counts (B1476, B1477): not
+one taken only with an item (a crafting table, a jukebox, a beehive or bee nest, a mailbox), not one walled in with
+nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one whose job is
+switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
+still hires its Fisherman at the barrel beside its smoker. With the cap switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
 its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not
@@ -422,7 +430,8 @@ from the bag and hotbar first, then the off hand. Armor you wear never pays.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
 with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
-four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+four deep, a hoist (its crank's lever hangs on the end of the hoist drum, B1485: on a fence post, as first
+rebuilt, the Builder could never place it), and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
 y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
 finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
 who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,
@@ -436,7 +445,9 @@ catches up when the pit loads again; nothing is banked while the pit is full. Wh
 Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
 (72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
 pit's site and starts the marked one; once that is done or canceled the pit is given back. Canceling the pit's site
-gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
+gives no marker back (there was none), and the Miner takes the pit again within 5 seconds. The live drawing is the rebuilt
+Quarry (50.10, the Headframe: `tools/blueprints/js/quarry`); its hoist drum's crank is a lever hung on the drum's west
+end, so a Builder places it (B1485: it stood on a fence post, whose top can't hold a lever, and was always skipped).
 
 ## Switches
 

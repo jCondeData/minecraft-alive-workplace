@@ -95,8 +95,10 @@ keep their drawing until a refresh. Its grade still comes from `homes/townhouse.
 ## 7. Known limits
 
 - The showcase scenes `rebuild_townhouse` and `rebuild_townhouse_looks` are filmed on GitHub, not in this session.
-- No snowy or taiga look: the critic sent both back three times; they wait for the owner. Only Level I of each look is
-  built to DONE by a test; Levels II-IV are checked for size, beds, job blocks and furniture spots.
+- No snowy or taiga look: the critic sent both back three times; they wait for the owner. Level I of each look and the
+  savanna Level II are built to DONE by tests; Levels III-IV are checked for size, beds, job blocks and furniture spots.
+- From out in the street the game's pathfinder doesn't find the top-floor beds (3, 10, 2) and (7, 10, 2) of any look or
+  the drawing; from inside the front door it does, and the bed at (14, 10, 14) (III, IV) is reached by its ladder.
 - check.py's "upper floor with no stairs or ladder" lines for `modded/townhouse_3` and `_4` are the known false alarm
   for modded copies (their ladders are Carved Wood's). Its two crockery lines for `modded/townhouse_4` are a false
   alarm too: check.py's loader reads the furniture spots of a drawing with a basement 4 blocks off, so the chairs at
@@ -115,4 +117,6 @@ keep their drawing until a refresh. Its grade still comes from `homes/townhouse.
 `QaWindowsAndWards1028GameTests.qaABuiltTownhousesGlassJoinsAfterAReloadMidStructure`, `FurnishedHomesGameTests`,
 `B648GameTests`, `QaRefreshFurnishedGameTests`, the basement tests, `TownhouseLooksGameTests` (culture pick at every level,
 fallbacks, base/upgrade/lock per look, plot, beds and job blocks, Level I of each look built to DONE, a desert site saved
-mid-build reloads as desert). Scenes `rebuild_townhouse`, `rebuild_townhouse_looks`.
+mid-build reloads as desert), `QaStoneTownLooks1121cGameTests` (savanna Townhouse II built across a reload from exactly
+its materials, every bed reached; the Steward asks for the village's look by biome; every look level's beds, spots and
+plot). Scenes `rebuild_townhouse`, `rebuild_townhouse_looks`.

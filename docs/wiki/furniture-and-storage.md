@@ -146,7 +146,9 @@ every inventory it joins: the chests, barrels and filing cabinets touching it (a
 cable connector on its cables faces. The board's first line counts the connector as one chest, and a second line says
 "Linked through an inventory connector: 3 blocks". Porters put goods in through the connector and builders take what
 they need through it, so a chest on the network counts once, however many lists it is near. Unplug a chest (break its
-cable connector) and it is a store of its own again at once. Two connectors on one network are read as one: the
+cable connector) and it is a store of its own again at once; cut a cable to it and, in the second until Tom's
+connector looks again, its items still count once (B1358). Plugged back in, a chest counts none of its items until
+Tom's connector looks again, up to a second (known bug B1446). Two connectors on one network are read as one: the
 Storehouse goes through just one of them, so nothing counts twice. A chest reached two ways (it touches the connector
 and a cable connector on the same cables faces it too) also counts once, in the Storehouse and in Tom's own terminal
 (B1025). A storage or crafting terminal on the network is Tom's

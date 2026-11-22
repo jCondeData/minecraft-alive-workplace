@@ -5,7 +5,7 @@ field, on a doorstep. Now the village's Undertaker takes each one to the village
 there. The villager can still be brought back from the Graveyard. A village without a Graveyard gets a small plot near
 its hall instead (owner's decision, 2026-10-19).
 
-Roadmap items: B222, B788, B1081, B1082, B1093, B1094, B1097
+Roadmap items: B222, B788, B1081, B1082, B1093, B1094, B1097, B1423
 
 <!-- Lanes: add each id to the line above in the commit that builds it, and put the new config keys, saved fields,
      tests and scenes in backticks so wikicheck.py checks them. -->
@@ -17,8 +17,11 @@ with (no golden apple, healing potion or totem in the chest), they walk to the g
 grave moves to the next free slot in the Graveyard, with a puff of soul particles at both ends. Then the Undertaker walks
 over to it. Their status reads "laying a grave to rest in the graveyard" (`message.aliveworkplace.undertaker.state.moving`).
 
-The Graveyard build (`aliveworkplace:graveyard` and its upgrade) fills row by row: first the row in front of the
-mortuary, then the row along the gate wall, then the gaps along the walls and the path. A village with a Village Hall
+The Graveyard build (`aliveworkplace:graveyard` and its upgrade) fills row by row, from the row in front of the
+mortuary to the row along the gate wall, with two graves each side in the nook behind, by the chapel wall. Each side of
+the path has two grass cross-walks you step into from the path and a back walk along the benches, and every grave lies
+right beside one of them or the path. So mourners and the Undertaker can walk up to every grave, even when all 32 are
+taken (B1423). A village with a Village Hall
 and no Graveyard gets a **plot near the hall**: three rows of four graves, a grave every other block, on open ground
 6 to 20 blocks from the hall.
 
@@ -95,6 +98,9 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - The grave moves as soon as the Undertaker has worked at it, then the Undertaker walks to where it was laid. A carried
   grave would have needed new saved data on the villager and could be lost if the Undertaker died on the way.
 - Reviving comes before moving: a grave the Undertaker can empty now isn't moved first.
+- The grave slots changed in B1423 (the old ones walled each other in once the yard was full). Graves already laid in
+  an old slot stay where they are, still count as resting in the Graveyard and are revived from there; new graves only go
+  to the new slots.
 - The hall plot is found from the ground each time (the first open spot, nearest the hall, where 12 slots fit), so
   graves already laid there keep it.
 
@@ -111,6 +117,14 @@ Nothing new. A moved grave keeps its block entity (`villager`, `name`, `professi
 - `B222GameTests.reloadMidMoveKeepsTheGrave`: the Undertaker saved and loaded mid-move carries on; one grave, saved and
   loaded with everything in it.
 - `B222GameTests.switchOffLeavesGravesWhereTheyFall` and `B222GameTests.noGraveyardMeansAPlotNearTheHall`.
+- QA's `QaRebuiltCivic1121cBugTests.qaEveryGraveInAFullGraveyardCanBeWalkedTo` (B1423): the Graveyard placed with a
+  grave in each of its 32 slots; the game's pathfinder finds a villager in the street a way to within reach of every
+  grave. `qaAGraveLaidInAnOldSlotStillRestsInTheGraveyard`: a grave in a pre-B1423 slot is still revived from the yard.
+- QA's `QaGraveyard1122cGameTests` (B1423, 6): both levels full, as drawn and built turned (a quarter turn, and turned
+  around), every grave reached by the pathfinder from the street and from beside the brewing stand, and an old-slot grave
+  in the turned yard still rests there; a Builder dies in the street and the Undertaker lays her in the last free slot,
+  in the middle of a nearly full Level II, walks to it without a stuck-teleport and leaves an old-slot grave where it
+  lies; a mourner called from the street walks into a full yard to a grave in its middle.
 - QA's `QaVillagerFixes1104c2GameTests.qaWithAnAppleInTheChestAStreetGraveIsRevivedNotMoved`: with a golden apple
   already in the chest, the street grave is revived where it lies (name kept, apple used) and never laid in the Graveyard.
 - B779: QA's `QaVillageReachGraves1101BugTests.aGraveInTheNextVillageIsNotLaidInThisVillagesGraveyard` (the next

@@ -16,6 +16,36 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence
+  post (a fence top can't hold a lever, so Builders always skipped it). The blueprint check now catches floor and
+  ceiling levers and buttons with nothing sturdy under or over them.
+- Fisher's Hut II hires its Fisherman again: a jobless villager by its barrel no longer turns Butcher at the hut's
+  smoker. A barrel near a crafting table, jukebox, beehive, mailbox or a walled-in workstation (nobody takes those by
+  themselves) also hires a Fisherman again; a Supply Shop's stock barrels still leave its counter to the Shopkeeper.
+- Desert husks behind a wall now pile their sand ramp when the village hall stands just a few blocks inside it. Before,
+  a husk that got right up against the wall near the hall counted as already in, so it waited at the wall's foot all
+  siege and never began a ramp.
+- Archers can get up onto Gatehouse II's barbican again. Set in a stone wall with its gates shut, the barbican's roof
+  was out of reach from inside the town, so archers sent up there stood on the ground all siege. Each barbican wall
+  now has a passage inside it, entered from the guardroom, and guards climb up from there. Archers are also only sent
+  to a station they can actually get to, on any wall, gate or tower.
+- The Research Lab no longer takes in a stray Carpenter. Its Prep Room had a crafting table for a worktop, and any
+  villager without a job could walk in and claim it as a Carpenter's workstation. The worktop is now part of the stone
+  lab bench, so the Fossil Analyzer is the only workstation in every level of the lab.
+- Archers on the Lookout Tower shoot again. The rebuilt tower's railing ran all the way round its top at eye height,
+  so an archer up there couldn't see a single raider on the ground. The railing now has an open gap every other
+  block on every side, and archers stand in those gaps to shoot (all four levels).
+- The level II walls have their names: Stone Wall II, Wall Tower II, Palisade II and Gatehouse II, instead of
+  "Stone Wall 2". The homes built in a village's own culture are named too ("Starter Cottage II: Desert", 104 of them).
+- A jobless villager walking into a Supply Shop takes its Shop Counter and becomes the Shopkeeper, instead of
+  sometimes taking one of the stock barrels behind it and turning Fisherman. A workshop's barrels aren't a
+  Fisherman's workstation while its own job block is free.
+- A desert raider waiting for its sand ramp no longer climbs the half-built ramp onto a player's fence and drops
+  into the pen behind it, stuck there for good: it waits beside the ramp and climbs it once it's done.
+
+## 0.159.0 — 2026-11-21
+
 ### Added
 - **The Artisan's House in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
   it, at every level: a flat-roofed mud and sandstone house with a deep arched doorway, a lattice bay, a windcatcher and
@@ -48,6 +78,41 @@ asks for the steps, `latest.log` and any crash report).
   shelter. Level II has no beds anymore. The Sunny Plaza look is unchanged for now. A Pokémon Center already standing
   keeps its old shape, and its Shop Counter and Pasture Block keep working where they are.
 ### Fixed
+- The Carpenter's Workshop and Farmstead II and III are built whole again: a tool hook drawn on a glass pane (which
+  can't hold one) was skipped by the builder. The workshop's hooks now hang on the post beside the window, and the
+  Farmstead's tool wall keeps the two hooks over its bench. The Flower Shop's back room, with the Florist's second
+  chest, is open again: a shelf of pots no longer blocks its doorway (B1451, B1452, B1454).
+- The village Ball Workshops' tower ladder reaches the drying loft again: two of its rungs hung on a glass pane, which
+  can't hold a ladder, so builders skipped them. The tower's east wall is now solid behind the ladder; its windows face
+  north and south (B1453).
+- With Handcrafted installed, the Supply Shop no longer sets plates and cups on its display tables: a hardware shop
+  with no stove and no chairs isn't a kitchen (B1450).
+- The Castaway Camp's torn sail hangs from the sail again: its five blown tail blocks were hanging in the air, joined
+  only at their corners (B1455).
+- The blueprint checker now refuses a lantern standing on a rug laid on the floor, like one on the bare floor (no
+  shipped build had one) (B1444).
+- A Steward's palisade no longer stacks up on itself: two wall segments that overlap a little were each laid out on
+  top of the other once one stood, so builders kept building them higher until they ran out of cobblestone and the
+  wall never finished. Wall pieces are now always set on the real ground.
+- A full Graveyard no longer walls in its own graves: once all 32 were taken, the headstones boxed in 18 of them, so
+  mourners couldn't gather there and the Undertaker had to be teleported in. New graves go in rows with grass walks
+  between them, so every grave can be walked up to. Graves already laid stay where they are and
+  are still revived from the Graveyard (B1423).
+- An archer on the Palisade's walk hits raiders again: his arrows stuck in the stake tops in front of him, because he
+  aimed at a raider's knees, which the stakes hid even when he could see the raider. From a battle station he now aims
+  as high up the raider as his arrow needs to clear the wall (B1439).
+- The desert Stone House II, III and IV: the parlor's bed can be reached again. The old hall window's sill, a stone
+  stair, blocked the doorway into the parlor, so nobody got to that bed; the doorway now opens straight in (B1431).
+- Taking down a house whose old look the mod no longer knows now leaves it in the Village Hall: the Builder says he
+  took nothing down instead of reporting it gone, and the house can still be moved, repaired or refreshed (B1432).
+- The next level's blueprint now lines up with a house still standing as an older, bigger look wherever on the house
+  it is clicked, its back wall included, instead of being placed as a new build on top (B1433).
+- A house still standing as an older, deeper drawing of its blueprint is now kept whole by its neighbors: a new build
+  beside it no longer digs or fills under its back rows, the Steward keeps his 2 free blocks behind its real back wall,
+  and a villager sleeping in its back rows has that house as their home again (B1435, B1436).
+- The Great Wall's description in the Village Hall's Wonder list now reads "A gray wall 97 blocks long" instead of "A long gray wall 97 long" (B1438).
+- A village wall with one stretch taken down (or never built) no longer reads finished: the segments on either side
+  don't count for the missing one anymore, so the Steward sends a builder to close the gap (B1425).
 
 - With Create, machines in a building the Mover moved run again at the new spot: a cogwheel on a motor no longer
   stands still (and the Mechanical Arm it drives carries items again), and a Redstone Link beside its redstone block

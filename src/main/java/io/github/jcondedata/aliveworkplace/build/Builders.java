@@ -1112,11 +1112,18 @@ public final class Builders {
 		level.sendParticles(ParticleTypes.HAPPY_VILLAGER, villager.getX(), villager.getY() + 1.8, villager.getZ(), 12, 0.5, 0.5, 0.5, 0.0);
 		level.playSound(null, villager, SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1f, 1f);
 		ServerPlayer owner = level.getServer().getPlayerList().getPlayer(site.owner());
+		// B1372, B1432: a take-down that took nothing down while the building still stands (its plan didn't match what
+		// stands) leaves it known to the hall, to be moved, repaired, refreshed or taken down again
+		boolean keptStanding = site.wonder() == null && site.isDeconstruction() && site.placed() == 0 && stillStands(level, site);
 		if (owner != null) {
 			if (site.wonder() != null) {
 				// B138: a Wonder's part is told as a part of its stage (no blueprint comes back for it, 35.4)
 				io.github.jcondedata.aliveworkplace.wonder.WonderStages.partFinishedLine(level, site, villager.getDisplayName())
 					.ifPresent(line -> tell(owner, line, ChatFormatting.GREEN));
+			} else if (keptStanding) {
+				// B1432: nothing came down (what stands isn't what its blueprint says): told so, not "took down"
+				tell(owner, Component.translatable("message.aliveworkplace.finished_deconstruct_nothing",
+					villager.getDisplayName(), Blueprints.displayName(site.structure())), ChatFormatting.YELLOW);
 			} else {
 				tell(owner, Component.translatable(site.isDeconstruction() ? "message.aliveworkplace.finished_deconstruct"
 						: site.isCellarOnly() ? "message.aliveworkplace.cellar_dug" : "message.aliveworkplace.finished",
@@ -1138,9 +1145,7 @@ public final class Builders {
 			return;
 		}
 		if (site.isDeconstruction()) {
-			// B1372: a take-down that took nothing down while the building still stands (its plan didn't match what stands)
-			// leaves it known to the hall, to be moved, repaired, refreshed or taken down again
-			if (site.placed() > 0 || !stillStands(level, site)) {
+			if (!keptStanding) { // (B1372, B1432: kept above)
 				BuildSiteManager.get(level).forgetFinished(site.placement());
 				io.github.jcondedata.aliveworkplace.habitat.VillageHabitats.onTakenDown(level, site.structure(), site.placement()); // 28.14
 			}
@@ -1198,6 +1203,27 @@ public final class Builders {
 					return true;
 				}
 			}
+		}
+		// B1432: no drawing known to match (an older one the history doesn't hold, changed before it was kept): the building
+		// stands if its spot still holds a block someone put there, not ground, plants or what always stays
+		return manager.finishedIn(level).stream().filter(f -> f.placement().equals(site.placement())).findFirst()
+			.flatMap(f -> io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(level, site.structure())
+				.map(b -> Refreshes.standingBox(level, f, io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(site.placement(), b.size()), false)))
+			.map(box -> anyBuiltBlock(level, box)).orElse(false);
+	}
+
+	/** B1432: whether {@code box} holds a block a builder or player put there (not air, ground, a plant or a kept block). */
+	private static boolean anyBuiltBlock(ServerLevel level, BoundingBox box) {
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ())) {
+			net.minecraft.world.level.block.state.BlockState world = level.getBlockState(pos);
+			if (world.isAir() || world.canBeReplaced() || !world.getFluidState().isEmpty()
+				|| world.is(net.minecraft.tags.BlockTags.LEAVES) || world.is(net.minecraft.tags.BlockTags.FLOWERS)
+				|| world.is(net.minecraft.tags.BlockTags.SAPLINGS) || world.is(net.minecraft.tags.BlockTags.DIRT)
+				|| world.is(net.minecraft.tags.BlockTags.SAND) || world.is(net.minecraft.tags.BlockTags.BASE_STONE_OVERWORLD)
+				|| world.is(net.minecraft.tags.BlockTags.SNOW) || Refreshes.kept(level, pos, world)) {
+				continue;
+			}
+			return true;
 		}
 		return false;
 	}

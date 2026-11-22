@@ -166,8 +166,67 @@ public final class WorkerLimits {
 				return false;
 			}
 			return !fishermen || !FishermanCap.barrel(p.getFirst())
-				|| !fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()));
+				|| (!fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()))
+					&& !storeOfAFreeWorkstation(level, p.getSecond()));
 		});
+	}
+
+	/**
+	 * B1463: whether a free workstation of another job stands within supply reach of the barrel at {@code barrel} (8
+	 * across, 4 up or down: {@code SupplyContainers.inReach}, the reach in which that job block reads it as its store).
+	 * Workshops keep their stock in barrels (the Supply Shop's six beside its Shop Counter), and a barrel is the vanilla
+	 * Fisherman's workstation: while the village had room for a fisherman, a jobless villager walking into the shop took a
+	 * stock barrel and turned fisherman instead of minding the counter. While the workshop's own job block is free its
+	 * barrels are its stores, not a workstation; once it is taken they count again (for the cap as before).
+	 * <p>Only a workstation a jobless villager could take instead counts (B1476, B1477): not one taken only by an item
+	 * (a crafting table, a jukebox, a beehive or bee nest, a mailbox: {@link Stations.Station#byItself}) or whose job this
+	 * game doesn't have ({@link Stations#takenByItself}), nor one with nowhere beside or on top to stand
+	 * ({@link #standBeside}: a counter walled in), since those stay free forever and would hide the barrel forever; and
+	 * not a smoker or furnace, which the Fisherman tends himself in his barrel's reach (fishers_hut.md, Level II), so the
+	 * barrel there is the hut's job site, not another workshop's stock.
+	 */
+	static boolean storeOfAFreeWorkstation(ServerLevel level, BlockPos barrel) {
+		int reach = io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS;
+		return level.getPoiManager().getInSquare(t -> JobSiteTickets.workstation(t) && !FishermanCap.barrel(t) && !offByConfig(t)
+					&& takenByAJoblessVillager(t), barrel, reach, PoiManager.Occupancy.HAS_SPACE)
+			.anyMatch(r -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(r.getPos(), barrel)
+				&& !fishermansOven(level, r.getPos()) && standBeside(level, r.getPos()));
+	}
+
+	/** Whether a jobless villager takes a workstation of kind {@code type} by himself, with no item (see {@link Stations}). */
+	private static boolean takenByAJoblessVillager(Holder<PoiType> type) {
+		return Stations.takenByItself(type)
+			&& Stations.ALL.stream().filter(s -> s.poi().test(type)).findFirst().map(Stations.Station::byItself).orElse(true);
+	}
+
+	/** A smoker or furnace: the Fisherman smokes his catch in those within his barrel's reach (fishers_hut.md). */
+	private static boolean fishermansOven(ServerLevel level, BlockPos pos) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+		return state.is(net.minecraft.world.level.block.Blocks.SMOKER) || state.is(net.minecraft.world.level.block.Blocks.FURNACE);
+	}
+
+	/**
+	 * Whether a villager has somewhere to stand at the workstation at {@code pos} to take it: beside it or on top (vanilla
+	 * takes a workstation from a block at most 1 away, counted along the axes). A workstation with none never gets taken.
+	 */
+	private static boolean standBeside(ServerLevel level, BlockPos pos) {
+		if (Walker.canStand(level, pos.above())) {
+			return true;
+		}
+		for (net.minecraft.core.Direction side : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			if (Walker.canStand(level, pos.relative(side))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Workstations a jobless villager's search leaves out while their job's config switch is off (see {@link #hideFull}). */
+	private static boolean offByConfig(Holder<PoiType> type) {
+		return (!io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TOOLBOX_POI))
+			|| (!io.github.jcondedata.aliveworkplace.city.CaravanTrains.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRACK_STATION_POI))
+			|| (!io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.FURNICRAFTER_POI))
+			|| (!io.github.jcondedata.aliveworkplace.move.MoverWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI));
 	}
 
 	/** Whether {@code villager} is being given a job by order right now (not taking one by themselves). */

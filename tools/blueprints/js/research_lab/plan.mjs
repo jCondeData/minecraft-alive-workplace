@@ -132,7 +132,7 @@ export const MASSES = {
 
 export const ROOMS = [
   { name: 'Lab', level: 1, use: "the Fossil Analyzer and the scientist's desk, open to the roof", box: [2, 1, 3, 6, 10, 9] },
-  { name: 'Prep Room', level: 1, use: 'sorting bench, finds chest, worktop', box: [8, 1, 5, 10, 3, 9] },
+  { name: 'Prep Room', level: 1, use: 'sorting bench, finds chest, lab bench', box: [8, 1, 5, 10, 3, 9] },
   { name: 'Gallery', level: 2, use: 'the museum hall: the skeleton on its dais, specimens, seats', box: [12, 1, 4, 20, 9, 12] },
   { name: 'Dig', level: 3, use: 'the lower lab: a boardwalk round a sunken dig, the finds bench and chests', box: [12, -3, 4, 20, -1, 12] },
 ]
@@ -213,9 +213,10 @@ export const FURNITURE = [
   { level: 1, room: 'Lab', kind: 'lamp', part: 'hangingLamp', pos: [3, 3, 8], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Lab', kind: 'lamp', part: 'hangingLamp', pos: [5, 3, 8], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Lab', kind: 'lamp', part: 'hangingLamp', pos: [4, 4, 6], facing: 'north', chain: 6, wood: 'dark_oak' },
-  // Prep Room (I): the worktop and counters under the front window, the sorting desk and the finds chest at the back,
-  // a lamp from the ridge; the way through to the Gallery (II) stays clear down the middle
-  { level: 1, room: 'Prep Room', kind: 'fixture', part: 'worktop', pos: [8, 1, 5], facing: 'north' },
+  // Prep Room (I): the lab bench under the front window (three counters, stone-topped), the sorting desk and the finds
+  // chest at the back, a lamp from the ridge; the way through to the Gallery (II) stays clear down the middle. No
+  // crafting table (B1468): it is the Carpenter's job site, and the analyzer is this building's only one.
+  { level: 1, room: 'Prep Room', kind: 'counter', part: 'counter', pos: [8, 1, 5], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Prep Room', kind: 'counter', part: 'counter', pos: [9, 1, 5], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Prep Room', kind: 'counter', part: 'counter', pos: [10, 1, 5], facing: 'north', wood: 'dark_oak' },
   { level: 1, room: 'Prep Room', kind: 'fixture', part: 'chest', pos: [8, 1, 9], facing: 'north', block: 'chest' },

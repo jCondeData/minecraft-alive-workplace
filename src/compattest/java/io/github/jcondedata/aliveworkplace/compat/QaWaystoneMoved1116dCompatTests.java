@@ -242,8 +242,11 @@ public class QaWaystoneMoved1116dCompatTests implements FabricGameTest {
 			hall.setCustomName(Component.literal("Saltmarsh Green"));
 			Optional<String> name = VillageWaystones.EXTENSION.call(s -> s.nameAt(level, now), Optional.<String>empty());
 			helper.assertTrue(name.equals(Optional.of("Saltmarsh Green")), "after the rename the moved stone is " + name + ", not Saltmarsh Green");
+			// Only stones round this test (B1464: a Thornbury another batch left 2,150 blocks off failed it by batch order); the
+			// old spot and the new one are both within a few blocks of the hall.
 			List<String> stale = net.blay09.mods.waystones.core.WaystoneManagerImpl.get(level.getServer()).getWaystones()
-				.filter(w -> w.getName().getString().equals("Thornbury")).map(w -> w.getPos().toShortString()).toList();
+				.filter(w -> w.getName().getString().equals("Thornbury") && w.getDimension().equals(level.dimension()) && flat(w.getPos(), a) <= 64)
+				.map(w -> w.getPos().toShortString()).toList();
 			helper.assertTrue(stale.isEmpty(), "the mod still lists a stone named Thornbury at " + stale);
 			ServerPlayer player = helper.makeMockServerPlayerInLevel();
 			List<String> lines = WaystoneQaCompatTests.texts(WaystoneQaCompatTests.mapLore(player, a), LINE);

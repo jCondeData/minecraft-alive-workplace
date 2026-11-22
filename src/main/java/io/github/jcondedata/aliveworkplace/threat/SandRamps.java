@@ -320,7 +320,7 @@ public final class SandRamps {
 					storm.nextTry.put(id, now + TRY_EVERY);
 					paths++;
 					Path path = mob.getNavigation().createPath(siege.hall, REACH);
-					if (path == null || path.canReach()) {
+					if (path == null || path.canReach() && !walledOff(level, path, siege.hall)) {
 						continue;
 					}
 					site = siteFor(level, siege, storm, mob, path);
@@ -355,17 +355,26 @@ public final class SandRamps {
 				storm.sentAt.put(id, now);
 				Path path = mob.getNavigation().createPath(to, 0, 64);
 				paths++;
-				if (!up && endsOnRamp(level, site, path)) {
+				boolean overSand = !up && overPiled(level, site, path);
+				if (!up && (overSand || endsOnRamp(level, site, path))) {
 					// The spot can't be reached (a ledge or a player's blocks out there) and the nearest it gets is on a block
-					// still to be piled, where it would hold the sand back for good (B591, B726): it waits beside the ramp.
+					// still to be piled, where it would hold the sand back for good (B591, B726), or the way there runs over
+					// the sand already piled, a step up onto a player's fence or wall and down behind it, where it is stuck
+					// for good (B1434: into a pen round its spot): it waits beside the ramp.
 					Direction side = site.into.getClockWise();
+					boolean found = false;
 					for (int k : new int[] {2, -2}) {
 						Path beside = mob.getNavigation().createPath(site.foot.relative(site.into, -(site.height - 1)).relative(side, k), 0, 64);
 						paths++;
-						if (beside != null && !endsOnRamp(level, site, beside)) {
+						if (beside != null && !endsOnRamp(level, site, beside) && !overPiled(level, site, beside)) {
 							path = beside;
+							found = true;
 							break;
 						}
+					}
+					if (!found && overSand) {
+						mob.getNavigation().stop(); // (no way beside it either: it stays where it is, this side of the sand)
+						continue;
 					}
 				}
 				mob.getNavigation().moveTo(path, 1.0);
@@ -442,6 +451,25 @@ public final class SandRamps {
 		BlockPos at = end.asBlockPos();
 		for (BlockPos pos : site.blocks()) {
 			if (pos.equals(at) && !sandy(level, pos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether {@code path} goes up onto a block of {@code site}'s ramp that is already piled (after where the mob stands):
+	 * a climber waiting for its ramp never uses the half-built sand as a step on its way to its spot, which is what lets it
+	 * onto a player's fence or wall top and down behind it (B1434).
+	 */
+	private static boolean overPiled(ServerLevel level, Site site, @Nullable Path path) {
+		if (path == null) {
+			return false;
+		}
+		List<BlockPos> blocks = site.blocks();
+		for (int i = 1; i < path.getNodeCount(); i++) {
+			BlockPos under = path.getNode(i).asBlockPos().below();
+			if (blocks.contains(under) && sandy(level, under)) {
 				return true;
 			}
 		}
@@ -546,6 +574,33 @@ public final class SandRamps {
 			}
 		}
 		return 2;
+	}
+
+	/**
+	 * Whether a wall stands between where {@code path} ends and the hall: a column at least two high on the straight line
+	 * between them, at the height the path ends. The pathfinder counts a path as getting there once it ends within
+	 * {@link #REACH} blocks of the hall counted along the axes, so one that ends right outside a wall with the hall a few
+	 * blocks in counted as in, and the climber never began a ramp: it stood at the wall's foot for good (B1445, B1479).
+	 */
+	private static boolean walledOff(ServerLevel level, Path path, BlockPos hall) {
+		Node end = path.getEndNode();
+		if (end == null) {
+			return false;
+		}
+		BlockPos from = end.asBlockPos();
+		double dx = hall.getX() - from.getX();
+		double dz = hall.getZ() - from.getZ();
+		int steps = (int) Math.ceil(Math.sqrt(dx * dx + dz * dz) * 2);
+		for (int i = 1; i < steps; i++) {
+			BlockPos at = BlockPos.containing(from.getX() + 0.5 + dx * i / steps, from.getY(), from.getZ() + 0.5 + dz * i / steps);
+			if (at.getX() == hall.getX() && at.getZ() == hall.getZ()) {
+				break;
+			}
+			if (blocked(level, at) && blocked(level, at.above())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Nullable

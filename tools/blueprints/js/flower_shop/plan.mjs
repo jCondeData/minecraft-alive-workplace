@@ -124,7 +124,8 @@ export const BEDS = {
 export const FURNITURE = [
   // Glasshouse, the shop end: staging of potted flowers down both side walls, decorated pots on the floor
   { room: 'Glasshouse', kind: 'fixture', part: 'staging', cellsAbs: [[2, 1, 2], [2, 1, 3]], wood: 'dark_oak', pots: ['potted_red_tulip', 'potted_oxeye_daisy'] },
-  { room: 'Glasshouse', kind: 'fixture', part: 'staging', cellsAbs: [[6, 1, 2], [6, 1, 3]], wood: 'dark_oak', pots: ['potted_blue_orchid', 'potted_allium'] },
+  // (east: one cell only, so the parlour doorway at (7, 1, 3) stays open from the aisle; B1454)
+  { room: 'Glasshouse', kind: 'fixture', part: 'staging', cellsAbs: [[6, 1, 2]], wood: 'dark_oak', pots: ['potted_blue_orchid'] },
   // the working end: her composter at the aisle's end, a chest beside it, the potting bench of empty pots she fills
   { room: 'Glasshouse', kind: 'fixture', part: 'composter', pos: [5, 1, 9] },
   { room: 'Glasshouse', kind: 'fixture', part: 'chest', pos: [6, 1, 9], facing: 'west', block: 'chest' },

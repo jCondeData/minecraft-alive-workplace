@@ -97,7 +97,7 @@ range is in brackets.
 | `movers` | on |  | A jobless villager by a free Mover's Crate becomes the village's Mover, who takes down the buildings moved on the Village Hall's Move page and puts them up again at their new spot (45.3). Off: no new Movers, those hired stand idle, and moves wait. |
 | `moveBuildings` | on |  | Players may move the village's own buildings on the Village Hall's Move page (45.6): never the Hall, a Wonder, a building the builders are still working on or one in another player's protected village, each refused with its reason. Off: the page refuses every building; a move already confirmed still goes ahead. |
 | `quarryRegrowth` | 100 (0 to 2400) |  | Blocks that grow back in a Quarry's pit in a Minecraft day (0: none). At 100 a pit dug to the bottom takes about a week to fill. |
-| `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A fisherman a village already has keeps his job. Off: as in vanilla. |
+| `fishermanCap` | on |  | A village takes only so many fishermen: other jobless villagers pass free barrels (storage in builds) by for another workstation. A barrel within 8 blocks across and 4 up or down of a free workstation that a jobless villager could take is that workstation's stock and makes no Fisherman; blocks nobody takes by himself (crafting table, jukebox, beehive, bee nest, Mailbox) and the Fisherman's own smoker don't count, so the Fisher's Hut II still hires its Fisherman. A fisherman a village already has keeps his job. Off: as in vanilla. |
 | `fishermenPerVillage` | 1 (1 to 20) |  | With the fisherman cap on, the fishermen every village takes. |
 | `villagersPerFisherman` | 10 (1 to 100) |  | With the fisherman cap on, one more fisherman for every this many villagers within the village radius. |
 | `workerPathRange` | 48 (16 to 128) |  | How far villagers with a job look for a path in one go (vanilla: 48). |
@@ -310,6 +310,9 @@ expansions' builds wait the same way; the Table refuses a closed expansion's bui
 world and ticking, the riders stay mounted and a pup of two tame wolves keeps their owner; only what the world refuses
 is forced and logged; with the switch off a band's riders all come on foot and the log says so),
 QA's `QaBuilderSwitches1114bBugTests` (B1227: every game rule in the table above has its words on the Edit Game Rules
-screen).
+screen), `QaMoneyWording1121dCompatTests` (compat suite, B1379, `dollarsPerEmerald`: at rates 1, 21 and 100 every
+money line's sum (an emerald price of 0, 1, 2 and 3, the family tree's price, the cup purses) reads "1 CobbleDollar"
+for one and "CobbleDollars" otherwise, "0 CobbleDollars" too; the hall's treasury and quest reward lines read so on
+its own buttons; without CobbleDollars the sums read "1 emerald", "2 emeralds").
 
 Showcase scenes: `config` (the settings screen).

@@ -40,6 +40,8 @@ import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
+import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -52,7 +54,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
  * <li><b>archers</b> climb to a free station over the breach's side, among those within {@link #POST_REACH}
  * blocks of their Guard Post; a build with fewer archers on it comes first, so they spread over the towers and walks,
  * then the station that sees the most of the ground in front of the breach ({@link #view}: behind a merlon one sees
- * nothing below, in a crenel one does; B252), then the highest. A station is a walkway spot of a finished wall, gate or tower build (the walls and gates
+ * nothing below, in a crenel one does; B252), then the highest; of those, the first he has a way up to ({@link #reachable},
+ * B1427: not one out past the shut gates). A station is a walkway spot of a finished wall, gate or tower build (the walls and gates
  * family and the Lookout Towers): a block of the blueprint at least {@link #MIN_HEIGHT} above its floor that one can
  * stand on, with two blocks of air above it, and not a merlon (a spot one block above a walkway spot beside it). They
  * are <b>read once per blueprint</b> ({@link #reads} counts) and checked against the world when taken: a station whose
@@ -86,6 +89,14 @@ public final class BattleStations {
 	public static final int KNIGHT_BACK = 3;
 	public static final int MEDIC_BACK = 6;
 	public static final double CLIMB_REACH = 3.5;
+	/**
+	 * B1427: how many paths a watch works out to see whether an archer can get up to a station ({@link #reachable}).
+	 * Past that an archer takes his best station not yet found out of reach, as before, and it is looked at in a later
+	 * watch.
+	 */
+	static final int CHECKS = 8;
+	/** A path that gives out farther than this (flat) from the station says nothing about whether it can be climbed to. */
+	static final int NEAR = 12;
 	/** A knight or medic leaves their spot only for a foe within this many blocks of it. */
 	public static final double HOLD = 6;
 	private static final float SPEED = 0.9f;
@@ -125,10 +136,12 @@ public final class BattleStations {
 		@org.jetbrains.annotations.Nullable
 		BlockPos viewed;
 		final Set<UUID> guards = new HashSet<>();
+		/** B1427: stations an archer of this village found he can't get up to (out past shut gates), passed over. */
+		final Set<BlockPos> unreachable = new HashSet<>();
 	}
 
 	/** A guard's place in the siege: where, and whether it is a station (an archer's) or a spot on the ground. */
-	private record Place(BlockPos pos, boolean station, boolean ramparts) {
+	private record Place(BlockPos pos, boolean station, boolean ramparts, boolean checked) {
 	}
 
 	private static final Map<ResourceLocation, Read> READ = new ConcurrentHashMap<>();
@@ -416,14 +429,26 @@ public final class BattleStations {
 		});
 		Set<BlockPos> taken = new HashSet<>();
 		Map<Integer, Integer> manned = new HashMap<>(); // archers on each build
+		int checks = CHECKS;
 		for (Villager guard : guards) {
 			Place place = PLACES.get(guard.getUUID());
 			if (place == null || !watch.guards.contains(guard.getUUID())) {
 				continue;
 			}
 			Guards.Kind kind = Guards.kind(guard);
-			// A station that can't be stood on any more, or a guard whose arms changed: the place is given up.
-			if (place.station() != (kind == Guards.Kind.ARCHER) || place.station() && !standable(level, place.pos()) || kind == Guards.Kind.GUARD) {
+			if (place.station() && !place.checked() && checks > 0 && !at(guard, place.pos())) {
+				// B1427: a station taken before it was looked at (the watch's paths ran out): can he get up there?
+				checks--;
+				if (reachable(guard, place.pos())) {
+					place = new Place(place.pos(), true, place.ramparts(), true);
+					PLACES.put(guard.getUUID(), place);
+				} else {
+					watch.unreachable.add(place.pos());
+				}
+			}
+			// A station that can't be stood on any more or can't be got up to, or a guard whose arms changed: the place is given up.
+			if (place.station() != (kind == Guards.Kind.ARCHER) || place.station() && (!standable(level, place.pos()) || watch.unreachable.contains(place.pos()))
+				|| kind == Guards.Kind.GUARD) {
 				PLACES.remove(guard.getUUID());
 				watch.guards.remove(guard.getUUID());
 			} else {
@@ -432,7 +457,7 @@ public final class BattleStations {
 					manned.merge(watch.stations.getOrDefault(place.pos(), -1), 1, Integer::sum);
 				}
 				if (place.ramparts() != watch.ramparts) {
-					PLACES.put(guard.getUUID(), new Place(place.pos(), place.station(), watch.ramparts));
+					PLACES.put(guard.getUUID(), new Place(place.pos(), place.station(), watch.ramparts, place.checked()));
 				}
 			}
 		}
@@ -452,18 +477,33 @@ public final class BattleStations {
 				continue;
 			}
 			BlockPos pos = null;
+			boolean checked = false;
 			if (kind == Guards.Kind.ARCHER) {
 				BlockPos home = Builders.benchPos(guard).orElse(guard.blockPosition());
 				// The breach's side first; then the build with the fewest archers, so they spread over the towers and
 				// walks; then the one with the most of the ground in front of the breach in sight (B252); then the
 				// highest; then the nearest the breach (with none: the farthest out from the hall).
-				pos = watch.stations.keySet().stream()
-					.filter(s -> !taken.contains(s) && flat(s, home) <= (double) POST_REACH * POST_REACH && standable(level, s))
-					.min(Comparator.<BlockPos>comparingInt(s -> side(siege, s, watch.alert == siege) ? 0 : 1).thenComparingInt(s -> manned.getOrDefault(watch.stations.get(s), 0))
+				List<BlockPos> best = watch.stations.keySet().stream()
+					.filter(s -> !taken.contains(s) && !watch.unreachable.contains(s) && flat(s, home) <= (double) POST_REACH * POST_REACH && standable(level, s))
+					.sorted(Comparator.<BlockPos>comparingInt(s -> side(siege, s, watch.alert == siege) ? 0 : 1).thenComparingInt(s -> manned.getOrDefault(watch.stations.get(s), 0))
 						.thenComparingInt(s -> -watch.views.computeIfAbsent(s, v -> view(level, siege, v, watch.alert == siege)))
 						.thenComparingInt(s -> -s.getY())
 						.thenComparingDouble(s -> siege.breach == null ? -flat(s, siege.hall) : flat(s, siege.breach.relative(siege.out, 4))).thenComparingLong(BlockPos::asLong))
-					.orElse(null);
+					.toList();
+				// B1427: the best he can get up to; once the watch's paths run out, the best not yet found out of reach
+				for (BlockPos s : best) {
+					if (checks <= 0) {
+						pos = s;
+						break;
+					}
+					checks--;
+					if (reachable(guard, s)) {
+						pos = s;
+						checked = true;
+						break;
+					}
+					watch.unreachable.add(s);
+				}
 				if (pos != null) {
 					manned.merge(watch.stations.get(pos), 1, Integer::sum);
 				}
@@ -474,7 +514,7 @@ public final class BattleStations {
 			}
 			if (pos != null) {
 				taken.add(pos);
-				PLACES.put(guard.getUUID(), new Place(pos.immutable(), kind == Guards.Kind.ARCHER, watch.ramparts));
+				PLACES.put(guard.getUUID(), new Place(pos.immutable(), kind == Guards.Kind.ARCHER, watch.ramparts, checked));
 				watch.guards.add(guard.getUUID());
 				if (guard.isSleeping()) {
 					guard.stopSleeping();
@@ -539,6 +579,26 @@ public final class BattleStations {
 			}
 		}
 		return seen;
+	}
+
+	/**
+	 * B1427: whether {@code guard} can get onto the station {@code s}: his path goes there, or ends below it within
+	 * {@link #CLIMB_REACH}, where he climbs. A station in a stone wall's barbican, out past the shut gates, has a path
+	 * that ends inside the gates, near it but out of reach: he would stand there all siege. No path at all (asleep, in
+	 * the air), or one that gives out more than {@link #NEAR} blocks off (the search's limit), tells nothing: yes.
+	 */
+	static boolean reachable(Villager guard, BlockPos s) {
+		Path path = guard.getNavigation().createPath(s, 0);
+		if (path == null || path.canReach()) {
+			return true;
+		}
+		Node end = path.getEndNode();
+		if (end == null) {
+			return true;
+		}
+		BlockPos at = end.asBlockPos();
+		double away = flat(at, s);
+		return away > (double) NEAR * NEAR || at.equals(s) || s.getY() - at.getY() >= 2 && away <= CLIMB_REACH * CLIMB_REACH;
 	}
 
 	private static int spread(int n) {

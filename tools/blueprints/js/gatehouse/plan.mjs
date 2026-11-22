@@ -58,13 +58,15 @@
 //             loggia (x 3 / 7, z 2) beside the stations, a window to the village (glass set back one block in its
 //             reveal), glazed arrow slits to the field and to the flank, two stacked (y 6..7, 9..10), plunging sills.
 //   Level II (the Barbican) adds, keeping every block of Level I:
-//   Barbican  walls x 2..3 and 7..8, z 5..9, y 0..3 (plinth, ashlar, the pale course at y 3), a Deck at y 4 over x 2..8,
+//   Barbican  walls x 1..3 and 7..9, z 5..9, y 0..3 (plinth, ashlar, the pale course at y 3), each with a mural Gallery
+//             (x 2 / 8, y 1..2, z 5..8, a torch at its end, a glazed slit to the flank) entered from the guardroom
+//             through the tower's front wall: the guards' way in under the deck (B1427). A Deck at y 4 over x 1..9,
 //             z 4..9 (spruce boards over the passage between the gate lines with two Murder holes at (4 / 6, 4, 5),
 //             stone elsewhere). The outer Gates at (4..6, 1, 8), the outer Portcullis at (4..6, 3, 7) over a pale sill,
 //             the Outer stand (4..6, 1..3, 9) under the deck's pale lintel. Its Parapet at y 5 round the outer edges
-//             (x 2, x 8, z 9), merlons at y 6 with wall-post finials (crenels in front of the towers' slits), two 2 x 2
-//             corner Turrets (x 2..3 / 7..8, z 8..9) up to y 7 under a pale coping, a lantern on a post at each
-//             outer corner. The deck's inner cells (x 3..7) are the barbican's battle stations (y 5).
+//             (x 1, x 9, z 9), merlons at y 6 with wall-post finials, two 2 x 2 corner Turrets (x 1..2 / 8..9,
+//             z 8..9) up to y 7 under a pale coping, a lantern on a post at each outer corner. The deck's inner cells
+//             (x 2..8) are the barbican's battle stations (y 5), each within climbing reach of a gallery.
 
 export { KIT } from '../stone_wall/plan.mjs'
 import { KIT } from '../stone_wall/plan.mjs'
@@ -109,10 +111,14 @@ export const MASSES = {
   loggia: { x0: 4, x1: 6, z0: 0, z1: 3, walkY: 5, sillY: 5, headY: 8, pier: 5, lights: [4, 6], roofY: 9, roofZ: [0, 3] },
   standard: { x: 5, z: 2, y: 11, height: 5, field: [5, 7, 4] }, // pole y 11..15; a second banner on the loggia's pier, the banner at the top facing the field
   barbican: { // Level II
-    walls: [{ x0: 2, x1: 3 }, { x0: 7, x1: 8 }], z0: 5, z1: 9, deckY: 4, deck: { x0: 2, x1: 8, z0: 4, z1: 9 },
+    walls: [{ x0: 1, x1: 3 }, { x0: 7, x1: 9 }], z0: 5, z1: 9, deckY: 4, deck: { x0: 1, x1: 9, z0: 4, z1: 9 },
+    // B1427: a mural gallery in each wall (x 2 / 8, y 1..2, z 5..8), entered from the guardroom through the tower's
+    // front wall (x 2 / 8, z 4): ground on the village side under the deck, so a guard sent to a barbican station
+    // walks in under it and climbs (no deck cell is more than 3.5 blocks flat from a gallery cell)
+    galleries: [{ x: 2, door: [2, 1, 4], slit: [1, 2, 6], torch: [2, 2, 8] }, { x: 8, door: [8, 1, 4], slit: [9, 2, 6], torch: [8, 2, 8] }], galleryZ: [5, 8],
     timber: { x0: 4, x1: 6, z0: 4, z1: 6 }, holes: [[4, 5], [6, 5]],
     parapetY: 5, merlonY: 6, turretTop: 7,
-    turrets: [{ cells: [[2, 8], [3, 8], [2, 9], [3, 9]], corner: [2, 9] }, { cells: [[7, 8], [8, 8], [7, 9], [8, 9]], corner: [8, 9] }],
+    turrets: [{ cells: [[1, 8], [2, 8], [1, 9], [2, 9]], corner: [1, 9] }, { cells: [[8, 8], [9, 8], [8, 9], [9, 9]], corner: [9, 9] }],
   },
 }
 
@@ -171,8 +177,18 @@ export const FURNITURE = [
   { room: 'Loggia', kind: 'lamp', part: 'hangingLamp', pos: [5, 8, 1], facing: 'south', wood: 'spruce' },
 ]
 
+// Level II (B1427): the guardrooms are the way into the barbican's galleries, so their table and chair stand along the
+// outer wall (x 1 / 9), the doorways off the gateway have no leaves, and the way (x 2 / 8, z 1..3) is clear.
+export const FURNITURE_2 = FURNITURE.map(f => {
+  if (f.room === 'West guardroom' && f.kind === 'table') return { ...f, pos: [1, 1, 2] }
+  if (f.room === 'West guardroom' && f.kind === 'chair') return { ...f, pos: [1, 1, 1] }
+  if (f.room === 'East guardroom' && f.kind === 'table') return { ...f, pos: [9, 1, 2] }
+  if (f.room === 'East guardroom' && f.kind === 'chair') return { ...f, pos: [9, 1, 1] }
+  return f
+})
+
 // Lights outside the rooms: Level II's on its two turrets (Level I's field face stays dark: the raiders' side).
-export const LIGHTS = { 1: [], 2: [[2, 9, 9, 'standing'], [8, 9, 9, 'standing']] }
+export const LIGHTS = { 1: [], 2: [[1, 9, 9, 'standing'], [9, 9, 9, 'standing']] }
 
 // The walking line: a guard from the village ground through the arch into the gateway; left into the guardroom and
 // up the ladder to the watch room; out onto the loggia (the stations); Level II: over the light's sill down onto the

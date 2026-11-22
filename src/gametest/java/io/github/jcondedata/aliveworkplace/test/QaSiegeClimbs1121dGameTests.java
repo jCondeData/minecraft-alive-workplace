@@ -401,15 +401,22 @@ public class QaSiegeClimbs1121dGameTests implements FabricGameTest {
 	}
 
 	/**
-	 * The husk comes from outside the front wall, east of the Stone Wall; its ramp goes at the west (side) wall, so it walks
-	 * west along the front wall's outside and round the south-west corner. On the way it passes, outside, the strip in
-	 * from the ramp's foot where a raider over the ramp lands (x 9 to 12): it must not be let go there.
+	 * The husk comes from outside the front wall, in the strip in from the ramp's foot where a raider over the ramp lands
+	 * (x 9 to 12); its ramp goes at the west (side) wall, so it walks west along the front wall's outside and round the
+	 * south-west corner. It must not be let go while it is out there.
+	 *
+	 * <p>B1460: it started at (16.5, 22.5), in front of the Stone Wall, until CI once piled its ramp at the front wall
+	 * (13, 2, 20). Where its way to the hall ends (the ramp's spot) is the game's pathfinder's nearest point within its
+	 * search, and from 2 to 4 blocks south-east of that start (where the husk can stroll before its first try) the search
+	 * sometimes ends at the front wall instead of the west one (measured: 1 to 12 start cells per run, all x 16 to 21,
+	 * z 24 to 26; every cell x 8 to 15, z 20 to 26 ends at the west wall in every run). The side ramp is what this test
+	 * is about, so it starts at (12.5, 22.5), the strip's east edge, still outside the front wall and round the corner.
 	 */
 	//$ gametest_ticks_batch AREA '1200' '"qaClimbs1121dSideRamp"'
 	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaClimbs1121dSideRamp")
 	public void qaAHuskWalkingRoundTheCornerToASideWallRampPilesItAndGetsOver(GameTestHelper helper) {
 		Yard yard = rampYard(helper);
-		rampRun(helper, yard, "side-wall ramp round the corner", 16.5, 22.5, Map.of());
+		rampRun(helper, yard, "side-wall ramp round the corner", 12.5, 22.5, Map.of());
 	}
 
 	/**
@@ -447,4 +454,44 @@ public class QaSiegeClimbs1121dGameTests implements FabricGameTest {
 		pen.put(new BlockPos(2, 2, 20), Blocks.OAK_FENCE);
 		rampRun(helper, yard, "fenced waiting spot", 16.5, 22.5, pen);
 	}
+
+	/**
+	 * B1434, made certain: the same pen, and once the last stage's outer block (4, 2, 13) is piled a player's cobblestone
+	 * holds the stage's next block (5, 3, 13) back for {@link #PEN_HOLD} ticks. In the nightly the window between those two
+	 * blocks was 30 ticks, and 2 runs in 10 the husk, sent on to its waiting spot (2, 2, 13) inside the pen, walked up that
+	 * outer block onto the fence's top and dropped into the pen, stuck there for good. It must wait beside the ramp the
+	 * whole time (never in the pen), and once the cobblestone is gone it finishes the ramp and gets over.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"qaClimbs1121dPenHeld"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaClimbs1121dPenHeld")
+	public void qaAHuskNeverStepsOffTheHalfBuiltRampIntoAFencedPen(GameTestHelper helper) {
+		Yard yard = rampYard(helper);
+		Map<BlockPos, Block> pen = new LinkedHashMap<>();
+		for (int z = 6; z <= 20; z++) {
+			pen.put(new BlockPos(1, 2, z), Blocks.OAK_FENCE);
+			pen.put(new BlockPos(3, 2, z), Blocks.OAK_FENCE);
+		}
+		pen.put(new BlockPos(2, 2, 6), Blocks.OAK_FENCE);
+		pen.put(new BlockPos(2, 2, 20), Blocks.OAK_FENCE);
+		BlockPos outer = new BlockPos(R_WEST - 4, 2, 13);
+		BlockPos held = new BlockPos(R_WEST - 3, 3, 13);
+		long[] heldAt = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (heldAt[0] < 0 && helper.getBlockState(outer).is(Blocks.SAND) && helper.getBlockState(held).isAir()) {
+				helper.setBlock(held, Blocks.COBBLESTONE);
+				heldAt[0] = tick;
+			} else if (heldAt[0] >= 0 && tick == heldAt[0] + PEN_HOLD) {
+				helper.setBlock(held, Blocks.AIR);
+			}
+			helper.getLevel().getEntitiesOfClass(Mob.class, net.minecraft.world.phys.AABB.encapsulatingFullBlocks(helper.absolutePos(new BlockPos(2, 2, 7)),
+				helper.absolutePos(new BlockPos(2, 3, 19)))).stream().filter(m -> m.getType() == EntityType.HUSK).findFirst().ifPresent(m ->
+				helper.fail("the husk got onto the player's fence or into the pen at " + rel(helper, m.position()) + " (tick " + tick + ", the stage held back since "
+					+ heldAt[0] + ")"));
+		});
+		rampRun(helper, yard, "pen, last stage held back", 16.5, 22.5, pen);
+	}
+
+	/** How long the last stage of the pen test's ramp is held back by a player's block. */
+	private static final int PEN_HOLD = 120;
 }

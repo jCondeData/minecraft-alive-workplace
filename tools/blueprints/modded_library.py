@@ -223,8 +223,9 @@ def infill(t, p):
 
 
 def meal_cells(name, t):
-    """The seat cells (chair, bench and stool spots) and kitchen cells (counter spots, and stoves, furnaces, smokers,
-    sinks...) of a build, as check.crockery_problems counts them, in template cells."""
+    """The seat cells (chair, bench and stool spots) and kitchen cells (stoves, furnaces, smokers, sinks...) of a
+    build, in template cells. A counter spot alone is no kitchen: a shop's sales counter is one too (B1450: the Supply
+    Shop's display tables got plates), so plates need a stove, furnace, smoker or sink in reach, or a seat."""
     path = os.path.join(SPOTS, name + ".json")
     depth = basement(name)
     seats, kitchen = set(), set()
@@ -235,8 +236,6 @@ def meal_cells(name, t):
                 cells = {(x + b["at"][0], y + depth + b["at"][1], z + b["at"][2]) for b in s["blocks"]}
                 if s["kind"] in ("chair", "bench", "stool"):
                     seats |= cells
-                elif s["kind"] == "counter":
-                    kitchen |= cells
     for p in t.cells:
         n = t.name(p)
         if any(k in n.split(":")[-1] for k in ("furnace", "smoker", "stove", "oven", "cooking_pot", "kitchen", "sink")):

@@ -95,6 +95,42 @@ public class StationsSpecGameTests implements FabricGameTest {
 		player.setShiftKeyDown(false);
 	}
 
+	/**
+	 * B1483, for a failure's message: where each villager is (template coordinates), its job, workstation and pick, whether
+	 * it still ticks and what it is doing, then everything else near the area: other entities, and every job block within
+	 * a jobless villager's search (free or taken). Only in the test's last ticks (a check that fails every tick until it
+	 * passes shouldn't scan the world each time); empty before.
+	 */
+	static String whereabouts(GameTestHelper helper, List<Villager> villagers, int timeoutTicks) {
+		if (helper.getTick() < timeoutTicks - 5) {
+			return "";
+		}
+		ServerLevel level = helper.getLevel();
+		StringBuilder out = new StringBuilder(" (");
+		for (Villager v : villagers) {
+			out.append(name(job(v))).append(" at ").append(helper.relativePos(v.blockPosition()).toShortString())
+				.append(v.isRemoved() ? ", removed (" + v.getRemovalReason() + ")" : "")
+				.append(level.isPositionEntityTicking(v.blockPosition()) ? "" : ", in a chunk where entities don't tick")
+				.append(v.onGround() ? "" : ", in the air").append(v.isPassenger() ? ", riding" : "").append(v.isSleeping() ? ", asleep" : "")
+				.append(v.isBaby() ? ", a child" : "")
+				.append(", workstation ").append(site(v).map(p -> helper.relativePos(p).toShortString()).orElse("none"))
+				.append(", pick ").append(v.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> helper.relativePos(g.pos()).toShortString()).orElse("none"))
+				.append(", walking to ").append(v.getBrain().getMemory(MemoryModuleType.WALK_TARGET)
+					.map(w -> helper.relativePos(w.getTarget().currentBlockPosition()).toShortString()).orElse("nowhere"))
+				.append(", doing ").append(v.getBrain().getActiveActivities()).append(", health ").append(v.getHealth()).append("; ");
+		}
+		for (net.minecraft.world.entity.Entity e : level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class, helper.getBounds().inflate(48),
+				e -> !villagers.contains(e))) {
+			out.append(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType())).append(" at ").append(helper.relativePos(e.blockPosition()).toShortString()).append("; ");
+		}
+		level.getPoiManager().getInRange(t -> t.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE) || Stations.ALL.stream().anyMatch(st -> st.poi().test(t)),
+			BlockPos.containing(helper.getBounds().getCenter()), 70, net.minecraft.world.entity.ai.village.poi.PoiManager.Occupancy.ANY)
+			.forEach(r -> out.append(r.getPoiType().unwrapKey().map(k -> k.location().getPath()).orElse("?")).append(r.hasSpace() ? " free" : " taken")
+				.append(" at ").append(helper.relativePos(r.getPos()).toShortString()).append("; "));
+		return out.append("day time ").append(level.getDayTime() % 24000).append(level.isRaining() ? ", raining" : "")
+			.append(level.isRaided(BlockPos.containing(helper.getBounds().getCenter())) ? ", a raid" : "").append(")").toString();
+	}
+
 	static Optional<BlockPos> site(Villager villager) {
 		return villager.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos);
 	}
@@ -474,7 +510,7 @@ public class StationsSpecGameTests implements FabricGameTest {
 			for (int i = 0; i < blocks.size(); i++) {
 				BlockPos at = helper.absolutePos(spots.get(i));
 				Optional<Villager> worker = villagers.stream().filter(v -> site(v).equals(Optional.of(at))).findFirst();
-				helper.assertTrue(worker.isPresent(), "nobody works at the " + BuiltInRegistries.BLOCK.getKey(blocks.get(i)));
+				helper.assertTrue(worker.isPresent(), "nobody works at the " + BuiltInRegistries.BLOCK.getKey(blocks.get(i)) + whereabouts(helper, villagers, 1600));
 				helper.assertTrue(job(worker.get()) == jobs.get(i) || blocks.get(i) == ModBlocks.SHOP_COUNTER && job(worker.get()) == ModVillagers.INNKEEPER,
 					"at the " + BuiltInRegistries.BLOCK.getKey(blocks.get(i)) + ": a " + name(job(worker.get())) + ", not a " + name(jobs.get(i)));
 			}

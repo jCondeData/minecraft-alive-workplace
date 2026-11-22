@@ -486,7 +486,8 @@ public class WallGameTests implements FabricGameTest {
 	 * B283: a Palisade Tower with its roof on, still being built (its ladders not in yet). Laid out again, the tower sits on
 	 * its own roof (a piece's height is its ground's), clear of the open site's box: the hall's round opened a second tower
 	 * there for the next free builder, and that one never finished (the City showcase: "palisade_tower at 540, -48, 562
-	 * waiting for 2 ladders", ten above the first, its hall at -58). No piece opens on a site's spot.
+	 * waiting for 2 ladders", ten above the first, its hall at -58). No piece opens on a site's spot. Since B1457 the
+	 * tower is laid out again where it is being built (the wall's own pieces are no ground), and still nothing opens on it.
 	 */
 	//$ gametest_ticks_batch AREA '40' '"wallOnItself"'
 	@GameTest(template = AREA, timeoutTicks = 40, batch = "wallOnItself")
@@ -519,9 +520,11 @@ public class WallGameTests implements FabricGameTest {
 					}
 				}
 			}
+			// B1457: the wall's own pieces are no ground, so the tower laid out again sits where it is being built, no
+			// longer on its own roof (which was how the second tower came to be opened clear of the site's box)
 			Walls.Piece again = Walls.pieces(level, v.hall()).get(0);
-			helper.assertTrue(again.placement().origin().getY() > tower.placement().origin().getY(), "setup: the tower isn't laid out on its own roof ("
-				+ again.placement().origin().toShortString() + ", built at " + tower.placement().origin().toShortString() + ")");
+			helper.assertTrue(again.placement().equals(tower.placement()), "the tower still being built is laid out again at "
+				+ again.placement().origin().toShortString() + ", not where it is built at " + tower.placement().origin().toShortString());
 			// a second builder, free for the round
 			BlockPos table = new BlockPos(10, 2, 18);
 			helper.setBlock(table, ModBlocks.BLUEPRINT_TABLE);

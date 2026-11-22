@@ -99,8 +99,9 @@ export function draw() {
   for (const ch of CHESTS) chestStack(c, ch.cells, [1], ch.facing)
   for (let x = WINCH.x0; x <= WINCH.x1; x++) c.set(x, WINCH.y, WINCH.z, `stripped_${P.joinery}`, { axis: 'x' })
   const [kx, ky, kz] = WINCH.crank
-  c.set(kx, ky, kz, `${P.wood}_fence`) // the crank's post, a lever on it
-  c.set(kx, ky + 1, kz, 'lever', { face: 'floor', facing: 'east', powered: 'false' })
+  // the crank: a lever on the drum's west end (B1485: it stood on a fence post, whose top can't hold one, so a Builder
+  // never placed it). Facing west, it hangs on the drum's end face at x 14.
+  c.set(kx, ky, kz, 'lever', { face: 'wall', facing: 'west', powered: 'false' })
   for (const f of FURNITURE) (furnitureParts[f.part] ?? kitchenParts[f.part])(c, f)
 
   // --- Pass 5: ground -----------------------------------------------------------------------------------------------

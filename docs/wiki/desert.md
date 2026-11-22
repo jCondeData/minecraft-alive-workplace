@@ -5,7 +5,7 @@ ROADMAP 32.9. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
-Roadmap items: 32.9, B382, B437, B828
+Roadmap items: 32.9, B382, B437, B828, B1445, B1479
 
 ## What a player sees
 
@@ -57,11 +57,16 @@ Roadmap items: 32.9, B382, B437, B828
   Only a raider that was on the ramp's top, or has the ramp's wall standing beside it, counts as down inside: one
   walking round a corner of the walls to its ramp, past the end of that wall on the outside, stays with the ramp and
   goes on piling (B726). That wall means the village wall the ramp leans on, standing unbroken along its line from
-  the ramp to beside the raider: a player's own wall farther along the same line past a gap (a garden wall outside)
-  doesn't count, and a raider beside it is still outside (B1419). While the sand goes up a climber waits two blocks out from the ramp's
+  the ramp to beside the raider (every block of it at the ramp's foot height or one above: a fence, a wall block, a
+  slab or a lintel over a hole counts; an opening that high doesn't), at most 32 blocks along: a player's own wall
+  farther along the same line past a gap (a garden wall outside) doesn't count, and a raider beside it is still
+  outside (B1419). A garden wall built right on to the village wall with no gap is still taken for part of it (found
+  2026-11-21, not fixed). While the sand goes up a climber waits two blocks out from the ramp's
   outer end; where that spot can't be reached (a ledge, a player's blocks) and the nearest it gets is a block of the
   ramp still to be piled, it waits two blocks to the side of the ramp's outer end instead, since no sand is piled
-  onto a raider.
+  onto a raider. It does the same when the only way to its spot runs over the sand already piled (B1434): a climber
+  never uses its half-built ramp as a step, which let one up onto a player's fence and down into the pen round its
+  spot, stuck there for good.
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.
@@ -103,6 +108,9 @@ Roadmap items: 32.9, B382, B437, B828
 - A husk killed within three seconds of a restart doesn't rise.
 - Sand a player knocks loose from a ramp (by digging under it) falls as sand does, and the block it lands as is
   not taken away after the siege.
+- A climber that reaches the wall's foot at the spot nearest its target before it has begun a ramp (a husk starting
+  three blocks behind the back wall, its villager inside a little to one side) stands there and never begins one
+  (B1445, found by QA on 2026-11-21; its failing test waits on the branch tests/ramp-foot-1121d for the fix).
 
 ## Proof
 
@@ -122,6 +130,10 @@ Roadmap items: 32.9, B382, B437, B828
 - `QaSandRampHeight1103dGameTests` (3, QA lane D): against walls exactly 8 high a husk climber begins a ramp; against
   walls 9 high, and against walls 4 high with a ledge all round two above their top, no ramp is begun and no sand is
   piled in 500 ticks of siege.
+- `QaSandRampCorners1121dGameTests` (3, QA lane D, B726): a ramp against the back wall, raiders standing still: one
+  inside two past the landing is let go, while ones outside the west and east walls as deep in from the ramp's foot,
+  and one outside behind the ramp, never are; a husk from outside the east wall's front corner, and one from behind
+  the back wall at the test area's edge (its waiting spot off the land), piles its ramp to the wall's top.
 - `DesertRaiderGameTests.noSandWithMobGriefingOff`.
 - `DesertRaiderGameTests.theDesertSiegeIsStillOnAtMidMorningAndOverAtNoon`.
 - `QaRisings1102dBugTests` (B828): a husk that fell just before the raid was called off, before the raiders left at

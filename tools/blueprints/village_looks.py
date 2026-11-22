@@ -671,9 +671,9 @@ def ball_workshop(b, P):
         b.set(7, yy, 5, "air")
         b.set(8, yy, 5, "air")
     ladder_up(b, cx + 1, 1, 9, cz, "west")
+    # windows north and south only: the east wall stays solid, the ladder hangs on it (B1453: a pane can't hold one)
     for yy in (4, 7):
         pane(b, cx, yy, cz - 2)
-        pane(b, cx + 2, yy, cz)
         pane(b, cx, yy, cz + 2)
     lantern(b, cx, 8, cz, hanging=True)
     entry(b, P)

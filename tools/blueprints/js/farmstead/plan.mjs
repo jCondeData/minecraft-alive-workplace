@@ -82,7 +82,7 @@ export const MASSES = {
     chamber: { wallZ: 16, doorX: 3, wallX: 4, z0: 17, z1: 19 },
     // two stalls down the east wall (x 6), a fence front at x 5 with a gate to each, a sunken water trough in each
     stalls: { front: 5, z0: 11, z1: 15, gates: [12, 14], dividers: [13, 16], troughs: [11, 14], hay: [12, 15] },
-    tools: { x: 2, z: [11, 12, 13] } },
+    tools: { x: 2, z: [11, 12] } }, // hooks on the boards over the bench (B1452: the pane at z 13 can't hold one)
   cupola: { x: 3, z: 15 },
   crossGable: { across: [13, 17], along: [5, 8], window: { z: 15, y: [6, 7] } }, // II: over the second composter, eave on the barn's
   // Proud frame: posts and a beam one block out from every face, the infill in the wall plane behind them

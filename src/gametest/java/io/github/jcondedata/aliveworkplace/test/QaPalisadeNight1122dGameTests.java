@@ -58,7 +58,7 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
 	static final ResourceLocation NIGHT_CLIMBERS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa_palisade_night_1122d_ladders");
 	static final ResourceLocation NIGHT_RAMS = ResourceLocation.fromNamespaceAndPath("aliveworkplace_test", "qa_palisade_night_1122d_rams");
-	private static final BlockPos WALL = new BlockPos(11, 2, 5);
+	static final BlockPos WALL = new BlockPos(11, 2, 5);
 	private static final BlockPos HALL = new BlockPos(14, 2, 1);
 	/** The walk's row in both palisade blueprints. */
 	private static final int WALK_Z = 2;
@@ -66,10 +66,10 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 	private static final int NIGHT = 14000;
 	private static final int LIMIT = 1000;
 
-	private record Village(ServerLevel level, BlockPos hall, Culture culture) {
+	record Village(ServerLevel level, BlockPos hall, Culture culture) {
 	}
 
-	private static Village village(GameTestHelper helper, ResourceLocation id, String tactic) {
+	static Village village(GameTestHelper helper, ResourceLocation id, String tactic) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
 		ServerLevel level = helper.getLevel();
@@ -102,7 +102,7 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 		return new Village(level, hall, culture);
 	}
 
-	private static Blueprint stand(GameTestHelper helper, StarterBlueprints.Entry build) {
+	static Blueprint stand(GameTestHelper helper, StarterBlueprints.Entry build) {
 		ServerLevel level = helper.getLevel();
 		BlockPos origin = helper.absolutePos(WALL);
 		level.getStructureManager().get(build.id()).orElseThrow().placeInWorld(level, origin, origin, new StructurePlaceSettings(), RandomSource.create(1L), 2);
@@ -113,7 +113,7 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 		return BlueprintLibrary.get(level, build.id()).orElseThrow();
 	}
 
-	private static Mob raider(GameTestHelper helper, BlockPos at) {
+	static Mob raider(GameTestHelper helper, BlockPos at) {
 		ServerLevel level = helper.getLevel();
 		BlockPos pos = helper.absolutePos(at);
 		Mob mob = EntityType.HUSK.create(level);
@@ -125,7 +125,7 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 		return mob;
 	}
 
-	private static Villager archer(GameTestHelper helper) {
+	static Villager archer(GameTestHelper helper) {
 		BlockPos post = new BlockPos(4, 2, 3);
 		helper.setBlock(post, ModBlocks.GUARD_POST);
 		Villager v = helper.spawn(EntityType.VILLAGER, new BlockPos(4, 2, 1));

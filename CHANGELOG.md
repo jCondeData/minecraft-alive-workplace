@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- An archer on a wall or tower stays there when the raider he was shooting at is dead and no other is in his sight.
+  His patrol went on whenever he had nobody to fight, and after a few seconds it set him down on the ground near his
+  Guard Post, off his station, with the siege still on. Now a guard with a place in a siege doesn't patrol (B1474).
 - Archers get up onto the Lookout Tower when a raider stands near its foot. An archer on his way to his station
   stopped to shoot at any raider within 8 blocks and stayed on the ground all siege, a few steps from the tower; now he
   shoots as he walks and climbs up. An archer whose station couldn't be checked when the siege began (still landing,

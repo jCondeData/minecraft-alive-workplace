@@ -119,8 +119,12 @@ public class GuardPatrol extends Behavior<Villager> {
 
 	@Override
 	protected void tick(ServerLevel level, Villager villager, long gameTime) {
-		if (GuardCombat.isFighting(villager) || GuardRally.isRallying(villager)) {
+		// A guard with a place in a siege keeps it (B1474): the patrol doesn't start then, but one already under way went on
+		// whenever he had nobody to fight. It picked a point near the post, and as an archer on his station made no way
+		// toward it (BattleStations.stay holds him), the walker hopped him there, off the wall, 80 ticks later.
+		if (GuardCombat.isFighting(villager) || GuardRally.isRallying(villager) || BattleStations.stationed(villager)) {
 			waypoint = null;
+			walker.reset();
 			return;
 		}
 		var leader = Escorts.leader(villager);

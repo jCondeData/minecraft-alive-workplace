@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Desert raiders' sand climbers no longer pile a ramp against a lone lamp post or a wall right beside an open
+  doorway: a husk that can walk into the village walks in, and ramps go only against walls in its way.
 - The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence
   post (a fence top can't hold a lever, so Builders always skipped it). The blueprint check now catches floor and
   ceiling levers and buttons with nothing sturdy under or over them.

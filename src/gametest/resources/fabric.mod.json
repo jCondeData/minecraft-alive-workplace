@@ -2028,6 +2028,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArcherStationPatrolB1474GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardFixes1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuardCombatMutants1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",

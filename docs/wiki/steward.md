@@ -60,7 +60,9 @@ as within; a turned twin counts, a mirrored one doesn't).
 
 **Open builds.** His level sets how many of his builds may be open at once (1, 2, 2, 3, 4 from Novice to Master),
 never more than the village's rank allows (Hamlet 1 to City 4) nor more than `stewardMaxOpenBuilds`. An approved
-proposal is an ordinary build site for the nearest builder, owned by the hall's owner.
+proposal is an ordinary build site, owned by the hall's owner, for the builder with the fewest builds of his own (a
+builder only lending a hand on another's build counts as free: he leaves that crew and starts at once; a Wonder's crew
+is never left), the nearest the hall on a tie.
 
 **Jobs and research.** Each morning every grown jobless villager gets a free workstation for the village's biggest
 gap: a builder while there is none, then a farmer while food is short, guards, a porter, a scholar, then the nearest
@@ -187,7 +189,7 @@ from both sides, abandoned blocks, allowed block entities, containers, 2000 bloc
 finished build, placed leaves, the ledger, the desk line) and `QaRenewalGameTests` (9, 27.21: the switch, two days
 from both sides, a Fletcher's Lodge facing the old door, the sentences, a tight zone, broken lists, a building too big
 passed over, a zone not renewed), `QaRenewalTakeDown1102GameTests` (2, 27.21 and B789: the village's builder takes an
-approved old house down on foot, approved by the owner or by the Steward himself, and the rebuild follows), `RenewalHelperTakeDownGameTests` (3, B789: a builder helping on another's build who is given the take-down leaves the crew and takes the old house down while that build stays open, both get done when it is stocked, and a world saved with his take-down waiting behind the build he helps picks it up), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
+approved old house down on foot, approved by the owner or by the Steward himself, and the rebuild follows), `RenewalHelperTakeDownGameTests` (3, B789: a builder helping on another's build who is given the take-down leaves the crew and takes the old house down while that build stays open, both get done when it is stocked, and a world saved with his take-down waiting behind the build he helps picks it up), `QaHelperOwnBuild1122cGameTests` (6, B789 QA: a helper farther from the hall than the lead is still picked and starts at once, for a take-down and for a plain Steward build, and finishes it; a lead waiting for materials doesn't hold the helper's take-down; a helper saved with his take-down queued takes it up after a real reload; the Steward's preview doesn't take him off the crew; a builder with a queue loses to one with fewer; a Wonder's crew keeps its helper), `QaStewardSameRangeGameTests` (1, B470: Wells 25 and 24.04 blocks apart are not within
 24) and `QaBuilderFixes1027bGameTests` (B470's two: 24 blocks off refused on all four sides and 25 not, diagonals 23.35
 and 23.77 refused and 24.04 not, a turned twin still counts and a mirrored one doesn't; the even Market Stall and the
 Hay Cart turned against an unturned one, half a block off on both axes, measured the same way).

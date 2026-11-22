@@ -69,7 +69,8 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479, B1493
   spot, stuck there for good. A path counts as ending at a wall when it ends within five of the hall with a column two
   high on the straight line to it (B1445, B1479); a second path then asked right up to the hall (within two) says
   whether the climber can walk in round it, past a lamp post or through an open doorway beside the line, and then it
-  walks in and no sand is piled (B1493).
+  walks in and no sand is piled (B1493). A gap only one high, or a shut wooden door, is no way in: the climber ramps the
+  wall outside it.
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.
@@ -116,6 +117,11 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479, B1493
 
 ## Proof
 
+- `QaRampWalledOff1122dVerifyGameTests` (7, QA lane D 2026-11-22, B1493): a husk beside a two-wide doorway in the
+  east wall, or a one-wide two-high doorway in the west wall, or past three lamp posts and a two-high pillar in open
+  ground, piles no sand for 300 ticks, also with the siege saved and loaded on its way; a gap only one high in the
+  wall, and walls two out from the hall, still get a ramp outside the wall and the husk over it; a shut oak door in the
+  wall gets sand only outside the yard, never on the husk.
 - `QaRampWalledOff1122dBugTests.qaAClimberBesideAnOpenDoorwayDoesNotRamp` and
   `QaRampWalledOff1122dBugTests.qaALampPostInAnOpenVillageGetsNoRamp`: a husk two blocks from an open doorway in the
   yard's wall, or with a lone lamp post on its line to the hall, piles no sand for 300 ticks (B1493).

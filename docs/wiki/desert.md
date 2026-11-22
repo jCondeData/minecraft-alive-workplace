@@ -5,7 +5,7 @@ ROADMAP 32.9. Part of Milestone 32 (1.6), switched on for players in 1.0 with ev
 [Raids and threats](raids.md)) whose lair (see [Lairs and the Defense page](lairs.md)) is an old tomb, and who get over
 walls with sand where pillagers use ladders (see [Drowned pirates](pirates.md) for the culture before it).
 
-Roadmap items: 32.9, B382, B437, B828, B1445, B1479
+Roadmap items: 32.9, B382, B437, B828, B1445, B1479, B1493
 
 ## What a player sees
 
@@ -46,7 +46,7 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479
   dying within the radius of a living one is brought back after the delay as the same mob (its gear, its raid, its
   role), tagged `aliveworkplace_risen` so it never rises twice.
 - **Sand ramps** (`threat/SandRamps`, tactic `sand_ramps`): a raider with the role `climber` whose path to the hall
-  ends at a wall (two to 8 blocks high, not a gate; with no room for a raider to stand on the ramp's top, for instance
+  (a new search each time, never the path it is already walking, B1493) ends at a wall (two to 8 blocks high, not a gate; with no room for a raider to stand on the ramp's top, for instance
   under a ledge or gallery over the wall's foot, none) starts a ramp there. Every block of the ramp goes only into air
   or a wild plant it buries (the same rule as ladders, `threat/Buriable`), or sand already there (any sand, the `minecraft:sand` block tag: plain, red or suspicious, B437), on solid ground; the blocks go on in stages (each stage a whole ramp one higher than the last), every 10 ticks while
   the climber is near. At most 2 ramps a siege. Once the ramp stands, the raiders go up it and over.
@@ -66,7 +66,10 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479
   ramp still to be piled, it waits two blocks to the side of the ramp's outer end instead, since no sand is piled
   onto a raider. It does the same when the only way to its spot runs over the sand already piled (B1434): a climber
   never uses its half-built ramp as a step, which let one up onto a player's fence and down into the pen round its
-  spot, stuck there for good.
+  spot, stuck there for good. A path counts as ending at a wall when it ends within five of the hall with a column two
+  high on the straight line to it (B1445, B1479); a second path then asked right up to the hall (within two) says
+  whether the climber can walk in round it, past a lamp post or through an open doorway beside the line, and then it
+  walks in and no sand is piled (B1493).
 - With the game's mob griefing rule off no sand is piled.
 - **Taken away after the siege** like ladders: every block is recorded with the siege and becomes air when the raid
   is over, also after a restart.
@@ -108,12 +111,14 @@ Roadmap items: 32.9, B382, B437, B828, B1445, B1479
 - A husk killed within three seconds of a restart doesn't rise.
 - Sand a player knocks loose from a ramp (by digging under it) falls as sand does, and the block it lands as is
   not taken away after the siege.
-- A climber that reaches the wall's foot at the spot nearest its target before it has begun a ramp (a husk starting
-  three blocks behind the back wall, its villager inside a little to one side) stands there and never begins one
-  (B1445, found by QA on 2026-11-21; its failing test waits on the branch tests/ramp-foot-1121d for the fix).
+- A climber only walks in round a wall when the game's pathfinder finds the way within the husk's follow range: with
+  the yard's one open doorway on the far side, a long way round, it ramps the near wall instead (B1493).
 
 ## Proof
 
+- `QaRampWalledOff1122dBugTests.qaAClimberBesideAnOpenDoorwayDoesNotRamp` and
+  `QaRampWalledOff1122dBugTests.qaALampPostInAnOpenVillageGetsNoRamp`: a husk two blocks from an open doorway in the
+  yard's wall, or with a lone lamp post on its line to the hall, piles no sand for 300 ticks (B1493).
 - `DesertRaiderGameTests.theDesertRaidersFileIsAsTheItemSays`: the file, the template, the loot table and the texts.
 - `DesertRaiderGameTests.aHuskRisesOnceNearTheLivingPharaohAndNotAfterHisDeath`: risen after 3 s, not before, at
   half health, in its gear and raid, at the spot; killed again it stays dead; none rises after the Pharaoh's death.

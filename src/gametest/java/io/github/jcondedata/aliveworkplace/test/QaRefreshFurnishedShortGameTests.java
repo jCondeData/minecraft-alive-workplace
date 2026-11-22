@@ -333,6 +333,8 @@ public class QaRefreshFurnishedShortGameTests implements FabricGameTest {
 		});
 		helper.onEachTick(() -> {
 			if (killed[0]) {
+				helper.assertTrue(second[0] == null || second[0].isAlive(),
+					"the new Builder died at " + (second[0] == null ? "?" : second[0].blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()));
 				if (!repressed[0] && second[0] != null && Refreshes.siteOf(s.level(), s.placement()) == null
 					&& !BuildSiteManager.get(s.level()).refreshAsked(s.placement())) {
 					repressed[0] = true;
@@ -370,9 +372,11 @@ public class QaRefreshFurnishedShortGameTests implements FabricGameTest {
 			}
 			helper.assertTrue(offered || after != null || BuildSiteManager.get(s.level()).refreshAsked(s.placement()),
 				"the half-refreshed house is neither offered again nor kept for a Builder");
-			// a new free Builder at the same bench
+			// a new free Builder at the same bench, standing where the first one started (between the hall and the bench).
+			// B1466: not helper.relativePos(hall), which on 1.21.1 turns an unrotated test's position round (x and z
+			// negated): it put him 22 blocks outside the area, where another test's blocks suffocated him in CI.
 			BlockPos bench = s.stores().get(0).offset(2, 0, 0);
-			Villager next = helper.spawn(EntityType.VILLAGER, helper.relativePos(s.hall()).offset(2, 0, 0));
+			Villager next = helper.spawn(EntityType.VILLAGER, s.stores().get(0).offset(2, 0, -2));
 			Builders.employ(s.level(), next, helper.absolutePos(bench));
 			ModAttachments.BUILDER_EMPLOYER.set(next, new Employer(s.owner().getUUID(), s.owner().getGameProfile().getName()));
 			second[0] = next;

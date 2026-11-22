@@ -10,6 +10,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -52,6 +53,12 @@ public class B1463GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		});
 		Villager v = helper.spawn(EntityType.VILLAGER, QaRebuiltWorkshops1121cLiveGameTests.AT.offset(AISLE));
 		v.setVillagerData(v.getVillagerData().setProfession(VillagerProfession.NONE));
+		// B1478: he stands on the floor, but a freshly spawned mob counts as in the air after its first tick (it hasn't
+		// moved, so it hasn't touched the floor), and vanilla's job search finds no path for a mob in the air. When that
+		// search (first run 0 to 19 ticks in) fell on that tick, the five nearest job blocks (the barrels beside him, the
+		// counter) were skipped for 2 to 4 seconds and he took a farther one (about 1 run in 10). He starts landed.
+		v.setOnGround(true);
+		v.setDeltaMovement(0, -0.1, 0);
 		return v;
 	}
 
@@ -84,9 +91,13 @@ public class B1463GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 	@GameTest(template = HUGE, timeoutTicks = 1200, batch = "b1463CapOff")
 	public void withTheFishermanCapOffTheBarrelBesideHimMakesAFisherman(GameTestHelper helper) {
 		Villager v = joblessInTheAisle(helper, false);
+		// B1478: with the cap off, vanilla's job search takes the nearest job block he can reach, so this checks the barrel
+		// beside him is seen at all: he stays in the aisle (strolled to the shop's front, the Shop Counter is rightly nearer).
+		v.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(0);
 		BlockPos origin = helper.absolutePos(QaRebuiltWorkshops1121cLiveGameTests.AT);
 		helper.succeedWhen(() -> {
 			helper.assertTrue(v.isAlive(), "the villager died");
+			helper.assertTrue(v.blockPosition().equals(origin.offset(AISLE)), "(setup) he left the aisle: " + where(v, origin));
 			BlockPos site = v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos()).orElse(null);
 			helper.assertTrue(site != null && helper.getLevel().getBlockState(site).is(Blocks.BARREL)
 				&& v.getVillagerData().getProfession() == VillagerProfession.FISHERMAN, "no fisherman yet: " + where(v, origin));

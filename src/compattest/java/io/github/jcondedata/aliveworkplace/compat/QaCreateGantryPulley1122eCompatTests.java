@@ -440,7 +440,7 @@ public class QaCreateGantryPulley1122eCompatTests implements FabricGameTest {
 
 	/**
 	 * The control: beside an open village an elevator outside takes the plank over the edge into its cabin, and sets it back
-	 * when the pulley is broken. (The protected case fails today: it is in the unregistered QaCreateGantryPulley1122eBugCompatTests.)
+	 * when the pulley is broken. (The protected case, B1487, is {@link QaCreateGantryPulley1122eBugCompatTests}.)
 	 */
 	//$ gametest_ticks_batch AREA '300' '"qa_e1122g_elevator_open"'
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_e1122g_elevator_open")

@@ -5,7 +5,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 /**
- * QA (lane E, lane-e-1122-1313), failing today: a Mechanical Harvester riding a stranger's real Create train reaps the
+ * QA (lane E, lane-e-1122-1313), B1498, fixed by HarvesterMixin (lane-a-1122-1823): a Mechanical Harvester riding a stranger's real Create train reaped the
  * ripe wheat of a protected village it runs through (4 of 4 wheat reaped, 2026-11-22). The promise (B993/B808,
  * village-hall.md): a machine outside a protected village changes nothing inside it. The open-village control, and the
  * set-up, are {@link QaCreateTrainActors1122eCompatTests}'s.

@@ -5,7 +5,7 @@ import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 /**
- * QA (lane E, 2026-11-22), a failing bug test, not registered (main stays green): a stranger's Create Elevator Pulley
+ * QA (lane E, 2026-11-22), B1487, fixed by ElevatorCabinMixin (lane-a-1122-1823): a stranger's Create Elevator Pulley
  * outside a protected village whose cabin reaches over the edge takes the village's block into its cabin when it is put
  * together, and when the pulley is broken the block can't go back (the village refuses it) and drops as an item at the
  * machine, outside: an assemble-and-break way to take blocks out of any protected village. The promise (B993, B808):

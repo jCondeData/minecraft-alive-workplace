@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger's Create machines keep their hands off a protected village: a Mechanical Harvester, Plough or Roller on
+  his train or other contraption no longer reaps its crops, tills its grass or fills its holes, and his Elevator Pulley
+  outside no longer carries a village block away in its cabin (B1487, B1498, B1502, B1503).
 - An archer on a wall or tower stays there when the raider he was shooting at is dead and no other is in his sight.
   His patrol went on whenever he had nobody to fight, and after a few seconds it set him down on the ground near his
   Guard Post, off his station, with the siege still on. Now a guard with a place in a siege doesn't patrol (B1474).

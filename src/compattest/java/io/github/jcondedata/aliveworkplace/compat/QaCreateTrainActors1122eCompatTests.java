@@ -51,7 +51,7 @@ import net.minecraft.world.phys.AABB;
  * <li>a Deployer the stranger placed, holding 32 cobblestone: it places in front of it outside the village (calibration)
  * and must place none inside a protected one (open village: it does);</li>
  * <li>a Mechanical Harvester: ripe wheat stands in its path at x = 12 (outside, calibration) and x = 18..22 (inside); a
- * protected village's wheat stays ripe (fails today, B-pending: {@link QaCreateTrainActors1122eBugCompatTests}), an open
+ * protected village's wheat stays ripe (B1498: {@link QaCreateTrainActors1122eBugCompatTests}), an open
  * village's is reaped (the control, here);</li>
  * <li>a Mechanical Drill, with the train entity itself saved and loaded (as a chunk unloading and loading does) while it
  * stands just outside the village: on its way in it still breaks none of the planks inside (open village: all).</li>

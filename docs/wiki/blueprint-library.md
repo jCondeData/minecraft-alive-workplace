@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467
 
 ## 1. What a player sees
 
@@ -78,6 +78,9 @@ Ways to unlock, all for the village round the nearest hall:
 - Only the mod's own builds (the lists in `StarterBlueprints`, any style of them) and the Wonders can be locked. Imports,
   uploads, scans, structure-block saves and other datapacks' builds are always unlocked. Styles share their base's
   unlock; each upgrade tier is its own build.
+- Every build has a name in the lang file: upgrade tiers read "Stone Wall II", "Wall Tower II", "Palisade II",
+  "Gatehouse II", and a culture's look reads "<build>: <Culture>" ("Starter Cottage: Desert"), never a fallback like
+  "Stone Wall 2" (B1467, `BlueprintLangNamesB1467GameTests`).
 - The starting and rare sets are data: `data/<ns>/blueprint_unlocks/starting.json` and `rare.json`, each a
   `blueprints` list, merged across namespaces and read on every reload.
 - A Table's village is `VillageHalls.nearest` to the Table. With no hall in reach, one server-wide set is used; the

@@ -13,6 +13,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.compat.QaHomesStorage1122cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaMixedPlanks1122cCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaMixedPlanks1122cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPumpHouseDoor1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateGantryPulley1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateGantryPulley1122eBugCompatTests",

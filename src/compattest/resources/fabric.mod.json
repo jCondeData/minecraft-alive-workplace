@@ -18,6 +18,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovingMachines1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePortableTrains1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainActors1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainPloughRoller1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainPunch1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOwners1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePsi1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRefreshPieces1122e2CompatTests",
@@ -279,6 +281,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFileClipboard1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicBurner1108eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateSchematicBacktank1108eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateFreshBlocks1122bCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaBuilderFixes1027CompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelCounterCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFunnelMailboxCompatTests",
@@ -513,7 +516,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPumpHouseTank1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eBugCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eCompatTests"
 		]
 	},
 	"depends": {

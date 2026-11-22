@@ -26,6 +26,15 @@ A --compat-cmd that calls gradlew gets "--no-daemon -Dorg.gradle.jvmargs=-Xmx153
 already says --daemon/--no-daemon or sets jvmargs: a Gradle daemon reused between compat mutants gets
 OOM-killed on the 7 GB container. Only javac's own error lines (Foo.java:12: error: ...), "Compilation
 failed" and a failed compile task count as NO-COMPILE; the compat server log's "error: " lines don't.
+
+--covering (the nightly passes it, B1056): each run has only the GameTest classes that name the mutated class (its simple
+name as a word; when none does, the ones naming a class of the main code that uses it), at most --cover-max of them,
+by leaving only those entrypoints in the test mod's fabric.mod.json for the run (put back after it, and by --restore
+after a crash). The whole suite outgrew the nightly's time: a baseline took 25 minutes and a mutant 35, so every shard
+timed out and the report said "0 of 0 killed". The baseline then runs the classes of all the picked mutants together; a
+mutant no test class reaches is listed as NO-TEST (not run, not a kill). --compat-cmd runs get the same, from the compat
+suite's fabric.mod.json. --budget SECONDS: no run starts that would likely end past it (the slowest run so far is the
+guess), so a CI job ends with a report instead of being cancelled; the mutants left are listed as not run.
 """
 import argparse
 import json
@@ -58,6 +67,8 @@ OPS = [
     ("- to +", re.compile(r"(?<=[\w)]) - (?=\d)"), " + "),
 ]
 CALL_STMT = re.compile(r"^(\s*)((?:this\.|[a-z]\w*\.)*[a-z]\w*\([^;]*\);\s*)$")
+GAMETEST_JSON = "src/gametest/resources/fabric.mod.json"
+COMPAT_JSON = "src/compattest/resources/fabric.mod.json"
 SKIP_LINE = re.compile(r"^\s*(//|\*|/\*|import |package |@|LOGGER|log\.|.*\b(LOG|LOGGER)\.)")
 
 
@@ -145,6 +156,61 @@ def restore_all(root):
     return n
 
 
+def registered_tests(root, json_rel):
+    """{fully qualified name: source} of the GameTest classes the test mod at json_rel registers (sources found)."""
+    p = root / json_rel
+    if not p.exists():
+        return {}
+    out = {}
+    for e in json.loads(p.read_text(encoding="utf-8")).get("entrypoints", {}).get("fabric-gametest", []):
+        fq = e if isinstance(e, str) else e.get("value", "")
+        f = p.parent.parent / "java" / (fq.split("::")[0].replace(".", "/") + ".java")
+        if fq and f.exists():
+            out[fq] = f.read_text(encoding="utf-8", errors="replace")
+    return out
+
+
+def covering(name, tests, main_src, cap):
+    """The test classes (sorted) that name class `name`, the most mentions first, at most cap; when none does, those
+    naming a class of the main code (main_src: {simple name: source}) that names it. Empty: no test reaches it by name."""
+    def naming(rx):
+        hits = [(len(rx.findall(t)), fq) for fq, t in tests.items()]
+        return sorted(fq for n, fq in sorted(hits, key=lambda h: (-h[0], h[1]))[:cap] if n)
+    word = re.compile(r"\b%s\b" % re.escape(name))
+    found = naming(word)
+    if found:
+        return found
+    users = sorted(n for n, t in main_src.items() if n != name and word.search(t))
+    return naming(re.compile(r"\b(?:%s)\b" % "|".join(map(re.escape, users)))) if users else []
+
+
+class OnlyTests:
+    """Leaves only `classes` registered in the test mod's fabric.mod.json for one run and puts the file back after (with
+    a backup that --restore puts back after a crash). classes None: the file stays as it is."""
+
+    def __init__(self, root, json_rel, classes, tag):
+        self.path, self.classes, self.orig = root / json_rel, classes, None
+        self.key = backup_dir(root) / f"entry-{tag}"
+
+    def __enter__(self):
+        if self.classes is None or not self.path.exists():
+            return self
+        self.orig = self.path.read_text(encoding="utf-8")
+        shutil.copyfile(self.path, self.key.with_suffix(".orig"))
+        self.key.with_suffix(".json").write_text(json.dumps(dict(path=str(self.path))))
+        mod = json.loads(self.orig)
+        mod["entrypoints"]["fabric-gametest"] = sorted(self.classes)
+        self.path.write_text(json.dumps(mod, indent="\t") + "\n", encoding="utf-8")
+        return self
+
+    def __exit__(self, *exc):
+        if self.orig is not None:
+            self.path.write_text(self.orig, encoding="utf-8")
+            self.key.with_suffix(".orig").unlink(missing_ok=True)
+            self.key.with_suffix(".json").unlink(missing_ok=True)
+        return False
+
+
 def compat_gradle_flags(cmd):
     """Compat runs: no reused daemon, capped heap (B223). Other commands and explicit choices stay as given."""
     if not cmd or "gradlew" not in cmd or re.search(r"--(no-)?daemon|org\.gradle\.jvmargs", cmd):
@@ -191,13 +257,20 @@ def reached_summary(root, since_time):
     return all(SUMMARY_OK.search(t) or SUMMARY_FAIL.search(t) for t in map(read_text, logs))   # no server log: can't tell
 
 
-def compat_run(a, root, f, orig, c, key, compat):
-    """Run a main-suite survivor once with --compat-cmd: (status, seconds, killer)."""
+def compat_run(a, root, f, orig, c, key, compat, cover=None):
+    """Run a main-suite survivor once with --compat-cmd: (status, seconds, killer). cover: the compat test classes to run
+    (None: the whole compat suite)."""
     secs = 0.0
     if compat["base"] is None:
         t0 = time.time()
-        bstatus, bsecs, tail = run(a.compat_cmd, root, a.timeout)
+        with OnlyTests(root, COMPAT_JSON, compat.get("union"), "compat"):
+            bstatus, bsecs, tail = run(a.compat_cmd, root, a.timeout)
+        a.slowest = max(a.slowest, bsecs)
         secs += bsecs
+        if bstatus == "TIMEOUT":
+            compat["left"] = 0
+            print(f"compat baseline timed out after {a.timeout}s; survivors stay survivors", flush=True)
+            return "SURVIVED", secs, ""
         if bstatus == "NO-COMPILE":
             compat["left"] = 0
             print("compat baseline doesn't build; survivors stay survivors:\n" + tail[-800:], flush=True)
@@ -216,7 +289,9 @@ def compat_run(a, root, f, orig, c, key, compat):
         lines = orig.split("\n")
         lines[c["line"] - 1] = c["new"]
         f.write_text("\n".join(lines), encoding="utf-8")
-        status, more, _ = run(a.compat_cmd, root, a.timeout)
+        with OnlyTests(root, COMPAT_JSON, cover, "compat"):
+            status, more, _ = run(a.compat_cmd, root, a.timeout)
+        a.slowest = max(a.slowest, more)
     finally:
         f.write_text(orig, encoding="utf-8")
         key.with_suffix(".orig").unlink(missing_ok=True)
@@ -247,11 +322,16 @@ def main():
     ap.add_argument("--compat-cmd", help="second test command for the main command's survivors (e.g. runCompatGameTest)")
     ap.add_argument("--compat-max", type=int, default=6, help="re-run at most this many survivors with --compat-cmd")
     ap.add_argument("--timeout", type=int, default=900)
+    ap.add_argument("--covering", action="store_true", help="run only the GameTest classes that name the mutated class (B1056)")
+    ap.add_argument("--cover-max", type=int, default=40, help="with --covering: at most this many test classes a mutant")
+    ap.add_argument("--budget", type=int, help="seconds: start no run that would likely end past this (a CI job's time)")
     ap.add_argument("--list", action="store_true", help="only list the mutants that would run")
     ap.add_argument("--no-baseline", action="store_true", help="skip the first run on the real code (only if it is known to pass)")
     ap.add_argument("--restore", action="store_true")
     ap.add_argument("--include-client", action="store_true", help="also mutate src/client* (only useful with a client test command)")
     a = ap.parse_args()
+    started = time.time()
+    a.slowest = 0.0
     a.compat_cmd = compat_gradle_flags(a.compat_cmd)
     root = repo_root(a.repo)
     left = restore_all(root)
@@ -289,11 +369,36 @@ def main():
         nodes = sorted(p.name for p in (root / "versions").glob("*") if p.is_dir()) if (root / "versions").exists() else []
         a.cmd = f"./gradlew --max-workers=1 {':' + nodes[0] + ':' if nodes else ''}runGameTest"
     print(f"# Mutation spot-check: {len(chosen)} of {len(cands)} possible mutants; command: {a.cmd}\n")
+    cover, ccover, union, cunion = {}, {}, None, None
+    if a.covering:
+        main_src = {}
+        for d in main_dirs:
+            for jf in d.rglob("*.java"):
+                main_src[jf.stem] = main_src.get(jf.stem, "") + jf.read_text(encoding="utf-8", errors="replace")
+        tests, ctests = registered_tests(root, GAMETEST_JSON), registered_tests(root, COMPAT_JSON)
+        for i, c in enumerate(chosen, 1):
+            cover[i] = covering(c["file"].stem, tests, main_src, a.cover_max)
+            ccover[i] = covering(c["file"].stem, ctests, main_src, a.cover_max) if a.compat_cmd else []
+            names = ", ".join(x.rsplit(".", 1)[-1] for x in cover[i][:6]) + (", ..." if len(cover[i]) > 6 else "")
+            print(f"   {i}. {c['file'].stem}: {len(cover[i])} test class(es)" + (f", {len(ccover[i])} compat" if a.compat_cmd else "")
+                  + (f" ({names})" if names else ""))
+        union = sorted({x for v in cover.values() for x in v})
+        cunion = sorted({x for v in ccover.values() for x in v})
+        print()
     base_fail, base_status = set(), "SURVIVED"
     if not a.list and not a.no_baseline:
         # tests that already fail on the real code (e.g. a tester's bug tests) must not count as kills
         t0 = time.time()
-        base_status, secs, tail = run(a.cmd, root, a.timeout)
+        if union == []:
+            base_status, secs, tail = "SURVIVED", 0.0, ""     # no picked mutant has a main-suite test class
+        else:
+            with OnlyTests(root, GAMETEST_JSON, union, "gametest"):
+                base_status, secs, tail = run(a.cmd, root, a.timeout)
+        a.slowest = secs
+        if base_status == "TIMEOUT":
+            # B1056: a baseline cut off by --timeout is a timeout, not Gradle failing
+            sys.exit(f"the run on the real code timed out after {a.timeout}s ({len(union) if union is not None else 'all'} "
+                     "test classes): raise --timeout or run fewer tests (--covering)")
         if base_status == "NO-COMPILE":
             sys.exit("the real code doesn't build with this command:\n" + tail[-1500:])
         base_fail = set(failed_tests(root, t0))
@@ -307,9 +412,22 @@ def main():
         return
     results = []
     bdir = backup_dir(root)
-    compat = dict(left=a.compat_max, base=None)
+    compat = dict(left=a.compat_max, base=None, union=cunion)
+    not_run = []
+
+    def out_of_time():
+        return a.budget is not None and time.time() - started + a.slowest > a.budget
+
     for i, c in enumerate(chosen, 1):
         f = c["file"]
+        if a.covering and not cover[i] and not ccover[i]:
+            results.append((c, "NO-TEST", 0.0, ""))
+            print(f"{i}. NO-TEST    {f.relative_to(root)}:{c['line']} ({c['op']}, 0s)  no GameTest class names {f.stem} "
+                  "or a class that uses it", flush=True)
+            continue
+        if out_of_time():
+            not_run = chosen[i - 1:]
+            break
         orig = f.read_text(encoding="utf-8")
         key = bdir / f"m{i}"
         shutil.copyfile(f, key.with_suffix(".orig"))
@@ -319,7 +437,12 @@ def main():
             lines = orig.split("\n")
             lines[c["line"] - 1] = c["new"]
             f.write_text("\n".join(lines), encoding="utf-8")
-            status, secs, tail = run(a.cmd, root, a.timeout)
+            if a.covering and not cover[i]:
+                status, secs, tail = "SURVIVED", 0.0, "(no main-suite test class names it: compat only)"
+            else:
+                with OnlyTests(root, GAMETEST_JSON, cover.get(i), "gametest"):
+                    status, secs, tail = run(a.cmd, root, a.timeout)
+                a.slowest = max(a.slowest, secs)
         finally:
             f.write_text(orig, encoding="utf-8")
             key.with_suffix(".orig").unlink(missing_ok=True)
@@ -334,16 +457,23 @@ def main():
             if base_status != "SURVIVED" and not new_fail and status == "KILLED" and not crashed:
                 status = "SURVIVED"          # only the tests that already failed on the real code failed
             killer = ", ".join(new_fail)[:240] or ("(timed out)" if status == "TIMEOUT" else "(server crashed)" if crashed else "")
-        if status == "SURVIVED" and a.compat_cmd and compat["left"] > 0:
+        if status == "SURVIVED" and a.compat_cmd and compat["left"] > 0 and (not a.covering or ccover[i]) and not out_of_time():
             compat["left"] -= 1
-            status, more, killer = compat_run(a, root, f, orig, c, key, compat)
+            status, more, killer = compat_run(a, root, f, orig, c, key, compat, ccover.get(i) if a.covering else None)
             secs += more
+        elif status == "SURVIVED" and a.covering and not cover[i]:
+            status = "NO-TEST"       # only compat tests name it, and they weren't run (--compat-max or out of time)
         results.append((c, status, secs, killer))
         print(f"{i}. {status:10s} {f.relative_to(root)}:{c['line']} ({c['op']}, {secs:.0f}s){'  killed by ' + killer if killer else ''}", flush=True)
     surv = [r for r in results if r[1] == "SURVIVED"]
     real = [r for r in results if r[1] in ("KILLED", "SURVIVED", "TIMEOUT")]
     print(f"\nKilled {sum(1 for r in real if r[1] != 'SURVIVED')} of {len(real)} "
-          f"({sum(1 for r in results if r[1] == 'NO-COMPILE')} didn't compile).")
+          f"({sum(1 for r in results if r[1] == 'NO-COMPILE')} didn't compile"
+          + (f", {sum(1 for r in results if r[1] == 'NO-TEST')} reached by no test class" if a.covering else "") + ").")
+    if not_run:
+        print(f"\nOut of time: {len(not_run)} mutant(s) not run (--budget {a.budget}s, slowest run {a.slowest:.0f}s):")
+        for c in not_run:
+            print(f"- {c['file'].relative_to(root)}:{c['line']} ({c['op']})")
     if surv:
         print("\n## Survivors: bugs no test would catch (write a test that fails on each)\n")
         for c, status, secs, _ in surv:

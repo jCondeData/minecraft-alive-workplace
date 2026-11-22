@@ -670,8 +670,23 @@ public final class CitySoak {
 			.map(list -> list.isEmpty() ? "none found" : String.join(", ", list.stream().map(h -> h.verdict().name().toLowerCase(Locale.ROOT)).toList()))
 			.orElse("not surveyed");
 		List<String> proposals = StewardDesk.of(level, run.hall).proposals().stream().map(p -> p.name().getString()).toList();
+		// B1363: the wind-down switched the wall off (nothing new starts), and Walls.pieces is empty while it is off, so
+		// the line always read "0 pieces standing": count with it on, and say how many pieces the layout has.
+		boolean wallOn = Walls.ENABLED;
+		Walls.ENABLED = true;
+		int standing;
+		int[] layout;
+		try {
+			layout = Walls.counts(Walls.pieces(level, run.hall));
+			standing = Walls.standing(level, run.hall);
+		} finally {
+			Walls.ENABLED = wallOn;
+		}
+		int pieces = layout[Walls.Kind.SEGMENT.ordinal()] + layout[Walls.Kind.TOWER.ordinal()] + layout[Walls.Kind.GATE.ordinal()];
 		return "rank " + VillageRanks.of(level, run.hall).name().toLowerCase(Locale.ROOT) + "; wall " + wall + " (wanted: "
-			+ Walls.wanted(level, run.hall) + ", " + Walls.standing(level, run.hall) + " pieces standing); old houses: " + houses
+			+ Walls.wanted(level, run.hall) + ", " + standing + " of " + pieces + " pieces standing; layout: "
+			+ layout[Walls.Kind.SEGMENT.ordinal()] + " segments, " + layout[Walls.Kind.TOWER.ordinal()] + " towers, "
+			+ layout[Walls.Kind.GATE.ordinal()] + " gates); old houses: " + houses
 			+ "; renewals going: " + Renewals.active(level, run.hall).size() + "; on the desk: " + (proposals.isEmpty() ? "nothing" : String.join(" | ", proposals));
 	}
 

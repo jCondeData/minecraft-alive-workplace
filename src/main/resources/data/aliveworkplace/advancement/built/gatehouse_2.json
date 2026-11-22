@@ -5,8 +5,7 @@
       "id": "aliveworkplace:blueprint"
     },
     "title": {
-      "translate": "blueprint.aliveworkplace.gatehouse_2",
-      "fallback": "Gatehouse 2"
+      "translate": "blueprint.aliveworkplace.gatehouse_2"
     },
     "description": {
       "translate": "advancements.aliveworkplace.built.description"

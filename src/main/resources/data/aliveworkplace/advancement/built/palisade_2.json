@@ -5,8 +5,7 @@
       "id": "aliveworkplace:blueprint"
     },
     "title": {
-      "translate": "blueprint.aliveworkplace.palisade_2",
-      "fallback": "Palisade 2"
+      "translate": "blueprint.aliveworkplace.palisade_2"
     },
     "description": {
       "translate": "advancements.aliveworkplace.built.description"

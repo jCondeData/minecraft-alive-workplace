@@ -5,8 +5,7 @@
       "id": "aliveworkplace:blueprint"
     },
     "title": {
-      "translate": "blueprint.aliveworkplace.wall_tower_2",
-      "fallback": "Wall Tower 2"
+      "translate": "blueprint.aliveworkplace.wall_tower_2"
     },
     "description": {
       "translate": "advancements.aliveworkplace.built.description"

@@ -218,6 +218,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaGlassCreate1114cBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGlassLoopEdges1115cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaModdedRefresh1115cCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaModdedClinic1122bCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaGlassPanesCreate1115bCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesOurBlocks1102eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovesTheHall1107eCompatTests",

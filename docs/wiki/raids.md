@@ -106,6 +106,10 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **How long.** `hours: night` raiders flee at dawn, as before. `hours: until_noon` raiders stay through the morning.
 - **Guards** fight anything that carries the raider tag (`aliveworkplace_raider`), so a culture may bring hoglins, which
   the game doesn't count as monsters. Raiders also carry their role as a tag (`aliveworkplace_role_melee`, …).
+  In a raid a guard goes out to any raider within `guardRadius` (24) of his post even when he can't see it, so guards
+  indoors in a Barracks come out to raiders standing off in front without anyone ringing the bell (B1475); a raider he
+  sees, or one right beside him, comes first. Any other monster he must see (or have within 4 blocks) to go for it, and
+  outside a raid nothing changes.
 - **The chance hook.** `Threats.chanceFactor(level, hall)` multiplies a village's chance of an attack; other systems add
   to it with `Threats.addFactor(id, (level, hall) -> factor)`. Curfew and the research topic that makes raids rarer
   already go through it.

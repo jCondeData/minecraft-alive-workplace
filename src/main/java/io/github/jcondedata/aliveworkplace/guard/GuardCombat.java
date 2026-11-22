@@ -382,10 +382,44 @@ public class GuardCombat extends Behavior<Villager> {
 				.min(Comparator.comparingDouble(villager::distanceToSqr))
 				.orElse(null);
 		}
-		return level.getEntitiesOfClass(LivingEntity.class, area(level, villager), e -> Guards.isFoe(e, villager)).stream()
-			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
-			.min(Comparator.comparingDouble(villager::distanceToSqr))
-			.orElse(null);
+		// B1475: a raid's raider within guardRadius of the post is a foe even out of sight (behind the Barracks' walls the
+		// guards never came out to raiders standing off in front); one in sight, or right beside him, comes first.
+		BlockPos center = center(villager);
+		Optional<AABB> raid = VillageRaids.raidArea(level, center);
+		LivingEntity best = null;
+		boolean bestSeen = false;
+		double bestDistance = Double.MAX_VALUE;
+		for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, raid.orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS)),
+			x -> Guards.isFoe(x, villager))) {
+			double distance = villager.distanceToSqr(e);
+			if (bestSeen && distance >= bestDistance) {
+				continue;
+			}
+			boolean seen = distance < 16 || villager.hasLineOfSight(e);
+			if (!seen && (bestSeen || !inRaid(raid.isPresent(), e) || flat(e, center) > (double) Guards.RADIUS * Guards.RADIUS)) {
+				continue;
+			}
+			if (seen && !bestSeen || distance < bestDistance) {
+				best = e;
+				bestSeen = seen;
+				bestDistance = distance;
+			}
+		}
+		return best;
+	}
+
+	/**
+	 * B1475: whether {@code e} is a raider of a raid on now: with a raid on the guard's village ({@code raid}), one carrying
+	 * the raid's tag; or a vanilla raid's own. Any other monster he must see (or have right beside him) to go for it.
+	 */
+	private static boolean inRaid(boolean raid, LivingEntity e) {
+		return raid && Guards.isRaider(e) || e instanceof net.minecraft.world.entity.raid.Raider raider && raider.hasActiveRaid();
+	}
+
+	private static double flat(LivingEntity e, BlockPos p) {
+		double dx = e.getX() - (p.getX() + 0.5);
+		double dz = e.getZ() - (p.getZ() + 0.5);
+		return dx * dx + dz * dz;
 	}
 
 	/** Where {@code villager} looks for foes away from a Rally Banner: in a raid the whole village (or the pillagers' raid area), else round their post. */

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Guards come out of their Barracks to fight a raid without the bell. Guards indoors only went for raiders they
+  could see, so raiders standing off in front of the building were left alone; now, in a raid, a guard goes out to
+  any raider within his patrol radius (24 blocks) of his post.
 - Archers get up onto the Lookout Tower when a raider stands near its foot. An archer on his way to his station
   stopped to shoot at any raider within 8 blocks and stayed on the ground all siege, a few steps from the tower; now he
   shoots as he walks and climbs up. An archer whose station couldn't be checked when the siege began (still landing,

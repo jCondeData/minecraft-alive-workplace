@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467, B1469, B1468
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467, B1469, B1468, B1427
 
 ## 1. What a player sees
 
@@ -382,6 +382,19 @@ second job there. The worktop is now a third stone-topped counter of the lab ben
 `modded_library.py`), the released drawings kept by `history.py`. Test:
 `ResearchLabJobSiteB1468CompatTests.theResearchLabsHaveNoJobSiteButTheAnalyzer` (no block of any level or modded copy
 is any profession's job site but the Fossil Analyzer's).
+
+**B1427: Gatehouse II's way up to the barbican.** Set in a stone wall with its gates shut, the rebuilt Gatehouse II's
+barbican roof (every station standing at y 5, z 4 to 8) was more than 3.5 blocks from any ground a guard could walk to
+on the village side, so an archer sent there stood inside the gates all siege. Each barbican wall is now three thick
+(x 1..3 and 7..9) with a mural gallery in it (x 2 / 8, y 1..2, z 5..8, a wall torch at its end and a glazed slit to
+the flank), entered from the guardroom through the tower's front wall (x 2 / 8, z 4); the guardrooms' table and chair
+stand along the outer wall and their doorways off the gateway have no leaves, so the way is clear. Every barbican
+station lies within climbing reach of a gallery (`js/gatehouse/selfcheck.py` checks it). Level I is unchanged; Level
+II is regenerated (`rebuild.py`), the released drawing kept by `history.py`. And `BattleStations` now looks for an
+archer's way up (a path there, or to a spot within climbing reach below it) and sends him to the best station he can
+reach, so a station out past shut gates in any build is passed over. Tests:
+`QaRebuiltDefense1121cBugTests` (every barbican station climbed to from the village side with the gates shut; a live
+siege where all four archers are on a station within 450 ticks).
 
 **QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence
 gates stay shut, nobody stands on fences, walls or headstones) from the street at the z=0 side.

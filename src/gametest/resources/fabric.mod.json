@@ -21,6 +21,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaWaterRuns1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHistoryLazy1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHistoryReread1122eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaShippedHistoryKnown1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaArcFoes1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampCorners1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampFootStall1121dBugTests",

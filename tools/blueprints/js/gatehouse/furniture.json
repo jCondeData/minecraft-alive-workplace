@@ -1,9 +1,9 @@
 {"spots": [
-  {"kind":"table","pos":[2,1,3],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"green"},
-  {"kind":"chair","pos":[2,1,2],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"table","pos":[1,1,2],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"green"},
+  {"kind":"chair","pos":[1,1,1],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[1,4,1],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
-  {"kind":"table","pos":[8,1,3],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"green"},
-  {"kind":"chair","pos":[8,1,2],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
+  {"kind":"table","pos":[9,1,2],"facing":"north","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":"green"},
+  {"kind":"chair","pos":[9,1,1],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[9,4,1],"facing":"south","cells":[[0,0,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[1,10,2],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},
   {"kind":"lamp","pos":[9,10,2],"facing":"south","cells":[[0,0,0],[0,1,0]],"wood":"spruce","colour":null},

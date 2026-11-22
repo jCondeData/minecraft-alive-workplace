@@ -320,7 +320,7 @@ public final class SandRamps {
 					storm.nextTry.put(id, now + TRY_EVERY);
 					paths++;
 					Path path = mob.getNavigation().createPath(siege.hall, REACH);
-					if (path == null || path.canReach()) {
+					if (path == null || path.canReach() && !walledOff(level, path, siege.hall)) {
 						continue;
 					}
 					site = siteFor(level, siege, storm, mob, path);
@@ -574,6 +574,33 @@ public final class SandRamps {
 			}
 		}
 		return 2;
+	}
+
+	/**
+	 * Whether a wall stands between where {@code path} ends and the hall: a column at least two high on the straight line
+	 * between them, at the height the path ends. The pathfinder counts a path as getting there once it ends within
+	 * {@link #REACH} blocks of the hall counted along the axes, so one that ends right outside a wall with the hall a few
+	 * blocks in counted as in, and the climber never began a ramp: it stood at the wall's foot for good (B1445, B1479).
+	 */
+	private static boolean walledOff(ServerLevel level, Path path, BlockPos hall) {
+		Node end = path.getEndNode();
+		if (end == null) {
+			return false;
+		}
+		BlockPos from = end.asBlockPos();
+		double dx = hall.getX() - from.getX();
+		double dz = hall.getZ() - from.getZ();
+		int steps = (int) Math.ceil(Math.sqrt(dx * dx + dz * dz) * 2);
+		for (int i = 1; i < steps; i++) {
+			BlockPos at = BlockPos.containing(from.getX() + 0.5 + dx * i / steps, from.getY(), from.getZ() + 0.5 + dz * i / steps);
+			if (at.getX() == hall.getX() && at.getZ() == hall.getZ()) {
+				break;
+			}
+			if (blocked(level, at) && blocked(level, at.above())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Nullable

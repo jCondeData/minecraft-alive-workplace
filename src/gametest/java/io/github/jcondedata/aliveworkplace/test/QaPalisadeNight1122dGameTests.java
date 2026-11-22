@@ -170,8 +170,16 @@ public class QaPalisadeNight1122dGameTests implements FabricGameTest {
 		VillageRaids.track(level, village.hall(), village.culture(), all);
 		helper.assertTrue(Sieges.siege(level, village.hall()).isPresent(), what + ": a night attack on a village behind a Palisade is no siege");
 		long[] on = {-1};
+		java.util.ArrayDeque<String> dbg = new java.util.ArrayDeque<>();
 		helper.onEachTick(() -> {
 			long tick = helper.getTick();
+			dbg.addLast("DBG1474 t" + tick + " at " + helper.relativeVec(archer.position()) + " onSt " + BattleStations.onStation(archer) + " nav " + archer.getNavigation().getTargetPos()
+				+ " walk " + archer.getBrain().getMemory(net.minecraft.world.entity.ai.memory.MemoryModuleType.WALK_TARGET).map(w -> w.getTarget().currentBlockPosition().toShortString()).orElse("-")
+				+ " act " + archer.getBrain().getActiveNonCoreActivity() + " fight " + io.github.jcondedata.aliveworkplace.guard.GuardCombat.isFighting(archer)
+				+ " foe " + io.github.jcondedata.aliveworkplace.guard.GuardCombat.foe(archer) + " run " + archer.getBrain().getRunningBehaviors().stream().map(b -> b.debugString()).toList()
+				+ " sight " + must.stream().map(m -> m.isAlive() + "/" + archer.hasLineOfSight(m)).toList());
+			if (dbg.size() > 60) dbg.removeFirst();
+			if (on[0] >= 0 && (!BattleStations.onStation(archer) || archer.getY() < BattleStations.post(archer).orElseThrow().getY() - 0.1)) dbg.forEach(System.out::println);
 			if (on[0] < 0) {
 				if (BattleStations.onStation(archer)) {
 					on[0] = tick;

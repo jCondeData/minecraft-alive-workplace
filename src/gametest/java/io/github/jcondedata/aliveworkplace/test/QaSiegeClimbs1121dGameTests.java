@@ -454,4 +454,44 @@ public class QaSiegeClimbs1121dGameTests implements FabricGameTest {
 		pen.put(new BlockPos(2, 2, 20), Blocks.OAK_FENCE);
 		rampRun(helper, yard, "fenced waiting spot", 16.5, 22.5, pen);
 	}
+
+	/**
+	 * B1434, made certain: the same pen, and once the last stage's outer block (4, 2, 13) is piled a player's cobblestone
+	 * holds the stage's next block (5, 3, 13) back for {@link #PEN_HOLD} ticks. In the nightly the window between those two
+	 * blocks was 30 ticks, and 2 runs in 10 the husk, sent on to its waiting spot (2, 2, 13) inside the pen, walked up that
+	 * outer block onto the fence's top and dropped into the pen, stuck there for good. It must wait beside the ramp the
+	 * whole time (never in the pen), and once the cobblestone is gone it finishes the ramp and gets over.
+	 */
+	//$ gametest_ticks_batch AREA '1200' '"qaClimbs1121dPenHeld"'
+	@GameTest(template = AREA, timeoutTicks = 1200, batch = "qaClimbs1121dPenHeld")
+	public void qaAHuskNeverStepsOffTheHalfBuiltRampIntoAFencedPen(GameTestHelper helper) {
+		Yard yard = rampYard(helper);
+		Map<BlockPos, Block> pen = new LinkedHashMap<>();
+		for (int z = 6; z <= 20; z++) {
+			pen.put(new BlockPos(1, 2, z), Blocks.OAK_FENCE);
+			pen.put(new BlockPos(3, 2, z), Blocks.OAK_FENCE);
+		}
+		pen.put(new BlockPos(2, 2, 6), Blocks.OAK_FENCE);
+		pen.put(new BlockPos(2, 2, 20), Blocks.OAK_FENCE);
+		BlockPos outer = new BlockPos(R_WEST - 4, 2, 13);
+		BlockPos held = new BlockPos(R_WEST - 3, 3, 13);
+		long[] heldAt = {-1};
+		helper.onEachTick(() -> {
+			long tick = helper.getTick();
+			if (heldAt[0] < 0 && helper.getBlockState(outer).is(Blocks.SAND) && helper.getBlockState(held).isAir()) {
+				helper.setBlock(held, Blocks.COBBLESTONE);
+				heldAt[0] = tick;
+			} else if (heldAt[0] >= 0 && tick == heldAt[0] + PEN_HOLD) {
+				helper.setBlock(held, Blocks.AIR);
+			}
+			helper.getLevel().getEntitiesOfClass(Mob.class, net.minecraft.world.phys.AABB.encapsulatingFullBlocks(helper.absolutePos(new BlockPos(2, 2, 7)),
+				helper.absolutePos(new BlockPos(2, 3, 19)))).stream().filter(m -> m.getType() == EntityType.HUSK).findFirst().ifPresent(m ->
+				helper.fail("the husk got onto the player's fence or into the pen at " + rel(helper, m.position()) + " (tick " + tick + ", the stage held back since "
+					+ heldAt[0] + ")"));
+		});
+		rampRun(helper, yard, "pen, last stage held back", 16.5, 22.5, pen);
+	}
+
+	/** How long the last stage of the pen test's ramp is held back by a player's block. */
+	private static final int PEN_HOLD = 120;
 }

@@ -16,6 +16,10 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A desert raider waiting for its sand ramp no longer climbs the half-built ramp onto a player's fence and drops
+  into the pen behind it, stuck there for good: it waits beside the ramp and climbs it once it's done.
+
 ## 0.159.0 — 2026-11-21
 
 ### Added

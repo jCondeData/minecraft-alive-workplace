@@ -355,17 +355,26 @@ public final class SandRamps {
 				storm.sentAt.put(id, now);
 				Path path = mob.getNavigation().createPath(to, 0, 64);
 				paths++;
-				if (!up && endsOnRamp(level, site, path)) {
+				boolean overSand = !up && overPiled(level, site, path);
+				if (!up && (overSand || endsOnRamp(level, site, path))) {
 					// The spot can't be reached (a ledge or a player's blocks out there) and the nearest it gets is on a block
-					// still to be piled, where it would hold the sand back for good (B591, B726): it waits beside the ramp.
+					// still to be piled, where it would hold the sand back for good (B591, B726), or the way there runs over
+					// the sand already piled, a step up onto a player's fence or wall and down behind it, where it is stuck
+					// for good (B1434: into a pen round its spot): it waits beside the ramp.
 					Direction side = site.into.getClockWise();
+					boolean found = false;
 					for (int k : new int[] {2, -2}) {
 						Path beside = mob.getNavigation().createPath(site.foot.relative(site.into, -(site.height - 1)).relative(side, k), 0, 64);
 						paths++;
-						if (beside != null && !endsOnRamp(level, site, beside)) {
+						if (beside != null && !endsOnRamp(level, site, beside) && !overPiled(level, site, beside)) {
 							path = beside;
+							found = true;
 							break;
 						}
+					}
+					if (!found && overSand) {
+						mob.getNavigation().stop(); // (no way beside it either: it stays where it is, this side of the sand)
+						continue;
 					}
 				}
 				mob.getNavigation().moveTo(path, 1.0);
@@ -442,6 +451,25 @@ public final class SandRamps {
 		BlockPos at = end.asBlockPos();
 		for (BlockPos pos : site.blocks()) {
 			if (pos.equals(at) && !sandy(level, pos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether {@code path} goes up onto a block of {@code site}'s ramp that is already piled (after where the mob stands):
+	 * a climber waiting for its ramp never uses the half-built sand as a step on its way to its spot, which is what lets it
+	 * onto a player's fence or wall top and down behind it (B1434).
+	 */
+	private static boolean overPiled(ServerLevel level, Site site, @Nullable Path path) {
+		if (path == null) {
+			return false;
+		}
+		List<BlockPos> blocks = site.blocks();
+		for (int i = 1; i < path.getNodeCount(); i++) {
+			BlockPos under = path.getNode(i).asBlockPos().below();
+			if (blocks.contains(under) && sandy(level, under)) {
 				return true;
 			}
 		}

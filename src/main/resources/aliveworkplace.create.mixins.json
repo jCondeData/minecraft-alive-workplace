@@ -10,6 +10,8 @@
 		"ContraptionColliderMixin",
 		"ContraptionPlacementMixin",
 		"ControlledContraptionAccessor",
+		"ElevatorCabinMixin",
+		"HarvesterMixin",
 		"InventoryReachMixin",
 		"MovingBreakerMixin"
 	],

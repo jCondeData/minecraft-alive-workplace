@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.159.0 — 2026-11-21
+
 ### Added
 - **The Artisan's House in its village's culture**: desert, savanna, snowy and taiga villages now build their own look of
   it, at every level: a flat-roofed mud and sandstone house with a deep arched doorway, a lattice bay, a windcatcher and

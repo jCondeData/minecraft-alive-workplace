@@ -10,8 +10,10 @@ import net.minecraft.world.item.Items;
  * QA (lane D, 2026-11-21, lane-d-1121-2208) for B1439's fix, written from the bug's text: "an archer on the Palisade's
  * walk hits raiders 8-15 out as on Palisade II" (before, every arrow stuck in the stake top in front of him). The fix's
  * own test covers a bow and two raiders straight out in front. These go where it doesn't: a guard who traded his bow for
- * a crossbow (a flatter, faster bolt, spread and aim of its own), and raiders off to the side of the palisade, so the
- * shot slants over the stake line, on both palisade levels. A real siege each: the archer climbs to the walk and must
+ * a crossbow (a flatter, faster bolt, spread and aim of its own), and raiders at the palisade's two ends, so the shot
+ * slants over the stake line, on both palisade levels. (Mutation, 2026-11-21: with the fix's aim taken out these four
+ * still pass; the fix's own QaPalisadeSight1121dBugTests fails then. They guard the crossbow and slanting shots, not B1439's
+ * exact case.) A real siege each: the archer climbs to the walk and must
  * hit both raiders without coming down. The raiders stay 8 or more out (2 to 5 out is the owner's call, B1439).
  */
 public class QaPalisadeAim1121dGameTests implements FabricGameTest {
@@ -29,16 +31,16 @@ public class QaPalisadeAim1121dGameTests implements FabricGameTest {
 		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE_2, Items.CROSSBOW, 1, 8, 5, 15);
 	}
 
-	/** One raider 10 out and 5 west of the palisade's west end, one 12 out and 5 east of its east end: both shots slant over the stakes. */
+	/** One raider 10 out in front of the palisade's east end, one 15 out in front of its west end: from most walk stations the shots slant over the stakes. */
 	//$ gametest_ticks_batch AREA '1000' '"qaPalisadeAim1121dSlant"'
 	@GameTest(template = AREA, timeoutTicks = 1000, batch = "qaPalisadeAim1121dSlant")
 	public void qaAnArcherOnThePalisadesWalkHitsRaidersOffToTheSide(GameTestHelper helper) {
-		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE, Items.BOW, -5, 10, 11, 12);
+		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE, Items.BOW, 6, 10, 0, 15);
 	}
 
 	//$ gametest_ticks_batch AREA '1000' '"qaPalisadeAim1121dSlant2"'
 	@GameTest(template = AREA, timeoutTicks = 1000, batch = "qaPalisadeAim1121dSlant2")
 	public void qaAnArcherOnPalisadeIIsWalkHitsRaidersOffToTheSide(GameTestHelper helper) {
-		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE_2, Items.BOW, -5, 10, 11, 12);
+		QaPalisadeSight1121dGameTests.shootsFromTheWalk(helper, StarterBlueprints.PALISADE_2, Items.BOW, 6, 10, 0, 15);
 	}
 }

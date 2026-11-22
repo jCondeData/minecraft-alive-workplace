@@ -14,6 +14,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaHomesStorage1122cCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPumpHouseDoor1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateGantryPulley1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateGantryPulley1122eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainActors1122eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateOwnVillage1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovingMachines1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePortableTrains1122eCompatTests",

@@ -5,6 +5,8 @@ import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
+import io.github.jcondedata.aliveworkplace.wonder.WonderBlueprints;
+import io.github.jcondedata.aliveworkplace.wonder.Wonders;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
@@ -160,22 +162,24 @@ public class QaHungPieces1122bGameTests implements FabricGameTest {
 
 	/**
 	 * The mod's own blueprints a builder builds or the world sets down: everything in our namespace but the modded
-	 * library's copies and the builds of Cobblemon's or Mega Showdown's blocks while those mods are absent (their blocks
+	 * library's copies and the builds of Cobblemon's, Mega Showdown's or Create's blocks while those mods are absent (their blocks
 	 * load as air here, so a lantern under a Cobblemon log would look unheld), and a Wonder's stage parts (each stands on
 	 * the stages before it, so a part alone has pieces on blocks another part lays).
 	 */
 	static List<ResourceLocation> shipped(MinecraftServer server) {
 		boolean cobblemon = io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("cobblemon");
 		boolean mega = io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("mega_showdown");
+		boolean create = io.github.jcondedata.aliveworkplace.platform.Platform.get().isModLoaded("create");
 		return BlueprintLibrary.list(server, true).stream()
 			.filter(id -> id.getNamespace().equals(AliveWorkplace.MOD_ID))
 			.filter(id -> !id.getPath().startsWith("modded/") && !id.getPath().startsWith("compat_test/") && !id.getPath().startsWith("wonder/"))
 			.filter(id -> cobblemon || !in(StarterBlueprints.COBBLEMON_ONLY, id) && !in(StarterBlueprints.COBBLEMON_WORKPLACES, id))
 			.filter(id -> mega || !in(StarterBlueprints.MEGA_ONLY, id))
+			.filter(id -> create || !in(StarterBlueprints.CREATE_ONLY, id))
 			.toList();
 	}
 
-	private static boolean in(List<StarterBlueprints.Entry> entries, ResourceLocation id) {
+	static boolean in(List<StarterBlueprints.Entry> entries, ResourceLocation id) {
 		ResourceLocation base = BlueprintStyles.base(id);
 		return entries.stream().anyMatch(e -> e.id().equals(id) || e.id().equals(base));
 	}
@@ -199,23 +203,24 @@ public class QaHungPieces1122bGameTests implements FabricGameTest {
 		helper.succeed();
 	}
 
-	/** Every shipped blueprint: every hung or standing piece has a hold in the drawing. */
+	/**
+	 * Every Wonder, whole (every stage's parts laid at their offsets, as its site is built): every hung or standing piece
+	 * has a hold. The stage parts lean on each other, so they are checked here together, not one by one.
+	 */
 	//$ gametest_ticks 'FabricGameTest.EMPTY_STRUCTURE' '400'
 	@GameTest(template = FabricGameTest.EMPTY_STRUCTURE, timeoutTicks = 400)
-	public void qaEveryHungPieceOfEveryShippedBlueprintHasAHold(GameTestHelper helper) {
+	public void qaEveryHungPieceOfEveryWonderHasAHold(GameTestHelper helper) {
 		MinecraftServer server = helper.getLevel().getServer();
 		List<String> problems = new ArrayList<>();
 		int[] unknown = {0};
 		int checked = 0;
-		for (ResourceLocation id : shipped(server)) {
-			Blueprint blueprint = BlueprintLibrary.get(server, id).orElse(null);
-			if (blueprint == null) {
-				continue;
-			}
+		for (ResourceLocation wonder : Wonders.loaded().keySet()) {
+			Blueprint whole = WonderBlueprints.whole(server, WonderBlueprints.idOf(wonder)).orElse(null);
+			helper.assertTrue(whole != null, "the Wonder " + wonder + " has no whole drawing (a part missing)");
 			checked++;
-			problems.addAll(unheld(blueprint, helper.getLevel(), unknown));
+			problems.addAll(unheld(whole, helper.getLevel(), unknown));
 		}
-		helper.assertTrue(checked > 300, "only " + checked + " shipped blueprints were found");
+		helper.assertTrue(checked >= 5, "only " + checked + " Wonders were found");
 		helper.assertTrue(unknown[0] == 0, unknown[0] + " piece(s) couldn't be checked against the drawing alone");
 		helper.assertTrue(problems.isEmpty(), problems.size() + " piece(s) with nothing to hold them: "
 			+ String.join("; ", problems.subList(0, Math.min(10, problems.size()))));

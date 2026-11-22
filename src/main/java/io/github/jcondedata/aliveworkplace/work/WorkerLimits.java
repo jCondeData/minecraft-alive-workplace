@@ -178,12 +178,47 @@ public final class WorkerLimits {
 	 * Fisherman's workstation: while the village had room for a fisherman, a jobless villager walking into the shop took a
 	 * stock barrel and turned fisherman instead of minding the counter. While the workshop's own job block is free its
 	 * barrels are its stores, not a workstation; once it is taken they count again (for the cap as before).
+	 * <p>Only a workstation a jobless villager could take instead counts (B1476, B1477): not one taken only by an item
+	 * (a crafting table, a jukebox, a beehive or bee nest, a mailbox: {@link Stations.Station#byItself}) or whose job this
+	 * game doesn't have ({@link Stations#takenByItself}), nor one with nowhere beside or on top to stand
+	 * ({@link #standBeside}: a counter walled in), since those stay free forever and would hide the barrel forever; and
+	 * not a smoker or furnace, which the Fisherman tends himself in his barrel's reach (fishers_hut.md, Level II), so the
+	 * barrel there is the hut's job site, not another workshop's stock.
 	 */
 	static boolean storeOfAFreeWorkstation(ServerLevel level, BlockPos barrel) {
 		int reach = io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS;
-		return level.getPoiManager().getInSquare(t -> JobSiteTickets.workstation(t) && !FishermanCap.barrel(t) && !offByConfig(t), barrel, reach,
-				PoiManager.Occupancy.HAS_SPACE)
-			.anyMatch(r -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(r.getPos(), barrel));
+		return level.getPoiManager().getInSquare(t -> JobSiteTickets.workstation(t) && !FishermanCap.barrel(t) && !offByConfig(t)
+					&& takenByAJoblessVillager(t), barrel, reach, PoiManager.Occupancy.HAS_SPACE)
+			.anyMatch(r -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(r.getPos(), barrel)
+				&& !fishermansOven(level, r.getPos()) && standBeside(level, r.getPos()));
+	}
+
+	/** Whether a jobless villager takes a workstation of kind {@code type} by himself, with no item (see {@link Stations}). */
+	private static boolean takenByAJoblessVillager(Holder<PoiType> type) {
+		return Stations.takenByItself(type)
+			&& Stations.ALL.stream().filter(s -> s.poi().test(type)).findFirst().map(Stations.Station::byItself).orElse(true);
+	}
+
+	/** A smoker or furnace: the Fisherman smokes his catch in those within his barrel's reach (fishers_hut.md). */
+	private static boolean fishermansOven(ServerLevel level, BlockPos pos) {
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
+		return state.is(net.minecraft.world.level.block.Blocks.SMOKER) || state.is(net.minecraft.world.level.block.Blocks.FURNACE);
+	}
+
+	/**
+	 * Whether a villager has somewhere to stand at the workstation at {@code pos} to take it: beside it or on top (vanilla
+	 * takes a workstation from a block at most 1 away, counted along the axes). A workstation with none never gets taken.
+	 */
+	private static boolean standBeside(ServerLevel level, BlockPos pos) {
+		if (Walker.canStand(level, pos.above())) {
+			return true;
+		}
+		for (net.minecraft.core.Direction side : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+			if (Walker.canStand(level, pos.relative(side))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** Workstations a jobless villager's search leaves out while their job's config switch is off (see {@link #hideFull}). */

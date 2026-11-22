@@ -1995,6 +1995,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaStoneTownLooks1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintLangNamesB1467GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrels1122cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobBarrels1122cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHooksParlour1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",

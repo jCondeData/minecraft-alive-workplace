@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Fisher's Hut II hires its Fisherman again: a jobless villager by its barrel no longer turns Butcher at the hut's
+  smoker. A barrel near a crafting table, jukebox, beehive, mailbox or a walled-in workstation (nobody takes those by
+  themselves) also hires a Fisherman again; a Supply Shop's stock barrels still leave its counter to the Shopkeeper.
 - Desert husks behind a wall now pile their sand ramp when the village hall stands just a few blocks inside it. Before,
   a husk that got right up against the wall near the hall counted as already in, so it waited at the wall's foot all
   siege and never began a ramp.

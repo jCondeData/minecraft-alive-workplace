@@ -108,10 +108,18 @@ public class QaRebuiltWorkshops1121cLiveGameTests implements net.fabricmc.fabric
 		takesItsJob(helper, StarterBlueprints.GLASSBLOWERS_WORKSHOP, ModBlocks.GLASS_KILN, ModVillagers.GLASSBLOWER);
 	}
 
-	/** supply_shop.md: the Shop Counter is the Shopkeeper's job site; a jobless villager in front walks in and takes it. */
+	/**
+	 * supply_shop.md: the Shop Counter is the Shopkeeper's job site; a jobless villager in front walks in and takes it.
+	 * With the fisherman cap on, as in a player's game (config {@code fishermanCap}, default true): GameTests start with it
+	 * off, and off the six stock barrels are fishermen's workstations as in vanilla, so the villager took the nearest of
+	 * the counter and the barrels and turned Fisherman in about 1 run in 10 (B1484).
+	 */
 	//$ gametest_ticks_batch HUGE '2400' '"qaWorkshops1121cSupply"'
 	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qaWorkshops1121cSupply")
 	public void qaAJoblessVillagerBecomesTheShopkeeperAtTheRebuiltSupplyShop(GameTestHelper helper) {
+		boolean capped = io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED;
+		io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = true;
+		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.fish.FishermanCap.ENABLED = capped);
 		takesItsJob(helper, StarterBlueprints.SUPPLY_SHOP, ModBlocks.SHOP_COUNTER, ModVillagers.SHOPKEEPER);
 	}
 

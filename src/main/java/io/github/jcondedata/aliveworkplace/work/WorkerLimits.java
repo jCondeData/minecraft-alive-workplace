@@ -165,6 +165,9 @@ public final class WorkerLimits {
 			if (workers && full(level, GlobalPos.of(level.dimension(), p.getSecond()), false)) {
 				return false;
 			}
+			if (fishermen && fishermansOven(level, p.getSecond()) && nearerAFreeBarrel(level, villager, p.getSecond())) {
+				return false; // B1496: the hut's smoker is its Fisherman's, for a villager by the hut's free barrel
+			}
 			return !fishermen || !FishermanCap.barrel(p.getFirst())
 				|| (!fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()))
 					&& !storeOfAFreeWorkstation(level, p.getSecond()));
@@ -203,6 +206,22 @@ public final class WorkerLimits {
 	private static boolean fishermansOven(ServerLevel level, BlockPos pos) {
 		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(pos);
 		return state.is(net.minecraft.world.level.block.Blocks.SMOKER) || state.is(net.minecraft.world.level.block.Blocks.FURNACE);
+	}
+
+	/**
+	 * B1496: whether {@code villager} stands nearer than the smoker or furnace at {@code oven} to a free barrel in that
+	 * oven's reach which his search sees (the village has room for a fisherman, and the barrel isn't another workshop's
+	 * stock). Then the oven is the Fisherman's, the hut's (fishers_hut.md), and is left out of his search: vanilla's
+	 * search gives up on every block it tried when one walk fails and retries each after its own random 40 to 80 ticks,
+	 * so a villager beside the Fisher's Hut II barrel sometimes saw the smoker again before the barrel and turned Butcher.
+	 */
+	private static boolean nearerAFreeBarrel(ServerLevel level, Villager villager, BlockPos oven) {
+		BlockPos at = villager.blockPosition();
+		double toOven = at.distSqr(oven);
+		return level.getPoiManager().getInSquare(FishermanCap::barrel, oven, io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS, PoiManager.Occupancy.HAS_SPACE)
+			.map(r -> r.getPos())
+			.filter(b -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(oven, b) && b.distSqr(at) < toOven)
+			.anyMatch(b -> !FishermanCap.full(level, b) && !storeOfAFreeWorkstation(level, b));
 	}
 
 	/**

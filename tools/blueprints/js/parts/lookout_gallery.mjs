@@ -15,15 +15,20 @@ export function rimCells(x0, z0, x1, z1) {
 }
 
 /** watchGallery: an open gallery on a deck: the deck (`deck`) over x0..x1, z0..z1 at deckY, a `post` log at each
- *  corner from deckY + 1 to beamY - 1, a `fence` rail round the rim at deckY + 1 between them, a knee brace (an
- *  upside-down `brace` stair, its full side to the post) beside each post just under the beam, and a ring of `beam`
- *  logs at beamY. The deck inside the rail keeps two clear cells over it: those cells are an archer's stations.
- *  `skip(x, z)` leaves a deck cell open (a ladder's hole). */
+ *  corner from deckY + 1 to beamY - 1, a `fence` rail round the rim at deckY + 1 between them with every other cell
+ *  left open (a shooting cell: the cells two, four, ... from a corner), a knee brace (an upside-down `brace` stair,
+ *  its full side to the post) beside each post just under the beam, and a ring of `beam` logs at beamY. The deck
+ *  keeps two clear cells over it inside the rail and in each open cell: those cells are an archer's stations. A fence
+ *  stands 1.5 high and a villager's eyes 1.62, so behind an unbroken rail no station sees the ground below (B1469):
+ *  from the open cells at the deck's edge one does. Keep the sides an odd number of cells long (a fence beside each
+ *  post). `skip(x, z)` leaves a deck cell open (a ladder's hole). */
 export function watchGallery(c, { x0, z0, x1, z1, deckY, beamY }, { deck, post, fence, beam, brace }, skip = () => false) {
   for (let x = x0; x <= x1; x++) for (let z = z0; z <= z1; z++) if (!skip(x, z)) c.set(x, deckY, z, deck)
   const corners = [[x0, z0], [x1, z0], [x0, z1], [x1, z1]]
   for (const [x, z] of corners) for (let y = deckY + 1; y < beamY; y++) c.set(x, y, z, post, { axis: 'y' })
-  for (const [x, z] of rimCells(x0, z0, x1, z1)) if (!c.get(x, deckY + 1, z)) c.set(x, deckY + 1, z, fence)
+  // B1469: the rail is broken by an open cell every other cell, so an archer at the deck's edge sees down to the ground
+  const open = (x, z) => (x - x0 + z - z0) % 2 === 0
+  for (const [x, z] of rimCells(x0, z0, x1, z1)) if (!c.get(x, deckY + 1, z) && !open(x, z)) c.set(x, deckY + 1, z, fence)
   const by = beamY - 1
   for (const z of [z0, z1]) { stair(c, x0 + 1, by, z, brace, 'west', 'top'); stair(c, x1 - 1, by, z, brace, 'east', 'top') }
   for (const x of [x0, x1]) { stair(c, x, by, z0 + 1, brace, 'north', 'top'); stair(c, x, by, z1 - 1, brace, 'south', 'top') }

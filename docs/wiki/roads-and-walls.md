@@ -4,7 +4,7 @@ The roads and the wall you draw on a City Plan get built by the village's builde
 steps, a road to each trading partner, and a wall once the village has been raided. Part of 1.1 (Villages that build
 themselves): switched on in 1.0 with every other expansion.
 
-Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753, B1380, B1382, B1425, 52.3
+Roadmap items: 27.4, 27.15, 27.16, 27.17, 27.18, B283, B752, B753, B1380, B1382, B1425, B1457, 52.3
 
 ## What a player sees
 
@@ -56,7 +56,8 @@ time.
 **Walls (27.18).** A wall is made from a kit (`data/aliveworkplace/wall_kits/`): a segment, a corner tower and a
 gate, for a range of ranks. The line is laid out into pieces: a tower at every corner and at least every 28 blocks,
 whole segments between them, and a gate wherever a road of the plan crosses. Each piece sits at its own ground
-height. With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones on every side. At most 3 wall pieces
+height: the real ground, a hill or a finished building under its middle, never the wall's own overlapping pieces, so
+a piece laid out again sits where it was built (B1457: segments stacked up on their neighbors until the cobblestone ran out). With no wall line drawn, the Steward draws one of his own, 4 blocks outside the zones on every side. At most 3 wall pieces
 are open at once, and never one on the spot of a piece still being built, at any height (B283: a tower with its roof
 on but its ladders not yet in had a second tower opened on top of it).
 Nor is a piece opened through a finished building or a Wonder's ground (finished, or laid out and waiting for its goods):
@@ -170,7 +171,10 @@ still count and another mod's `palisade_2` is not a wall piece). `QaWallGap1121d
 taken down isn't finished; a segment with only its two neighbors built is still to build and isn't held back as a
 replacement). `QaWallGapEnds1121cGameTests` (6, B1425: the first or the last segment taken down, a Town's stone wall, a gap
 between upgraded segments, a gap across a restart closed by building it again, and a tower taken down; each time only
-the missing piece is to build).
+the missing piece is to build). `QaWallGround1122dGameTests` (6, B1457: pieces on ground that steps up and down,
+finished last to first, the stone kit with its towers, across a save and reload, each laid out again where it was; a
+real hill or a finished house under a segment still lifts it and a player's pillar beside it doesn't; a Steward builds
+the palisade once from exactly its materials).
 
 Showcase scenes: `roads` (a street between two houses), `bridges`, `caravan_road`, `walls` (a palisade going up),
 `city_plan_ground` (the plan on the ground).

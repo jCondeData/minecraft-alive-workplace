@@ -9,6 +9,7 @@ import io.github.jcondedata.aliveworkplace.build.BuildSiteManager;
 import io.github.jcondedata.aliveworkplace.build.Builders;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
+import io.github.jcondedata.aliveworkplace.threat.SandRamps;
 import io.github.jcondedata.aliveworkplace.threat.Sieges;
 import io.github.jcondedata.aliveworkplace.threat.ThreatData;
 import io.github.jcondedata.aliveworkplace.work.WorkerStatus;
@@ -439,7 +440,10 @@ public final class BattleStations {
 			if (place.station() && !place.checked() && checks > 0 && !at(guard, place.pos())) {
 				// B1427: a station taken before it was looked at (the watch's paths ran out): can he get up there?
 				checks--;
-				if (reachable(guard, place.pos())) {
+				Boolean can = reachable(guard, place.pos());
+				if (can == null) {
+					// B1494: still nothing to tell by (no path yet, or it gives out far off): looked at again in a later watch
+				} else if (can) {
 					place = new Place(place.pos(), true, place.ramparts(), true);
 					PLACES.put(guard.getUUID(), place);
 				} else {
@@ -497,9 +501,10 @@ public final class BattleStations {
 						break;
 					}
 					checks--;
-					if (reachable(guard, s)) {
+					Boolean can = reachable(guard, s);
+					if (can == null || can) {
 						pos = s;
-						checked = true;
+						checked = can != null; // B1494: a path that tells nothing yet is looked at again in a later watch
 						break;
 					}
 					watch.unreachable.add(s);
@@ -585,20 +590,31 @@ public final class BattleStations {
 	 * B1427: whether {@code guard} can get onto the station {@code s}: his path goes there, or ends below it within
 	 * {@link #CLIMB_REACH}, where he climbs. A station in a stone wall's barbican, out past the shut gates, has a path
 	 * that ends inside the gates, near it but out of reach: he would stand there all siege. No path at all (asleep, in
-	 * the air), or one that gives out more than {@link #NEAR} blocks off (the search's limit), tells nothing: yes.
+	 * the air, just spawned), or one that gives out more than {@link #NEAR} blocks off (the search's limit), tells nothing
+	 * yet: {@code null}, and the station is taken but looked at again in a later watch, when he is on the ground or nearer
+	 * (B1494: taking that as a yes for good left an archer whose first look came before he touched the ground on a
+	 * station he could never get up to all siege). The path is a new search ({@link SandRamps#newPath}): vanilla hands
+	 * back the path he already walks whenever it heads for the same block, half walked or stale.
 	 */
-	static boolean reachable(Villager guard, BlockPos s) {
-		Path path = guard.getNavigation().createPath(s, 0);
-		if (path == null || path.canReach()) {
+	@org.jetbrains.annotations.Nullable
+	static Boolean reachable(Villager guard, BlockPos s) {
+		Path path = SandRamps.newPath(guard, s, 0);
+		if (path == null) {
+			return null;
+		}
+		if (path.canReach()) {
 			return true;
 		}
 		Node end = path.getEndNode();
 		if (end == null) {
-			return true;
+			return null;
 		}
 		BlockPos at = end.asBlockPos();
 		double away = flat(at, s);
-		return away > (double) NEAR * NEAR || at.equals(s) || s.getY() - at.getY() >= 2 && away <= CLIMB_REACH * CLIMB_REACH;
+		if (away > (double) NEAR * NEAR) {
+			return null;
+		}
+		return at.equals(s) || s.getY() - at.getY() >= 2 && away <= CLIMB_REACH * CLIMB_REACH;
 	}
 
 	private static int spread(int n) {

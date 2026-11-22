@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Archers on the Lookout Tower shoot again. The rebuilt tower's railing ran all the way round its top at eye height,
+  so an archer up there couldn't see a single raider on the ground. The railing now has an open gap every other
+  block on every side, and archers stand in those gaps to shoot (all four levels).
 - The level II walls have their names: Stone Wall II, Wall Tower II, Palisade II and Gatehouse II, instead of
   "Stone Wall 2". The homes built in a village's own culture are named too ("Starter Cottage II: Desert", 104 of them).
 - A jobless villager walking into a Supply Shop takes its Shop Counter and becomes the Shopkeeper, instead of

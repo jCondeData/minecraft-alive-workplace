@@ -3,7 +3,7 @@
 The Blueprint Table as a collection: each village starts with the basics and unlocks the rest, so buying a blueprint
 from a builder is worth it again. The owner's playtest found builders selling what the Table gave away.
 
-Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467
+Roadmap items: 26.10, 36.6, 36.6a, 36.6b, 36.10, 36.13, B419, B1002, B454, B1037, B1022, B1239, 36.23, 36.23a, 36.23b, 36.23c, 49.1, B1345, 51.4, 51.5, 51.6, 51.7, 51.8, 52.4, B1467, B1469
 
 ## 1. What a player sees
 
@@ -364,6 +364,16 @@ grindstone (2, 1, 5). The fire station and gatehouses leave `owner_rules_baselin
 modded copies are in `blueprint_history/`; the Guard House's village pieces (`village/<style>_guard_house`) keep their
 own looks (`village_looks.py` not redrawn). Scenes `rebuild_barracks`, `rebuild_guard_house`, `rebuild_fire_station`,
 `rebuild_gatehouse`, `rebuild_lookout_tower`.
+
+**B1469: the Lookout Tower's open shooting cells.** The rebuilt gallery's spruce fence rail ran unbroken round the
+deck, 1.5 high, and a standing villager's eyes are 1.62 over it, so from none of the top's stations could an archer
+see a raider on the ground. The rail (`parts/lookout_gallery.mjs`) now leaves every other rim cell
+open (x or z 3 and 5 on each side): those cells are stations at the deck's edge, and the archer, who takes the
+station that sees the most of the ground (or, with no breach, the one farthest from the hall), shoots from one.
+All four levels and their modded copies are regenerated (`build.sh`'s steps, then `modded_library.py`); the
+released drawings are kept by `history.py`. Tests: `QaRebuiltDefenseLive1122dGameTests` (a live siege: the archer
+climbs Lookout Tower I and hits a raider 19 out; each level, turned four ways, has a station that sees the ground 3
+to 15 out on every side).
 
 **QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence
 gates stay shut, nobody stands on fences, walls or headstones) from the street at the z=0 side.

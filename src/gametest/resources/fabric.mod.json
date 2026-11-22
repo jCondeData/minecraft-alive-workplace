@@ -413,6 +413,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B640GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B648GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1418GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B1463GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",

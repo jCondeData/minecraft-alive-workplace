@@ -77,8 +77,9 @@ public class QaRebuiltWorkshops1121cLiveGameTests implements net.fabricmc.fabric
 				helper.assertTrue(v.isAlive(), "a villager died");
 				BlockPos site = v.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(g -> g.pos()).orElse(null);
 				helper.assertTrue(site != null && sites.contains(site), entry.id().getPath() + ": a villager hasn't taken a "
-					+ block.getName().getString() + " yet: job " + v.getVillagerData().getProfession() + ", site " + site + ", at "
-					+ helper.relativePos(v.blockPosition()).subtract(AT).toShortString() + " (template coordinates)");
+					+ block.getName().getString() + " yet: job " + v.getVillagerData().getProfession() + ", site "
+					+ (site == null ? "none" : site.subtract(origin).toShortString()) + ", at "
+					+ v.blockPosition().subtract(origin).toShortString() + " (template coordinates)");
 				VillagerProfession got = v.getVillagerData().getProfession();
 				helper.assertTrue(job == null ? got != VillagerProfession.NONE : got == job, entry.id().getPath() + ": took the "
 					+ block.getName().getString() + " as " + got + ", wanted " + (job == null ? "a job" : job));

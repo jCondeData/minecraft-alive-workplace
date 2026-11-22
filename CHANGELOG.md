@@ -24,6 +24,8 @@ asks for the steps, `latest.log` and any crash report).
   stopped to shoot at any raider within 8 blocks and stayed on the ground all siege, a few steps from the tower; now he
   shoots as he walks and climbs up. An archer whose station couldn't be checked when the siege began (still landing,
   or asleep) is checked again a moment later.
+- A desert raider no longer stands beside its finished sand ramp for good when your fences leave it only a long way
+  round to the ramp's foot (about 45 blocks): it now finds that way, walks round and climbs (B1506).
 - Desert raiders' sand climbers no longer pile a ramp against a lone lamp post or a wall right beside an open
   doorway: a husk that can walk into the village walks in, and ramps go only against walls in its way.
 - Guards come out to a raid without the bell: in a raid, a guard goes for raiders within 24 blocks of his post even when

@@ -166,8 +166,32 @@ public final class WorkerLimits {
 				return false;
 			}
 			return !fishermen || !FishermanCap.barrel(p.getFirst())
-				|| !fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()));
+				|| (!fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()))
+					&& !storeOfAFreeWorkstation(level, p.getSecond()));
 		});
+	}
+
+	/**
+	 * B1463: whether a free workstation of another job stands within supply reach of the barrel at {@code barrel} (8
+	 * across, 4 up or down: {@code SupplyContainers.inReach}, the reach in which that job block reads it as its store).
+	 * Workshops keep their stock in barrels (the Supply Shop's six beside its Shop Counter), and a barrel is the vanilla
+	 * Fisherman's workstation: while the village had room for a fisherman, a jobless villager walking into the shop took a
+	 * stock barrel and turned fisherman instead of minding the counter. While the workshop's own job block is free its
+	 * barrels are its stores, not a workstation; once it is taken they count again (for the cap as before).
+	 */
+	static boolean storeOfAFreeWorkstation(ServerLevel level, BlockPos barrel) {
+		int reach = io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS;
+		return level.getPoiManager().getInSquare(t -> JobSiteTickets.workstation(t) && !FishermanCap.barrel(t) && !offByConfig(t), barrel, reach,
+				PoiManager.Occupancy.HAS_SPACE)
+			.anyMatch(r -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(r.getPos(), barrel));
+	}
+
+	/** Workstations a jobless villager's search leaves out while their job's config switch is off (see {@link #hideFull}). */
+	private static boolean offByConfig(Holder<PoiType> type) {
+		return (!io.github.jcondedata.aliveworkplace.mechanic.MechanicWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TOOLBOX_POI))
+			|| (!io.github.jcondedata.aliveworkplace.city.CaravanTrains.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.TRACK_STATION_POI))
+			|| (!io.github.jcondedata.aliveworkplace.craft.FurnicrafterWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.FURNICRAFTER_POI))
+			|| (!io.github.jcondedata.aliveworkplace.move.MoverWork.ENABLED && type.is(io.github.jcondedata.aliveworkplace.registry.ModVillagers.MOVERS_CRATE_POI));
 	}
 
 	/** Whether {@code villager} is being given a job by order right now (not taking one by themselves). */

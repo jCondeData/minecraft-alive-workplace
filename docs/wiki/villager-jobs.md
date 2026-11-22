@@ -59,6 +59,10 @@ of the barrel. Once a village has its fishermen, a jobless villager passes free 
 workstation instead (or stays jobless if there is none). A fisherman the village already has keeps his job when it is
 over the cap, across a restart too, and a job given by order (the hall's job menu) isn't held back. Only living
 fishermen within the radius count: when one dies, or stands farther from the barrel, the barrel is free for the next.
+A workshop's stock barrels aren't a Fisherman's while its own job block is free (B1463): a jobless villager
+doesn't take a barrel standing within 8 blocks across and 4 up or down of a free workstation of another job, such as
+the Supply Shop's barrels behind its Shop Counter, and takes that job block instead. Once it is taken, the barrels
+count again (with the cap above). With the cap switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
 its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not

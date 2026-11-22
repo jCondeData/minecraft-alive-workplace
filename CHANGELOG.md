@@ -17,6 +17,10 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Archers get up onto the Lookout Tower when a raider stands near its foot. An archer on his way to his station
+  stopped to shoot at any raider within 8 blocks and stayed on the ground all siege, a few steps from the tower; now he
+  shoots as he walks and climbs up. An archer whose station couldn't be checked when the siege began (still landing,
+  or asleep) is checked again a moment later.
 - Desert raiders' sand climbers no longer pile a ramp against a lone lamp post or a wall right beside an open
   doorway: a husk that can walk into the village walks in, and ramps go only against walls in its way.
 - The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence

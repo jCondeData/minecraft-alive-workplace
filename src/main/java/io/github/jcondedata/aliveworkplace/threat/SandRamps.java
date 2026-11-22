@@ -630,10 +630,10 @@ public final class SandRamps {
 	 * A new search for a path from {@code mob} to within {@code reach} of {@code to}, leaving the path it walks and where
 	 * that goes as they were. Vanilla hands back the path the mob is already walking whenever it heads for the same block,
 	 * whatever reach is asked for, so a climber the siege sends toward the hall was judged by that path, half walked or
-	 * one that never got in, and ramped by an open way in (B1493).
+	 * one that never got in, and ramped by an open way in (B1493). BattleStations asks it too (B1494).
 	 */
 	@Nullable
-	private static Path newPath(Mob mob, BlockPos to, int reach) {
+	public static Path newPath(Mob mob, BlockPos to, int reach) {
 		PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
 		BlockPos target = nav.aliveworkplace$targetPos();
 		int range = nav.aliveworkplace$reachRange();

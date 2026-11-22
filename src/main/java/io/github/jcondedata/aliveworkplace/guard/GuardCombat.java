@@ -159,7 +159,13 @@ public class GuardCombat extends Behavior<Villager> {
 			// from it, and never leaves it to close in.
 			java.util.Optional<BlockPos> station = BattleStations.postNow(level, villager); // a siege begun this tick: stations at once
 			boolean posted = station.isPresent() && BattleStations.onStation(villager);
-			if (station.isPresent() && !posted && distance > STATION_FIRST) {
+			if (station.isPresent() && !posted) {
+				// B1494: on his way he shoots a foe nearer than STATION_FIRST but keeps walking. Stopping to shoot (or closing
+				// in) left him on the ground all siege, a few blocks short of his tower, while a raider stood near its foot.
+				if (distance <= STATION_FIRST && cooldown == 0 && villager.hasLineOfSight(foe) && clearShot(level, villager, foe)) {
+					shoot(level, villager, foe);
+					cooldown = Guards.isCrossbow(villager.getItemBySlot(EquipmentSlot.OFFHAND)) ? CROSSBOW_COOLDOWN : SHOT_COOLDOWN;
+				}
 				return;
 			}
 			if (distance > BattleStations.range(villager, BOW_RANGE) || !villager.hasLineOfSight(foe)) {

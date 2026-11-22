@@ -23,6 +23,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampCorners1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampFootStall1121dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampWalledOff1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampWalledOff1122dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceBoard1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDaubHouse1117cGameTests",

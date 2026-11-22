@@ -393,6 +393,9 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
   in the chest is still used); a slimeball is never read down to Wheat Flour; Tom's Storage's things name no Chipped plank.
 - `ShortLineOwnWaysGameTests` (3, B1289 in the base game): the smoker's 4 logs, a chest minecart's 1 Minecart, a furnace
   minecart's cobblestone and Minecart, and a slimeball with no way at all read as before.
+- `QaBuilderAsks1122bGameTests` (2 of its tests, B1289 in the base game through the builder's line): a builder short of 1
+  Smoker with 8 cobblestone and a Carpenter at his bench reads "Can't be made yet: short of 4 Dark Oak Logs to make 1
+  Smoker" (any Minecraft wood) and nothing is taken; with 4 oak logs there too the Carpenter makes it and the build ends.
 - `QaLogsSlot1115e3GameTests` (3): a smoker from 8 cobblestone, or from a furnace, lacks exactly 4 logs of one of the
   base game's woods (never 8 through wood); with 2 oak logs there the other 2, with 1 birch log 3 more. Mixed woods in one
   slot are B1293's.

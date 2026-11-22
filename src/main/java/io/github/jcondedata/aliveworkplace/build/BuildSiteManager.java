@@ -74,6 +74,25 @@ public final class BuildSiteManager extends SavedData {
 		}
 	}
 
+	/**
+	 * B1500: per finished building, the older drawing (its key) a refresh of it was begun from and hasn't finished: a
+	 * refresh left half done (its Builder died) is taken up again from the same drawing. Saved with the building.
+	 */
+	private final Map<BlueprintData.Placement, String> refreshBegun = new java.util.HashMap<>();
+
+	/** The key of the older drawing an unfinished refresh of the building at {@code placement} was begun from (B1500), or null. */
+	@Nullable
+	public String refreshBegun(BlueprintData.Placement placement) {
+		return refreshBegun.get(placement);
+	}
+
+	/** Records the older drawing a refresh of the building at {@code placement} is begun from (B1500); null once it is finished. */
+	public void setRefreshBegun(BlueprintData.Placement placement, @Nullable String from) {
+		if (!java.util.Objects.equals(from == null ? refreshBegun.remove(placement) : refreshBegun.put(placement, from), from)) {
+			setDirty();
+		}
+	}
+
 	/** The question about repairing the building at {@code placement} (36.15), or null if it was never asked or is settled. */
 	@Nullable
 	public RepairAsks.Ask repairAsk(BlueprintData.Placement placement) {
@@ -132,6 +151,9 @@ public final class BuildSiteManager extends SavedData {
 		if (io.github.jcondedata.aliveworkplace.city.Roads.isSegment(structure)) {
 			return; // road segments are kept on the City Plan (27.15), not with the buildings
 		}
+		if (finished.stream().anyMatch(f -> f.placement().equals(placement) && !f.structure().equals(structure))) {
+			refreshBegun.remove(placement); // (another building now, such as the next tier)
+		}
 		finished.removeIf(f -> f.placement().equals(placement));
 		gaveUp.remove(placement);
 		furniture.remove(placement);
@@ -170,6 +192,7 @@ public final class BuildSiteManager extends SavedData {
 		notTurning.remove(placement);
 		repairAsks.remove(placement);
 		refreshAsked.remove(placement);
+		refreshBegun.remove(placement);
 		turnChecks.removeIf(c -> c.placement().equals(placement));
 		if (finished.removeIf(f -> f.placement().equals(placement))) {
 			changes++;
@@ -486,6 +509,10 @@ public final class BuildSiteManager extends SavedData {
 			if (refreshAsked.contains(f.placement())) { // 36.21
 				entry.putBoolean("refresh_asked", true);
 			}
+			String begun = refreshBegun.get(f.placement());
+			if (begun != null) { // B1500
+				entry.putString("refresh_begun", begun);
+			}
 			done.add(entry);
 		}
 		tag.put("finished", done);
@@ -544,6 +571,9 @@ public final class BuildSiteManager extends SavedData {
 					manager.repairAsks.put(placement.get(), new RepairAsks.Ask(state, Nbt.getInt(entry, "repair_missing"))));
 				if (Nbt.getBoolean(entry, "refresh_asked")) { // 36.21: older saves have none
 					manager.refreshAsked.add(placement.get());
+				}
+				if (!Nbt.getString(entry, "refresh_begun").isEmpty()) { // B1500: older saves have none
+					manager.refreshBegun.put(placement.get(), Nbt.getString(entry, "refresh_begun"));
 				}
 			}
 		}

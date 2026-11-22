@@ -260,7 +260,9 @@ Nearer means across the ground, as the radius measures it, so a hall on higher g
 to across (B1270, `QaZoneNearerHall1115bBugTests`).
 Only a hall that really stands is another village here: a hall's point of interest left behind with no hall block on
 it (in a loaded chunk) refuses no painting and takes no painted cell (B1266, `OrphanHallPointGameTests`: the stroke
-paints whole and a Stone Wall there still walls the village; a real hall on the spot refuses the next stroke).
+paints whole and a Stone Wall there still walls the village; a real hall on the spot refuses the next stroke;
+`QaVillagecircle1122cGameTests`: a hall swapped away in its chunk with no block update, or broken by a player, frees its
+cells for the remaining village while another real hall still refuses its own, and the hall put back refuses again).
 A building also counts by its corner (B620, so nothing that counted before stops counting), but only when its middle
 doesn't lie nearer another hall (B1271): a Stone Wall whose middle is in a cell nearer hall B is village B's only, even
 with its corner in a cell village A painted or inside A's radius (`QaZoneNearerHall1115bBugTests`). A building whose

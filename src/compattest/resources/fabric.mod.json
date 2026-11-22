@@ -16,6 +16,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateOwnVillage1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateMovingMachines1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePortableTrains1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainActors1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOwners1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreatePsi1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaRefreshPieces1122e2CompatTests",

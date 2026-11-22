@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrelsSaved1122eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSavedFieldsWeek1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatehouseReach1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWaterSlab1122bGameTests",
@@ -2010,7 +2011,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests"
 		]
 	},
 	"depends": {

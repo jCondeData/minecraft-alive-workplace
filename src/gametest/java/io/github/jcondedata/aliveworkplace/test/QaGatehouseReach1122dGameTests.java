@@ -319,4 +319,59 @@ public class QaGatehouseReach1122dGameTests implements FabricGameTest {
 			}
 		});
 	}
+
+	/** Where one stands on every barbican station (drawing z >= 4) of {@code build} at this placement (world). */
+	private static Set<BlockPos> barbican(Gate gate, StarterBlueprints.Entry build) {
+		Set<BlockPos> out = new HashSet<>();
+		for (BlockPos s : BattleStations.spots(BlueprintLibrary.get(gate.level(), build.id()).orElseThrow())) {
+			if (s.getZ() >= 4) {
+				out.add(gate.origin().offset(StructureTemplate.transform(s, gate.mirror(), gate.rotation(), BlockPos.ZERO)).above());
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * B1427 needs the barbican: as many archers as Gatehouse II has stations off the barbican, and two more, so at least
+	 * two must take a barbican roof station (z >= 4, y 5). Within 450 ticks every archer stands on a station (none left
+	 * on the ground, none sharing) and at least one of them on the barbican.
+	 */
+	private static void barbicanManned(GameTestHelper helper, Rotation rotation, Mirror mirror, String what) {
+		Gate gate = gate(helper, StarterBlueprints.GATEHOUSE_2, rotation, mirror);
+		Set<BlockPos> stations = gate.stations(StarterBlueprints.GATEHOUSE_2);
+		Set<BlockPos> barbican = barbican(gate, StarterBlueprints.GATEHOUSE_2);
+		int count = stations.size() - barbican.size() + 2;
+		helper.assertTrue(!barbican.isEmpty() && barbican.size() >= 2, "(setup) Gatehouse II has " + barbican.size() + " barbican stations");
+		helper.assertTrue(count <= 26, "(setup) too many archers needed: " + count + " (" + stations.size() + " stations, " + barbican.size() + " on the barbican)");
+		int[] xs = new int[count];
+		for (int i = 0; i < count; i++) {
+			xs[i] = -8 + i; // side by side along the village side, drawing x -8 on
+		}
+		List<Villager> archers = archers(helper, gate, xs);
+		siege(helper, gate);
+		helper.onEachTick(() -> {
+			List<String> now = off(gate, archers, stations);
+			long up = archers.stream().filter(a -> BattleStations.onStation(a) && BattleStations.post(a).map(barbican::contains).orElse(false)).count();
+			if (now.isEmpty() && up >= 1) {
+				helper.succeed();
+			} else if (helper.getTick() > LIMIT) {
+				helper.fail(what + ": " + count + " archers (" + stations.size() + " stations, " + barbican.size() + " on the barbican), " + up
+					+ " on the barbican within " + LIMIT + " ticks; not up (drawing coordinates): " + now);
+			}
+		});
+	}
+
+	/** Gatehouse II as drawn, more archers than stations off the barbican: some must climb onto the barbican. */
+	//$ gametest_ticks_batch AREA '600' '"qaGatehouseReach1122dBarbican"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qaGatehouseReach1122dBarbican")
+	public void qaArchersPastTheGateStationsGetOntoGatehouseIIBarbican(GameTestHelper helper) {
+		barbicanManned(helper, Rotation.NONE, Mirror.NONE, "as drawn");
+	}
+
+	/** The same turned clockwise and mirrored: the barbican is still reached from the village side. */
+	//$ gametest_ticks_batch AREA '600' '"qaGatehouseReach1122dBarbicanTurned"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "qaGatehouseReach1122dBarbicanTurned")
+	public void qaArchersPastTheGateStationsGetOntoTurnedGatehouseIIBarbican(GameTestHelper helper) {
+		barbicanManned(helper, Rotation.CLOCKWISE_90, Mirror.FRONT_BACK, "turned clockwise, mirrored");
+	}
 }

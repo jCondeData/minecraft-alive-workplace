@@ -10,6 +10,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+      "io.github.jcondedata.aliveworkplace.test.QaJobBarrels1122cBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWonderCopy1122e2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWaterRuns1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHistoryLazy1122eGameTests",

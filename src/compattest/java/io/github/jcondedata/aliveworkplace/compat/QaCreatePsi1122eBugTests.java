@@ -16,8 +16,8 @@ public class QaCreatePsi1122eBugTests implements FabricGameTest {
 	private static final String AREA = QaCreatePsi1122eCompatTests.AREA;
 
 	/** A stranger's cart, put together outside, docking at Frank's PSI in his protected village takes none of his diamonds. */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_protected"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_protected")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_protected"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_protected")
 	public void aStrangersCartDockingAtAPsiInAProtectedVillageTakesNothing(GameTestHelper helper) {
 		QaCreatePsi1122eCompatTests.run(helper, Cart.STRANGER, true, false, false);
 	}
@@ -26,15 +26,15 @@ public class QaCreatePsi1122eBugTests implements FabricGameTest {
 	 * A stranger's Mechanical Piston outside the village pushes its PSI up to Frank's PSI at the village's last column (it
 	 * never enters the village): it takes none of his diamonds.
 	 */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_piston_protected"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_piston_protected")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_piston_protected"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_piston_protected")
 	public void aStrangersPistonPsiOutsideAProtectedVillageTakesNothingAtItsEdge(GameTestHelper helper) {
 		QaCreatePsi1122eCompatTests.pistonRun(helper, true, false);
 	}
 
 	/** The same, with the stranger's cart saved and loaded on its way (still outside the village). */
-	//$ gametest_ticks_batch AREA '500' '"qa_e1122_psi_protected_reloaded"'
-	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122_psi_protected_reloaded")
+	//$ gametest_ticks_batch AREA '500' '"qa_e1122x_psi_protected_reloaded"'
+	@GameTest(template = AREA, timeoutTicks = 500, batch = "qa_e1122x_psi_protected_reloaded")
 	public void aStrangersCartSavedAndLoadedOnTheWayStillTakesNothingAtAProtectedVillagesPsi(GameTestHelper helper) {
 		QaCreatePsi1122eCompatTests.run(helper, Cart.STRANGER, true, true, false);
 	}

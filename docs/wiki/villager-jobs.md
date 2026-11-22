@@ -430,7 +430,8 @@ from the bag and hotbar first, then the off hand. Armor you wear never pays.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
 with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
-four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+four deep, a hoist (its crank's lever hangs on the end of the hoist drum, B1485: on a fence post, as first
+rebuilt, the Builder could never place it), and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
 y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
 finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
 who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,

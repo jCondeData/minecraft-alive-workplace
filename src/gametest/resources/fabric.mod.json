@@ -10,6 +10,8 @@
 			"io.github.jcondedata.aliveworkplace.test.GameTestWatchdog"
 		],
 		"fabric-gametest": [
+			"io.github.jcondedata.aliveworkplace.test.QaGatehouseReach1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWaterSlab1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaOldDrawings1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderAsks1122bGameTests",
@@ -19,6 +21,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaArcFoes1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampCorners1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampFootStall1121dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRampWalledOff1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceBoard1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDaubHouse1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildMoves1117e2GameTests",

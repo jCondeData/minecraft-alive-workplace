@@ -170,6 +170,11 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
     ladder's hole and the crenels between its merlons, all at one height.
   - When a station is taken it is checked against the world: its floor must stand and two blocks be free. A station
     built over or with its floor gone is skipped, and a guard on it gets another.
+  - An archer is sent to the best station he can get onto (B1427): a path there, or one that ends below it within
+    3.5 blocks, where he climbs. A station whose path stops nearer than 12 blocks but out of reach (out past the shut
+    gates of a stone wall) is passed over by every archer of that siege; no path, or one that gives out farther off,
+    counts as reachable. A watch works out at most 8 such paths; past that an archer takes his best station not yet
+    passed over, and it is looked at in a later watch (out of reach: he gets another).
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
     first, then the build with the fewest archers, then the one with the most of the ground in front of the breach in
     sight (`BattleStations.view`: of the spots 2 to 16 blocks out from the breach along its outside, on the ground near

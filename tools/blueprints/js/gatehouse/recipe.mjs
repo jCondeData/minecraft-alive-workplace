@@ -6,7 +6,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { SIZE, PALETTE, MASSES, GATES, OPENINGS, FURNITURE, LIGHTS } from './plan.mjs'
+import { SIZE, PALETTE, MASSES, GATES, OPENINGS, FURNITURE, FURNITURE_2, LIGHTS } from './plan.mjs'
 import {
   Canvas, mix, stair, slab, quoins, corbelLine, crenels, hatchLadder, fenceGates, standard, furnitureParts,
   crenelTop, archHead, leafDoorway, loggia, murderDeck,
@@ -66,7 +66,10 @@ export function draw(level = 1) {
   archHead(c, G.x0, G.x1, G.archZ, G.vaultY, P.courseStairs, P.key) // four high at the face, the vault behind it at y 4
   c.clear(5, G.vaultY, G.archZ)
   c.set(5, G.vaultY, 3, P.key)
-  for (const d of OPENINGS.guardDoors) leafDoorway(c, d.at, d.hinge, P.wood)
+  for (const d of OPENINGS.guardDoors) {
+    if (level < 2) leafDoorway(c, d.at, d.hinge, P.wood)
+    else { c.clear(...d.at); c.clear(d.at[0], d.at[1] + 1, d.at[2]) } // Level II: no leaves, the way to the galleries
+  }
   for (const d of OPENINGS.loggiaDoors) leafDoorway(c, d.at, d.hinge, P.wood)
   for (const l of OPENINGS.ladders) {
     hatchLadder(c, l.x, l.z, l.y0, l.top, l.facing, P.wood)
@@ -107,6 +110,14 @@ export function draw(level = 1) {
     for (const [x, , z] of GATES[2].bars) c.set(x, 0, z, P.course)
     for (const w of B.walls) for (let x = w.x0; x <= w.x1; x++) for (let z = B.z0; z <= B.z1; z++) for (let y = 1; y <= 3; y++)
       c.set(x, y, z, y <= T.plinthTop ? plinth : y === T.courseY ? P.course : ashlar)
+    // the Galleries (B1427): a passage in each wall under the deck, in from the guardroom through the tower's front
+    // wall, lit by a torch at its end and a glazed slit in the flank
+    for (const g of B.galleries) {
+      for (let z = B.galleryZ[0]; z <= B.galleryZ[1]; z++) for (let y = 1; y <= 2; y++) c.clear(g.x, y, z)
+      c.clear(g.door[0], 1, g.door[2]); c.clear(g.door[0], 2, g.door[2])
+      c.set(...g.slit, P.glass)
+      c.set(...g.torch, 'wall_torch', { facing: 'north' })
+    }
     fenceGates(c, GATES[2].gates.map(([x]) => x), 1, 8, P.gate, 'south')
     for (const [x, y, z] of GATES[2].bars) c.set(x, y, z, P.bars, { north: 'false', south: 'false', east: 'false', west: 'false', waterlogged: 'false' })
     // the Deck: stone, but spruce boards over the passage between the gate lines, the murder holes left open
@@ -138,7 +149,7 @@ export function draw(level = 1) {
   }
 
   // --- Pass 4: interior (the plan's furniture) ----------------------------------------------------------------------
-  for (const f of FURNITURE) furnitureParts[f.part](c, f)
+  for (const f of level >= 2 ? FURNITURE_2 : FURNITURE) furnitureParts[f.part](c, f)
 
   // --- Pass 5: light ----------------------------------------------------------------------------------------------
   for (const [x, y, z, how] of LIGHTS[level]) c.set(x, y, z, 'lantern', { hanging: String(how === 'hanging'), waterlogged: 'false' })

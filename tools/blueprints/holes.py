@@ -60,6 +60,10 @@ ALLOW = {
 # it stood out as a stray wall a block off the tower)
 TOWER_EAVE = "open air under the tower's west cornice and eave, over the meeting room's roof"
 ALLOW.update({("village_hall_3", (17, y, z)): TOWER_EAVE for y in range(5, 16) for z in range(4, 11)})
+# Gatehouse II (B1427): the guardrooms' doorways off the gateway stand open (no leaves, and no door: a door would be a
+# gate block the siege counts) because they are the guards' way into the barbican's wall galleries
+ALLOW.update({("gatehouse_2", p): "the guardroom's open doorway off the gateway, the guards' way to the galleries"
+              for p in ((3, 1, 1), (7, 1, 1))})
 # The Lantern Pergola (26.14) is an open lattice of slats with azalea grown over some of the gaps, not a roof
 ALLOW.update({("lantern_pergola", p): "a pergola's open slats, not a roof"
               for p in ((2, 5, 1), (1, 5, 5), (2, 5, 5), (3, 5, 3))})

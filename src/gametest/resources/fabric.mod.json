@@ -1976,7 +1976,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintPiecesGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaStoneTownLooks1121cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaStoneTownLooks1121cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.BlueprintLangNamesB1467GameTests"
 		]
 	},
 	"depends": {

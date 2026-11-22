@@ -223,6 +223,11 @@ client receives.
 
 QA's `QaBlueprintLibraryVerify1108bGameTests` (8): a new village's unlocked builds are exactly the starting set above, the builder's four trades locked and each rare build a ??? never named; each builder trade's and questbook tier's hint word for word; the refusals for a locked Market Stall and a ??? Chapel, word for word, with no Blank Blueprint used; a creative player refused too; one player's found Fountain unlocks it for another at the same Table, and only the first is told; a level-up takes the lowest tier first, then by id, and one short of three takes what's left, never a rare build; the server-wide set through a save and reload; the switch off and on again (the village keeps nothing, and a blueprint taken out meanwhile unlocks it).
 
+**Names (B1467).** Every build has its own name, levels in Roman numerals ("Stone Wall II", "Gatehouse II") and a
+culture's look after a colon ("Starter Cottage II: Desert"), never the name made from its id ("Stone Wall 2").
+`BlueprintLangNamesB1467GameTests` (1): every shipped blueprint shown by name (all but the village pieces, modded
+copies, Wonder parts, camps, story pieces and road segments) reads its own name through the same lookup the game uses.
+
 Showcase scene `table_library` (36.13): the Stored tab empty, Store All with the counts, Take One Out counting the
 cottage down, and the cottage back in hand.
 

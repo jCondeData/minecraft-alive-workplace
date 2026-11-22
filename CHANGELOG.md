@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The level II walls have their names: Stone Wall II, Wall Tower II, Palisade II and Gatehouse II, instead of
+  "Stone Wall 2". The homes built in a village's own culture are named too ("Starter Cottage II: Desert", 104 of them).
 - A jobless villager walking into a Supply Shop takes its Shop Counter and becomes the Shopkeeper, instead of
   sometimes taking one of the stock barrels behind it and turning Fisherman. A workshop's barrels aren't a
   Fisherman's workstation while its own job block is free.

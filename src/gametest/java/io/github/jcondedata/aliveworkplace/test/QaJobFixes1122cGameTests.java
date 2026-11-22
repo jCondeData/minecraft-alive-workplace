@@ -676,4 +676,18 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		Stage s = house(helper, Rotation.COUNTERCLOCKWISE_90);
 		killedAndReplaced(helper, s, 300, s.corner().offset(2, 0, 4), true);
 	}
+
+	/**
+	 * FAILS (QA lane C, 2026-11-22): B1466 on the Stone House turned half round (CLOCKWISE_180), its Builder killed 2,500
+	 * ticks into the refresh (still clearing; 1,500 and 3,500 fail the same way, 200 passes), a new Builder at the same
+	 * bench: he finishes, but 5 to 7 spots by the front door keep the old drawing's furniture (a dark oak fence and
+	 * lantern, slabs, a stripped dark oak log and trapdoor) where today's drawing has the spruce door, spruce planks and
+	 * air. The same kill turned anticlockwise, or with no kill at all, ends as a fresh build.
+	 */
+	//$ gametest_ticks_batch HUGE '20000' '"qaJobFixes1122cRefreshHalfRound"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qaJobFixes1122cRefreshHalfRound")
+	public void qaABuilderKilledLateInARefreshOfAStoneHouseTurnedHalfRoundLeavesItToANewBuilder(GameTestHelper helper) {
+		Stage s = house(helper, Rotation.CLOCKWISE_180);
+		killedAndReplaced(helper, s, 2500, s.corner().offset(2, 0, 4), false);
+	}
 }

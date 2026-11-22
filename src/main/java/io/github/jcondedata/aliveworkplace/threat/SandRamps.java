@@ -76,6 +76,9 @@ public final class SandRamps {
 	private static final int IN_REACH = 2;
 	/** How often (ticks) a climber without a ramp asks for its path again. */
 	private static final int TRY_EVERY = 40;
+	/** How long a climber's way to its ramp may be, as vanilla's search counts it; and for the second search, when the first doesn't get there (B1506). */
+	private static final int WALK = 64;
+	private static final int LONG_WALK = 128;
 	/** How near (blocks) the next block a climber must be to pile it. */
 	private static final double PILE_REACH = 12;
 
@@ -374,8 +377,15 @@ public final class SandRamps {
 			if (!crossing(mob, site) && paths < MAX_PATHS && (mob.getNavigation().isDone() || now - storm.sentAt.getOrDefault(id, 0L) > 60)
 				&& (mob.blockPosition().distSqr(to) > (up ? 0 : 4) || !up && inTheWay(level, mob, site))) {
 				storm.sentAt.put(id, now);
-				Path path = mob.getNavigation().createPath(to, 0, 64);
+				Path path = mob.getNavigation().createPath(to, 0, WALK);
 				paths++;
+				if (path != null && !path.canReach()) {
+					Path longer = longWay(mob, to);
+					paths++;
+					if (longer != null && longer.canReach()) {
+						path = longer;
+					}
+				}
 				boolean overSand = !up && overPiled(level, site, path);
 				if (!up && (overSand || endsOnRamp(level, site, path))) {
 					// The spot can't be reached (a ledge or a player's blocks out there) and the nearest it gets is on a block
@@ -640,6 +650,30 @@ public final class SandRamps {
 		nav.aliveworkplace$setTargetPos(null);
 		try {
 			return mob.getNavigation().createPath(to, reach);
+		} finally {
+			nav.aliveworkplace$setTargetPos(target);
+			nav.aliveworkplace$setReachRange(range);
+		}
+	}
+
+	/**
+	 * The search for a climber's way to its ramp again, with twice the room to walk, for one that didn't get there. Vanilla
+	 * gives up on a node once the distance it has counted to it passes the search's range, and it counts that distance
+	 * from whichever neighbor it looked from last, not along the path it keeps: over open ground the count runs well ahead
+	 * of the real way (70 for a way 44 blocks long), so a search toward a block right beside the climber but a long way
+	 * round, such as the top of the finished ramp from between the ramp and a player's pen, came back with nothing but
+	 * the block it stood on, every time, and it stood by its ramp for good (B1506). The path being walked is left out of
+	 * it: vanilla hands that back, unsearched, for the same target.
+	 */
+	@Nullable
+	private static Path longWay(Mob mob, BlockPos to) {
+		PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+		BlockPos target = nav.aliveworkplace$targetPos();
+		int range = nav.aliveworkplace$reachRange();
+		nav.aliveworkplace$setTargetPos(null);
+		try {
+			// (Guava's set, as vanilla passes: it is asked whether it holds the cleared target, and Set.of throws on null)
+			return nav.aliveworkplace$createPath(com.google.common.collect.ImmutableSet.of(to), 8, false, 0, LONG_WALK);
 		} finally {
 			nav.aliveworkplace$setTargetPos(target);
 			nav.aliveworkplace$setReachRange(range);

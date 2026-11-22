@@ -399,6 +399,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHelperLeftoversGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperLeftoversBugTests",
 			"io.github.jcondedata.aliveworkplace.test.HelperBagsB645GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHelperAway1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperBags1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderMutants1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderInvariants1031GameTests",
@@ -615,6 +616,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaThreatSites1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltRaiderSites1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltStorySites1121dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltSites1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleCopper1117dBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaMoverMultiface1121cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaChronicleLate1121cGameTests",
@@ -2024,6 +2026,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobFixes1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArcherStationPatrolB1474GameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGuardFixes1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
@@ -2031,7 +2034,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPocketDrainWide1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCampBanners1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksRaid1122cGameTests"
 		]
 	},
 	"depends": {

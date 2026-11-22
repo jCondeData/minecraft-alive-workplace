@@ -3,7 +3,7 @@
 ROADMAP 32.2 (the threat engine). The rest of Milestone 32 (lairs for every culture, sieges, warnings) builds on it;
 `docs/design/M32.md` is the plan.
 
-Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146, B1320
+Roadmap items: 32.2, 32.14, B133, B824, B856, B919, B1063, B1054, B1146, B1320, B1475
 
 ## What a player sees
 
@@ -106,6 +106,10 @@ A village that keeps watch hears of an attack **the evening before**, when the c
 - **How long.** `hours: night` raiders flee at dawn, as before. `hours: until_noon` raiders stay through the morning.
 - **Guards** fight anything that carries the raider tag (`aliveworkplace_raider`), so a culture may bring hoglins, which
   the game doesn't count as monsters. Raiders also carry their role as a tag (`aliveworkplace_role_melee`, …).
+  A guard turns out to a raid's raider (ours, or a vanilla raid's) within `guardRadius` of his post whether he sees it or
+  not, so walls no longer keep a Barracks' guards at their grindstones while raiders stand outside (B1475); any other
+  monster, and anything outside a raid, he still has to see (or have within 4 blocks). A guard who ends up outside his
+  patrol's square (14 blocks by day, 6 at night, without a patrol route) walks straight back to his post before patrolling on.
 - **The chance hook.** `Threats.chanceFactor(level, hall)` multiplies a village's chance of an attack; other systems add
   to it with `Threats.addFactor(id, (level, hall) -> factor)`. Curfew and the research topic that makes raids rarer
   already go through it.
@@ -226,6 +230,9 @@ None.
   switched off, every new sentence). Scene `warning`.
 - B1146: `QaThreatSwitches1110dBugTests` (warned at level 2, then the level set to 0, the world saved and loaded at
   level 0, or the village set At peace: nothing shuts on the day).
+- B1475: `QaBarracksTurnOut1122dBugTests` (a night raid on a finished Barracks I with nobody ringing the bell: both
+  guards come out to the raiders 8 to 10 blocks in front and go back to their grindstones after; with the bell, they go
+  back by night too); `QaBarracksTurnOut1122dGameTests` unchanged and passing.
 - B1158: `QaGuardlessGates1110dBugTests` (a guardless village's gates shut at noon of the warned day are open the
   morning after and when the attack is called off; a guarded village's the morning after, as before).
 - B1158 (QA, lane D): `QaGatesNoGuardLeft1111dGameTests` (a guardless, unwarned village leaves the gates a player shut

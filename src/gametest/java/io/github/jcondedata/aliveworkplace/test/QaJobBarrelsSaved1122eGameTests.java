@@ -228,7 +228,22 @@ public class QaJobBarrelsSaved1122eGameTests implements net.fabricmc.fabric.api.
 	//$ gametest_ticks_batch HUGE '1200' '"qaJobBarrelsSaved1122eLectern10"'
 	@GameTest(template = HUGE, timeoutTicks = 1200, batch = "qaJobBarrelsSaved1122eLectern10")
 	public void qaABarrelTenAcrossFromAFreeLecternMakesTheFisherman(GameTestHelper helper) {
-		lecternAcross(helper, 10, false);
+		// Two jobless villagers: with one, he may take the free lectern first (both are free job sites; failed 1 of 3 runs
+		// beside other tests), which says nothing about the barrel. Out of the lectern's reach the barrel must still make
+		// a Fisherman of one of them.
+		QaJobBarrels1122cGameTests.setup(helper, true);
+		helper.setBlock(BARREL, Blocks.BARREL);
+		helper.setBlock(BARREL.offset(10, 0, 0), Blocks.LECTERN);
+		Villager a = jobless(helper, helper.absolutePos(BESIDE));
+		Villager b = jobless(helper, helper.absolutePos(BESIDE.offset(1, 0, 0)));
+		BlockPos barrel = helper.absolutePos(BARREL);
+		helper.succeedWhen(() -> {
+			helper.assertTrue(a.isAlive() && b.isAlive(), "a free lectern 10 across: a villager died");
+			helper.assertTrue(fishermanAt(a, barrel) || fishermanAt(b, barrel),
+				"a free lectern 10 across: no Fisherman at the barrel yet: " + where(helper, a) + "; " + where(helper, b));
+			a.discard();
+			b.discard();
+		});
 	}
 
 	/**

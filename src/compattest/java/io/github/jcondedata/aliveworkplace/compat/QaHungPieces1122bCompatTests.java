@@ -4,6 +4,7 @@ import io.github.jcondedata.aliveworkplace.AliveWorkplace;
 import io.github.jcondedata.aliveworkplace.blueprint.Blueprint;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.BlueprintStyles;
+import io.github.jcondedata.aliveworkplace.blueprint.ModdedLibrary;
 import io.github.jcondedata.aliveworkplace.blueprint.StarterBlueprints;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -40,7 +41,8 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
  * QA lane B (2026-11-22): the gametest QaHungPieces1122bGameTests' check (its helpers copied here: the compat source set
  * doesn't see the gametest classes): every ladder, torch, hook, sign, banner, button,
  * lever, lantern and door has something to hold it in the drawing) for the builds the plain suite can't read, here
- * where their mods are installed: the Cobblemon, Mega Showdown and Create builds (the modded library's copies: QaHungPieces1122bBugTests' compat twin on tests/hung-pieces-1122b, B1485).
+ * where their mods are installed: the Cobblemon, Mega Showdown and Create builds, and every complete copy in the modded
+ * library (37.12: the owner's server builds these, with the pack's furniture mods).
  */
 public class QaHungPieces1122bCompatTests implements FabricGameTest {
 
@@ -201,6 +203,28 @@ public class QaHungPieces1122bCompatTests implements FabricGameTest {
 			problems.addAll(unheld(blueprint, helper.getLevel(), unknown));
 		}
 		helper.assertTrue(checked > 20, "only " + checked + " Cobblemon, Mega Showdown and Create builds were found");
+		helper.assertTrue(unknown[0] == 0, unknown[0] + " piece(s) couldn't be checked against the drawing alone");
+		helper.assertTrue(problems.isEmpty(), problems.size() + " piece(s) with nothing to hold them: "
+			+ String.join("; ", problems.subList(0, Math.min(10, problems.size()))));
+		helper.succeed();
+	}
+
+	/** Every complete modded copy (the furniture mods' pieces in place): every hung or standing piece has a hold. */
+	//$ gametest_ticks EMPTY_STRUCTURE '400'
+	@GameTest(template = EMPTY_STRUCTURE, timeoutTicks = 400)
+	public void qaEveryHungPieceOfTheModdedCopiesHasAHold(GameTestHelper helper) {
+		List<String> problems = new ArrayList<>();
+		int[] unknown = {0};
+		int checked = 0;
+		for (ResourceLocation id : ModdedLibrary.builds()) {
+			Blueprint copy = ModdedLibrary.copy(id).orElse(null);
+			if (copy == null) {
+				continue; // a block of it is missing in this pack
+			}
+			checked++;
+			problems.addAll(unheld(copy, helper.getLevel(), unknown).stream().map(p -> "modded " + p).toList());
+		}
+		helper.assertTrue(checked > 20, "only " + checked + " complete modded copies were found");
 		helper.assertTrue(unknown[0] == 0, unknown[0] + " piece(s) couldn't be checked against the drawing alone");
 		helper.assertTrue(problems.isEmpty(), problems.size() + " piece(s) with nothing to hold them: "
 			+ String.join("; ", problems.subList(0, Math.min(10, problems.size()))));

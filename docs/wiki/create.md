@@ -845,5 +845,11 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   `QaCreateGantryPulley1122eBugCompatTests` (B1487) (QA, lane E, 2026-11-22; 4): a stranger's harvester, plow and
   filling roller on a real train change nothing in a protected village, and his elevator's cabin takes none of its
   blocks; the open-village controls are in the matching `…CompatTests` classes.
+- `QaCreateActorsVerify1122eCompatTests` (QA, lane E, 2026-11-22; 16): the same four fixes from their bug text: a
+  stranger's harvester and plow on a minecart contraption leave a protected village alone while working the cells
+  just outside; a harvester cart put together inside the village still reaps it; a stranger's harvester train keeps
+  the village's sweet berries and sugar cane; a roller in wide-fill mode fills nothing inside; a harvester or plow
+  train saved and loaded just outside still leaves the village alone; a turned elevator, and one saved and loaded
+  between assembling and breaking, keeps the village's block; each with an open-village control.
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

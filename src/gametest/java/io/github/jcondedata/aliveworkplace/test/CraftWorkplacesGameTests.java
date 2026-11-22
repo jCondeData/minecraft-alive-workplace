@@ -228,12 +228,22 @@ public class CraftWorkplacesGameTests implements net.fabricmc.fabric.api.gametes
 		List<Villager> workers = new ArrayList<>();
 		boolean[] hired = {false};
 		long[] hiredAt = {0};
+		// B1471 (as B1384 in WorkplacesGameTests): a builder works from 1000 to dusk and a villager takes a job block only in
+		// working hours, so from 2000 the rebuilt Smithy II (done at tick ~7,600) left its workers ~1,400 ticks before they
+		// went to bed with the armorer still on his way. The clock is held in working hours while it goes up, and the workers
+		// get a whole day from when it stands; clocking off at dusk is QaBuilderFixes1103GameTests'.
+		helper.onEachTick(() -> {
+			if (!hired[0] && level.getDayTime() % 24000 > 9000) {
+				helper.setDayTime(2000);
+			}
+		});
 		helper.succeedWhen(() -> {
 			helper.assertTrue(BuildSiteManager.get(level).get(site.id()) == null, "still building: " + site.stage());
 			if (!hired[0]) {
 				// The workers come once it stands, as they would to a finished workplace: from the street in front.
 				hired[0] = true;
 				hiredAt[0] = helper.getTick();
+				helper.setDayTime(2000); // the whole working day ahead of them, whatever the build took
 				for (int i = 0; i < w.workers().size(); i++) {
 					Villager worker = helper.spawn(EntityType.VILLAGER, new BlockPos(13 + 3 * i, 2, 5)); // in the street in front
 					VillagerProfession job = BuiltInRegistries.VILLAGER_PROFESSION.get(ResourceLocation.parse(w.workers().get(i).job()));

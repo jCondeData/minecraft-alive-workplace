@@ -371,7 +371,7 @@ see a raider on the ground. The rail (`parts/lookout_gallery.mjs`) now leaves ev
 open (x or z 3 and 5 on each side): those cells are stations at the deck's edge, and the archer, who takes the
 station that sees the most of the ground (or, with no breach, the one farthest from the hall), shoots from one.
 All four levels and their modded copies are regenerated (`build.sh`'s steps, then `modded_library.py`); the
-released drawings are kept by `history.py`. Tests: `QaRebuiltDefenseLive1122dGameTests` (a live siege: the archer
+released drawings are kept by `history.py`. Tests: `LookoutTowerSightB1469GameTests` (a live siege: the archer
 climbs Lookout Tower I and hits a raider 19 out; each level, turned four ways, has a station that sees the ground 3
 to 15 out on every side).
 
@@ -380,7 +380,7 @@ Room's worktop, and a crafting table is the Carpenter's job site, so a jobless v
 second job there. The worktop is now a third stone-topped counter of the lab bench under the front window
 (`js/research_lab/plan.mjs`); all three levels and their modded copies are regenerated (`build.sh`, then
 `modded_library.py`), the released drawings kept by `history.py`. Test:
-`QaRebuiltCobblemon1122dCompatTests.theResearchLabsHaveNoJobSiteButTheAnalyzer` (no block of any level or modded copy
+`ResearchLabJobSiteB1468CompatTests.theResearchLabsHaveNoJobSiteButTheAnalyzer` (no block of any level or modded copy
 is any profession's job site but the Fossil Analyzer's).
 
 **QA of the rebuilt big buildings (lane-c-1121-0953).** Every check walks like a villager (wooden doors open, fence

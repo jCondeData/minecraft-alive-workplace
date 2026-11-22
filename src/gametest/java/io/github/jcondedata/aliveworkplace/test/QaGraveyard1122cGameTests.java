@@ -309,6 +309,10 @@ public class QaGraveyard1122cGameTests implements FabricGameTest {
 		Villager mourner = helper.spawn(EntityType.VILLAGER, YARD.offset(6, 0, -3));
 		// a nitwit: one who'd take the yard's brewing stand as his job walked off to it instead (seen 1 run in 3)
 		mourner.setVillagerData(mourner.getVillagerData().setProfession(net.minecraft.world.entity.npc.VillagerProfession.NITWIT));
+		// and a nitwit's brain, as the game gives one born a nitwit: setVillagerData keeps the jobless brain the spawn built,
+		// whose core still picks any free workstation and walks to it (B1490: 11 runs in 20 he went for the brewing stand,
+		// the Undertaker here holding none, and ended on the chapel's altar)
+		mourner.refreshBrain(level);
 		Set<BlockPos> inside = new HashSet<>();
 		for (BlockPos p : BlockPos.betweenClosed(origin.offset(1, -1, 1), origin.offset(11, 3, 11))) {
 			inside.add(p.immutable());

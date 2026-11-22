@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
+import io.github.jcondedata.aliveworkplace.mixin.PathNavigationAccessor;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,8 +69,16 @@ public final class SandRamps {
 	public static final int SHARE = 8;
 	/** How near the hall a path must end to count as getting in. */
 	private static final int REACH = 5;
+	/**
+	 * How near the hall, along the axes, a climber's path must end to count as walking in when the one asked within
+	 * {@link #REACH} ends by a wall (B1493): two, so a hall block raised a step still counts as reached.
+	 */
+	private static final int IN_REACH = 2;
 	/** How often (ticks) a climber without a ramp asks for its path again. */
 	private static final int TRY_EVERY = 40;
+	/** How long a climber's way to its ramp may be, as vanilla's search counts it; and for the second search, when the first doesn't get there (B1506). */
+	private static final int WALK = 64;
+	private static final int LONG_WALK = 128;
 	/** How near (blocks) the next block a climber must be to pile it. */
 	private static final double PILE_REACH = 12;
 
@@ -319,9 +328,24 @@ public final class SandRamps {
 					}
 					storm.nextTry.put(id, now + TRY_EVERY);
 					paths++;
-					Path path = mob.getNavigation().createPath(siege.hall, REACH);
+					Path path = newPath(mob, siege.hall, REACH);
 					if (path == null || path.canReach() && !walledOff(level, path, siege.hall)) {
 						continue;
+					}
+					if (path.canReach()) {
+						// B1493: the path ends by a column on the line to the hall, but that may be a lone post or a wall with an
+						// open doorway beside it. A path asked to come right up to the hall says whether it can walk in.
+						Path in = newPath(mob, siege.hall, IN_REACH);
+						paths++;
+						if (in != null && in.canReach() && !walledOff(level, in, siege.hall)) {
+							if (mob.getNavigation().isDone()) {
+								mob.getNavigation().moveTo(in, 1.0);
+								PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+								nav.aliveworkplace$setTargetPos(in.getTarget());
+								nav.aliveworkplace$setReachRange(IN_REACH);
+							}
+							continue;
+						}
 					}
 					site = siteFor(level, siege, storm, mob, path);
 					if (site == null) {
@@ -353,8 +377,15 @@ public final class SandRamps {
 			if (!crossing(mob, site) && paths < MAX_PATHS && (mob.getNavigation().isDone() || now - storm.sentAt.getOrDefault(id, 0L) > 60)
 				&& (mob.blockPosition().distSqr(to) > (up ? 0 : 4) || !up && inTheWay(level, mob, site))) {
 				storm.sentAt.put(id, now);
-				Path path = mob.getNavigation().createPath(to, 0, 64);
+				Path path = mob.getNavigation().createPath(to, 0, WALK);
 				paths++;
+				if (path != null && !path.canReach()) {
+					Path longer = longWay(mob, to);
+					paths++;
+					if (longer != null && longer.canReach()) {
+						path = longer;
+					}
+				}
 				boolean overSand = !up && overPiled(level, site, path);
 				if (!up && (overSand || endsOnRamp(level, site, path))) {
 					// The spot can't be reached (a ledge or a player's blocks out there) and the nearest it gets is on a block
@@ -581,6 +612,8 @@ public final class SandRamps {
 	 * between them, at the height the path ends. The pathfinder counts a path as getting there once it ends within
 	 * {@link #REACH} blocks of the hall counted along the axes, so one that ends right outside a wall with the hall a few
 	 * blocks in counted as in, and the climber never began a ramp: it stood at the wall's foot for good (B1445, B1479).
+	 * A column here only means something is in the straight way: {@link #step} then asks for a path right up to the
+	 * hall, and a climber that can walk in round it (a lamp post, an open doorway beside the line) doesn't ramp (B1493).
 	 */
 	private static boolean walledOff(ServerLevel level, Path path, BlockPos hall) {
 		Node end = path.getEndNode();
@@ -601,6 +634,50 @@ public final class SandRamps {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * A new search for a path from {@code mob} to within {@code reach} of {@code to}, leaving the path it walks and where
+	 * that goes as they were. Vanilla hands back the path the mob is already walking whenever it heads for the same block,
+	 * whatever reach is asked for, so a climber the siege sends toward the hall was judged by that path, half walked or
+	 * one that never got in, and ramped by an open way in (B1493). BattleStations asks it too (B1494).
+	 */
+	@Nullable
+	public static Path newPath(Mob mob, BlockPos to, int reach) {
+		PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+		BlockPos target = nav.aliveworkplace$targetPos();
+		int range = nav.aliveworkplace$reachRange();
+		nav.aliveworkplace$setTargetPos(null);
+		try {
+			return mob.getNavigation().createPath(to, reach);
+		} finally {
+			nav.aliveworkplace$setTargetPos(target);
+			nav.aliveworkplace$setReachRange(range);
+		}
+	}
+
+	/**
+	 * The search for a climber's way to its ramp again, with twice the room to walk, for one that didn't get there. Vanilla
+	 * gives up on a node once the distance it has counted to it passes the search's range, and it counts that distance
+	 * from whichever neighbor it looked from last, not along the path it keeps: over open ground the count runs well ahead
+	 * of the real way (70 for a way 44 blocks long), so a search toward a block right beside the climber but a long way
+	 * round, such as the top of the finished ramp from between the ramp and a player's pen, came back with nothing but
+	 * the block it stood on, every time, and it stood by its ramp for good (B1506). The path being walked is left out of
+	 * it: vanilla hands that back, unsearched, for the same target.
+	 */
+	@Nullable
+	private static Path longWay(Mob mob, BlockPos to) {
+		PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+		BlockPos target = nav.aliveworkplace$targetPos();
+		int range = nav.aliveworkplace$reachRange();
+		nav.aliveworkplace$setTargetPos(null);
+		try {
+			// (Guava's set, as vanilla passes: it is asked whether it holds the cleared target, and Set.of throws on null)
+			return nav.aliveworkplace$createPath(com.google.common.collect.ImmutableSet.of(to), 8, false, 0, LONG_WALK);
+		} finally {
+			nav.aliveworkplace$setTargetPos(target);
+			nav.aliveworkplace$setReachRange(range);
+		}
 	}
 
 	@Nullable

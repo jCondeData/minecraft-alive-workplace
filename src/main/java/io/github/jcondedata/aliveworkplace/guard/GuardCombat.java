@@ -159,7 +159,13 @@ public class GuardCombat extends Behavior<Villager> {
 			// from it, and never leaves it to close in.
 			java.util.Optional<BlockPos> station = BattleStations.postNow(level, villager); // a siege begun this tick: stations at once
 			boolean posted = station.isPresent() && BattleStations.onStation(villager);
-			if (station.isPresent() && !posted && distance > STATION_FIRST) {
+			if (station.isPresent() && !posted) {
+				// B1494: on his way he shoots a foe nearer than STATION_FIRST but keeps walking. Stopping to shoot (or closing
+				// in) left him on the ground all siege, a few blocks short of his tower, while a raider stood near its foot.
+				if (distance <= STATION_FIRST && cooldown == 0 && villager.hasLineOfSight(foe) && clearShot(level, villager, foe)) {
+					shoot(level, villager, foe);
+					cooldown = Guards.isCrossbow(villager.getItemBySlot(EquipmentSlot.OFFHAND)) ? CROSSBOW_COOLDOWN : SHOT_COOLDOWN;
+				}
 				return;
 			}
 			if (distance > BattleStations.range(villager, BOW_RANGE) || !villager.hasLineOfSight(foe)) {
@@ -361,7 +367,7 @@ public class GuardCombat extends Behavior<Villager> {
 		}
 	}
 
-	/** Nearest monster in the guard's area that they can see (or that is right next to them). */
+	/** Nearest monster in the guard's area that they can see (or that is right next to them); in a raid, a raider near their post seen or not. */
 	@Nullable
 	private static LivingEntity findFoe(ServerLevel level, Villager villager) {
 		var leader = Escorts.leader(villager);
@@ -376,10 +382,22 @@ public class GuardCombat extends Behavior<Villager> {
 				.min(Comparator.comparingDouble(villager::distanceToSqr))
 				.orElse(null);
 		}
-		return level.getEntitiesOfClass(LivingEntity.class, area(level, villager), e -> Guards.isFoe(e, villager)).stream()
-			.filter(e -> villager.hasLineOfSight(e) || villager.distanceToSqr(e) < 16)
+		BlockPos center = center(villager);
+		Optional<AABB> raid = VillageRaids.raidArea(level, center);
+		AABB area = raid.orElseGet(() -> new AABB(center).inflate(Guards.RADIUS, 8, Guards.RADIUS));
+		// In a raid a guard turns out to a raider within guardRadius of his post even where walls hide it (B1475: the
+		// Barracks' guards stayed at their grindstones while raiders stood 8 out in front). Monsters, and any foe outside a
+		// raid, still have to be seen (or be right next to him). The cheap checks go before the sight line.
+		return level.getEntitiesOfClass(LivingEntity.class, area, e -> Guards.isFoe(e, villager)).stream()
+			.filter(e -> villager.distanceToSqr(e) < 16 || raid.isPresent() && raiderNear(e, center) || villager.hasLineOfSight(e))
 			.min(Comparator.comparingDouble(villager::distanceToSqr))
 			.orElse(null);
+	}
+
+	/** A raid's raider (ours, or a vanilla raid's) within {@link Guards#RADIUS} of the guard's post. */
+	private static boolean raiderNear(LivingEntity e, BlockPos center) {
+		return (Guards.isRaider(e) || e instanceof net.minecraft.world.entity.raid.Raider raider && raider.hasActiveRaid())
+			&& e.blockPosition().closerThan(center, Guards.RADIUS);
 	}
 
 	/** Where {@code villager} looks for foes away from a Rally Banner: in a raid the whole village (or the pillagers' raid area), else round their post. */

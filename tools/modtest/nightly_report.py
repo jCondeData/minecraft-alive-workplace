@@ -18,6 +18,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 COPY = re.compile(r"^repeat_(\d+)_(\w+?)_(\w+)$")
+UNCHECKED = []   # mutants(): NO-TEST rows (mutate.py --covering: no GameTest class names the mutated class)
 
 
 def read(path):
@@ -36,12 +37,18 @@ def mutants(folder):
         shard = re.sub(r"\D", "", os.path.basename(path))
         if "no mutable lines" in text or "no mutants left" in text:
             continue
-        rows = re.findall(r"^\d+\. (KILLED|SURVIVED|TIMEOUT|NO-COMPILE)\s+(\S+) \(([^,]+),", text, re.M)
+        rows = re.findall(r"^\d+\. (KILLED|SURVIVED|TIMEOUT|NO-COMPILE|NO-TEST)\s+(\S+) \(([^,]+),", text, re.M)
         if not rows and "Killed " not in text:
             problems.append(f"mutation shard {shard} didn't finish (see its log)")
             continue
+        late = re.search(r"^Out of time: (\d+) mutant", text, re.M)
+        if late:   # B1056: mutate.py --budget stopped before the job's time limit
+            problems.append(f"mutation shard {shard}: {late.group(1)} mutant(s) not run, out of time (see its log)")
         for status, where, op in rows:
             if status == "NO-COMPILE":
+                continue
+            if status == "NO-TEST":   # mutate.py --covering: no GameTest class names the class, so nothing ran
+                UNCHECKED.append(f"- `{where}` ({op})")
                 continue
             total += 1
             if status == "SURVIVED":
@@ -90,12 +97,14 @@ def main():
     since = (read(os.path.join(a.dir, "since.txt")) or "?").strip()
     lines = [f"## Nightly mutation and repeats (changes since `{since[:10]}`)", ""]
     survivor_blocks, killed, total, survivors, problems = mutants(a.dir)
-    if total == 0 and not problems:
+    if total == 0 and not problems and not UNCHECKED:
         lines.append("**Mutants:** none planted (no mutable lines changed in the last 24 hours).")
     else:
         lines.append(f"**Mutants:** {killed} of {total} killed" + (f", **{len(survivors)} survived**" if survivors else "") + ".")
     if survivor_blocks:
         lines += ["", "Survivors (a bug here would ship unnoticed: write a test that fails on each):", ""] + survivor_blocks
+    if UNCHECKED:
+        lines += ["", f"Not checked ({len(UNCHECKED)}): no GameTest class names the mutated class or a class using it:", ""] + UNCHECKED
     reps, rep_problems = repeats(a.dir)
     problems += rep_problems
     flaky = {t: v for t, v in reps.items() if v[0] > 0}

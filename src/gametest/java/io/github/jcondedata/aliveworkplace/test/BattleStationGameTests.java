@@ -234,6 +234,37 @@ public class BattleStationGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B1494: a raider standing still 6.4 blocks from the archer, nearer than he lets a foe come on his way up. He shoots
+	 * at it on his way, but keeps walking, and is on the tower's top within 450 ticks. Before, he stopped where he stood
+	 * to shoot and stayed on the ground all siege while the raider lived.
+	 */
+	//$ gametest_ticks_batch AREA '600' '"stationNearFoe"'
+	@GameTest(template = AREA, timeoutTicks = 600, batch = "stationNearFoe")
+	public void anArcherShootsANearFoeOnHisWayButStillClimbs(GameTestHelper helper) {
+		Village village = village(helper, false);
+		ServerLevel level = village.level();
+		Villager archer = guard(helper, new ItemStack(Items.BOW), 12, 21);
+		Mob foe = raider(helper, 16.5, 26.5);
+		foe.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(500);
+		foe.setHealth(500);
+		VillageRaids.track(level, village.hall(), village.culture(), List.of(foe));
+		village.siege(helper);
+		boolean[] shot = {false};
+		helper.onEachTick(() -> {
+			if (BattleStations.onStation(archer)) {
+				helper.assertTrue(shot[0], "he never shot at the raider " + foe.distanceTo(archer) + " blocks off on his way up");
+				helper.succeed();
+				return;
+			}
+			shot[0] |= arrows(helper, archer) > 0;
+			if (helper.getTick() > 450) {
+				helper.fail("the archer isn't on the tower within 450 ticks: he is at " + helper.relativeVec(archer.position()) + ", his place "
+					+ BattleStations.post(archer).map(p -> p.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()) + ", shot on the way: " + shot[0]);
+			}
+		});
+	}
+
+	/**
 	 * A siege begun just after a watch (the watches run once a second) still gives the archer his station at once:
 	 * otherwise he spends most of a second with no place and closes on the raider 18 blocks off to shoot from the
 	 * ground, as he did in a full suite run where the siege began in that part of the second. The raider comes with the

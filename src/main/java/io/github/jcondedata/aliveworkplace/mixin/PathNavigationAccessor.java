@@ -26,6 +26,24 @@ public interface PathNavigationAccessor {
 	 * Vanilla's path search to the nearest of {@code targets}: reading blocks {@code regionOffset} past the range, from the
 	 * block above the mob with {@code offsetUpward}, there when within {@code reach} blocks, over walks up to {@code range} long.
 	 */
+	/**
+	 * Where the path searched last goes, and how near counts as there. Vanilla's search hands back the path the mob is
+	 * walking, untouched, whenever it is asked again for a set holding this target, whatever reach it is asked for:
+	 * clearing it for one search makes that search a new one (B1493, {@code SandRamps}).
+	 */
+	@Accessor("targetPos")
+	@Nullable
+	BlockPos aliveworkplace$targetPos();
+
+	@Accessor("targetPos")
+	void aliveworkplace$setTargetPos(@Nullable BlockPos target);
+
+	@Accessor("reachRange")
+	int aliveworkplace$reachRange();
+
+	@Accessor("reachRange")
+	void aliveworkplace$setReachRange(int reach);
+
 	@Invoker("createPath")
 	@Nullable
 	Path aliveworkplace$createPath(Set<BlockPos> targets, int regionOffset, boolean offsetUpward, int reach, float range);

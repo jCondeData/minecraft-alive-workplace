@@ -39,7 +39,8 @@ helmets. The camp starts 10 strong and grows by 2 a day up to 16.
 
 Desert raiders don't use ladders: the husks pile sand against your wall, a block every half second, step by step, until
 the ramp is level with the top. Then they walk up and drop inside. Chat warns you: "Sand is piled against the walls of
-Thornholm!" When it's over the whole ramp is gone; nothing else is touched.
+Thornholm!" When it's over the whole ramp is gone; nothing else is touched. A husk that can walk in through an open
+doorway or gap doesn't bother with sand; a shut door or a hole only one block high keeps it out, so it builds a ramp.
 
 Husks don't burn, so a desert siege doesn't end at dawn: they stay until **noon**.
 

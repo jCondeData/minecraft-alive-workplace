@@ -77,6 +77,9 @@ public class QaRebuiltDefenseLive1122dGameTests implements FabricGameTest {
 	private static BlockPos village(GameTestHelper helper, BlockPos hallAt, long time) {
 		Leftovers.clear(helper);
 		Leftovers.halls(helper);
+		// an earlier batch's finished build at this spot (a Lookout Tower IV, 23 up) gave the village stations
+		// outside the Gatehouse: the nightly repeats' 1-in-10 failure of 2026-11-22. Every test here is alone in its batch.
+		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
 		int radius = VillageHalls.RADIUS;
 		long before = level.getDayTime();

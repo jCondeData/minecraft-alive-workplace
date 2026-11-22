@@ -17,6 +17,23 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A stranger's Create machines keep their hands off a protected village: a Mechanical Harvester, Plough or Roller on
+  his train or other contraption no longer reaps its crops, tills its grass or fills its holes, and his Elevator Pulley
+  outside no longer carries a village block away in its cabin (B1487, B1498, B1502, B1503).
+- An archer on a wall or tower stays there when the raider he was shooting at is dead and no other is in his sight.
+  His patrol went on whenever he had nobody to fight, and after a few seconds it set him down on the ground near his
+  Guard Post, off his station, with the siege still on. Now a guard with a place in a siege doesn't patrol (B1474).
+- Archers get up onto the Lookout Tower when a raider stands near its foot. An archer on his way to his station
+  stopped to shoot at any raider within 8 blocks and stayed on the ground all siege, a few steps from the tower; now he
+  shoots as he walks and climbs up. An archer whose station couldn't be checked when the siege began (still landing,
+  or asleep) is checked again a moment later.
+- A desert raider no longer stands beside its finished sand ramp for good when your fences leave it only a long way
+  round to the ramp's foot (about 45 blocks): it now finds that way, walks round and climbs (B1506).
+- Desert raiders' sand climbers no longer pile a ramp against a lone lamp post or a wall right beside an open
+  doorway: a husk that can walk into the village walks in, and ramps go only against walls in its way.
+- Guards come out to a raid without the bell: in a raid, a guard goes for raiders within 24 blocks of his post even when
+  his building's walls hide them (a Barracks' guards used to stay at their grindstones while raiders stood outside).
+  After a fight that took them away, guards walk straight back to their post.
 - The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence
   post (a fence top can't hold a lever, so Builders always skipped it). The blueprint check now catches floor and
   ceiling levers and buttons with nothing sturdy under or over them.

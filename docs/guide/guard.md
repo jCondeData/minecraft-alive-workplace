@@ -30,7 +30,8 @@ the best of it and wears it, so you can see it.
 
 Guards fight any monster within 24 blocks of their post, at any hour, and never run away. They have twice a villager's
 health, heal slowly between fights and keep the night watch close to their post. Players, villagers, pets and Pokémon
-are always safe from them. Over their head: how many foes they've beaten, and whether they're on patrol, getting better
+are always safe from them. In a raid they come out of their building to raiders within 24 blocks of their post
+even when walls hide them, without waiting for the bell. Over their head: how many foes they've beaten, and whether they're on patrol, getting better
 gear, sparring or fighting.
 
 **Kinds of guard.** What a guard holds in their other hand decides how they fight. Sneak-right-click a guard with one

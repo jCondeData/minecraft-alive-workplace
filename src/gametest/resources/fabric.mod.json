@@ -2013,7 +2013,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests"
 		]
 	},
 	"depends": {

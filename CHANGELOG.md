@@ -23,6 +23,9 @@ asks for the steps, `latest.log` and any crash report).
   or asleep) is checked again a moment later.
 - Desert raiders' sand climbers no longer pile a ramp against a lone lamp post or a wall right beside an open
   doorway: a husk that can walk into the village walks in, and ramps go only against walls in its way.
+- Guards come out to a raid without the bell: in a raid, a guard goes for raiders within 24 blocks of his post even when
+  his building's walls hide them (a Barracks' guards used to stay at their grindstones while raiders stood outside).
+  After a fight that took them away, guards walk straight back to their post.
 - The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence
   post (a fence top can't hold a lever, so Builders always skipped it). The blueprint check now catches floor and
   ceiling levers and buttons with nothing sturdy under or over them.

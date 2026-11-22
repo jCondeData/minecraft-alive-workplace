@@ -2019,6 +2019,9 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPocketDrainWide1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCampBanners1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests"
 		]
 	},

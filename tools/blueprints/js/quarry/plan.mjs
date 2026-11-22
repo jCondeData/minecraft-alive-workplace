@@ -110,7 +110,7 @@ export const CHESTS = [
   { cells: [[12, 9], [12, 10]], facing: 'east' }, // stores: pickaxes, torches, ladders (against the pit wall)
 ]
 export const WINCH = { x0: 14, x1: 16, y: 1, z: 10, crank: [13, 1, 10] } // the hoist drum in the back corner, its crank
-// post at the west end (a lever on it); its rope runs up to the Sheave
+// (a lever) on the drum's west end; its rope runs up to the Sheave
 export const FURNITURE = [
   { room: 'Hoist House', kind: 'lamp', part: 'hangingLamp', pos: [15, 3, 5], facing: 'west', wood: 'spruce' },
   { room: 'Hoist House', kind: 'lamp', part: 'hangingLamp', pos: [13, 3, 9], facing: 'west', wood: 'spruce' },

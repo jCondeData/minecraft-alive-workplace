@@ -4,7 +4,7 @@
   "compression": "gzip",
   "updateBlockStates": true,
   "blockStateUpdates": {
-    "updatedBlocks": 46
+    "updatedBlocks": 45
   },
   "nbtPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/out/quarry.nbt",
   "summaryPath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/out/summary.json",
@@ -13,7 +13,7 @@
     17,
     14
   ],
-  "blockCount": 686,
-  "paletteCount": 72,
+  "blockCount": 685,
+  "paletteCount": 71,
   "recipePath": "/home/claude/minecraft-alive-workplace/tools/blueprints/js/quarry/recipe.mjs"
 }

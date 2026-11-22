@@ -106,6 +106,21 @@ def hung_on_problem(behind):
     return "hangs on " + _short(behind) + " (it can't hold one: the builder skips it)"
 
 
+def sturdy_face_problem(block, top):
+    """Why a lever or button can't stand on {@code block}'s top ({@code top}) or hang under its bottom, or None if it
+    can: the game wants a sturdy face (isFaceSturdy), which a fence, a wall, a pane, a chain, a slab or stairs' other
+    half and the like don't have (B1485: the Quarry's lever on a fence post was never placed)."""
+    short = _short(block)
+    if short.endswith("_slab"):
+        ok = block[1].get("type") in (("top", "double") if top else ("bottom", "double"))
+    elif short.endswith("_stairs"):
+        ok = block[1].get("half") == ("top" if top else "bottom")
+    else:
+        ok = not any(t in block[0] for t in CANT_HOLD + ("torch", "_button", "lever", "pressure_plate", "_sign", "_banner",
+                                                          "rail", "candle", "_bed", "chest", "campfire", "lectern"))
+    return None if ok else ("stands on " if top else "hangs under ") + short + " (its face can't hold one: the builder skips it)"
+
+
 def check(b, only=None, whole=None):
     """What's wrong with build {@code b}, as lines of text (empty if nothing). {@code only}: the positions to report on
     (a Wonder's stage, checked standing on the stages before it); None for all of them. {@code whole}: whether the
@@ -161,6 +176,11 @@ def check(b, only=None, whole=None):
             dx, dy, dz = FACING[props["facing"]]
             behind = blocks.get((x - dx, y, z - dz))
             bad = (behind is None and "has no wall behind it") or hung_on_problem(behind)
+        elif (short.endswith("_button") or short == "lever") and props.get("face") in ("floor", "ceiling"):
+            on = below if props["face"] == "floor" else above
+            bad = (on is not None and sturdy_face_problem(on, props["face"] == "floor")) or (
+                on is None and props["face"] == "ceiling" and "hangs from nothing") or (
+                on is None and not grounded(x, y, z) and "stands on air")
         elif short in WALL_HUNG or ((short.endswith("_button") or short == "lever") and props.get("face") == "wall"):
             dx, dy, dz = FACING[props["facing"]]
             bad = hung_on_problem(blocks.get((x - dx, y, z - dz)))

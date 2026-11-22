@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- The Quarry's hoist crank is built: its lever now hangs on the end of the hoist drum instead of standing on a fence
+  post (a fence top can't hold a lever, so Builders always skipped it). The blueprint check now catches floor and
+  ceiling levers and buttons with nothing sturdy under or over them.
 - Fisher's Hut II hires its Fisherman again: a jobless villager by its barrel no longer turns Butcher at the hut's
   smoker. A barrel near a crafting table, jukebox, beehive, mailbox or a walled-in workstation (nobody takes those by
   themselves) also hires a Fisherman again; a Supply Shop's stock barrels still leave its counter to the Shopkeeper.

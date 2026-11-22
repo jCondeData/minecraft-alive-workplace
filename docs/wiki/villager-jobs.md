@@ -443,7 +443,9 @@ catches up when the pit loads again; nothing is banked while the pit is full. Wh
 Miner drops off the finds and waits at the shed ("waiting at the shed for the pit to grow back") until a layer's worth
 (72 blocks) has grown since the last pass, then starts again from the top. A Quarry Marker handed to them ends the
 pit's site and starts the marked one; once that is done or canceled the pit is given back. Canceling the pit's site
-gives no marker back (there was none), and the Miner takes the pit again within 5 seconds.
+gives no marker back (there was none), and the Miner takes the pit again within 5 seconds. The live drawing is the rebuilt
+Quarry (50.10, the Headframe: `tools/blueprints/js/quarry`); its hoist drum's crank is a lever hung on the drum's west
+end, so a Builder places it (B1485: it stood on a fence post, whose top can't hold a lever, and was always skipped).
 
 ## Switches
 

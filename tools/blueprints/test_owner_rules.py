@@ -337,6 +337,40 @@ class WallHungPieces(unittest.TestCase):
                     wrong.append(f"{name}: {block[10:]}@{p} hangs on {held_by[10:]}@{behind}")
         self.assertEqual([], wrong, "\n" + "\n".join(wrong))
 
+    def test_check_refuses_a_floor_lever_or_button_on_a_fence_and_passes_it_on_planks(self):
+        """B1485: the Quarry's lever stood on a fence post, whose top isn't sturdy, so the builder skipped it."""
+        for piece in ("lever", "oak_button"):
+            for under, held in (("spruce_fence", False), ("cobblestone_wall", False), ("glass_pane", False),
+                                ("spruce_planks", True), ("oak_log", True)):
+                b = room()
+                b.set(4, 1, 4, under)
+                b.set(4, 2, 4, piece, face="floor", facing="east", powered="false")
+                problems = [p for p in check(b) if "@4,2,4" in p]
+                self.assertEqual(held, problems == [], f"{piece} on {under}: {problems}")
+
+    def test_every_floor_or_ceiling_lever_and_button_has_a_sturdy_face(self):
+        import glob
+        from holes import load
+        root = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..",
+                            "src/main/resources/data/aliveworkplace/structure")
+        wrong = []
+        for path in sorted(glob.glob(os.path.join(root, "**", "*.nbt"), recursive=True)):
+            name = os.path.relpath(path, root)[:-4]
+            _, cells, states = load(path, props=True)
+            for p, block in cells.items():
+                face = states.get(p, {}).get("face")
+                if not block or not (block.endswith("_button") or block == "minecraft:lever") or face not in ("floor", "ceiling"):
+                    continue
+                q = (p[0], p[1] - 1 if face == "floor" else p[1] + 1, p[2])
+                on = cells.get(q)
+                if on is None:
+                    continue  # outside the drawing or a structure void
+                if on == "minecraft:air" or any(t in on for t in self.CANT_HOLD) or (
+                        on.endswith(("_slab", "_stairs")) and states[q].get("type", states[q].get("half"))
+                        not in (("top", "double") if face == "floor" else ("bottom", "double"))):
+                    wrong.append(f"{name}: {block[10:]}@{p} ({face}) on {on[10:]}@{q}")
+        self.assertEqual([], wrong, "\n" + "\n".join(wrong))
+
 
 class QaCornerRule1121c(unittest.TestCase):
     """QA (lane-b-1121-2138): corners the owner would see that the first tests don't draw."""

@@ -2,6 +2,7 @@ package io.github.jcondedata.aliveworkplace.threat;
 
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.mixin.MobAccessor;
+import io.github.jcondedata.aliveworkplace.mixin.PathNavigationAccessor;
 import io.github.jcondedata.aliveworkplace.platform.Platform;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -68,6 +69,11 @@ public final class SandRamps {
 	public static final int SHARE = 8;
 	/** How near the hall a path must end to count as getting in. */
 	private static final int REACH = 5;
+	/**
+	 * How near the hall, along the axes, a climber's path must end to count as walking in when the one asked within
+	 * {@link #REACH} ends by a wall (B1493): two, so a hall block raised a step still counts as reached.
+	 */
+	private static final int IN_REACH = 2;
 	/** How often (ticks) a climber without a ramp asks for its path again. */
 	private static final int TRY_EVERY = 40;
 	/** How near (blocks) the next block a climber must be to pile it. */
@@ -319,9 +325,24 @@ public final class SandRamps {
 					}
 					storm.nextTry.put(id, now + TRY_EVERY);
 					paths++;
-					Path path = mob.getNavigation().createPath(siege.hall, REACH);
+					Path path = newPath(mob, siege.hall, REACH);
 					if (path == null || path.canReach() && !walledOff(level, path, siege.hall)) {
 						continue;
+					}
+					if (path.canReach()) {
+						// B1493: the path ends by a column on the line to the hall, but that may be a lone post or a wall with an
+						// open doorway beside it. A path asked to come right up to the hall says whether it can walk in.
+						Path in = newPath(mob, siege.hall, IN_REACH);
+						paths++;
+						if (in != null && in.canReach() && !walledOff(level, in, siege.hall)) {
+							if (mob.getNavigation().isDone()) {
+								mob.getNavigation().moveTo(in, 1.0);
+								PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+								nav.aliveworkplace$setTargetPos(in.getTarget());
+								nav.aliveworkplace$setReachRange(IN_REACH);
+							}
+							continue;
+						}
 					}
 					site = siteFor(level, siege, storm, mob, path);
 					if (site == null) {
@@ -581,6 +602,8 @@ public final class SandRamps {
 	 * between them, at the height the path ends. The pathfinder counts a path as getting there once it ends within
 	 * {@link #REACH} blocks of the hall counted along the axes, so one that ends right outside a wall with the hall a few
 	 * blocks in counted as in, and the climber never began a ramp: it stood at the wall's foot for good (B1445, B1479).
+	 * A column here only means something is in the straight way: {@link #step} then asks for a path right up to the
+	 * hall, and a climber that can walk in round it (a lamp post, an open doorway beside the line) doesn't ramp (B1493).
 	 */
 	private static boolean walledOff(ServerLevel level, Path path, BlockPos hall) {
 		Node end = path.getEndNode();
@@ -601,6 +624,26 @@ public final class SandRamps {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * A new search for a path from {@code mob} to within {@code reach} of {@code to}, leaving the path it walks and where
+	 * that goes as they were. Vanilla hands back the path the mob is already walking whenever it heads for the same block,
+	 * whatever reach is asked for, so a climber the siege sends toward the hall was judged by that path, half walked or
+	 * one that never got in, and ramped by an open way in (B1493). BattleStations asks it too (B1494).
+	 */
+	@Nullable
+	public static Path newPath(Mob mob, BlockPos to, int reach) {
+		PathNavigationAccessor nav = (PathNavigationAccessor) mob.getNavigation();
+		BlockPos target = nav.aliveworkplace$targetPos();
+		int range = nav.aliveworkplace$reachRange();
+		nav.aliveworkplace$setTargetPos(null);
+		try {
+			return mob.getNavigation().createPath(to, reach);
+		} finally {
+			nav.aliveworkplace$setTargetPos(target);
+			nav.aliveworkplace$setReachRange(range);
+		}
 	}
 
 	@Nullable

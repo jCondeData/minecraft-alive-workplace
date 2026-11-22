@@ -414,3 +414,13 @@ open (not with them shut), every Lookout Tower and Gatehouse I station climbed t
 Hall's vault growing with every chest walked to. Open bugs from it: B1423 (a full Graveyard walls in 18 of its graves),
 B1424 (the fair's banners: 13 of 16 round the new square), B1427 (Gatehouse II's barbican stations out of reach behind
 a wall).
+
+**51.6 built by a Builder (lane-b-1122-1238).** `QaRebuiltCivic1122bGameTests` (8): the Chapel, Graveyard I, Post
+Office and Clock Tower (without Create) each built by a real Builder from exactly its Material List across a restart,
+DONE with 0 skipped and every block as drawn, within the brief's budget (Chapel 37 stacks, Graveyard 27, Post Office
+55, Clock Tower 40). The built Chapel has no job site or bed and a roofed floor at its middle; the built Graveyard
+all 32 slots free, one Undertaker's site with a chest and a plain candle, no drawn grave; the built Post Office one
+Mailbox and a home bed, and paper on a jobless villager beside it makes a Postman there; the built Clock Tower one
+cartography table. Graveyard I to II keeps the Undertaker's claimed stand, his chest and three resting graves slot
+for slot. The Post Office short of bricks waits, then finishes once restocked; its Mailbox broken mid-build is put
+back. Every name reads in American English.

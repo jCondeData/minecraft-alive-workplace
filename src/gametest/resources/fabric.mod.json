@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrelsSaved1122eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSavedFieldsWeek1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatehouseReach1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWaterSlab1122bGameTests",
@@ -23,6 +24,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaSandRampCorners1121dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampFootStall1121dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRampWalledOff1122dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRampWalledOff1122dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPriceBoard1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaDaubHouse1117cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildMoves1117e2GameTests",
@@ -228,6 +231,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RepairAskGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RefreshGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRefreshOldHouseGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefreshAskedSave1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildSaves1117eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildSaves1117eBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuildTakeDown1117e2BugTests",
@@ -2011,7 +2015,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBlueprintNames1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltMarketsDefense1122bGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRebuiltCivic1122bGameTests"
 		]
 	},
 	"depends": {

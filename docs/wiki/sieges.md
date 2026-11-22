@@ -172,9 +172,11 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
     built over or with its floor gone is skipped, and a guard on it gets another.
   - An archer is sent to the best station he can get onto (B1427): a path there, or one that ends below it within
     3.5 blocks, where he climbs. A station whose path stops nearer than 12 blocks but out of reach (out past the shut
-    gates of a stone wall) is passed over by every archer of that siege; no path, or one that gives out farther off,
-    counts as reachable. A watch works out at most 8 such paths; past that an archer takes his best station not yet
-    passed over, and it is looked at in a later watch (out of reach: he gets another).
+    gates of a stone wall) is passed over by every archer of that siege; no path (asleep, or still in the air), or one
+    that gives out farther off, tells nothing yet: he takes the station and it is looked at again in a later watch
+    (B1494). Each look is a new path search, not the path he is already walking. A watch works out at most 8 such
+    paths; past that an archer takes his best station not yet passed over, and it is looked at in a later watch (out
+    of reach: he gets another).
   - An archer's choice among the free stations within 24 blocks of his Guard Post: the breach's side of the village
     first, then the build with the fewest archers, then the one with the most of the ground in front of the breach in
     sight (`BattleStations.view`: of the spots 2 to 16 blocks out from the breach along its outside, on the ground near
@@ -183,7 +185,8 @@ Roadmap items: 32.4, 32.5, 32.6, 32.16a, 32.20, B175, B176, B252, B320, B381, B4
     the breach (with no breach, the farthest out from the hall).
   - **The climb**: villagers cannot path up a ladder. A guard walks as near his station as his path gets; once he
     is within 3.5 blocks of it and below it he is set on it, with a ladder's step sound.
-  - On the way an archer fights only what comes within 8 blocks. From a station his bow's arrow flies faster and
+  - On the way an archer shoots only at what comes within 8 blocks, and keeps walking while he does (B1494: he used to
+    stop and shoot from the ground all siege at a raider standing near his tower's foot). From a station his bow's arrow flies faster and
     flatter so that it carries the range; its damage is scaled back so only the height rule adds to it.
   - A knight or medic fights only a foe within 6 blocks of his spot, so the gate's defenders wait for what comes
     through instead of pressing against the bars.

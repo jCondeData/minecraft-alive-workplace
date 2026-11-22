@@ -3,7 +3,7 @@
 How a villager gets a job in this mod, what every job has in common (chests, levels, pace, status lines), and the
 list of all the jobs with the block and item that start each.
 
-Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296, 47.4, B1476, B1477
+Roadmap items: 21.1a, 21.1c, 24.1, 30.2, 28.8, 28.9, 28.10, 28.11, 28.12, 34.10, 34.12, 34.11, 26.6, 26.13, 26.12, 36.11, 36.12, 36.18, B97, B101, B103, B226, B224, B220, B221, B292, B333, B334, B344, B348, B349, B444, B445, B466, 40.3, 36.20, 36.22, B688, B716, B802, B803, B834, B906, B854, B147, B201, B975, B976, B970, B971, B979, B955, B1031, B1039, B1040, B1041, B1098, B1108, B1109, B1202, 36.11a, B1284, B1285, B1287, B1295, B1296, 47.4, B1476, B1477, B1485
 
 ## What a player sees
 
@@ -429,7 +429,8 @@ from the bag and hotbar first, then the off hand. Armor you wear never pays.
 
 **A Quarry build that refills (36.12).** The Quarry blueprint (`tools/blueprints/quarry.py`, in the Blueprint Table
 with "Jobs: Armorer/Miner (1)") is a curbed, fenced rim round an 8 x 9 pit, steps cut down its east side to a landing
-four deep, a hoist, and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
+four deep, a hoist (its crank's lever hangs on the end of the hoist drum, B1485: on a fence post, as first
+rebuilt, the Builder could never place it), and the Miner's shed with the blast furnace and a double chest. The pit (the build's x 1-8, z 2-10,
 y -1 to -10) is not in the file: it is the ground as it lies. Every 5 seconds `mine/QuarryBuilds.hire` looks at the
 finished Quarries: one with no quarry site of its own is given to the Miner whose job site is its blast furnace and
 who has no quarry, as a `QuarrySite` that remembers the build's origin (no marker; the owner, if online,

@@ -1990,6 +1990,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltShopsWater1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltWorkshops1121bBugTests",
+			"io.github.jcondedata.aliveworkplace.test.QaHungPieces1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRebuiltLooks1121bBugTests",
 			"io.github.jcondedata.aliveworkplace.test.BlueprintPiecesGameTests",

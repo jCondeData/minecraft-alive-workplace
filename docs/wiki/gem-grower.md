@@ -97,4 +97,6 @@ against lava, never stone; 4 plantings round a magma block and no fifth; Blank T
 the Apprentice and Type Gems from the Expert), `QaGemGrowerPartnerCompatTests` (Rock and Steel partners; a Geodude
 taps the ripe cluster loose as she picks it).
 
+- QA (lane-c-1123-0953): `QaGemGrower1123cGameTests` (two beds read "Tending 2 gem beds"; no beds says what makes one; a budding block broken mid-job forgotten; the switch off mid-job then on, she carries on; no chest: she holds her picking through a save and reload, titled "1 cluster picked", and fills a chest put down later; her lines in American English)
+
 Showcase scene: `gem_grower`.

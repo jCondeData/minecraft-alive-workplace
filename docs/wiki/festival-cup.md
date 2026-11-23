@@ -185,6 +185,10 @@ Later additions:
 - The Arena: `ArenaGameTests` (a builder finishes each tier, `Arenas.find` in every rotation and mirrored, "What
   next?"), `ArenaCompatTests` (the Expert Trainer Leader's trade, Arena III's Healing Machines),
   `QaArenaGameTests.everyArenaHasAFifteenByNineRingAndTheFirstFits`.
+- QA (lane-c-1123-0953): `QaFestivalCup1123cGameTests` (three entrants a plain festival and four a Cup, the page's
+  Sign up and Withdraw buttons, the champion seeded first, no pride for delegates or other villages, a Cup saved
+  mid-event comes back whole, a partner's hall broken mid sign-up, every Cup sentence in American English). B1545's
+  test is on `tests/festival-cup-1123c`.
 - QA (28.1a): `QaCupPurseGameTests` (a Cup at every festival out of the box; a final won by walkover pays 600,000 in
   emeralds and the purse line says so), `QaCupPurseCompatTests` (the same final pays 600,000 CobbleDollars: "The Cup's
   purse for your win: 600,000 CobbleDollars").

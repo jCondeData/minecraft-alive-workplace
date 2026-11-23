@@ -24,10 +24,9 @@ build at the [Blueprint Table](blueprint-library.md) ("A market-day trader"). Wi
 one more under the Open Gates [edict](edicts.md), and one for the Burghers. A Festival Cup's fair brings the same
 traders to the Arena with two more ([Festival Cup](festival-cup.md)).
 
-**How long.** A trader stays 10,000 ticks (about eight and a half minutes); under the Curfew edict he leaves by dusk.
-The round that starts the market runs every 30 seconds, so a market usually begins soon after 1000 (the start of the
-morning) and its traders leave about dusk. A market that begins late in the morning (the village loaded only then)
-keeps them into the night: that is B1362.
+**How long.** A trader stays 10,000 ticks (about eight and a half minutes) at most, and is gone by dusk (12000)
+whenever the market began: a market that begins late in the morning (the village loaded only then) keeps its traders
+only until dusk, not into the night (B1362). The Curfew edict's limit is the same or sooner.
 
 ## How it works
 
@@ -40,8 +39,8 @@ keeps them into the night: that is B1362.
   happens, and the day isn't spent: if the square is finished later that morning, the market still comes.
 - **Told ahead.** The [Seer](legends.md) foretells the next market day, the [Observatory](wonders.md)'s Coming days
   list and the [Gazette](luxury-workshops.md)'s calendar show it: today while this morning's market is still to come,
-  else the next market day, never more than a week off. The Gazette also dates a market for a village with no square
-  or with markets switched off, which never comes: that is B1361.
+  else the next market day, never more than a week off. A village with no Market Square in its area, or with markets
+  switched off, is told of no market day at all (B1361).
 - **[Legends](legends.md)** that visit "on market day" come with the traders.
 
 ## Switches
@@ -67,9 +66,7 @@ chronicle, and the day isn't spent, so switching it back on that morning brings 
 
 ## Known limits
 
-- B1361: the Gazette dates a market for a village with no Market Square or with markets off (and a festival with
-  festivals off); the Observatory's Coming days list shows a market day for a village with no square.
-- B1362: a market that begins late in the morning keeps its traders into the night.
+- A Market Square counts only inside the village's area: one finished far from the hall holds no market there.
 
 ## Proof
 
@@ -78,4 +75,9 @@ chronicle, and the day isn't spent, so switching it back on that morning brings 
   all over the map, the next day told against the day it comes, no square then a square finished that morning, who
   is told, the chronicle's count, the count by rank and Commerce, the switch, a styled square, 40 markets' blueprints all real and priced 6, and the
   day held kept over a save.
-- The two bugs' tests are on the branch tests/market-days-1117c until they are fixed.
+- `QaMarketDays1117cBugTests` (B1361, B1362, passing since the fixes): the Gazette tells no market day without a
+  market, and late-morning traders leave by nightfall.
+- `QaCivicMarket1123cGameTests` (QA, lane-c-1123-0953): under Open Gates three traders come to a Hamlet, a player in
+  the village reads "It's market day in ...: traders have come to the Market Square" in gold, the chronicle says
+  "Market day: 3 traders came to the Market Square", every trader leaves by dusk, two again with the edict lifted; a
+  square 200 blocks off holds no market, spends no day and is foretold by nobody, while one in the village holds it.

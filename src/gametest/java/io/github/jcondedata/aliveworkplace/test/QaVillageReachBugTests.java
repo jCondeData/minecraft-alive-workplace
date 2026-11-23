@@ -5,6 +5,7 @@ import io.github.jcondedata.aliveworkplace.farm.FieldJob;
 import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import io.github.jcondedata.aliveworkplace.hall.VillageHalls;
 import io.github.jcondedata.aliveworkplace.registry.ModAttachments;
+import io.github.jcondedata.aliveworkplace.registry.ModVillagers;
 import io.github.jcondedata.aliveworkplace.work.Jobs;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.village.poi.PoiManager;
 import net.minecraft.world.entity.ai.village.poi.PoiTypes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
@@ -48,14 +50,28 @@ public class QaVillageReachBugTests {
 		BlockPos composter = hall.offset(56, 0, 56);
 		// the composter stands 79 blocks off, outside the test area: its chunk is kept loaded so the farmer can be clicked
 		// (in a run with only this class nothing else may load it, and a villager there can't be clicked until its entities load;
-		// B581: under CI load the forced chunk took more than 200 ticks to tick entities, so the wait has 1200)
+		// B581, B1558: the forced chunk is fresh terrain, entity-ticking only once the 5x5 chunks round it are generated, in real
+		// time, while the GameTest server runs its ticks back to back: a wait counted in ticks (200, then 1200) ran out on CI.
+		// So it waits by the clock (FarChunks, B1242), then a few ticks for the entity section's load from disk to land;
+		// each tick that finds it still pending gives the IO thread 5 ms of real time)
 		net.minecraft.world.level.ChunkPos chunk = new net.minecraft.world.level.ChunkPos(composter);
 		boolean wasForced = level.getForcedChunks().contains(chunk.toLong());
 		level.setChunkForced(chunk.x, chunk.z, true);
 		Leftovers.after(helper, () -> level.setChunkForced(chunk.x, chunk.z, wasForced));
+		FarChunks.awaitEntityTicking(helper, composter);
+		// the composter's cell and the field lie far outside the test area, where earlier batches' tests stand: a Village Hall
+		// of theirs nearer the composter's cell than this one rightly takes that cell (CityPlan.nearerAnotherHall), and one
+		// nearer the field puts it in its own village; in 20 repeats, 10 copies were refused so. This test is alone in its
+		// batch, so every other hall within reach of both goes first
+		otherHalls(level, hall, 56 + 80);
 		helper.startSequence()
-			.thenWaitUntil(() -> helper.assertTrue(level.areEntitiesLoaded(chunk.toLong()) && level.isPositionEntityTicking(composter),
-				"the composter's chunk isn't loaded yet"))
+			.thenWaitUntil(() -> {
+				boolean loaded = level.areEntitiesLoaded(chunk.toLong()) && level.isPositionEntityTicking(composter);
+				if (!loaded) {
+					java.util.concurrent.locks.LockSupport.parkNanos(5_000_000L);
+				}
+				helper.assertTrue(loaded, "the composter's chunk isn't loaded yet");
+			})
 			.thenExecute(() -> {
 				VillageHallBlockEntity entity = (VillageHallBlockEntity) level.getBlockEntity(hall);
 				BitSet cells = new BitSet();
@@ -84,5 +100,18 @@ public class QaVillageReachBugTests {
 					+ VillageHalls.RADIUS + "), was refused: " + QaVillageReachGameTests.texts(seen));
 				helper.succeed();
 			});
+	}
+
+	/** Takes away every Village Hall (block and point of interest) within {@code range} blocks of {@code hall} but that one. */
+	private static void otherHalls(ServerLevel level, BlockPos hall, int range) {
+		List<BlockPos> others = level.getPoiManager().findAll(h -> h.is(ModVillagers.VILLAGE_HALL_POI), p -> !p.equals(hall), hall, range,
+			PoiManager.Occupancy.ANY).toList();
+		for (BlockPos other : others) {
+			level.removeBlock(other, false);
+			if (level.getPoiManager().getType(other).filter(h -> h.is(ModVillagers.VILLAGE_HALL_POI)).isPresent()) {
+				level.getPoiManager().remove(other); // a point with no hall under it (B427)
+			}
+		}
+		VillageHalls.forgetNearest();
 	}
 }

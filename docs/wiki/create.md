@@ -882,5 +882,13 @@ at his interface, and any contraption docks in an open village.
 - `QaCreateItemEdge1122eCompatTests` (QA, lane E, 2026-11-22; 2): a Weighted Ejector and a belt outside an open
   village deliver onto a Depot inside it; `QaCreateItemEdge1122eBugCompatTests` (2) checks that a stranger's
   outside a protected village puts nothing onto it (B1520, fixed).
+- `QaCreateEdgeVerify1123eCompatTests` (QA, lane E, 2026-11-23; 16): the six fixes above checked from their bug text
+  in the cases they left open: a stranger's contraption pours no fluid into a protected village through its fluid
+  interface (an open one's fills); turning protection on while a stranger's contraption is docked stops the trade;
+  Frank's own piston contraption still trades at his interface; a stranger's deployer pours no lava inside, none
+  facing north either, but still pours just outside, and a friend's deployer may pour inside; a stranger's hose
+  pulley fills only a basin's outside cells and, saved and loaded mid-drain, still drains nothing inside; a
+  Schematicannon fed from a chest of stone and gunpowder prints only outside; an open pipe pours no lava inside; each
+  refusal with an open-village control. Removing any of the six new Create protection mixins fails at least one.
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

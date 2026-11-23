@@ -319,7 +319,9 @@ villagers nearest the free bed have a baby (the family eats 8 meals), up to `vil
 bed at once (B206), so a second birth, an inn's traveler or vanilla breeding can't count the same bed free: a village
 with N free beds takes in at most N newcomers, whichever way they come; a traveler who moves on frees the bed for the
 next one (travelers nobody hires move on two days after arriving, at the inn's round with no player within 24 blocks;
-while a player watches they stay and keep the bed), and so does a newcomer who dies. With no bed free the Beds button says **The village is full: nobody new
+while a player watches they stay and keep the bed), and so does a newcomer who dies. A traveler staying at the inn is a nitwit guest: they take no job and claim no job block, so a free
+workstation beside the inn (a composter, a lectern, a Storehouse, a Travel Post) stays free for the village's jobless, before
+and after a save; once hired they are jobless and take a free workstation themselves (B1483, B1470). With no bed free the Beds button says **The village is full: nobody new
 moves in until a bed is free**.
 
 **Wagon beds are no homes** (B206, B207, `camp/CampBeds`). The Beds button says how many it left out, in the singular for one ("Not counted: 1 wagon bed
@@ -625,6 +627,11 @@ progress and words; the bread a stuck quest becomes is capped at 64, from both s
 two free beds take in two newcomers and the hall says it's full, the inn takes a traveler only into a free house bed,
 the wagon-bed list and its save, an older list lets a cabin's bed go and keeps the camp's), `QaWagonBedsBug1031Tests`
 (B715: a cabin's brown bed by a campfire and hay is still a home),
+`B1483GameTests` (B1483, B1470: a traveler leaves a free Storehouse to the jobless; the three kept blocks keep their
+villagers when one arrives), `QaInnTraveller1123cGameTests` (QA: the inn's own morning traveler leaves a composter, a
+lectern, a Storehouse and a Travel Post free and four jobless villagers take them; a composter put down after he came; a
+traveler saved and loaded again stays the same nitwit guest and leaves a lectern; two travelers at once; a hired one takes
+the free composter himself),
 `QaCabinBedsHome1101GameTests` (B730, B732, B749: the old look's campfire and hay at 10 blocks, not 11, and table at 12,
 not 13; other colors never wagon beds; a cabin at the look's far edges and a bed a villager takes by itself stay homes
 in a new world; a real camp on a server with an older list keeps its wagon beds through a reload while a player's bed

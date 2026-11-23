@@ -2,9 +2,12 @@ package io.github.jcondedata.aliveworkplace.compat.create;
 
 import com.simibubi.create.content.contraptions.Contraption;
 import com.simibubi.create.content.contraptions.ControlledContraptionEntity;
+import com.simibubi.create.content.kinetics.saw.TreeCutter;
 import io.github.jcondedata.aliveworkplace.compat.create.mixin.ControlledContraptionAccessor;
+import io.github.jcondedata.aliveworkplace.compat.create.mixin.TreeAccessor;
 import io.github.jcondedata.aliveworkplace.hall.VillageProtection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
@@ -42,5 +45,33 @@ public final class CreateMachines {
 	/** Whether the machine moving {@code contraption} may change the block at {@code target}. */
 	public static boolean may(Level level, Contraption contraption, BlockPos target) {
 		return VillageProtection.mayMachineChange(level, machine(contraption), target);
+	}
+
+	/**
+	 * B1518: the part of {@code tree} (found by a saw's cut) that the machine at {@code machine} may fell: its logs, leaves
+	 * and attachments inside a protected village it isn't in are left out. The same tree when nothing is left out.
+	 */
+	public static TreeCutter.Tree fellable(Level level, BlockPos machine, TreeCutter.Tree tree) {
+		if (tree == null || level == null || !VillageProtection.guarding()) {
+			return tree;
+		}
+		TreeAccessor parts = (TreeAccessor) tree;
+		List<BlockPos> logs = keep(level, machine, parts.aliveworkplace$logs());
+		List<BlockPos> leaves = keep(level, machine, parts.aliveworkplace$leaves());
+		List<BlockPos> attachments = keep(level, machine, parts.aliveworkplace$attachments());
+		if (logs == null && leaves == null && attachments == null) {
+			return tree;
+		}
+		return new TreeCutter.Tree(logs != null ? logs : parts.aliveworkplace$logs(), leaves != null ? leaves : parts.aliveworkplace$leaves(),
+			attachments != null ? attachments : parts.aliveworkplace$attachments());
+	}
+
+	/** The blocks of {@code blocks} the machine may change, or null when that is all of them. */
+	private static List<BlockPos> keep(Level level, BlockPos machine, List<BlockPos> blocks) {
+		if (blocks == null || blocks.isEmpty()) {
+			return null;
+		}
+		List<BlockPos> kept = blocks.stream().filter(pos -> VillageProtection.mayMachineChange(level, machine, pos)).toList();
+		return kept.size() == blocks.size() ? null : new java.util.ArrayList<>(kept);
 	}
 }

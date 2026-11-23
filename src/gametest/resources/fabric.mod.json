@@ -288,6 +288,7 @@
 			"io.github.jcondedata.aliveworkplace.test.GemGrowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGemGrowerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGemGrowerOrdersGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGemGrower1123cBugGameTests",
 			"io.github.jcondedata.aliveworkplace.test.JewellerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FireGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaFireGameTests",

@@ -17,53 +17,6 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
-- A Beekeeper harvesting a hive over a lit campfire now leaves the bees calm inside, as a player's bottle does; before,
-  they flew out every time (the smoke check only looked for fire blocks).
-- A Beekeeper no longer breeds a fourth bee for a hive while one of its three is out foraging far from the Apiary: a
-  bee counts for its own hive wherever it flies.
-- A shared workstation's Shift tooltip now names every job a jobless villager may take there by chance ("takes it as a
-  Farmer, an Orchard Keeper, a Florist or a Composter, by chance" for the composter), not only the vanilla one; with
-  `randomStationJobs` off it still names the vanilla job alone.
-- A jobless villager no longer stands jobless beside a barrel nobody can take while a free smoker waits nearby. A
-  barrel boxed in on its four sides and its top, or one he can't walk to (he is shut in, or it is behind glass), kept
-  the smoker out of his job search for good; now only a barrel he could really take and reach holds the smoker for the
-  Fisherman, and otherwise he becomes the smoker's Butcher. The same walk check now frees a barrel standing near a
-  workstation nobody can get to, such as a lectern in a sealed room (B1523, B1525, B1491).
-- Villagers no longer get stuck against each other on the way to work. Workers hired together at one workshop could
-  stand two abreast on its doorstep for a minute or more, and in the Smithy II the Armorer or the Miner could be held
-  at the bench's corner by the Weaponsmith standing at his grindstone, never reaching the back blast furnace. Now one
-  steps back at a door, by day as at bedtime, and a villager blocked by one who is standing still shoulders past
-  (B1512).
-- A stranger's Create saw outside a protected village no longer fells the part of a tree that reaches into the
-  village: the trunk and branches outside fall, the logs and leaves inside stay (B1518).
-- A stranger's Create Weighted Ejector or belt outside a protected village no longer delivers items onto a depot or
-  belt inside it: the ejector keeps its item and the belt's items wait at its end, as at a full depot (B1520).
-- Nor do a stranger's other Create machines just outside: an Item Drain, a Saw or Drill, a Crushing Wheel, a Funnel,
-  a Brass Tunnel or a Mechanical Crafter hands nothing onto a depot, belt or other machine inside a protected village
-  and keeps the item, as at a full depot. Machines inside the village work as before (B1532).
-- Killing the third pillager of a vanilla raid near a village hall now gives the raid's +20 reputation; vanilla
-  raids never paid it before (B1527).
-- A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze
-  powder is in the chest by the stand, and brews the potions; the same when the stand runs out of fuel with an
-  ingredient still in it (B1521).
-- A traveller staying at an inn no longer claims a free job block near him. He never took its job and never gave it
-  up, so a jobless villager stood beside a block that looked free until the world was next loaded (B1483, B1470).
-- A stranger's Create machine outside a protected village no longer pours water into it or drains water out of it: a
-  Deployer with a bucket, a Hose Pulley, and an open Fluid Pipe with a Mechanical Pump all stop at the village's edge,
-  as they do for players (B1501, B1505, B1517). His Schematicannon outside prints nothing into it either, and still
-  prints the cells outside (B1516).
-- A stranger's Create contraption outside a protected village can no longer dock its Portable Storage Interface or
-  Portable Fluid Interface with the village's interface to take or leave items or fluid; nothing passes, also after
-  a save and load. The owner's own contraptions still dock (B1488, B1495, B1519).
-
-## 0.159.1 — 2026-11-22
-
-### Fixed
-- A jobless villager by the **Fisher's Hut II** or **Ranch II** barrel becomes its Fisherman every time; he sometimes
-  turned Butcher at the hut's smoker instead (B1496).
-- A house whose Builder died halfway through a **Refresh to the latest look** is finished properly by the next
-  Builder: he carries on from the drawing the refresh started from, so no old furniture is left by the front door and
-  the new door goes in (B1500, B1511, B1513).
 - A stranger's Create machines keep their hands off a protected village: a Mechanical Harvester, Plough or Roller on
   his train or other contraption no longer reaps its crops, tills its grass or fills its holes, and his Elevator Pulley
   outside no longer carries a village block away in its cabin (B1487, B1498, B1502, B1503).

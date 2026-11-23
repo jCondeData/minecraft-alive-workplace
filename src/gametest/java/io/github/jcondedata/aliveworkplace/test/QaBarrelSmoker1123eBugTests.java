@@ -9,9 +9,9 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.level.block.Blocks;
 
 /**
- * QA lane E (2026-11-23), B1496's fix (d47d10901): a case where it disagrees with its spec, failing on main (3 of 3 runs):
+ * QA lane E (2026-11-23), B1496's fix (d47d10901): a case where it disagrees with its spec, which failed on main (3 of 3 runs):
  * a barrel no villager can take still hides a free smoker from a jobless villager standing nearer that barrel, so he
- * stays jobless. Not registered in fabric.mod.json until fixed. Helpers in {@link QaBarrelSmoker1123eGameTests}.
+ * stayed jobless (B1525; fixed 2026-11-23: {@code WorkerLimits.canTake}). Helpers in {@link QaBarrelSmoker1123eGameTests}.
  */
 public class QaBarrelSmoker1123eBugTests implements net.fabricmc.fabric.api.gametest.v1.FabricGameTest {
 	private static final String HUGE = QaBarrelSmoker1123eGameTests.HUGE;

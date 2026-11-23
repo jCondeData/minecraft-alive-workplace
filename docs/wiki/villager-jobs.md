@@ -64,11 +64,16 @@ doesn't take a barrel standing within 8 blocks across and 4 up or down of a free
 the Supply Shop's barrels behind its Shop Counter, and takes that job block instead. Once it is taken, the barrels
 count again (with the cap above). Only a job block a jobless villager could really take counts (B1476, B1477): not
 one taken only with an item (a crafting table, a jukebox, a beehive or bee nest, a mailbox), not one walled in with
-nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one whose job is
+nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one
+the villager has no way to walk to (a lectern in a sealed room, B1491; he opens doors and gates on the way, and steps up
+one block or drops three), not one whose job is
 switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
 still hires its Fisherman at the barrel beside its smoker. That smoker (or a furnace) is the Fisherman's, not a Butcher's, for a
 jobless villager nearer the free barrel than the smoker while the village has room for a fisherman (B1496): he becomes the
-hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. With the cap
+hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. Only a barrel
+he could really take and walk to holds the smoker back (B1523, B1525): a barrel boxed in on its four sides and its top, or
+one he can't reach (he is shut in a pen with the smoker, the barrel outside), leaves the smoker in his search, and he
+becomes its Butcher instead of standing jobless. With the cap
 switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of

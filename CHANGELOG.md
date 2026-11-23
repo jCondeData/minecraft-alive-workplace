@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A jobless villager no longer stands jobless beside a barrel nobody can take while a free smoker waits nearby. A
+  barrel boxed in on its four sides and its top, or one he can't walk to (he is shut in, or it is behind glass), kept
+  the smoker out of his job search for good; now only a barrel he could really take and reach holds the smoker for the
+  Fisherman, and otherwise he becomes the smoker's Butcher. The same walk check now frees a barrel standing near a
+  workstation nobody can get to, such as a lectern in a sealed room (B1523, B1525, B1491).
 - Villagers no longer get stuck against each other on the way to work. Workers hired together at one workshop could
   stand two abreast on its doorstep for a minute or more, and in the Smithy II the Armorer or the Miner could be held
   at the bench's corner by the Weaponsmith standing at his grindstone, never reaching the back blast furnace. Now one

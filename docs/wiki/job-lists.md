@@ -153,3 +153,8 @@ gatherer of every wood, the nether stems, ores, sand, gravel, clay and wool (by 
 of reach), stripped logs of six woods naming the Lumberjack, all sixteen colors of every colored kind on its own job's
 list and never the Leatherworker's, every listed thing made by exactly one job, a Leatherworker leaving red wool to the
 Shepherd through a builder's request, and the Storehouse board for stripped birch logs and lime concrete.
+`QaJobLists1123cGameTests` (QA): every thing section 1 names for each job made by that job alone (the lever the
+Carpenter's only), every gatherer's exact Storehouse line and only that line (wool and raw iron too, by name or not),
+the maker line unnamed and never for a child, another job or one out of reach, the builder's hire line dropping a job
+with a worker in the village's reach and keeping it beyond, and every Storehouse line of every item and every listed
+thing's hire line read as English (no raw key, %s or British spelling).

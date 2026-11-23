@@ -21,6 +21,11 @@ import net.minecraft.world.level.material.Fluids;
  *       the guarded inventory behaviour (packing from the chest is refused, and tested in the registered class).</li>
  * </ul>
  *
+ * Round 3 (B1546's edges, for lane A's fix): the same drain through a Smart Fluid Pipe, a glass and an encased Fluid
+ * Pipe as the stranger's piece on the edge; Frank's tank three blocks tall (a 2-wide tank can't
+ * stand in the last column: Create's tanks are square, and on z = 14 or 16 x = 11 is already outside); and protection
+ * switched on mid-drain.
+ *
  * Their open-village controls (in the registered class) pass, so the set-up moves fluid and items. Register this class
  * in src/compattest/resources/fabric.mod.json once the holes are fixed.
  */
@@ -60,5 +65,40 @@ public class QaCreatePipePackager1123eBugCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 200, batch = "qa_e1123p_packager_unpack_protected")
 	public void aStrangersPackagerUnpacksNothingIntoAChestInAProtectedVillage(GameTestHelper helper) {
 		QaCreatePipePackager1123eCompatTests.unpack(helper, true);
+	}
+
+	/** A Smart Fluid Pipe on the edge (B1546). */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_smart_pipe_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_smart_pipe_protected")
+	public void aStrangersSmartPipeDrainsNothingFromATankInAProtectedVillage(GameTestHelper helper) {
+		QaCreatePipePackager1123eCompatTests.drainVia(helper, true, "smart_fluid_pipe", 1);
+	}
+
+	/** A glass Fluid Pipe on the edge (B1546). */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_glass_pipe_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_glass_pipe_protected")
+	public void aStrangersGlassPipeDrainsNothingFromATankInAProtectedVillage(GameTestHelper helper) {
+		QaCreatePipePackager1123eCompatTests.drainVia(helper, true, "glass_fluid_pipe", 1);
+	}
+
+	/** An encased Fluid Pipe on the edge (B1546). */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_encased_pipe_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_encased_pipe_protected")
+	public void aStrangersEncasedPipeDrainsNothingFromATankInAProtectedVillage(GameTestHelper helper) {
+		QaCreatePipePackager1123eCompatTests.drainVia(helper, true, "encased_fluid_pipe", 1);
+	}
+
+	/** Frank's tank three blocks tall (one multiblock) in his last column (B1546). */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_tall_tank_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_tall_tank_protected")
+	public void aStrangersPipeDrainsNothingFromATallTankInAProtectedVillage(GameTestHelper helper) {
+		QaCreatePipePackager1123eCompatTests.drainVia(helper, true, "fluid_pipe", 3);
+	}
+
+	/** Protection switched on while a stranger's pump is draining Frank's edge tank: within 20 ticks no more water leaves it (B1546). */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_pipe_protect_midway_protected"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_pipe_protect_midway_protected")
+	public void protectionSwitchedOnMidDrainStopsAStrangersPipe(GameTestHelper helper) {
+		QaCreatePipePackager1123eCompatTests.drainMidway(helper, true);
 	}
 }

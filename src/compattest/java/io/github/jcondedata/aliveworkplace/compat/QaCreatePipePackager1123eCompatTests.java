@@ -4,6 +4,7 @@ import static io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerOnOurTh
 
 import com.simibubi.create.content.logistics.box.PackageItem;
 import com.simibubi.create.content.logistics.packager.PackagerBlockEntity;
+import io.github.jcondedata.aliveworkplace.hall.VillageHallBlockEntity;
 import java.util.List;
 import net.fabricmc.fabric.api.gametest.v1.FabricGameTest;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
@@ -112,16 +113,33 @@ public class QaCreatePipePackager1123eCompatTests implements FabricGameTest {
 	 * Fluid Tank at {@link #THEIR_TANK}, a cogwheel north of the pump turned by a creative motor.
 	 */
 	static void pipes(GameTestHelper helper, String target, String flow) {
+		pipes(helper, target, flow, "fluid_pipe");
+	}
+
+	/** A straight east-west run of {@code kind}: a plain, encased or glass Fluid Pipe, or a Smart Fluid Pipe on the floor. */
+	static BlockState piece(String kind) {
+		BlockState state = create(kind);
+		return switch (kind) {
+			case "fluid_pipe", "encased_fluid_pipe" -> {
+				for (String side : List.of("north", "south", "up", "down")) {
+					state = MechanicCompatTests.with(state, side, "false");
+				}
+				yield MechanicCompatTests.with(MechanicCompatTests.with(state, "east", "true"), "west", "true");
+			}
+			case "glass_fluid_pipe" -> MechanicCompatTests.with(state, "axis", "x");
+			case "smart_fluid_pipe" -> MechanicCompatTests.with(MechanicCompatTests.with(state, "face", "floor"), "facing", "east");
+			default -> throw new GameTestAssertException("set-up: no pipe piece " + kind);
+		};
+	}
+
+	/** As {@link #pipes(GameTestHelper, String, String)} with {@code kind} (see {@link #piece}) as the piece at {@link #PIPE}. */
+	static void pipes(GameTestHelper helper, String target, String flow, String kind) {
 		clear(helper);
 		helper.setBlock(EDGE.below(), Blocks.STONE);
 		helper.setBlock(EDGE, create(target));
 		helper.setBlock(THEIR_TANK, create("fluid_tank"));
 		helper.setBlock(PUMP, MechanicCompatTests.with(create("mechanical_pump"), "facing", flow));
-		BlockState pipe = create("fluid_pipe");
-		for (String side : List.of("north", "south", "up", "down")) {
-			pipe = MechanicCompatTests.with(pipe, side, "false");
-		}
-		helper.setBlock(PIPE, MechanicCompatTests.with(MechanicCompatTests.with(pipe, "east", "true"), "west", "true"));
+		helper.setBlock(PIPE, piece(kind));
 		helper.setBlock(COG, MechanicCompatTests.with(create("cogwheel"), "axis", "x"));
 		helper.runAfterDelay(2, () -> helper.setBlock(COG.east(), MechanicCompatTests.with(create("creative_motor"), "facing", "west")));
 		// a pump turns itself round when its shaft's direction does; once it turns, set it the way the test wants it
@@ -221,6 +239,157 @@ public class QaCreatePipePackager1123eCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_pipe_basin_open")
 	public void aStrangersPipeFillsWaterIntoABasinInAnOpenVillage(GameTestHelper helper) {
 		fillInto(helper, false, "basin", Fluids.WATER);
+	}
+
+	// ---------------------------------------------------------------- 2b. B1546's edges: other pipe pieces, a tall tank, protection switched on
+
+	/**
+	 * Frank's tank {@code height} blocks tall at {@link #EDGE} (one multiblock tank in his last column), filled at tick 10
+	 * with 8 buckets of water a block; the stranger's {@code kind} piece at {@link #PIPE} on its outside face and his pump
+	 * pulling it into his tank. Protected: Frank's tank keeps every droplet; open: water leaves it.
+	 */
+	static void drainVia(GameTestHelper helper, boolean protect, String kind, int height) {
+		QaCreateDeployerUses1122eCompatTests.hall(helper, protect);
+		pipes(helper, "fluid_tank", "east", kind);
+		for (int y = 1; y < height; y++) {
+			helper.setBlock(EDGE.above(y), create("fluid_tank"));
+		}
+		QaCreateCannonPipes1122eCompatTests.ruleSays(helper, protect, PIPE, EDGE);
+		long full = height * 8 * BUCKET;
+		helper.runAfterDelay(10, () -> fill(helper, EDGE, Fluids.WATER, full));
+		QaCreateDeployerUses1122eCompatTests.thenCheck(helper, 300, () -> {
+			long franks = amount(helper, EDGE, Fluids.WATER);
+			long theirs = amount(helper, THEIR_TANK, Fluids.WATER);
+			String what = (height > 1 ? height + "-block-tall " : "") + "Fluid Tank, through a " + kind;
+			String state = "Frank's tank " + franks + " of " + full + " droplets, the stranger's tank " + theirs + " (" + kind + " " + helper.getBlockState(PIPE)
+				+ ", pump Speed " + speed(helper, PUMP) + ")";
+			helper.assertTrue(speed(helper, PUMP) != 0, "set-up: the stranger's pump never turned: " + state);
+			if (protect) {
+				helper.assertTrue(franks == full && theirs == 0, "a stranger's Mechanical Pump outside Frank's protected village drained his " + what
+					+ " on its outside face: " + state);
+			} else {
+				helper.assertTrue(franks < full && theirs > 0, "the control (village open): the pump moved no water out of Frank's " + what + ": " + state);
+			}
+		});
+	}
+
+	/** The control: a Smart Fluid Pipe on the edge. */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_smart_pipe_open"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_smart_pipe_open")
+	public void aStrangersSmartPipeDrainsATankInAnOpenVillage(GameTestHelper helper) {
+		drainVia(helper, false, "smart_fluid_pipe", 1);
+	}
+
+	/** The control: a glass Fluid Pipe on the edge. */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_glass_pipe_open"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_glass_pipe_open")
+	public void aStrangersGlassPipeDrainsATankInAnOpenVillage(GameTestHelper helper) {
+		drainVia(helper, false, "glass_fluid_pipe", 1);
+	}
+
+	/** The control: an encased Fluid Pipe on the edge. */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_encased_pipe_open"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_encased_pipe_open")
+	public void aStrangersEncasedPipeDrainsATankInAnOpenVillage(GameTestHelper helper) {
+		drainVia(helper, false, "encased_fluid_pipe", 1);
+	}
+
+	/** The control: Frank's tank three blocks tall in his last column. */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_tall_tank_open"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_tall_tank_open")
+	public void aStrangersPipeDrainsATallTankInAnOpenVillage(GameTestHelper helper) {
+		drainVia(helper, false, "fluid_pipe", 3);
+	}
+
+	static final int SWITCH_AFTER = 20;
+
+	/**
+	 * The village open while the stranger's pump drains Frank's tank; {@link #SWITCH_AFTER} ticks after water first
+	 * leaves it, Frank turns protection on ({@code protectMidway}; else it stays open). From {@link #SWITCH_AFTER} ticks
+	 * after that, Frank's tank must lose nothing more (the control: it goes on losing).
+	 */
+	static void drainMidway(GameTestHelper helper, boolean protectMidway) {
+		VillageHallBlockEntity hall = QaCreateDeployerUses1122eCompatTests.hall(helper, false);
+		pipes(helper, "fluid_tank", "east");
+		long full = 8 * BUCKET;
+		fill(helper, EDGE, Fluids.WATER, full);
+		long[] first = {-1};
+		long[] after = {-1};
+		helper.onEachTick(() -> {
+			long now = amount(helper, EDGE, Fluids.WATER);
+			if (first[0] < 0 && now < full) {
+				first[0] = helper.getTick();
+			}
+			if (first[0] >= 0 && protectMidway && helper.getTick() == first[0] + SWITCH_AFTER) {
+				hall.setProtected(true);
+			}
+			if (first[0] >= 0 && after[0] < 0 && helper.getTick() >= first[0] + 2 * SWITCH_AFTER) {
+				after[0] = now;
+			}
+		});
+		QaCreateDeployerUses1122eCompatTests.thenCheck(helper, 300, () -> {
+			long franks = amount(helper, EDGE, Fluids.WATER);
+			String state = "Frank's tank " + after[0] + " -> " + franks + " droplets from tick " + (first[0] + 2 * SWITCH_AFTER) + " to 300 (water first left it at tick "
+				+ first[0] + (protectMidway ? ", protection on at tick " + (first[0] + SWITCH_AFTER) : "") + "; " + pipeState(helper) + ")";
+			helper.assertTrue(first[0] >= 0 && after[0] >= 0, "set-up: the stranger's pump never drained the open village's tank: " + state);
+			if (protectMidway) {
+				helper.assertTrue(franks == after[0], "Frank turned his village's protection on while a stranger's pump outside was draining his edge tank, and"
+					+ " the water kept leaving: " + state);
+			} else {
+				helper.assertTrue(franks < after[0], "the control (village open throughout): the drain stopped by itself, so the protected case proves nothing: " + state);
+			}
+		});
+	}
+
+	/** The control: with the village left open the drain goes on past the moment protection would have been switched on. */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_pipe_open_midway"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_pipe_open_midway")
+	public void aStrangersPipeKeepsDrainingAnOpenVillagesTank(GameTestHelper helper) {
+		drainMidway(helper, false);
+	}
+
+	/**
+	 * Over-protection guard: Frank's own tank (8, 2, 15), pipe (9, 2, 15), pump (10, 2, 15) facing east and pipe
+	 * (11, 2, 15), all inside his protected village, pump his water out into a stranger's tank just outside at (12, 2, 15).
+	 * The owner's machines inside work as usual (create.md), and nothing inside changes against his will.
+	 */
+	//$ gametest_ticks_batch AREA '400' '"qa_e1123p_own_pump_out"'
+	@GameTest(template = AREA, timeoutTicks = 400, batch = "qa_e1123p_own_pump_out")
+	public void theOwnersPumpInsideStillPumpsHisWaterOutToATankOutside(GameTestHelper helper) {
+		QaCreateDeployerUses1122eCompatTests.hall(helper, true);
+		clear(helper);
+		BlockPos tank = new BlockPos(8, 2, Z);
+		BlockPos pump = new BlockPos(10, 2, Z);
+		BlockPos outside = new BlockPos(12, 2, Z);
+		BlockPos cog = pump.north();
+		helper.assertTrue(inside(tank) && inside(pump) && inside(pump.east()) && inside(cog) && !inside(outside), "set-up: Frank's pump station isn't inside his village");
+		helper.setBlock(tank, create("fluid_tank"));
+		helper.setBlock(outside, create("fluid_tank"));
+		helper.setBlock(pump, MechanicCompatTests.with(create("mechanical_pump"), "facing", "east"));
+		helper.setBlock(pump.west(), piece("fluid_pipe"));
+		helper.setBlock(pump.east(), piece("fluid_pipe"));
+		helper.setBlock(cog, MechanicCompatTests.with(create("cogwheel"), "axis", "x"));
+		helper.runAfterDelay(2, () -> helper.setBlock(cog.west(), MechanicCompatTests.with(create("creative_motor"), "facing", "east")));
+		for (int t = 8; t <= 60; t += 4) {
+			helper.runAfterDelay(t, () -> {
+				BlockState state = helper.getBlockState(pump);
+				if (speed(helper, pump) != 0 && !state.getValue(state.getBlock().getStateDefinition().getProperty("facing")).toString().equals("east")) {
+					helper.getLevel().setBlock(helper.absolutePos(pump), MechanicCompatTests.with(state, "facing", "east"), 3);
+				}
+			});
+		}
+		fill(helper, tank, Fluids.WATER, 8 * BUCKET);
+		helper.assertTrue(io.github.jcondedata.aliveworkplace.hall.VillageProtection.mayMachineChange(helper.getLevel(), helper.absolutePos(pump), helper.absolutePos(tank)),
+			"set-up: the protection rule refuses Frank's own pump inside his village");
+		QaCreateDeployerUses1122eCompatTests.thenCheck(helper, 300, () -> {
+			long franks = amount(helper, tank, Fluids.WATER);
+			long out = amount(helper, outside, Fluids.WATER);
+			String state = "Frank's tank " + franks + " of " + 8 * BUCKET + " droplets, the tank outside " + out + " (pump Speed " + speed(helper, pump) + " "
+				+ helper.getBlockState(pump) + ")";
+			helper.assertTrue(speed(helper, pump) != 0, "set-up: Frank's pump never turned: " + state);
+			helper.assertTrue(franks < 8 * BUCKET && out > 0, "over-protection: Frank's own pump inside his protected village didn't pump his water out to a tank"
+				+ " just outside: " + state);
+		});
 	}
 
 	// ---------------------------------------------------------------- 3. Packager on Frank's chest

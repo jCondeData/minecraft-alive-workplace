@@ -88,4 +88,10 @@ carries the raiders' entity tags, so a restart mid-raid keeps him with it.
   raiders, the camp standing while he's away, and broken by his death at the village.
 - `WarbandGameTests.theWarlordGoesHomeAndTheSwitches`: the Warlord home at dawn; the lines a player reads; the config
   switch, the expansion gate, a Village and a desert Town get no warband.
+- `QaWarbandSpec1123dGameTests` (QA, lane D, 11-23), from this page: at most 10 stand at the camp as the strength grows
+  to 18 (at 18, 11, 10 and 9; 17 and a day is 18; a raid of 6 from 18 leaves 10 standing); a player who brings the
+  Warlord down at the walls is named in the chronicle, the band at the camp scatters, the raiders at the walls fight on
+  and the chest stays; the Warlord saved and loaded mid-raid still leads and goes home at dawn; `pillager_warband`
+  false: a standing camp sends no raid (switched on again it does); sieges off: still two ravagers, the evoker and the
+  Warlord, no siege; the camp's, the horn's and the raid's lines word for word.
 - Showcase scene `warband`: the war camp south of a palisaded Town, and the warband's siege on its gate.

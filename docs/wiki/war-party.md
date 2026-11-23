@@ -98,6 +98,10 @@ turns out six at a time and goes for the war party; a lair broken with two playe
 (B418): a lone guard's kill at the lair, then the player alone breaks it: 5 days and no cheer; a guard on a raised banner
 kills there and is lost (kills saved and loaded), then the player breaks it: 10 days and the cheer. Scene `war_party`.
 
+QA at the war camp (lane D, 2026-11-23): `QaWarbandSpec1123dGameTests.atAWarCampTheWarlordFightsAtTheFrontOnlyByACity`:
+by a Town the war camp's band goes for the war party while the Warlord keeps to his fire; by a City he fights at the
+front, his leash off; with every one of the band killed at the camp its strength is spent and nobody more turns out.
+
 QA of the Rally Banner itself (lane D, 2026-11-14): `QaRallySafe1114dGameTests` (3): a following guard leaves alone
 the village's iron golem and an armor stand the player strikes, then goes for a pig the player strikes; a zombie after
 the player is named the foe and falls; a guard follows 80 blocks from their post through fifteen rounds without being

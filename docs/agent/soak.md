@@ -230,3 +230,17 @@ watch (`BuildSite.supplied`). The same split soak after the fix:
 ```
 10:14:43 Soak result: 22/22 builds finished in 77246 ticks (3.2 days); 0 stalls; items off: none; village chunks: 21 for 14 workers
 ```
+
+### 2026-11-23: the rebuilt drawings (Milestones 49-52), lane-e-1123-0113
+
+The starter set is now 37 builds for the soak's 10 builders (4 each, one fewer for three). On main d7f7f1015
+(0.159.1), Cobbleverse, Java 21:
+
+```
+SOAK=true SOAK_DAYS=6:   Soak result: 35/37 builds finished in 144125 ticks (6.0 days); 0 stalls; 0 meals eaten from the chests; items off: none; unfinished: flower_shop (CLEAR, WORKING, 0 placed, 1 skipped; ...), guildhall (LANDSCAPE, WORKING, 1369 placed, 74 skipped; ...)
+SOAK=true SOAK_DAYS=12:  Soak result: 37/37 builds finished in 146513 ticks (6.1 days); 0 stalls; 0 meals eaten from the chests; items off: none; village chunks: 15 for 10 workers
+                         Standing: 37 of 37 finished builds stand as drawn
+```
+
+Not a bug: the last builds of two builders were simply still going when 6 days ran out (both finished a tenth of a
+day later in the 12-day run). With 37 builds, run the soak with `SOAK_DAYS=8` or more; 6 days now fails on time alone.

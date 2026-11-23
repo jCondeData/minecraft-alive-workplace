@@ -233,6 +233,12 @@ None.
 - B1475: `QaBarracksTurnOut1122dBugTests` (a night raid on a finished Barracks I with nobody ringing the bell: both
   guards come out to the raiders 8 to 10 blocks in front and go back to their grindstones after; with the bell, they go
   back by night too); `QaBarracksTurnOut1122dGameTests` unchanged and passing.
+- Vanilla pillager raids (QA, lane D): `QaVanillaRaid1123dGameTests` (a Bad Omen raid's pillager boxed 14.2 blocks
+  from the Barracks' grindstones: with `guardRadius` 12 nobody leaves for it, with the default 24 both guards come to
+  its box, and once that raid is over they walk back to their posts).
+- Vanilla raids across a reload (QA, lane D): `QaVanillaRaidMore1123dGameTests` (the guards and the boxed pillager
+  saved and loaded 10 ticks into a Bad Omen raid: both guards still come to its box; saved and loaded again there, then
+  the raid over: they walk back to their grindstones).
 - B1158: `QaGuardlessGates1110dBugTests` (a guardless village's gates shut at noon of the warned day are open the
   morning after and when the attack is called off; a guarded village's the morning after, as before).
 - B1158 (QA, lane D): `QaGatesNoGuardLeft1111dGameTests` (a guardless, unwarned village leaves the gates a player shut

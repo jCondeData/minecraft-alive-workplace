@@ -12,6 +12,7 @@
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaUnlockStart1122b2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrelsSaved1122eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBarrelSmoker1123eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSavedFieldsWeek1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGatehouseReach1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLookoutSight1122dGameTests",
@@ -441,6 +442,7 @@
 			"io.github.jcondedata.aliveworkplace.test.B648GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1418GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B1463GameTests",
+			"io.github.jcondedata.aliveworkplace.test.B1483GameTests",
 			"io.github.jcondedata.aliveworkplace.test.B132BenchGameTests",
 			"io.github.jcondedata.aliveworkplace.test.SelfHealingSupplyGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuildReserveGameTests",
@@ -2029,6 +2031,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaHooksParlour1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHelperOwnBuild1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobFixes1122cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRefreshResume1123bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPalisadeNight1122dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArcherStationPatrolB1474GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGuardFixes1122dGameTests",
@@ -2041,7 +2044,11 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCampBanners1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests",
-			"io.github.jcondedata.aliveworkplace.test.QaBarracksRaid1122cGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaBarracksRaid1122cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaid1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaidMore1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWarbandSpec1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeSwitchesWalled1123dGameTests"
 		]
 	},
 	"depends": {

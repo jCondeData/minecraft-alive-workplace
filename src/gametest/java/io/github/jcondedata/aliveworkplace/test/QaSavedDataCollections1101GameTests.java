@@ -94,7 +94,7 @@ public class QaSavedDataCollections1101GameTests implements FabricGameTest {
 		}));
 		// BuildSiteManager#load reads these from inside each finished building's entry, by its placement.
 		String finished = "saved inside a finished building's entry (BuildSiteManager#load): only a listed one's comes back";
-		for (String f : List.of("gaveUp", "furniture", "notTurning", "repairAsks", "refreshAsked")) {
+		for (String f : List.of("gaveUp", "furniture", "notTurning", "repairAsks", "refreshAsked", "refreshBegun")) {
 			TIED.put("build.BuildSiteManager." + f, new Tie(finished, (d, made, m) -> {
 				java.util.ArrayDeque<Object> list = field(d, "finished");
 				Collection<?> placements = made instanceof Map<?, ?> map ? map.keySet() : (Collection<?>) made;

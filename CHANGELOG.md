@@ -16,7 +16,14 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.159.1 — 2026-11-22
+
 ### Fixed
+- A jobless villager by the **Fisher's Hut II** or **Ranch II** barrel becomes its Fisherman every time; he sometimes
+  turned Butcher at the hut's smoker instead (B1496).
+- A house whose Builder died halfway through a **Refresh to the latest look** is finished properly by the next
+  Builder: he carries on from the drawing the refresh started from, so no old furniture is left by the front door and
+  the new door goes in (B1500, B1511, B1513).
 - A stranger's Create machines keep their hands off a protected village: a Mechanical Harvester, Plough or Roller on
   his train or other contraption no longer reaps its crops, tills its grass or fills its holes, and his Elevator Pulley
   outside no longer carries a village block away in its cabin (B1487, B1498, B1502, B1503).

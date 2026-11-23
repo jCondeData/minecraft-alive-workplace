@@ -588,6 +588,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		helper.assertTrue(loose.isEmpty(), "floating after the refresh: " + loose.subList(0, Math.min(10, loose.size())));
 		helper.assertTrue(Refreshes.entries(s.level(), s.hall()).stream().noneMatch(e -> e.building().placement().equals(s.placement())),
 			"the refreshed house still offers a refresh on the Repairs page");
+		helper.assertTrue(BuildSiteManager.get(s.level()).refreshBegun(s.placement()) == null, "the finished refresh is still remembered as begun"); // B1500
 	}
 
 	/**
@@ -603,10 +604,12 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		boolean[] killed = {false};
 		boolean[] repressed = {false};
 		int[] ticks = {0};
+		String[] from = {null};
 		helper.runAfterDelay(2, () -> {
 			helper.assertTrue(pressRefresh(helper, s), "the old Stone House has no Refresh on the Repairs page");
 			BuildSite site = Refreshes.siteOf(s.level(), s.placement());
 			helper.assertTrue(site != null, "no Builder took the refresh up");
+			from[0] = site.refreshFrom();
 			stock(helper, s, site.plan(s.level()).materials());
 		});
 		helper.onEachTick(() -> {
@@ -618,6 +621,10 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 					helper.assertTrue(pressRefresh(helper, s), "the half-refreshed house isn't on the Repairs page any more");
 					helper.assertTrue(Refreshes.siteOf(s.level(), s.placement()) != null, "the new Builder didn't take the refresh up");
 				}
+				BuildSite taken = Refreshes.siteOf(s.level(), s.placement());
+				// B1500: taken up again from the drawing it was begun from, not one guessed from the half-cleared house
+				helper.assertTrue(taken == null || from[0].equals(taken.refreshFrom()),
+					"begun from the older drawing " + from[0] + ", taken up again from " + (taken == null ? "?" : taken.refreshFrom()));
 				return;
 			}
 			BuildSite site = Refreshes.siteOf(s.level(), s.placement());
@@ -634,6 +641,9 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 				s.level().getDataStorage().set(BuildSiteManager.NAME,
 					BuildSiteManager.load(BuildSiteManager.get(s.level()).save(new CompoundTag(), registries), registries));
 			}
+			helper.assertTrue(after != null || from[0].equals(BuildSiteManager.get(s.level()).refreshBegun(s.placement())),
+				"the drawing the refresh was begun from (" + from[0] + ") is forgotten" + (reload ? " after the load: " : ": ")
+					+ BuildSiteManager.get(s.level()).refreshBegun(s.placement())); // B1500
 			BuildSite loaded = Refreshes.siteOf(s.level(), s.placement());
 			helper.assertTrue(loaded == null || !s.builder().getUUID().equals(loaded.builder()), "after the load the refresh is set to the dead Builder again");
 			if (!s.level().getBlockState(helper.absolutePos(newBench)).is(ModBlocks.BUILDERS_BENCH)) {
@@ -675,5 +685,17 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	public void qaABuilderKilledMidRefreshThenASaveAndLoadStillLeavesItToANewBuilder(GameTestHelper helper) {
 		Stage s = house(helper, Rotation.COUNTERCLOCKWISE_90);
 		killedAndReplaced(helper, s, 300, s.corner().offset(2, 0, 4), true);
+	}
+
+	/**
+	 * B1500: the same on the Stone House turned half round (CLOCKWISE_180), its Builder killed 2,500 ticks into the
+	 * refresh (still clearing), a new Builder at the same bench: he finishes it as a fresh build of today's drawing, with
+	 * none of the old drawing's furniture left by the front door.
+	 */
+	//$ gametest_ticks_batch HUGE '20000' '"qaJobFixes1122cRefreshHalfRound"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qaJobFixes1122cRefreshHalfRound")
+	public void qaABuilderKilledLateInARefreshOfAStoneHouseTurnedHalfRoundLeavesItToANewBuilder(GameTestHelper helper) {
+		Stage s = house(helper, Rotation.CLOCKWISE_180);
+		killedAndReplaced(helper, s, 2500, s.corner().offset(2, 0, 4), false);
 	}
 }

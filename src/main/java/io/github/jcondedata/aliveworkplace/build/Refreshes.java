@@ -348,10 +348,36 @@ public final class Refreshes {
 			return Optional.empty(); // (a modded library build: its copy's older drawings aren't shipped yet)
 		}
 		Old best = best(level, current.get(), olds, f.placement(), furniture);
+		BuildSiteManager manager = BuildSiteManager.get(level);
+		String begun = manager.refreshBegun(f.placement());
 		if (best == null) {
+			if (begun != null) {
+				manager.setRefreshBegun(f.placement(), null); // (stands as today's drawing now: nothing left to take up)
+			}
 			return Optional.empty();
 		}
-		BuildPlan plan = plan(level, BlueprintLibrary.get(level, f.structure()).orElseThrow(), f.structure(), best.key(), f.placement(), furniture);
+		// B1500: a refresh begun and left (its Builder died) goes on from the drawing it was begun from, while the build
+		// still stands as that drawing more than as today's. Guessed again from the half-cleared house, another older
+		// drawing could match it a little better, and what only the true one drew (its furniture by the front door) was
+		// then never taken away, with the new door's place still taken.
+		if (begun != null && !begun.equals(best.key())) {
+			Map<BlockPos, BlockState> now = BuildPlan.create(current.get(), f.placement()).targets();
+			Optional<Old> from = olds.stream().filter(o -> o.key().equals(begun)).findFirst()
+				.filter(o -> score(level, BuildPlan.create(furniture.applyAsBuilt(o.drawing()), f.placement()).targets(), now) > 0);
+			if (from.isPresent()) {
+				best = from.get();
+			} else {
+				manager.setRefreshBegun(f.placement(), null); // (that drawing is no longer shipped, or the build no longer stands as it)
+			}
+		}
+		Change change = changeFrom(level, f, best.key(), furniture);
+		return change.total() == 0 ? Optional.empty() : Optional.of(change);
+	}
+
+	/** What refreshing {@code f} from its older drawing {@code from} would change. */
+	private static Change changeFrom(ServerLevel level, BuildSiteManager.Finished f, String from,
+									 io.github.jcondedata.aliveworkplace.furnish.FurnitureChoice furniture) {
+		BuildPlan plan = plan(level, BlueprintLibrary.get(level, f.structure()).orElseThrow(), f.structure(), from, f.placement(), furniture);
 		int[] added = new int[3];
 		int[] removed = new int[3];
 		for (BuildPlan.Stage stage : List.of(BuildPlan.Stage.STRUCTURE, BuildPlan.Stage.DECORATION)) {
@@ -365,8 +391,7 @@ public final class Refreshes {
 				removed[kind(world)]++;
 			}
 		}
-		Change change = new Change(best.key(), added, removed);
-		return change.total() == 0 ? Optional.empty() : Optional.of(change);
+		return new Change(from, added, removed);
 	}
 
 	/** The older drawing among {@code olds} the build on {@code placement} stands as better than {@code current}, or null. */
@@ -733,6 +758,7 @@ public final class Refreshes {
 		BuildSite site = manager.create(f.owner(), owner != null ? owner.getGameProfile().getName() : "", f.structure(), f.placement());
 		site.setFurniture(manager.furniture(f.placement()));
 		site.setRefresh(change.get().from());
+		manager.setRefreshBegun(f.placement(), change.get().from()); // B1500: kept if he dies, until a refresh finishes
 		site.setBuilder(builder.getUUID());
 		site.setBench(bench);
 		ModAttachments.BUILDER_JOB.set(builder, new BuilderJob(site.id()));

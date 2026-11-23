@@ -66,7 +66,10 @@ count again (with the cap above). Only a job block a jobless villager could real
 one taken only with an item (a crafting table, a jukebox, a beehive or bee nest, a mailbox), not one walled in with
 nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one whose job is
 switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
-still hires its Fisherman at the barrel beside its smoker. With the cap switched off, barrels hire fishermen as in vanilla.
+still hires its Fisherman at the barrel beside its smoker. That smoker (or a furnace) is the Fisherman's, not a Butcher's, for a
+jobless villager nearer the free barrel than the smoker while the village has room for a fisherman (B1496): he becomes the
+hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. With the cap
+switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
 its brick oven, is still taken: a villager who picks it walks to the open floor beside it (the side it faces first), not

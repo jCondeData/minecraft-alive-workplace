@@ -474,6 +474,12 @@ back its redstone block turns its receiver off and on (no transmitter left at th
 lights its receiver. `QaCreateMoverTurns1110hBugCompatTests` (4, B1160): a cogwheel on a Creative Motor turns after the
 move at its speed from before, and a Mechanical Arm driven by it carries a diamond between its depots moved unturned, a
 quarter turned, and with the Mover working one step a tick.
+`QaMoverSettle1122cGameTests` (8, the QA lane, B1216's settle pass) and `QaMoverSettle1122cCompatTests` (3, B1160): a
+house at rest (a fired dispenser held by a redstone block, a locked hopper, an extended and a retracted piston, a
+switched-off lever between TNT and a lamp, an observer) arrives exactly as packed, turned a quarter or not at all,
+across a reload just before the settle and after a call-off: nothing fires or moves, lamps by a redstone block light,
+outside the new spot too; a motor's cogwheel, and a motor, shaft and press line, turn after a half turn, a quarter turn
+and a call-off. A lamp outside the old spot stays lit after the house has gone: B1447.
 `QaCreateMoverChains1113eCompatTests` (2, compat suite, the QA lane), with the Mover working one swing a tick as in a
 world: a Sequenced Gearshift keeps its instruction list and a Rotation Speed Controller its 64 RPM, and a Display Link
 put up before its Nixie Tube still aims at the tube, each moved a quarter turn with nothing loose. Two Chain Conveyors

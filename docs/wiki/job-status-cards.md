@@ -116,5 +116,10 @@ gives three orange Needs lines, each one of those kinds with its count, and no "
 and "and 1 more". Hand mutant killed: "and N more" from three needs on. The `status_card` scene now opens the card a
 step after its staging (a new hall's point of interest is added after the tick that placed it, so the card opened in
 that tick had Hall page grayed).
+QA (lane C, 2026-11-23): `QaJobCards1123cGameTests` (6, 3 of 3 runs): a builder's "Skipped: 4" and "Next up" with
+the queued build; an idle builder's and an idle miner's line in the chat's words; "Experience: 40 / 70 XP" green with a
+part-filled bar, "Top level" for a Master, "Needs: Nothing" green; all seven jobs' cards with no raw key, %s or British
+spelling; every `card.job.*` key this page lists; a builder's card unchanged after a save and reload. Planted mutant
+killed: a wrong experience value.
 
 Showcase scenes: `status_card`

@@ -265,6 +265,13 @@ public class QaBarrelSmoker1123eGameTests implements net.fabricmc.fabric.api.gam
 	 * A player's free barrel and a free smoker 4 east (no building), the village with room for its one fisherman. The
 	 * jobless villager beside the barrel becomes the Fisherman (never the Butcher); then a second jobless villager beside
 	 * the barrel (now taken; the village full) becomes the Butcher at the smoker.
+	 * <p>
+	 * The rule holds only while he is nearer the barrel than the smoker (villager-jobs.md), and a jobless villager strolls:
+	 * 1 of 60 repeats (and 1 of 10 in the 2026-11-23 nightly) he hopped off to (13, 2, 7), nearer the smoker, within 55
+	 * ticks, his search saw the smoker there as the rule allows, and he turned Butcher. So he is stood back beside the
+	 * barrel every tick while jobless: on open ground, the walk to the smoker as free as before (no pen, which would keep
+	 * the smoker from him whatever the rule says), the barrel within his reach from where he stands. Standing still he
+	 * could never finish a walk to the smoker, so the check is on the search itself: his job search never picks the smoker.
 	 */
 	//$ gametest_ticks_batch HUGE '2400' '"qaBarrelSmoker1123ePlayer"'
 	@GameTest(template = HUGE, timeoutTicks = 2400, batch = "qaBarrelSmoker1123ePlayer")
@@ -272,11 +279,19 @@ public class QaBarrelSmoker1123eGameTests implements net.fabricmc.fabric.api.gam
 		QaJobBarrels1122cGameTests.setup(helper, true);
 		barrelAndSmoker(helper);
 		BlockPos barrel = helper.absolutePos(BARREL);
-		Villager first = joblessAbs(helper, helper.absolutePos(BESIDE));
+		BlockPos smoker = helper.absolutePos(SMOKER);
+		BlockPos beside = helper.absolutePos(BESIDE);
+		Villager first = joblessAbs(helper, beside);
 		Villager[] second = {null};
 		helper.onEachTick(() -> {
 			helper.assertTrue(first.getVillagerData().getProfession() != VillagerProfession.BUTCHER,
 				"the villager beside the free barrel became the Butcher: " + where(helper, first));
+			if (first.getVillagerData().getProfession() == VillagerProfession.NONE) {
+				helper.assertTrue(!first.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(GlobalPos::pos).filter(smoker::equals).isPresent(),
+					"the jobless villager beside the free barrel picked the smoker in his job search: " + where(helper, first));
+				first.setPos(beside.getX() + 0.5, beside.getY(), beside.getZ() + 0.5); // beside the barrel, wherever he strolled this tick
+				helper.assertTrue(first.blockPosition().distSqr(barrel) < first.blockPosition().distSqr(smoker), "(setup) the villager isn't nearer the barrel");
+			}
 			if (second[0] == null && holds(first, VillagerProfession.FISHERMAN, barrel)) {
 				second[0] = joblessAbs(helper, helper.absolutePos(BARREL.north()));
 			} else if (second[0] != null) {

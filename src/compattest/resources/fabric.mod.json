@@ -27,6 +27,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainActors1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainPloughRoller1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateActorsVerify1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateMixinMutants1123eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateCannonPipes1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateCannonPipes1122eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFellingFluids1122eCompatTests",

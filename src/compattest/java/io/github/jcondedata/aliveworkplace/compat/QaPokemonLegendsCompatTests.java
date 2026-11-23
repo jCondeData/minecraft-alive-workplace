@@ -224,6 +224,73 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 		});
 	}
 
+	/**
+	 * B1393's lead (lane-d-1123-0108), a bug test: the wiki says the Professor "counts only the Pasture Blocks inside the
+	 * village". A Pikachu of a pasture inside the village that has walked 3 blocks past the village's edge (well inside
+	 * its pasture's roaming range) still belongs to that pasture, so the census still counts it.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"qa_legends_census_out"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_legends_census_out")
+	public void aPokemonThatWalkedOutStillCountsForItsPasture(GameTestHelper helper) {
+		setUp(helper);
+		VillageHalls.RADIUS = 6; // the village is x and z 9 to 21; setUp's reset puts the radius back
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		BlockPos pasture = PastureCompatTests.pasture(helper, new BlockPos(15, 2, 12));
+		Pokemon pikachu = PastureCompatTests.pastured(helper, pasture, player, "pikachu", Direction.NORTH);
+		helper.runAfterDelay(10, () -> {
+			helper.assertTrue(census(helper).pokemon() == 1, "the control: a Pikachu beside its pasture in the village counts: " + census(helper));
+			PokemonEntity entity = pikachu.getEntity();
+			helper.assertTrue(entity != null, "the Pikachu has no entity");
+			entity.setNoAi(true);
+			Vec3 out = helper.absoluteVec(new Vec3(15.5, 2, 5.5));
+			entity.teleportTo(out.x, out.y, out.z);
+			helper.runAfterDelay(5, () -> {
+				PokemonPastureBlockEntity block = (PokemonPastureBlockEntity) level.getBlockEntity(pasture);
+				helper.assertTrue(block.getTetheredPokemon().size() == 1 && entity.isAlive() && entity.getTethering() != null,
+					"the control: the pasture still keeps the Pikachu: " + block.getTetheredPokemon().size() + ", alive " + entity.isAlive());
+				helper.assertTrue(VillageHalls.contains(helper.absolutePos(HALL), pasture), "the control: the pasture is in the village");
+				helper.assertTrue(!VillageHalls.area(helper.absolutePos(HALL)).intersects(entity.getBoundingBox()), "the control: the Pikachu stands outside the village");
+				var count = census(helper);
+				helper.assertTrue(count.pokemon() == 1 && count.species().equals(Set.of("cobblemon:pikachu")),
+					"a Pikachu of a pasture inside the village isn't counted while it stands 3 blocks past the edge: " + count);
+				helper.succeed();
+			});
+		});
+	}
+
+	/**
+	 * The other side: "a pasture outside the hall's reach adds nothing to the census or the village Pokédex", also when
+	 * its Squirtle has walked into the village.
+	 */
+	//$ gametest_ticks_batch AREA '300' '"qa_legends_census_in"'
+	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_legends_census_in")
+	public void aPokemonThatWalkedInFromAnOutsidePastureIsNotCounted(GameTestHelper helper) {
+		setUp(helper);
+		VillageHalls.RADIUS = 6;
+		ServerLevel level = helper.getLevel();
+		ServerPlayer player = helper.makeMockServerPlayerInLevel();
+		BlockPos pasture = PastureCompatTests.pasture(helper, new BlockPos(15, 2, 27));
+		Pokemon squirtle = PastureCompatTests.pastured(helper, pasture, player, "squirtle", Direction.SOUTH);
+		helper.runAfterDelay(10, () -> {
+			helper.assertTrue(census(helper).pokemon() == 0, "the control: a Squirtle beside its pasture outside the village doesn't count: " + census(helper));
+			PokemonEntity entity = squirtle.getEntity();
+			helper.assertTrue(entity != null, "the Squirtle has no entity");
+			entity.setNoAi(true);
+			Vec3 in = helper.absoluteVec(new Vec3(15.5, 2, 18.5));
+			entity.teleportTo(in.x, in.y, in.z);
+			helper.runAfterDelay(5, () -> {
+				PokemonPastureBlockEntity block = (PokemonPastureBlockEntity) level.getBlockEntity(pasture);
+				helper.assertTrue(block.getTetheredPokemon().size() == 1 && entity.isAlive() && entity.getTethering() != null,
+					"the control: the pasture still keeps the Squirtle: " + block.getTetheredPokemon().size() + ", alive " + entity.isAlive());
+				helper.assertTrue(!VillageHalls.contains(helper.absolutePos(HALL), pasture), "the control: the pasture is outside the village");
+				var count = census(helper);
+				helper.assertTrue(count.pokemon() == 0, "a Squirtle of a pasture outside the village is counted while it stands in the village: " + count);
+				helper.succeed();
+			});
+		});
+	}
+
 	private static io.github.jcondedata.aliveworkplace.legend.PokemonCensus.Count census(GameTestHelper helper) {
 		return io.github.jcondedata.aliveworkplace.legend.PokemonCensus.of(helper.getLevel(), helper.absolutePos(HALL));
 	}

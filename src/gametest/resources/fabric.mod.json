@@ -846,6 +846,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCovens1108dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarlordBand1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPiglins1108dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaPiglins1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaPeacefulRadius1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaLadderThrow1107dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCuredVillager1109eGameTests",

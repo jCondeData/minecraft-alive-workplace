@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Villagers no longer get stuck against each other on the way to work. Workers hired together at one workshop could
+  stand two abreast on its doorstep for a minute or more, and in the Smithy II the Armorer or the Miner could be held
+  at the bench's corner by the Weaponsmith standing at his grindstone, never reaching the back blast furnace. Now one
+  steps back at a door, by day as at bedtime, and a villager blocked by one who is standing still shoulders past
+  (B1512).
 - Killing the third pillager of a vanilla raid near a village hall now gives the raid's +20 reputation; vanilla
   raids never paid it before (B1527).
 - A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze

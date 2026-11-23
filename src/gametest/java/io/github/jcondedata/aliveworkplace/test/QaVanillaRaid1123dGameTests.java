@@ -40,19 +40,21 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlac
 
 /**
  * QA (lane-d-1123-0108): a vanilla pillager raid (the Raids one a Bad Omen starts, not ours) against the guards and the
- * guards, from the spec (docs/wiki/raids.md, "Guards"):
+ * village's standing, from the spec (docs/wiki/raids.md "Guards", reputation.md "Fighting in a raid"):
  * <ul>
  * <li>a guard turns out to a vanilla raid's raider within {@code guardRadius} of his post whether he sees it or not, and
  * keeps the sight rule just outside it (both sides of the boundary, the raider unseen in a stone box);</li>
- * <li>when the vanilla raid is over, the guards who went out walk back to their posts.</li>
+ * <li>when the vanilla raid is over, the guards who went out walk back to their posts;</li>
+ * <li>the third vanilla raid pillager a player kills while the raid is on pays the raid's +20, once; a pillager outside
+ * any raid, and one killed after the raid stopped, count for nothing.</li>
  * </ul>
  * The raid is started with {@code Raids.createOrExtendRaid} at a bell whose meeting point is taken (as ReliefGameTests
  * does); the pillagers are placed by hand and joined to wave 1 so no random wave spawns while one of them lives. The guard
- * scene is a finished Barracks I with a guard at each grindstone, as in QaBarracksRaid1122cGameTests. The reputation a
- * vanilla raid's pillagers should pay (reputation.md) fails (B1527): that test is on branch tests/vanilla-raid-1123d.
+ * scene is a finished Barracks I with a guard at each grindstone, as in QaBarracksRaid1122cGameTests.
  */
 public class QaVanillaRaid1123dGameTests implements FabricGameTest {
 	private static final String AREA = "aliveworkplace_test:huge_area";
+	private static final String REP_AREA = ReputationGameTests.AREA;
 	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("QaVanillaRaid1123d");
 	private static final BlockPos HALL = new BlockPos(2, 2, 2);
 	private static final BlockPos AT = new BlockPos(8, 2, 14);
@@ -130,7 +132,7 @@ public class QaVanillaRaid1123dGameTests implements FabricGameTest {
 	}
 
 	/** A tough crossbow pillager at {@code rel} (y = 2) without AI, no tag of ours. */
-	private static Mob pillager(GameTestHelper helper, BlockPos rel) {
+	static Mob pillager(GameTestHelper helper, BlockPos rel) {
 		ServerLevel level = helper.getLevel();
 		Mob m = EntityType.PILLAGER.create(level);
 		BlockPos p = helper.absolutePos(rel);
@@ -158,7 +160,7 @@ public class QaVanillaRaid1123dGameTests implements FabricGameTest {
 	}
 
 	/** A bell at {@code rel} whose meeting point is taken at tick 5, so the spot counts as a village for a vanilla raid. */
-	private static BlockPos bell(GameTestHelper helper, BlockPos rel) {
+	static BlockPos bell(GameTestHelper helper, BlockPos rel) {
 		ServerLevel level = helper.getLevel();
 		BlockPos bell = helper.absolutePos(rel);
 		level.setBlockAndUpdate(bell, Blocks.BELL.defaultBlockState());
@@ -167,7 +169,7 @@ public class QaVanillaRaid1123dGameTests implements FabricGameTest {
 	}
 
 	/** Starts the vanilla raid at {@code bell} (a mock player's omen) and joins {@code raiders} to its first wave. */
-	private static Raid startVanillaRaid(GameTestHelper helper, BlockPos bell, ServerPlayer player, Mob... raiders) {
+	static Raid startVanillaRaid(GameTestHelper helper, BlockPos bell, ServerPlayer player, Mob... raiders) {
 		ServerLevel level = helper.getLevel();
 		helper.assertTrue(level.isVillage(bell), "(setup) the bell doesn't make a village");
 		Raid raid = level.getRaids().createOrExtendRaid(player, bell);
@@ -331,6 +333,67 @@ public class QaVanillaRaid1123dGameTests implements FabricGameTest {
 				helper.fail("the vanilla raid is over but the guards didn't go back to their posts within " + BACK + " ticks: " + where(helper, s)
 					+ "; raid active " + raid[0].isActive() + ", vanilla raid at the post " + (s.level().getRaidAt(s.posts().get(0)) != null));
 			}
+		});
+	}
+
+	// --- Reputation in a vanilla raid -------------------------------------------------------------------------------
+
+	/**
+	 * reputation.md: "Fighting in a raid: the third raider you kill in it, +20, once a raid"; raiders are "vanilla's
+	 * pillagers while their raid is on; a straggler after the raid counts for nothing". A pillager killed with no raid on
+	 * pays nothing; with a vanilla raid on, the third joined pillager pays 20 and a fourth nothing more; another player's
+	 * third, killed after the raid stopped, pays nothing.
+	 */
+	//$ gametest_ticks_batch REP_AREA '200' '"qaVanillaRaid1123dReputation"'
+	@GameTest(template = REP_AREA, timeoutTicks = 200, batch = "qaVanillaRaid1123dReputation")
+	public void qaTheThirdVanillaRaidPillagerKilledEarnsTheRaidsTwenty(GameTestHelper helper) {
+		ReputationGameTests.village(helper, () -> {
+			ServerLevel level = helper.getLevel();
+			VillageRaids.forget();
+			Leftovers.after(helper, VillageRaids::forget);
+			BlockPos hall = helper.absolutePos(ReputationGameTests.HALL);
+			BlockPos bell = bell(helper, ReputationGameTests.HALL.offset(3, 0, 3));
+			ServerPlayer me = ReputationGameTests.player(helper, ReputationGameTests.HALL.south(2));
+			ServerPlayer other = ReputationGameTests.player(helper, ReputationGameTests.HALL.south(3));
+			Raid[] raid = new Raid[1];
+			Leftovers.after(helper, () -> {
+				if (raid[0] != null) {
+					raid[0].stop();
+				}
+			});
+			List<Mob> p = new ArrayList<>();
+			for (int n = 0; n < 7; n++) {
+				p.add(pillager(helper, new BlockPos(3 + n, 2, 3)));
+			}
+			// A pillager with no raid on.
+			p.get(0).hurt(level.damageSources().playerAttack(me), 1000f);
+			helper.assertTrue(ReputationGameTests.points(helper, me) == 0, "a pillager with no raid on paid " + ReputationGameTests.points(helper, me));
+			helper.runAfterDelay(30, () -> {
+				raid[0] = startVanillaRaid(helper, bell, me, p.get(1), p.get(2), p.get(3), p.get(4), p.get(5), p.get(6));
+				helper.assertTrue(VillageRaids.active(hall).isEmpty(), "(setup) a village raid of ours is on too");
+				helper.assertTrue(level.getRaidAt(p.get(1).blockPosition()) == raid[0], "(setup) the pillagers aren't in the raid's reach");
+				p.get(1).hurt(level.damageSources().playerAttack(me), 1000f);
+				p.get(2).hurt(level.damageSources().playerAttack(me), 1000f);
+				p.get(5).hurt(level.damageSources().playerAttack(other), 1000f);
+				p.get(6).hurt(level.damageSources().playerAttack(other), 1000f);
+				helper.assertTrue(ReputationGameTests.points(helper, me) == 0 && ReputationGameTests.points(helper, other) == 0,
+					"paid before the third: " + ReputationGameTests.points(helper, me) + ", " + ReputationGameTests.points(helper, other));
+				helper.assertTrue(((Raider) p.get(3)).hasActiveRaid() && raid[0].isActive(), "(setup) the third pillager isn't in the active raid");
+				p.get(3).hurt(level.damageSources().playerAttack(me), 1000f);
+				helper.assertTrue(ReputationGameTests.points(helper, me) == 20, "the third vanilla raid pillager paid " + ReputationGameTests.points(helper, me)
+					+ ", not 20 (the raid still active " + raid[0].isActive() + ", the dead pillager's raid " + ((Raider) p.get(3)).getCurrentRaid() + ")");
+				Mob extra = pillager(helper, new BlockPos(3, 2, 5));
+				raid[0].joinRaid(1, (Raider) extra, null, false);
+				extra.hurt(level.damageSources().playerAttack(me), 1000f);
+				helper.assertTrue(ReputationGameTests.points(helper, me) == 20, "paid twice in one vanilla raid: " + ReputationGameTests.points(helper, me));
+				// The raid stops; the other player's third, a straggler of it, counts for nothing.
+				Mob straggler = pillager(helper, new BlockPos(4, 2, 5));
+				raid[0].joinRaid(1, (Raider) straggler, null, false);
+				raid[0].stop();
+				straggler.hurt(level.damageSources().playerAttack(other), 1000f);
+				helper.assertTrue(ReputationGameTests.points(helper, other) == 0, "a straggler after the vanilla raid paid " + ReputationGameTests.points(helper, other));
+				helper.succeed();
+			});
 		});
 	}
 }

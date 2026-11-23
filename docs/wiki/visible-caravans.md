@@ -109,5 +109,6 @@ All 33.7, lane a, 2026-10-10 (the full list is in ROADMAP's Notes):
   payment, unpaid goods home in the sender's own caravan) the same seen or not; a player's lead or name tag doesn't
   take the party.
 - `CaravanTradeGameTests` and `VillageHallGameTests.caravansCarryWhatAnotherVillageNeeds` pass unchanged.
+- QA (lane-c-1123-0953): `QaVisibleCaravans1123cGameTests` (a spectator nearby sees nothing; breaking a hall takes away only its own party, goods kept; a leaving party's banner color and the picked one with `villageBanners` off; the saved `colour` through a save, an older save and a far village; an indoor Storehouse loads under the open sky; a caravan going north-west leaves and arrives on that side at the rim; `/kill` on the carter alone takes the whole party, drops nothing; the carter's name sentence)
 
 Showcase scenes: `caravan`

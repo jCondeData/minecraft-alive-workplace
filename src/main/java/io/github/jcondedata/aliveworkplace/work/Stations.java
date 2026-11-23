@@ -679,7 +679,22 @@ public final class Stations {
 		}
 		List<Component> lines = new ArrayList<>();
 		if (station.byItself() && jobs.get(0) == station.jobs().get(0)) {
-			lines.add(Words.articled("tooltip.aliveworkplace.station.by_itself", 0, name(jobs.get(0).profession().get())).withStyle(ChatFormatting.GRAY));
+			// B1541: with randomStationJobs on, a jobless villager draws one of the block's jobs (RandomJobs: never the
+			// Trainer Leader), so the line names them all; off, the vanilla job alone.
+			List<Job> drawn = RandomJobs.ENABLED ? jobs.stream().filter(j -> j == jobs.get(0) || j.profession().get() != ModVillagers.TRAINER_LEADER).toList()
+				: List.of(jobs.get(0));
+			if (drawn.size() < 2) {
+				lines.add(Words.articled("tooltip.aliveworkplace.station.by_itself", 0, name(jobs.get(0).profession().get())).withStyle(ChatFormatting.GRAY));
+			} else {
+				net.minecraft.network.chat.MutableComponent names = Component.empty();
+				for (int i = 0; i < drawn.size(); i++) {
+					if (i > 0) {
+						names.append(Component.translatable(i == drawn.size() - 1 ? "tooltip.aliveworkplace.station.by_itself.or" : "tooltip.aliveworkplace.station.by_itself.comma"));
+					}
+					names.append(Words.articled("tooltip.aliveworkplace.station.by_itself.name", 0, name(drawn.get(i).profession().get())));
+				}
+				lines.add(Component.translatable("tooltip.aliveworkplace.station.by_itself.random", names).withStyle(ChatFormatting.GRAY));
+			}
 		}
 		lines.add(Component.translatable("tooltip.aliveworkplace.station.header").withStyle(ChatFormatting.GOLD));
 		for (Job job : jobs) {

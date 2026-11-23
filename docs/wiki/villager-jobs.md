@@ -64,11 +64,16 @@ doesn't take a barrel standing within 8 blocks across and 4 up or down of a free
 the Supply Shop's barrels behind its Shop Counter, and takes that job block instead. Once it is taken, the barrels
 count again (with the cap above). Only a job block a jobless villager could really take counts (B1476, B1477): not
 one taken only with an item (a crafting table, a jukebox, a beehive or bee nest, a mailbox), not one walled in with
-nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one whose job is
+nowhere to stand beside or on top (a block with a single open side but no headroom there counts as walled in), not one
+the villager has no way to walk to (a lectern in a sealed room, B1491; he opens doors and gates on the way, and steps up
+one block or drops three), not one whose job is
 switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
 still hires its Fisherman at the barrel beside its smoker. That smoker (or a furnace) is the Fisherman's, not a Butcher's, for a
 jobless villager nearer the free barrel than the smoker while the village has room for a fisherman (B1496): he becomes the
-hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. With the cap
+hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. Only a barrel
+he could really take and walk to holds the smoker back (B1523, B1525): a barrel boxed in on its four sides and its top, or
+one he can't reach (he is shut in a pen with the smoker, the barrel outside), leaves the smoker in his search, and he
+becomes its Butcher instead of standing jobless. With the cap
 switched off, barrels hire fishermen as in vanilla.
 
 **Built-in workstations (B168).** A workstation built in under solid blocks, like the Kitchen's smoker in the mouth of
@@ -159,7 +164,9 @@ goes only on free grass or dirt, never over a block, and each one planted is one
 are fed flowers until there are three bees a hive: two become three, a lone bee is never fed. Without flowers (a
 sapling or wheat doesn't count) nothing is planted or fed and the chest is left as it was. A hive exactly 16 blocks
 from the Apiary is looked after, one 17 blocks away isn't. Harvested with no campfire under it, or an unlit one, the
-bees fly out and never go for the Beekeeper; over a lit campfire no bee gets angry.
+bees fly out and never go for the Beekeeper; over a lit campfire (smoke within 5 blocks below, as for a player's
+bottle) they stay in the hive and no bee gets angry (B1533). A bee out foraging still counts for its own hive, however
+far from the Apiary it flies, so a hive with three bees is never bred to four (B1534).
 
 **Daycare hatchlings (28.12, B854).** A Daycare Keeper's pair hatches the mother's base form in her regional form: a
 female Alolan Ninetales hatches an Alolan Vulpix, a Kanto mother a Kanto Vulpix whatever the father. The hatchling
@@ -595,9 +602,6 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 ## Known limits
 
 - A job needs a free block of its kind within about 4 blocks of the villager when it is picked.
-- Beekeeper (open bugs, QA 2026-11-23): a hive over a lit campfire still lets its bees out when the Beekeeper
-  harvests it (they stay calm), and a bee foraging more than 16 blocks from the Apiary isn't counted, so a hive that
-  already has three bees is sometimes bred to four.
 - Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap or the fisherman cap.
 - A jobless villager checks the fisherman cap when he looks for a workstation and on the way to it: if the village
   grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.

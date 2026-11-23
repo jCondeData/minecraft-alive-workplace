@@ -13,6 +13,10 @@ becomes a Farmer, an Orchard Keeper, a Florist or a Composter. A village that al
 florist will most likely get a florist next. Once a villager has a job, they keep it, through a save and reload, like
 any job. A job picked with its item (sneak-right-click) is never random: wheat still makes a Farmer.
 
+Hold Shift over a composter and its tooltip says so: "A villager without a job takes it as a Farmer, an Orchard
+Keeper, a Florist or a Composter, by chance". Every shared block names its own jobs that way; with the switch off
+it names only the vanilla job ("takes it as a Farmer").
+
 ## How it works
 
 When vanilla gives a jobless villager the job of the block they walked to (its `AssignProfessionFromJobSite`, the
@@ -91,6 +95,8 @@ No new ones. The blocks and jobs are those of [Villager jobs](villager-jobs.md);
   be refused; the vanilla job is always in it, as vanilla gave it.
 - A switch, on by default (the lane): the owner's live server can go back to the vanilla job.
 - The block's vanilla job is still the first in every list and in the tooltip; nothing about picking by item changed.
+- The tooltip's "takes it as" line names every job the block can draw, with "by chance" (B1541, 2026-11-23); it
+  leaves out the Trainer Leader, never drawn, but can't know the class of the villager who'll take the block.
 
 ## Known limits
 

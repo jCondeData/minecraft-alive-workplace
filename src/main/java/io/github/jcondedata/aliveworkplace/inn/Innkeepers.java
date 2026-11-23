@@ -248,6 +248,10 @@ public final class Innkeepers {
 		VillagerType[] types = {VillagerType.PLAINS, VillagerType.DESERT, VillagerType.SAVANNA, VillagerType.SNOW, VillagerType.TAIGA,
 			VillagerType.JUNGLE, VillagerType.SWAMP};
 		guest.setVillagerData(guest.getVillagerData().setType(types[level.random.nextInt(types.length)]).setProfession(VillagerProfession.NITWIT));
+		// B1483: a nitwit's brain. The one he was created with is a jobless villager's (changing the trade doesn't rebuild
+		// it): with it he claimed the nearest free job block, never took its job and never gave it up, so a jobless
+		// villager stood beside a block that looked free.
+		guest.refreshBrain(level);
 		boolean oldTongues = io.github.jcondedata.aliveworkplace.research.TreeEffects.flag(innkeeper, "old_tongues"); // the Old Sage's Ancient Lore (29.14)
 		int lvl = oldTongues ? Math.max(3, newcomerLevel(level, innkeeper)) : newcomerLevel(level, innkeeper);
 		ModAttachments.TRAVELLER.set(guest, new Traveller(level.getGameTime(), lvl));

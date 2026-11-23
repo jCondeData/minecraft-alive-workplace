@@ -159,5 +159,9 @@ none (the Journeyman's blueprint is an ordinary trade, saved with the villager's
 - `VillageGameTests`: `everyVillageTypeCanGrowTheOtherHouses` (the four houses in all five kinds, one job block, their
   worker), `theWinerysVintnerTakesItsVat`, `theTailorsShopsTailorTakesItsLoom`, `thePrintShopsPrinterTakesItsPress`,
   `theJewellersWorkshopsJewellerTakesItsBench`.
+- QA (lane-c-1123-0953): `QaLuxuryWorkshops1123cGameTests` (a second villager turned away at a taken cauldron, cartography
+  table or stonecutter, in English; a maker takes from a Vintner's chest but never a builder's; a Novice leaves a Brooch's
+  and a Circlet's makings alone and asks for a ring's; the Tailor dyes white wool for Fine Clothes; the cartography table
+  broken mid-job loses nothing; a full own chest loses no rings).
 - Showcase scene `luxury_workshops`: the eight builds front and back, and the four plains village houses with their
   workers.

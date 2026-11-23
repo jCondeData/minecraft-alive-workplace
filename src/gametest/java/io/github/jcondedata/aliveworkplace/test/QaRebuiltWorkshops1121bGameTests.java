@@ -141,52 +141,52 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 
 	// ---- drawings -----------------------------------------------------------------------------------------------------
 
-	private static Blueprint blueprint(GameTestHelper helper, StarterBlueprints.Entry entry) {
+	static Blueprint blueprint(GameTestHelper helper, StarterBlueprints.Entry entry) {
 		return BlueprintLibrary.get(helper.getLevel(), entry.id()).orElseThrow(() -> new AssertionError("missing " + entry.id()));
 	}
 
 	/** The drawing's cells, its basement (if any) below y = 0, so y = 0 is the ground floor in every level. */
-	private static Map<BlockPos, BlockState> cells(Blueprint blueprint) {
+	static Map<BlockPos, BlockState> cells(Blueprint blueprint) {
 		return QaBasementGameTests.blocks(blueprint);
 	}
 
-	private static BlockState at(Map<BlockPos, BlockState> cells, BlockPos pos) {
+	static BlockState at(Map<BlockPos, BlockState> cells, BlockPos pos) {
 		return QaBasementGameTests.at(cells, pos);
 	}
 
-	private static String n(StarterBlueprints.Entry entry) {
+	static String n(StarterBlueprints.Entry entry) {
 		return entry.id().getPath();
 	}
 
-	private static String name(BlockState s) {
+	static String name(BlockState s) {
 		return BuiltInRegistries.BLOCK.getKey(s.getBlock()).getPath();
 	}
 
-	private static List<BlockPos> where(Map<BlockPos, BlockState> cells, Block block) {
+	static List<BlockPos> where(Map<BlockPos, BlockState> cells, Block block) {
 		return cells.entrySet().stream().filter(e -> e.getValue().is(block)).map(Map.Entry::getKey).sorted().toList();
 	}
 
-	private static List<BlockPos> chests(Map<BlockPos, BlockState> cells) {
+	static List<BlockPos> chests(Map<BlockPos, BlockState> cells) {
 		return cells.entrySet().stream().filter(e -> e.getValue().getBlock() instanceof ChestBlock).map(Map.Entry::getKey).sorted().toList();
 	}
 
-	private static List<BlockPos> bedHeads(Map<BlockPos, BlockState> cells) {
+	static List<BlockPos> bedHeads(Map<BlockPos, BlockState> cells) {
 		return cells.entrySet().stream().filter(e -> e.getValue().getBlock() instanceof BedBlock
 			&& e.getValue().getValue(BedBlock.PART) == BedPart.HEAD).map(Map.Entry::getKey).sorted().toList();
 	}
 
-	private static BlockPos bedFoot(Map<BlockPos, BlockState> cells, BlockPos head) {
+	static BlockPos bedFoot(Map<BlockPos, BlockState> cells, BlockPos head) {
 		return head.relative(at(cells, head).getValue(BedBlock.FACING).getOpposite());
 	}
 
-	private static boolean container(BlockState s) {
+	static boolean container(BlockState s) {
 		Block b = s.getBlock();
 		return b instanceof ChestBlock || b instanceof BarrelBlock || b instanceof AbstractFurnaceBlock || b instanceof HopperBlock
 			|| b instanceof BrewingStandBlock || b instanceof DispenserBlock || b instanceof ShulkerBoxBlock;
 	}
 
 	/** Every job site a villager is drawn to, the bell included (not a bed, lightning rod, portal, lodestone or hive). */
-	private static Map<BlockPos, BlockState> jobSites(Map<BlockPos, BlockState> cells) {
+	static Map<BlockPos, BlockState> jobSites(Map<BlockPos, BlockState> cells) {
 		Map<BlockPos, BlockState> out = new HashMap<>();
 		cells.forEach((p, s) -> {
 			if (PoiTypes.forState(s).filter(h -> !h.is(PoiTypes.HOME) && !h.is(PoiTypes.LIGHTNING_ROD) && !h.is(PoiTypes.NETHER_PORTAL)
@@ -211,12 +211,12 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 	// ---- a villager's walk ------------------------------------------------------------------------------------------
 
 	/** A villager's feet or head can be in it: a wooden door (he opens it), a ladder, or nothing over a fifth of a block tall. */
-	private static boolean open(BlockState state) {
+	static boolean open(BlockState state) {
 		return open(state, false);
 	}
 
 	/** {@code player}: any door, trapdoor or fence gate opens too (a player's walk, the iron door's button pressed). */
-	private static boolean open(BlockState state, boolean player) {
+	static boolean open(BlockState state, boolean player) {
 		if (state.getBlock() instanceof DoorBlock && (player || !state.is(Blocks.IRON_DOOR))) {
 			return true;
 		}
@@ -230,11 +230,11 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 		return shape.isEmpty() || shape.max(Direction.Axis.Y) <= 0.2;
 	}
 
-	private static boolean noFloor(BlockState state) {
+	static boolean noFloor(BlockState state) {
 		return state.getBlock() instanceof FenceBlock || state.getBlock() instanceof WallBlock || state.getBlock() instanceof FenceGateBlock;
 	}
 
-	private static boolean standable(Map<BlockPos, BlockState> cells, BlockPos feet, boolean player) {
+	static boolean standable(Map<BlockPos, BlockState> cells, BlockPos feet, boolean player) {
 		BlockState here = at(cells, feet);
 		if (!open(here, player) || !open(at(cells, feet.above()), player) || !here.getFluidState().isEmpty()) {
 			return false;
@@ -244,11 +244,11 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 	}
 
 	/** Every spot a villager reaches on foot from the street in front: level, a step up, up to three down, ladders. */
-	private static Set<BlockPos> walk(Blueprint blueprint, Map<BlockPos, BlockState> cells) {
+	static Set<BlockPos> walk(Blueprint blueprint, Map<BlockPos, BlockState> cells) {
 		return walk(blueprint, cells, false);
 	}
 
-	private static Set<BlockPos> walk(Blueprint blueprint, Map<BlockPos, BlockState> cells, boolean player) {
+	static Set<BlockPos> walk(Blueprint blueprint, Map<BlockPos, BlockState> cells, boolean player) {
 		int sx = blueprint.size().getX();
 		int sz = blueprint.size().getZ();
 		int top = blueprint.size().getY();
@@ -298,7 +298,7 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 	}
 
 	/** A spot right beside {@code target} (one of its four sides, its level or the one below) was reached. */
-	private static boolean beside(Set<BlockPos> reached, BlockPos target) {
+	static boolean beside(Set<BlockPos> reached, BlockPos target) {
 		for (Direction d : Direction.Plane.HORIZONTAL) {
 			if (reached.contains(target.relative(d)) || reached.contains(target.relative(d).below())) {
 				return true;
@@ -308,7 +308,7 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 	}
 
 	/** A reached spot within {@code across} blocks each way and one up or down of {@code target}. */
-	private static boolean near(Set<BlockPos> reached, BlockPos target, int across) {
+	static boolean near(Set<BlockPos> reached, BlockPos target, int across) {
 		for (BlockPos p : BlockPos.betweenClosed(target.offset(-across, -1, -across), target.offset(across, 1, across))) {
 			if (reached.contains(p)) {
 				return true;
@@ -610,7 +610,7 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 
 	// ---- live -------------------------------------------------------------------------------------------------------
 
-	private static Villager reload(GameTestHelper helper, ServerLevel level, Villager old) {
+	static Villager reload(GameTestHelper helper, ServerLevel level, Villager old) {
 		BuildSiteManager loaded = BuildSiteManager.load(BuildSiteManager.get(level).save(new CompoundTag(), level.registryAccess()), level.registryAccess());
 		level.getDataStorage().set(BuildSiteManager.NAME, loaded);
 		CompoundTag tag = new CompoundTag();
@@ -622,11 +622,11 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 		return (Villager) back;
 	}
 
-	private static final BlockPos[] BARRELS = {new BlockPos(1, 2, 4), new BlockPos(3, 2, 4), new BlockPos(4, 2, 4), new BlockPos(5, 2, 4)};
-	private static final BlockPos BENCH = new BlockPos(2, 2, 2);
-	private static final BlockPos CHEST = new BlockPos(2, 2, 4);
+	static final BlockPos[] BARRELS = {new BlockPos(1, 2, 4), new BlockPos(3, 2, 4), new BlockPos(4, 2, 4), new BlockPos(5, 2, 4)};
+	static final BlockPos BENCH = new BlockPos(2, 2, 2);
+	static final BlockPos CHEST = new BlockPos(2, 2, 4);
 
-	private static void stock(GameTestHelper helper, List<ItemStack> stock) {
+	static void stock(GameTestHelper helper, List<ItemStack> stock) {
 		helper.assertTrue(stock.size() <= BARRELS.length * 27, "(setup) the test needs more barrels: " + stock.size() + " stacks");
 		for (int i = 0; i < BARRELS.length; i++) {
 			helper.setBlock(BARRELS[i], Blocks.BARREL);
@@ -637,7 +637,7 @@ public class QaRebuiltWorkshops1121bGameTests implements FabricGameTest {
 		}
 	}
 
-	private static void rules(GameTestHelper helper) {
+	static void rules(GameTestHelper helper) {
 		ServerLevel level = helper.getLevel();
 		int delay = level.getGameRules().getInt(ModGameRules.BUILD_DELAY);
 		boolean help = level.getGameRules().getBoolean(ModGameRules.BUILDERS_HELP);

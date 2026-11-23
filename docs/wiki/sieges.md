@@ -454,6 +454,11 @@ research topic Ramparts and the chronicle kind SIEGE; both use vanilla item icon
   the fix it walked up that outer block onto the fence and into the pen, 4 runs of 4), and gets over once it's gone. `QaRampPens1122dGameTests` (QA, 7, B1434: pens of cobblestone wall, 2-high stone and fences on either side of the
   ramp, every waiting place penned (it stays out), a save and load mid-wait, and an open pen; the husk never ends up in
   a pen and climbs wherever the ramp can be reached).
+- `QaSiegeSwitchesWalled1123dGameTests` (QA, lane D, 11-23): the switches with the shipped warband's ravager ram and
+  pillager climber at a yard of stone brick walls with a Palisade Gate. `siegeDamage` off: still a siege, the ram at the
+  gate for two blows and more, every gate block standing with all its hit points through 600 ticks, and a ladder still
+  set; switched on again mid-siege, the gate loses hit points. `sieges` off: the raid is on but no siege, no ladder and
+  the gate blocks as they were for 400 ticks; switched on again, the next raid is a siege with its ladder or damage.
 - Showcase scene `siege_gate`: a ravager breaking a Palisade Gate, the cracks showing.
 - Showcase scene `siege_ladders`: pillagers laddering a Stone Wall, one climbing over, and a guard throwing the ladder
   down.

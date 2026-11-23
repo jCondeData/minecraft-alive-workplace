@@ -283,4 +283,77 @@ public class QaUploadFluids1114bGameTests implements FabricGameTest {
 		helper.assertTrue(!Files.exists(structures(server, "imported").resolve(base + ".nbt")), "a lava pool's file was written");
 		helper.succeed();
 	}
+
+	// ---- B1559: a Litematica file, not only .nbt -------------------------------------------------------------------
+
+	/** A one-region 2 x 1 x 1 .litematic: {@code first} and {@code second} side by side (palette air, then both). */
+	static byte[] litematic(BlockState first, BlockState second) {
+		net.minecraft.nbt.ListTag palette = new net.minecraft.nbt.ListTag();
+		for (BlockState s : new BlockState[] {Blocks.AIR.defaultBlockState(), first, second}) {
+			palette.add(net.minecraft.nbt.NbtUtils.writeBlockState(s));
+		}
+		CompoundTag region = new CompoundTag();
+		region.put("Position", pos(0, 0, 0));
+		region.put("Size", pos(2, 1, 1));
+		region.put("BlockStatePalette", palette);
+		region.putLongArray("BlockStates", new long[] {1L | (2L << 2)}); // 2 bits each: entry 0 is palette 1, entry 1 palette 2
+		region.put("TileEntities", new net.minecraft.nbt.ListTag());
+		region.put("Entities", new net.minecraft.nbt.ListTag());
+		CompoundTag regions = new CompoundTag();
+		regions.put("Pond", region);
+		CompoundTag root = new CompoundTag();
+		root.putInt("Version", 6);
+		root.putInt("MinecraftDataVersion", 3955);
+		root.put("Metadata", new CompoundTag());
+		root.put("Regions", regions);
+		try {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			NbtIo.writeCompressed(root, out);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new GameTestAssertException("(setup) couldn't write the file: " + e);
+		}
+	}
+
+	private static CompoundTag pos(int x, int y, int z) {
+		CompoundTag t = new CompoundTag();
+		t.putInt("x", x);
+		t.putInt("y", y);
+		t.putInt("z", z);
+		return t;
+	}
+
+	/**
+	 * B1559: a player uploads a .litematic of only water at a Blueprint Table: refused with "the build is empty", and the
+	 * Table doesn't list it (nothing in his folder, nothing in BlueprintLibrary.list). The same file with one stone
+	 * block imports and is listed, so the file itself reads.
+	 */
+	//$ gametest_ticks_batch AREA '100' '"qaB1559TableLitematic"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaB1559TableLitematic")
+	public void aWaterOnlyLitematicUploadedAtTheTableIsRefusedAndNotListed(GameTestHelper helper) {
+		Leftovers.clear(helper);
+		BlockPos rel = new BlockPos(5, 2, 5);
+		helper.setBlock(rel, ModBlocks.BLUEPRINT_TABLE);
+		String name = unique("lite");
+		String folder = "uploads/" + name;
+		Leftovers.after(helper, () -> ImportGameTests.clearGenerated(helper, folder));
+		MinecraftServer server = helper.getLevel().getServer();
+		QaStageFiveGameTests.Client c = QaStageSixGameTests.client(helper, GameType.SURVIVAL, name);
+		QaStageFourGameTests.press(helper, c.player(), rel);
+		c.sent();
+		BlockState water = Blocks.WATER.defaultBlockState();
+		QaStageSixGameTests.upload(c, helper.absolutePos(rel), "Pond.litematic", litematic(water, water), 1000);
+		List<TablePayloads.UploadResult> results = c.sent(TablePayloads.UploadResult.class);
+		helper.assertTrue(results.size() == 1 && !results.get(0).ok() && results.get(0).id().isEmpty(), "a water-only .litematic's upload: " + results);
+		String said = JewellerGameTests.english(results.get(0).message());
+		helper.assertTrue(said.equals("Could not import Pond.litematic: the build is empty"), "the refusal reads: " + said);
+		List<ResourceLocation> listed = BlueprintLibrary.list(server, true).stream().filter(id -> id.getPath().startsWith(folder + "/")).toList();
+		helper.assertTrue(listed.isEmpty(), "the Table lists a water-only .litematic: " + listed);
+		helper.assertTrue(files(server, folder).isEmpty(), "files written for a refused .litematic: " + files(server, folder));
+		QaStageSixGameTests.upload(c, helper.absolutePos(rel), "Stone Pond.litematic", litematic(water, Blocks.STONE.defaultBlockState()), 1000);
+		List<TablePayloads.UploadResult> good = c.sent(TablePayloads.UploadResult.class);
+		helper.assertTrue(good.size() == 1 && good.get(0).ok() && good.get(0).id().isPresent(), "water and stone .litematic: " + good);
+		helper.assertTrue(BlueprintLibrary.list(server, true).contains(good.get(0).id().get()), "water and stone .litematic isn't listed: " + good.get(0).id());
+		helper.succeed();
+	}
 }

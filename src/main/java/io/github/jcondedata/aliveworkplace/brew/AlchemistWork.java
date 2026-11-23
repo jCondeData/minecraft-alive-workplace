@@ -421,10 +421,19 @@ public class AlchemistWork extends Behavior<Villager> {
 					return true; // done: out they come
 				}
 			}
-			return stand.getItem(3).isEmpty() && nextIngredient(level, bottles, own) != null;
+			if (stand.getItem(3).isEmpty()) {
+				return nextIngredient(level, bottles, own) != null;
+			}
+			// Bottles and an ingredient in but not brewing: out of fuel (B1521). Blaze powder in the chests? Go and fuel it.
+			return outOfFuel(stand) && SupplyContainers.count(level, own, Items.BLAZE_POWDER) > 0;
 		}
 		// Empty: load water bottles if there's something worth brewing.
 		return wantsWater(level, stand, own, bag) && (bag.count(Items.POTION) > 0 || SupplyContainers.firstMatching(level, own, AlchemistWork::isWater) != null);
+	}
+
+	/** No blaze powder in the fuel slot and no fuel left to start a brew. */
+	private static boolean outOfFuel(BrewingStandBlockEntity stand) {
+		return stand.getItem(4).isEmpty() && ((io.github.jcondedata.aliveworkplace.mixin.BrewingStandAccessor) stand).aliveworkplace$fuel() <= 0;
 	}
 
 	/** An empty stand, and ingredients for a potion that's short, starting from water. */

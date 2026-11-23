@@ -147,6 +147,12 @@ public interface Platform {
 	/** After a living entity took damage on the server (or blocked it). */
 	void afterDamage(AfterDamage action);
 
+	/**
+	 * A living entity on the server is about to die, before its own {@code die} runs (a raider still has its raid then;
+	 * {@code Raider.die} leaves it before {@link #afterDeath}). Watch only: the death goes ahead.
+	 */
+	void beforeDeath(BiConsumer<LivingEntity, DamageSource> action);
+
 	/** After a living entity died on the server. */
 	void afterDeath(BiConsumer<LivingEntity, DamageSource> action);
 

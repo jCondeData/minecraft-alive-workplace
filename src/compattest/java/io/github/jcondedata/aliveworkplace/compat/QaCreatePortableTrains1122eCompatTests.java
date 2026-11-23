@@ -90,6 +90,14 @@ public class QaCreatePortableTrains1122eCompatTests implements FabricGameTest {
 		level.setBlockEntity(again);
 	}
 
+	/**
+	 * The emeralds still on Frank's side: his chest and his feeder hopper under it (which keeps pulling from the chest
+	 * whether or not the interface it feeds takes anything, so emeralds waiting there haven't left him).
+	 */
+	private static int franksEmeralds(GameTestHelper helper, Container chest) {
+		return count(chest, Items.EMERALD) + (helper.getBlockEntity(FEEDER) instanceof Container feeder ? count(feeder, Items.EMERALD) : 0);
+	}
+
 	private static int count(Container c, Item item) {
 		int n = 0;
 		for (int s = 0; s < c.getContainerSize(); s++) {
@@ -158,6 +166,7 @@ public class QaCreatePortableTrains1122eCompatTests implements FabricGameTest {
 		}
 		helper.runAfterDelay(450, () -> {
 			int emeraldsLeft = count(chest, Items.EMERALD);
+			int emeraldsKept = franksEmeralds(helper, chest);
 			int inBarrel = count(barrel, null);
 			int diamondsInBarrel = count(barrel, Items.DIAMOND);
 			float turning = speed(helper, PISTON);
@@ -170,8 +179,8 @@ public class QaCreatePortableTrains1122eCompatTests implements FabricGameTest {
 			helper.assertTrue(reloaded[0], "set-up: the hall and interface were never saved and loaded");
 			if (protect) {
 				helper.assertTrue(stillProtected, "Frank's hall isn't protected any more after the save and reload");
-				helper.assertTrue(emeraldsLeft == 32 && inBarrel == 0, "a stranger's contraption (piston outside Frank's protected village) docked at his Portable Storage Interface: "
-					+ (32 - emeraldsLeft) + " of 32 emeralds left his chest into it and " + inBarrel + " items (" + diamondsInBarrel
+				helper.assertTrue(emeraldsKept == 32 && inBarrel == 0, "a stranger's contraption (piston outside Frank's protected village) docked at his Portable Storage Interface: "
+					+ (32 - emeraldsKept) + " of 32 emeralds left his chest and hopper into it and " + inBarrel + " items (" + diamondsInBarrel
 					+ " of its 32 diamonds) arrived in his barrel" + (reloadDocked ? " (after a save and reload while docked)" : ""));
 			} else {
 				helper.assertTrue(emeraldsLeft < 32 && diamondsInBarrel > 0, "the control: in an open village the docked contraption traded nothing: "

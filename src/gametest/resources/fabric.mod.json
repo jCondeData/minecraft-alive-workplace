@@ -11,6 +11,7 @@
 		],
 		"fabric-gametest": [
 			"io.github.jcondedata.aliveworkplace.test.QaSpawnRefusals1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCovens1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaUnlockStart1122b2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrelsSaved1122eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobBarrelsSaved1122eBugTests",

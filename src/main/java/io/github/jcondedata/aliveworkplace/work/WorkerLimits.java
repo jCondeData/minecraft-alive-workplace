@@ -53,6 +53,9 @@ public final class WorkerLimits {
 		if (!(villager.level() instanceof ServerLevel level)) {
 			return;
 		}
+		if (villager.tickCount == 1) {
+			firstLook(level, villager);
+		}
 		// every tick, before the brain's: a villager next to the workstation it picked takes it on the brain's next tick
 		holdBack(level, villager);
 		if ((villager.tickCount + villager.getId()) % CHECK_EVERY == 0) {
@@ -167,7 +170,8 @@ public final class WorkerLimits {
 			if (workers && full(level, GlobalPos.of(level.dimension(), p.getSecond()), false)) {
 				return false;
 			}
-			if (fishermen && fishermansOven(level, p.getSecond()) && nearerAFreeBarrel(level, villager, p.getSecond(), walks)) {
+			if (fishermen && fishermansOven(level, p.getSecond())
+				&& (keepsToHisBarrel(level, villager, p.getSecond(), walks) || nearerAFreeBarrel(level, villager, p.getSecond(), walks))) {
 				return false; // B1496: the hut's smoker is its Fisherman's, for a villager by the hut's free barrel
 			}
 			return !fishermen || !FishermanCap.barrel(p.getFirst())
@@ -222,11 +226,70 @@ public final class WorkerLimits {
 	private static boolean nearerAFreeBarrel(ServerLevel level, Villager villager, BlockPos oven, java.util.Map<BlockPos, Boolean> walks) {
 		BlockPos at = villager.blockPosition();
 		double toOven = at.distSqr(oven);
-		return level.getPoiManager().getInSquare(FishermanCap::barrel, oven, io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS, PoiManager.Occupancy.HAS_SPACE)
+		BlockPos barrel = level.getPoiManager().getInSquare(FishermanCap::barrel, oven, io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS, PoiManager.Occupancy.HAS_SPACE)
 			.map(r -> r.getPos())
 			.filter(b -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(oven, b) && b.distSqr(at) < toOven)
-			.anyMatch(b -> !FishermanCap.full(level, b) && !storeOfAFreeWorkstation(level, villager, b, walks)
-				&& canTake(level, villager, b, walks));
+			.filter(b -> !FishermanCap.full(level, b) && !storeOfAFreeWorkstation(level, villager, b, walks)
+				&& canTake(level, villager, b, walks))
+			.findFirst().orElse(null);
+		if (barrel == null) {
+			return false;
+		}
+		HIS_BARREL.put(villager, new HisBarrel(barrel.immutable(), level.getGameTime() + KEEPS_TO_IT));
+		return true;
+	}
+
+	/** The free barrel a jobless villager was beside at a job search ({@link #nearerAFreeBarrel}), and until when he keeps to it. */
+	private record HisBarrel(BlockPos barrel, long until) {
+	}
+
+	/** Not saved: a villager loaded again decides from where he stands. Only touched from the server thread. */
+	private static final java.util.Map<Villager, HisBarrel> HIS_BARREL = new java.util.WeakHashMap<>();
+	/** How long a villager keeps to the free barrel he was beside, wherever he strolls meanwhile: a minute. */
+	private static final int KEEPS_TO_IT = 1200;
+
+	/**
+	 * B1556: whether the smoker or furnace at {@code oven} is in reach of the free barrel {@code villager} was beside at an
+	 * earlier job search (or on his first tick, {@link #firstLook}). B1496's rule went by where he stands at each search,
+	 * and he doesn't stand still: a first search that comes before he has landed (or mid-hop) finds no path, vanilla puts
+	 * the barrel on a 40 to 80 tick retry, and meanwhile he strolls off. Traced on three failing runs: 2 to 7 blocks away
+	 * at the next search (as far from the barrel as from the smoker, or the rule no longer holding from where he stood),
+	 * he saw the smoker again and turned Butcher. So the barrel he was beside stays his for {@link #KEEPS_TO_IT} ticks, while it is still
+	 * free, the village still has room for a fisherman and it hasn't become another workshop's stock; after that (a barrel
+	 * walled in meanwhile) the rule goes by where he stands again, so the oven is never hidden for good.
+	 */
+	private static boolean keepsToHisBarrel(ServerLevel level, Villager villager, BlockPos oven, java.util.Map<BlockPos, Boolean> walks) {
+		HisBarrel his = HIS_BARREL.get(villager);
+		if (his == null) {
+			return false;
+		}
+		BlockPos barrel = his.barrel();
+		PoiManager pois = level.getPoiManager();
+		if (level.getGameTime() > his.until() || !pois.getType(barrel).map(FishermanCap::barrel).orElse(false) || pois.getFreeTickets(barrel) <= 0
+			|| FishermanCap.full(level, barrel) || storeOfAFreeWorkstation(level, villager, barrel, walks)) {
+			HIS_BARREL.remove(villager);
+			return false;
+		}
+		return io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(oven, barrel);
+	}
+
+	/**
+	 * B1556: a jobless villager's look round on his first tick (spawned, loaded, cured), as his first job search would see
+	 * it from there, so a free barrel he starts beside is his ({@link #keepsToHisBarrel}) even when vanilla's first search
+	 * comes up to a second later, a block or two into a stroll.
+	 */
+	private static void firstLook(ServerLevel level, Villager villager) {
+		if (!FishermanCap.ENABLED || villager.isBaby() || villager.getVillagerData().getProfession() != VillagerProfession.NONE) {
+			return;
+		}
+		Villager before = thinking;
+		thinking = villager;
+		try {
+			level.getPoiManager().findAllClosestFirstWithType(t -> t.is(net.minecraft.tags.PoiTypeTags.ACQUIRABLE_JOB_SITE), p -> true,
+				villager.blockPosition(), 48, PoiManager.Occupancy.HAS_SPACE).limit(5L).forEach(p -> { });
+		} finally {
+			thinking = before;
+		}
 	}
 
 	/**

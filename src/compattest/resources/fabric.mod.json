@@ -26,6 +26,7 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainPloughRoller1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateActorsVerify1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateCannonPipes1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateCannonPipes1122eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateFellingFluids1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateItemEdge1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateTrainPunch1122eCompatTests",
@@ -530,7 +531,9 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaRebuiltCreate1121eBugCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaPouredWater1121eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eBugCompatTests"
 		]
 	},
 	"depends": {

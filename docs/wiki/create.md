@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13, B1501, B1505, B1516, B1517
 
 ## What a player sees
 
@@ -568,7 +568,10 @@ Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or
 sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
 setting them down there, and a Deployer places no block inside (B1015). A Mechanical Harvester, Plow or Roller
 riding on a stranger's contraption (a train, a cart, a piston's head) reaps, tills and fills nothing inside (B1498,
-B1502, B1503), and a stranger's Elevator Pulley outside leaves the village's blocks out of its cabin (B1487). The same machines inside the village, or
+B1502, B1503), and a stranger's Elevator Pulley outside leaves the village's blocks out of its cabin (B1487). Fluids stop at the edge too: a stranger's Deployer outside empties or fills no bucket inside (B1501), his Hose
+Pulley drains no water out of the village and pours none into it (B1505), and the open end of his Fluid Pipe neither
+pours nor drains inside it (B1517). His Schematicannon outside skips the village's cells and prints only the ones
+outside (B1516). The same machines inside the village, or
 with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
 inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
 onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Portable Storage Interface.
@@ -845,6 +848,10 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   `QaCreateGantryPulley1122eBugCompatTests` (B1487) (QA, lane E, 2026-11-22; 4): a stranger's harvester, plow and
   filling roller on a real train change nothing in a protected village, and his elevator's cabin takes none of its
   blocks; the open-village controls are in the matching `…CompatTests` classes.
+- `QaCreateDeployerUses1122eBugCompatTests` (B1501), `QaCreateHosePulley1122eBugCompatTests` (B1505) and
+  `QaCreateCannonPipes1122eBugCompatTests` (B1516, B1517) (QA, lane E, 2026-11-22; 8): a stranger's deployer
+  bucket, hose pulley and open pipe outside a protected village neither pour water into it nor drain any from it, and
+  his Schematicannon prints nothing into it, also in "replace any" mode; the open-village controls and Frank's own machines inside are in the matching `…CompatTests` classes.
 - `QaCreateActorsVerify1122eCompatTests` (QA, lane E, 2026-11-22; 16): the same four fixes from their bug text: a
   stranger's harvester and plow on a minecart contraption leave a protected village alone while working the cells
   just outside; a harvester cart put together inside the village still reaps it; a stranger's harvester train keeps
@@ -854,7 +861,7 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
 - `QaCreateCannonPipes1122eCompatTests` (QA, lane E, 2026-11-22; 7): a Schematicannon prints into an open village
   (and replaces its planks in "replace any" mode), an open-ended pipe and pump pours into and drains it, and Frank's
   own cannon and pipe inside his protected village still work; a stranger's cannon or pipe outside a protected one
-  still changes it (B1516, B1517; failing tests on `tests/create-cannon-pipes-1122e`).
+  still changed it (B1516, B1517, fixed; those tests are in `QaCreateCannonPipes1122eBugCompatTests`).
 - `QaCreateFellingFluids1122eCompatTests` (QA, lane E, 2026-11-22; 5): a fixed saw and a piston's saw fell a tree
   reaching into an open village whole, a contraption docked at an open village's Portable Fluid Interface takes its
   water, and a stranger's Deployer with bone meal outside grows no sapling inside a protected village (an open one's

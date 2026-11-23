@@ -11,11 +11,15 @@
 		"ContraptionPlacementMixin",
 		"ControlledContraptionAccessor",
 		"ElevatorCabinMixin",
+		"FluidFillMixin",
+		"FluidSearchMixin",
 		"HarvesterMixin",
 		"InventoryReachMixin",
 		"MovingBreakerMixin",
+		"OpenPipeMixin",
 		"PloughMixin",
-		"RollerFillMixin"
+		"RollerFillMixin",
+		"SchematicannonMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

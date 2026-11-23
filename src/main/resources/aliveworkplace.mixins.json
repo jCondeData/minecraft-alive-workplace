@@ -9,6 +9,7 @@
 		"AxeItemAccessor",
 		"BehaviorMixin",
 		"BlockItemMixin",
+		"BucketItemMixin",
 		"BlockStateBaseMixin",
 		"BrainAccessor",
 		"BrainMixin",

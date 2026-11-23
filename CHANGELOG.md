@@ -16,6 +16,12 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+### Fixed
+- A stranger's Create machine outside a protected village no longer pours water into it or drains water out of it: a
+  Deployer with a bucket, a Hose Pulley, and an open Fluid Pipe with a Mechanical Pump all stop at the village's edge,
+  as they do for players (B1501, B1505, B1517). His Schematicannon outside prints nothing into it either, and still
+  prints the cells outside (B1516).
+
 ## 0.159.1 — 2026-11-22
 
 ### Fixed

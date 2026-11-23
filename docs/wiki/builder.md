@@ -441,7 +441,8 @@ repair finishes, when nothing is missing any more, and when the building is take
 `refresh_begun` (B1500: the key of the older drawing a refresh of the building was begun from, kept from the moment a
 Builder takes it up until a refresh of it finishes or the building is taken down; absent: none begun, as in every older
 save) is kept with it too: a refresh left half done, because its Builder died, is taken up again from the same drawing
-instead of one guessed from the half-cleared house.
+instead of one guessed from the half-cleared house. A remembered drawing the mod no longer ships is forgotten, and the
+refresh starts from the drawing the building stands as; an older save without it guesses the drawing again, as before.
 
 Friends are saved in `aliveworkplace_friends`. Not saved, worked out again: the plan, status, missing list, helpers'
 claims and trip counts.
@@ -669,6 +670,11 @@ the page for another to finish. `QaJobFixes1122cGameTests` (B1466, B1500): a Bui
 furnished old Stone House (turned a quarter or half round, the new Builder at the same or another bench, or after a save
 and load) leaves it to a new Builder, who takes it up from the drawing it was begun from and ends with a fresh build of
 today's drawing.
+QA's `QaRefreshResume1123bGameTests` (5, B1500, B1511, B1513): the same house unturned and turned clockwise (killed
+while clearing, the second with a save and load before the new Builder) and turned half round killed while the new
+drawing goes up (with a save and load) each end as a fresh build taken up from the begun drawing; an older save with no
+`refresh_begun` still offers the Refresh and the new Builder finishes it; a remembered drawing no longer shipped neither
+hides the Refresh nor steers it.
 `QaRefreshFurnishedGameTests` (B642, the tester's, through the same page): a Starter Cottage, an Inn and a Townhouse,
 each furnished by the spots file of its older drawing's day and turned or mirrored, end equal to a fresh build of the
 current drawing with nothing floating; a Builder refreshing a furnished, turned Stone House of before B260 across a save

@@ -176,7 +176,13 @@ front door and up the ladder; built to DONE within 12,000 ticks; its village pie
 `PokemonCenterCompatTests` and `BuilderGameTests.buildsPokemonCenter*` (50.12: the rebuilt Pokémon Center and Lodge, both
 levels, built from exactly their materials), `QaDoorwayBugGameTests` and `QaBuilderFixes1027bGameTests` (walks in by the
 lodge's street and back doors, and out turned), `OldPokemonCenterDrawingCompatTests` (an old-drawing II's Shop Counter and
-Pasture Block still taken where they stand).
+Pasture Block still taken where they stand), `QaRebuiltCobblemon1122dCompatTests`, `QaRebuiltPokemonCenter1121cCompatTests`
+and `QaRebuiltPokemonCenter1123bCompatTests` (50.12 from its briefs: every level of the default, Lodge and Plaza Pokémon
+Centers has one Healing Machine and its PC where the nurse can reach them, a chest in reach, a front door, a Pasture Block
+and Shop Counter at II, and the game's pathfinder walks a villager from the street to all of them and to every bed; II
+keeps I's machine, PC and chests in their cells), `QaCobblemonAbsent1123bGameTests` (without Cobblemon none of the
+Cobblemon builds is in the Table, the library or the creative tab, no villager sells one, and the Steward of a City with
+every Cobblemon job never asks for one).
 
 Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21), `rebuild_pokemon_center` and `rebuild_pokemon_center_looks` (50.12).
 

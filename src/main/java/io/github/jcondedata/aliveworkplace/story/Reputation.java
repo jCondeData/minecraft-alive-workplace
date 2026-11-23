@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.minecraft.ChatFormatting;
@@ -249,6 +250,15 @@ public final class Reputation {
 		Platform.get().afterDamage((entity, source, baseDamage, damage, blocked) -> {
 			if (entity instanceof Villager villager && entity.level() instanceof ServerLevel level && !blocked && damage > 0 && entity.isAlive()) {
 				onHurt(level, villager, source);
+			}
+		});
+		Platform.get().beforeDeath((entity, source) -> {
+			if (entity instanceof Raider raider && entity.level() instanceof ServerLevel) {
+				if (raider.getCurrentRaid() != null) {
+					DYING_RAIDERS.put(raider, raider.getCurrentRaid()); // Raider.die leaves the raid before afterDeath (B1527)
+				} else {
+					DYING_RAIDERS.remove(raider); // saved by a totem once, out of the raid since: nothing stale
+				}
 			}
 		});
 		Platform.get().afterDeath((entity, source) -> {
@@ -625,8 +635,22 @@ public final class Reputation {
 		}
 	}
 
+	/**
+	 * The vanilla raid each dying raider was in, taken just before it died: {@code Raider.die} takes a raider out of its
+	 * raid before the after-death hook runs, so by then {@code getCurrentRaid()} is always null (B1527). Weak keys: an
+	 * entity saved from death (a totem) is forgotten with the entity.
+	 */
+	private static final Map<Raider, net.minecraft.world.entity.raid.Raid> DYING_RAIDERS = new WeakHashMap<>();
+
+	/** The vanilla raid {@code raider} was in when it died, or null. */
+	private static net.minecraft.world.entity.raid.Raid raidOnDeath(Raider raider) {
+		net.minecraft.world.entity.raid.Raid taken = DYING_RAIDERS.remove(raider);
+		return raider.getCurrentRaid() != null ? raider.getCurrentRaid() : taken;
+	}
+
 	/** Something died: a villager, a guard or an iron golem by a player's hand costs standing; a raider counts towards the raid. */
 	static void onDeath(ServerLevel level, LivingEntity entity, DamageSource source) {
+		net.minecraft.world.entity.raid.Raid vanillaRaid = entity instanceof Raider raider ? raidOnDeath(raider) : null;
 		if (!ENABLED || !(source.getEntity() instanceof ServerPlayer player)) {
 			return;
 		}
@@ -634,8 +658,8 @@ public final class Reputation {
 			hallOf(level, villager).ifPresent(hall -> add(level, hall, player, Guards.isGuard(villager) ? KILL_GUARD : KILL_VILLAGER));
 		} else if (entity instanceof IronGolem) {
 			VillageHalls.nearest(level, entity.blockPosition()).ifPresent(hall -> add(level, hall, player, KILL_GOLEM));
-		} else if (Guards.isRaider(entity) || entity instanceof Raider raider && raider.hasActiveRaid()) {
-			onRaiderKilled(level, entity, player);
+		} else if (Guards.isRaider(entity) || vanillaRaid != null && vanillaRaid.isActive()) {
+			onRaiderKilled(level, entity, player, vanillaRaid);
 		}
 	}
 
@@ -645,7 +669,7 @@ public final class Reputation {
 	}
 
 	/** One of a raid's raiders fell to {@code player}: the third in the same raid earns {@value #RAID}. */
-	private static void onRaiderKilled(ServerLevel level, LivingEntity raider, ServerPlayer player) {
+	private static void onRaiderKilled(ServerLevel level, LivingEntity raider, ServerPlayer player, net.minecraft.world.entity.raid.Raid itsRaid) {
 		Optional<BlockPos> near = VillageHalls.nearest(level, raider.blockPosition());
 		if (near.isEmpty()) {
 			near = VillageHalls.nearest(level, player.blockPosition());
@@ -656,7 +680,7 @@ public final class Reputation {
 		BlockPos hall = near.get();
 		long stamp;
 		Optional<VillageRaids.Raid> ours = VillageRaids.active(hall);
-		net.minecraft.world.entity.raid.Raid vanilla = level.getRaidAt(raider.blockPosition());
+		net.minecraft.world.entity.raid.Raid vanilla = itsRaid != null ? itsRaid : level.getRaidAt(raider.blockPosition());
 		if (ours.isPresent()) {
 			stamp = ours.get().began();
 		} else if (vanilla != null && vanilla.isActive()) {

@@ -17,6 +17,9 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze
+  powder is in the chest by the stand, and brews the potions; the same when the stand runs out of fuel with an
+  ingredient still in it (B1521).
 - A traveller staying at an inn no longer claims a free job block near him. He never took its job and never gave it
   up, so a jobless villager stood beside a block that looked free until the world was next loaded (B1483, B1470).
 - A stranger's Create machine outside a protected village no longer pours water into it or drains water out of it: a

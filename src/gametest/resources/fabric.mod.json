@@ -2062,6 +2062,7 @@
 			"io.github.jcondedata.aliveworkplace.test.RaidKillReputationGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaidMore1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaRaidKills1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaRaidKillsEdges1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarbandSpec1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaSiegeSwitchesWalled1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBanditRaids1123dGameTests",

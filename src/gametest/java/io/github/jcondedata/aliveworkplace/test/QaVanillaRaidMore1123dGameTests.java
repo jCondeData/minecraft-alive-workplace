@@ -369,10 +369,14 @@ public class QaVanillaRaidMore1123dGameTests implements FabricGameTest {
 			}
 			List<Villager> riders = Relief.riders(level, land.hall(1));
 			if (count[0] < 0) {
-				helper.assertTrue(raid[0].isActive(), "(setup) the vanilla raid ended before the riders came");
+				// Ended means stopped or over: isActive() is only whether the raid's center chunk is loaded this tick, and it can read
+				// false for a moment right after the start in this wide realm (seen beside other batches, 2026-11-23).
+				helper.assertTrue(!raid[0].isStopped() && !raid[0].isOver(), "(setup) the vanilla raid ended before the riders came");
 				if (riders.isEmpty() || !Relief.onTheRoad(level, land.hall(1)).isEmpty()) {
 					if (tick > 30 + 400) {
-						helper.fail("(setup) no riders came to the vanilla raid within 400 ticks; on the road " + Relief.onTheRoad(level, land.hall(1)));
+						helper.fail("(setup) no riders came to the vanilla raid within 400 ticks; on the road " + Relief.onTheRoad(level, land.hall(1)) + "; raid active "
+							+ raid[0].isActive() + ", center " + helper.relativePos(raid[0].getCenter()) + " loaded " + level.hasChunkAt(raid[0].getCenter()) + ", hall 1 "
+							+ helper.relativePos(land.hall(1)) + ", raid at hall 1 " + (level.getRaidAt(land.hall(1)) != null) + ", ticking " + level.shouldTickBlocksAt(raid[0].getCenter()));
 					}
 					return;
 				}
@@ -387,7 +391,7 @@ public class QaVanillaRaidMore1123dGameTests implements FabricGameTest {
 				return;
 			}
 			if (over[0] < 0) {
-				helper.assertTrue(raid[0].isActive(), "(setup) the vanilla raid ended on its own");
+				helper.assertTrue(!raid[0].isStopped() && !raid[0].isOver(), "(setup) the vanilla raid ended on its own");
 				helper.assertTrue(Relief.onTheRoad(level, land.hall(1)).isEmpty(), "after a reload in a vanilla raid, with its riders still there, the village called again at tick "
 					+ (tick - reloaded[0]) + ": " + Relief.onTheRoad(level, land.hall(1)));
 				helper.assertTrue(riders.size() == count[0], "after a reload in a vanilla raid, " + riders.size() + " riders for hamlet 1 at tick " + (tick - reloaded[0])

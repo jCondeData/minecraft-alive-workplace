@@ -17,6 +17,11 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A jobless villager who starts beside a free barrel now becomes its Fisherman every time, even when he strolls off
+  before he takes it. Before, he sometimes turned Butcher at a smoker a few blocks away: his first try at the barrel
+  could miss (he hadn't landed yet, or was mid-hop), and by his next look he had wandered as near the smoker as the
+  barrel. The barrel he was beside now stays his for a minute, while it is free and the village has room for a
+  fisherman (B1556).
 - A Beekeeper harvesting a hive over a lit campfire now leaves the bees calm inside, as a player's bottle does; before,
   they flew out every time (the smoke check only looked for fire blocks).
 - A Beekeeper no longer breeds a fourth bee for a hive while one of its three is out foraging far from the Apiary: a

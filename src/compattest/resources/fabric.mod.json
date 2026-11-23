@@ -536,7 +536,8 @@
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eCompatTests",
 			"io.github.jcondedata.aliveworkplace.compat.QaCreateHosePulley1122eBugCompatTests",
-			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eBugCompatTests"
+			"io.github.jcondedata.aliveworkplace.compat.QaCreateDeployerUses1122eBugCompatTests",
+			"io.github.jcondedata.aliveworkplace.compat.QaDaubFurnished1123bCompatTests"
 		]
 	},
 	"depends": {

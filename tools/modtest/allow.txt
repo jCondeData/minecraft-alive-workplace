@@ -86,6 +86,10 @@ Skipping Wonder (qa_pack|owner_pack):wonders/
 # ["x"], [I;1,2,3]) under each key a block reads, items among them, to prove the block still loads; vanilla logs each item it drops
 # (lane-e-1121-0713; the bare 'Not a string' stays visible, too plain to tell from a real save's).
 Tried to load invalid item: 'Not a map: (\[I;1,2,3\]|-9223372036854775808L|\["x"\]|\[\]|-7); Not a string'
+# TrainerRefusedChoiceCompatTests, QaTrainerRefusedEveryTurn1114dCompatTests and QaTrainerBattle1111dCompatTests (master refused) make the trainer switch to the Pokemon already out, to prove a refused choice can't stop the battle (B43); Showdown refuses it and Cobblemon logs the refusal.
+\(Cobblemon\) Missing interpretation on 'error' action \|error\|\[Invalid choice\] Can't switch: You can't switch to an active Pok
+# QaTrainerBattle1111dCompatTests (bad forced switch) makes the trainer send in its fainted Pokemon; Cobblemon 1.7.3's own check throws this NullPointerException and stops the battle (B1256 calls it off). Only this exact trace: any other battle crash stays visible.
+Exception while ticking a battle\. Saving battle log\.\njava\.lang\.NullPointerException: null\n\s+at \S*BattleActor\.setActionResponses\(BattleActor\.java:114\)[^\n]*\n\s+at \S*AIBattleActor\.onChoiceRequested\(AIBattleActor\.java:54\)
 
 # --- other mods in the compat test server (dev environment, not our code) ---
 # Tom's Storage queues each block entity's onLoad for the next tick; QaModdedRefresh1115cCompatTests (Others) places a modded Storage

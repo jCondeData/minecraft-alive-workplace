@@ -114,13 +114,13 @@ public class CreateHandOverEdgeCompatTests implements FabricGameTest {
 	// ---------------------------------------------------------------- 2. a horizontal Mechanical Saw's output
 
 	/**
-	 * A Mechanical Saw facing up (its shaft along z, a Creative Motor at its north side), so items put on it move along x;
-	 * diamonds (nothing to cut) leave it westward onto the depot.
+	 * A Mechanical Saw facing up (its shaft along z, a Creative Motor at its south side, which turns it so that items on it
+	 * move west; with the motor at its north side they move east); diamonds (nothing to cut) leave it westward onto the depot.
 	 */
 	static void saw(GameTestHelper helper, Village village) {
 		BlockPos[] at = setUp(helper, village);
 		BlockPos saw = at[0];
-		helper.setBlock(saw.north(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "south"));
+		helper.setBlock(saw.south(), MechanicCompatTests.with(MechanicCompatTests.create("creative_motor").defaultBlockState(), "facing", "north"));
 		helper.setBlock(saw, MechanicCompatTests.with(MechanicCompatTests.with(MechanicCompatTests.create("mechanical_saw").defaultBlockState(),
 			"facing", "up"), "axis_along_first", "false"));
 		int[] fed = {0};

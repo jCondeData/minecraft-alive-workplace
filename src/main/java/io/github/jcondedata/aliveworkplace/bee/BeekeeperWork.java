@@ -37,6 +37,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.BeehiveBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -240,7 +241,13 @@ public class BeekeeperWork extends Behavior<Villager> {
 				inHives += entity.getOccupantCount();
 			}
 		}
-		if (bees.size() + inHives < hives.size() * BEES_PER_HIVE) {
+		// B1534: a bee out foraging past the Apiary's reach still lives in one of these hives, so it counts too. A bee
+		// that strays 32 blocks from its hive forgets it (vanilla), so they're all well within RADIUS + 48 of the station.
+		java.util.Set<BlockPos> hiveSet = new java.util.HashSet<>(hives);
+		AABB near = new AABB(station).inflate(RADIUS);
+		int foraging = level.getEntitiesOfClass(Bee.class, new AABB(station).inflate(RADIUS + 48),
+			b -> b.isAlive() && b.hasHive() && hiveSet.contains(b.getHivePos()) && !near.intersects(b.getBoundingBox())).size();
+		if (bees.size() + foraging + inHives < hives.size() * BEES_PER_HIVE) {
 			List<Bee> ready = bees.stream().filter(b -> !b.isBaby() && b.canFallInLove() && b.getAge() == 0)
 				.sorted(Comparator.comparingDouble(villager::distanceToSqr)).toList();
 			if (ready.size() >= 2) {
@@ -324,8 +331,9 @@ public class BeekeeperWork extends Behavior<Villager> {
 		level.setBlock(target, state.setValue(BeehiveBlock.HONEY_LEVEL, 0), Block.UPDATE_ALL);
 		// A Bug or Grass partner circles the hive being harvested (ROADMAP 28.6).
 		io.github.jcondedata.aliveworkplace.work.PartnerShows.cue(villager, "harvest", target);
-		// Smoked, the bees stay put; otherwise they come out (they don't go for villagers).
-		if (level.getBlockEntity(target) instanceof BeehiveBlockEntity hive && !hive.isFireNearby()) {
+		// Smoked, the bees stay put; otherwise they come out (they don't go for villagers). B1533: smoke is vanilla's
+		// campfire check (as when a player bottles a hive), not isFireNearby, which only sees fire blocks.
+		if (level.getBlockEntity(target) instanceof BeehiveBlockEntity hive && !CampfireBlock.isSmokeyPos(level, target)) {
 			hive.emptyAllLivingFromHive(null, state, BeehiveBlockEntity.BeeReleaseStatus.EMERGENCY);
 		}
 		ModAttachments.HIVES_HARVESTED.set(villager, ModAttachments.HIVES_HARVESTED.getOrElse(villager, 0) + 1);

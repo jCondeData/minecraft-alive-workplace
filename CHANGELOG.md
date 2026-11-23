@@ -17,6 +17,13 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- A Beekeeper harvesting a hive over a lit campfire now leaves the bees calm inside, as a player's bottle does; before,
+  they flew out every time (the smoke check only looked for fire blocks).
+- A Beekeeper no longer breeds a fourth bee for a hive while one of its three is out foraging far from the Apiary: a
+  bee counts for its own hive wherever it flies.
+- A shared workstation's Shift tooltip now names every job a jobless villager may take there by chance ("takes it as a
+  Farmer, an Orchard Keeper, a Florist or a Composter, by chance" for the composter), not only the vanilla one; with
+  `randomStationJobs` off it still names the vanilla job alone.
 - A jobless villager no longer stands jobless beside a barrel nobody can take while a free smoker waits nearby. A
   barrel boxed in on its four sides and its top, or one he can't walk to (he is shut in, or it is behind glass), kept
   the smoker out of his job search for good; now only a barrel he could really take and reach holds the smoker for the

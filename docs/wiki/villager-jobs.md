@@ -164,7 +164,9 @@ goes only on free grass or dirt, never over a block, and each one planted is one
 are fed flowers until there are three bees a hive: two become three, a lone bee is never fed. Without flowers (a
 sapling or wheat doesn't count) nothing is planted or fed and the chest is left as it was. A hive exactly 16 blocks
 from the Apiary is looked after, one 17 blocks away isn't. Harvested with no campfire under it, or an unlit one, the
-bees fly out and never go for the Beekeeper; over a lit campfire no bee gets angry.
+bees fly out and never go for the Beekeeper; over a lit campfire (smoke within 5 blocks below, as for a player's
+bottle) they stay in the hive and no bee gets angry (B1533). A bee out foraging still counts for its own hive, however
+far from the Apiary it flies, so a hive with three bees is never bred to four (B1534).
 
 **Daycare hatchlings (28.12, B854).** A Daycare Keeper's pair hatches the mother's base form in her regional form: a
 female Alolan Ninetales hatches an Alolan Vulpix, a Kanto mother a Kanto Vulpix whatever the father. The hatchling
@@ -600,9 +602,6 @@ absent, the box's own floor (every quarry saved before, and every one dug to its
 ## Known limits
 
 - A job needs a free block of its kind within about 4 blocks of the villager when it is picked.
-- Beekeeper (open bugs, QA 2026-11-23): a hive over a lit campfire still lets its bees out when the Beekeeper
-  harvests it (they stay calm), and a bee foraging more than 16 blocks from the Apiary isn't counted, so a hive that
-  already has three bees is sometimes bred to four.
 - Jobs given by order (a player's pick, the Steward) aren't held back by the worker cap or the fisherman cap.
 - A jobless villager checks the fisherman cap when he looks for a workstation and on the way to it: if the village
   grows later, he looks again by himself, but a fisherman over the cap is never let go to make room.

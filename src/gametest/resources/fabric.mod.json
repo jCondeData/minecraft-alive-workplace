@@ -712,6 +712,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBuilderBugFixesBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneRebuilt1121eGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaCobblemonAbsent1123bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGiftsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGifts1123cGameTests",

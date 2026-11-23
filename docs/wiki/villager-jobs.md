@@ -70,7 +70,10 @@ one block or drops three), not one whose job is
 switched off in the config (the Mover's crate with movers off), and not a smoker or furnace, which the Fisherman tends himself, so Fisher's Hut II
 still hires its Fisherman at the barrel beside its smoker. That smoker (or a furnace) is the Fisherman's, not a Butcher's, for a
 jobless villager nearer the free barrel than the smoker while the village has room for a fisherman (B1496): he becomes the
-hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. Only a barrel
+hut's Fisherman every time, while a villager nearer the smoker (the Ranch's Rancher) still takes the smoker. The barrel
+he was beside (on his first tick in the world, or at any look for a job) stays his for a minute wherever he strolls
+meanwhile, as long as it is free and the village has room for a fisherman, so a stroll toward the smoker before he
+takes the barrel doesn't make him a Butcher (B1556). Only a barrel
 he could really take and walk to holds the smoker back (B1523, B1525): a barrel boxed in on its four sides and its top, or
 one he can't reach (he is shut in a pen with the smoker, the barrel outside), leaves the smoker in his search, and he
 becomes its Butcher instead of standing jobless. With the cap

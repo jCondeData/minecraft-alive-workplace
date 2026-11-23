@@ -137,6 +137,20 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * For the failure message only (B1552: CI's two smiths on the doorstep couldn't be told from the message, and 2,260
+	 * local repeats never showed them): exactly where he stands, the path he follows and how long he has had no way.
+	 */
+	private static String where(GameTestHelper helper, Villager w) {
+		BlockPos zero = helper.absolutePos(BlockPos.ZERO);
+		net.minecraft.world.level.pathfinder.Path path = w.getNavigation().getPath();
+		String way = path == null ? "no path" : path.isDone() ? "path done" : "path node " + path.getNextNodeIndex() + " of " + path.getNodeCount() + " at "
+			+ path.getNextNodePos().subtract(zero).toShortString() + " to " + path.getTarget().subtract(zero).toShortString() + (path.canReach() ? "" : " (falls short)");
+		return String.format(java.util.Locale.ROOT, ", stands at %.2f, %.2f, %.2f, %s, %s, no way since %s, game time %d", w.getX() - zero.getX(), w.getY() - zero.getY(),
+			w.getZ() - zero.getZ(), w.onGround() ? "on the ground" : "in the air", way,
+			w.getBrain().getMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE).map(String::valueOf).orElse("never"), w.level().getGameTime());
+	}
+
 	/** Why not yet, or null when each smith works at a block of his trade inside the Smithy II, no two at one. */
 	private static String unsettled(GameTestHelper helper, Smithy s) {
 		Set<BlockPos> taken = new HashSet<>();
@@ -153,7 +167,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 				out.add(SMITHS[i] + " works at " + (site == null ? "null" : helper.relativePos(site).toShortString()) + " (at "
 					+ w.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + ", potential "
 					+ w.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).orElse("none")
-					+ ", activity " + w.getBrain().getActiveNonCoreActivity().orElse(null) + ")");
+					+ ", activity " + w.getBrain().getActiveNonCoreActivity().orElse(null) + where(helper, w) + ")");
 			}
 		}
 		return out.isEmpty() ? null : String.join("; ", out) + ", day time " + s.level().getDayTime() % 24000;

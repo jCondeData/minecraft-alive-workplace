@@ -145,8 +145,8 @@ public class QaWorkHorn1123cGameTests implements FabricGameTest {
 	 * In an owned village a friend of the owner and an operator may call a rush through the item; a stranger is told
 	 * "Only <owner> and their friends can call a rush in <village>." with both names filled in.
 	 */
-	//$ gametest_ticks_batch AREA '100' '"qaHornFriend"'
-	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaHornFriend")
+	//$ gametest_ticks_batch AREA '100' '"qaHornFriend1123c"'
+	@GameTest(template = AREA, timeoutTicks = 100, batch = "qaHornFriend1123c")
 	public void aFriendAndAnOperatorMayCallARush(GameTestHelper helper) {
 		Village v = village(helper);
 		Villager farmer = grown(helper, new BlockPos(4, 2, 4));

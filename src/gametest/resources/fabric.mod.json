@@ -2045,7 +2045,8 @@
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksRaid1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaid1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaidMore1123dGameTests",
-			"io.github.jcondedata.aliveworkplace.test.QaWarbandSpec1123dGameTests"
+			"io.github.jcondedata.aliveworkplace.test.QaWarbandSpec1123dGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaSiegeSwitchesWalled1123dGameTests"
 		]
 	},
 	"depends": {

@@ -8,7 +8,7 @@ Part of 2.3, behind its gate (`Expansions.M39`). Built so far: the plan, the gat
 built from a blueprint (39.5), Create schematics at the Blueprint Table (39.6), trains between villages (39.7) and their
 Conductor (39.7d) and six more Create builds (39.8); the full plan is the design note, docs/design/M39.md.
 
-Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13, B1501, B1505, B1516, B1517
+Roadmap items: 39.1, 39.2, 39.3, 39.4, 39.5, 39.6, 39.7, 39.7a, 39.7b, 39.7c, 39.7d, 39.8, B189, B193, B231, B243, B244, B483, B484, B486, B598, B800, B820, B894, B898, B912, B913, B933, B938, B959, B960, B962, B1049, B669, 50.7, 50.10, B1067, B1068, B1069, B1070, 50.13, B1501, B1505, B1516, B1517, B1488, B1495, B1519
 
 ## What a player sees
 
@@ -574,7 +574,10 @@ pours nor drains inside it (B1517). His Schematicannon outside skips the village
 outside (B1516). The same machines inside the village, or
 with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
 inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
-onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Portable Storage Interface.
+onto a depot, belt, basin or funnel inside it (B1015). A stranger's contraption (on his piston or cart) can't
+dock its Portable Storage Interface or Portable Fluid Interface with the village's own interface: it doesn't stop to dock, and
+no items or fluid pass either way, also after a save and load (B1488, B1495, B1519). The owner's own cart still docks
+at his interface, and any contraption docks in an open village.
 
 ## Proof
 
@@ -865,8 +868,14 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
 - `QaCreateFellingFluids1122eCompatTests` (QA, lane E, 2026-11-22; 5): a fixed saw and a piston's saw fell a tree
   reaching into an open village whole, a contraption docked at an open village's Portable Fluid Interface takes its
   water, and a stranger's Deployer with bone meal outside grows no sapling inside a protected village (an open one's
-  grows); a stranger's saw still fells the part inside a protected village and his contraption still takes its water
-  (B1518, B1519; failing tests on `tests/create-felling-fluids-1122e`).
+  grows); a stranger's saw still fells the part inside a protected village (B1518; failing tests on
+  `tests/create-felling-fluids-1122e`). The fluid interface's protected case (B1519, fixed) is in
+  `QaCreatePortableTrains1122eBugCompatTests`.
+- `QaCreatePortableTrains1122eCompatTests` and `QaCreatePsi1122eCompatTests` (QA, lane E, 2026-11-22): contraptions
+  on a piston and on a cart dock at an open village's Portable Storage Interface and trade, also after a save and load,
+  and Frank's own cart docks at his protected village; `QaCreatePortableTrains1122eBugCompatTests` (3) and
+  `QaCreatePsi1122eBugTests` (3) check that a stranger's piston or cart outside a protected village trades no items or
+  fluid with its interface (B1488, B1495, B1519, fixed).
 - `QaCreateItemEdge1122eCompatTests` (QA, lane E, 2026-11-22; 2): a Weighted Ejector and a belt outside an open
   village deliver onto a Depot inside it; a stranger's outside a protected village still does (B1520; failing tests
   on `tests/create-item-edge-1122e`).

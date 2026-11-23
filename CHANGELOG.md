@@ -21,6 +21,9 @@ asks for the steps, `latest.log` and any crash report).
   Deployer with a bucket, a Hose Pulley, and an open Fluid Pipe with a Mechanical Pump all stop at the village's edge,
   as they do for players (B1501, B1505, B1517). His Schematicannon outside prints nothing into it either, and still
   prints the cells outside (B1516).
+- A stranger's Create contraption outside a protected village can no longer dock its Portable Storage Interface or
+  Portable Fluid Interface with the village's interface to take or leave items or fluid; nothing passes, also after
+  a save and load. The owner's own contraptions still dock (B1488, B1495, B1519).
 
 ## 0.159.1 — 2026-11-22
 

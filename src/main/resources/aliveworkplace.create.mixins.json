@@ -18,6 +18,7 @@
 		"MovingBreakerMixin",
 		"OpenPipeMixin",
 		"PloughMixin",
+		"PortableInterfaceMixin",
 		"RollerFillMixin",
 		"SchematicannonMixin"
 	],

@@ -26,6 +26,9 @@ asks for the steps, `latest.log` and any crash report).
   village: the trunk and branches outside fall, the logs and leaves inside stay (B1518).
 - A stranger's Create Weighted Ejector or belt outside a protected village no longer delivers items onto a depot or
   belt inside it: the ejector keeps its item and the belt's items wait at its end, as at a full depot (B1520).
+- Nor do a stranger's other Create machines just outside: an Item Drain, a Saw or Drill, a Crushing Wheel, a Funnel,
+  a Brass Tunnel or a Mechanical Crafter hands nothing onto a depot, belt or other machine inside a protected village
+  and keeps the item, as at a full depot. Machines inside the village work as before (B1532).
 - Killing the third pillager of a vanilla raid near a village hall now gives the raid's +20 reputation; vanilla
   raids never paid it before (B1527).
 - A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze

@@ -577,7 +577,7 @@ with its protection off, work as usual. Item transport stops at the edge too: a 
 inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
 onto a depot, belt, basin or funnel inside it (B1015). A Weighted Ejector outside launches nothing onto a depot or
 belt it aims at inside the village (it keeps the item, as at a full depot), and a belt ending just outside carries
-nothing onto the depot or belt past its end inside (the items wait at the end, B1520). A stranger's contraption (on his piston or cart) can't
+nothing onto the depot or belt past its end inside (the items wait at the end, B1520). No other machine outside hands items onto a block inside either: an Item Drain, Saw, Drill, Crushing Wheel, Funnel, Brass Tunnel or Mechanical Crafter keeps the item, as at a full depot (B1532). A stranger's contraption (on his piston or cart) can't
 dock its Portable Storage Interface or Portable Fluid Interface with the village's own interface: it doesn't stop to dock, and
 no items or fluid pass either way, also after a save and load (B1488, B1495, B1519). The owner's own cart still docks
 at his interface, and any contraption docks in an open village.
@@ -882,6 +882,9 @@ at his interface, and any contraption docks in an open village.
 - `QaCreateItemEdge1122eCompatTests` (QA, lane E, 2026-11-22; 2): a Weighted Ejector and a belt outside an open
   village deliver onto a Depot inside it; `QaCreateItemEdge1122eBugCompatTests` (2) checks that a stranger's
   outside a protected village puts nothing onto it (B1520, fixed).
+- `CreateHandOverEdgeCompatTests` (6): a stranger's Item Drain and Mechanical Saw just outside a protected village
+  hand no diamond onto Frank's Depot inside it; with the village open they do (the controls), and Frank's own drain
+  and saw inside his protected village still do (B1532).
 - `QaCreateEdgeVerify1123eCompatTests` (QA, lane E, 2026-11-23; 16): the six fixes above checked from their bug text
   in the cases they left open: a stranger's contraption pours no fluid into a protected village through its fluid
   interface (an open one's fills); turning protection on while a stranger's contraption is docked stops the trade;

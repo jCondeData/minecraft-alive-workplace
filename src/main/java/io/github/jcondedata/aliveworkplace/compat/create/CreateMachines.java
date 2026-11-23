@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 /**
  * Village protection for Create's machines (B808, B993, B1033): where a machine stands, so {@link VillageProtection#mayMachineChange}
@@ -22,7 +23,37 @@ public final class CreateMachines {
 	/** Where each contraption was put together (the controller's block, given to its {@code assemble}), until its entity exists. */
 	private static final Map<Contraption, BlockPos> ASSEMBLED = Collections.synchronizedMap(new WeakHashMap<>());
 
+	/** B1532: the Create machine whose tick is running on this thread (null between ticks, or with protection off). */
+	private static final ThreadLocal<BlockEntity> TICKING = new ThreadLocal<>();
+
 	private CreateMachines() {
+	}
+
+	/** Runs {@code tick} (the tick of the Create machine {@code machine}), remembering for {@link #mayHandOver} whose tick it is. */
+	public static void ticking(BlockEntity machine, Runnable tick) {
+		BlockEntity before = TICKING.get();
+		TICKING.set(machine);
+		try {
+			tick.run();
+		} finally {
+			TICKING.set(before);
+		}
+	}
+
+	/**
+	 * B1532: whether the Create machine ticking now may hand an item over to the item acceptor (a depot, a belt, a
+	 * drain, a funnel, any block with Create's direct belt input) at {@code target}. A machine outside a protected
+	 * village may not hand anything to one inside ({@link VillageProtection#mayMachineChange}). Belts are judged by the
+	 * segment at their end (BeltEndMixin), so a belt's tick is left to that; with no machine ticking (an item landing
+	 * from the air, a player) there is nothing to judge here.
+	 */
+	public static boolean mayHandOver(Level level, BlockPos target) {
+		BlockEntity machine = TICKING.get();
+		if (machine == null || level == null || machine.getLevel() != level
+			|| machine instanceof com.simibubi.create.content.kinetics.belt.BeltBlockEntity) {
+			return true;
+		}
+		return VillageProtection.mayMachineChange(level, machine.getBlockPos(), target);
 	}
 
 	/** Remembers that {@code contraption} is being put together by the machine at {@code pos}. */

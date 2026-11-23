@@ -125,4 +125,9 @@ None of its own. It needs a Village Hall and a Storehouse with at least one ches
   to the cent, and an account that can't pay buys nothing.
 - `PriceBoardGameTests` still passes; one expectation changed: a good's tooltip now ends with the trading lines (in
   that test's village, "The market needs a Storehouse with a chest").
+- QA, `QaShopBoards1123cGameTests`: a purchase fills the treasury only up to its cap; a shift-click buys only what the
+  player can pay for; a good with no price yet trades at its base, and a bundle one item short is a purchase; two chests
+  by the Storehouse trade as one (16 kept back between them); the Storehouse broken and the economy switched off with
+  the page open; a page left open while another player trades; the treasury switch off; the hall saved and loaded
+  after trading; a sneaking stranger with a block and protection switched off; every sentence the board says.
 - Showcase scene: `board_trade` (the treasury before, a bundle of Timber bought, the treasury after).

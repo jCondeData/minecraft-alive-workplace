@@ -417,5 +417,10 @@ The chronicle has new kinds, `LIFE` (a clock) and `FUNERAL` (a wither rose, 36.1
 - QA: `QaElderLifeBugTests` (4, B442: the waiting line goes while a jobless villager is there and the elder holds a
   site or the 3-day wait runs; it comes back when that villager takes a job and goes when the villager is no elder; never
   while someone learns the elder's trade).
+- QA (lane C 11-23): `QaElders1123cGameTests` (5: the card silent 11 days before, "Their time comes in 10 days (an
+  Evergreen Charm keeps them)" at 10, "in 1 day" singular, "tonight" on the last, never a raw placeholder; with charms
+  off the countdown names no charm; a revived elder's card stops warning and warns again 10 days before the next time;
+  "Elder · grown 1200 days" and 1211 on the card, none at 1199; a child and a villager of unknown age refuse the charm
+  by sneak-right-click with "is not an elder" and the player keeps it).
 - Showcase scene: `family_tree` (the hall's list, Dara's Family page, Mira's grandparents with Bram marked, the printed
   tree as a book).

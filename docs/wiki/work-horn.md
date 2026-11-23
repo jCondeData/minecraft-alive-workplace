@@ -61,4 +61,4 @@ ends; 0). On each villager who answered: the attachment `worn_out` (the rush's e
 ## Proof
 
 GameTests: `WorkHornGameTests` (7: the pace during and after the rush, once a day, worn out until dawn, the cap, a
-stranger's horn in an owned village, the console's rush, a rush over a save, `workHorns` off), `QaEdictsGameTests` (the rush's last tick). Showcase scene `work_horn`.
+stranger's horn in an owned village, the console's rush, a rush over a save, `workHorns` off), `QaEdictsGameTests` (the rush's last tick), `QaWorkHorn1123cGameTests` (7: the recipe, the answer counts only the grown in the circle and a rush lasts 5 minutes, a latecomer rushes but isn't worn out, a friend and an operator may call a rush and a stranger's refusal, let go early it doesn't sound, `workHorns` off wears nobody out, every sentence). Showcase scene `work_horn`.

@@ -112,5 +112,8 @@ for the Guildhall, five helpers at one build), `GuildPerkGameTests` (5), `GuildH
 `QaEdictsGameTests.qaAFullVillageSaysOneGuild`, and `QaTonicsGuildsGameTests` (10: which trade finds which guild, a
 charter given by sneak-right-click, perks only in the village and kept over a reload of the hall, each guild's
 numbers for its members and not for the others, the rounding, the plural refusal in a Town).
+`QaGuildsSettlers1123cGameTests` (4 for guilds: the charter's recipe and stack of 16, the oldest guild claiming the first
+Guildhall while the next waits for its own, the village hearing the charter, the founding and the succession, the
+switch off refusing and keeping the charter and on again bringing everything back).
 
 Showcase scenes: `guildhall` (charters and the Guildhall), `guilds` (the other guilds at work).

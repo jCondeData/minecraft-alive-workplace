@@ -714,6 +714,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaCreateGoneRebuilt1121eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartsGiftsGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaGifts1123cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHeartStories1031GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaHallHomesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaEconomyGameTests",

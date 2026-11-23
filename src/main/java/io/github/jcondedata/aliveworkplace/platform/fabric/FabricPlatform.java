@@ -247,6 +247,14 @@ public final class FabricPlatform implements Platform {
 	}
 
 	@Override
+	public void beforeDeath(BiConsumer<LivingEntity, DamageSource> action) {
+		ServerLivingEntityEvents.ALLOW_DEATH.register((entity, source, amount) -> {
+			action.accept(entity, source);
+			return true;
+		});
+	}
+
+	@Override
 	public void afterDeath(BiConsumer<LivingEntity, DamageSource> action) {
 		ServerLivingEntityEvents.AFTER_DEATH.register(action::accept);
 	}

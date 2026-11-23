@@ -17,6 +17,8 @@ asks for the steps, `latest.log` and any crash report).
 ## Unreleased
 
 ### Fixed
+- Killing the third pillager of a vanilla raid near a village hall now gives the raid's +20 reputation; vanilla
+  raids never paid it before (B1527).
 - A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze
   powder is in the chest by the stand, and brews the potions; the same when the stand runs out of fuel with an
   ingredient still in it (B1521).

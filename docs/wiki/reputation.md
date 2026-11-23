@@ -195,4 +195,7 @@ Breaking the hall drops its standings with the rest of the village's stories.
   `ReputationGameTests.harmToTheVillageCostsStanding`, `ReputationGameTests.theTitleGoesBeforeAChatLine`,
   `ReputationGameTests.theHallTooltipAndTheCommand`, `ReputationGameTests.aSaveAndReloadKeepsStandings` and
   `ReputationGameTests.theSwitchesOff`.
+- `QaRaidReputation1123cGameTests` (4, QA for B1527): a vanilla raid's vindicator, witch and ravager pay the third-kill
+  +20, so do raiders shot with the player's arrows; raiders killed by a zombie or plain damage count for nobody; kills
+  don't carry over to the next vanilla raid, and each raid pays once.
 - Showcase scenes: `titles`

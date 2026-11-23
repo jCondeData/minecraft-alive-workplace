@@ -320,8 +320,9 @@ public class QaVisibleCaravans1123cGameTests implements FabricGameTest {
 				helper.setBlock(new BlockPos(x, 5, z), Blocks.STONE);
 			}
 		}
-		helper.runAfterDelay(2, () -> {
-			helper.assertTrue(!two.level().canSeeSky(helper.absolutePos(STORE_A).above()), "the roof doesn't cover the Storehouse");
+		// Sky light under a new roof is worked out by the light engine a few ticks later (longer when many tests load at
+		// once, as in a full run), so wait until the roof shades the Storehouse before the round.
+		whenShaded(helper, two, 0, () -> {
 			open(helper, two);
 			Caravans.round(two.level(), two.a(), null);
 			helper.assertTrue(two.ours().countItem(Items.BREAD) == 24, "the caravan should leave: " + two.ours().countItem(Items.BREAD));
@@ -330,6 +331,17 @@ public class QaVisibleCaravans1123cGameTests implements FabricGameTest {
 			helper.assertTrue(two.level().canSeeSky(party.yard()), "the party loads indoors at " + party.yard() + " with open sky a few blocks away");
 			helper.assertTrue(flat(party.yard(), helper.absolutePos(STORE_A)) <= 6.5, "the yard is far from the Storehouse: " + party.yard());
 			helper.succeed();
+		});
+	}
+
+	private static void whenShaded(GameTestHelper helper, Two two, int waited, Runnable then) {
+		helper.runAfterDelay(2, () -> {
+			if (!two.level().canSeeSky(helper.absolutePos(STORE_A).above())) {
+				then.run();
+			} else {
+				helper.assertTrue(waited < 120, "the roof doesn't cover the Storehouse after " + waited + " ticks");
+				whenShaded(helper, two, waited + 2, then);
+			}
 		});
 	}
 

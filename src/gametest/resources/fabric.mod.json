@@ -1919,6 +1919,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobCraftListsBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaJobLists1110cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaJobLists1123cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BuilderAsksForFramesGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1110eGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaGlassblower1111bGameTests",

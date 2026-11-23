@@ -315,7 +315,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		return foe;
 	}
 
-	private static String rel(GameTestHelper helper, BlockPos pos) {
+	static String rel(GameTestHelper helper, BlockPos pos) {
 		return pos.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString();
 	}
 
@@ -457,7 +457,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	/** The house's origin: the middle of the area, so it fits however it's turned. */
 	private static final BlockPos HOUSE = new BlockPos(15, 2, 15);
 
-	private record Stage(ServerLevel level, ServerPlayer owner, ResourceLocation structure, BlueprintData.Placement placement, Blueprint asBuilt,
+	record Stage(ServerLevel level, ServerPlayer owner, ResourceLocation structure, BlueprintData.Placement placement, Blueprint asBuilt,
 						 BlockPos hall, BlockPos corner, List<BlockPos> stores, Villager builder) {
 	}
 
@@ -465,7 +465,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	 * The owner's furnished pre-B260 Stone House standing as built, turned by {@code rotation}; a hall, a Builder, his
 	 * bench and four stores in the corner the house leaves free (as QaRefreshFurnishedShortGameTests stages it).
 	 */
-	private static Stage house(GameTestHelper helper, Rotation rotation) {
+	static Stage house(GameTestHelper helper, Rotation rotation) {
 		Leftovers.clear(helper);
 		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
@@ -518,7 +518,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	}
 
 	/** The owner presses Refresh for the house on the hall's Repairs page; false when the page doesn't offer it. */
-	private static boolean pressRefresh(GameTestHelper helper, Stage s) {
+	static boolean pressRefresh(GameTestHelper helper, Stage s) {
 		ChoiceMenu menu = VillageHallScreen.forTest(s.owner(), s.hall());
 		menu.press(HallPages.slot(RepairsPage.PAGE), s.owner());
 		int slot = -1;
@@ -536,13 +536,13 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		return true;
 	}
 
-	private static Blueprint currentFor(Stage s) {
+	static Blueprint currentFor(Stage s) {
 		Blueprint base = BlueprintLibrary.get(s.level(), s.structure()).orElseThrow();
 		return Refreshes.refreshedFurniture(s.level(), s.structure(), BuildSiteManager.get(s.level()).furniture(s.placement())).apply(base, s.structure());
 	}
 
 	/** Every material the refresh needs, twice over, into the stores. */
-	private static void stock(GameTestHelper helper, Stage s, Map<net.minecraft.world.item.Item, Integer> needs) {
+	static void stock(GameTestHelper helper, Stage s, Map<net.minecraft.world.item.Item, Integer> needs) {
 		int at = 0;
 		for (Map.Entry<net.minecraft.world.item.Item, Integer> need : needs.entrySet()) {
 			for (int left = need.getValue() * 2 + 2; left > 0 && at < 27 * s.stores().size(); at++) {
@@ -555,7 +555,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	}
 
 	/** The house afterwards is a fresh build of today's drawing (beds a villager claimed aside), nothing floating, no Refresh left offered. */
-	private static void assertFresh(GameTestHelper helper, Stage s, Map<BlockPos, BlockState> was, Map<BlockPos, BlockState> now) {
+	static void assertFresh(GameTestHelper helper, Stage s, Map<BlockPos, BlockState> was, Map<BlockPos, BlockState> now) {
 		helper.assertTrue(Refreshes.siteOf(s.level(), s.placement()) == null, "still refreshing");
 		helper.assertTrue(BuildSiteManager.get(s.level()).all().stream().noneMatch(b -> b.placement().equals(s.placement())), "a site left on the house");
 		List<String> left = new ArrayList<>(RefreshMatchesFreshBuildGameTests.differences(s.level(), s.placement(), s.asBuilt(), currentFor(s)));

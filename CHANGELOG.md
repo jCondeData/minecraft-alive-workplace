@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.159.1 — 2026-11-22
+
 ### Fixed
 - A jobless villager by the **Fisher's Hut II** or **Ranch II** barrel becomes its Fisherman every time; he sometimes
   turned Butcher at the hut's smoker instead (B1496).

@@ -851,5 +851,17 @@ onto a depot, belt, basin or funnel inside it (B1015). Not covered yet: the Port
   the village's sweet berries and sugar cane; a roller in wide-fill mode fills nothing inside; a harvester or plow
   train saved and loaded just outside still leaves the village alone; a turned elevator, and one saved and loaded
   between assembling and breaking, keeps the village's block; each with an open-village control.
+- `QaCreateCannonPipes1122eCompatTests` (QA, lane E, 2026-11-22; 7): a Schematicannon prints into an open village
+  (and replaces its planks in "replace any" mode), an open-ended pipe and pump pours into and drains it, and Frank's
+  own cannon and pipe inside his protected village still work; a stranger's cannon or pipe outside a protected one
+  still changes it (B1516, B1517; failing tests on `tests/create-cannon-pipes-1122e`).
+- `QaCreateFellingFluids1122eCompatTests` (QA, lane E, 2026-11-22; 5): a fixed saw and a piston's saw fell a tree
+  reaching into an open village whole, a contraption docked at an open village's Portable Fluid Interface takes its
+  water, and a stranger's Deployer with bone meal outside grows no sapling inside a protected village (an open one's
+  grows); a stranger's saw still fells the part inside a protected village and his contraption still takes its water
+  (B1518, B1519; failing tests on `tests/create-felling-fluids-1122e`).
+- `QaCreateItemEdge1122eCompatTests` (QA, lane E, 2026-11-22; 2): a Weighted Ejector and a belt outside an open
+  village deliver onto a Depot inside it; a stranger's outside a protected village still does (B1520; failing tests
+  on `tests/create-item-edge-1122e`).
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

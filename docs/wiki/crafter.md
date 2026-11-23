@@ -364,6 +364,11 @@ recipe only matches what no other does (B1290: `carved_wood_crafting_table.json`
 - `QaJobsShops1117cBugCompatTests` (2, B1378 with Chipped and Carved Wood): for seven 2x2 mixes of planks (one Chipped
   kind, two, Chipped beside oak, oak beside acacia, oak alone, acacia alone) a crafting table lacks nothing exactly when
   the game's own table makes one of them; and one CobbleDollar reads in the singular (B1379).
+- `QaMixedPlanks1122cCompatTests` (6, QA past B1378 with Chipped and Carved Wood): every set of 4 planks from six kinds
+  and of 5 from four lacks nothing exactly when the game's own table makes a crafting table, the plan takes 4 planks and
+  never 4 acacia; 3 planks lack something and what's named is enough; a Carpenter makes a builder's table from 2 oak and
+  2 acacia, from 4 acacia and a Chipped plank (Minecraft's table, not Carved Wood's), and across a reload. Three mixed
+  planks read as 2-3 Oak Planks short instead of one plank: B1514.
 - `QaRecipeStandInFiles1116eGameTests` (4, base game, a datapack's files through the real loader): a stand-in counts
   only while its serializer's recipe is loaded and is gone after a reload without it; without Carved Wood the shipped
   chest file adds nothing; `except` taking out all, a result from itself, and from only uncrafted things (both kept) or

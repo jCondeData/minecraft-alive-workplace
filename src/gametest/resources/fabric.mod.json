@@ -224,6 +224,7 @@
 			"io.github.jcondedata.aliveworkplace.test.AlchemistGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ExplorerGameTests",
 			"io.github.jcondedata.aliveworkplace.test.BeekeeperGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaBeekeeperAlchemist1122cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.FloristGameTests",
 			"io.github.jcondedata.aliveworkplace.test.RancherGameTests",
 			"io.github.jcondedata.aliveworkplace.test.VillageHallGameTests",

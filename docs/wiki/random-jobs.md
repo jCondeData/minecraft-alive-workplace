@@ -112,4 +112,10 @@ No new ones. The blocks and jobs are those of [Villager jobs](villager-jobs.md);
 - `RandomJobsGameTests.aSingleJobBlockIsUnchanged`: a barrel, a Storehouse, the loom with `tailors` off and on.
 - `RandomJobsGameTests.ordersItemsAndTheSwitchOffKeepTheJobNamed`: orders, the item, a load, the switch off, its words.
 - `RandomJobsGameTests.theJobDrawnSurvivesASaveAndReload`.
+- `QaRandomJobs1123cGameTests` (QA from this page, 9): three farmers and no florist most likely give a florist next; a
+  villager's class leaves jobs out (a Peasant at a lectern is only a Librarian, an Artisan never a Scholar) but never
+  the vanilla one; a villager with a job, a job other than the block's vanilla one and an order inside the brain's run
+  are never redrawn; a broken block, no job site or one in another dimension give the vanilla job; a job switched off
+  (`vintners`, `physicians`) never comes up; the Shop Counter gives the Shopkeeper or the Innkeeper, the same random
+  the same job; every job name and the setting's words are written.
 - Showcase scenes: `random_job` (four composters, four jobless villagers, named by the job each took).

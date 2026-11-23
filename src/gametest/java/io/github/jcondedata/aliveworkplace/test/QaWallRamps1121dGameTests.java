@@ -159,6 +159,17 @@ public class QaWallRamps1121dGameTests implements FabricGameTest {
 		mob.moveTo(base.getX() + x + 0.5, base.getY() + 2, base.getZ() + z + 0.5, 0f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
 		Threats.outfit(level, mob, yard.culture(), member);
+		// B1528: finalizeSpawn makes one zombie-kind in 20 a baby (the level's random), now and then on a chicken: a baby
+		// walks in under the walls or rides off on its chicken instead of piling a ramp. Always an adult on foot.
+		if (mob instanceof net.minecraft.world.entity.monster.Zombie zombie && zombie.isBaby()) {
+			zombie.setBaby(false);
+		}
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x + 0.5, base.getY() + 2, base.getZ() + z + 0.5, 0f, 0f);
+		}
 		mob.setPersistenceRequired();
 		level.addFreshEntityWithPassengers(mob);
 		return mob;

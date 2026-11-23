@@ -194,10 +194,11 @@ public class QaBeltMendRebuilt1121eCompatTests implements FabricGameTest {
 			turnedAsBuilt.addAll(turning(run));
 			helper.assertTrue(segments.stream().allMatch(turnedAsBuilt::contains), "as built, the " + entry.id().getPath()
 				+ "'s belt doesn't turn: turning are " + turnedAsBuilt.stream().map(p -> rel(run, p).toShortString()).toList());
-			// Earlier tests' finished builds at this spot (their blocks cleared) would be holes in this Mechanic's reach
+			// Earlier tests' finished builds at this spot (their blocks cleared) would be holes in this Mechanic's reach,
+			// asked the way the Mechanic asks (B1535: a build whose origin lay over 96 blocks away still reached him)
 			BuildSiteManager sites = BuildSiteManager.get(level);
-			for (BuildSiteManager.Finished f : sites.finishedIn(level)) {
-				if (!f.placement().equals(run.placement()) && f.placement().origin().distManhattan(run.placement().origin()) < 96) {
+			for (BuildSiteManager.Finished f : sites.finishedReaching(level, helper.absolutePos(TOOLBOX), MechanicWork.REACH * 2)) {
+				if (!f.placement().equals(run.placement())) {
 					sites.forgetFinished(f.placement());
 				}
 			}

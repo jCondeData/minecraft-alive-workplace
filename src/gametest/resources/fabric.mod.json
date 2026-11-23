@@ -2040,6 +2040,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaQuarryLever1122bGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksTurnOut1122dBugTests",
 			"io.github.jcondedata.aliveworkplace.test.QaBarracksRaid1122cGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaVanillaRaid1123dGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaWarbandSpec1123dGameTests"
 		]
 	},

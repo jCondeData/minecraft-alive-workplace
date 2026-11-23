@@ -22,6 +22,10 @@ asks for the steps, `latest.log` and any crash report).
   at the bench's corner by the Weaponsmith standing at his grindstone, never reaching the back blast furnace. Now one
   steps back at a door, by day as at bedtime, and a villager blocked by one who is standing still shoulders past
   (B1512).
+- A stranger's Create saw outside a protected village no longer fells the part of a tree that reaches into the
+  village: the trunk and branches outside fall, the logs and leaves inside stay (B1518).
+- A stranger's Create Weighted Ejector or belt outside a protected village no longer delivers items onto a depot or
+  belt inside it: the ejector keeps its item and the belt's items wait at its end, as at a full depot (B1520).
 - Killing the third pillager of a vanilla raid near a village hall now gives the raid's +20 reputation; vanilla
   raids never paid it before (B1527).
 - A Cleric who loaded his brewing stand before there was any blaze powder now comes back to fuel it once blaze

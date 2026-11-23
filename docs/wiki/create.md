@@ -563,7 +563,8 @@ Mailbox, Shop Counter or Storehouse it places or clicks stays unowned (B843). A 
 village can do only what the stranger may: it places no block and renames, opens or hands nothing in at the hall
 (B844).
 Create's machines keep out of a protected village the way a vanilla piston does (B808, B993, B1033): one standing
-outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing, a
+outside breaks, moves and places nothing inside. A Mechanical Drill or Saw leaves the village's edge standing (a saw that cuts a tree outside fells only the
+part outside, and a branch reaching into the village stays, B1518), a
 Mechanical Piston, Gantry or Rope Pulley stops at the edge (also when a drill or saw rides on it), a bearing's arm
 sweeps past without breaking anything and, stopped over the village, drops its blocks beside the bearing instead of
 setting them down there, and a Deployer places no block inside (B1015). A Mechanical Harvester, Plow or Roller
@@ -574,7 +575,9 @@ pours nor drains inside it (B1517). His Schematicannon outside skips the village
 outside (B1516). The same machines inside the village, or
 with its protection off, work as usual. Item transport stops at the edge too: a funnel or chute outside finds no
 inventory in a chest or barrel inside the village (B994), and a Mechanical Arm outside neither takes from nor puts
-onto a depot, belt, basin or funnel inside it (B1015). A stranger's contraption (on his piston or cart) can't
+onto a depot, belt, basin or funnel inside it (B1015). A Weighted Ejector outside launches nothing onto a depot or
+belt it aims at inside the village (it keeps the item, as at a full depot), and a belt ending just outside carries
+nothing onto the depot or belt past its end inside (the items wait at the end, B1520). A stranger's contraption (on his piston or cart) can't
 dock its Portable Storage Interface or Portable Fluid Interface with the village's own interface: it doesn't stop to dock, and
 no items or fluid pass either way, also after a save and load (B1488, B1495, B1519). The owner's own cart still docks
 at his interface, and any contraption docks in an open village.
@@ -868,16 +871,16 @@ at his interface, and any contraption docks in an open village.
 - `QaCreateFellingFluids1122eCompatTests` (QA, lane E, 2026-11-22; 5): a fixed saw and a piston's saw fell a tree
   reaching into an open village whole, a contraption docked at an open village's Portable Fluid Interface takes its
   water, and a stranger's Deployer with bone meal outside grows no sapling inside a protected village (an open one's
-  grows); a stranger's saw still fells the part inside a protected village (B1518; failing tests on
-  `tests/create-felling-fluids-1122e`). The fluid interface's protected case (B1519, fixed) is in
-  `QaCreatePortableTrains1122eBugCompatTests`.
+  grows); `QaCreateFellingFluids1122eBugCompatTests` (2) checks that a stranger's fixed saw and piston saw outside a
+  protected village fell none of the tree's logs and leaves inside it (B1518, fixed). The fluid interface's protected
+  case (B1519, fixed) is in `QaCreatePortableTrains1122eBugCompatTests`.
 - `QaCreatePortableTrains1122eCompatTests` and `QaCreatePsi1122eCompatTests` (QA, lane E, 2026-11-22): contraptions
   on a piston and on a cart dock at an open village's Portable Storage Interface and trade, also after a save and load,
   and Frank's own cart docks at his protected village; `QaCreatePortableTrains1122eBugCompatTests` (3) and
   `QaCreatePsi1122eBugTests` (3) check that a stranger's piston or cart outside a protected village trades no items or
   fluid with its interface (B1488, B1495, B1519, fixed).
 - `QaCreateItemEdge1122eCompatTests` (QA, lane E, 2026-11-22; 2): a Weighted Ejector and a belt outside an open
-  village deliver onto a Depot inside it; a stranger's outside a protected village still does (B1520; failing tests
-  on `tests/create-item-edge-1122e`).
+  village deliver onto a Depot inside it; `QaCreateItemEdge1122eBugCompatTests` (2) checks that a stranger's
+  outside a protected village puts nothing onto it (B1520, fixed).
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

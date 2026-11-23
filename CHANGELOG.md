@@ -16,6 +16,8 @@ asks for the steps, `latest.log` and any crash report).
 
 ## Unreleased
 
+## 0.159.1 — 2026-11-22
+
 ### Fixed
 - A stranger's Create machines keep their hands off a protected village: a Mechanical Harvester, Plough or Roller on
   his train or other contraption no longer reaps its crops, tills its grass or fills its holes, and his Elevator Pulley

@@ -662,6 +662,7 @@
 			"io.github.jcondedata.aliveworkplace.test.QaConscriptReach1104d2GameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaConscriptReach1104d2BugTests",
 			"io.github.jcondedata.aliveworkplace.test.WorkHornGameTests",
+			"io.github.jcondedata.aliveworkplace.test.QaWorkHorn1123cGameTests",
 			"io.github.jcondedata.aliveworkplace.test.TonicGameTests",
 			"io.github.jcondedata.aliveworkplace.test.QaStageOneGameTests",
 			"io.github.jcondedata.aliveworkplace.test.ArticleGameTests",

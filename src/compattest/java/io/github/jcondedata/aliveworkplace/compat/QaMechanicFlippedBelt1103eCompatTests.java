@@ -121,10 +121,12 @@ public class QaMechanicFlippedBelt1103eCompatTests implements FabricGameTest {
 			for (BlockPos pos : segments) {
 				belt.put(pos.immutable(), level.getBlockState(pos));
 			}
-			// Earlier tests' finished builds at this spot (their blocks cleared) would be holes in this Mechanic's reach
+			// Earlier tests' finished builds at this spot (their blocks cleared) would be holes in this Mechanic's reach.
+			// Asked the way the Mechanic asks (every build whose bounds reach his toolbox): B1535, a tall Create build whose
+			// origin lay over 96 blocks away still reached him, and he went to mend its shafts before the belt
 			BuildSiteManager sites = BuildSiteManager.get(level);
-			for (BuildSiteManager.Finished f : sites.finishedIn(level)) {
-				if (!f.placement().equals(run.placement()) && f.placement().origin().distManhattan(run.placement().origin()) < 96) {
+			for (BuildSiteManager.Finished f : sites.finishedReaching(level, helper.absolutePos(TOOLBOX), MechanicWork.REACH * 2)) {
+				if (!f.placement().equals(run.placement())) {
 					sites.forgetFinished(f.placement());
 				}
 			}
@@ -244,7 +246,10 @@ public class QaMechanicFlippedBelt1103eCompatTests implements FabricGameTest {
 
 	private static List<BlockPos> beltsOf(Run run) {
 		List<BlockPos> out = new ArrayList<>();
-		for (BlockPos pos : BlockPos.betweenClosed(run.world(BlockPos.ZERO).offset(-30, -2, -30), run.world(BlockPos.ZERO).offset(30, 20, 30))) {
+		// Only inside the build's own box: an earlier test's build standing beside this area has belts of its own (B1535)
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = io.github.jcondedata.aliveworkplace.blueprint.BlueprintOutline.bounds(run.placement(),
+			io.github.jcondedata.aliveworkplace.blueprint.BlueprintLibrary.get(run.level(), run.entry().id()).map(b -> b.size()).orElse(run.entry().size()));
+		for (BlockPos pos : BlockPos.betweenClosed(box.minX() - 1, box.minY() - 2, box.minZ() - 1, box.maxX() + 1, box.maxY() + 1, box.maxZ() + 1)) {
 			if ("create:belt".equals(BuiltInRegistries.BLOCK.getKey(run.level().getBlockState(pos).getBlock()).toString())) {
 				out.add(pos.immutable());
 			}

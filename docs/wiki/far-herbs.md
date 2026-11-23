@@ -90,4 +90,7 @@ none. The herbs are only planted by story arcs, so the arcs' own switches decide
   goes); `eachHerbKeepsToItsGround`, `glowcapGlowsAndNeedsShade`, `herbsHaveBiomesItemsAndNames`;
   `aPatchPlantsOnlyOnFitGround`, `aPatchPlantsOnlyWhatFits`, `aGlowcapPatchKeepsToTheShade`,
   `theArcPlantsAPatchWhereItsRuleSays`.
+- QA (lane-c-1123-0953): `QaCharterHerbs1123cGameTests` (every ground in the table above and grounds not in it,
+  the Glowcap's shade from glass or leaves but not a cobweb, a herb popping off when its ground turns unfit, a patch
+  under a canopy planting on the ground below, a waiting patch kept through a save).
 - Showcase scenes: `herbs` (all eight patches on their ground, and the tonic in hand).

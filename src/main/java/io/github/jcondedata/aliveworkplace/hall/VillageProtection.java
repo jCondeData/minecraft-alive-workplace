@@ -34,6 +34,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.BellBlock;
 import net.minecraft.world.level.block.ButtonBlock;
@@ -99,18 +100,23 @@ public final class VillageProtection {
 	 * B719: whether {@code player} may use the bucket {@code stack} where it would act, not where they stand: the block its
 	 * own raycast hits (scooping, or a waterlogged block filled) and the one beside the face it hits (where it pours, also
 	 * where it falls back to when the hit block can't take the fluid). A stranger outside can't pour into a village or scoop
-	 * out of it; one inside may pour outside it. If not, they're told whose village it is.
+	 * out of it; one inside may pour outside it. If not, they're told whose village it is. B1501: also asked by
+	 * BucketItemMixin for a machine's stand-in (Create's Deployer), which uses a bucket without the use-item event;
+	 * {@code level} may then be the machine's wrapper of the real level, which the ray is cast in, as the bucket casts it.
 	 */
-	static boolean mayUseBucket(Level level, Player player, ItemStack stack) {
+	public static boolean mayUseBucket(Level level, Player player, ItemStack stack) {
 		boolean empty = stack.is(Items.BUCKET);
 		Vec3 eye = player.getEyePosition();
-		Vec3 end = eye.add(player.getViewVector(1.0f).scale(player.blockInteractionRange()));
+		// the bucket's own aim (Item.getPlayerPOVHitResult): the body's turn, not the head's, which a machine's stand-in
+		// (Create's Deployer) never turns
+		Vec3 end = eye.add(Vec3.directionFromRotation(player.getXRot(), player.getYRot()).scale(player.blockInteractionRange()));
 		BlockHitResult hit = level.clip(new ClipContext(eye, end, ClipContext.Block.OUTLINE,
 			empty ? ClipContext.Fluid.SOURCE_ONLY : ClipContext.Fluid.NONE, player));
 		if (hit.getType() != HitResult.Type.BLOCK) {
 			return true; // the bucket does nothing either
 		}
-		return mayChange(level, player, hit.getBlockPos()) && mayChange(level, player, hit.getBlockPos().relative(hit.getDirection()));
+		Level real = level instanceof ServerLevelAccessor accessor ? accessor.getLevel() : level;
+		return mayChange(real, player, hit.getBlockPos()) && mayChange(real, player, hit.getBlockPos().relative(hit.getDirection()));
 	}
 
 	/**

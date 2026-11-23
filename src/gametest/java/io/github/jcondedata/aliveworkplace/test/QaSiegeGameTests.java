@@ -152,6 +152,17 @@ public class QaSiegeGameTests implements FabricGameTest {
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
 		Threats.outfit(level, mob, village.culture(), member);
+		// B1528: finalizeSpawn makes one zombie-kind in 20 a baby (the level's random), now and then on a chicken, and the
+		// chicken walks a held-still raider off its spot (and a baby stands lower). Always an adult on foot.
+		if (mob instanceof net.minecraft.world.entity.monster.Zombie zombie && zombie.isBaby()) {
+			zombie.setBaby(false);
+		}
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 180f, 0f);
+		}
 		mob.addTag(VillageRaids.TAG);
 		mob.setPersistenceRequired();
 		if (still) {

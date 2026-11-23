@@ -91,7 +91,9 @@ build the new one on the plot, the first building on the list that fits the old 
 the old door was. A renewal list file that is broken, or a building it names that doesn't exist, is skipped. The sleepers get the new beds and the worker keeps the job. Two of them coming home
 through the one front door together no longer jam on the doorstep: the one further from the door steps back a moment
 and follows the other in, and the jam never counts towards vanilla giving a bed up (B255; this holds at any door, for
-any villagers walking to bed). A jobless villager walking to a workstation it picked before dusk gives that walk up at
+any villagers walking anywhere, by day too: workers hired together at one workshop no longer stick two abreast on its
+doorstep, B1512). A villager held against a corner by another who is standing still, as the Smithy II's Armorer was
+by the Weaponsmith at his grindstone on the way to the back room, shoulders past after a second (B1512). A jobless villager walking to a workstation it picked before dusk gives that walk up at
 bedtime and goes to bed (B258).
 
 ## Switches

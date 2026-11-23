@@ -137,5 +137,8 @@ All 33.8, lane a, 2026-10-10 (also in ROADMAP's Notes):
   `whatNextSuggestsAColonyOnceACity`, `theMapShowsLoadedLandAndEveryVillageWithoutLoadingAnything`,
   `aClickOnTheMapLandsWithin16BlocksOfThePlace`.
 - `ConfigGameTests` and `ExpansionGateGameTests` count the three new settings.
+- QA (lane-c-1123-0953): `QaCharterHerbs1123cGameTests` (one emerald singular on the tab and in the message, hundredths
+  kept in the treasury, every compass point and its rounding, the off-hand charter, a charter 20,000 blocks from
+  home loading nothing, two charters never stacking).
 
 Showcase scenes: `colony_charter`

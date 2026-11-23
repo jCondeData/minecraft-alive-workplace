@@ -1289,6 +1289,10 @@ public class BuilderGameTests implements FreshPlanning {
 	@GameTest(template = AREA, timeoutTicks = 500, batch = "upkeepOff")
 	public void builderLeavesBuildingsAloneWithRepairsOff(GameTestHelper helper) {
 		Leftovers.clear(helper);
+		// an earlier batch's unfinished build here (RefreshGameTests' refresh_short leaves its refresh waiting for planks)
+		// is a job for this builder, not a repair
+		Leftovers.buildSites(helper);
+		Leftovers.finished(helper);
 		boolean was = io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED;
 		io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = false;
 		Leftovers.after(helper, () -> io.github.jcondedata.aliveworkplace.build.Upkeep.ENABLED = was);

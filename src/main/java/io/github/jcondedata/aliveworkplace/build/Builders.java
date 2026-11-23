@@ -1085,6 +1085,9 @@ public final class Builders {
 			if (site.wonder() == null) {
 				BuildSiteManager.get(level).setRepairAsk(site.placement(), null); // 36.15: done, off the Repairs page
 			}
+			if (site.isRefresh()) {
+				BuildSiteManager.get(level).setRefreshBegun(site.placement(), null); // B1500: finished, nothing left to take up
+			}
 			endJob(level, villager, site);
 			BuilderLevels.addXp(level, villager, 2, site.owner());
 			return;

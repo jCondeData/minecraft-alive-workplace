@@ -158,6 +158,8 @@ public final class WorkerLimits {
 		}
 		// Barrels are many (storage in every build): the fishermen are counted once per chunk section, not per barrel
 		java.util.Map<Long, Boolean> fishermenFull = new java.util.HashMap<>();
+		// One walk worked out per block and search: whether this villager can get to it (canTake)
+		java.util.Map<BlockPos, Boolean> walks = new java.util.HashMap<>();
 		return found.filter(p -> {
 			if (!JobSiteTickets.workstation(p.getFirst())) {
 				return true;
@@ -165,9 +167,12 @@ public final class WorkerLimits {
 			if (workers && full(level, GlobalPos.of(level.dimension(), p.getSecond()), false)) {
 				return false;
 			}
+			if (fishermen && fishermansOven(level, p.getSecond()) && nearerAFreeBarrel(level, villager, p.getSecond(), walks)) {
+				return false; // B1496: the hut's smoker is its Fisherman's, for a villager by the hut's free barrel
+			}
 			return !fishermen || !FishermanCap.barrel(p.getFirst())
 				|| (!fishermenFull.computeIfAbsent(net.minecraft.core.SectionPos.asLong(p.getSecond()), k -> FishermanCap.full(level, p.getSecond()))
-					&& !storeOfAFreeWorkstation(level, p.getSecond()));
+					&& !storeOfAFreeWorkstation(level, villager, p.getSecond(), walks));
 		});
 	}
 
@@ -180,17 +185,18 @@ public final class WorkerLimits {
 	 * barrels are its stores, not a workstation; once it is taken they count again (for the cap as before).
 	 * <p>Only a workstation a jobless villager could take instead counts (B1476, B1477): not one taken only by an item
 	 * (a crafting table, a jukebox, a beehive or bee nest, a mailbox: {@link Stations.Station#byItself}) or whose job this
-	 * game doesn't have ({@link Stations#takenByItself}), nor one with nowhere beside or on top to stand
-	 * ({@link #standBeside}: a counter walled in), since those stay free forever and would hide the barrel forever; and
+	 * game doesn't have ({@link Stations#takenByItself}), nor one the searching villager can't take ({@link #canTake}:
+	 * nowhere beside or on top to stand, a counter walled in; or no way to walk there, a lectern in a sealed room, B1491),
+	 * since those stay free forever and would hide the barrel forever; and
 	 * not a smoker or furnace, which the Fisherman tends himself in his barrel's reach (fishers_hut.md, Level II), so the
 	 * barrel there is the hut's job site, not another workshop's stock.
 	 */
-	static boolean storeOfAFreeWorkstation(ServerLevel level, BlockPos barrel) {
+	static boolean storeOfAFreeWorkstation(ServerLevel level, Villager villager, BlockPos barrel, java.util.Map<BlockPos, Boolean> walks) {
 		int reach = io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS;
 		return level.getPoiManager().getInSquare(t -> JobSiteTickets.workstation(t) && !FishermanCap.barrel(t) && !offByConfig(t)
 					&& takenByAJoblessVillager(t), barrel, reach, PoiManager.Occupancy.HAS_SPACE)
 			.anyMatch(r -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(r.getPos(), barrel)
-				&& !fishermansOven(level, r.getPos()) && standBeside(level, r.getPos()));
+				&& !fishermansOven(level, r.getPos()) && canTake(level, villager, r.getPos(), walks));
 	}
 
 	/** Whether a jobless villager takes a workstation of kind {@code type} by himself, with no item (see {@link Stations}). */
@@ -206,19 +212,150 @@ public final class WorkerLimits {
 	}
 
 	/**
-	 * Whether a villager has somewhere to stand at the workstation at {@code pos} to take it: beside it or on top (vanilla
-	 * takes a workstation from a block at most 1 away, counted along the axes). A workstation with none never gets taken.
+	 * B1496: whether {@code villager} stands nearer than the smoker or furnace at {@code oven} to a free barrel in that
+	 * oven's reach which his search sees (the village has room for a fisherman, and the barrel isn't another workshop's
+	 * stock) and which he can take ({@link #canTake}; B1523, B1525: a barrel boxed in, or one he can't walk to, hid the
+	 * oven from him for good and left him jobless). Then the oven is the Fisherman's, the hut's (fishers_hut.md), and is left out of his search: vanilla's
+	 * search gives up on every block it tried when one walk fails and retries each after its own random 40 to 80 ticks,
+	 * so a villager beside the Fisher's Hut II barrel sometimes saw the smoker again before the barrel and turned Butcher.
 	 */
-	private static boolean standBeside(ServerLevel level, BlockPos pos) {
+	private static boolean nearerAFreeBarrel(ServerLevel level, Villager villager, BlockPos oven, java.util.Map<BlockPos, Boolean> walks) {
+		BlockPos at = villager.blockPosition();
+		double toOven = at.distSqr(oven);
+		return level.getPoiManager().getInSquare(FishermanCap::barrel, oven, io.github.jcondedata.aliveworkplace.build.SupplyContainers.RADIUS, PoiManager.Occupancy.HAS_SPACE)
+			.map(r -> r.getPos())
+			.filter(b -> io.github.jcondedata.aliveworkplace.build.SupplyContainers.inReach(oven, b) && b.distSqr(at) < toOven)
+			.anyMatch(b -> !FishermanCap.full(level, b) && !storeOfAFreeWorkstation(level, villager, b, walks)
+				&& canTake(level, villager, b, walks));
+	}
+
+	/**
+	 * Whether {@code villager} can take the free workstation at {@code pos}: a spot to stand in to take it ({@link
+	 * #standingSpots}) which he can walk to ({@link #walkTo}). One he can never take is no reason to hide anything from
+	 * him: it stays free for good (B1477, B1491, B1523, B1525). {@code walks} keeps the answers of one search.
+	 */
+	private static boolean canTake(ServerLevel level, Villager villager, BlockPos pos, java.util.Map<BlockPos, Boolean> walks) {
+		Boolean known = walks.get(pos);
+		if (known == null) {
+			java.util.List<BlockPos> spots = standingSpots(level, pos);
+			known = !spots.isEmpty() && walkTo(level, villager, spots);
+			walks.put(pos.immutable(), known);
+		}
+		return known;
+	}
+
+	/**
+	 * The spots a villager stands in to take the workstation at {@code pos}: on top of it or against one of its four sides
+	 * (vanilla takes a workstation from a block at most 1 away, counted along the axes). A workstation with none never gets
+	 * taken.
+	 */
+	private static java.util.List<BlockPos> standingSpots(ServerLevel level, BlockPos pos) {
+		java.util.List<BlockPos> spots = new java.util.ArrayList<>(5);
 		if (Walker.canStand(level, pos.above())) {
-			return true;
+			spots.add(pos.above());
 		}
 		for (net.minecraft.core.Direction side : net.minecraft.core.Direction.Plane.HORIZONTAL) {
 			if (Walker.canStand(level, pos.relative(side))) {
-				return true;
+				spots.add(pos.relative(side));
+			}
+		}
+		return spots;
+	}
+
+	/** How many standing spots the walk check looks at before it gives up and answers yes ({@link #walkTo}). */
+	private static final int WALK_SPOTS = 1024;
+	/** How far off the straight line from the villager to the workstation the walk check follows a detour. */
+	private static final int WALK_PAD = 5;
+
+	/**
+	 * Whether {@code villager} can walk from where he stands to one of {@code spots}: a flood fill over the blocks he can
+	 * stand on, a step up of one and a drop of up to three at a time, through doors and gates (he opens those), inside a box
+	 * round him and the spots with {@link #WALK_PAD} blocks of room for a detour. It answers yes when it can't tell (he is
+	 * in the air mid-hop, or the way round is wider than the box or {@link #WALK_SPOTS} spots), so a village is never read
+	 * as more shut-in than it is. Vanilla's own search asks its pathfinder the same question before it lets him claim a
+	 * workstation; asking the navigation here instead gave the villager's own half-walked path back and flaked.
+	 */
+	private static boolean walkTo(ServerLevel level, Villager villager, java.util.List<BlockPos> spots) {
+		BlockPos start = standingAt(level, villager);
+		if (start == null) {
+			return true;
+		}
+		java.util.Set<BlockPos> goals = new java.util.HashSet<>(spots);
+		if (goals.contains(start)) {
+			return true;
+		}
+		int minX = start.getX();
+		int maxX = start.getX();
+		int minY = start.getY();
+		int maxY = start.getY();
+		int minZ = start.getZ();
+		int maxZ = start.getZ();
+		for (BlockPos goal : goals) {
+			minX = Math.min(minX, goal.getX());
+			maxX = Math.max(maxX, goal.getX());
+			minY = Math.min(minY, goal.getY());
+			maxY = Math.max(maxY, goal.getY());
+			minZ = Math.min(minZ, goal.getZ());
+			maxZ = Math.max(maxZ, goal.getZ());
+		}
+		net.minecraft.world.level.levelgen.structure.BoundingBox box = new net.minecraft.world.level.levelgen.structure.BoundingBox(
+			minX - WALK_PAD, minY - WALK_PAD, minZ - WALK_PAD, maxX + WALK_PAD, maxY + WALK_PAD, maxZ + WALK_PAD);
+		java.util.Set<BlockPos> seen = new java.util.HashSet<>();
+		java.util.ArrayDeque<BlockPos> queue = new java.util.ArrayDeque<>();
+		seen.add(start);
+		queue.add(start);
+		while (!queue.isEmpty()) {
+			if (seen.size() > WALK_SPOTS) {
+				return true; // too wide a way round to work out here: as before the check
+			}
+			BlockPos at = queue.poll();
+			for (net.minecraft.core.Direction side : net.minecraft.core.Direction.Plane.HORIZONTAL) {
+				BlockPos step = stepTo(level, at.relative(side));
+				if (step == null || !box.isInside(step) || !seen.add(step)) {
+					continue;
+				}
+				if (goals.contains(step)) {
+					return true;
+				}
+				queue.add(step);
 			}
 		}
 		return false;
+	}
+
+	/** Where {@code villager} stands for {@link #walkTo}, or null when he is in no spot of its own (in the air mid-hop). */
+	@Nullable
+	private static BlockPos standingAt(ServerLevel level, Villager villager) {
+		BlockPos at = villager.blockPosition();
+		for (BlockPos p : new BlockPos[] {at, at.below(), at.above()}) {
+			if (walkable(level, p)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/** The spot a step to {@code side} lands in: the same height, one up, or up to three down, or null for a wall. */
+	@Nullable
+	private static BlockPos stepTo(ServerLevel level, BlockPos side) {
+		for (int dy = 1; dy >= -3; dy--) {
+			BlockPos p = side.above(dy);
+			if (walkable(level, p)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	/** A spot a villager walks through: one he can stand in, or a closed door or gate on solid ground (he opens those). */
+	private static boolean walkable(ServerLevel level, BlockPos feet) {
+		if (Walker.canStand(level, feet)) {
+			return true;
+		}
+		net.minecraft.world.level.block.state.BlockState state = level.getBlockState(feet);
+		return (state.getBlock() instanceof net.minecraft.world.level.block.DoorBlock
+				|| state.getBlock() instanceof net.minecraft.world.level.block.FenceGateBlock)
+			&& Walker.isGround(level, feet.below(), level.getBlockState(feet.below()));
 	}
 
 	/** Workstations a jobless villager's search leaves out while their job's config switch is off (see {@link #hideFull}). */

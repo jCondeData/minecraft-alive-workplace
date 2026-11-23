@@ -41,7 +41,8 @@ public class ArticleGameTests implements FabricGameTest {
 			for (Component line : Stations.tooltip(new ItemStack(item), true)) {
 				read++;
 				String text = line.getString();
-				armorer |= text.equals("A villager without a job takes it as an Armorer");
+				// B1541: with randomStationJobs on it names the Miner too ("as an Armorer or a Miner, by chance")
+				armorer |= text.startsWith("A villager without a job takes it as an Armorer");
 				if (A_BEFORE_VOWEL.matcher(text).find()) {
 					wrong.add(BuiltInRegistries.ITEM.getKey(item).getPath() + ": \"" + text + "\"");
 				}

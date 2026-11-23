@@ -283,3 +283,4 @@ and the one waiting hears nothing until his turn; the listener dying or logging 
 sleep or panicking halfway, stops the telling with nothing kept, and it starts over from the first line (a waiting
 friend gets it when the listener logs out); 600 points at once tells the 2-, 4- and 6-heart events in order, each
 counted once, and her next is at 8 hearts.
+- QA (lane-c-1123-0953): `QaHeartEvents1123cGameTests` (8 tests: 199 points tells nothing and 200 starts, 399/400 for 4 hearts, with the page's "at 2/4 hearts" and "has something to tell you"; starts at exactly 8 blocks, not 8.5, and tells from where she stands after 5 seconds; one listener, two tellers: nearest first, never both; carried 12 blocks off halfway stops, starts over on return; one child, three children and a dead child in the children list; every unknown argument reads "nobody"; switches off keep the page's stories, friendship off hides hearts; unnamed and hall-less villagers tell nothing)

@@ -118,5 +118,12 @@ The journey takes 3 minutes plus a tick for every block to the spot (612 blocks:
   a charter from another dimension; the only farmer's husband and a Legend staying home, two of a trade, every settler
   killed or the hall broken at the muster, calling it off, the setting-out sentences word for word; an unnamed colony
   named and announced, and no room with everything sent home.
+- QA: `QaGuildsSettlers1123cGameTests` (5 for settlers): a renamed bed left in the chest and "1 bed" missing word for
+  word, an order given before the switch goes off still leaving, the hall broken while they get ready (called off, the
+  charter dropped with its spot), a volunteer who dies not replaced, and a friend of the owner calling it off.
+- QA (lane-c-1123-0953): `QaColonySettlers1123cGameTests` (7: a builder mid-build staying home and the next builder or a
+  jobless grown-up going; a player 47.5 blocks off holding them the half minute and one 48.5 off letting them go at once;
+  the call-off button's line for the owner and a stranger and the stranger's refusal word for word; "Too late" from a tab
+  left open; three settlers named "Tomas, Dara and Flo" when sent and at the bell; the 3 days ending neither early nor late)
 
 Showcase scenes: `colony_departure`

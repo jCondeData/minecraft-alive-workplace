@@ -94,5 +94,7 @@ None of its own. The page opens from the Village Hall's minecart button and thro
   read.
 - GameTests that still pass unchanged and reach the routes page as a tab: `HallPagesGameTests`,
   `VillageBannerGameTests`, `MerchantPrinceGameTests`.
+- QA, `QaShopBoards1123cGameTests`: a page left open shows the price another player's trade left; a good with no price
+  yet reads at its base; every line on the Prices tab reads in plain American English.
 - Showcase scenes: `price_board` (the page, Timber's tooltip, the name icon) and `hall_pages` (the routes page, now the
   Routes tab).

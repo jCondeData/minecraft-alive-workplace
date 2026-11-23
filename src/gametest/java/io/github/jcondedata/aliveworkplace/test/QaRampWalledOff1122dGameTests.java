@@ -144,6 +144,17 @@ public class QaRampWalledOff1122dGameTests implements FabricGameTest {
 		mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 0f, 0f);
 		mob.finalizeSpawn(level, level.getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.EVENT, null);
 		Threats.outfit(level, mob, yard.culture(), member);
+		// B1528: finalizeSpawn makes one husk in 20 a baby (the level's random), now and then on a chicken. A baby is
+		// under a block tall, so it walks in through a gap one high that these tests count as no way in. Always an adult.
+		if (mob instanceof net.minecraft.world.entity.monster.Zombie zombie && zombie.isBaby()) {
+			zombie.setBaby(false);
+		}
+		net.minecraft.world.entity.Entity vehicle = mob.getVehicle();
+		if (vehicle != null) {
+			mob.stopRiding();
+			vehicle.discard();
+			mob.moveTo(base.getX() + x, base.getY() + 2, base.getZ() + z, 0f, 0f);
+		}
 		mob.setPersistenceRequired();
 		level.addFreshEntityWithPassengers(mob);
 		VillageRaids.track(level, yard.hall(), yard.culture(), List.of(mob));

@@ -5,17 +5,29 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"ArmReachMixin",
+		"BeltEndMixin",
 		"BlockBreakerMixin",
 		"ContraptionAssemblyMixin",
 		"ContraptionColliderMixin",
 		"ContraptionPlacementMixin",
 		"ControlledContraptionAccessor",
+		"EjectorTargetMixin",
 		"ElevatorCabinMixin",
+		"FluidFillMixin",
+		"FluidSearchMixin",
+		"HandOverMixin",
 		"HarvesterMixin",
 		"InventoryReachMixin",
+		"MachineTickMixin",
 		"MovingBreakerMixin",
+		"MovingSawFellingMixin",
+		"OpenPipeMixin",
 		"PloughMixin",
-		"RollerFillMixin"
+		"PortableInterfaceMixin",
+		"RollerFillMixin",
+		"SawFellingMixin",
+		"SchematicannonMixin",
+		"TreeAccessor"
 	],
 	"injectors": {
 		"defaultRequire": 1

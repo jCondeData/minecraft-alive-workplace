@@ -137,6 +137,20 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		}
 	}
 
+	/**
+	 * For the failure message only (B1552: CI's two smiths on the doorstep couldn't be told from the message, and 2,260
+	 * local repeats never showed them): exactly where he stands, the path he follows and how long he has had no way.
+	 */
+	private static String where(GameTestHelper helper, Villager w) {
+		BlockPos zero = helper.absolutePos(BlockPos.ZERO);
+		net.minecraft.world.level.pathfinder.Path path = w.getNavigation().getPath();
+		String way = path == null ? "no path" : path.isDone() ? "path done" : "path node " + path.getNextNodeIndex() + " of " + path.getNodeCount() + " at "
+			+ path.getNextNodePos().subtract(zero).toShortString() + " to " + path.getTarget().subtract(zero).toShortString() + (path.canReach() ? "" : " (falls short)");
+		return String.format(java.util.Locale.ROOT, ", stands at %.2f, %.2f, %.2f, %s, %s, no way since %s, game time %d", w.getX() - zero.getX(), w.getY() - zero.getY(),
+			w.getZ() - zero.getZ(), w.onGround() ? "on the ground" : "in the air", way,
+			w.getBrain().getMemory(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE).map(String::valueOf).orElse("never"), w.level().getGameTime());
+	}
+
 	/** Why not yet, or null when each smith works at a block of his trade inside the Smithy II, no two at one. */
 	private static String unsettled(GameTestHelper helper, Smithy s) {
 		Set<BlockPos> taken = new HashSet<>();
@@ -153,7 +167,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 				out.add(SMITHS[i] + " works at " + (site == null ? "null" : helper.relativePos(site).toShortString()) + " (at "
 					+ w.blockPosition().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString() + ", potential "
 					+ w.getBrain().getMemory(MemoryModuleType.POTENTIAL_JOB_SITE).map(g -> g.pos().subtract(helper.absolutePos(BlockPos.ZERO)).toShortString()).orElse("none")
-					+ ", activity " + w.getBrain().getActiveNonCoreActivity().orElse(null) + ")");
+					+ ", activity " + w.getBrain().getActiveNonCoreActivity().orElse(null) + where(helper, w) + ")");
 			}
 		}
 		return out.isEmpty() ? null : String.join("; ", out) + ", day time " + s.level().getDayTime() % 24000;
@@ -176,6 +190,51 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 				helper.succeed();
 			} else if (helper.getTick() > 1500) {
 				helper.fail("not settled within 1,500 ticks of a working day: " + why);
+			}
+		});
+	}
+
+	/**
+	 * B1512, the jam that kept the test above from settling about one run in eight: the Weaponsmith at his grindstone
+	 * (23, 3, 14) stands in the mouth of the only way to the back room, wedged between the grindstone and the wall, and
+	 * the Armorer coming round the bench's corner at (21, 3, 15) beside him was held against that corner by the push
+	 * between two touching villagers for as long as the Weaponsmith stood there. With the front blast furnace gone the
+	 * Armorer has to pass him: he is at the back one, his, within 400 ticks.
+	 */
+	//$ gametest_ticks_batch HUGE '500' '"qaJobFixes1122cSmithyPinch"'
+	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaJobFixes1122cSmithyPinch")
+	public void qaAnArmorerGetsPastTheWeaponsmithStoodAtHisGrindstoneToTheBackFurnace(GameTestHelper helper) {
+		Smithy s = smithy(helper);
+		helper.setDayTime(2000);
+		BlockPos front = helper.absolutePos(new BlockPos(15, 3, 16));
+		BlockPos back = helper.absolutePos(new BlockPos(16, 3, 21));
+		helper.assertTrue(s.level().getBlockState(front).is(Blocks.BLAST_FURNACE) && s.level().getBlockState(back).is(Blocks.BLAST_FURNACE),
+			"(setup) the Smithy II's blast furnaces aren't at (15, 3, 16) and (16, 3, 21)");
+		helper.assertTrue(s.level().getBlockState(helper.absolutePos(new BlockPos(23, 3, 14))).is(Blocks.GRINDSTONE)
+			&& !s.level().getBlockState(helper.absolutePos(new BlockPos(21, 3, 15))).isAir() && s.level().getBlockState(helper.absolutePos(new BlockPos(22, 3, 15))).isAir(),
+			"(setup) the Smithy II's grindstone and bench corner aren't where the jam was");
+		s.level().setBlock(front, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+		// where every traced run had him: against the grindstone and the wall behind, unable to move further off
+		BlockPos zero = helper.absolutePos(BlockPos.ZERO);
+		Villager wedged = helper.spawn(EntityType.VILLAGER, new BlockPos(22, 3, 14));
+		wedged.setVillagerData(wedged.getVillagerData().setProfession(VillagerProfession.WEAPONSMITH));
+		wedged.moveTo(zero.getX() + 22.82, zero.getY() + 3, zero.getZ() + 14.3, 0, 0);
+		wedged.setNoAi(true);
+		Villager armorer = helper.spawn(EntityType.VILLAGER, new BlockPos(20, 3, 12));
+		armorer.setVillagerData(armorer.getVillagerData().setProfession(VillagerProfession.ARMORER));
+		armorer.setVillagerXp(1);
+		armorer.refreshBrain(s.level());
+		armorer.setOnGround(true); // landed, so his first job search finds its way (B1478)
+		armorer.setDeltaMovement(0, -0.1, 0);
+		helper.onEachTick(() -> {
+			BlockPos site = armorer.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).orElse(null);
+			if (back.equals(site)) {
+				helper.succeed();
+			} else if (helper.getTick() > 400) {
+				helper.fail("the Armorer isn't at the back blast furnace 400 ticks on: works at " + (site == null ? "null" : site.subtract(zero).toShortString())
+					+ ", stands at " + armorer.position().subtract(zero.getX(), zero.getY(), zero.getZ()) + ", walking to "
+					+ armorer.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> w.getTarget().currentBlockPosition().subtract(zero).toShortString()).orElse("nothing")
+					+ ", the Weaponsmith at " + wedged.position().subtract(zero.getX(), zero.getY(), zero.getZ()));
 			}
 		});
 	}
@@ -315,7 +374,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		return foe;
 	}
 
-	private static String rel(GameTestHelper helper, BlockPos pos) {
+	static String rel(GameTestHelper helper, BlockPos pos) {
 		return pos.subtract(helper.absolutePos(BlockPos.ZERO)).toShortString();
 	}
 
@@ -457,7 +516,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	/** The house's origin: the middle of the area, so it fits however it's turned. */
 	private static final BlockPos HOUSE = new BlockPos(15, 2, 15);
 
-	private record Stage(ServerLevel level, ServerPlayer owner, ResourceLocation structure, BlueprintData.Placement placement, Blueprint asBuilt,
+	record Stage(ServerLevel level, ServerPlayer owner, ResourceLocation structure, BlueprintData.Placement placement, Blueprint asBuilt,
 						 BlockPos hall, BlockPos corner, List<BlockPos> stores, Villager builder) {
 	}
 
@@ -465,7 +524,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	 * The owner's furnished pre-B260 Stone House standing as built, turned by {@code rotation}; a hall, a Builder, his
 	 * bench and four stores in the corner the house leaves free (as QaRefreshFurnishedShortGameTests stages it).
 	 */
-	private static Stage house(GameTestHelper helper, Rotation rotation) {
+	static Stage house(GameTestHelper helper, Rotation rotation) {
 		Leftovers.clear(helper);
 		Leftovers.finished(helper);
 		ServerLevel level = helper.getLevel();
@@ -518,7 +577,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	}
 
 	/** The owner presses Refresh for the house on the hall's Repairs page; false when the page doesn't offer it. */
-	private static boolean pressRefresh(GameTestHelper helper, Stage s) {
+	static boolean pressRefresh(GameTestHelper helper, Stage s) {
 		ChoiceMenu menu = VillageHallScreen.forTest(s.owner(), s.hall());
 		menu.press(HallPages.slot(RepairsPage.PAGE), s.owner());
 		int slot = -1;
@@ -536,13 +595,13 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		return true;
 	}
 
-	private static Blueprint currentFor(Stage s) {
+	static Blueprint currentFor(Stage s) {
 		Blueprint base = BlueprintLibrary.get(s.level(), s.structure()).orElseThrow();
 		return Refreshes.refreshedFurniture(s.level(), s.structure(), BuildSiteManager.get(s.level()).furniture(s.placement())).apply(base, s.structure());
 	}
 
 	/** Every material the refresh needs, twice over, into the stores. */
-	private static void stock(GameTestHelper helper, Stage s, Map<net.minecraft.world.item.Item, Integer> needs) {
+	static void stock(GameTestHelper helper, Stage s, Map<net.minecraft.world.item.Item, Integer> needs) {
 		int at = 0;
 		for (Map.Entry<net.minecraft.world.item.Item, Integer> need : needs.entrySet()) {
 			for (int left = need.getValue() * 2 + 2; left > 0 && at < 27 * s.stores().size(); at++) {
@@ -555,7 +614,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	}
 
 	/** The house afterwards is a fresh build of today's drawing (beds a villager claimed aside), nothing floating, no Refresh left offered. */
-	private static void assertFresh(GameTestHelper helper, Stage s, Map<BlockPos, BlockState> was, Map<BlockPos, BlockState> now) {
+	static void assertFresh(GameTestHelper helper, Stage s, Map<BlockPos, BlockState> was, Map<BlockPos, BlockState> now) {
 		helper.assertTrue(Refreshes.siteOf(s.level(), s.placement()) == null, "still refreshing");
 		helper.assertTrue(BuildSiteManager.get(s.level()).all().stream().noneMatch(b -> b.placement().equals(s.placement())), "a site left on the house");
 		List<String> left = new ArrayList<>(RefreshMatchesFreshBuildGameTests.differences(s.level(), s.placement(), s.asBuilt(), currentFor(s)));
@@ -588,6 +647,7 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		helper.assertTrue(loose.isEmpty(), "floating after the refresh: " + loose.subList(0, Math.min(10, loose.size())));
 		helper.assertTrue(Refreshes.entries(s.level(), s.hall()).stream().noneMatch(e -> e.building().placement().equals(s.placement())),
 			"the refreshed house still offers a refresh on the Repairs page");
+		helper.assertTrue(BuildSiteManager.get(s.level()).refreshBegun(s.placement()) == null, "the finished refresh is still remembered as begun"); // B1500
 	}
 
 	/**
@@ -603,10 +663,12 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 		boolean[] killed = {false};
 		boolean[] repressed = {false};
 		int[] ticks = {0};
+		String[] from = {null};
 		helper.runAfterDelay(2, () -> {
 			helper.assertTrue(pressRefresh(helper, s), "the old Stone House has no Refresh on the Repairs page");
 			BuildSite site = Refreshes.siteOf(s.level(), s.placement());
 			helper.assertTrue(site != null, "no Builder took the refresh up");
+			from[0] = site.refreshFrom();
 			stock(helper, s, site.plan(s.level()).materials());
 		});
 		helper.onEachTick(() -> {
@@ -618,6 +680,10 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 					helper.assertTrue(pressRefresh(helper, s), "the half-refreshed house isn't on the Repairs page any more");
 					helper.assertTrue(Refreshes.siteOf(s.level(), s.placement()) != null, "the new Builder didn't take the refresh up");
 				}
+				BuildSite taken = Refreshes.siteOf(s.level(), s.placement());
+				// B1500: taken up again from the drawing it was begun from, not one guessed from the half-cleared house
+				helper.assertTrue(taken == null || from[0].equals(taken.refreshFrom()),
+					"begun from the older drawing " + from[0] + ", taken up again from " + (taken == null ? "?" : taken.refreshFrom()));
 				return;
 			}
 			BuildSite site = Refreshes.siteOf(s.level(), s.placement());
@@ -634,6 +700,9 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 				s.level().getDataStorage().set(BuildSiteManager.NAME,
 					BuildSiteManager.load(BuildSiteManager.get(s.level()).save(new CompoundTag(), registries), registries));
 			}
+			helper.assertTrue(after != null || from[0].equals(BuildSiteManager.get(s.level()).refreshBegun(s.placement())),
+				"the drawing the refresh was begun from (" + from[0] + ") is forgotten" + (reload ? " after the load: " : ": ")
+					+ BuildSiteManager.get(s.level()).refreshBegun(s.placement())); // B1500
 			BuildSite loaded = Refreshes.siteOf(s.level(), s.placement());
 			helper.assertTrue(loaded == null || !s.builder().getUUID().equals(loaded.builder()), "after the load the refresh is set to the dead Builder again");
 			if (!s.level().getBlockState(helper.absolutePos(newBench)).is(ModBlocks.BUILDERS_BENCH)) {
@@ -675,5 +744,17 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	public void qaABuilderKilledMidRefreshThenASaveAndLoadStillLeavesItToANewBuilder(GameTestHelper helper) {
 		Stage s = house(helper, Rotation.COUNTERCLOCKWISE_90);
 		killedAndReplaced(helper, s, 300, s.corner().offset(2, 0, 4), true);
+	}
+
+	/**
+	 * B1500: the same on the Stone House turned half round (CLOCKWISE_180), its Builder killed 2,500 ticks into the
+	 * refresh (still clearing), a new Builder at the same bench: he finishes it as a fresh build of today's drawing, with
+	 * none of the old drawing's furniture left by the front door.
+	 */
+	//$ gametest_ticks_batch HUGE '20000' '"qaJobFixes1122cRefreshHalfRound"'
+	@GameTest(template = HUGE, timeoutTicks = 20000, batch = "qaJobFixes1122cRefreshHalfRound")
+	public void qaABuilderKilledLateInARefreshOfAStoneHouseTurnedHalfRoundLeavesItToANewBuilder(GameTestHelper helper) {
+		Stage s = house(helper, Rotation.CLOCKWISE_180);
+		killedAndReplaced(helper, s, 2500, s.corner().offset(2, 0, 4), false);
 	}
 }

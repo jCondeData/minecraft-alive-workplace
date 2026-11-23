@@ -189,6 +189,11 @@ public class QaPokemonLegendsCompatTests implements FabricGameTest {
 	@GameTest(template = AREA, timeoutTicks = 300, batch = "qa_legends_census")
 	public void censusOpensAtExactly25Of10Types(GameTestHelper helper) {
 		setUp(helper);
+		// B1393: pastured Pokémon walk about. In setUp's 14-block village the pastures stand 4 blocks from its edge and
+		// the Pokémon start 1 to 4 blocks from it; a Rattata covers that in 20 ticks, so now and then one stood outside
+		// when the census was read ("after the swap: 24 of [10 types]"). A 40-block village keeps all of them more than
+		// 26 blocks inside for the test's 20 ticks; setUp's reset puts the radius back.
+		VillageHalls.RADIUS = 40;
 		ServerLevel level = helper.getLevel();
 		ServerPlayer player = helper.makeMockServerPlayerInLevel();
 		BlockPos[] pastures = {

@@ -111,6 +111,71 @@ public class QaFisherSmoker1123cGameTests implements net.fabricmc.fabric.api.gam
 		becomes(helper, v, helper.absolutePos(BARREL), VillagerProfession.FISHERMAN, VillagerProfession.BUTCHER, "beside the barrel, a smoker 4 across");
 	}
 
+	private static void stand(GameTestHelper helper, Villager v, BlockPos rel) {
+		BlockPos abs = helper.absolutePos(rel);
+		v.moveTo(abs.getX() + 0.5, abs.getY(), abs.getZ() + 0.5, 0, 0);
+	}
+
+	/**
+	 * B1556: the villager who started beside the free barrel (his first ticks there, then AI off) and now stands beside the
+	 * smoker, as after a stroll during vanilla's retry wait: his search still sees the barrel and not the smoker. Once the
+	 * barrel is gone he sees the smoker.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"qaFisherSmoker1123cStrolled"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "qaFisherSmoker1123cStrolled")
+	public void qaStartedBesideTheBarrelAndStrolledToTheSmokerHeStillDoesntSeeTheSmoker(GameTestHelper helper) {
+		QaJobBarrels1122cGameTests.setup(helper, true);
+		helper.setBlock(BARREL, Blocks.BARREL);
+		BlockPos smoker = BARREL.offset(4, 0, 0);
+		helper.setBlock(smoker, Blocks.SMOKER);
+		Villager v = jobless(helper, BESIDE);
+		helper.runAfterDelay(2, () -> {
+			v.setNoAi(true); // after his first tick: a villager with AI off from the start has none
+			stand(helper, v, smoker.south());
+			List<BlockPos> a = search(helper, v);
+			helper.assertTrue(a.contains(helper.absolutePos(BARREL)), "strolled to the smoker: his search doesn't see the free barrel: " + rel(helper, a));
+			helper.assertFalse(a.contains(helper.absolutePos(smoker)), "strolled to the smoker: his search sees the smoker again: " + rel(helper, a));
+			helper.setBlock(BARREL, Blocks.AIR);
+			List<BlockPos> b = search(helper, v);
+			helper.assertTrue(b.contains(helper.absolutePos(smoker)), "the barrel gone: his search still doesn't see the smoker: " + rel(helper, b));
+			v.discard();
+			helper.succeed();
+		});
+	}
+
+	/**
+	 * B1556: one who started beside the smoker, searched beside the free barrel (so it is his) and went back to the smoker
+	 * doesn't see the smoker; with the village's fisherman place taken meanwhile he sees it again.
+	 */
+	//$ gametest_ticks_batch HUGE '200' '"qaFisherSmoker1123cCameBy"'
+	@GameTest(template = HUGE, timeoutTicks = 200, batch = "qaFisherSmoker1123cCameBy")
+	public void qaSearchedBesideTheBarrelThenBackAtTheSmokerHeDoesntSeeItUntilTheVillageHasItsFisherman(GameTestHelper helper) {
+		QaJobBarrels1122cGameTests.setup(helper, true);
+		helper.setBlock(BARREL, Blocks.BARREL);
+		BlockPos smoker = BARREL.offset(4, 0, 0);
+		helper.setBlock(smoker, Blocks.SMOKER);
+		Villager v = jobless(helper, smoker.south());
+		v.setNoAi(true);
+		helper.runAfterDelay(3, () -> {
+			List<BlockPos> first = search(helper, v);
+			helper.assertTrue(first.contains(helper.absolutePos(smoker)), "beside the smoker from the start: his search doesn't see it: " + rel(helper, first));
+			stand(helper, v, BESIDE);
+			search(helper, v);
+			stand(helper, v, smoker.south());
+			List<BlockPos> a = search(helper, v);
+			helper.assertFalse(a.contains(helper.absolutePos(smoker)), "back at the smoker after a search beside the barrel: he sees the smoker: " + rel(helper, a));
+			Villager fisher = helper.spawn(EntityType.VILLAGER, BARREL.offset(0, 0, 3));
+			fisher.setNoAi(true);
+			fisher.setVillagerData(fisher.getVillagerData().setProfession(VillagerProfession.FISHERMAN));
+			List<BlockPos> b = search(helper, v);
+			helper.assertTrue(b.contains(helper.absolutePos(smoker)), "the village has its fisherman: his search still doesn't see the smoker: " + rel(helper, b));
+			helper.assertFalse(b.contains(helper.absolutePos(BARREL)), "the village has its fisherman: his search sees the barrel: " + rel(helper, b));
+			v.discard();
+			fisher.discard();
+			helper.succeed();
+		});
+	}
+
 	/** The same at the edge of reach: the smoker 8 blocks from the barrel (the Fisher's Hut II's own spacing). */
 	//$ gametest_ticks_batch HUGE '1200' '"qaFisherSmoker1123cEdge"'
 	@GameTest(template = HUGE, timeoutTicks = 1200, batch = "qaFisherSmoker1123cEdge")

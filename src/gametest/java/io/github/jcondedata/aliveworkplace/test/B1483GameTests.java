@@ -100,13 +100,20 @@ public class B1483GameTests implements net.fabricmc.fabric.api.gametest.v1.Fabri
 		}
 		Villager innkeeper = helper.spawn(EntityType.VILLAGER, counter.offset(1, 0, 1));
 		Jobs.employ(level, innkeeper, helper.absolutePos(counter), ModVillagers.SHOP_COUNTER_POI, ModVillagers.INNKEEPER);
+		// B1557: put down on the ground. One in the air on his first tick can't path to his own block (B1478) and marks it
+		// failed for a while, so on a loaded run the two could swap blocks (the porter walked to the Travel Post) and
+		// the check below, which wants each at his own block, failed.
 		Villager porter = helper.spawn(EntityType.VILLAGER, storehouse.offset(1, 0, 1));
+		porter.setOnGround(true);
 		Villager ferryman = helper.spawn(EntityType.VILLAGER, post.offset(1, 0, 1));
+		ferryman.setOnGround(true);
 		helper.succeedWhen(() -> {
 			java.util.List<Villager> guests = Innkeepers.guests(level, helper.absolutePos(counter));
 			helper.assertTrue(!guests.isEmpty(), "no traveller has arrived yet");
 			helper.assertTrue(helper.getTick() >= 1200, "waiting: the traveller's job search runs for a while");
-			String traveller = "; the traveller: " + claims(guests.get(0));
+			String traveller = "; the traveller: " + claims(guests.get(0)) + "; trades: porter " + porter.getVillagerData().getProfession()
+				+ ", ferryman " + ferryman.getVillagerData().getProfession() + "; the ferryman: " + claims(ferryman) + "; blocks at " + helper.absolutePos(storehouse).toShortString()
+				+ " and " + helper.absolutePos(post).toShortString();
 			helper.assertTrue(porter.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).filter(helper.absolutePos(storehouse)::equals).isPresent()
 				&& porter.getVillagerData().getProfession() == ModVillagers.PORTER, "nobody works at the Storehouse: " + claims(porter) + traveller);
 			helper.assertTrue(ferryman.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).filter(helper.absolutePos(post)::equals).isPresent()

@@ -145,6 +145,9 @@ public class TablePreviewGameTests implements FabricGameTest {
 		MinecraftServer server = helper.getLevel().getServer();
 		List<String> problems = new ArrayList<>();
 		for (TablePayloads.Entry e : TableServer.listing(server)) {
+			if (unscannable(server, e.id())) {
+				continue; // B811: not a build a player could have scanned (see unscannable)
+			}
 			Optional<TablePayloads.Preview> preview = TableServer.preview(server, e.id());
 			if (preview.isEmpty()) {
 				problems.add(e.id() + " is listed but has no preview");
@@ -164,6 +167,20 @@ public class TablePreviewGameTests implements FabricGameTest {
 		}
 		helper.assertTrue(problems.isEmpty(), String.join("; ", problems));
 		helper.succeed();
+	}
+
+	/**
+	 * B811: a scan holding nothing the preview draws (only water, lava, a bubble column, light or barriers), which the
+	 * Scan Tool refuses since B1195 ({@code QaScanPreview1111b}/{@code QaScanEmpty} check that), so it can only be one
+	 * an older build or another test's fake player left in the reused GameTest world. Every other listed build, scans
+	 * with a drawn block included, is still judged in full.
+	 */
+	private static boolean unscannable(MinecraftServer server, ResourceLocation id) {
+		if (!id.getPath().startsWith("scans/")) {
+			return false;
+		}
+		Optional<Blueprint> bp = BlueprintLibrary.get(server, id);
+		return bp.isPresent() && bp.get().blocks().stream().noneMatch(b -> TableServer.previewShows(b.state()));
 	}
 
 	/** A build too big for the cap even hollowed is drawn in coarser cells: a 40-block stone cube becomes 2-block cells. */

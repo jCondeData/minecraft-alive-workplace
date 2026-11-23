@@ -116,4 +116,12 @@ the crops within 32 blocks of it grow 25% faster, and golden sparkles rise from 
 - QA (B826, lane E 11-09): `QaHallLenientSaves1109eGameTests`: every layer from removed mods leaves the red base with no
   layers, the first layer gone keeps the other two in their order, a layer whose color doesn't read is the only one
   dropped; each time the hall's design equals what a vanilla banner kept, and a design loaded so saves and loads again unchanged.
+- QA (lane-c-1123-0953): `QaCivicMarket1123cGameTests`: the owner of a protected village raises colors by hand and
+  reads "These are now the colors of ..." with his line in the chronicle; with the switch off he reads that Village
+  Banners are off, nothing changes and the colors survive a save; a stranger to the protected village changes nothing;
+  in the game's recipe list one banner and one gold ingot anywhere in the grid make a Village Banner, and two banners,
+  two ingots, a stray stick, a nugget, a lone banner or a Village Banner and gold make none; two cradles count as one
+  (12000 ticks to grow up, one extra baby, the hall's line word for word); each cradle seats its nearest child, a third
+  child and one 9 blocks off stay up; `seasonDays` clamped to 1 and 120, with autumn on days 3 and 7 at 1 and days 241
+  to 360 at 120; sugar cane by an idol grows as without while potatoes grow about a quarter more.
 - Showcase scenes: `cradle`, `village_banner`, `harvest_idol`.

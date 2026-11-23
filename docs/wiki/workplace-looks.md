@@ -182,7 +182,13 @@ Centers has one Healing Machine and its PC where the nurse can reach them, a che
 and Shop Counter at II, and the game's pathfinder walks a villager from the street to all of them and to every bed; II
 keeps I's machine, PC and chests in their cells), `QaCobblemonAbsent1123bGameTests` (without Cobblemon none of the
 Cobblemon builds is in the Table, the library or the creative tab, no villager sells one, and the Steward of a City with
-every Cobblemon job never asks for one).
+every Cobblemon job never asks for one), `QaRebuiltShops1123bGameTests` (50.4 and 50.5 from their briefs: the Ferry House
+built by a Builder from exactly its materials across a save and reload, waiting for a missing Travel Post and then
+finishing, its post taken by a jobless villager unturned and turned to the west, a landing passenger able to walk out;
+Winery I built across a reload, II built over a I whose vat a Vintner holds keeps the vat claimed and the player's chest,
+II's berry garden survives being placed, a turned Winery's vat taken, a turned Butcher's Shop's smoker and chest reached
+from its street by the game's pathfinder; the Butcher's
+freezer holds nothing that melts; the Watermill without Create keeps its composter and store chest on foot).
 
 Showcase scenes: `workplaces` (all twelve placed side by side), `refresh_old_house` (an old Stone House before and after its refresh, 36.21), `rebuild_pokemon_center` and `rebuild_pokemon_center_looks` (50.12).
 

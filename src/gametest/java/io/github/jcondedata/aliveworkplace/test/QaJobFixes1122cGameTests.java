@@ -181,6 +181,51 @@ public class QaJobFixes1122cGameTests implements FabricGameTest {
 	}
 
 	/**
+	 * B1512, the jam that kept the test above from settling about one run in eight: the Weaponsmith at his grindstone
+	 * (23, 3, 14) stands in the mouth of the only way to the back room, wedged between the grindstone and the wall, and
+	 * the Armorer coming round the bench's corner at (21, 3, 15) beside him was held against that corner by the push
+	 * between two touching villagers for as long as the Weaponsmith stood there. With the front blast furnace gone the
+	 * Armorer has to pass him: he is at the back one, his, within 400 ticks.
+	 */
+	//$ gametest_ticks_batch HUGE '500' '"qaJobFixes1122cSmithyPinch"'
+	@GameTest(template = HUGE, timeoutTicks = 500, batch = "qaJobFixes1122cSmithyPinch")
+	public void qaAnArmorerGetsPastTheWeaponsmithStoodAtHisGrindstoneToTheBackFurnace(GameTestHelper helper) {
+		Smithy s = smithy(helper);
+		helper.setDayTime(2000);
+		BlockPos front = helper.absolutePos(new BlockPos(15, 3, 16));
+		BlockPos back = helper.absolutePos(new BlockPos(16, 3, 21));
+		helper.assertTrue(s.level().getBlockState(front).is(Blocks.BLAST_FURNACE) && s.level().getBlockState(back).is(Blocks.BLAST_FURNACE),
+			"(setup) the Smithy II's blast furnaces aren't at (15, 3, 16) and (16, 3, 21)");
+		helper.assertTrue(s.level().getBlockState(helper.absolutePos(new BlockPos(23, 3, 14))).is(Blocks.GRINDSTONE)
+			&& !s.level().getBlockState(helper.absolutePos(new BlockPos(21, 3, 15))).isAir() && s.level().getBlockState(helper.absolutePos(new BlockPos(22, 3, 15))).isAir(),
+			"(setup) the Smithy II's grindstone and bench corner aren't where the jam was");
+		s.level().setBlock(front, Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+		// where every traced run had him: against the grindstone and the wall behind, unable to move further off
+		BlockPos zero = helper.absolutePos(BlockPos.ZERO);
+		Villager wedged = helper.spawn(EntityType.VILLAGER, new BlockPos(22, 3, 14));
+		wedged.setVillagerData(wedged.getVillagerData().setProfession(VillagerProfession.WEAPONSMITH));
+		wedged.moveTo(zero.getX() + 22.82, zero.getY() + 3, zero.getZ() + 14.3, 0, 0);
+		wedged.setNoAi(true);
+		Villager armorer = helper.spawn(EntityType.VILLAGER, new BlockPos(20, 3, 12));
+		armorer.setVillagerData(armorer.getVillagerData().setProfession(VillagerProfession.ARMORER));
+		armorer.setVillagerXp(1);
+		armorer.refreshBrain(s.level());
+		armorer.setOnGround(true); // landed, so his first job search finds its way (B1478)
+		armorer.setDeltaMovement(0, -0.1, 0);
+		helper.onEachTick(() -> {
+			BlockPos site = armorer.getBrain().getMemory(MemoryModuleType.JOB_SITE).map(GlobalPos::pos).orElse(null);
+			if (back.equals(site)) {
+				helper.succeed();
+			} else if (helper.getTick() > 400) {
+				helper.fail("the Armorer isn't at the back blast furnace 400 ticks on: works at " + (site == null ? "null" : site.subtract(zero).toShortString())
+					+ ", stands at " + armorer.position().subtract(zero.getX(), zero.getY(), zero.getZ()) + ", walking to "
+					+ armorer.getBrain().getMemory(MemoryModuleType.WALK_TARGET).map(w -> w.getTarget().currentBlockPosition().subtract(zero).toShortString()).orElse("nothing")
+					+ ", the Weaponsmith at " + wedged.position().subtract(zero.getX(), zero.getY(), zero.getZ()));
+			}
+		});
+	}
+
+	/**
 	 * B1471's failure as CI had it: the smiths arrive at day 9,600, after the working day, and night falls before they
 	 * settle. Nobody is stranded: the next morning each has a block of his own inside the Smithy II within 2,500 ticks,
 	 * the armorer included, and no job block's ticket is left held by a smith who works elsewhere.

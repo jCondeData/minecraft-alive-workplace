@@ -134,3 +134,4 @@ hung; after a save and reload mid-wait the site still waits and its lines still 
 line.
 `QaBuilderDecorStore1110bGameTests` (QA of B1148): a frame in neither the bench's chest nor made by anyone but spare
 in the village Storehouse is fetched from there and hung, and the Storehouse is left without it.
+- QA (lane-c-1123-0953): `QaCandlesLeather1123cGameTests` (the Beekeeper taking the makings from her own chest, a honeycomb block from exactly four of five honeycomb, three honeycomb named "short of 1 Honeycomb to make 1 Honeycomb Block" with nothing taken, two candles short of string read "short of 2 String to make 2 Candles", a candle stock order into a full store chest losing nothing, and three decoration jobs to hire naming two and "and 1 more").

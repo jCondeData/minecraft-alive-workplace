@@ -130,4 +130,5 @@ None of its own. It needs a Village Hall and a Storehouse with at least one ches
   by the Storehouse trade as one (16 kept back between them); the Storehouse broken and the economy switched off with
   the page open; a page left open while another player trades; the treasury switch off; the hall saved and loaded
   after trading; a sneaking stranger with a block and protection switched off; every sentence the board says.
+- QA (lane-c-1123-0953): `QaBoardTrade1123cGameTests` (the line above the hotbar for a sale and a refusal; a shift-click sale of three bundles, each at the price the one before left, paid down once; worn armor not sold beside a whole piece; a named stack keeps its name both ways; a one-emerald purchase and nugget in the singular, and no emerald buys nothing; a second Storehouse takes what the first has no room for; a buyer one emerald short)
 - Showcase scene: `board_trade` (the treasury before, a bundle of Timber bought, the treasury after).

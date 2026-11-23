@@ -106,3 +106,7 @@ a save and reload between each foe's coming and its kill) and `QaStoryVerify1103
 (a `threat` arc waiting while At peace, at level 0 and on Peaceful and starting once threatened, a removed file's one log
 line after a save and reload, the real `/reload` reading the arc files again, the commands refused to non-operators,
 every story sentence in American English). Showcase scene `story_arc`.
+- QA (lane-c-1123-0953): `QaStoryArcs1123cGameTests` (apples on a chapter's last day beat its time limit; a save and
+  reload while the next chapter waits begins it on its day, heard in chat; the happy end heard near and not far, the
+  Story tab and chatter cleared; the bad end told, no ending reward, the cooldown from the failing day; the same tale in
+  two villages moves and fails apart; the cast elder dying never finishes the talk step)

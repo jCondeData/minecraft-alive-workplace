@@ -424,3 +424,15 @@ Mailbox and a home bed, and paper on a jobless villager beside it makes a Postma
 cartography table. Graveyard I to II keeps the Undertaker's claimed stand, his chest and three resting graves slot
 for slot. The Post Office short of bricks waits, then finishes once restocked; its Mailbox broken mid-build is put
 back. Every name reads in American English.
+
+**QA of the rebuilt farms (lane-b-1123-0940, 50.9 and 50.10).** `QaRebuiltFarms1123bGameTests` (12), from the briefs:
+Berry Farm, Compost Yard and Greenhouse one composter, Sifting Shed one then two cauldrons, the Quarry one blast furnace
+at (14, 1, 7), Apiary Garden more hives in II than I, and no other job block; each walked up to from the street (gates
+shut, berry bushes walked round) built straight and turned every way; a chest within 8 / 4 of each (two for Compost
+Yard II's composter) and every chest walked to; II keeps I's job blocks and chests; sizes, plots and block budgets;
+every berry plant within the keeper's search and reach and on soil, every hive facing open air with 4 flowers; the
+Quarry's pit open above and walked into from the furnace; a refreshed old drawing keeps one job block of its kind.
+Live: Berry Farm II, Apiary Garden II and Sifting Shed II built across a reload from exactly their materials (the
+berry bushes ripen); a Compost Yard short of its composter waits naming only it, then finishes; a cauldron broken
+mid-build is put back. Found: the built Berry Farm II's cave vines never bear glow berries (drawn at age 25, built
+without berries).

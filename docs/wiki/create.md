@@ -887,5 +887,12 @@ at his interface, and any contraption docks in an open village.
   pulley fills only a basin's outside cells and, saved and loaded mid-drain, still drains nothing inside; a
   Schematicannon fed from a chest of stone and gunpowder prints only outside; an open pipe pours no lava inside; each
   refusal with an open-village control. Removing any of the six new Create protection mixins fails at least one.
+- `QaCreatePipePackager1123eCompatTests` (QA, lane E, 2026-11-23; 12) and `QaCreateEdgeTransport1123eCompatTests` (5):
+  a stranger's Packager outside packs nothing out of a chest in a protected village's last column, and his Mechanical
+  Crafter puts its result into no chest there (open-village controls fill it); a belt ending at the chest feeds it in
+  no village, and a frogport reaches only down. Pipes: open-village controls for a plain, smart, glass and encased
+  pipe and a tall tank, and Frank's own pump inside still pumps his water out. A stranger's pump and pipe outside still
+  drain and fill a tank or basin inside (B1546), and his packager outside unpacks a package into the chest inside
+  (B1547): failing tests in `QaCreatePipePackager1123eBugCompatTests` (not registered until the fixes).
 
 Showcase scenes: `mechanic`, `create_mill`, `create_builds`, `create_contraption` (all filmed with Create).

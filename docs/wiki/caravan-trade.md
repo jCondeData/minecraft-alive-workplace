@@ -128,4 +128,10 @@ None new. It uses the Village Hall, the Storehouse and its chests.
   that loses and makes nothing, the waited-for load free and first, and the sentences at one emerald (singular).
 - `QaCaravansBugTests.qaEmeraldsDoNotVanishWhenTheSellersTreasuryIsFull` (QA, B430): with the seller's treasury at
   its cap, the two treasuries together lose nothing.
+- `QaCaravanTrade1123cGameTests` (QA, 9): the route limit through the Routes page's clicks with a sister route beside
+  it (refused past the limit, a stopped route frees the place); a sister route carrying nothing for sale either way;
+  the 16 kept back counted over two Storehouse chests; 31 logs send nothing and 32 one bundle; a buyer with exactly
+  1.3 emeralds buys one bundle and with 1.29 none; unsold logs coming home to a full Storehouse not lost; a caravan on
+  its way home over a save and reload of the caravans' list; a late booking dated the day of the sale and paid once;
+  and every sentence rendered with its arguments.
 - Showcase scene `caravan_trade`: the Routes tab with its earnings, then the chronicle line.
